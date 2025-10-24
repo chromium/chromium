@@ -81,7 +81,8 @@ public class BrowserWindowCreatorBridgeUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
         var tabModel = mock(TabModel.class);
         when(tabModel.getProfile()).thenReturn(mock(Profile.class));
-        pendingTask.setActivityWindowAndroid(activityWindowAndroid, tabModel);
+        pendingTask.setActivityWindowAndroid(
+                activityWindowAndroid, tabModel, /* multiInstanceManager= */ null);
 
         // Assert final state.
         assertEquals(ChromeAndroidTaskImpl.State.IDLE, pendingTask.getState());

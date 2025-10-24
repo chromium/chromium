@@ -52,6 +52,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -110,7 +111,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void constructor_withActivity_setsActivityWindowAndroid() {
+    public void constructor_withActivityWindowAndroid_setsActivityWindowAndroid() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
@@ -124,7 +125,7 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void constructor_withActivity_registersActivityLifecycleObservers() {
+    public void constructor_withActivityWindowAndroid_registersActivityLifecycleObservers() {
         // Arrange & Act.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var mockActivityLifecycleDispatcher =
@@ -140,7 +141,8 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void constructor_withActivity_setsTabModelRefAndRegistersTabModelObserver() {
+    public void
+            constructor_withActivityWindowAndroid_setsTabModelRefAndRegistersTabModelObserver() {
         // Arrange & Act.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask =
@@ -150,6 +152,19 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         assertEquals(mockTabModel, chromeAndroidTask.getObservedTabModelForTesting());
         verify(mockTabModel, times(1)).addObserver(chromeAndroidTask);
+    }
+
+    @Test
+    public void constructor_withActivityWindowAndroid_setsMultiInstanceManager() {
+        // Arrange & Act.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockMultiInstanceManager = chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager;
+
+        // Assert.
+        assertEquals(
+                mockMultiInstanceManager, chromeAndroidTask.getMultiInstanceManagerForTesting());
     }
 
     @Test
@@ -231,7 +246,9 @@ public class ChromeAndroidTaskImplUnitTest {
                 AssertionError.class,
                 () ->
                         chromeAndroidTask.setActivityWindowAndroid(
-                                newActivityWindowAndroid, mock(TabModel.class)));
+                                newActivityWindowAndroid,
+                                mock(TabModel.class),
+                                /* multiInstanceManager= */ null));
     }
 
     @Test
@@ -245,7 +262,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 createActivityWindowAndroidMocks(taskId).mMockActivityWindowAndroid;
 
         // Act.
-        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+        task.setActivityWindowAndroid(
+                activityWindowAndroid, mock(TabModel.class), /* multiInstanceManager= */ null);
 
         // Assert.
         assertEquals(taskId, (int) task.getId());
@@ -263,7 +281,8 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.clearActivityWindowAndroid();
 
         // Act.
-        chromeAndroidTask.setActivityWindowAndroid(newActivityWindowAndroid, mock(TabModel.class));
+        chromeAndroidTask.setActivityWindowAndroid(
+                newActivityWindowAndroid, mock(TabModel.class), /* multiInstanceManager= */ null);
 
         // Assert.
         assertEquals(newActivityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
@@ -280,7 +299,9 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                newActivityWindowAndroidMocks.mMockActivityWindowAndroid, mock(TabModel.class));
+                newActivityWindowAndroidMocks.mMockActivityWindowAndroid,
+                mock(TabModel.class),
+                /* multiInstanceManager= */ null);
 
         // Assert.
         verify(newActivityWindowAndroidMocks.mMockActivityLifecycleDispatcher, times(1))
@@ -305,7 +326,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Act.
         chromeAndroidTask.clearActivityWindowAndroid();
         chromeAndroidTask.setActivityWindowAndroid(
-                newActivityWindowAndroidMocks.mMockActivityWindowAndroid, newMockTabModel);
+                newActivityWindowAndroidMocks.mMockActivityWindowAndroid,
+                newMockTabModel,
+                /* multiInstanceManager= */ null);
 
         // Assert.
         // Verify observer was removed from the old TabModel.
@@ -314,6 +337,31 @@ public class ChromeAndroidTaskImplUnitTest {
         // Verify the new TabModel is being observed.
         assertEquals(newMockTabModel, chromeAndroidTask.getObservedTabModelForTesting());
         verify(newMockTabModel, times(1)).addObserver(chromeAndroidTask);
+    }
+
+    @Test
+    public void setActivityWindowAndroid_previousRefCleared_setsNewMultiInstanceManager() {
+        // Arrange.
+        int taskId = 1;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(taskId);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var oldMultiInstanceManager = chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager;
+
+        var newActivityWindowAndroidMocks = createActivityWindowAndroidMocks(taskId);
+        var newMockMultiInstanceManager = mock(MultiInstanceManager.class);
+        assertNotEquals(oldMultiInstanceManager, newMockMultiInstanceManager);
+
+        // Act.
+        chromeAndroidTask.clearActivityWindowAndroid();
+        chromeAndroidTask.setActivityWindowAndroid(
+                newActivityWindowAndroidMocks.mMockActivityWindowAndroid,
+                mock(TabModel.class),
+                newMockMultiInstanceManager);
+
+        // Assert.
+        assertEquals(
+                newMockMultiInstanceManager, chromeAndroidTask.getMultiInstanceManagerForTesting());
     }
 
     @Test
@@ -331,7 +379,9 @@ public class ChromeAndroidTaskImplUnitTest {
                 AssertionError.class,
                 () ->
                         chromeAndroidTask.setActivityWindowAndroid(
-                                newActivityWindowAndroid, mock(TabModel.class)));
+                                newActivityWindowAndroid,
+                                mock(TabModel.class),
+                                /* multiInstanceManager= */ null));
     }
 
     @Test
@@ -349,7 +399,9 @@ public class ChromeAndroidTaskImplUnitTest {
                 AssertionError.class,
                 () ->
                         chromeAndroidTask.setActivityWindowAndroid(
-                                newActivityWindowAndroid, mock(TabModel.class)));
+                                newActivityWindowAndroid,
+                                mock(TabModel.class),
+                                /* multiInstanceManager= */ null));
     }
 
     @Test
@@ -397,6 +449,20 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         verify(mockTabModel, times(1)).removeObserver(chromeAndroidTask);
         assertNull(chromeAndroidTask.getObservedTabModelForTesting());
+    }
+
+    @Test
+    public void clearActivityWindowAndroid_clearsMultiInstanceManagerRef() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Act.
+        chromeAndroidTask.clearActivityWindowAndroid();
+
+        // Assert.
+        assertNull(chromeAndroidTask.getMultiInstanceManagerForTesting());
     }
 
     @Test
@@ -1516,7 +1582,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
 
         // Act.
-        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+        task.setActivityWindowAndroid(
+                activityWindowAndroid, mock(TabModel.class), /* multiInstanceManager= */ null);
 
         // Assert.
         verify(mockActivityManager).moveTaskToFront(taskId, 0);
@@ -1537,7 +1604,8 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockActivity = activityWindowAndroid.getActivity().get();
 
         // Act.
-        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+        task.setActivityWindowAndroid(
+                activityWindowAndroid, mock(TabModel.class), /* multiInstanceManager= */ null);
 
         // Assert.
         verify(mockActivity).finishAndRemoveTask();
@@ -1560,7 +1628,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
 
         // Act.
-        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+        task.setActivityWindowAndroid(
+                activityWindowAndroid, mock(TabModel.class), /* multiInstanceManager= */ null);
 
         // Assert.
         verify(mockActivityManager).moveTaskToFront(taskId, 0);
@@ -1584,7 +1653,9 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+                activityWindowAndroid,
+                chromeAndroidTaskWithMockDeps.mMockTabModel,
+                chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager);
 
         // Assert.
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
@@ -1609,7 +1680,9 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+                activityWindowAndroid,
+                chromeAndroidTaskWithMockDeps.mMockTabModel,
+                chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager);
 
         // Assert.
         verify(mockActivity).moveTaskToBack(true);
@@ -1642,7 +1715,9 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+                activityWindowAndroid,
+                chromeAndroidTaskWithMockDeps.mMockTabModel,
+                chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager);
 
         // Assert.
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
@@ -1670,7 +1745,9 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+                activityWindowAndroid,
+                chromeAndroidTaskWithMockDeps.mMockTabModel,
+                chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager);
 
         // Assert.
         verify(apiDelegate, never()).moveTaskTo(any(), anyInt(), any());
@@ -1704,7 +1781,9 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.setActivityWindowAndroid(
-                activityWindowAndroid, chromeAndroidTaskWithMockDeps.mMockTabModel);
+                activityWindowAndroid,
+                chromeAndroidTaskWithMockDeps.mMockTabModel,
+                chromeAndroidTaskWithMockDeps.mMockMultiInstanceManager);
 
         // Assert.
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
@@ -1727,7 +1806,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 createActivityWindowAndroidMocks(taskId).mMockActivityWindowAndroid;
 
         // Act.
-        task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
+        task.setActivityWindowAndroid(
+                activityWindowAndroid, mock(TabModel.class), /* multiInstanceManager= */ null);
 
         // Assert.
         var ptrCaptor = ArgumentCaptor.forClass(Long.class);

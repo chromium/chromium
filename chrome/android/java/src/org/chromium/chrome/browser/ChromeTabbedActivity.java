@@ -818,7 +818,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             mTabModelNotificationDotManager.initWithNative(mTabModelSelector);
             TabModel currentTabModel = mTabModelSelector.getCurrentModel();
-            initializeChromeAndroidTask(BrowserWindowType.NORMAL, currentTabModel);
+            initializeChromeAndroidTask(
+                    BrowserWindowType.NORMAL, currentTabModel, mMultiInstanceManager);
 
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =

@@ -79,7 +79,8 @@ final class AndroidBaseWindowNativeUnitTestSupport {
                     new ChromeAndroidTaskImpl(
                             BrowserWindowType.NORMAL,
                             (ActivityWindowAndroid) mWindowAndroid,
-                            tabModel);
+                            tabModel,
+                            /* multiInstanceManager= */ null);
         } else {
             mWindowAndroid = mock(WindowAndroid.class);
             mChromeAndroidTask = mock(ChromeAndroidTask.class);

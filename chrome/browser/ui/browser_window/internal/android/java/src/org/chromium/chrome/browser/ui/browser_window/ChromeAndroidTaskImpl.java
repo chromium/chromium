@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -136,6 +137,9 @@ final class ChromeAndroidTaskImpl
     @GuardedBy("mActivityWindowAndroidLock")
     private WeakReference<ActivityWindowAndroid> mActivityWindowAndroid = new WeakReference<>(null);
 
+    @GuardedBy("mActivityWindowAndroidLock")
+    private @Nullable MultiInstanceManager mMultiInstanceManager;
+
     /** Last Task (window) bounds updated by {@link #onConfigurationChanged(Configuration)}. */
     private @Nullable Rect mLastBoundsInDpOnConfigChanged;
 
@@ -214,7 +218,8 @@ final class ChromeAndroidTaskImpl
     ChromeAndroidTaskImpl(
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
-            TabModel tabModel) {
+            TabModel tabModel,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         mBrowserWindowType = browserWindowType;
         mId = getActivity(activityWindowAndroid).getTaskId();
         mPendingId = null;
@@ -224,7 +229,7 @@ final class ChromeAndroidTaskImpl
                 : "ChromeAndroidTask must be initialized with a non-null profile";
         mInitialProfile = tabModel.getProfile();
         mState.set(State.IDLE);
-        setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
+        setActivityWindowAndroidInternal(activityWindowAndroid, tabModel, multiInstanceManager);
     }
 
     ChromeAndroidTaskImpl(int pendingId, AndroidBrowserWindowCreateParams createParams) {
@@ -262,8 +267,10 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void setActivityWindowAndroid(
-            ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
-        setActivityWindowAndroidInternal(activityWindowAndroid, tabModel);
+            ActivityWindowAndroid activityWindowAndroid,
+            TabModel tabModel,
+            @Nullable MultiInstanceManager multiInstanceManager) {
+        setActivityWindowAndroidInternal(activityWindowAndroid, tabModel, multiInstanceManager);
     }
 
     @Override
@@ -682,6 +689,12 @@ final class ChromeAndroidTaskImpl
         }
     }
 
+    @Nullable MultiInstanceManager getMultiInstanceManagerForTesting() {
+        synchronized (mActivityWindowAndroidLock) {
+            return mMultiInstanceManager;
+        }
+    }
+
     @Override
     public List<ChromeAndroidTaskFeature> getAllFeaturesForTesting() {
         synchronized (mFeaturesLock) {
@@ -704,7 +717,9 @@ final class ChromeAndroidTaskImpl
     }
 
     private void setActivityWindowAndroidInternal(
-            ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
+            ActivityWindowAndroid activityWindowAndroid,
+            TabModel tabModel,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         synchronized (mActivityWindowAndroidLock) {
             assert mActivityWindowAndroid.get() == null
                     : "This Task already has an ActivityWindowAndroid.";
@@ -734,9 +749,12 @@ final class ChromeAndroidTaskImpl
                         .getInsetObserver()
                         .addWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
             }
+
             // Update and register TabModel
             tabModel.addObserver(this);
             mObservedTabModel = tabModel;
+
+            mMultiInstanceManager = multiInstanceManager;
 
             // Transition from PENDING to ALIVE.
             if (mState.get() == State.PENDING_CREATE) {
@@ -838,6 +856,7 @@ final class ChromeAndroidTaskImpl
                 mObservedTabModel = null;
             }
 
+            mMultiInstanceManager = null;
             mActivityWindowAndroid.clear();
         }
     }

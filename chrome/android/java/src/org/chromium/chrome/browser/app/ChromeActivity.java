@@ -134,6 +134,7 @@ import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetecto
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
@@ -1019,9 +1020,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      *
      * @param browserWindowType Type of the browser window (normal, popup, etc.)
      * @param currentTabModel The current {@link TabModel} for this {@code Activity}.
+     * @param multiInstanceManager The {@link MultiInstanceManager} for this {@code Activity}.
      */
     protected final void initializeChromeAndroidTask(
-            @BrowserWindowType int browserWindowType, TabModel currentTabModel) {
+            @BrowserWindowType int browserWindowType,
+            TabModel currentTabModel,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         try (TraceEvent e = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
             // 1. Obtain a ChromeAndroidTask that represents the Task (window) for this Activity.
             var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
@@ -1042,7 +1046,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             var chromeAndroidTask =
                     chromeAndroidTaskTracker.obtainTask(
-                            browserWindowType, activityWindowAndroid, currentTabModel, pendingId);
+                            browserWindowType,
+                            activityWindowAndroid,
+                            currentTabModel,
+                            multiInstanceManager,
+                            pendingId);
 
             // 2. Associate the current TabModel with ChromeAndroidTask's underlying native
             // AndroidBrowserWindow object.

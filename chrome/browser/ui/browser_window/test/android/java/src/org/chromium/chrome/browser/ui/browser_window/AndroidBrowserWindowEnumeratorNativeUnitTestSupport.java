@@ -31,7 +31,8 @@ final class AndroidBrowserWindowEnumeratorNativeUnitTestSupport {
                                 BrowserWindowType.NORMAL,
                                 mockActivityWindowAndroid,
                                 tabModel,
-                                null);
+                                /* multiInstanceManager= */ null,
+                                /* pendingId= */ null);
         return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
     }
 

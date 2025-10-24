@@ -940,7 +940,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (browserWindowType != null) {
             initializeChromeAndroidTask(
                     browserWindowType,
-                    tabModelOrchestrator.getTabModelSelector().getCurrentModel());
+                    tabModelOrchestrator.getTabModelSelector().getCurrentModel(),
+                    /* multiInstanceManager= */ null);
         }
     }
 

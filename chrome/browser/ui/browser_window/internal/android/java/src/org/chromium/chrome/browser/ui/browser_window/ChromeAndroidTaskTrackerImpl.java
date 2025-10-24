@@ -69,6 +69,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
             TabModel tabModel,
+            @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable Integer pendingId) {
         int taskId = getTaskId(activityWindowAndroid);
 
@@ -77,20 +78,26 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             if (existingTask != null) {
                 assert existingTask.getBrowserWindowType() == browserWindowType
                         : "The browser window type of an existing task can't be changed.";
-                existingTask.setActivityWindowAndroid(activityWindowAndroid, tabModel);
+                existingTask.setActivityWindowAndroid(
+                        activityWindowAndroid, tabModel, multiInstanceManager);
                 return existingTask;
             }
 
             if (pendingId != null) {
                 ChromeAndroidTask pendingTask = mPendingTasks.remove(pendingId);
                 assert pendingTask != null : "Invalid pendingId provided.";
-                pendingTask.setActivityWindowAndroid(activityWindowAndroid, tabModel);
+                pendingTask.setActivityWindowAndroid(
+                        activityWindowAndroid, tabModel, multiInstanceManager);
                 mTasks.put(taskId, pendingTask);
                 return pendingTask;
             }
 
             var newTask =
-                    new ChromeAndroidTaskImpl(browserWindowType, activityWindowAndroid, tabModel);
+                    new ChromeAndroidTaskImpl(
+                            browserWindowType,
+                            activityWindowAndroid,
+                            tabModel,
+                            multiInstanceManager);
             mTasks.put(taskId, newTask);
             mObservers.forEach((observer) -> observer.onTaskAdded(newTask));
             return newTask;

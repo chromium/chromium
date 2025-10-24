@@ -8,6 +8,7 @@ import android.graphics.Rect;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -72,7 +73,8 @@ public interface ChromeAndroidTask {
     int getBrowserWindowType();
 
     /**
-     * Sets the current {@link ActivityWindowAndroid} in this Task.
+     * Sets the current {@link ActivityWindowAndroid} and other objects associated with {@link
+     * ActivityWindowAndroid}'s {@code Activity}.
      *
      * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but an {@link
      * ActivityWindowAndroid} is associated with a {@code ChromeActivity}, this method is needed to
@@ -82,9 +84,18 @@ public interface ChromeAndroidTask {
      * ChromeAndroidTask} at any time. If this method is called when this {@link ChromeAndroidTask}
      * already has an {@link ActivityWindowAndroid}, an {@link AssertionError} will occur.
      *
+     * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with this
+     *     {@link ChromeAndroidTask}.
+     * @param tabModel The {@link TabModel} associated with {@link ActivityWindowAndroid}'s {@code
+     *     Activity}.
+     * @param multiInstanceManager The {@link MultiInstanceManager} associated with {@link
+     *     ActivityWindowAndroid}'s {@code Activity}.
      * @see #clearActivityWindowAndroid()
      */
-    void setActivityWindowAndroid(ActivityWindowAndroid activityWindowAndroid, TabModel tabModel);
+    void setActivityWindowAndroid(
+            ActivityWindowAndroid activityWindowAndroid,
+            TabModel tabModel,
+            @Nullable MultiInstanceManager multiInstanceManager);
 
     /**
      * Returns the current {@link ActivityWindowAndroid} in this Task, or {@code null} if there is
@@ -93,12 +104,12 @@ public interface ChromeAndroidTask {
     @Nullable ActivityWindowAndroid getActivityWindowAndroid();
 
     /**
-     * Clears the current {@link ActivityWindowAndroid} in this Task.
+     * Clears the current {@link ActivityWindowAndroid} and all other objects associated with it..
      *
      * <p>This method should be called when the current {@link ActivityWindowAndroid} is about to be
      * destroyed.
      *
-     * @see #setActivityWindowAndroid()
+     * @see #setActivityWindowAndroid
      */
     void clearActivityWindowAndroid();
 

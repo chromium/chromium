@@ -32,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -108,6 +109,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final ActivityWindowAndroidMocks mActivityWindowAndroidMocks;
         public final Profile mMockProfile;
         public final TabModel mMockTabModel;
+        public final MultiInstanceManager mMockMultiInstanceManager;
         public final AppTask mMockAppTask;
         public final AconfigFlaggedApiDelegate mMockAconfigFlaggedApiDelegate;
 
@@ -125,6 +127,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 ActivityWindowAndroidMocks activityWindowAndroidMocks,
                 Profile mockProfile,
                 TabModel mockTabModel,
+                MultiInstanceManager mockMultiInstanceManager,
                 AppTask appTask,
                 AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate,
                 AndroidBrowserWindow.@Nullable Natives mockAndroidBrowserWindowNatives) {
@@ -132,6 +135,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
             mActivityWindowAndroidMocks = activityWindowAndroidMocks;
             mMockProfile = mockProfile;
             mMockTabModel = mockTabModel;
+            mMockMultiInstanceManager = mockMultiInstanceManager;
             mMockAppTask = appTask;
             mMockAconfigFlaggedApiDelegate = aconfigFlaggedApiDelegate;
             mMockAndroidBrowserWindowNatives = mockAndroidBrowserWindowNatives;
@@ -190,12 +194,17 @@ public final class ChromeAndroidTaskUnitTestSupport {
             int taskId, boolean mockNatives, boolean isPendingTask) {
         Profile profile =
                 mockNatives ? mock(Profile.class) : ProfileManager.getLastUsedRegularProfile();
-        TabModel tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(profile);
+
+        // TODO(http://crbug.com/454954191): Use the "MockTabModel" class.
+        var mockTabModel = mock(TabModel.class);
+        when(mockTabModel.getProfile()).thenReturn(profile);
+
+        var mockMultiInstanceManager = mock(MultiInstanceManager.class);
 
         var activityWindowAndroidMocks = createActivityWindowAndroidMocks(taskId);
         var mockAndroidBrowserWindowNatives =
                 mockNatives ? createMockAndroidBrowserWindowNatives() : null;
+
         ChromeAndroidTask chromeAndroidTask;
         if (isPendingTask) {
             chromeAndroidTask =
@@ -207,10 +216,13 @@ public final class ChromeAndroidTaskUnitTestSupport {
                     new ChromeAndroidTaskImpl(
                             BrowserWindowType.NORMAL,
                             activityWindowAndroidMocks.mMockActivityWindowAndroid,
-                            tabModel);
+                            mockTabModel,
+                            mockMultiInstanceManager);
         }
+
         var mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
+
         var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mockApiDelegate);
         when(mockApiDelegate.isTaskMoveAllowedOnDisplay(any(), anyInt())).thenReturn(true);
@@ -219,7 +231,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 chromeAndroidTask,
                 activityWindowAndroidMocks,
                 profile,
-                tabModel,
+                mockTabModel,
+                mockMultiInstanceManager,
                 mockAppTask,
                 mockApiDelegate,
                 mockAndroidBrowserWindowNatives);
