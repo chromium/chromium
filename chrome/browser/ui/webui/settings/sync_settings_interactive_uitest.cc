@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
   const DeepQuery kSignInButton = {"settings-ui",
                                    "settings-main",
                                    "settings-people-page-index",
-                                   "settings-account-page",
+                                   "settings-people-page",
                                    "settings-sync-account-control",
                                    "cr-button#signIn"};
   const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(
   const DeepQuery kContinueAsButton = {"settings-ui",
                                        "settings-main",
                                        "settings-people-page-index",
-                                       "settings-account-page",
+                                       "settings-people-page",
                                        "settings-sync-account-control",
                                        "cr-button#account-aware"};
   const GURL kAccountSettingsUrl = GURL(chrome::kChromeUIAccountSettingsURL);

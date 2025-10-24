@@ -396,6 +396,11 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         this.syncStatus.signedInState === SignedInState.SIGNED_IN;
   }
 
+  private shouldLinkToProfileRow_(): boolean {
+    return !this.shouldShowSyncAccountControl_() &&
+        !this.shouldLinkToAccountSettingsPage_();
+  }
+
   private shouldShowSyncAccountControl_(): boolean {
     if (this.syncStatus === undefined) {
       return false;

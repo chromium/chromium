@@ -111,8 +111,11 @@ suite('AccountPage', function() {
     const encryptionDescription =
         accountSettingsPage.shadowRoot!.querySelector<CrExpandButtonElement>(
             '#encryptionDescription');
+    const encryptionCollapse =
+        accountSettingsPage.shadowRoot!.querySelector<CrCollapseElement>(
+            '#encryptionCollapse');
     assertTrue(!!encryptionDescription);
-    const encryptionCollapse = accountSettingsPage.$.encryptionCollapse;
+    assertTrue(!!encryptionCollapse);
 
     // No encryption with custom passphrase.
     assertFalse(encryptionCollapse.opened);

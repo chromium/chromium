@@ -11,6 +11,7 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 import type {SettingsPeoplePageElement} from 'chrome://settings/settings.js';
 import {ProfileInfoBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {simulateSyncStatus} from './sync_test_util.js';
 import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
@@ -22,7 +23,6 @@ import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {StoredAccount} from 'chrome://settings/settings.js';
-import { isChildVisible } from 'chrome://webui-test/test_util.js';
 
 import {simulateStoredAccounts} from './sync_test_util.js';
 // </if>
@@ -421,9 +421,9 @@ suite('SyncSettings', function() {
   });
 
   test('ShowCorrectSyncRow', function() {
-    assertTrue(!!peoplePage.shadowRoot!.querySelector('#sync-setup'));
-    assertFalse(!!peoplePage.shadowRoot!.querySelector('#sync-status'));
-    assertFalse(!!peoplePage.shadowRoot!.querySelector('#google-services'));
+    assertTrue(isChildVisible(peoplePage, '#sync-setup'));
+    assertFalse(isChildVisible(peoplePage, '#sync-status'));
+    assertFalse(isChildVisible(peoplePage, '#google-services'));
 
     // Make sures the subpage opens even when logged out or has errors.
     simulateSyncStatus({

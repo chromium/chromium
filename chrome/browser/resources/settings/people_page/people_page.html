@@ -82,47 +82,46 @@
                   "$i18n{peopleSignInPromptSecondaryWithNoAccount}">
           </settings-sync-account-control>
         </template>
-        <template is="dom-if" if="[[!shouldShowSyncAccountControl_(
-            syncStatus.syncSystemEnabled, signinAllowed_)]]" restamp>
-          <template is="dom-if" if="[[!shouldLinkToAccountSettingsPage_(
-              syncStatus.signedInState)]]" restamp>
-            <div id="profile-row" class="cr-row first two-line"
-                actionable$="[[isProfileActionable_]]"
-                on-click="onProfileClick_">
-              <template is="dom-if" if="[[syncStatus]]">
-                <div id="profile-icon"
-                    style="background-image: [[getIconImageSet_(
-                        profileIconUrl_)]]">
-                </div>
-                <div class="flex cr-row-gap cr-padded-text text-elide">
-                  <span id="profile-name">[[profileName_]]</span>
-                </div>
-                <cr-icon-button class="subpage-arrow"
-                    aria-label="$i18n{editPerson}"
-                    aria-describedby="profile-name"
-                    aria-roledescription="$i18n{subpageArrowRoleDescription}">
-                </cr-icon-button>
-              </template>
-            </div>
-          </template>
-          <template is="dom-if" if="[[shouldLinkToAccountSettingsPage_(
-              syncStatus.signedInState)]]" restamp>
-            <cr-link-row id="account-subpage-row" on-click="onAccountClick_">
+
+        <template is="dom-if" if="[[shouldLinkToProfileRow_(
+            syncStatus.syncSystemEnabled, signinAllowed_,
+            syncStatus.signedInState)]]" restamp>
+          <div id="profile-row" class="cr-row first two-line"
+              actionable$="[[isProfileActionable_]]"
+              on-click="onProfileClick_">
+            <template is="dom-if" if="[[syncStatus]]">
               <div id="profile-icon"
                   style="background-image: [[getIconImageSet_(
-                      primaryAccountIconUrl_)]]">
+                      profileIconUrl_)]]">
               </div>
-              <div class="cr-row-gap cr-padded-text flex no-min-width">
-                <div id="account-name" class="text-elide">
-                  [[primaryAccountName_]]
-                </div>
-                <div id="account-subtitle" class="secondary">
-                  [[getAccountRowSubtitle_(primaryAccountEmail_, syncStatus)]]
-                </div>
+              <div class="flex cr-row-gap cr-padded-text text-elide">
+                <span id="profile-name">[[profileName_]]</span>
               </div>
-            </cr-link-row>
-          </template>
-        </template> <!-- if="[[!shouldShowSyncAccountControl_()]]" -->
+              <cr-icon-button class="subpage-arrow"
+                  aria-label="$i18n{editPerson}"
+                  aria-describedby="profile-name"
+                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
+              </cr-icon-button>
+            </template>
+          </div>
+        </template>
+
+        <cr-link-row id="account-subpage-row" on-click="onAccountClick_"
+            hidden="[[!shouldLinkToAccountSettingsPage_(
+              syncStatus.signedInState)]]">
+          <div id="profile-icon"
+              style="background-image: [[getIconImageSet_(
+                  primaryAccountIconUrl_)]]">
+          </div>
+          <div class="cr-row-gap cr-padded-text flex no-min-width">
+            <div id="account-name" class="text-elide">
+              [[primaryAccountName_]]
+            </div>
+            <div id="account-subtitle" class="secondary">
+              [[getAccountRowSubtitle_(primaryAccountEmail_, syncStatus)]]
+            </div>
+          </div>
+        </cr-link-row>
 
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
@@ -130,14 +129,12 @@
             role-description="$i18n{subpageArrowRoleDescription}"
             hidden="[[shouldHideSyncSetupLinkRow_(syncStatus)]]">
         </cr-link-row>
-        <template is="dom-if" if="[[shouldHideSyncSetupLinkRow_(syncStatus)]]"
-            restamp>
-          <cr-link-row id="google-services"
-              label="$i18n{googleServicesPageTitle}"
-              on-click="onGoogleServicesClick_"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
+        <cr-link-row id="google-services"
+            label="$i18n{googleServicesPageTitle}"
+            on-click="onGoogleServicesClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            hidden="[[!shouldHideSyncSetupLinkRow_(syncStatus)]]">
+        </cr-link-row>
 
         <template is="dom-if" if="[[signinAllowed_]]">
           <cr-link-row id="manage-google-account"

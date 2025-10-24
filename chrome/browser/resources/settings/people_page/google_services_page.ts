@@ -66,10 +66,14 @@ export class SettingsGoogleServicesPageElement extends
     }
 
     // Don't show this page if the user is syncing.
-    if (!this.syncStatus_ ||
-        this.syncStatus_.signedInState === SignedInState.SYNCING) {
+    if (!this.shouldShowPageContents_()) {
       Router.getInstance().navigateTo(routes.PEOPLE);
     }
+  }
+
+  private shouldShowPageContents_() {
+    return this.syncStatus_ &&
+        this.syncStatus_.signedInState !== SignedInState.SYNCING;
   }
 
   // SettingsViewMixin implementation.

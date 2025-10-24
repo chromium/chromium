@@ -6,7 +6,10 @@
 
 <settings-subpage page-title="$i18n{googleServicesPageTitle}"
     route-path$="[[routePath]]">
-  <settings-personalization-options prefs="{{prefs}}"
-      sync-status="[[syncStatus_]]">
-  </settings-personalization-options>
+  <template is="dom-if" if="[[shouldShowPageContents_(syncStatus_,
+      syncStatus_.signedInState)]]" restamp>
+    <settings-personalization-options prefs="{{prefs}}"
+        sync-status="[[syncStatus_]]">
+    </settings-personalization-options>
+  </template>
 </settings-subpage>
