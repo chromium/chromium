@@ -85,6 +85,7 @@ class MockPasswordManagerDriver
               (),
               (const, override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
   MOCK_METHOD(password_manager::PasswordManagerInterface*,
               GetPasswordManager,
               (),
@@ -273,6 +274,36 @@ TEST_F(ActorLoginGetCredentialsHelperTest, ImmediatelyAvailableToLogin) {
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresFormInFencedFrame) {
+  PasswordForm saved_form =
+      CreatePasswordForm(kUrl.spec(), u"foo_username", u"foo_password");
+  client()->profile_store()->AddLogin(saved_form);
+  // To make GetSigninFormManager return a non-nullptr value, we need to
+  // populate the PasswordFormCache with a PasswordFormManager that represents
+  // a sign-in form.
+  AddFormManager(CreateFormManager());
+  SetBestMatches({saved_form});
+
+  EXPECT_CALL(driver(), IsNestedWithinFencedFrame).WillOnce(Return(true));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+  // `FakeFormFetcher::AddConsumer` implementation differs from production,
+  // therefore additional manual call to NotifyFetchCompleted is needed
+  // after helper above gets registered as observer of `FakeFormFetcher`.
+  // Otherwise helper will never know that `FakeFormFetcher` already fetched
+  // credentials and this test will crash.
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_EQ(credentials[0].username, u"foo_username");
+  EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_FALSE(credentials[0].has_persistent_permission);
 }
 

@@ -88,6 +88,10 @@ bool StubPasswordManagerDriver::IsInPrimaryMainFrame() const {
   return true;
 }
 
+bool StubPasswordManagerDriver::IsNestedWithinFencedFrame() const {
+  return false;
+}
+
 bool StubPasswordManagerDriver::CanShowAutofillUi() const {
   return true;
 }

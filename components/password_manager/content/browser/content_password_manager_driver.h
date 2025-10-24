@@ -120,6 +120,7 @@ class ContentPasswordManagerDriver final
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   void SendLoggingAvailability() override;
   bool IsInPrimaryMainFrame() const override;
+  bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;
   int GetFrameId() const override;
   const GURL& GetLastCommittedURL() const override;

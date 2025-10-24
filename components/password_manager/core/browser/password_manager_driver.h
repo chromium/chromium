@@ -193,6 +193,10 @@ class PasswordManagerDriver {
   // Return true iff the driver corresponds to the main frame.
   virtual bool IsInPrimaryMainFrame() const = 0;
 
+  // Return true iff the driver corresponds to a fenced frame or to
+  // a frame nested in a fenced frame.
+  virtual bool IsNestedWithinFencedFrame() const = 0;
+
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
   virtual bool CanShowAutofillUi() const = 0;

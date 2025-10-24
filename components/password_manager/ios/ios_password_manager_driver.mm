@@ -177,6 +177,10 @@ bool IOSPasswordManagerDriver::IsInPrimaryMainFrame() const {
   return is_in_main_frame_;
 }
 
+bool IOSPasswordManagerDriver::IsNestedWithinFencedFrame() const {
+  NOTREACHED();
+}
+
 bool IOSPasswordManagerDriver::CanShowAutofillUi() const {
   return true;
 }

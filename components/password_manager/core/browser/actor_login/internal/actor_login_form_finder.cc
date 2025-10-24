@@ -104,13 +104,22 @@ ActorLoginFormFinder::GetEligibleLoginFormManagers(const url::Origin& origin) {
     return eligible_form_managers;
   }
   for (const auto& manager : form_cache->GetFormManagers()) {
-    const password_manager::PasswordForm* parsed_form =
-        manager->GetParsedObservedForm();
+    if (!manager->GetDriver()) {
+      continue;
+    }
+
+    if (manager->GetDriver()->IsNestedWithinFencedFrame()) {
+      continue;
+    }
+
     if (!IsFormOriginSupported(manager->GetDriver()->GetLastCommittedOrigin(),
                                origin)) {
       continue;
     }
-    if (!parsed_form || !manager->GetDriver() || !IsLoginForm(*parsed_form)) {
+
+    const password_manager::PasswordForm* parsed_form =
+        manager->GetParsedObservedForm();
+    if (!parsed_form || !IsLoginForm(*parsed_form)) {
       continue;
     }
     eligible_form_managers.emplace_back(manager.get());

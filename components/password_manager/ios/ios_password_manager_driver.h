@@ -77,6 +77,7 @@ class IOSPasswordManagerDriver final
       override;
   int GetFrameId() const override;
   bool IsInPrimaryMainFrame() const override;
+  bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
   const url::Origin& GetLastCommittedOrigin() const override;

@@ -80,6 +80,7 @@ class MockStubPasswordManagerDriver
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
   MOCK_METHOD(PasswordManagerInterface*, GetPasswordManager, (), (override));
 };
 
@@ -392,6 +393,34 @@ TEST_P(ActorLoginCredentialFillerTest,
                                     mock_callback.Get());
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorInvalidCredential)));
+  filler.AttemptLogin(&mock_password_manager_, tab_);
+}
+
+TEST_P(ActorLoginCredentialFillerTest, DoesntFillFencedFrameForm) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  const Credential credential =
+      CreateTestCredential(kTestUsername, origin.GetURL(), origin);
+  const FormData form_data = CreateSigninFormData(origin.GetURL());
+  std::vector<password_manager::PasswordForm> saved_forms;
+  saved_forms.push_back(
+      CreateSavedPasswordForm(origin.GetURL(), kTestUsername));
+  form_fetcher_.SetBestMatches(saved_forms);
+
+  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
+  form_managers.push_back(
+      CreateFormManagerWithParsedForm(origin, form_data, mock_driver_));
+
+  base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
+  ActorLoginCredentialFiller filler(origin, credential,
+                                    should_store_permission(), &mock_client_,
+                                    mock_callback.Get());
+
+  EXPECT_CALL(mock_form_cache_, GetFormManagers)
+      .WillRepeatedly(Return(base::span(form_managers)));
+  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(false));
+  EXPECT_CALL(mock_driver_, IsNestedWithinFencedFrame).WillOnce(Return(true));
+  EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
   filler.AttemptLogin(&mock_password_manager_, tab_);
 }
 
