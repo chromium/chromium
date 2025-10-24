@@ -14,6 +14,10 @@
 - (void)viewControllerDidTapReaderModeOptionsButton:
     (PageActionMenuViewController*)viewController;
 
+// Called when the user taps the translate options button.
+- (void)viewControllerDidTapTranslateOptionsButton:
+    (PageActionMenuViewController*)viewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_VIEW_CONTROLLER_DELEGATE_H_

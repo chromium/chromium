@@ -54,6 +54,9 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Opens the price insights contextual panel.
 - (void)openPriceInsightsPanel;
 
+// Opens the translation settings modal.
+- (void)openTranslateOptions;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_

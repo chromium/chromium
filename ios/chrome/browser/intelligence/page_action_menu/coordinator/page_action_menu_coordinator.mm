@@ -167,6 +167,18 @@
                                    animated:YES];
 }
 
+- (void)viewControllerDidTapTranslateOptionsButton:
+    (PageActionMenuViewController*)viewController {
+  __weak __typeof(self) weakSelf = self;
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf->_mediator openTranslateOptions];
+  }];
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:

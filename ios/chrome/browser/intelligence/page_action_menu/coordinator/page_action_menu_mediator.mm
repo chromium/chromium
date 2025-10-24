@@ -14,9 +14,16 @@
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -458,6 +465,67 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   }
 
   [self.contextualSheetHandler openContextualSheet];
+}
+
+- (void)openTranslateOptions {
+  web::WebState* webState = _webState;
+  if (!webState) {
+    return;
+  }
+
+  ChromeIOSTranslateClient* translateClient =
+      ChromeIOSTranslateClient::FromWebState(webState);
+  if (!translateClient || !translateClient->GetTranslateManager()) {
+    return;
+  }
+
+  translate::TranslateManager* translateManager =
+      translateClient->GetTranslateManager();
+  translate::LanguageState* languageState =
+      translateManager->GetLanguageState();
+  std::string sourceLanguage = languageState->source_language();
+  std::string targetLanguage = languageState->current_language();
+
+  // Create translate infobar without showing banner.
+  // Setting triggered_from_menu=false with TRANSLATE_STEP_AFTER_TRANSLATE
+  // suppresses the banner per ChromeIOSTranslateClient::CreateInfoBar logic.
+  translateClient->ShowTranslateUI(translate::TRANSLATE_STEP_AFTER_TRANSLATE,
+                                   sourceLanguage, targetLanguage,
+                                   translate::TranslateErrors::NONE, false);
+
+  infobars::InfoBarManager* infoBarManager =
+      InfoBarManagerImpl::FromWebState(webState);
+  if (!infoBarManager) {
+    return;
+  }
+
+  InfoBarIOS* translateInfobar = nullptr;
+  for (infobars::InfoBar* infobar : infoBarManager->infobars()) {
+    InfoBarIOS* infobarIOS = static_cast<InfoBarIOS*>(infobar);
+    if (infobarIOS->infobar_type() == InfobarType::kInfobarTypeTranslate) {
+      translateInfobar = infobarIOS;
+      break;
+    }
+  }
+
+  if (!translateInfobar) {
+    return;
+  }
+
+  // Insert modal overlay request to asynchronously show the translate settings
+  // modal to the user via Chrome's overlay system.
+  InfobarOverlayRequestInserter::CreateForWebState(
+      webState, &DefaultInfobarOverlayRequestFactory);
+
+  InsertParams params(translateInfobar);
+  params.overlay_type = InfobarOverlayType::kModal;
+  params.insertion_index = OverlayRequestQueue::FromWebState(
+                               webState, OverlayModality::kInfobarModal)
+                               ->size();
+  params.source = InfobarOverlayInsertionSource::kBadge;
+
+  InfobarOverlayRequestInserter::FromWebState(webState)->InsertOverlayRequest(
+      params);
 }
 
 @end
