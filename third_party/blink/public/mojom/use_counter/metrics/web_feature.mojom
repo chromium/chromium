@@ -4682,7 +4682,7 @@ enum WebFeature {
   kInterestFor = 5373,
   kTextAutoSizingDisabledOnFlexbox = 5374,
   kAriaLabeledByAlternativeSpelling = 5375,
-  kCanvasTextNg = 5376,
+  kOBSOLETE_CanvasTextNg = 5376,
   kDOMWindowOpenPopup = 5377,
   kFencedFrameDisableUntrustedNetwork = 5378,
   kFencedFrameNotifyEvent = 5379,
