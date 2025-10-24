@@ -7,7 +7,9 @@
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -152,8 +154,14 @@ class AutofillAnnotationsProviderBrowserTest : public InProcessBrowserTest {
     return autofill_manager_injector_[rfh];
   }
 
+  TestContentAutofillClient* client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
  protected:
   autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -244,6 +252,30 @@ IN_PROC_BROWSER_TEST_F(AutofillAnnotationsProviderBrowserTest,
       EXPECT_EQ(form_control_datas[i]->coarse_autofill_field_type_size(), 0);
     }
   }
+}
+
+// Verifies that availability of autofill data is propagated in the
+// `autofill_information` attribute in `AnnotatedPageContents`.
+IN_PROC_BROWSER_TEST_F(AutofillAnnotationsProviderBrowserTest,
+                       AddAutofillInformation) {
+  client()->GetPersonalDataManager().address_data_manager().AddProfile(
+      AutofillProfile(AutofillProfile::RecordType::kAccount,
+                      AddressCountryCode("ES")));
+
+  LoadPage(https_server()->GetURL("/address_sections_and_creditcard.html"),
+           /*num_expected_forms=*/1);
+
+  ASSERT_TRUE(page_content().has_profile_information());
+  ASSERT_TRUE(page_content().profile_information().has_autofill_information());
+  EXPECT_EQ(page_content()
+                .profile_information()
+                .autofill_information()
+                .fillable_data_size(),
+            1);
+  EXPECT_EQ(
+      page_content().profile_information().autofill_information().fillable_data(
+          0),
+      optimization_guide::proto::AutofillInformation_FillableData_ADDRESS);
 }
 
 }  // namespace autofill

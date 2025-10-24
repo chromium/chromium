@@ -43,6 +43,11 @@ class AutofillAnnotationsProvider : public base::SupportsUserData::Data {
       ConvertAIPageContentToProtoSession& session,
       optimization_guide::proto::ContentAttributes* proto_attributes) = 0;
 
+  // Adds information about fillable data to the annotated page content.
+  virtual void AddAutofillInformation(
+      content::RenderFrameHost& render_frame_host,
+      proto::AutofillInformation* autofill_information) = 0;
+
  private:
   // The key for storing the `AutofillAnnotationsProvider` in a `WebContents`.
   static const void* UserDataKey();

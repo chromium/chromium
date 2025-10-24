@@ -10,7 +10,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -19,6 +21,7 @@
 
 namespace optimization_guide {
 
+using autofill::AutofillClient;
 using autofill::AutofillField;
 using autofill::AutofillManager;
 using autofill::ContentAutofillDriver;
@@ -29,6 +32,8 @@ using autofill::FormGlobalId;
 using autofill::FormStructure;
 using autofill::FormType;
 using autofill::LocalFrameToken;
+using autofill::PersonalDataManager;
+using autofill::ValuablesDataManager;
 
 namespace {
 
@@ -184,6 +189,36 @@ void AutofillAnnotationsProviderImpl::AddAutofillAnnotations(
   }
 
   UpdateFormControlData(session, *field_metadata, form_control_data);
+}
+
+void AutofillAnnotationsProviderImpl::AddAutofillInformation(
+    content::RenderFrameHost& render_frame_host,
+    proto::AutofillInformation* autofill_information) {
+  content::WebContents& web_contents =
+      *content::WebContents::FromRenderFrameHost(&render_frame_host);
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(
+          web_contents.GetPrimaryMainFrame());
+  if (!autofill_driver) {
+    return;
+  }
+
+  AutofillClient& client = autofill_driver->GetAutofillClient();
+  const PersonalDataManager& pdm = client.GetPersonalDataManager();
+
+  autofill_information->clear_fillable_data();
+
+  if (client.IsAutofillProfileEnabled() &&
+      !pdm.address_data_manager().GetProfiles().empty()) {
+    autofill_information->add_fillable_data(
+        proto::AutofillInformation_FillableData_ADDRESS);
+  }
+
+  if (client.IsAutofillPaymentMethodsEnabled() &&
+      !pdm.payments_data_manager().GetCreditCards().empty()) {
+    autofill_information->add_fillable_data(
+        proto::AutofillInformation_FillableData_CREDIT_CARD);
+  }
 }
 
 }  // namespace optimization_guide

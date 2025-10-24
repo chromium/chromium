@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/optimization_guide/content/browser/autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -361,11 +362,25 @@ void OnGotAIPageContentForAllFrames(
         render_frame_host->GetWeakDocumentPtr();
   }
 
-  base::ThreadPool::PostTask(FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-                             base::BindOnce(
-                                 RecordPageContentExtractionMetrics,
-                                 elapsed_timer.Elapsed(), source_id, mode, on_critical_path,
-                                 page_content.proto));
+  if (base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentWithAutofillAnnotations)) {
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromFrameToken(main_frame_token);
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    if (auto* autofill_annotations_provider =
+            AutofillAnnotationsProvider::GetFor(web_contents)) {
+      autofill_annotations_provider->AddAutofillInformation(
+          *render_frame_host, page_content.proto.mutable_profile_information()
+                                  ->mutable_autofill_information());
+    }
+  }
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(RecordPageContentExtractionMetrics,
+                     elapsed_timer.Elapsed(), source_id, mode, on_critical_path,
+                     page_content.proto));
   std::move(done_callback).Run(std::move(page_content));
 }
 

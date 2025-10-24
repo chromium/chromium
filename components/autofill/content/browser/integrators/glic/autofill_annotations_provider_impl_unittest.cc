@@ -9,6 +9,9 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -21,6 +24,9 @@
 
 namespace optimization_guide {
 
+using autofill::AddressCountryCode;
+using autofill::AutofillProfile;
+using autofill::CreditCard;
 using autofill::FormData;
 using autofill::LocalFrameToken;
 using autofill::TestAutofillClientInjector;
@@ -70,9 +76,29 @@ class AutofillAnnotationsProviderImplTest
     NavigateAndCommit(GURL("about:blank"));
   }
 
+  AutofillProfile CreateAddress() {
+    return AutofillProfile(AutofillProfile::RecordType::kAccount,
+                           AddressCountryCode("ES"));
+  }
+
+  CreditCard CreateCreditCard() {
+    CreditCard local_card;
+    autofill::test::SetCreditCardInfo(&local_card, "Freddy Mercury",
+                                      "4234567890123463",  // Visa
+                                      "08", "2999", "1");
+    local_card.set_guid("00000000-0000-0000-0000-000000000009");
+    local_card.set_record_type(CreditCard::RecordType::kLocalCard);
+    local_card.usage_history().set_use_count(5);
+    return local_card;
+  }
+
  protected:
   TestBrowserAutofillManager* autofill_manager() {
     return autofill_manager_injector_[contents()];
+  }
+
+  TestContentAutofillClient* client() {
+    return autofill_client_injector_[web_contents()];
   }
 
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -86,6 +112,8 @@ class AutofillAnnotationsProviderImplTest
   AutofillAnnotationsProviderImpl autofill_annotations_provider_;
 };
 
+// Ensures that `autofill_section_id` and `coarse_autofill_field_type` are
+// properly populated in `AnnotatedPageContext` nodes for form controls.
 TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillAnnotations) {
   // Register a form to the Autofill Manager.
   FormDescription form_description = {
@@ -134,6 +162,92 @@ TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillAnnotations) {
   ASSERT_EQ(form_control_datas[0]->coarse_autofill_field_type_size(), 1);
   EXPECT_EQ(form_control_datas[0]->coarse_autofill_field_type(0),
             optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_ADDRESS);
+}
+
+// Ensures that the `autofill_information` in `AnnotatedPageContent` shows no
+// records in case the PersonalDataManager does not show any data.
+TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillInformation_NoData) {
+  proto::AnnotatedPageContent page_content;
+  autofill_annotations_provider_.AddAutofillInformation(
+      *contents()->GetPrimaryMainFrame(),
+      page_content.mutable_profile_information()
+          ->mutable_autofill_information());
+  EXPECT_EQ(page_content.profile_information()
+                .autofill_information()
+                .fillable_data_size(),
+            0);
+}
+
+// Ensures that the `autofill_information` in `AnnotatedPageContent` reports an
+// autofillable address if it exists.
+TEST_F(AutofillAnnotationsProviderImplTest,
+       AddAutofillInformation_AddressProfile) {
+  client()->GetPersonalDataManager().address_data_manager().AddProfile(
+      CreateAddress());
+
+  proto::AnnotatedPageContent page_content;
+  autofill_annotations_provider_.AddAutofillInformation(
+      *contents()->GetPrimaryMainFrame(),
+      page_content.mutable_profile_information()
+          ->mutable_autofill_information());
+  EXPECT_EQ(page_content.profile_information()
+                .autofill_information()
+                .fillable_data_size(),
+            1);
+}
+
+// Ensures that the `autofill_information` in `AnnotatedPageContent` reports NO
+// autofillable address if it exists but autofill is disabled.
+TEST_F(AutofillAnnotationsProviderImplTest,
+       AddAutofillInformation_AddressProfile_AutofillDisabled) {
+  client()->SetAutofillProfileEnabled(false);
+
+  client()->GetPersonalDataManager().address_data_manager().AddProfile(
+      CreateAddress());
+  proto::AnnotatedPageContent page_content;
+  autofill_annotations_provider_.AddAutofillInformation(
+      *contents()->GetPrimaryMainFrame(),
+      page_content.mutable_profile_information()
+          ->mutable_autofill_information());
+  EXPECT_EQ(page_content.profile_information()
+                .autofill_information()
+                .fillable_data_size(),
+            0);
+}
+
+// Ensures that the `autofill_information` in `AnnotatedPageContent` reports an
+// autofillable credit card if it exists.
+TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillInformation_CreditCard) {
+  client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
+      CreateCreditCard());
+  proto::AnnotatedPageContent page_content;
+  autofill_annotations_provider_.AddAutofillInformation(
+      *contents()->GetPrimaryMainFrame(),
+      page_content.mutable_profile_information()
+          ->mutable_autofill_information());
+  EXPECT_EQ(page_content.profile_information()
+                .autofill_information()
+                .fillable_data_size(),
+            1);
+}
+
+// Ensures that the `autofill_information` in `AnnotatedPageContent` reports NO
+// autofillable credit card if it exists but autofill is disabled.
+TEST_F(AutofillAnnotationsProviderImplTest,
+       AddAutofillInformation_CreditCard_AutofillDisabled) {
+  client()->SetAutofillPaymentMethodsEnabled(false);
+
+  client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
+      CreateCreditCard());
+  proto::AnnotatedPageContent page_content;
+  autofill_annotations_provider_.AddAutofillInformation(
+      *contents()->GetPrimaryMainFrame(),
+      page_content.mutable_profile_information()
+          ->mutable_autofill_information());
+  EXPECT_EQ(page_content.profile_information()
+                .autofill_information()
+                .fillable_data_size(),
+            0);
 }
 
 }  // namespace optimization_guide

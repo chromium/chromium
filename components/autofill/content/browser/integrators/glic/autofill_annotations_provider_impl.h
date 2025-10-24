@@ -19,6 +19,9 @@ class AutofillAnnotationsProviderImpl : public AutofillAnnotationsProvider {
       content::RenderFrameHost& render_frame_host,
       ConvertAIPageContentToProtoSession& session,
       optimization_guide::proto::ContentAttributes* proto_attributes) override;
+  void AddAutofillInformation(content::RenderFrameHost& render_frame_host,
+                              optimization_guide::proto::AutofillInformation*
+                                  autofill_information) override;
 };
 
 }  // namespace optimization_guide
