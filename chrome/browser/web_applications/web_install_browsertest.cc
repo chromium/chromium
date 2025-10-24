@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -32,6 +33,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
@@ -55,6 +57,8 @@ constexpr char kNotAllowedError[] = "NotAllowedError";
 constexpr char kTypeError[] = "TypeError";
 constexpr char kInstallResultUma[] = "WebApp.WebInstallApi.Result";
 constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
+constexpr char kRequestingPageUkm[] = "ResultByRequestingPage";
+constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 }  // namespace
 
 namespace web_app {
@@ -157,6 +161,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
       install_future;
   SetInstalledCallbackForTesting(install_future.GetCallback());
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
@@ -210,6 +215,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
                       ".FetchManifestAndInstall", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify that UKMs are not recorded for current document installs.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
@@ -383,9 +393,11 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 // Tests for WebAppInstallNotSupportedDialog appearing in Incognito and Guest
 // modes since web app installs are not supported in these modes. The dialog
 // appears for all current and background document installs.
+using WebInstallNotSupportedDialogBrowserTest =
+    WebInstallCurrentDocumentBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
-                       NotSupportedDialogInIncognito) {
+IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
+                       NotSupportedDialogInIncognito_CurrentDocument) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = https_server()->GetURL("/simple.html");
   Browser* incognito_browser =
@@ -432,7 +444,77 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                                web_app::WebInstallApiType::kCurrentDocument, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
+                       NotSupportedDialogInIncognito_BackgroundDocument) {
+  // Open incognito window and navigate to a valid URL.
+  GURL test_url = https_server()->GetURL("/simple.html");
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), test_url);
+
+  const GURL background_doc_install_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Trigger the Install Not Supported dialog by initiating an install request.
+  ExecuteScriptAsync(incognito_web_contents,
+                     "navigator.install('" + background_doc_install_url.spec() +
+                         "')"
+                         ".then(result => {"
+                         "  webInstallResult = result;"
+                         "}).catch(error => {"
+                         "  webInstallError = error;"
+                         "});");
+
+  // Wait for the dialog to show.
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+
+  // Verify dialog title for Incognito mode.
+  EXPECT_EQ(
+      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
+      u"Web app installs aren't supported in Incognito mode");
+
+  // Simulate the user accepting the dialog.
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists(incognito_web_contents));
+  EXPECT_TRUE(ErrorExists(incognito_web_contents));
+  EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
+
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogAfterTabSwitching) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = https_server()->GetURL("/simple.html");
@@ -492,7 +574,8 @@ class WebInstallGuestModeTest : public WebInstallCurrentDocumentBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest, NotSupportedDialogInGuestMode) {
+IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
+                       NotSupportedDialogInGuestMode_CurrentDocument) {
   // Open a new guest mode window.
 #if BUILDFLAG(IS_CHROMEOS)
   Browser* guest_browser = browser();
@@ -544,6 +627,83 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest, NotSupportedDialogInGuestMode) {
       kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
   histograms.ExpectBucketCount(kInstallTypeUma,
                                web_app::WebInstallApiType::kCurrentDocument, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
+                       NotSupportedDialogInGuestMode_BackgroundDocument) {
+  // Open a new guest mode window.
+#if BUILDFLAG(IS_CHROMEOS)
+  Browser* guest_browser = browser();
+#else
+  Browser* guest_browser = CreateGuestBrowser();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
+
+  // Navigate to a valid URL in the guest browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      guest_browser, https_server()->GetURL("/simple.html")));
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
+  content::WebContents* guest_web_contents =
+      guest_browser->tab_strip_model()->GetActiveWebContents();
+
+  const GURL background_doc_install_url =
+      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Trigger the Install Not Supported dialog by initiating an install request.
+  ExecuteScriptAsync(guest_web_contents, "navigator.install('" +
+                                             background_doc_install_url.spec() +
+                                             "')"
+                                             ".then(result => {"
+                                             "  webInstallResult = result;"
+                                             "}).catch(error => {"
+                                             "  webInstallError = error;"
+                                             "});");
+
+  // Confirm Install Not Supported Dialog shows.
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+
+  // Verify dialog title for Guest mode.
+  EXPECT_EQ(
+      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
+      u"Web app installs aren't supported in Guest mode");
+
+  // Simulate the user accepting the dialog.
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists(guest_web_contents));
+  EXPECT_TRUE(ErrorExists(guest_web_contents));
+  EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
+
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(
+      kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries.
+  auto ukm_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kUnsupportedProfile));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
 }
 
 // Manifest validation for current document installs.

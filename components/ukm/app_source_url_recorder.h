@@ -33,6 +33,7 @@ class BadgeManager;
 
 namespace web_app {
 class DesktopWebAppUkmRecorder;
+class WebInstallServiceImpl;
 }  // namespace web_app
 
 namespace webapk {
@@ -58,6 +59,8 @@ class AppSourceUrlRecorder {
   friend class badging::BadgeManager;
 
   friend class web_app::DesktopWebAppUkmRecorder;
+
+  friend class web_app::WebInstallServiceImpl;
 
   friend class webapk::WebApkUkmRecorder;
 

@@ -28233,6 +28233,41 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="WebApp.WebInstall">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Recorded when a site attempts to install another site that isn't the current
+    document via Web Install API.
+  </summary>
+  <metric name="ResultByInstalledApp" enum="WebInstallApiResult">
+    <summary>
+      Records the result of the Web Install API for the URL of the target site
+      that we attempted to install as a web app via the API.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultByRequestingPage" enum="WebInstallApiResult">
+    <summary>
+      Records the result of the Web Install API for the URL of the requesting
+      page that invoked the API.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="WebAuthn.ConditionalUiGetCall">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>

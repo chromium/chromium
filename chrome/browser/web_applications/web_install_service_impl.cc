@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/permissions/permission_request.h"
+#include "components/ukm/app_source_url_recorder.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -42,6 +43,9 @@
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
@@ -129,16 +133,41 @@ void WebInstallServiceImpl::CreateIfAllowed(
 
 void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
                                     InstallCallback callback) {
+  // Create source ids for UKM logging.
+  ukm::SourceId requesting_page_source_id =
+      options ? render_frame_host().GetPageUkmSourceId()
+              : ukm::kInvalidSourceId;
+  ukm::SourceId installed_app_source_id =
+      options ? ukm::AppSourceUrlRecorder::GetSourceIdForPWA(
+                    GURL(options->install_url))
+              : ukm::kInvalidSourceId;
+
   // Wrap the blink callback in another that accepts all the information needed
   // to log `kInstallResultUma`, then run run the blink callback.
   auto callback_with_metrics = base::BindOnce(
-      [](InstallCallback callback, web_app::WebInstallApiResult metrics_result,
+      [](InstallCallback callback, ukm::SourceId requesting_page_source_id,
+         ukm::SourceId installed_app_source_id,
+         web_app::WebInstallApiResult metrics_result,
          blink::mojom::WebInstallServiceResult install_result,
          webapps::ManifestId manifest_id_result) {
         base::UmaHistogramEnumeration(kInstallResultUma, metrics_result);
+        // Record UKMs for background document installs.
+        if (requesting_page_source_id != ukm::kInvalidSourceId &&
+            installed_app_source_id != ukm::kInvalidSourceId) {
+          ukm::builders::WebApp_WebInstall(requesting_page_source_id)
+              .SetResultByRequestingPage(static_cast<int>(metrics_result))
+              .Record(ukm::UkmRecorder::Get());
+          // The UKM for the installed app must log source type APP_ID.
+          CHECK(ukm::GetSourceIdType(installed_app_source_id) ==
+                ukm::SourceIdType::APP_ID);
+          ukm::builders::WebApp_WebInstall(installed_app_source_id)
+              .SetResultByInstalledApp(static_cast<int>(metrics_result))
+              .Record(ukm::UkmRecorder::Get());
+        }
+
         std::move(callback).Run(install_result, manifest_id_result);
       },
-      std::move(callback));
+      std::move(callback), requesting_page_source_id, installed_app_source_id);
 
   // Record the type of install being requested. Null `options` means no
   // arguments were passed, which means a current document install.

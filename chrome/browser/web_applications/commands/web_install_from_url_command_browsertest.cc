@@ -38,6 +38,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
@@ -46,6 +47,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,6 +74,8 @@ constexpr char kAbortError[] = "AbortError";
 constexpr char kDataError[] = "DataError";
 constexpr char kInstallResultUma[] = "WebApp.WebInstallApi.Result";
 constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
+constexpr char kRequestingPageUkm[] = "ResultByRequestingPage";
+constexpr char kInstalledAppUkm[] = "ResultByInstalledApp";
 }  // namespace
 
 namespace web_app {
@@ -98,6 +102,7 @@ class WebInstallFromUrlCommandBrowserTest
     WebAppBrowserTestBase::SetUpOnMainThread();
     secondary_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(secondary_server_.Start());
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   content::WebContents* web_contents() {
@@ -176,12 +181,17 @@ class WebInstallFromUrlCommandBrowserTest
     return EvalJs(web_contents(), "webInstallError.name").ExtractString();
   }
 
+  const ukm::TestAutoSetUkmRecorder& test_ukm_recorder() const {
+    return *test_ukm_recorder_;
+  }
+
  protected:
   net::EmbeddedTestServer secondary_server_{
       net::EmbeddedTestServer::TYPE_HTTPS};
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,6 +242,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -276,6 +307,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -322,6 +374,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                                web_app::WebInstallApiResult::kSuccess, 1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0],
+      https_server()->GetURL("/banners/manifest_test_page.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1], install_url);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -367,6 +440,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -388,6 +481,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                                WebInstallApiResult::kPermissionDenied, 1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kPermissionDenied));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kPermissionDenied));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -436,6 +550,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -462,6 +596,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
       kInstallResultUma, web_app::WebInstallApiResult::kPermissionDenied, 1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kPermissionDenied));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kPermissionDenied));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -501,6 +656,25 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[0], current_doc_url);
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1], current_doc_url);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -545,6 +719,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              background_doc_install_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
@@ -582,6 +777,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              background_doc_install_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
@@ -639,6 +855,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              background_doc_install_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
@@ -743,6 +980,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccessAlreadyInstalled));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1], install_url);
 }
 
 // Parameterized test for calling `navigator.install()` on an already
@@ -827,6 +1084,26 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromUrlCommandBrowserTest, LaunchApp) {
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
 
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kSuccess));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1], install_url);
+
   // It should always have OS integration and launch in an app window.
   EXPECT_EQ(registrar.GetAppById(app_id)->install_state(),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
@@ -871,6 +1148,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
       kInstallResultUma, web_app::WebInstallApiResult::kCanceledByUser, 1);
   histograms.ExpectBucketCount(
       kInstallTypeUma, web_app::WebInstallApiType::kBackgroundDocument, 1);
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kCanceledByUser));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kCanceledByUser));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1], install_url);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -911,6 +1208,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, NoManifest) {
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
@@ -948,6 +1265,26 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidManifest) {
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -983,6 +1320,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kManifestIdMismatch));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kManifestIdMismatch));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, ManifestMissingId) {
@@ -1018,6 +1376,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, ManifestMissingId) {
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kNoCustomManifestId));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kNoCustomManifestId));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
@@ -1055,6 +1434,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
@@ -1091,6 +1491,27 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest, InvalidInstallUrl) {
                       ".WebInstallFromUrl", ".Crafted"),
                   base::BucketsAre(base::Bucket(
                       webapps::WebappInstallSource::WEB_INSTALL, 1))));
+
+  // Verify UKM entries for both the requesting page and the installed app.
+  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, ukm_entries.size());
+  // First entry should be of source type, NAVIGATION_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[0], kRequestingPageUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(
+      ukm_entries[0], https_server()->GetURL("/simple.html"));
+  // Second entry should be of source type, APP_ID.
+  EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  test_ukm_recorder().ExpectEntryMetric(
+      ukm_entries[1], kInstalledAppUkm,
+      static_cast<int>(web_app::WebInstallApiResult::kInstallCommandFailed));
+  test_ukm_recorder().ExpectEntrySourceHasUrl(ukm_entries[1],
+                                              GURL(install_url));
 }
 
 class WebInstallFromUrlCommandDialogTest
