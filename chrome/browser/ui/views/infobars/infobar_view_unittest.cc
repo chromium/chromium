@@ -11,8 +11,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
@@ -68,6 +71,20 @@ class TestInfoBarViewWithLabelAndIcon : public InfoBarView {
   raw_ptr<views::Label> test_label_ = nullptr;
 };
 
+class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
+ public:
+  TestConfirmInfoBarDelegate() = default;
+  ~TestConfirmInfoBarDelegate() override = default;
+
+  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
+    return TEST_INFOBAR;
+  }
+
+  std::u16string GetMessageText() const override { return u"Test message"; }
+
+  int GetButtons() const override { return BUTTON_OK; }
+};
+
 }  // namespace
 
 class InfoBarViewUnitTest : public views::ViewsTestBase {
@@ -115,5 +132,32 @@ TEST_F(InfoBarViewUnitTest, CenteredLayout) {
 
   EXPECT_EQ(expected_start_x, icon->x());
   widget->CloseNow();
-  widget.reset();
+}
+
+TEST_F(InfoBarViewUnitTest, ConfirmInfoBarButtonPadding) {
+  auto delegate = std::make_unique<TestConfirmInfoBarDelegate>();
+  auto infobar_view = std::make_unique<ConfirmInfoBar>(std::move(delegate));
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+
+  widget->SetContentsView(infobar_view.get());
+  widget->SetBounds(gfx::Rect(0, 0, 500, 50));
+  widget->Show();
+  widget->LayoutRootViewIfNecessary();
+
+  views::MdTextButton* ok_button = infobar_view->ok_button_for_testing();
+  ASSERT_NE(nullptr, ok_button);
+
+  const gfx::Insets expected_padding =
+      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING),
+                      ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING));
+
+  EXPECT_EQ(expected_padding, ok_button->GetInsets());
+  widget->CloseNow();
 }

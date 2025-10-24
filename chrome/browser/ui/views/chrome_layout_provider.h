@@ -191,6 +191,10 @@ enum ChromeDistanceMetric {
   DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS,
   // Vertical spacing between infoboxes in the FFR dialog.
   DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL,
+  // Vertical padding for the infobar buttons.
+  DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING,
+  // Horizontal padding for the infobar buttons.
+  DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

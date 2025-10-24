@@ -39,6 +39,14 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     auto* button = AddContentChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(click_function, base::Unretained(this)),
         GetDelegate()->GetButtonLabel(type)));
+
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      button->SetCustomPadding(
+          gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING),
+                          ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING)));
+    }
     button->SetProperty(
         views::kMarginsKey,
         gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
