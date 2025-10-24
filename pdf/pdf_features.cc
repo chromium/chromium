@@ -61,6 +61,15 @@ const base::FeatureParam<bool> kPdfInk2TextHighlighting{
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 // Saves the PDF file to Google Drive.
 BASE_FEATURE(kPdfSaveToDrive, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the survey for saving PDF to Google Drive.
+BASE_FEATURE(kPdfSaveToDriveSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
+// The consumer survey trigger ID.
+const base::FeatureParam<std::string> kPdfSaveToDriveSurveyConsumerTriggerId{
+    &kPdfSaveToDriveSurvey, "consumer-trigger-id", ""};
+// The enterprise survey trigger ID.
+const base::FeatureParam<std::string> kPdfSaveToDriveSurveyEnterpriseTriggerId{
+    &kPdfSaveToDriveSurvey, "enterprise-trigger-id", ""};
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {

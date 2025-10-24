@@ -8,6 +8,8 @@
 #ifndef PDF_PDF_FEATURES_H_
 #define PDF_PDF_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "pdf/buildflags.h"
@@ -36,6 +38,12 @@ extern const base::FeatureParam<bool> kPdfInk2TextHighlighting;
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 BASE_DECLARE_FEATURE(kPdfSaveToDrive);
+
+BASE_DECLARE_FEATURE(kPdfSaveToDriveSurvey);
+extern const base::FeatureParam<std::string>
+    kPdfSaveToDriveSurveyConsumerTriggerId;
+extern const base::FeatureParam<std::string>
+    kPdfSaveToDriveSurveyEnterpriseTriggerId;
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 // Sets whether the OOPIF PDF policy enables the OOPIF PDF viewer. Otherwise,
