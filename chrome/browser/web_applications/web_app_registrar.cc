@@ -1010,6 +1010,11 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
     return !IsDiyApp(app_id);
   }
 
+  if (filter.is_crafted_app_and_opens_in_dedicated_window_) {
+    return !IsDiyApp(app_id) &&
+           GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+  }
+
   if (filter.is_diy_with_os_shortcut_) {
     const WebApp* app = GetAppById(app_id);
     return app && app->is_diy_app() &&
@@ -1040,7 +1045,8 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
 
 std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
     const GURL& url,
-    const WebAppFilter& filter) const {
+    const WebAppFilter& filter,
+    WebAppScopeScoreOptions scope_score_options) const {
   if (!url.is_valid()) {
     return std::nullopt;
   }
@@ -1050,7 +1056,8 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
 
   for (const webapps::AppId& app_id :
        GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!GetAppScope(app_id).is_valid()) {
+    std::optional<WebAppScope> scope = GetEffectiveScope(app_id);
+    if (!scope.has_value()) {
       continue;
     }
 
@@ -1059,7 +1066,7 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
       continue;
     }
 
-    int score = GetAppExtendedScopeScore(url, app_id);
+    int score = scope->GetScopeScore(url, scope_score_options);
     if (score > 0 && score > best_score) {
       best_app_id = app_id;
       best_score = score;

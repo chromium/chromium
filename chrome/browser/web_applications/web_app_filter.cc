@@ -56,6 +56,13 @@ WebAppFilter WebAppFilter::IsCraftedApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::IsCraftedAppAndOpensInDedicatedWindow() {
+  WebAppFilter filter;
+  filter.is_crafted_app_and_opens_in_dedicated_window_ = true;
+  return filter;
+}
+
+// static
 WebAppFilter WebAppFilter::IsSuggestedApp() {
   WebAppFilter filter;
   filter.is_suggested_app_ = true;

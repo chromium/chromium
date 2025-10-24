@@ -66,13 +66,26 @@ bool CheckNewWebAppConflictsWithExistingInstallation(
     return true;
   }
 
+  // Don't install if in primary scope of installed crafted app,
+  // and don't install if in primary or extended scope of installed crafted
+  // standalone app.
+
   // We cannot install if we are in scope of an installed crafted app, no matter
   // the user display type.
-  std::optional<AppId> non_diy_app_id =
+  std::optional<AppId> non_diy_primary_scope_app_id =
       provider->registrar_unsafe().FindBestAppWithUrlInScope(
-          start_url, web_app::WebAppFilter::IsCraftedApp());
+          start_url, web_app::WebAppFilter::IsCraftedApp(),
+          {.exclude_scope_extensions = true});
+  if (non_diy_primary_scope_app_id) {
+    return true;
+  }
 
-  if (non_diy_app_id) {
+  std::optional<AppId> non_diy_extended_scope_app_id =
+      provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          start_url,
+          web_app::WebAppFilter::IsCraftedAppAndOpensInDedicatedWindow(),
+          {.exclude_scope_extensions = false});
+  if (non_diy_extended_scope_app_id) {
     return true;
   }
 

@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
+#include "chrome/browser/web_applications/web_app_scope.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -175,7 +176,8 @@ class WebAppRegistrar {
   //        url, WebAppFilter::OpensInBrowserTab());
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
-      const WebAppFilter& filter) const;
+      const WebAppFilter& filter,
+      WebAppScopeScoreOptions scope_score_options = {}) const;
 
   // Finds all apps that have scopes that are nested within the given
   // `outer_scope`, and match the specified filter.
