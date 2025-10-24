@@ -68,11 +68,6 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  actions::ActionItem* glic_action_item() {
-    return actions::ActionManager::Get().FindAction(
-        kActionSidePanelShowGlic,
-        browser()->browser_actions()->root_action_item());
-  }
 
   void CallOnGlicEnabledChanged() { coordinator_->OnGlicEnabledChanged(); }
 
@@ -89,7 +84,6 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest, EntryAdded) {
 
   EXPECT_TRUE(registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
-  EXPECT_TRUE(glic_action_item()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest, EntryNotAdded) {
@@ -99,31 +93,30 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest, EntryNotAdded) {
 
   EXPECT_FALSE(registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
-  EXPECT_FALSE(glic_action_item()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorTest,
                        EligibilityChangesReflected) {
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
-
+  // Start in a state when glic is not enabled. There should ne no side panel
+  // entry.
   CallOnGlicEnabledChanged();
   EXPECT_FALSE(registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
-  EXPECT_FALSE(glic_action_item()->GetVisible());
 
+  // Change state - glic is not enabled. Verify entry is added.
   ForceSigninAndModelExecutionCapability(profile());
 
   EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
   EXPECT_TRUE(registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
-  EXPECT_TRUE(glic_action_item()->GetVisible());
 
+  // Change state - glic is not enabled. Verify entry is still there.
   SetModelExecutionCapability(profile(), false);
 
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
-  EXPECT_FALSE(registry()->GetEntryForKey(
+  EXPECT_TRUE(registry()->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic)));
-  EXPECT_FALSE(glic_action_item()->GetVisible());
 }
 
 }  // namespace

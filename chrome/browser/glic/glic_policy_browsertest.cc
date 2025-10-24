@@ -577,10 +577,6 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyDisabledTest, WebUiDisabledAtLoad) {
 // Ensure that if the policy changes to disabled at runtime, and the user has an
 // an open Glic window, that window should show the unavailable page.
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/454076166): fix this.
-    GTEST_SKIP() << "broken in multi-instance";
-  }
   // The pref defaults to enabled.
   ASSERT_EQ(kEnabledValue, profile_1_->GetPrefs()->GetInteger(kGeminiSettings));
 

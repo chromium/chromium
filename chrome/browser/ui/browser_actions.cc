@@ -1110,10 +1110,12 @@ void BrowserActions::InitializeBrowserActions() {
                         kActionSidePanelShowContextualTasks, bwi, false)
             .Build());
   }
-
+// TODO(crbug.com/454112198): Delete this after Multi Instance launches. This
+// is currently only used in the experimental single instance side panel.
 #if BUILDFLAG(ENABLE_GLIC)
   auto* glic_service = glic::GlicKeyedService::Get(bwi->GetProfile());
-  if (glic_service) {
+  if (glic_service &&
+      !base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     actions::ActionItem::InvokeActionCallback toggle_glic_callback =
         base::BindRepeating(
             [](base::WeakPtr<BrowserWindowInterface> bwi,

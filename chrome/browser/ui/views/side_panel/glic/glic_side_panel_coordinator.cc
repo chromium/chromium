@@ -31,18 +31,6 @@
 namespace glic {
 DEFINE_USER_DATA(GlicSidePanelCoordinator);
 
-namespace {
-
-actions::ActionItem* GetGlicActionItem(actions::ActionItem* root_action_item) {
-  actions::ActionItem* glic_action_item =
-      actions::ActionManager::Get().FindAction(kActionSidePanelShowGlic,
-                                               root_action_item);
-  DCHECK(glic_action_item);
-  return glic_action_item;
-}
-
-}  // namespace
-
 GlicSidePanelCoordinator::GlicSidePanelCoordinator(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
@@ -62,7 +50,11 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
           &GlicSidePanelCoordinator::OnTabDeactivated, base::Unretained(this)));
 }
 
-GlicSidePanelCoordinator::~GlicSidePanelCoordinator() = default;
+GlicSidePanelCoordinator::~GlicSidePanelCoordinator() {
+  if (entry_) {
+    entry_->RemoveObserver(this);
+  }
+}
 
 void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   if (side_panel_registry_->GetEntryForKey(
@@ -141,31 +133,10 @@ void GlicSidePanelCoordinator::OnTabDeactivated(tabs::TabInterface* tab) {
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
-  bool is_allowed = glic::GlicEnabling::IsEnabledForProfile(
-      tab_->GetBrowserWindowInterface()->GetProfile());
-
-  // Active tab sets visibility of toolbar action.
-  // TODO: Consider moving this responsibility to a browser level singleton
-  if (tab_->IsActivated()) {
-    GetGlicActionItem(
-        tab_->GetBrowserWindowInterface()->GetActions()->root_action_item())
-        ->SetVisible(is_allowed);
-  }
-  // Register / deregister side panel entry.
-  if (is_allowed) {
+  // Maybe register side panel entry if not yet registered.
+  if (glic::GlicEnabling::IsEnabledForProfile(
+          tab_->GetBrowserWindowInterface()->GetProfile())) {
     CreateAndRegisterEntry();
-  } else {
-    SidePanelEntry::Key glic_key =
-        SidePanelEntry::Key(SidePanelEntry::Id::kGlic);
-    auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
-    if (window_side_panel_coordinator &&
-        window_side_panel_coordinator->IsSidePanelEntryShowing(glic_key)) {
-      window_side_panel_coordinator->Close();
-    }
-    if (entry_) {
-      entry_->RemoveObserver(this);
-    }
-    side_panel_registry_->Deregister(glic_key);
   }
 }
 
