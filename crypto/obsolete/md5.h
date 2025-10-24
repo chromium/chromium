@@ -82,6 +82,10 @@ namespace net {
 crypto::obsolete::Md5 MakeMd5HasherForHttpVaryData();
 }
 
+namespace performance_manager {
+std::string Md5AsHexForDatabaseKey(std::string_view input);
+}
+
 namespace policy {
 crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 }
@@ -193,6 +197,10 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(https://crbug.com/419853200): get rid of this.
   friend Md5 net::MakeMd5HasherForHttpVaryData();
+
+  // TODO(crbug.com/454931298): get rid of this.
+  friend std::string performance_manager::Md5AsHexForDatabaseKey(
+      std::string_view input);
 
   // TODO(https://crbug.com/425990763): get rid of this.
   friend std::string trusted_vault::MD5StringForTrustedVault(

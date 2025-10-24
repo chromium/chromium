@@ -16,6 +16,7 @@ include_rules = [
   "+content/public/test",
   "+content/shell/browser",
   "+content/test",
+  "+crypto",
   "+mojo/public",
   "+net/base",
   "+net/test",

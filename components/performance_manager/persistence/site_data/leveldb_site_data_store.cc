@@ -13,20 +13,26 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace performance_manager {
+
+std::string Md5AsHexForDatabaseKey(std::string_view input) {
+  return base::ToLowerASCII(
+      base::HexEncode(crypto::obsolete::Md5::Hash(input)));
+}
 
 namespace {
 
@@ -64,7 +70,7 @@ struct DatabaseSizeResult {
 };
 
 std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin) {
-  return base::MD5String(origin.host());
+  return Md5AsHexForDatabaseKey(origin.host());
 }
 
 }  // namespace
