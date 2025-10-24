@@ -317,6 +317,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       network::features::kLocalNetworkAccessChecks);
 
+  // Disable background media for WebView, until we have consensus on long-term
+  // behavior crbug.com/453706851
+  aw_feature_overrides.DisableFeature(
+      features::kAndroidEnableBackgroundMediaLargeFormFactors);
+
   // SystemTracing is enabled by default only in WebView for now.
   aw_feature_overrides.EnableFeature(features::kEnablePerfettoSystemTracing);
 }
