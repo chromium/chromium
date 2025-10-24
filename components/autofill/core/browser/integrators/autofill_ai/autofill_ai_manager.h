@@ -98,8 +98,7 @@ class AutofillAiManager {
       AutofillClient::AutofillAiImportPromptType prompt_type,
       AutofillClient::AutofillAiBubbleClosedReason close_reason,
       const GURL& url,
-      const EntityInstance& entity,
-      std::optional<EntityInstance::EntityId> existing_entity_id);
+      const EntityInstance& entity);
   void AddStrikeForSaveAttempt(const GURL& url, const EntityInstance& entity);
   void AddStrikeForUpdateAttempt(const EntityInstance::EntityId& entity_uuid);
   void ClearStrikesForSave(const GURL& url, const EntityInstance& entity);
@@ -113,8 +112,7 @@ class AutofillAiManager {
     EntityImportPromptCandidate() = delete;
     EntityImportPromptCandidate(
         AutofillClient::AutofillAiImportPromptType prompt_type,
-        const EntityInstance& candidate_entity,
-        std::optional<EntityInstance::EntityId> existing_entity_id);
+        const EntityInstance& candidate_entity);
     EntityImportPromptCandidate(const EntityImportPromptCandidate&);
     EntityImportPromptCandidate(EntityImportPromptCandidate&&);
     EntityImportPromptCandidate& operator=(const EntityImportPromptCandidate&);
@@ -126,9 +124,6 @@ class AutofillAiManager {
     // The entity that the user would get if they accept the possibly shown
     // save/update/migrate prompt.
     EntityInstance candidate_entity;
-    // The ID of the already existing entity that contributed to the
-    // update/migrate prompt. This is `std::nullopt` for save prompt candidates.
-    std::optional<EntityInstance::EntityId> existing_entity_id;
   };
 
   // Given `form` that is observed at submission, returns candidates for showing
@@ -189,7 +184,6 @@ class AutofillAiManager {
   void HandlePromptResult(
       const FormData& form,
       EntityInstance entity,
-      std::optional<EntityInstance::EntityId> existing_entity_id,
       ukm::SourceId ukm_source_id,
       AutofillClient::AutofillAiImportPromptType prompt_type,
       AutofillClient::AutofillAiBubbleClosedReason close_reason);
