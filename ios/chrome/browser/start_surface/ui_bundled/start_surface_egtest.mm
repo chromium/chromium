@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -50,6 +51,10 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   }
 }
 
+NSString* const kGroupName = @"group";
+const char kZeroSecondsTreshold[] = "0";
+const char kThreeSecondsTreshold[] = "3";
+
 }  // namespace
 
 // Integration tests for the Start Surface user flows.
@@ -61,18 +66,30 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kStartSurface.name) + "<" +
-      std::string(kStartSurface.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
-      ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
-      "/" + "0");
+
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   config.additional_args.push_back("--mock-shopping-service=is-eligible,"
                                    "has-empty-price-tracked-bookmarks-results");
+
+  if ([self isRunningTest:@selector(testShowTabGroupInGridOnStart)] ||
+      [self isRunningTest:@selector
+            (testDoNotShowTabGroupInGridOnStartInIncognitoMode)]) {
+    config.features_enabled_and_params.push_back(
+        {kShowTabGroupInGridOnStart,
+         {{{kShowTabGroupInGridInactiveDurationInSeconds,
+            kZeroSecondsTreshold}}}});
+    config.features_enabled_and_params.push_back(
+        {kStartSurface,
+         {{{kReturnToStartSurfaceInactiveDurationInSeconds,
+            kThreeSecondsTreshold}}}});
+    return config;
+  }
+
+  config.features_enabled_and_params.push_back(
+      {kStartSurface,
+       {{{kReturnToStartSurfaceInactiveDurationInSeconds,
+          kZeroSecondsTreshold}}}});
+
   return config;
 }
 
@@ -197,6 +214,80 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:1];
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
   [ChromeEarlGrey closeAllExtraWindows];
+}
+
+// Tests that the tab group in grid view is opened if Chrome is activated in the
+// right time interval.
+- (void)testShowTabGroupInGridOnStart {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the tab group in grid view is open
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is not
+// activated in the right time interval.
+- (void)testDoNotShowTabGroupInGridOnStart {
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the tab group in grid view is not open.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is activated in
+// the right time interval but in Incognito mode.
+- (void)testDoNotShowTabGroupInGridOnStartInIncognitoMode {
+  [ChromeEarlGrey openNewIncognitoTab];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Create a tab group with an item at 0.
+  chrome_test_util::CreateTabGroupAtIndex(0, kGroupName);
+
+  // Open the group.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridGroupCellAtIndex(
+                                          0)] performAction:grey_tap()];
+
+  // Open the tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Simulate background then foreground activation.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the tab group in grid view is not open.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

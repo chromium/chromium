@@ -413,6 +413,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+    // Do not show if the app is not yet ready to present normal UI that is
+    // required by tab group in grid.
+    self.waitingForProfileStateAfterSceneStateReady = YES;
+    return;
+  }
+
   Browser* browser =
       self.sceneState.browserProviderInterface.currentBrowserProvider.browser;
 
@@ -427,13 +434,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
 
   if (!ShouldShowTabGroupInGridForSceneState(self.sceneState)) {
-    return;
-  }
-
-  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
-    // Do not show if the app is not yet ready to present normal UI that is
-    // required by tab group in grid.
-    self.waitingForProfileStateAfterSceneStateReady = YES;
     return;
   }
 
