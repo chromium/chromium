@@ -16,10 +16,12 @@
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace webid {
 
@@ -133,15 +135,34 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, NavigateAway) {
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ReShow) {
   Show();
+
+  // The dialog is initially shown on the visible tab.
+  tabs::TabInterface* tab_with_dialog =
+      browser()->tab_strip_model()->GetTabAtIndex(0);
+  ASSERT_TRUE(tab_with_dialog->IsVisible());
+
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
+
+  views::test::PropertyWaiter hide_tab_waiter(
+      base::BindRepeating(&tabs::TabInterface::IsVisible,
+                          base::Unretained(tab_with_dialog)),
+      false);
   EXPECT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
 
-  // The tab is currently hidden.
+  // When the tab is hidden, the dialog is hidden.
+  ASSERT_TRUE(hide_tab_waiter.Wait());
   ASSERT_TRUE(GetDialog());
   EXPECT_FALSE(GetDialog()->IsVisible());
 
+  views::test::PropertyWaiter show_tab_waiter(
+      base::BindRepeating(&tabs::TabInterface::IsVisible,
+                          base::Unretained(tab_with_dialog)),
+      true);
   browser()->tab_strip_model()->ActivateTabAt(0);
 
-  // The dialog should be reshown after the WebContents is Visible.
+  // The dialog should be reshown after the tab is made visible again.
+  ASSERT_TRUE(show_tab_waiter.Wait());
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
 }
