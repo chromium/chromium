@@ -362,6 +362,53 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicInputModesUsed) -->
 
+<!-- LINT.IfChange(GlicInstanceEvent) -->
+
+<enum name="GlicInstanceEvent">
+  <int value="0" label="Instance Created"/>
+  <int value="1" label="Warmed Instance Created"/>
+  <int value="2" label="Instance Created Without Warming"/>
+  <int value="3" label="Warmed Instance Promoted"/>
+  <int value="4" label="Side Panel Shown"/>
+  <int value="5" label="Floaty Shown"/>
+  <int value="6" label="Detached To Floaty"/>
+  <int value="7" label="Tab Bound"/>
+  <int value="8" label="Tab Bound Via Daisy Chain"/>
+  <int value="9" label="Daisy Chain Failed"/>
+  <int value="10" label="Conversation Switched From Floaty"/>
+  <int value="11" label="Conversation Switched From Side Panel"/>
+  <int value="12" label="Conversation Switched To Floaty"/>
+  <int value="13" label="Conversation Switched To Side Panel"/>
+  <int value="14" label="Register Conversation"/>
+  <int value="15" label="Instance Hidden"/>
+  <int value="16" label="Close"/>
+  <int value="17" label="Toggle"/>
+  <int value="18" label="Bound Tab Destroyed"/>
+  <int value="19" label="Create Tab"/>
+  <int value="20" label="Create Task"/>
+  <int value="21" label="Perform Actions"/>
+  <int value="22" label="Stop Actor Task"/>
+  <int value="23" label="Pause Actor Task"/>
+  <int value="24" label="Resume Actor Task"/>
+  <int value="25" label="Interrupt Actor Task"/>
+  <int value="26" label="Uninterrupt Actor Task"/>
+  <int value="27" label="WebUI State Uninitialized"/>
+  <int value="28" label="WebUI State Begin Load"/>
+  <int value="29" label="WebUI State Show Loading"/>
+  <int value="30" label="WebUI State Hold Loading"/>
+  <int value="31" label="WebUI State Finish Loading"/>
+  <int value="32" label="WebUI State Error"/>
+  <int value="33" label="WebUI State Offline"/>
+  <int value="34" label="WebUI State Unavailable"/>
+  <int value="35" label="WebUI State Ready"/>
+  <int value="36" label="WebUI State Unresponsive"/>
+  <int value="37" label="WebUI State Sign In"/>
+  <int value="38" label="WebUI State Guest Error"/>
+  <int value="39" label="WebUI State Disabled By Admin"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceEvent) -->
+
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
 <enum name="GlicInvocationSource">

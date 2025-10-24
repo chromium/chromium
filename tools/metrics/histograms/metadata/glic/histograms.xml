@@ -593,6 +593,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.EventCounts" enum="GlicInstanceEvent"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Instance's lifecycle. This
+    histogram answers the question: How many instances had each event type occur
+    at least once? Even if an event occurs multiple times in an instance, only
+    one event is recorded per instance.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.EventTotals" enum="GlicInstanceEvent"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records every event that happens during a Glic Instance's lifecycle. This
+    histogram answers the question: What is the total number of times each event
+    occurred across all Glic instances? An event is recorded each time it
+    occurs.
+  </summary>
+</histogram>
+
 <histogram name="Glic.MaybeReplaceNavigation.Result" enum="Boolean"
     expires_after="2026-03-22">
   <owner>liberato@chromium.org</owner>

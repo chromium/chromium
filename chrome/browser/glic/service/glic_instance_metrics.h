@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace glic {
@@ -21,6 +22,57 @@ enum class DaisyChainSource {
   kActorAddTab = 3,
   kMaxValue = kActorAddTab,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// This enum should be kept in sync with GlicInstanceEvent in enums.xml. Each
+// value is recorded at most once per instance.
+
+// LINT.IfChange(GlicInstanceEvent)
+enum class GlicInstanceEvent {
+  kInstanceCreated = 0,
+  kWarmedInstanceCreated = 1,
+  kInstanceCreatedWithoutWarming = 2,
+  kInstancePromoted = 3,
+  kSidePanelShown = 4,
+  kFloatyShown = 5,
+  kDetachedToFloaty = 6,
+  kTabBound = 7,
+  kTabBoundViaDaisyChain = 8,
+  kDaisyChainFailed = 9,
+  kConversationSwitchedFromFloaty = 10,
+  kConversationSwitchedFromSidePanel = 11,
+  kConversationSwitchedToFloaty = 12,
+  kConversationSwitchedToSidePanel = 13,
+  kRegisterConversation = 14,
+  kInstanceHidden = 15,
+  kClose = 16,
+  kToggle = 17,
+  kBoundTabDestroyed = 18,
+  kCreateTab = 19,
+  kCreateTask = 20,
+  kPerformActions = 21,
+  kStopActorTask = 22,
+  kPauseActorTask = 23,
+  kResumeActorTask = 24,
+  kInterruptActorTask = 25,
+  kUninterruptActorTask = 26,
+  kWebUiStateUninitialized = 27,
+  kWebUiStateBeginLoad = 28,
+  kWebUiStateShowLoading = 29,
+  kWebUiStateHoldLoading = 30,
+  kWebUiStateFinishLoading = 31,
+  kWebUiStateError = 32,
+  kWebUiStateOffline = 33,
+  kWebUiStateUnavailable = 34,
+  kWebUiStateReady = 35,
+  kWebUiStateUnresponsive = 36,
+  kWebUiStateSignIn = 37,
+  kWebUiStateGuestError = 38,
+  kWebUiStateDisabledByAdmin = 39,
+  kMaxValue = kWebUiStateDisabledByAdmin,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics {
@@ -51,13 +103,6 @@ class GlicInstanceMetrics {
 
   // Called when this instance is shown in the side panel.
   void OnShowInSidePanel();
-
-  // Called when GlicInstanceImpl::Show is called for a side panel due to hotkey
-  // use.
-  void OnShowSidePanelViaHotkey();
-
-  // Called when the floaty is shown via a hotkey due to hotkey use.
-  void OnFloatyShownViaHotkey();
 
   // Called when this instance is shown in a floaty.
   void OnShowInFloaty();
@@ -109,8 +154,70 @@ class GlicInstanceMetrics {
   // Called when GlicInstanceImpl::ResumeActorTask is called.
   void OnResumeActorTask();
 
+  // Called when GlicInstanceImpl::InterruptActorTask is called.
+  void InterruptActorTask();
+
+  // Called when GlicInstanceImpl::UninterruptActorTask is called.
+  void UninterruptActorTask();
+
   // Called when GlicInstanceImpl::WebUiStateChanged is called.
   void OnWebUiStateChanged(mojom::WebUiState state);
+
+ private:
+  // Stores counts for events to ensure they are only logged once per instance.
+  struct GlicInstanceEventCounts {
+    GlicInstanceEventCounts();
+
+    // go/keep-sorted start
+    int bound_tab_destroyed{};
+    int close{};
+    int conversation_switched_from_floaty{};
+    int conversation_switched_from_side_panel{};
+    int conversation_switched_to_floaty{};
+    int conversation_switched_to_side_panel{};
+    int create_tab{};
+    int create_task{};
+    int daisy_chain_failed{};
+    int detached_to_floaty{};
+    int floaty_shown{};
+    int instance_created_without_warming{};
+    int instance_created{};
+    int instance_destroyed{};
+    int instance_hidden{};
+    int instance_promoted{};
+    int interrupt_actor_task{};
+    int pause_actor_task{};
+    int perform_actions{};
+    int register_conversation{};
+    int resume_actor_task{};
+    int side_panel_shown{};
+    int stop_actor_task{};
+    int tab_bound_via_daisy_chain{};
+    int tab_bound{};
+    int toggle{};
+    int uninterrupt_actor_task{};
+    int warmed_instance_created{};
+    int web_ui_state_begin_load{};
+    int web_ui_state_disabled_by_admin{};
+    int web_ui_state_error{};
+    int web_ui_state_finish_loading{};
+    int web_ui_state_guest_error{};
+    int web_ui_state_hold_loading{};
+    int web_ui_state_offline{};
+    int web_ui_state_ready{};
+    int web_ui_state_show_loading{};
+    int web_ui_state_sign_in{};
+    int web_ui_state_unavailable{};
+    int web_ui_state_uninitialized{};
+    int web_ui_state_unresponsive{};
+    // go/keep-sorted end
+  };
+
+  // Logs the given event to the EventTotals histogram, and if the count is 0,
+  // also logs to the EventCounts histogram. Increments the counter.
+  void LogEvent(GlicInstanceEvent event, int& event_counter);
+
+  GlicInstanceEventCounts event_counts_;
 };
 
 }  // namespace glic

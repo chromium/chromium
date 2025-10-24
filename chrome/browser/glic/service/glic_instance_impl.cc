@@ -166,7 +166,6 @@ GlicInstanceImpl::GlicInstanceImpl(
 GlicInstanceImpl::~GlicInstanceImpl() {
   // Destroying the web contents may result in calls back here, so do it first.
   host_.Shutdown();
-  instance_metrics_.OnInstanceDestroyed();
 }
 
 bool GlicInstanceImpl::IsShowing() const {
@@ -363,10 +362,12 @@ void GlicInstanceImpl::ResumeActorTask(
 }
 
 void GlicInstanceImpl::InterruptActorTask(actor::TaskId task_id) {
+  instance_metrics_.InterruptActorTask();
   actor_task_manager_->InterruptActorTask(task_id);
 }
 
 void GlicInstanceImpl::UninterruptActorTask(actor::TaskId task_id) {
+  instance_metrics_.UninterruptActorTask();
   actor_task_manager_->UninterruptActorTask(task_id);
 }
 

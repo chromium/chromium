@@ -14024,6 +14024,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.InterruptActorTask">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    User action to interrupt an actor task within the Glic instance.
+  </description>
+</action>
+
 <action name="Glic.Instance.PauseActorTask">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
@@ -14072,27 +14080,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Glic.Instance.Show.FloatyViaHotkey">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <description>
-    Logged when a Glic instance is shown in a floating window directly.
-  </description>
-</action>
-
 <action name="Glic.Instance.Show.SidePanel">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <description>
     Logged when a Glic instance is shown in the side panel.
-  </description>
-</action>
-
-<action name="Glic.Instance.Show.SidePanelViaHotkey">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <description>
-    Logged when a Glic instance is shown in a side panel due to hotkey use.
   </description>
 </action>
 
@@ -14146,6 +14138,14 @@ should be able to be added at any place in this file.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <description>Logged when Toggle is called on an instance.</description>
+</action>
+
+<action name="Glic.Instance.UninterruptActorTask">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    User action to uninterrupt an actor task within the Glic instance.
+  </description>
 </action>
 
 <action name="Glic.Instance.WebUiStateChanged.BeginLoad">
