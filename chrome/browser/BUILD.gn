@@ -1804,6 +1804,10 @@ static_library("browser") {
     # headers get componentized:
     # - c/b/chrome_content_browser_client.h
     "//chrome/browser/btm:impl",
+
+    # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
+    # gets componentized.
+    "//chrome/browser/subscription_eligibility",
   ]
 
   public_deps = [
@@ -1999,6 +2003,7 @@ static_library("browser") {
     "//chrome/browser/status_icons",
     "//chrome/browser/status_icons:impl",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_group_sync:factories_impl",

@@ -9098,6 +9098,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SubscriptionEligibility.AiSubscriptionTierStatus"
+    enum="SubscriptionEligibilityAiSubscriptionTierStatus"
+    expires_after="2026-03-31">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records AI subscription tier status for profiles available on this install.
+    Emitted in every UMA record from the current session (at the time the record
+    is finalized).
+  </summary>
+</histogram>
+
 <histogram name="Tablet.CountOfVolumeAdjustType" units="numbers"
     expires_after="2023-02-12">
   <owner>minch@chromium.org</owner>

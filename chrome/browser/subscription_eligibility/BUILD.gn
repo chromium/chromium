@@ -4,6 +4,8 @@
 
 source_set("subscription_eligibility") {
   sources = [
+    "subscription_eligibility_metrics_provider.cc",
+    "subscription_eligibility_metrics_provider.h",
     "subscription_eligibility_prefs.cc",
     "subscription_eligibility_prefs.h",
     "subscription_eligibility_service.cc",
@@ -13,12 +15,16 @@ source_set("subscription_eligibility") {
   ]
 
   public_deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
   ]
 
   deps = [
+    "//chrome/browser:browser_process",
+    "//components/metrics",
     "//components/pref_registry",
     "//components/prefs",
+    "//third_party/metrics_proto:metrics_proto_gen",
   ]
 }
