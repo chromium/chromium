@@ -11,12 +11,15 @@
 namespace password_manager::features {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kActorLogin, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActorLoginFieldVisibilityCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginFillingHeuristics, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginLocalClassificationModel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginReauthTaskRefocus, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginSameSiteIframeSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableActorLoginPermissions, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -80,10 +83,6 @@ BASE_FEATURE(kDownloadModelForPasswordChange,
 
 BASE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kEnableActorLoginPermissions, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kFetchChangePasswordUrlForPasswordChange,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -18,11 +18,15 @@ namespace password_manager::features {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kActorLogin);
+// Enables Actor Login form finding with async check
+BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
 BASE_DECLARE_FEATURE(kActorLoginFillingHeuristics);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
 BASE_DECLARE_FEATURE(kActorLoginReauthTaskRefocus);
 // Enables finding and filling forms in same-site iframes for actor login.
 BASE_DECLARE_FEATURE(kActorLoginSameSiteIframeSupport);
+// Enables Actor Login permissions UI in Password Manager settings
+BASE_DECLARE_FEATURE(kEnableActorLoginPermissions);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -95,11 +99,6 @@ BASE_DECLARE_FEATURE(kDownloadModelForPasswordChange);
 // This feature disables filling on page load for leaked credentials on some
 // sites. Filling on page load interferes with password change feature.
 BASE_DECLARE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// Enables Actor Login permissions UI in Password Manager settings
-BASE_DECLARE_FEATURE(kEnableActorLoginPermissions);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables the Mojo JavaScript API for the password manager, replacing the
