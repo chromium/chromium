@@ -45,21 +45,6 @@ namespace {
 
 using enum AutofillAiImportDataController::EntityAttributeUpdateType;
 
-bool DidUserDeclineExplicitly(
-    AutofillClient::AutofillAiBubbleClosedReason close_reason) {
-  using enum AutofillClient::AutofillAiBubbleClosedReason;
-  switch (close_reason) {
-    case kCancelled:
-    case kClosed:
-      return true;
-    case kAccepted:
-    case kUnknown:
-    case kNotInteracted:
-    case kLostFocus:
-      return false;
-  }
-}
-
 std::u16string GetPrimaryAccountEmailFromProfile(Profile* profile) {
   if (!profile) {
     return std::u16string();
@@ -293,23 +278,16 @@ void AutofillAiImportDataControllerImpl::OnBubbleClosed(
 
   if (!bubble_hide_initiated_by_bubble_manager_ &&
       !prompt_closed_callback_.is_null()) {
-    std::move(prompt_closed_callback_)
-        .Run({DidUserDeclineExplicitly(close_reason), close_reason,
-              /*entity=*/close_reason ==
-                      AutofillClient::AutofillAiBubbleClosedReason::kAccepted
-                  ? std::exchange(new_entity_, std::nullopt)
-                  : std::nullopt});
+    std::move(prompt_closed_callback_).Run(close_reason);
   }
 }
 
 void AutofillAiImportDataControllerImpl::OnBubbleDiscarded() {
   if (!prompt_closed_callback_.is_null()) {
     std::move(prompt_closed_callback_)
-        .Run({false,
-              was_bubble_shown_
-                  ? AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted
-                  : AutofillClient::AutofillAiBubbleClosedReason::kUnknown,
-              std::nullopt});
+        .Run(was_bubble_shown_
+                 ? AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted
+                 : AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
   }
 }
 

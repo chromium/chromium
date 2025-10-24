@@ -181,12 +181,13 @@ class AutofillAiManager {
 
   // Updates the `EntityDataManager` and the save strike database depending on
   // the prompt `result`.
-  void HandleSavePromptResult(const GURL& form_url,
-                              uint64_t form_session_id,
-                              const std::string& domain,
-                              ukm::SourceId ukm_source_id,
-                              const EntityInstance& entity,
-                              AutofillClient::EntityImportPromptResult result);
+  void HandleSavePromptResult(
+      const GURL& form_url,
+      uint64_t form_session_id,
+      const std::string& domain,
+      ukm::SourceId ukm_source_id,
+      EntityInstance entity,
+      AutofillClient::AutofillAiBubbleClosedReason close_reason);
 
   // Updates the `EntityDataManager` and the update strike database depending on
   // the prompt `result`.
@@ -194,8 +195,9 @@ class AutofillAiManager {
       uint64_t form_session_id,
       const std::string& domain,
       ukm::SourceId ukm_source_id,
-      const EntityInstance::EntityId& entity_uuid,
-      AutofillClient::EntityImportPromptResult result);
+      EntityInstance updated_entity,
+      const EntityInstance::EntityId& existing_entity_id,
+      AutofillClient::AutofillAiBubbleClosedReason close_reason);
 
   // Updates the `EntityDataManager` by deleting a local entity and moving it to
   // the Google Wallet server. Updates the strike database depending on the
@@ -205,9 +207,9 @@ class AutofillAiManager {
       uint64_t form_session_id,
       const std::string& domain,
       ukm::SourceId ukm_source_id,
-      const EntityInstance& entity,
+      EntityInstance entity,
       EntityInstance::EntityId local_entity,
-      AutofillClient::EntityImportPromptResult result);
+      AutofillClient::AutofillAiBubbleClosedReason close_reason);
 
   LogManager* GetCurrentLogManager();
 

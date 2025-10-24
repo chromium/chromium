@@ -1423,7 +1423,8 @@ void ChromeAutofillClient::ShowEntityImportBubble(
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
-  std::move(prompt_closed_callback).Run(EntityImportPromptResult());
+  std::move(prompt_closed_callback)
+      .Run(AutofillClient::AutofillAiBubbleClosedReason::kUnknown);
 }
 
 }  // namespace autofill

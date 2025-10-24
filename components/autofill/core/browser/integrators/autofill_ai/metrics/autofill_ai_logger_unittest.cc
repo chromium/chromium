@@ -711,9 +711,7 @@ TEST_P(AutofillAiPromptMetricsTest, PromptMetrics) {
   base::HistogramTester histogram_tester;
   test_api(manager()).logger().OnImportPromptResult(
       prompt_type(), entity_type(), record_type(),
-      /*form_session_id*/ 0, /*domain=*/"",
-      AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false, close_reason(), /*entity=*/std::nullopt),
+      /*form_session_id*/ 0, /*domain=*/"", close_reason(),
       /*ukm_source_id=*/0);
 
   const std::string_view prompt_type_str =
@@ -896,10 +894,7 @@ TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
       AutofillClient::AutofillAiImportPromptType::kUpdate,
       EntityType(EntityTypeName::kPassport), EntityInstance::RecordType::kLocal,
       /*form_session_id=*/kFormSession, "myform_root.com",
-      AutofillClient::EntityImportPromptResult(
-          /*did_user_decline=*/false,
-          AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
-          test::GetPassportEntityInstance()),
+      AutofillClient::AutofillAiBubbleClosedReason::kAccepted,
       /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 1u);
 

@@ -249,33 +249,8 @@ class AutofillClient {
     };
     ArrowPosition arrow_position;
   };
-
-  // Contains the result of a user interaction with the save/update AutofillAi
-  // prompt.
-  struct EntityImportPromptResult final {
-    EntityImportPromptResult();
-    EntityImportPromptResult(
-        bool did_user_decline,
-        AutofillClient::AutofillAiBubbleClosedReason close_reason,
-        std::optional<EntityInstance> entity);
-    EntityImportPromptResult(const EntityImportPromptResult&);
-    EntityImportPromptResult(EntityImportPromptResult&&);
-    EntityImportPromptResult& operator=(const EntityImportPromptResult&);
-    EntityImportPromptResult& operator=(EntityImportPromptResult&&);
-    ~EntityImportPromptResult();
-
-    // Whether the user explicitly declined the dialog.
-    bool did_user_decline = false;
-
-    // The actual reason for the bubble to be closed.
-    AutofillClient::AutofillAiBubbleClosedReason close_reason =
-        AutofillClient::AutofillAiBubbleClosedReason::kUnknown;
-
-    // Non-empty iff the prompt was accepted.
-    std::optional<EntityInstance> entity;
-  };
   using EntityImportPromptResultCallback =
-      base::OnceCallback<void(EntityImportPromptResult result)>;
+      base::OnceCallback<void(AutofillAiBubbleClosedReason close_reason)>;
 
   // The types of prompts that AutofillAi can show to the user after a form
   // submission. The values are ordered by decreasing priority of being shown

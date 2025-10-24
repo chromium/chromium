@@ -54,32 +54,6 @@ AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
 AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
     AutofillClient::PopupOpenArgs&&) = default;
 
-AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
-    bool did_user_decline,
-    AutofillClient::AutofillAiBubbleClosedReason close_reason,
-    std::optional<EntityInstance> entity)
-    : did_user_decline(did_user_decline),
-      close_reason(close_reason),
-      entity(std::move(entity)) {}
-
-AutofillClient::EntityImportPromptResult::EntityImportPromptResult() = default;
-
-AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
-    const AutofillClient::EntityImportPromptResult&) = default;
-
-AutofillClient::EntityImportPromptResult::EntityImportPromptResult(
-    AutofillClient::EntityImportPromptResult&&) = default;
-
-AutofillClient::EntityImportPromptResult&
-AutofillClient::EntityImportPromptResult::operator=(
-    const AutofillClient::EntityImportPromptResult&) = default;
-
-AutofillClient::EntityImportPromptResult&
-AutofillClient::EntityImportPromptResult::operator=(
-    AutofillClient::EntityImportPromptResult&&) = default;
-
-AutofillClient::EntityImportPromptResult::~EntityImportPromptResult() = default;
-
 version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }

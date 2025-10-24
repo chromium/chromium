@@ -52,7 +52,7 @@ class AutofillAiLogger {
       EntityInstance::RecordType record_type,
       uint64_t form_session_id,
       const std::string& domain,
-      AutofillClient::EntityImportPromptResult result,
+      AutofillClient::AutofillAiBubbleClosedReason close_reason,
       ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into
