@@ -27,7 +27,6 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.IdRes;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
@@ -49,7 +48,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -79,10 +77,7 @@ import java.util.concurrent.ExecutionException;
 /** Integration tests for the first run experience with sign-in and sync decoupled. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test interacts with native initialization")
-// Disabled on Android 14 and above.
-@DisableIf.Build(
-        sdk_is_greater_than = VERSION_CODES.TIRAMISU,
-        message = "http://crbug.com/441219391")
+@DisabledTest(message = "ttp://crbug.com/441219391")
 public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_URL = "https://foo.com";
 
@@ -173,7 +168,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void managedAccountContinueButtonClickShowsManagementNotice() {
         mAccountManagerTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -191,7 +185,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void destroyHistorySyncActivityWhenAccountIsRemoved() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -237,7 +230,6 @@ public class FirstRunActivitySigninAndSyncTest {
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void dismissButtonNotShownOnResetForChildAccount() throws ExecutionException {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -273,7 +265,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void continueButtonClickShowsSearchEnginePageWhenItIsEnabled() {
         when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
                 .thenReturn(SearchEnginePromoType.SHOW_NEW);
@@ -294,7 +285,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void dismissButtonClickShowsSearchEnginePageWhenItIsEnabled() {
         when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
                 .thenReturn(SearchEnginePromoType.SHOW_NEW);
@@ -311,7 +301,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void acceptingHistorySyncEndsFreAndEnablesHistorySync() {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -337,7 +326,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void aadcMinorAccount_acceptsHistorySync() {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -388,7 +376,6 @@ public class FirstRunActivitySigninAndSyncTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "http://crbug.com/441219391")
     public void aadcMinorAccount_refuseHistorySync() {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
