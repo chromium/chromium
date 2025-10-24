@@ -10,10 +10,12 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/stack_allocated.h"
+#include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 class SoftNavigationContext;
@@ -46,6 +48,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kXMLHttpRequest,
     kSoftNavigation,
     kMiscEvent,
+    kMicrotask,
   };
 
   // `TaskScope` stores state for the current task, which is propagated to tasks
@@ -91,8 +94,46 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     TaskAttributionTaskState* previous_task_state_;
   };
 
+  // A `MicrotaskTraceScope` is a scoped object used for tracing the current
+  // task state associated with a running microtask. This is used for
+  // non-Promise microtasks.
+  class MicrotaskTraceScope final {
+    STACK_ALLOCATED();
+
+   public:
+    explicit MicrotaskTraceScope(v8::Isolate* isolate) {
+      if (base::FeatureList::IsEnabled(
+              features::kTaskAttributionTraceMicrotaskTaskState)) {
+        if (IsMainThread() && IsTracingCategoryEnabled()) {
+          tracker_ = From(isolate);
+          if (tracker_) {
+            tracker_->BeginMicrotaskTrace();
+          }
+        }
+      }
+    }
+
+    ~MicrotaskTraceScope() {
+      if (tracker_) {
+        tracker_->EndMicrotaskTrace();
+      }
+    }
+
+    MicrotaskTraceScope(const MicrotaskTraceScope&) = delete;
+    MicrotaskTraceScope& operator=(const MicrotaskTraceScope&) = delete;
+
+   private:
+    TaskAttributionTracker* tracker_ = nullptr;
+  };
+
+  static constexpr char kTracingCategory[] = "blink.task_attribution";
+
   static TaskAttributionTracker* From(v8::Isolate* isolate) {
     return V8PerIsolateData::From(isolate)->GetTaskAttributionTracker();
+  }
+
+  static bool IsTracingCategoryEnabled() {
+    return TRACE_EVENT_CATEGORY_ENABLED(kTracingCategory);
   }
 
   virtual ~TaskAttributionTracker() = default;
@@ -154,6 +195,14 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
  protected:
   virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;
+
+  // Start an async trace event with task state iformation at the beginning of a
+  // microtask. Does nothing for threads that don't support task attribution.
+  // Must be paired with `EndMicrotaskTrace().`
+  virtual void BeginMicrotaskTrace() = 0;
+
+  // End an async trace event started with `BeginMicrotaskTrace()`.
+  virtual void EndMicrotaskTrace() = 0;
 };
 
 }  // namespace blink::scheduler

@@ -8,19 +8,24 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_info_impl.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "v8/include/v8-promise.h"
 
 namespace blink::scheduler {
 
@@ -50,12 +55,46 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
       return ProtoType::TASK_SCOPE_SOFT_NAVIGATION;
     case TaskAttributionTracker::TaskScopeType::kMiscEvent:
       return ProtoType::TASK_SCOPE_MISC_EVENT;
+    case TaskAttributionTracker::TaskScopeType::kMicrotask:
+      return ProtoType::TASK_SCOPE_MICROTASK;
   }
 }
 
 int64_t TaskStateIdForTracing(TaskAttributionTaskState* state) {
   TaskAttributionInfo* info = state ? state->GetTaskAttributionInfo() : nullptr;
   return info ? info->Id().value() : 0;
+}
+
+void BeginBlinkTaskStateTrace(TaskAttributionTaskState* task_state,
+                              TaskAttributionTaskState* previous_task_state,
+                              TaskAttributionTracker::TaskScopeType type) {
+  TRACE_EVENT_BEGIN(
+      TaskAttributionTracker::kTracingCategory, "BlinkTaskState",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_blink_task_scope();
+        data->set_type(ToProtoEnum(type));
+        data->set_scope_task_id(TaskStateIdForTracing(task_state));
+        data->set_running_task_id_to_be_restored(
+            TaskStateIdForTracing(previous_task_state));
+      });
+}
+
+void EndBlinkTaskStateTrace() {
+  TRACE_EVENT_END(TaskAttributionTracker::kTracingCategory);
+}
+
+void TaskAttributionPromiseHook(v8::PromiseHookType type,
+                                v8::Local<v8::Promise> promise,
+                                v8::Local<v8::Value> parent) {
+  if (type == v8::PromiseHookType::kBefore) {
+    BeginBlinkTaskStateTrace(
+        TaskAttributionTaskState::GetCurrent(v8::Isolate::GetCurrent()),
+        /*previous_task_state=*/nullptr,
+        TaskAttributionTracker::TaskScopeType::kMicrotask);
+  } else if (type == v8::PromiseHookType::kAfter) {
+    EndBlinkTaskStateTrace();
+  }
 }
 
 }  // namespace
@@ -69,6 +108,29 @@ std::unique_ptr<TaskAttributionTracker> TaskAttributionTrackerImpl::Create(
 TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
     : isolate_(isolate) {
   CHECK(isolate_);
+  if (base::FeatureList::IsEnabled(
+          features::kTaskAttributionTraceMicrotaskTaskState)) {
+    // Register a tracing state observer unless we're running in a test without
+    // a task runner. Also note that setting the promise hook must be done on
+    // the main thread, since otherwise the `isolate_` might not be the current
+    // isolate, so we need to use an async observer.
+    if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+      trace_event::AddAsyncEnabledStateObserver(weak_factory_.GetWeakPtr());
+    }
+    // If tracing was already enabled, we won't get a callback, so check if we
+    // need to register the promise hook.
+    if (IsTracingCategoryEnabled()) {
+      isolate_->SetPromiseHook(TaskAttributionPromiseHook);
+    }
+  }
+}
+
+TaskAttributionTrackerImpl::~TaskAttributionTrackerImpl() {
+  if (base::FeatureList::IsEnabled(
+          features::kTaskAttributionTraceMicrotaskTaskState)) {
+    // Note that it's safe to remove a non-existent observer.
+    trace_event::RemoveAsyncEnabledStateObserver(this);
+  }
 }
 
 scheduler::TaskAttributionInfo* TaskAttributionTrackerImpl::CurrentTaskState()
@@ -124,17 +186,7 @@ TaskAttributionTrackerImpl::SetCurrentTaskStateImpl(
   if (task_state != previous_task_state) {
     TaskAttributionTaskState::SetCurrent(isolate_, task_state);
   }
-
-  TRACE_EVENT_BEGIN(
-      "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_blink_task_scope();
-        data->set_type(ToProtoEnum(type));
-        data->set_scope_task_id(TaskStateIdForTracing(task_state));
-        data->set_running_task_id_to_be_restored(
-            TaskStateIdForTracing(previous_task_state));
-      });
-
+  BeginBlinkTaskStateTrace(task_state, previous_task_state, type);
   return TaskScope(this, previous_task_state);
 }
 
@@ -142,7 +194,7 @@ void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
     const TaskScope& task_scope) {
   TaskAttributionTaskState::SetCurrent(isolate_,
                                        task_scope.previous_task_state_);
-  TRACE_EVENT_END("scheduler");
+  EndBlinkTaskStateTrace();
 }
 
 std::optional<TaskAttributionId>
@@ -176,6 +228,26 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
     }
   }
   return nullptr;
+}
+
+void TaskAttributionTrackerImpl::OnTraceLogEnabled() {
+  if (IsTracingCategoryEnabled()) {
+    isolate_->SetPromiseHook(TaskAttributionPromiseHook);
+  }
+}
+
+void TaskAttributionTrackerImpl::OnTraceLogDisabled() {
+  isolate_->SetPromiseHook(nullptr);
+}
+
+void TaskAttributionTrackerImpl::BeginMicrotaskTrace() {
+  BeginBlinkTaskStateTrace(TaskAttributionTaskState::GetCurrent(isolate_),
+                           /*previous_task_state=*/nullptr,
+                           TaskAttributionTracker::TaskScopeType::kMicrotask);
+}
+
+void TaskAttributionTrackerImpl::EndMicrotaskTrace() {
+  EndBlinkTaskStateTrace();
 }
 
 }  // namespace blink::scheduler

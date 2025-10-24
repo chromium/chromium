@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -101,6 +102,7 @@ void EventLoop::RunPendingMicrotask(void* data) {
   auto* self = static_cast<EventLoop*>(data);
   base::OnceClosure task = std::move(self->pending_microtasks_.front());
   self->pending_microtasks_.pop_front();
+  TaskAttributionTracker::MicrotaskTraceScope scope(self->isolate_);
   std::move(task).Run();
 }
 
