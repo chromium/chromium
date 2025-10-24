@@ -229,15 +229,21 @@ RequestHandlerResult CalculateRequestHandlerResult(
   }
 
   // If file is non-compliant, map it to the specific case.
+  //
+  // We should check if the action is `WARN` or `BLOCK` before `FILE_TOO_LARGE`
+  // or `FILE_ENCRYPTED`, because the server could issue a `WARN` or `BLOCK`
+  // verdict based on the metadata of large or encrypted files.
   if (ResultIsFailClosed(upload_result)) {
     DVLOG(1) << __func__ << ": result mapped to fail-closed.";
     result.final_result = FinalContentAnalysisResult::FAIL_CLOSED;
+  } else if (action == TriggeredRule::WARN) {
+    result.final_result = FinalContentAnalysisResult::WARNING;
+  } else if (action == TriggeredRule::BLOCK) {
+    result.final_result = FinalContentAnalysisResult::FAILURE;
   } else if (upload_result == BinaryUploadService::Result::FILE_TOO_LARGE) {
     result.final_result = FinalContentAnalysisResult::LARGE_FILES;
   } else if (upload_result == BinaryUploadService::Result::FILE_ENCRYPTED) {
     result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
-  } else if (action == TriggeredRule::WARN) {
-    result.final_result = FinalContentAnalysisResult::WARNING;
   } else {
     result.final_result = FinalContentAnalysisResult::FAILURE;
   }
