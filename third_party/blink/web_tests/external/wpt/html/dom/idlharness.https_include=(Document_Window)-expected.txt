@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Window interface: attribute navigation
-  assert_equals: setter must be undefined for readonly attributes expected (undefined) undefined but got (function) function "function set navigation() { [native code] }"
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Document interface: calling parseHTMLUnsafe((TrustedHTML or DOMString)) on iframe.contentDocument with too few arguments must throw TypeError
   assert_own_property: interface object must have static operation as own property expected property "parseHTMLUnsafe" missing
 Harness: the test ran to completion.

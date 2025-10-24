@@ -21,20 +21,20 @@ Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Both attributes and removeAttributes should not be allowed.
   assert_throws_js: function "() => {\n    new Sanitizer({ attributes: [], removeAttributes: [] });\n  }" did not throw
 [FAIL] config[attributes] and element[attributes] should not intersect.
-  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: ["title"],\n      elements: [{ name: "div", attributes: ["title"] }],\n    });\n  }" did not throw
+  assert_throws_js: function "() => {\n      new Sanitizer({\n        attributes: [a],\n        elements: [{ name: "div", attributes: [b] }],\n      });\n    }" did not throw
 [FAIL] element[removeAttributes] should be a subset of config[attributes]
   assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: ["class"],\n      elements: [{ name: "div", removeAttributes: ["title"] }],\n    });\n  }" did not throw
-[FAIL] Per-element allow list with a data attribute must not co-exist with config[dataAttributes] set to true.
+[FAIL] element[attributes] with a data attribute must not co-exist with config[dataAttributes] set to true.
   assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: [],\n      dataAttributes: true,\n      elements: [{ name: "div", attributes: ["data-foo"] }],\n    });\n  }" did not throw
-[FAIL] Global attribute allow-list with a data attribute must not co-exist with config[dataAttributes] set to true.
-  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: [],\n      dataAttributes: true,\n      attributes: ["data-bar"],\n    });\n  }" did not throw
+[FAIL] config[attributes] with a data attribute must not co-exist with config[dataAttributes] set to true.
+  assert_throws_js: function "() => {\n    new Sanitizer({\n      attributes: ["data-bar"],\n      dataAttributes: true,\n    });\n  }" did not throw
 [FAIL] element[attributes] and element[removeAttributes] should not both exist with config[removeAttributes].
   assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: [],\n      elements: [{ name: "div", attributes: [], removeAttributes: [] }],\n    });\n  }" did not throw
 [FAIL] config[removeAttributes] and element[attributes] should not intersect.
-  assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: ["class"],\n      elements: [{ name: "div", attributes: ["class"] }],\n    });\n  }" did not throw
+  assert_throws_js: function "() => {\n      new Sanitizer({\n        removeAttributes: [a],\n        elements: [{ name: "div", attributes: [b] }],\n      });\n    }" did not throw
 [FAIL] config[removeAttributes] and element[removeAttributes] should not intersect.
-  assert_throws_js: function "() => {\n    new Sanitizer({\n      removeAttributes: ["class"],\n      elements: [{ name: "div", removeAttributes: ["class"] }],\n    });\n  }" did not throw
-[FAIL] Can not use config[dataAttributes] and config[attributes] together.
+  assert_throws_js: function "() => {\n      new Sanitizer({\n        removeAttributes: [a],\n        elements: [{ name: "div", removeAttributes: [b] }],\n      });\n    }" did not throw
+[FAIL] Can not use config[dataAttributes] and config[removeAttributes] together.
   assert_throws_js: function "() => {\n    new Sanitizer({ removeAttributes: [], dataAttributes: true });\n  }" did not throw
 Harness: the test ran to completion.
 
