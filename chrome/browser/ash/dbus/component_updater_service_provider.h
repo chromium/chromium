@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"

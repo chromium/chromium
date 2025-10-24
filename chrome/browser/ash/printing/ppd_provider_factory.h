@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PPD_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_ASH_PRINTING_PPD_PROVIDER_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 class Profile;
 

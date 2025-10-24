@@ -10,7 +10,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "content/public/browser/tts_platform.h"
 

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"

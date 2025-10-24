@@ -11,7 +11,7 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner_util.h"
 #include "chromeos/ash/experiences/arc/mojom/file_system.mojom-forward.h"

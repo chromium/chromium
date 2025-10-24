@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "net/http/http_status_code.h"

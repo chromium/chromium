@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/ash/power/renderer_freezer.h"
 

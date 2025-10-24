@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"

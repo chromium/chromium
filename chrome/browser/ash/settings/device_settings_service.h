@@ -12,7 +12,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/ownership/owner_settings_service.h"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_BLUETOOTH_POLICY_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
