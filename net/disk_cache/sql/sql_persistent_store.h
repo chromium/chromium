@@ -45,6 +45,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // table.
   using ResId = base::StrongAlias<class ResIdTag, int64_t>;
 
+  // A unique identifier for a database shard.
+  // TODO(crbug.com/443171275): Sharding logic is not implemented yet.
+  using ShardId = base::StrongAlias<class ResIdTag, uint8_t>;
+
   // Represents the error of SqlPersistentStore operation.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
