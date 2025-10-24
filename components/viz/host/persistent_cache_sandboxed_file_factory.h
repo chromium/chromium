@@ -81,7 +81,7 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
  private:
   friend class base::RefCountedThreadSafe<PersistentCacheSandboxedFileFactory>;
 
-  base::FilePath cache_root_dir_;
+  const base::FilePath cache_root_dir_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 };
 
