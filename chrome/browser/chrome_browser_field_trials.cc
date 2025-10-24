@@ -186,8 +186,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // implemented.
   feature_overrides.EnableFeature(
       chrome::android::kLockTopControlsOnLargeTablets);
-  feature_overrides.EnableFeature(
-      chrome::android::kLockTopControlsOnLargeTabletsV2);
   // Bypass the WebAudio output buffer, to reduce audio latency.
   // TODO(crbug.com/436988695): Remove when the long term solution is
   // implemented.
