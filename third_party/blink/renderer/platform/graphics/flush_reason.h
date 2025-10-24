@@ -124,17 +124,12 @@ enum class FlushReason {
   // The HTMLCanvasElement.toDataURL method was called on the canvas.
   kToDataURL = 26,
 
-  // The canvas's layer bridge was replaced. This happens when switching
-  // between GPU and CPU rendering.
-  // This inhibits vector printing.
-  kReplaceLayerBridge = 27,
-
   // The canvas was used as a source image in a call to
   // `CanvasRenderingContext2D.drawMesh`.
   // This inhibits vector printing.
-  kDrawMesh = 28,
+  kDrawMesh = 27,
 
-  kOther = 29,
+  kOther = 28,
 
   kMaxValue = kOther,
 };

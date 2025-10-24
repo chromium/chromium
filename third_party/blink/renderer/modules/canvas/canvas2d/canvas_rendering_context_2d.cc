@@ -1394,8 +1394,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
 
-  scoped_refptr<StaticBitmapImage> image =
-      GetImage(FlushReason::kReplaceLayerBridge);
+  scoped_refptr<StaticBitmapImage> image = GetImage(FlushReason::kOther);
   // image can be null if allocation failed in which case we should just
   // abort the provider switch to retain the old provider, which is still
   // functional.
