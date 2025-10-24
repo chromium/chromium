@@ -19,7 +19,6 @@ origin_files = glob([
     "chrome/VERSION",
     "components/metrics/**",
     # See https://chromium-review.googlesource.com/c/chromium/src/+/4896104
-    "components/miracle_parameter/**",
     "components/nacl/**",
     "components/prefs/**",
     "components/unexportable_keys/**",

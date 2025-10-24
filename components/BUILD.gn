@@ -504,7 +504,6 @@ test("components_unittests") {
       "//components/link_header_util:unit_tests",
       "//components/media_device_salt:unit_tests",
       "//components/media_effects:unit_tests",
-      "//components/miracle_parameter/common:unit_tests",
       "//components/mirroring:mirroring_tests",
       "//components/navigation_interception:unit_tests",
       "//components/no_state_prefetch/browser:unit_tests",

@@ -172,7 +172,6 @@ blink_platform_sources("scheduler") {
   deps = [
     "//base",
     "//cc",
-    "//components/miracle_parameter/common",
     "//components/performance_manager/scenario_api",
     "//device/base/synchronization",
     "//services/metrics/public/mojom",

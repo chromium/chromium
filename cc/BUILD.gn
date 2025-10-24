@@ -503,7 +503,6 @@ cc_component("cc") {
     "//build:chromeos_buildflags",
     "//components/metrics/dwa:dwa_builders",
     "//components/metrics/dwa/mojom",
-    "//components/miracle_parameter/common",
     "//components/viz/client",
     "//device/base/synchronization",
     "//gpu/command_buffer/client:gles2_interface",

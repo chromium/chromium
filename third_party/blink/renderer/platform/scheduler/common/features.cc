@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 
 #include "base/command_line.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 

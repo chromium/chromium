@@ -187,7 +187,6 @@ component("cpp") {
   deps = [
     "//base",
     "//components/link_header_util",
-    "//components/miracle_parameter/common",
     "//components/os_crypt/async/browser",
     "//components/os_crypt/async/common",
     "//components/prefs",

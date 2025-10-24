@@ -1731,8 +1731,6 @@ component("base") {
     sources += [
       "allocator/dispatcher/memory_tagging.cc",
       "allocator/dispatcher/memory_tagging.h",
-      "allocator/miracle_parameter.cc",
-      "allocator/miracle_parameter.h",
       "allocator/partition_alloc_features.cc",
       "allocator/partition_alloc_features.h",
       "allocator/partition_alloc_support.cc",

@@ -339,7 +339,6 @@ component("network_service") {
     "//components/ip_protection/common:ip_protection_telemetry_uma",
     "//components/ip_protection/common:masked_domain_list_manager",
     "//components/ip_protection/common:probabilistic_reveal_token_registry",
-    "//components/miracle_parameter/common",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
     "//components/os_crypt/async/common",

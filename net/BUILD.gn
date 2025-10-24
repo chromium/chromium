@@ -1173,7 +1173,6 @@ component("net") {
   deps = [
     ":cronet_buildflags",
     ":net_deps",
-    "//components/miracle_parameter/common",
     "//components/network_time/time_tracker",
     "//net/http:transport_security_state_generated_files",
     "//third_party/simdutf",
