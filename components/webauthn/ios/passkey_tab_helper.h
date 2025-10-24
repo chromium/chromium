@@ -35,7 +35,8 @@ class PasskeyTabHelper : public web::WebStateUserData<PasskeyTabHelper> {
   friend class web::WebStateUserData<PasskeyTabHelper>;
 
   explicit PasskeyTabHelper(web::WebState* web_state,
-                            webauthn::PasskeyModel* passkey_model);
+                            webauthn::PasskeyModel* passkey_model,
+                            bool allow_modal_login);
 
   // Provides access to stored WebAuthn credentials.
   raw_ptr<webauthn::PasskeyModel> passkey_model_;

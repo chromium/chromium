@@ -25,7 +25,8 @@ constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
 class PasskeyTabHelperTest : public PlatformTest {
  public:
   PasskeyTabHelperTest() {
-    PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get());
+    PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
+                                        /*allow_modal_login*/ false);
   }
 
  protected:

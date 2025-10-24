@@ -39,6 +39,10 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
+void PasskeyJavaScriptFeature::SetAllowModalLogin(bool allow_modal_login) {
+  // TODO(crbug.com/385174410): Allow modal login when desired.
+}
+
 std::optional<std::string>
 PasskeyJavaScriptFeature::GetScriptMessageHandlerName() const {
   return kHandlerName;

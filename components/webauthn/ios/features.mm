@@ -5,3 +5,4 @@
 #import "components/webauthn/ios/features.h"
 
 BASE_FEATURE(kIOSPasskeyShim, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSPasskeyModalLoginWithShim, base::FEATURE_DISABLED_BY_DEFAULT);

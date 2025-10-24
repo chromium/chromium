@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state.h"
 
@@ -72,8 +73,12 @@ void PasskeyTabHelper::HandleGetResolvedEvent(
 }
 
 PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
-                                   webauthn::PasskeyModel* passkey_model)
+                                   webauthn::PasskeyModel* passkey_model,
+                                   bool allow_modal_login)
     : passkey_model_(passkey_model) {
   CHECK(web_state);
   CHECK(passkey_model_);
+
+  PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
+      allow_modal_login);
 }

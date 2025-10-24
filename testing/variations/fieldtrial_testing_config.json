@@ -13605,6 +13605,21 @@
             ]
         }
     ],
+    "IOSPasskeyModalLoginWithShim": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSPasskeyModalLoginWithShim"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPasskeyShim": [
         {
             "platforms": [

@@ -308,7 +308,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(web_state);
     if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
       PasskeyTabHelper::CreateForWebState(
-          web_state, IOSPasskeyModelFactory::GetForProfile(profile));
+          web_state, IOSPasskeyModelFactory::GetForProfile(profile),
+          base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim));
     }
   }
 
