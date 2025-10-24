@@ -85,13 +85,17 @@ if (!limit_android_deps) {
     }
   }
 
-  android_library("chromium_play_services_availability_java") {
-    sources = [ "util/org/chromium/gms/ChromiumPlayServicesAvailability.java" ]
-    deps = [
-      "$google_play_services_package:google_play_services_base_java",
-      "$google_play_services_package:google_play_services_basement_java",
-      "//base:resetters_java",
-    ]
+  # Guard because some consumers may not have //base.
+  if (build_with_chromium) {
+    android_library("chromium_play_services_availability_java") {
+      sources =
+          [ "util/org/chromium/gms/ChromiumPlayServicesAvailability.java" ]
+      deps = [
+        "$google_play_services_package:google_play_services_base_java",
+        "$google_play_services_package:google_play_services_basement_java",
+        "//base:resetters_java",
+      ]
+    }
   }
 
   java_group("playcore_java") {
