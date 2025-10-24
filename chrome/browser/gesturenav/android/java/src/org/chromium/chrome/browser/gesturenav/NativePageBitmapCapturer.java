@@ -12,6 +12,7 @@ import android.os.Build;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
@@ -36,6 +37,8 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     private static final UnownedUserDataKey<NativePageBitmapCapturer> CAPTURER_KEY =
             new UnownedUserDataKey<>(NativePageBitmapCapturer.class);
     private static final float SCALE = 1;
+
+    private static boolean sIgnoreCurrentUrlCheck;
 
     private @Nullable HardwareDraw mHardwareDraw;
 
@@ -114,6 +117,14 @@ public class NativePageBitmapCapturer implements UnownedUserData {
         return capture(tab, true, topControlsHeight);
     }
 
+    public static void setIgnoreCurrentUrlCheckForTesting() {
+        sIgnoreCurrentUrlCheck = true;
+        ResettersForTesting.register(
+                () -> {
+                    sIgnoreCurrentUrlCheck = false;
+                });
+    }
+
     private static boolean isCapturable(Tab tab) {
         if (!tab.isNativePage()) {
             return false;
@@ -147,16 +158,18 @@ public class NativePageBitmapCapturer implements UnownedUserData {
             return CaptureNativeViewResult.VIEW_NOT_LAID_OUT;
         }
 
-        GURL lastCommittedUrl = tab.getWebContents().getLastCommittedUrl();
-        boolean isLastPageNative =
-                NativePage.isNativePageUrl(lastCommittedUrl, tab.isIncognitoBranded(), false);
-        // crbug.com/376115165: Show fallback screenshots when navigating between native pages.
-        // Native page views show before the navigation commit, which causes the content/ to
-        // capture a wrong screenshot.
-        // TODO(crbug.com/378565245): Capture screenshots when navigating between native pages.
-        if (isLastPageNative
-                && NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognitoBranded(), false)) {
-            return CaptureNativeViewResult.BETWEEN_NATIVE_PAGES;
+        if (!sIgnoreCurrentUrlCheck) {
+            GURL lastCommittedUrl = tab.getWebContents().getLastCommittedUrl();
+            boolean isLastPageNative =
+                    NativePage.isNativePageUrl(lastCommittedUrl, tab.isIncognitoBranded(), false);
+            // crbug.com/376115165: Show fallback screenshots when navigating between native pages.
+            // Native page views show before the navigation commit, which causes the content/ to
+            // capture a wrong screenshot.
+            // TODO(crbug.com/378565245): Capture screenshots when navigating between native pages.
+            if (isLastPageNative
+                    && NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognitoBranded(), false)) {
+                return CaptureNativeViewResult.BETWEEN_NATIVE_PAGES;
+            }
         }
 
         return CaptureNativeViewResult.CAPTURE_SCREENSHOT;

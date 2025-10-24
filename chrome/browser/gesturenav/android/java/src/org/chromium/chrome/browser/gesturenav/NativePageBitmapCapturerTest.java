@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.gesturenav;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,11 @@ public class NativePageBitmapCapturerTest {
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    @Before
+    public void setUp() {
+        NativePageBitmapCapturer.setIgnoreCurrentUrlCheckForTesting();
+    }
+
     @Test
     @SmallTest
     public void testWithNativePage() throws TimeoutException {
@@ -46,6 +52,7 @@ public class NativePageBitmapCapturerTest {
                             NativePageBitmapCapturer.maybeCaptureNativeView(
                                     ntp.getTab(),
                                     (bitmap) -> {
+                                        Assert.assertNotNull(bitmap);
                                         callbackHelper.notifyCalled();
                                     }));
                 });
