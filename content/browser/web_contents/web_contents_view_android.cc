@@ -542,8 +542,8 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
         drop_data_->html = ConvertJavaStringToUTF16(env, event.GetJavaHtml());
       }
       if (!event.GetJavaUrl().is_null()) {
-        drop_data_->url =
-            GURL(ConvertJavaStringToUTF16(env, event.GetJavaUrl()));
+        GURL url(ConvertJavaStringToUTF16(env, event.GetJavaUrl()));
+        drop_data_->url_infos.emplace_back(std::move(url), std::u16string());
       }
 
       OnPerformDrop(event.location(), event.screen_location());

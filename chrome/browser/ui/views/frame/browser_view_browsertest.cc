@@ -846,7 +846,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_DragNotSupportedInFullscreen) {
 
   // Attempt to start a drag
   content::DropData drop_data;
-  drop_data.url = GURL("https://mail.google.com");
+  drop_data.url_infos = {
+      ui::ClipboardUrlInfo(GURL("https://mail.google.com"), u"")};
   const gfx::Rect bounds = browser_view()->GetBoundsInScreen();
   const gfx::PointF point(bounds.left_center().x() + 10,
                           bounds.left_center().y());

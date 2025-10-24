@@ -54,13 +54,15 @@ constexpr char kNudgeShownUserActionName[] = "Tabs.SplitView.NudgeShown";
 
 content::DropData ValidUrlDropData() {
   content::DropData valid_url_data;
-  valid_url_data.url = GURL("https://mail.google.com");
+  valid_url_data.url_infos = {
+      ui::ClipboardUrlInfo(GURL("https://mail.google.com"), u"")};
   return valid_url_data;
 }
 
 content::DropData NonStandardUrlDropData() {
   content::DropData valid_url_data;
-  valid_url_data.url = GURL("mailto:me@google.com");
+  valid_url_data.url_infos = {
+      ui::ClipboardUrlInfo(GURL("mailto:me@google.com"), u"")};
   return valid_url_data;
 }
 

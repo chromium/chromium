@@ -237,7 +237,7 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
         DropData::Kind::STRING, ui::kMimeTypePlainText16));
   }
 
-  if (drop_data.url.is_valid()) {
+  if (!drop_data.url_infos.empty()) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
         DropData::Kind::STRING, ui::kMimeTypeUriList16));
   }
@@ -2059,7 +2059,9 @@ void RenderWidgetHostImpl::DragSourceSystemDragEnded() {
 void RenderWidgetHostImpl::FilterDropData(DropData* drop_data) {
   drop_data->view_id = GetRoutingID();
 
-  GetProcess()->FilterURL(true, &drop_data->url);
+  for (auto& url_info : drop_data->url_infos) {
+    GetProcess()->FilterURL(true, &url_info.url);
+  }
   if (drop_data->did_originate_from_renderer) {
     drop_data->filenames.clear();
   }
@@ -2858,8 +2860,11 @@ void RenderWidgetHostImpl::StartDragging(
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Allow drag of Javascript URLs to enable bookmarklet drag to bookmark bar.
-  if (!filtered_data.url.SchemeIs(url::kJavaScriptScheme)) {
-    process->FilterURL(true, &filtered_data.url);
+  for (auto& url_info : filtered_data.url_infos) {
+    if (url_info.url.SchemeIs(url::kJavaScriptScheme)) {
+      continue;
+    }
+    process->FilterURL(true, &url_info.url);
   }
   process->FilterURL(false, &filtered_data.html_base_url);
   // Filter out any paths that the renderer didn't have access to. This prevents

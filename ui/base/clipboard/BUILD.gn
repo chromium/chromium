@@ -16,7 +16,10 @@ component("clipboard_types") {
   sources = [
     "clipboard_buffer.h",
     "clipboard_constants.h",
+    "clipboard_url_info.h",
   ]
+
+  public_deps = [ "//url" ]
 
   if (use_blink) {
     sources += [ "clipboard_format_type.h" ]

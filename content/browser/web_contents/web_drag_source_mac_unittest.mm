@@ -16,7 +16,7 @@ using WebDragSourceMacTest = RenderViewHostTestHarness;
 
 TEST_F(WebDragSourceMacTest, DragInvalidlyEscapedBookmarklet) {
   DropData drop_data;
-  drop_data.url = GURL("javascript:%");
+  drop_data.url_infos = {ui::ClipboardUrlInfo{GURL("javascript:%"), u""}};
 
   WebDragSource* source = [[WebDragSource alloc] initWithHost:nullptr
                                                      dropData:drop_data

@@ -274,8 +274,10 @@ void PrepareDragData(const DropData& drop_data,
   if (drop_data.text) {
     provider->SetString(*drop_data.text);
   }
-  if (drop_data.url.is_valid())
-    provider->SetURL(drop_data.url, drop_data.url_title);
+  if (!drop_data.url_infos.empty()) {
+    provider->SetURL(drop_data.url_infos.front().url,
+                     drop_data.url_infos.front().title);
+  }
   if (drop_data.html && !drop_data.html->empty())
     provider->SetHtml(*drop_data.html, drop_data.html_base_url);
   if (!drop_data.filenames.empty())
@@ -322,7 +324,7 @@ void PrepareDragData(const DropData& drop_data,
 // TODO(crbug.com/41459545): Drag and drop: Should support both virtual
 // file and url data on drop.
 bool ShouldIncludeVirtualFiles(const DropData& drop_data) {
-  return !drop_data.did_originate_from_renderer && drop_data.url.is_empty();
+  return !drop_data.did_originate_from_renderer && drop_data.url_infos.empty();
 }
 #endif
 
@@ -718,8 +720,8 @@ void WebContentsViewAura::PrepareDropData(
   if (std::optional<ui::OSExchangeData::UrlInfo> url = data.GetURLAndTitle(
           ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
       url.has_value() && url->url.is_valid()) {
-    drop_data->url = std::move(url->url);
-    drop_data->url_title = std::move(url->title);
+    drop_data->url_infos.emplace_back(std::move(url->url),
+                                      std::move(url->title));
   }
 
   if (std::optional<ui::OSExchangeData::HtmlInfo> html = data.GetHtml();

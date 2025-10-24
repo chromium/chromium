@@ -98,7 +98,7 @@
   }
 
   // URL (and title).
-  if (_dropData.url.is_valid()) {
+  if (!_dropData.url_infos.empty()) {
     [writableTypes addObject:NSPasteboardTypeURL];
     [writableTypes addObject:ui::kUTTypeUrlName];
   }
@@ -210,13 +210,14 @@
 
   // URL.
   if ([type isEqualToString:NSPasteboardTypeURL]) {
-    DCHECK(_dropData.url.is_valid());
-    NSURL* url = net::NSURLWithGURL(_dropData.url);
+    DCHECK(!_dropData.url_infos.empty());
+    NSURL* url = net::NSURLWithGURL(_dropData.url_infos.front().url);
     // If NSURL creation failed, check for a badly-escaped JavaScript URL.
     // Strip out any existing escapes and then re-escape uniformly.
-    if (!url && _dropData.url.SchemeIs(url::kJavaScriptScheme)) {
-      std::string unescapedUrlString =
-          base::UnescapeBinaryURLComponent(_dropData.url.spec());
+    if (!url &&
+        _dropData.url_infos.front().url.SchemeIs(url::kJavaScriptScheme)) {
+      std::string unescapedUrlString = base::UnescapeBinaryURLComponent(
+          _dropData.url_infos.front().url.spec());
       std::string escapedUrlString =
           base::EscapeUrlEncodedData(unescapedUrlString, false);
       url = [NSURL URLWithString:base::SysUTF8ToNSString(escapedUrlString)];
@@ -226,7 +227,8 @@
 
   // URL title.
   if ([type isEqualToString:ui::kUTTypeUrlName]) {
-    return base::SysUTF16ToNSString(_dropData.url_title);
+    DCHECK(!_dropData.url_infos.empty());
+    return base::SysUTF16ToNSString(_dropData.url_infos.front().title);
   }
 
   // File contents.

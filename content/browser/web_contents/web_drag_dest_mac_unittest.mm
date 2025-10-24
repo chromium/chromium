@@ -83,7 +83,7 @@ TEST_F(WebDragDestTest, Data) {
   content::DropData data =
       content::PopulateDropDataFromPasteboard(pboard->get());
 
-  EXPECT_EQ(data.url.spec(), "http://www.google.com/");
+  EXPECT_EQ(data.url_infos.front().url.spec(), "http://www.google.com/");
   EXPECT_EQ(base::SysNSStringToUTF16(text_string), data.text);
   EXPECT_EQ(base::SysNSStringToUTF16(html_string), data.html);
 }

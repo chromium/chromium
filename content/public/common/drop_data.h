@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "ipc/constants.mojom.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "url/gurl.h"
@@ -88,9 +89,8 @@ struct CONTENT_EXPORT DropData {
   // Whether this drag is from a privileged WebContents.
   bool is_from_privileged = false;
 
-  // User is dragging a link or image.
-  GURL url;
-  std::u16string url_title;  // The title associated with `url`.
+  // Holds one or more URLs, such as those from dragging links or images.
+  std::vector<ui::ClipboardUrlInfo> url_infos;
 
   // User is dragging a link out-of the webview.
   std::u16string download_metadata;

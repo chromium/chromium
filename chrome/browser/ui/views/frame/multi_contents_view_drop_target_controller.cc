@@ -223,7 +223,8 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     ResetDropTargetTimers();
     return;
   }
-  if (!data.url.is_valid() || !data.url.IsStandard() || is_in_split_view) {
+  if (data.url_infos.empty() || !data.url_infos.front().url.IsStandard() ||
+      is_in_split_view) {
     ResetDropTargetTimers();
     return;
   }

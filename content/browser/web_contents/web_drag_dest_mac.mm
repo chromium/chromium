@@ -488,11 +488,10 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   NSArray<URLAndTitle*>* urls_and_titles =
       ui::clipboard_util::URLsAndTitlesFromPasteboard(pboard,
                                                       /*include_files=*/false);
-  if (urls_and_titles.count) {
-    drop_data.url =
-        GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
-    drop_data.url_title =
-        base::SysNSStringToUTF16(urls_and_titles.firstObject.title);
+  for (URLAndTitle* url_and_title in urls_and_titles) {
+    drop_data.url_infos.push_back(
+        ui::ClipboardUrlInfo{GURL(base::SysNSStringToUTF8(url_and_title.URL)),
+                             base::SysNSStringToUTF16(url_and_title.title)});
   }
 
   // Get plain text.

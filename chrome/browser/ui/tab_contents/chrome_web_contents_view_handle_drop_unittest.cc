@@ -261,7 +261,13 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
                   EXPECT_TRUE(successful_file_paths.count(filename.path));
                 }
                 if (successful_text_scan) {
-                  EXPECT_EQ(result_data->url_title, data.url_title);
+                  if (data.url_infos.empty()) {
+                    EXPECT_TRUE(result_data->url_infos.empty());
+                  } else {
+                    ASSERT_FALSE(result_data->url_infos.empty());
+                    EXPECT_EQ(result_data->url_infos.front().title,
+                              data.url_infos.front().title);
+                  }
                   EXPECT_EQ(result_data->text, data.text);
                   EXPECT_EQ(result_data->html, data.html);
                 }
@@ -351,7 +357,8 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop,
 TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   content::DropData data;
   data.document_is_handling_drag = true;
-  data.url_title = base::UTF8ToUTF16(large_text());
+  data.url_infos = {ui::ClipboardUrlInfo(GURL("https://example.com"),
+                                         base::UTF8ToUTF16(large_text()))};
 
   SetExpectedRequestsCount(0);
   RunTest(data, /*enable=*/false, /*successful_text_scan=*/true,
@@ -363,7 +370,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, UrlTitle) {
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/true,
           /*successful_file_paths*/ {});
 
-  data.url_title = base::UTF8ToUTF16(small_text());
+  data.url_infos.front().title = base::UTF8ToUTF16(small_text());
   SetExpectedRequestsCount(0);
   RunTest(data, /*enable=*/true, /*successful_text_scan=*/true,
           /*successful_file_paths*/ {});

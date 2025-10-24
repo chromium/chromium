@@ -160,11 +160,21 @@ blink::mojom::DragDataPtr DropDataToDragData(
     item->string_data = *drop_data.text;
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
-  if (!drop_data.url.is_empty()) {
+  if (!drop_data.url_infos.empty()) {
+    // Merge all URLs into a single item with CRLF as separator.
+    // This is the format used by the text/uri-list MIME type.
+    std::string merged_urls;
+    for (const auto& info : drop_data.url_infos) {
+      if (!merged_urls.empty()) {
+        merged_urls += "\r\n";
+      }
+      merged_urls += info.url.spec();
+    }
+
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
     item->string_type = ui::kMimeTypeUriList;
-    item->string_data = base::UTF8ToUTF16(drop_data.url.spec());
-    item->title = drop_data.url_title;
+    item->string_data = base::UTF8ToUTF16(merged_urls);
+    item->title = drop_data.url_infos.front().title;
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
   if (drop_data.html) {
@@ -291,9 +301,26 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         if (str_type == ui::kMimeTypePlainText) {
           result.text = string_item->string_data;
         } else if (str_type == ui::kMimeTypeUriList) {
-          result.url = GURL(string_item->string_data);
-          if (string_item->title)
-            result.url_title = *string_item->title;
+          // Parse the string data into a vector of URLs with RFC 2483 support
+          std::vector<std::u16string_view> lines = base::SplitStringPiece(
+              string_item->string_data, u"\r\n", base::KEEP_WHITESPACE,
+              base::SPLIT_WANT_NONEMPTY);
+
+          for (const auto& line : lines) {
+            // Skip comment lines as per RFC 2483
+            if (line.starts_with('#')) {
+              continue;
+            }
+
+            GURL gurl(line);
+            if (gurl.is_valid()) {
+              result.url_infos.emplace_back(gurl, u"");
+            }
+          }
+          // Only the first URL can have a title (e.g., when dragging a link).
+          if (!result.url_infos.empty() && string_item->title) {
+            result.url_infos.front().title = *string_item->title;
+          }
         } else if (str_type == ui::kMimeTypeDownloadUrl) {
           result.download_metadata = string_item->string_data;
           result.referrer_policy = drag_data.referrer_policy;
