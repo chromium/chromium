@@ -12,7 +12,8 @@ found in the LICENSE file.
     <FrameLayout
         android:id="@+id/pinned_tabs_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="@macro/default_bg_color"/>
     <FrameLayout
         android:id="@+id/tab_list_container"
         android:layout_width="match_parent"

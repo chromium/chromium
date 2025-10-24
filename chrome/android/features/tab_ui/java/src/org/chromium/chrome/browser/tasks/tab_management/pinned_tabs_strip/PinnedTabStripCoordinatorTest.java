@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -126,16 +125,6 @@ public class PinnedTabStripCoordinatorTest {
         Assert.assertEquals(
                 LinearLayoutManager.HORIZONTAL,
                 ((LinearLayoutManager) pinnedTabRecyclerView.getLayoutManager()).getOrientation());
-    }
-
-    @Test
-    public void testScrollListener_onScrolled() {
-        ArgumentCaptor<RecyclerView.OnScrollListener> scrollListenerCaptor =
-                ArgumentCaptor.forClass(RecyclerView.OnScrollListener.class);
-        verify(mTabGridListRecyclerView).addOnScrollListener(scrollListenerCaptor.capture());
-
-        scrollListenerCaptor.getValue().onScrolled(mTabGridListRecyclerView, 0, 10);
-        verify(mMediator).onScrolled();
     }
 
     @Test

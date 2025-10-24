@@ -115,14 +115,6 @@ public class PinnedTabStripCoordinator {
 
         ItemTouchHelper2 itemTouchHelper = createItemTouchHelper(callback);
         itemTouchHelper.attachToRecyclerView(mPinnedTabsRecyclerView);
-
-        tabGridListRecyclerView.addOnScrollListener(
-                new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                        mMediator.onScrolled();
-                    }
-                });
     }
 
     @VisibleForTesting
@@ -133,6 +125,11 @@ public class PinnedTabStripCoordinator {
     /** Returns the {@link TabListRecyclerView} for the pinned tabs strip. */
     public TabListRecyclerView getPinnedTabsRecyclerView() {
         return mPinnedTabsRecyclerView;
+    }
+
+    /** Called when the pinned tabs strip is scrolled. */
+    public void onScrolled() {
+        mMediator.onScrolled();
     }
 
     PinnedTabStripMediator createMediator(

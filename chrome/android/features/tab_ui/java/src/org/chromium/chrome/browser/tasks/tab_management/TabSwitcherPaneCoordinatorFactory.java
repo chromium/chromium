@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -175,8 +174,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param setOverlayViewCallback Sets a view to overlay the Hub.
-     * @param searchBoxVisibilityScrollListener The {@link RecyclerView.OnScrollListener} to add to
-     *     the tab list to control search box visibility.
+     * @param hubSearchBoxVisibilitySupplier Used to set the visibility of the hub search box.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
     TabSwitcherPaneCoordinator create(
@@ -190,7 +188,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @Nullable Runnable onTabGroupCreation,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             Callback<@Nullable View> setOverlayViewCallback,
-            RecyclerView.@Nullable OnScrollListener searchBoxVisibilityScrollListener) {
+            ObservableSupplierImpl<Boolean> hubSearchBoxVisibilitySupplier) {
         int token = mMessageManagerTokenHolder.acquireToken();
         assert mMessageManager != null;
 
@@ -222,7 +220,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mUndoBarThrottle,
                 setOverlayViewCallback,
                 mTabSwitcherDragHandler,
-                searchBoxVisibilityScrollListener);
+                hubSearchBoxVisibilitySupplier);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */

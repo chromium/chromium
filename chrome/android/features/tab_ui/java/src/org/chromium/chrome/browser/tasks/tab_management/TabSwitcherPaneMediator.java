@@ -9,8 +9,11 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 
+import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
@@ -22,6 +25,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -32,12 +36,14 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -147,7 +153,6 @@ public class TabSwitcherPaneMediator
     private final Callback<Integer> mOnTabClickCallback;
     private final TabIndexLookup mTabIndexLookup;
     private final BottomSheetController mBottomSheetController;
-
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
             mCurrentTabListEditorControllerBackSupplier;
@@ -389,6 +394,35 @@ public class TabSwitcherPaneMediator
         if (editorController != null && editorController.isVisible()) {
             editorController.hide();
         }
+    }
+
+    void maybeTranslatePinnedStrip(
+            Activity activity,
+            ObservableSupplierImpl<Boolean> hubSearchBoxVisibilitySupplier,
+            boolean show) {
+        Configuration config = activity.getResources().getConfiguration();
+        FrameLayout pinnedTabsContainer = mContainerView.findViewById(R.id.pinned_tabs_container);
+        boolean isTabletOrLandscape =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                        || HubUtils.isScreenWidthTablet(config.screenWidthDp);
+        boolean shouldShow = show && !isTabletOrLandscape;
+        if (hubSearchBoxVisibilitySupplier.get() != null
+                && shouldShow == hubSearchBoxVisibilitySupplier.get()) {
+            // Early out.
+            return;
+        }
+        int translationHeight =
+                shouldShow
+                        ? activity.getResources().getDimensionPixelSize(R.dimen.hub_search_box_gap)
+                        : 0;
+        float elevation = shouldShow ? 1f : 0f;
+        pinnedTabsContainer.setTranslationY(translationHeight);
+        pinnedTabsContainer.setElevation(elevation);
+        hubSearchBoxVisibilitySupplier.set(shouldShow);
+    }
+
+    void setSearchBoxSpace(boolean isTabletOrLandscape) {
+        mContainerViewModel.set(TabListContainerProperties.SEARCH_BOX_PADDING, isTabletOrLandscape);
     }
 
     private boolean ableToOpenDialog(Tab tab) {

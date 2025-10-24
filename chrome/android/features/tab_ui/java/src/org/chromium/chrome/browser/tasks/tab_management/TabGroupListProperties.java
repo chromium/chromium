@@ -22,8 +22,14 @@ public class TabGroupListProperties {
     public static final WritableBooleanPropertyKey EMPTY_STATE_VISIBLE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey SYNC_ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey SEARCH_BOX_PADDING =
+            new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ON_IS_SCROLLED_CHANGED, ENABLE_CONTAINMENT, EMPTY_STATE_VISIBLE, SYNC_ENABLED
+        ON_IS_SCROLLED_CHANGED,
+        ENABLE_CONTAINMENT,
+        EMPTY_STATE_VISIBLE,
+        SYNC_ENABLED,
+        SEARCH_BOX_PADDING
     };
 }
