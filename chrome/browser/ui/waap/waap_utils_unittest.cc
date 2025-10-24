@@ -22,17 +22,6 @@ TEST(IsForInitialWebUITest, FeaturesDisabled) {
                              chrome::kChromeUIReloadButtonHost)));
 }
 
-TEST(IsForInitialWebUITest, MetricsFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kInitialWebUI, features::kWebUIReloadButton},
-      {features::kInitialWebUIMetrics});
-
-  EXPECT_FALSE(
-      IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIReloadButtonHost)));
-}
-
 TEST(IsForInitialWebUITest, FeaturesEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -65,4 +54,18 @@ TEST(IsForInitialWebUITest, NonInitialWebUIHost) {
 
   EXPECT_FALSE(IsForInitialWebUI(
       GURL(std::string(content::kChromeUIScheme) + "://" + "wrong-host")));
+}
+
+TEST(IsInitialWebUIMetricsLoggingEnabledTest, FeaturesDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({}, {features::kInitialWebUIMetrics});
+
+  EXPECT_FALSE(IsInitialWebUIMetricsLoggingEnabled());
+}
+
+TEST(IsInitialWebUIMetricsLoggingEnabledTest, FeaturesEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kInitialWebUIMetrics}, {});
+
+  EXPECT_TRUE(IsInitialWebUIMetricsLoggingEnabled());
 }

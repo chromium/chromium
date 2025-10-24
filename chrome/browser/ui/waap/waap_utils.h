@@ -17,4 +17,12 @@
 // features::kInitialWebUIMetrics and update those callers.
 bool IsForInitialWebUI(const GURL& url);
 
+// Returns true if the WaapUIMetricsService and related metrics logging are
+// enabled.
+// This is intentionally separate from IsForInitialWebUI() because when enabled,
+// the UI metrics should be logged for the UI views that are relevant to WaaP
+// experiment, which includes both the existing C++ version (not a InitialWebUI)
+// and the WebUI version.
+bool IsInitialWebUIMetricsLoggingEnabled();
+
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_

@@ -13,10 +13,13 @@
 
 bool IsForInitialWebUI(const GURL& url) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-      base::FeatureList::IsEnabled(features::kInitialWebUIMetrics) &&
       base::FeatureList::IsEnabled(features::kWebUIReloadButton)) {
     return url.SchemeIs(content::kChromeUIScheme) &&
            url.host() == chrome::kChromeUIReloadButtonHost;
   }
   return false;
+}
+
+bool IsInitialWebUIMetricsLoggingEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUIMetrics);
 }
