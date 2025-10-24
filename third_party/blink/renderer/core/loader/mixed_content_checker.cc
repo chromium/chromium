@@ -514,8 +514,6 @@ bool MixedContentChecker::ShouldBlockFetch(
       // Cast receivers can be configured to allow loading Mixed Content from
       // an insecure IP address. This is a workaround to revert Cast
       // Receivers to the behavior before crrev.com/c/4032146.
-      // TODO(crbug.com/1434440): Remove this workaround when there is a better
-      // way to disable blocking Mixed Content with an IP address.
       allowed = !strict_mode;
 #else
       allowed = !strict_mode && !GURL(url).HostIsIPAddress();
