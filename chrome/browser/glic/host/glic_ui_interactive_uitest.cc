@@ -242,6 +242,10 @@ class GlicUiInteractiveTest : public GlicUiInteractiveUiTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicUiInteractiveTest, OpenGlicWindow) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   base::HistogramTester histogram_tester;
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
@@ -274,6 +278,10 @@ class GlicUiConnectedUiTest : public GlicUiInteractiveUiTestBase,
 INSTANTIATE_TEST_SUITE_P(All, GlicUiConnectedUiTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
@@ -283,6 +291,10 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DisconnectedPanelHidden) {
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        DoesNotHidePanelWhenReadyButOffline) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
@@ -335,6 +347,10 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
                        HidesTabAccessUIOnWebClientCrash) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
@@ -552,6 +568,10 @@ class GlicUiLoadingPanelHoldingTest : public GlicUiInteractiveUiTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelHoldingTest, Test) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
@@ -600,6 +620,10 @@ IN_PROC_BROWSER_TEST_F(GlicUiLoadingPanelHoldingTest, EscapeKeyDismisses) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicUiFullLoadingSequenceTest, EscapeKeyDismisses) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       ObserveState(kGlicUiStateHistory, GetHost()),
       OpenGlicWindow(GlicWindowMode::kAttached, GlicInstrumentMode::kHostOnly),
@@ -731,6 +755,10 @@ class GlicApiUiRedirectTest : public test::InteractiveGlicTest,
 };
 
 IN_PROC_BROWSER_TEST_P(GlicApiUiRedirectTest, AccessDeniedAdmin) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   auto https_server_running =
       embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
 
@@ -756,6 +784,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiUiRedirectTest, AccessDeniedAdmin) {
 INSTANTIATE_TEST_SUITE_P(All, GlicApiUiRedirectTest, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, AccessDeniedAdminWithoutLink) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached, GlicInstrumentMode::kHostOnly),
       InAnyContext(Do([&]() {

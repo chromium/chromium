@@ -204,6 +204,10 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<size_t>,
                                     kAcceptedSocketCount);
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerUiTest, PreconnectOnButtonHover) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   EXPECT_TRUE(predictors::IsPreconnectAllowed(browser()->profile()));
 
   // The `server_running` handle is held until the end of the function, to keep

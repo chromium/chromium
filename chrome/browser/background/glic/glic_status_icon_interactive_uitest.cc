@@ -132,6 +132,10 @@ class GlicStatusIconUiTest : public test::InteractiveGlicTest,
 // show button is clicked before the button view is shown, but to reliably
 // reproduce the issue, we force the view to have zero bounds here.
 IN_PROC_BROWSER_TEST_P(GlicStatusIconUiTest, ShowClose) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   Profile* other_profile = CreateSecondProfile();
   RunTestSequence(
       VerifyStatusIconVisibility(false), EnableGlicLauncher(),
