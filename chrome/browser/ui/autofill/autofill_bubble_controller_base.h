@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/actions/action_id.h"
 
 namespace content {
 class WebContents;
@@ -99,13 +100,26 @@ class AutofillBubbleControllerBase : public BubbleControllerBase,
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
-  virtual std::optional<PageActionIconType> GetPageActionIconType() = 0;
+  // Migrated page action bubble controller subclasses should override this
+  // method to supply their page action's `ActionId`.
+  virtual std::optional<actions::ActionId> GetActionIdForPageAction();
+
+  // This method should only be overridden if `GetActionIdForPageAction` is not
+  // overridden (page action not migrated yet) or to override the
+  // `ActionId`->`PageActionIconType` mapping defined in
+  // `page_action_properties_provider.cc`.
+  virtual std::optional<PageActionIconType> GetPageActionIconType();
 
   // Subclasses should implement this method to actually show the bubble and
   // potentially log metrics.
   virtual void DoShowBubble() = 0;
 
+  // Updates page action visibility.
   virtual void UpdatePageActionIcon();
+
+  // Subclasses can override this method to provide custom page action
+  // visibility logic with the new page action framework.
+  virtual bool ShouldShowPageAction();
 
   // If the BubbleManager feature is enabled, this returns `false` if a bubble
   // is already queued to be shown.

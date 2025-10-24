@@ -26,6 +26,7 @@ source_set("payments") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/autofill/core/browser",
     "//content/public/browser",
+    "//ui/actions:actions_headers",
     "//ui/base",
     "//ui/gfx/geometry",
   ]

@@ -49,6 +49,7 @@ source_set("autofill") {
     "//components/signin/public/identity_manager",
     "//components/zoom",
     "//content/public/browser",
+    "//ui/actions:actions_headers",
     "//ui/gfx",
     "//ui/gfx/geometry",
   ]

@@ -248,10 +248,16 @@ MandatoryReauthBubbleControllerImpl::GetMandatoryReauthBubbleType() const {
   return current_bubble_type_;
 }
 
-std::optional<PageActionIconType>
-MandatoryReauthBubbleControllerImpl::GetPageActionIconType() {
-  return PageActionIconType::kMandatoryReauth;
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+MandatoryReauthBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionAutofillMandatoryReauth;
 }
+
+bool MandatoryReauthBubbleControllerImpl::ShouldShowPageAction() {
+  return IsIconVisible();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void MandatoryReauthBubbleControllerImpl::DoShowBubble() {
 #if BUILDFLAG(IS_ANDROID)
@@ -295,47 +301,6 @@ MandatoryReauthBubbleControllerImpl::GetJavaControllerBridge() {
   return base::android::ScopedJavaLocalRef<jobject>(java_controller_bridge_);
 }
 #endif
-
-void MandatoryReauthBubbleControllerImpl::UpdatePageActionIcon() {
-// Page action icons do not exist for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  // If WebContents is being destroyed, `TabFeatures` may have been already
-  // destroyed. This check prevents a UAF.
-  if (web_contents()->IsBeingDestroyed()) {
-    return;
-  }
-  if (!IsPageActionMigrated(PageActionIconType::kMandatoryReauth)) {
-    AutofillBubbleControllerBase::UpdatePageActionIcon();
-  }
-
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents());
-
-  if (!tab_interface) {
-    return;
-  }
-
-  tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-  if (!tab_features) {
-    // This controller outlives the tab features.
-    return;
-  }
-
-  // NOTE: Consider creating a separate page action view controller file when
-  // the logic to show the page action become complex.
-  page_actions::PageActionController* page_action_controller =
-      tab_features->page_action_controller();
-  if (!page_action_controller) {
-    return;
-  }
-
-  if (IsIconVisible()) {
-    page_action_controller->Show(kActionAutofillMandatoryReauth);
-  } else {
-    page_action_controller->Hide(kActionAutofillMandatoryReauth);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MandatoryReauthBubbleControllerImpl);
 

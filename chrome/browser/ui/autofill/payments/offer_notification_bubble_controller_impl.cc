@@ -207,17 +207,23 @@ void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubbleAndClearTimestamp(bubble_state_ == BubbleState::kShowingIcon);
   }
-  UpdatePageAction();
+  UpdatePageActionIcon();
 }
 
-std::optional<PageActionIconType>
-OfferNotificationBubbleControllerImpl::GetPageActionIconType() {
-  return PageActionIconType::kPaymentsOfferNotification;
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+OfferNotificationBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionOffersAndRewardsForPage;
 }
+
+bool OfferNotificationBubbleControllerImpl::ShouldShowPageAction() {
+  return IsIconVisible();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   bubble_state_ = BubbleState::kShowingIconAndBubble;
-  UpdatePageAction();
+  UpdatePageActionIcon();
 
   // Don't show bubble yet if web content is not active (bubble will instead be
   // shown when web content become visible and active).
@@ -268,39 +274,26 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
     bool should_show_icon) {
   bubble_state_ =
       should_show_icon ? BubbleState::kShowingIcon : BubbleState::kHidden;
-  UpdatePageAction();
   UpdatePageActionIcon();
   HideBubble(/*initiated_by_bubble_manager=*/false);
   bubble_shown_timestamp_ = std::nullopt;
 }
 
-void OfferNotificationBubbleControllerImpl::UpdatePageAction() {
+void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!IsPageActionMigrated(PageActionIconType::kPaymentsOfferNotification)) {
+  AutofillBubbleControllerBase::UpdatePageActionIcon();
+
+  if (!IsPageActionMigrated(*GetPageActionIconType()) ||
+      web_contents()->IsBeingDestroyed()) {
     return;
   }
-  // TODO(crbug.com/403255843): AutofillBubbleControllerBase relies on
-  // WebContents visibility changes, meaning this can get triggered during
-  // destruction. Ideally, the controller would track a TabInterface to prevent
-  // updates mid-destruction.
-  if (!tab_interface_->GetTabFeatures()) {
-    return;
-  }
-  bool should_show_icon = bubble_state_ != BubbleState::kHidden;
-  constexpr actions::ActionId action_id = kActionOffersAndRewardsForPage;
-  auto* const page_action_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
-  if (should_show_icon) {
-    page_action_controller->Show(action_id);
-  } else {
-    page_action_controller->Hide(action_id);
-  }
+  actions::ActionId action_id = *GetActionIdForPageAction();
   auto* action = actions::ActionManager::Get().FindAction(
       action_id, tab_interface_->GetBrowserWindowInterface()
                      ->GetActions()
                      ->root_action_item());
-  action->SetEnabled(should_show_icon);
+  action->SetEnabled(ShouldShowPageAction());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

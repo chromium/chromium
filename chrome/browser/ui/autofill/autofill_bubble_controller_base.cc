@@ -7,6 +7,9 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -39,6 +42,32 @@ void AutofillBubbleControllerBase::OnVisibilityChanged(
   }
 }
 
+std::optional<PageActionIconType>
+AutofillBubbleControllerBase::GetPageActionIconType() {
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> action_id = GetActionIdForPageAction();
+  if (!action_id.has_value()) {
+    return std::nullopt;
+  }
+
+  page_actions::PageActionPropertiesProvider page_action_properties_provider;
+  if (!page_action_properties_provider.Contains(*action_id)) {
+    return std::nullopt;
+  }
+
+  const auto& properties =
+      page_action_properties_provider.GetProperties(*action_id);
+  return properties.type;
+#else
+  return std::nullopt;
+#endif  //! BUILDFLAG(IS_ANDROID)
+}
+
+std::optional<actions::ActionId>
+AutofillBubbleControllerBase::GetActionIdForPageAction() {
+  return std::nullopt;
+}
+
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
@@ -46,13 +75,54 @@ void AutofillBubbleControllerBase::WebContentsDestroyed() {
   }
 }
 
+bool AutofillBubbleControllerBase::ShouldShowPageAction() {
+  return IsShowingBubble();
+}
+
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto icon_type = GetPageActionIconType()) {
+  std::optional<PageActionIconType> icon_type = GetPageActionIconType();
+  if (!icon_type.has_value()) {
+    return;
+  }
+
+  std::optional<actions::ActionId> action_id = GetActionIdForPageAction();
+
+  // Legacy path for unmigrated page actions or when migration disabled by
+  // feature flag.
+  if (!action_id.has_value() || !IsPageActionMigrated(*icon_type)) {
     if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
       browser->window()->UpdatePageActionIcon(*icon_type);
     }
+    return;
+  }
+
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab_interface) {
+    return;
+  }
+
+  tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
+  // `TabFeatures` could be a nullptr if this method is called when the tab is
+  // being closed.
+  if (!tab_features) {
+    return;
+  }
+
+  // NOTE: Consider creating a separate page action view controller file
+  // when the logic to show the page action become complex.
+  page_actions::PageActionController* page_action_controller =
+      tab_features->page_action_controller();
+  if (!page_action_controller) {
+    return;
+  }
+
+  if (ShouldShowPageAction()) {
+    page_action_controller->Show(*action_id);
+  } else {
+    page_action_controller->Hide(*action_id);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
