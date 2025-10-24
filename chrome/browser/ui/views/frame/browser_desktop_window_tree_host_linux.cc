@@ -390,11 +390,8 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowTiledStateChanged(
     return;
   }
 
-  bool maximized = new_tiled_edges.top && new_tiled_edges.left &&
-                   new_tiled_edges.bottom && new_tiled_edges.right;
-  bool tiled = new_tiled_edges.top || new_tiled_edges.left ||
-               new_tiled_edges.bottom || new_tiled_edges.right;
-  browser_widget_->set_tiled(tiled && !maximized);
+  browser_widget_->set_tiled(new_tiled_edges.top || new_tiled_edges.left ||
+                             new_tiled_edges.bottom || new_tiled_edges.right);
   UpdateFrameHints();
   if (SupportsClientFrameShadow()) {
     // Trigger a re-layout as the insets will change even if the bounds don't.
