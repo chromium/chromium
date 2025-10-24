@@ -230,9 +230,11 @@ class WebUIWebViewCoverageDisabledBrowserTest : public WebUIWebViewBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && \
+                          (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))
 // TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
 // TODO(crbug.com/41419648) Flaky on CrOS ASan LSan
+// TODO(crbug.com/454729976): Fails on chromium/ci/win11-arm64-rel-tests.
 #define MAYBE_AddContentScriptsWithNewWindowAPI \
   DISABLED_AddContentScriptsWithNewWindowAPI
 #else
