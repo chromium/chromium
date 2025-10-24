@@ -101,8 +101,6 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
                 .setWebViewIntegrityApiStatus(
                         MediaIntegrityApiStatus.ENABLED, Collections.emptyMap());
 
-        // TODO(crbug.com/330151742): AWMI doesn't use the origin of the base URL set by loads from
-        // loadDataWithBaseUrl. For now, use a TestWebServer to load a default HTTPS page.
         try (TestWebServer server = TestWebServer.startSsl()) {
             String url = server.setEmptyResponse("");
             mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
