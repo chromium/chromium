@@ -1222,7 +1222,6 @@ component("base") {
       "android/self_compaction_manager.h",
       "android/shared_preferences/shared_preferences_manager.cc",
       "android/shared_preferences/shared_preferences_manager.h",
-      "android/statistics_recorder_android.cc",
       "android/sys_utils.cc",
       "android/sys_utils.h",
       "android/task_scheduler/post_task_android.cc",
@@ -1281,9 +1280,7 @@ component("base") {
       ":content_uri_utils_jni",
       ":features_jni",
       ":file_utils_jni",
-      ":jni_android_jni",
       ":memory_jni",
-      ":metrics_jni",
       ":path_utils_jni",
       ":process_launcher_jni",
       ":sys_utils_jni",
@@ -1382,6 +1379,7 @@ component("base") {
       "android/library_loader/library_prefetcher_hooks.cc",
       "android/native_uma_recorder.cc",
       "android/scoped_java_ref.h",
+      "android/statistics_recorder_android.cc",
       "android/token_android.cc",
       "android/token_android.h",
       "android/trace_event_binding.cc",
@@ -1393,7 +1391,9 @@ component("base") {
       ":base_minimal_jni($default_toolchain)",
       ":callback_jni($default_toolchain)",
       ":command_line_jni($default_toolchain)",
+      ":jni_android_jni($default_toolchain)",
       ":library_loader_jni($default_toolchain)",
+      ":metrics_jni($default_toolchain)",
       ":tasks_minimal_jni($default_toolchain)",
       "//build:robolectric_buildflags",
     ]
@@ -4784,6 +4784,7 @@ if (is_android) {
     ]
   }
 
+  # Separated out for cronet.
   android_library("metrics_ScopedSysTraceEvent_java") {
     sources = [
       "android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
