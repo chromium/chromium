@@ -227,11 +227,18 @@ void InputTransferHandlerAndroid::RequestInputBack(
 
 bool InputTransferHandlerAndroid::IsTouchSequencePotentiallyActiveOnViz()
     const {
-  return cached_transferred_sequence_event_time_us_ > last_seen_touch_end_ts_;
+  return cached_transferred_sequence_event_time_us_.has_value();
 }
 
+// In some cases where Viz might drop sequence the touch end is not received
+// here.
+// TOOD(crbug.com/448836551): Make Viz forward touch end for dropped
+// sequences to Browser.
 void InputTransferHandlerAndroid::OnTouchEnd(base::TimeTicks event_time) {
-  last_seen_touch_end_ts_ = event_time;
+  if (cached_transferred_sequence_event_time_us_.has_value() &&
+      *cached_transferred_sequence_event_time_us_ < event_time) {
+    cached_transferred_sequence_event_time_us_.reset();
+  }
 }
 
 void InputTransferHandlerAndroid::OnStartDroppingSequence(
