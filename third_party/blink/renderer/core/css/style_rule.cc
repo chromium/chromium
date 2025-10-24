@@ -568,6 +568,28 @@ StyleRuleBase* CloneGroupRule(
                               mixin_parameter_bindings));
 }
 
+// Make sure that the FakeParentRuleForDeclarations, if any,
+// gets our parent as parent. In particular, we'd like any
+// StyleRuleNestedDeclarations in there to get our selector
+// (it copies the parent selector during clone), not the
+// dummy parent selector that's there from parsing and which
+// may have the wrong specificity.
+StyleRule* CloneFakeParentRule(
+    StyleRule* old_inner_rule,
+    StyleRule* new_parent,
+    const MixinParameterBindings* mixin_parameter_bindings) {
+  HeapVector<CSSSelector> selectors =
+      CSSSelectorList::Copy(new_parent->FirstSelector());
+  auto* new_rule = StyleRule::Create(
+      selectors, old_inner_rule->Properties().ImmutableCopyIfNeeded(),
+      mixin_parameter_bindings);
+  for (StyleRuleBase* child_rule : *old_inner_rule->ChildRules()) {
+    new_rule->AddChildRule(
+        child_rule->Clone(new_rule, mixin_parameter_bindings));
+  }
+  return new_rule;
+}
+
 }  // namespace
 
 StyleRuleBase* StyleRuleBase::Clone(
@@ -634,11 +656,27 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kMixin:
       return CloneGroupRule(To<StyleRuleMixin>(this), new_parent,
                             mixin_parameter_bindings);
-    case kApplyMixin:
-    case kContents:
-      // The parent pointers in mixins don't really matter;
-      // they are always replaced during application anyway.
-      return this;
+    case kApplyMixin: {
+      auto* apply_rule = To<StyleRuleApplyMixin>(this);
+      StyleRule* old_inner_rule = apply_rule->FakeParentRuleForDeclarations();
+      if (!old_inner_rule || !old_inner_rule->ChildRules()) {
+        return this;
+      }
+      return MakeGarbageCollected<StyleRuleApplyMixin>(
+          apply_rule->GetName(), apply_rule->GetArguments(),
+          CloneFakeParentRule(old_inner_rule, new_parent,
+                              mixin_parameter_bindings));
+    }
+    case kContents: {
+      auto* contents_rule = To<StyleRuleContentsStatement>(this);
+      StyleRule* old_inner_rule = contents_rule->FakeParentRuleForFallback();
+      if (!old_inner_rule || !old_inner_rule->ChildRules()) {
+        return this;
+      }
+      return MakeGarbageCollected<StyleRuleContentsStatement>(
+          CloneFakeParentRule(old_inner_rule, new_parent,
+                              mixin_parameter_bindings));
+    }
     case kNestedDeclarations: {
       auto* nested_declarations_rule = To<StyleRuleNestedDeclarations>(this);
       // Nested declaration rules are different from regular nested style rules,
