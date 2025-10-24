@@ -40,9 +40,9 @@ export class VoiceLanguageModel {
   private languagesForVoiceDownloads_: Set<string> = new Set();
 
   // When a new TTS Engine extension is loaded into reading mode, we want to try
-  // to install new natural voices from it. However, the new engine isn't ready
-  // until it calls onvoiceschanged, so set this and wait for that call to
-  // request the install.
+  // to install new natural voices from it. However, the new engine may not be
+  // ready until it calls onvoiceschanged, so set this and
+  // request the install when that's called.
   private waitingForNewEngine_ = false;
 
   private currentVoice_: SpeechSynthesisVoice|null = null;

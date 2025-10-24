@@ -513,26 +513,82 @@ suite('VoiceLanguageController', () => {
     voiceLanguageController.enableLang(lang1);
     voiceLanguageController.enableLang(lang2);
     voiceLanguageController.enableLang(lang3);
-
     voiceLanguageController.onTtsEngineInstalled();
-    voiceLanguageController.onVoicesChanged();
-  });
+    installedLangs = [];
 
-  test('onVoicesChanged after new tts engine honors page language', () => {
-    chrome.readingMode.getStoredVoice = () => '';
-    voiceLanguageController.onTtsEngineInstalled();
-    const lang = 'de';
-    chrome.readingMode.baseLanguageForSpeech = lang;
     voiceLanguageController.onVoicesChanged();
 
-    // onVoicesChanged should request an install for the page language.
-    assertArrayEquals([lang], requestInfoLangs);
-    voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
-    assertEquals(
-        VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
-        voiceLanguageController.getLocalStatus(lang));
-    assertArrayEquals([lang], installedLangs);
+    assertArrayEquals(['bn', 'hu'], installedLangs);
+    assertTrue(onAvailableVoicesChange);
+    assertFalse(voiceLanguageController.hasAvailableVoices());
   });
+
+  test(
+      'onVoicesChanged after new tts engine enables page language if no ' +
+          'voices before install',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        voiceLanguageController.onTtsEngineInstalled();
+        const lang = 'de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        voiceLanguageController.onVoicesChanged();
+
+        // onVoicesChanged should request an install for the page language.
+        assertArrayEquals([lang], requestInfoLangs);
+        voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
+        assertEquals(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            voiceLanguageController.getLocalStatus(lang));
+        assertArrayEquals([lang], installedLangs);
+      });
+
+  test('onTtsEngineInstalled installs enabled google locales', () => {
+    const lang1 = 'bn-bd';
+    const lang2 = 'hu-hu';
+    const lang3 = 'en';
+    voiceLanguageController.enableLang(lang1);
+    voiceLanguageController.enableLang(lang2);
+    voiceLanguageController.enableLang(lang3);
+
+    voiceLanguageController.onTtsEngineInstalled();
+
+    assertArrayEquals(['bn', 'hu'], installedLangs);
+    assertTrue(onAvailableVoicesChange);
+    assertFalse(voiceLanguageController.hasAvailableVoices());
+  });
+
+  test(
+      'onTtsEngineInstalled enables page language if no voices before install',
+      () => {
+        chrome.readingMode.getStoredVoice = () => '';
+        const voice =
+            createSpeechSynthesisVoice({lang: 'de-de', name: 'Google German'});
+        // Change page language to de before any voices are available for it.
+        const lang = 'de';
+        chrome.readingMode.baseLanguageForSpeech = lang;
+        voiceLanguageController.onPageLanguageChanged();
+
+        // onTtsEngineInstalled should request an install for the page language,
+        // but it's not enabled yet.
+        voiceLanguageController.onTtsEngineInstalled();
+        assertFalse(voiceLanguageController.getEnabledLangs().includes(lang));
+        assertTrue(requestInfoLangs.includes(lang));
+
+        // Once the status comes back as not installed, then actually request
+        // the install.
+        voiceLanguageController.updateLanguageStatus(lang, 'kNotInstalled');
+        assertEquals(
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            voiceLanguageController.getLocalStatus(lang));
+        assertArrayEquals([lang], installedLangs);
+
+        // When the install completes, new voices for the requested language
+        // should be available, and the installed status should come back. At
+        // that point, the page language should be enabled.
+        speech.setVoices([voice]);
+        voiceLanguageController.updateLanguageStatus(lang, 'kInstalled');
+        assertTrue(voiceLanguageController.getEnabledLangs().includes('de-de'));
+      });
 
   test('onVoicesChanged restores from prefs on first voices received', () => {
     const lang = 'uk';
