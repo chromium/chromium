@@ -591,17 +591,16 @@ const base::FeatureParam<MBIMode>::Option mbi_mode_types[] = {
     {MBIMode::kLegacy, "legacy"},
     {MBIMode::kEnabledPerRenderProcessHost, "per_render_process_host"},
     {MBIMode::kEnabledPerSiteInstance, "per_site_instance"}};
-const base::FeatureParam<MBIMode> kMBIModeParam {
-  &kMBIMode, "mode",
+const base::FeatureParam<MBIMode> kMBIModeParam{
+    &kMBIMode, "mode",
 #if BUILDFLAG(MBI_MODE_PER_RENDER_PROCESS_HOST)
-      MBIMode::kEnabledPerRenderProcessHost,
+    MBIMode::kEnabledPerRenderProcessHost,
 #elif BUILDFLAG(MBI_MODE_PER_SITE_INSTANCE)
-      MBIMode::kEnabledPerSiteInstance,
+    MBIMode::kEnabledPerSiteInstance,
 #else
       MBIMode::kLegacy,
 #endif
-      &mbi_mode_types
-};
+    &mbi_mode_types};
 
 // Controls the configurablity of the navigation confidence noise level.
 // If the feature is not enabled, then the epsilon value will be 1.1.

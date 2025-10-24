@@ -110,9 +110,8 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
-     * Report a form resubmission. The overwriter of this function should eventually call
-     * either of NavigationController.ContinuePendingReload or
-     * NavigationController.CancelPendingReload.
+     * Report a form resubmission. The overwriter of this function should eventually call either of
+     * NavigationController.ContinuePendingReload or NavigationController.CancelPendingReload.
      */
     @CalledByNative
     public void showRepostFormWarningDialog() {}
@@ -161,19 +160,25 @@ public class WebContentsDelegateAndroid {
         return false;
     }
 
-    /** @return The height of the top controls in physical pixels (not DIPs). */
+    /**
+     * @return The height of the top controls in physical pixels (not DIPs).
+     */
     @CalledByNative
     public int getTopControlsHeight() {
         return 0;
     }
 
-    /** @return The minimum visible height the top controls can have in physical pixels (not DIPs). */
+    /**
+     * @return The minimum visible height the top controls can have in physical pixels (not DIPs).
+     */
     @CalledByNative
     public int getTopControlsMinHeight() {
         return 0;
     }
 
-    /** @return The height of the bottom controls in physical pixels (not DIPs). */
+    /**
+     * @return The height of the bottom controls in physical pixels (not DIPs).
+     */
     @CalledByNative
     public int getBottomControlsHeight() {
         return 0;
@@ -181,20 +186,24 @@ public class WebContentsDelegateAndroid {
 
     /**
      * @return The minimum visible height the bottom controls can have in physical pixels (not
-     *         DIPs).
+     *     DIPs).
      */
     @CalledByNative
     public int getBottomControlsMinHeight() {
         return 0;
     }
 
-    /** @return Whether or not the browser controls height changes should be animated. */
+    /**
+     * @return Whether or not the browser controls height changes should be animated.
+     */
     @CalledByNative
     public boolean shouldAnimateBrowserControlsHeightChanges() {
         return false;
     }
 
-    /** @return Whether or not the browser controls resize Blink's view size. */
+    /**
+     * @return Whether or not the browser controls resize Blink's view size.
+     */
     @CalledByNative
     public boolean controlsResizeView() {
         return false;
@@ -202,7 +211,7 @@ public class WebContentsDelegateAndroid {
 
     /**
      * @return If shown, returns the height of the virtual keyboard in physical pixels. Otherwise,
-     *         returns 0.
+     *     returns 0.
      */
     @CalledByNative
     public int getVirtualKeyboardHeight() {

@@ -61,7 +61,7 @@ namespace blink {
 namespace mojom {
 class FileChooserParams;
 class WindowFeatures;
-}
+}  // namespace mojom
 }  // namespace blink
 
 namespace device {
@@ -73,7 +73,7 @@ class GeolocationContext;
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace input {
 struct NativeWebKeyboardEvent;
@@ -90,7 +90,7 @@ class Origin;
 namespace blink {
 class WebGestureEvent;
 enum class ProtocolHandlerSecurityLevel;
-}
+}  // namespace blink
 
 namespace content {
 
@@ -224,8 +224,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   }
 
   // Notification that the target URL has changed.
-  virtual void UpdateTargetURL(WebContents* source,
-                               const GURL& url) {}
+  virtual void UpdateTargetURL(WebContents* source, const GURL& url) {}
 
   // Notification that a mouse `event` was dispatched to the WebContents's view.
   virtual void ContentsMouseEvent(WebContents* source, const ui::Event& event) {
@@ -292,8 +291,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // This is called when WebKit tells us that it is done tabbing through
   // controls on the page. Provides a way for WebContentsDelegates to handle
   // this. Returns true if the delegate successfully handled it.
-  virtual bool TakeFocus(WebContents* source,
-                         bool reverse);
+  virtual bool TakeFocus(WebContents* source, bool reverse);
 
   // Asks the delegate if the given tab can download.
   // Invoking the |callback| synchronously is OK.
@@ -338,9 +336,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // by the renderer's event handler. Note that the touch events that create
   // the gesture are always passed to the renderer since the gesture is created
   // and dispatched after the touches return without being "preventDefault()"ed.
-  virtual bool PreHandleGestureEvent(
-      WebContents* source,
-      const blink::WebGestureEvent& event);
+  virtual bool PreHandleGestureEvent(WebContents* source,
+                                     const blink::WebGestureEvent& event);
 
   // Called when an external drag event enters the web contents window. Return
   // true to allow dragging and dropping on the web contents window or false to
