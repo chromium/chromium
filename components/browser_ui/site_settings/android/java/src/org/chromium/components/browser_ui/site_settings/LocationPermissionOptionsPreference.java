@@ -35,7 +35,6 @@ public class LocationPermissionOptionsPreference extends Preference
     private @MonotonicNonNull GeolocationSetting mSetting;
     private @MonotonicNonNull RadioButtonWithDescription mPrecise;
     private @MonotonicNonNull RadioButtonWithDescription mApproximate;
-    private @MonotonicNonNull LocationPermissionSubpageSettings mSubpage;
     private boolean mIsPreciseSelected;
 
     public LocationPermissionOptionsPreference(Context context, AttributeSet attrs) {
@@ -65,12 +64,9 @@ public class LocationPermissionOptionsPreference extends Preference
     }
 
     public void initialize(
-            @NonNull BrowserContextHandle browserContextHandle,
-            @NonNull Website site,
-            @NonNull LocationPermissionSubpageSettings subpage) {
+            @NonNull BrowserContextHandle browserContextHandle, @NonNull Website site) {
         mBrowserContextHandle = browserContextHandle;
         mSite = site;
-        mSubpage = subpage;
 
         PermissionInfo info = mSite.getPermissionInfo(ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
         assumeNonNull(info);
@@ -90,7 +86,6 @@ public class LocationPermissionOptionsPreference extends Preference
         assumeNonNull(mSetting);
         assumeNonNull(mSite);
         assumeNonNull(mBrowserContextHandle);
-        assumeNonNull(mSubpage);
 
         mIsPreciseSelected = mPrecise.isChecked();
         boolean isPermissionAllowed = mSetting.mApproximate == ContentSetting.ALLOW;
@@ -99,7 +94,6 @@ public class LocationPermissionOptionsPreference extends Preference
         assumeNonNull(mSite.getPermissionInfo(ContentSettingsType.GEOLOCATION_WITH_OPTIONS))
                 .setGeolocationSetting(
                         mBrowserContextHandle, new GeolocationSetting(approximate, precise));
-        mSubpage.setUpOsWarningPreferences();
     }
 
     public @Nullable RadioButtonWithDescription getApproximateButtonForTesting() {

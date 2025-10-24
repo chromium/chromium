@@ -8,8 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.Bundle;
 
-import androidx.preference.Preference;
-
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -17,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 
@@ -28,8 +25,6 @@ import java.util.Collection;
 public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
         implements EmbeddableSettingsPage {
     public static final String RADIO_BUTTON_GROUP_KEY = "radio_button_group";
-    public static final String PREF_OS_PERMISSIONS_WARNING = "os_permissions_warning";
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
     private @MonotonicNonNull Website mSite;
 
@@ -80,52 +75,11 @@ public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
         assert permissionInfo.getSessionModel() == SessionModel.DURABLE;
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.location_permission_settings);
-        setUpOsWarningPreferences();
 
         LocationPermissionOptionsPreference radioPreference =
                 findPreference(RADIO_BUTTON_GROUP_KEY);
         assert radioPreference != null;
-        radioPreference.initialize(
-                getSiteSettingsDelegate().getBrowserContextHandle(), mSite, this);
-    }
-
-    public void setUpOsWarningPreferences() {
-        assumeNonNull(mSite);
-        PermissionInfo info =
-                mSite.getPermissionInfo(
-                        SiteSettingsCategory.contentSettingsType(
-                                SiteSettingsCategory.Type.DEVICE_LOCATION));
-        boolean forPreciseLocation = true;
-        if (info != null) {
-            GeolocationSetting permission =
-                    info.getGeolocationSetting(getSiteSettingsDelegate().getBrowserContextHandle());
-            if (permission.mPrecise != ContentSetting.ALLOW
-                    && permission.mApproximate == ContentSetting.ALLOW) {
-                forPreciseLocation = false;
-            }
-        }
-
-        LocationCategory locationCategory =
-                new LocationCategory(
-                        getSiteSettingsDelegate().getBrowserContextHandle(), forPreciseLocation);
-        if (!locationCategory.showPermissionBlockedMessage(getContext())) {
-            Preference preference = findPreference(PREF_OS_PERMISSIONS_WARNING);
-            if (preference != null) getPreferenceScreen().removePreference(preference);
-            return;
-        }
-
-        Preference osWarning = findPreference(PREF_OS_PERMISSIONS_WARNING);
-        if (osWarning == null) {
-            osWarning = new Preference(getContext());
-            osWarning.setKey(PREF_OS_PERMISSIONS_WARNING);
-            // This should be at the end of the list.
-            osWarning.setOrder(1000);
-        }
-
-        Preference osWarningExtra = new Preference(getContext());
-        locationCategory.configureWarningPreferences(
-                osWarning, osWarningExtra, getContext(), getSiteSettingsDelegate().getAppName());
-        getPreferenceScreen().addPreference(osWarning);
+        radioPreference.initialize(getSiteSettingsDelegate().getBrowserContextHandle(), mSite);
     }
 
     @Override
