@@ -326,6 +326,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) override;
 
+  bool ShouldAnimateBackForwardTransitions() override;
+
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;
   }

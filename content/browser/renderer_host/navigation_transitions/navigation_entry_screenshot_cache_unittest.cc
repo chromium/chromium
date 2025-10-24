@@ -11,6 +11,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -44,12 +45,10 @@ void AssertEntryHasNoScreenshot(WebContents* tab, int nav_entry_id) {
 
 class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
  public:
-  NavigationEntryScreenshotCacheTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kBackForwardTransitions,
-          {{"min-required-physical-ram-mb", "0"}}}},
-        {});
-  }
+  NavigationEntryScreenshotCacheTest()
+      : min_required_physical_rm_mb_auto_reset_(
+            NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(
+                0)) {}
   ~NavigationEntryScreenshotCacheTest() override = default;
 
   void SetUp() override {
@@ -211,7 +210,7 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
   // Hold the test WebContents.
   std::array<std::unique_ptr<WebContents>, 3> tabs_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::AutoReset<int> min_required_physical_rm_mb_auto_reset_;
 };
 
 // Test the basic functionalities of `SetScreenshot`, `RemoveScreenshot` of

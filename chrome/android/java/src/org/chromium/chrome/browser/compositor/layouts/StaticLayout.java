@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -305,7 +304,8 @@ public class StaticLayout extends Layout {
 
     /**
      * Initialize the layout to be shown.
-     * @param time   The current time of the app in ms.
+     *
+     * @param time The current time of the app in ms.
      * @param animate Whether to play an entry animation.
      */
     @Override
@@ -426,8 +426,6 @@ public class StaticLayout extends Layout {
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         final boolean isBFScreenshotDrawing =
                 isNativePage && tab.isDisplayingBackForwardAnimation();
-        assert !isBFScreenshotDrawing || GestureNavigationUtils.areBackForwardTransitionsEnabled()
-                : "Must not draw bf screenshot if back forward transition is disabled";
         return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
     }
 
