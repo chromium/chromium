@@ -14,6 +14,7 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/persist_tab_context/metrics",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/intelligence/proto_wrappers:utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/browser",

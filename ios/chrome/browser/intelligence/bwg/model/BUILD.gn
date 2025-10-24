@@ -95,6 +95,7 @@ source_set("bwg_service") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/proto_wrappers:utils",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",

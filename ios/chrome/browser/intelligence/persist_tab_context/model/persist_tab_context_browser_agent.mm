@@ -10,12 +10,14 @@
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/notimplemented.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -239,16 +241,14 @@ void LogStorageDifference(base::FilePath storage_directory_path,
   // differences can frequently be non-zero, making it difficult to definitively
   // confirm if web state management is always working as intended strictly
   // based on this metric. This is due to several potential race conditions:
-  // 1.  At browser startup, contexts for New Tab Pages (NTPs) or PDFs might not
-  // be fully persisted when this metric is logged, which can result in a
-  // negative delta (e.g., -1).
-  // 2.  If multiple browser agents are active, these startup timing issues
-  // could potentially compound, leading to larger negative deltas.
-  // 3.  Race conditions can occur between a background task counting web states
+  // 1.  Race conditions can occur between a background task counting web states
   // in one browser and concurrent tab closures happening in another browser
   // instance. This can lead to unexpected positive deltas. To improve metric
   // reliability and reduce these race conditions, consider refactoring to use a
   // keyed service instead of a BrowserAgent for this logic in the future.
+  // 2.  If multiple browser agents are active, these startup timing issues
+  // could potentially compound, leading to larger deltas.
+  // 3.  Onboarding into the experiment with pre-existing tabs.
   int difference = file_count - web_state_count;
   base::UmaHistogramSparse(kPersistTabContextStorageDifferenceHistogram,
                            difference);
@@ -298,8 +298,9 @@ void DeletePersistedContextsDirectory(base::FilePath contexts_dir) {
 }
 
 // Calculates the total number of WebStates across all Browser instances
-// associated with the given `profile`.
-int GetTotalWebStateCountForProfile(ProfileIOS* profile) {
+// associated with the given `profile` which are eligibile to have their
+// contexts persisted.
+int GetPersistedWebStateCountForProfile(ProfileIOS* profile) {
   CHECK(profile);
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   CHECK(browser_list);
@@ -309,8 +310,17 @@ int GetTotalWebStateCountForProfile(ProfileIOS* profile) {
 
   int total_web_state_count = 0;
   for (Browser* browser : browsers) {
-    if (browser && browser->GetWebStateList()) {
-      total_web_state_count += browser->GetWebStateList()->count();
+    if (!browser || !browser->GetWebStateList()) {
+      continue;
+    }
+
+    for (int i = 0; i < browser->GetWebStateList()->count(); i++) {
+      web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(i);
+      if (!CanExtractPageContextForWebState(web_state)) {
+        continue;
+      }
+
+      total_web_state_count++;
     }
   }
   return total_web_state_count;
@@ -359,7 +369,7 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
         kPurgeTaskDelay);
   }
 
-  int total_web_state_count = GetTotalWebStateCountForProfile(profile);
+  int total_web_state_count = GetPersistedWebStateCountForProfile(profile);
   // Log the difference between web states and persisted files.
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&LogStorageDifference, storage_directory_path_,
@@ -380,6 +390,10 @@ void PersistTabContextBrowserAgent::GetSingleContextAsync(
     base::OnceCallback<void(
         std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
         callback) {
+  // TODO(crbug.com/454689025): Remove when this browser agent is ready to be
+  // used by clients.
+  NOTIMPLEMENTED();
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadAndParseContextFromStorage, storage_directory_path_,
@@ -390,6 +404,10 @@ void PersistTabContextBrowserAgent::GetSingleContextAsync(
 void PersistTabContextBrowserAgent::GetMultipleContextsAsync(
     const std::vector<std::string>& webstate_unique_ids,
     base::OnceCallback<void(PageContextMap)> callback) {
+  // TODO(crbug.com/454689025): Remove when this browser agent is ready to be
+  // used by clients.
+  NOTIMPLEMENTED();
+
   if (webstate_unique_ids.empty()) {
     std::move(callback).Run({});
     return;
@@ -442,13 +460,22 @@ void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
     return;
   }
 
+  std::string webstate_unique_id =
+      base::NumberToString(web_state->GetUniqueIdentifier().identifier());
+
+  // Check if the tab should be persisted, and skip + clean up any remaining
+  // context if it shouldn't.
+  if (!CanExtractPageContextForWebState(web_state)) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteContextFromStorage, webstate_unique_id,
+                                  storage_directory_path_));
+    return;
+  }
+
   // Cancel any ongoing page context operation.
   if (page_context_wrapper_) {
     page_context_wrapper_ = nil;
   }
-
-  std::string webstate_unique_id =
-      base::NumberToString(web_state->GetUniqueIdentifier().identifier());
 
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state

@@ -12,6 +12,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -91,14 +92,8 @@ bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
   if (!web_state || !IsProfileEligibleForBwg()) {
     return false;
   }
-  // The web state is eligible for HTML and images that use http/https schemes.
-  const GURL& url = web_state->GetVisibleURL();
-  const std::string mime_type = web_state->GetContentsMimeType();
-  const BOOL is_web_state_eligible =
-      url.SchemeIsHTTPOrHTTPS() &&
-      (web::IsContentTypeHtml(mime_type) || web::IsContentTypeImage(mime_type));
 
-  return is_web_state_eligible;
+  return CanExtractPageContextForWebState(web_state);
 }
 
 #pragma mark - signin::IdentityManager::Observer

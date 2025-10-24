@@ -38,12 +38,28 @@ source_set("page_context_metrics") {
   ]
 }
 
+source_set("utils") {
+  sources = [
+    "page_context_utils.h",
+    "page_context_utils.mm",
+  ]
+  deps = [
+    "//ios/web/public",
+    "//ios/web/util",
+    "//url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "page_context_wrapper_unittest.mm" ]
+  sources = [
+    "page_context_utils_unittest.mm",
+    "page_context_wrapper_unittest.mm",
+  ]
   deps = [
     ":metrics_constants",
     ":proto_wrappers",
+    ":utils",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/features",
@@ -62,6 +78,7 @@ source_set("unit_tests") {
     "//ios/web/test/fakes",
     "//net:test_support",
     "//testing/gtest",
+    "//url",
   ]
 }
 
