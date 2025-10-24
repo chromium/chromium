@@ -56,7 +56,7 @@ config("compiler") {
   # This is here so that all files get recompiled after an Xcode update.
   # (defines are passed via the command line, and build system rebuild things
   # when their commandline changes). Nothing should ever read this define.
-  defines = [ "CR_XCODE_VERSION=$xcode_version" ]
+  defines = [ "CR_XCODE_BUILD=$xcode_build" ]
 
   asmflags = common_flags
   cflags = common_flags
