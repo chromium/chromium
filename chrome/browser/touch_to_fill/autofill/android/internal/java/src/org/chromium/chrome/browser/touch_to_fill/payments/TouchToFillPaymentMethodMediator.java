@@ -546,7 +546,7 @@ class TouchToFillPaymentMethodMediator {
                         createProgressIconModel(
                                 R.string
                                         .autofill_pending_dialog_loading_accessibility_description)));
-        // TODO(crbug.com/438784993): Add footer UI to BNPL progress screen.
+        progressScreenModel.add(buildFooterForBnplSelectionProgress(/* isInProgress= */ true));
 
         mModel.set(SHEET_ITEMS, progressScreenModel);
         mModel.set(

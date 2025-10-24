@@ -821,7 +821,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 is(R.string.autofill_bnpl_progress_sheet_closed));
 
         ModelList sheetItems = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
-        assertThat(sheetItems.size(), is(2));
+        assertThat(sheetItems.size(), is(3));
 
         ListItem bnplSelectionProgressHeaderItem = sheetItems.get(0);
         assertThat(
@@ -841,6 +841,19 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                         TouchToFillPaymentMethodProperties.ProgressIconProperties
                                 .PROGRESS_CONTENT_DESCRIPTION_ID),
                 is(R.string.autofill_pending_dialog_loading_accessibility_description));
+
+        ListItem bnplSelectionProgressFooter = sheetItems.get(2);
+        assertThat(
+                bnplSelectionProgressFooter.type,
+                is(TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER));
+        assertFooterModelHasExpectedValues(
+                sheetItems,
+                /* expectedTermsTextId= */ R.string.autofill_bnpl_issuer_bottom_sheet_terms_label,
+                /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
+                        .getString(
+                                R.string
+                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
+                /* expectedEnabled= */ false);
     }
 
     @Test
@@ -920,7 +933,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
                         .getString(
                                 R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option));
+                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
+                /* expectedEnabled= */ true);
     }
 
     @Test
@@ -954,7 +968,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
                         .getString(
                                 R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option));
+                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
+                /* expectedEnabled= */ true);
     }
 
     @Test
@@ -991,7 +1006,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
                         .getString(
                                 R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option));
+                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
+                /* expectedEnabled= */ true);
     }
 
     @Test
@@ -2011,12 +2027,13 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     private static void assertFooterModelHasExpectedValues(
             ModelList itemList,
             @StringRes int expectedTermsTextId,
-            String expectedHideOptionsLinkText) {
+            String expectedHideOptionsLinkText,
+            boolean expectedEnabled) {
         Optional<PropertyModel> footerModel = getBnplSelectionProgressFooterModel(itemList);
         assertTrue(footerModel.isPresent());
         assertThat(footerModel.get().get(TERMS_TEXT_ID), is(expectedTermsTextId));
         assertThat(footerModel.get().get(HIDE_OPTIONS_LINK_TEXT), is(expectedHideOptionsLinkText));
-        assertFalse(footerModel.get().get(APPLY_LINK_DEACTIVATED_STYLE));
+        assertThat(footerModel.get().get(APPLY_LINK_DEACTIVATED_STYLE), is(!expectedEnabled));
         assertNotNull(footerModel.get().get(ON_LINK_CLICK_CALLBACK));
     }
 

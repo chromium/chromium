@@ -5,24 +5,23 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:layout_marginVertical="@dimen/bnpl_progress_bar_vertical_margin"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-   <com.google.android.material.progressindicator.CircularProgressIndicator
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_spinner"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/bnpl_progress_bar_margin_top"
+        android:layout_marginBottom="@dimen/bnpl_progress_bar_margin_bottom"
         app:indicatorSize="@dimen/bnpl_progress_bar_size"
         app:trackThickness="@dimen/bnpl_progress_bar_track_thickness"
         app:indicatorColor="@macro/default_icon_color_accent1"
         android:indeterminate="true"
         app:indeterminateTrackVisible="true" />
 
-</LinearLayout>
+</FrameLayout>

@@ -20,7 +20,8 @@ found in the LICENSE file.
     <dimen name="bnpl_progress_bar_size">24dp</dimen>
     <!-- TODO(crbug.com/430575808): Set progress bar vertical margin
     dynamically to match issuer selection screen. -->
-    <dimen name="bnpl_progress_bar_vertical_margin">76dp</dimen>
+    <dimen name="bnpl_progress_bar_margin_top">66dp</dimen>
+    <dimen name="bnpl_progress_bar_margin_bottom">76dp</dimen>
     <dimen name="bnpl_back_button_margin_end">16dp</dimen>
     <dimen name="bnpl_issuer_linked_status_pill_padding_horizontal">8dp</dimen>
     <dimen name="bnpl_issuer_linked_status_pill_padding_vertical">2dp</dimen>
