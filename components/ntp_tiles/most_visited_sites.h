@@ -367,8 +367,8 @@ class MostVisitedSites :
   // Initialize the query to Top Sites.
   void InitiateTopSitesQuery(bool is_user_triggered);
 
-  // Builds enterprise shortcut tiles and notifies observers.
-  void InitiateEnterpriseFlow(bool is_user_triggered);
+  // Returns enterprise shortcut tiles.
+  NTPTilesVector GetEnterpriseShortcutTiles();
 
   // Callback for when data is available from TopSites.
   void OnMostVisitedURLsAvailable(
@@ -431,6 +431,10 @@ class MostVisitedSites :
   // Creates a new tiles vector consisting of |custom_links_cache_| combined
   // with |tiles|.
   NTPTilesVector ImposeCustomLinks(NTPTilesVector tiles);
+
+  // Creates a new tiles vector consisting of GetEnterpriseShortcutTiles()
+  // combined with |tiles|.
+  NTPTilesVector ImposeEnterpriseShortcuts(NTPTilesVector tiles);
 
   // Saves the new tiles and notifies the observer if the tiles were actually
   // changed.
