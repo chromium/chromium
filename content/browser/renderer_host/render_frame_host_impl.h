@@ -1538,6 +1538,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       // The number of observed cookie modifications.
       int64_t cookie_modification_count = 0;
       int64_t http_only_cookie_modification_count = 0;
+      int64_t non_http_only_cookie_modification_count = 0;
       // The number of observed cookie modifications that should be removed
       // since we want to adjust the count by subtracting the number of cookie
       // modification from the navigation itself.
