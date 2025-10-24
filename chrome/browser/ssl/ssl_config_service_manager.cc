@@ -177,6 +177,9 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
   registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled,
                                 default_context_config.ech_enabled);
+  // The following two prefs for SSL compliance policies are used here as
+  // local_state prefs, but the same pref names are also used as Profile prefs
+  // in certain Profiles. Their value is only used if managed.
   registry->RegisterStringPref(prefs::kPreferSlowKexAlgorithms, std::string());
   registry->RegisterStringPref(prefs::kPreferSlowCiphers, std::string());
 
@@ -280,20 +283,8 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
           : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
 #endif
 
-  bool cnsa_feature_enabled =
-      base::FeatureList::IsEnabled(features::kCryptographyComplianceCnsa);
-
-  if (cnsa_feature_enabled ||
-      (key_exchange_compliance_.IsManaged() &&
-       key_exchange_compliance_.GetValue() == kPrefStringValueCnsa2)) {
-    config->named_groups_preset = network::mojom::SSLNamedGroupsPreset::kCnsa2;
-  }
-
-  if (cnsa_feature_enabled ||
-      (tls13_cipher_compliance_.IsManaged() &&
-       tls13_cipher_compliance_.GetValue() == kPrefStringValueCnsa)) {
-    config->tls13_cipher_prefer_aes_256 = true;
-  }
+  ConfigureSSLComplianceSettings(key_exchange_compliance_,
+                                 tls13_cipher_compliance_, config.get());
 
   return config;
 }
@@ -303,4 +294,28 @@ void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
   const base::Value::List& list =
       local_state->GetList(prefs::kCipherSuiteBlacklist);
   disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
+}
+
+// static
+void SSLConfigServiceManager::ConfigureSSLComplianceSettings(
+    const StringPrefMember& key_exchange_compliance_pref,
+    const StringPrefMember& tls13_cipher_compliance_pref,
+    network::mojom::SSLConfig* config) {
+  if (base::FeatureList::IsEnabled(features::kCryptographyComplianceCnsa)) {
+    config->named_groups_preset = network::mojom::SSLNamedGroupsPreset::kCnsa2;
+    config->tls13_cipher_prefer_aes_256 = true;
+    return;
+  }
+
+  if (key_exchange_compliance_pref.IsManaged()) {
+    config->named_groups_preset =
+        key_exchange_compliance_pref.GetValue() == kPrefStringValueCnsa2
+            ? network::mojom::SSLNamedGroupsPreset::kCnsa2
+            : network::mojom::SSLNamedGroupsPreset::kDefault;
+  }
+
+  if (tls13_cipher_compliance_pref.IsManaged()) {
+    config->tls13_cipher_prefer_aes_256 =
+        tls13_cipher_compliance_pref.GetValue() == kPrefStringValueCnsa;
+  }
 }

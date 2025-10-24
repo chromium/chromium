@@ -113,6 +113,9 @@
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/ssl/ssl_config_overlay.h"
+#include "chrome/browser/ssl/ssl_config_service_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -490,6 +493,18 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
 
   DisableQuicIfNotAllowed();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  base::RepeatingClosure ssl_compliance_changed_callback = base::BindRepeating(
+      &ProfileNetworkContextService::UpdateSSLComplianceConfig,
+      base::Unretained(this));
+  profile_key_exchange_compliance_.Init(prefs::kPreferSlowKexAlgorithms,
+                                        profile_prefs,
+                                        ssl_compliance_changed_callback);
+  profile_tls13_cipher_compliance_.Init(prefs::kPreferSlowCiphers,
+                                        profile_prefs,
+                                        ssl_compliance_changed_callback);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Observe content settings so they can be synced to the network service.
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
@@ -614,6 +629,11 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   net::ServerCertificateDatabaseService::RegisterProfilePrefs(registry);
+  // The following two prefs are primarily used (elsewhere) as local_state
+  // prefs, but they are also used here as Profile prefs, for the login screen
+  // Profile on ChromeOS. Their value is only used if managed.
+  registry->RegisterStringPref(prefs::kPreferSlowKexAlgorithms, std::string());
+  registry->RegisterStringPref(prefs::kPreferSlowCiphers, std::string());
 #endif
 }
 
@@ -1061,6 +1081,26 @@ void ProfileNetworkContextService::
             ->SetCorsNonWildcardRequestHeadersSupport(value);
       });
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ProfileNetworkContextService::ConfigureSSLComplianceSettings(
+    network::mojom::SSLConfig* config) const {
+  SSLConfigServiceManager::ConfigureSSLComplianceSettings(
+      profile_key_exchange_compliance_, profile_tls13_cipher_compliance_,
+      config);
+}
+
+void ProfileNetworkContextService::UpdateSSLComplianceConfig() {
+  for (auto& overlay : ssl_config_overlays_) {
+    // Clean up a bit while we're iterating.
+    if (!overlay || !overlay->IsBound()) {
+      overlay.reset();
+      continue;
+    }
+    overlay->Update();
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_REPORTING)
 base::flat_map<std::string, GURL>
@@ -1577,6 +1617,19 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   network_context_params->device_bound_sessions_enabled =
       base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::IsSigninBrowserContext(profile_)) {
+    // base::Unretained is safe because the overlay is owned by `this`.
+    auto& overlay = ssl_config_overlays_.emplace_back(
+        std::make_unique<SSLConfigOverlay>(base::BindRepeating(
+            &ProfileNetworkContextService::ConfigureSSLComplianceSettings,
+            base::Unretained(this))));
+    if (!overlay->Init(network_context_params)) {
+      ssl_config_overlays_.pop_back();
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

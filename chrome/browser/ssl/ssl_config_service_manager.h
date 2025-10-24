@@ -30,9 +30,10 @@ class SSLConfigServiceManager {
 
   ~SSLConfigServiceManager();
 
+  // The main entry point for obtaining an SSLConfig from this class:
   // Populates the `SSLConfig`-related members of `network_context_params`
   // (`initial_ssl_config` and `ssl_config_client_receiver`). Updated
-  // `SSLConfig`s will be send to the `NetworkContext` created with those params
+  // `SSLConfig`s will be sent to the `NetworkContext` created with those params
   // whenever the configuration changes. Can be called more than once to inform
   // multiple `NetworkContext`s of changes.
   void AddToNetworkContextParams(
@@ -43,6 +44,14 @@ class SSLConfigServiceManager {
   // |trust_anchor_ids| would typically be provided by component updater, to
   // update/override a set of compiled-in trust anchor IDs.
   void UpdateTrustAnchorIDs(std::vector<std::vector<uint8_t>> trust_anchor_ids);
+
+  // Computes the SSL compliance policy settings based on the given prefs and
+  // feature state, and writes those settings into the appropriate fields in
+  // `config`.
+  static void ConfigureSSLComplianceSettings(
+      const StringPrefMember& key_exchange_compliance_pref,
+      const StringPrefMember& tls13_cipher_compliance_pref,
+      network::mojom::SSLConfig* config);
 
   // Flushes all `SSLConfigClient` mojo pipes, to avoid races in tests.
   void FlushForTesting();
