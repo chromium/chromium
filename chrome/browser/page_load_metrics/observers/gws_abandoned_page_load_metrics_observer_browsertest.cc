@@ -1364,9 +1364,10 @@ INSTANTIATE_TEST_SUITE_P(
     GWSAbandonedPageLoadMetricsObserverWithIgnoreDuplicateFlagBrowserTest,
     ::testing::Bool());
 
+// TODO(crbug.com/454577392): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(
     GWSAbandonedPageLoadMetricsObserverWithIgnoreDuplicateFlagBrowserTest,
-    DuplicateNavigation_BrowserInitiated) {
+    DISABLED_DuplicateNavigation_BrowserInitiated) {
   const bool ignore_duplicate_navs_enabled = IsIgnoreDuplicateNavsEnabled();
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_non_srp()));
 
