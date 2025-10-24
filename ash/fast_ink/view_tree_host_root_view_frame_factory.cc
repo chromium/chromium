@@ -94,7 +94,6 @@ std::unique_ptr<UiResource> ViewTreeHostRootViewFrameFactory::CreateUiResource(
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
   resource->ui_source_id = ui_source_id;
-  resource->resource_size = size;
 
   return resource;
 }

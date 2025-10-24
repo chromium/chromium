@@ -131,7 +131,6 @@ std::unique_ptr<UiResource> CreateUiResource(
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
   resource->ui_source_id = ui_source_id;
-  resource->resource_size = shared_image->size();
   return resource;
 }
 
