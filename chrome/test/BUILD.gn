@@ -1225,7 +1225,7 @@ if (is_android) {
     script_test(target_name) {
       script = "//testing/scripts/run_gpu_integration_test_as_googletest.py"
       args = [
-        "../../content/test/gpu/run_gpu_integration_test.py",
+        "@WrappedPath(../../content/test/gpu/run_gpu_integration_test.py)",
         "--chromium-output-directory=@WrappedPath(.)",
       ]
       data_deps = [
@@ -1247,7 +1247,7 @@ if (is_android) {
   script_test("telemetry_gpu_integration_test") {
     script = "//testing/scripts/run_gpu_integration_test_as_googletest.py"
     args = [
-      "../../content/test/gpu/run_gpu_integration_test.py",
+      "@WrappedPath(../../content/test/gpu/run_gpu_integration_test.py)",
       "--chromium-output-directory=@WrappedPath(.)",
     ]
 
