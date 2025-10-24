@@ -82,6 +82,7 @@ class AlertIndicatorButton : public views::ImageButton,
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void Layout(PassKey) override;
 
   // views::ViewTargeterDelegate
   bool DoesIntersectRect(const View* target,
@@ -147,6 +148,8 @@ class AlertIndicatorButton : public views::ImageButton,
   raw_ptr<views::AnimatedImageView> actor_indicator_spinner_;
   // The playback config for the actor_indicator_spinner.
   std::optional<lottie::Animation::PlaybackConfig> actor_indicator_config_;
+  // The scaled size of the spinner, stored at creation time.
+  std::optional<gfx::Size> actor_spinner_scaled_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_

@@ -194,16 +194,18 @@ void AlertIndicatorButton::MaybeLoadActorAccessingSpinner() {
   actor_indicator_spinner_->layer()->SetFillsBoundsOpaquely(false);
   actor_indicator_spinner_->SetAnimatedImage(std::move(animation));
   actor_indicator_spinner_->SetVisible(false);
+  actor_spinner_scaled_size_ = gfx::ScaleToCeiledSize(
+      actor_indicator_spinner_->animated_image()->GetOriginalSize(),
+      kActorAccessingSpinnerScaleFactor);
+  actor_indicator_spinner_->SetImageSize(actor_spinner_scaled_size_.value());
 }
 
 void AlertIndicatorButton::SetActorAccessingSpinnerBounds() {
-  if (!actor_indicator_spinner_) {
+  if (!actor_indicator_spinner_ || !actor_spinner_scaled_size_.has_value()) {
     return;
   }
 
-  gfx::Size spinner_scaled_size = gfx::ScaleToCeiledSize(
-      actor_indicator_spinner_->animated_image()->GetOriginalSize(),
-      kActorAccessingSpinnerScaleFactor);
+  gfx::Size spinner_scaled_size = actor_spinner_scaled_size_.value();
   const int x = (width() - spinner_scaled_size.width()) / 2;
   const int y = (height() - spinner_scaled_size.height()) / 2;
 
@@ -304,6 +306,10 @@ bool AlertIndicatorButton::OnMousePressed(const ui::MouseEvent& event) {
 
 void AlertIndicatorButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateEnabledForMuteToggle();
+}
+
+void AlertIndicatorButton::Layout(PassKey) {
+  LayoutSuperclass<ImageButton>(this);
   SetActorAccessingSpinnerBounds();
 }
 

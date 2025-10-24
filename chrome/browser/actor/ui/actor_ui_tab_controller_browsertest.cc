@@ -123,7 +123,10 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   // The indicator should now be visible.
   EXPECT_TRUE(
       tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+  ASSERT_NE(GetSpinner(), nullptr);
   EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kPlaying);
+  EXPECT_TRUE(GetSpinner()->GetVisible());
+  EXPECT_FALSE(GetSpinner()->bounds().IsEmpty());
 
   // Stop acting on the tab.
   state_manager->OnUiEvent(StoppedActingOnTab(tab->GetHandle()));
