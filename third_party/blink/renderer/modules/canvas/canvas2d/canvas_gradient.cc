@@ -57,6 +57,8 @@ static Color::ColorSpace V8ColorSpaceToColorSpace(
       return Color::ColorSpace::kSRGBLinear;
     case V8ColorInterpolationMethod::Enum::kDisplayP3:
       return Color::ColorSpace::kDisplayP3;
+    case V8ColorInterpolationMethod::Enum::kDisplayP3Linear:
+      return Color::ColorSpace::kDisplayP3Linear;
     case V8ColorInterpolationMethod::Enum::kA98Rgb:
       return Color::ColorSpace::kA98RGB;
     case V8ColorInterpolationMethod::Enum::kProphotoRgb:

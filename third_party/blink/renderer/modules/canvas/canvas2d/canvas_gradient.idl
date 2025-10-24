@@ -32,6 +32,7 @@ enum ColorInterpolationMethod {
   "hwb",
   "srgb-linear",
   "display-p3",
+  "display-p3-linear",
   "a98-rgb",
   "prophoto-rgb",
   "rec2020",
