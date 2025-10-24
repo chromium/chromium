@@ -1154,4 +1154,21 @@ BASE_DECLARE_FEATURE(kIOSAutoOpenRemoteTabGroupsSettings);
 // Whether the kIOSAutoOpenRemoteTabGroupsSettings feature is enabled.
 bool IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled();
 
+// Enables the DisableKeyboardAccessory feature.
+BASE_DECLARE_FEATURE(kDisableKeyboardAccessory);
+
+// Variations for DisableKeyboardAccessory feature.
+extern const char kDisableKeyboardAccessoryParam[];
+extern const char kDisableKeyboardAccessoryOnlySymbols[];
+extern const char kDisableKeyboardAccessoryOnlyFeatures[];
+extern const char kDisableKeyboardAccessoryCompletely[];
+
+// Returns true if keyboard accessory is enabled.
+bool ShouldShowKeyboardAccessory();
+// Returns true if the symbols :/- and .com in the keyboard accessory are
+// enabled.
+bool ShouldShowKeyboardAccessorySymbols();
+// Returns true if lens and voice search can be shown in the keyboard accessory.
+bool ShouldShowKeyboardAccessoryFeatures();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

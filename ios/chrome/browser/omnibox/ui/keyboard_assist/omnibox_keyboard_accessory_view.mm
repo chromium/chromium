@@ -77,6 +77,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithButtons:(NSArray<NSString*>*)buttonTitles
+                      showTools:(BOOL)showTools
                        delegate:(id<OmniboxAssistiveKeyboardDelegate>)delegate
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
@@ -86,6 +87,7 @@ constexpr CGFloat kShadowOpacity = 0.12;
                inputViewStyle:UIInputViewStyleKeyboard];
   if (self) {
     _buttonTitles = buttonTitles;
+    _showTools = showTools;
     _delegate = delegate;
     _pasteTarget = pasteTarget;
     _responder = responder;
@@ -195,8 +197,9 @@ constexpr CGFloat kShadowOpacity = 0.12;
                  !base::FeatureList::IsEnabled(kDisableLensCamera) &&
                  [self isGoogleSearchEngine:self.templateURLService];
   NSArray<UIControl*>* leadingControls =
-      OmniboxAssistiveKeyboardLeadingControls(_delegate, self.pasteTarget,
-                                              useLens);
+      _showTools ? OmniboxAssistiveKeyboardLeadingControls(
+                       _delegate, self.pasteTarget, useLens)
+                 : @[];
   UIStackView* searchStackView = [[UIStackView alloc] init];
   searchStackView.translatesAutoresizingMaskIntoConstraints = NO;
   searchStackView.spacing = kBetweenSearchButtonSpacing;

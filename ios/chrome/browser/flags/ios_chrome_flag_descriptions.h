@@ -257,6 +257,9 @@ extern const char kDiamondPrototypeDescription[];
 extern const char kDisableAutofillStrikeSystemName[];
 extern const char kDisableAutofillStrikeSystemDescription[];
 
+extern const char kDisableKeyboardAccessoryName[];
+extern const char kDisableKeyboardAccessoryDescription[];
+
 extern const char kDisableLensCameraName[];
 extern const char kDisableLensCameraDescription[];
 

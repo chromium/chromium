@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_input_assistant_items.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/device_form_factor.h"
 
 OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
@@ -20,11 +21,20 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     TemplateURLService* templateURLService,
     id<HelpCommands> helpHandler) {
   DCHECK(dotComTLD);
+
+  if (!ShouldShowKeyboardAccessory()) {
+    return nil;
+  }
+
   // These keys must be in sync with IOSOmniboxAssistiveKey enum for metrics
   // reporting purposes.
   // LINT.IfChange(buttonTitles)
   NSArray<NSString*>* buttonTitles = AssistiveKeys();
   // LINT.ThenChange(//ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h:IOSOmniboxAssistiveKey)
+
+  if (!ShouldShowKeyboardAccessorySymbols()) {
+    buttonTitles = @[];
+  }
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     textInput.view.inputAssistantItem.leadingBarButtonGroups =
@@ -35,12 +45,14 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     textInput.view.inputAssistantItem.leadingBarButtonGroups = @[];
     textInput.view.inputAssistantItem.trailingBarButtonGroups = @[];
     OmniboxKeyboardAccessoryView* keyboardAccessoryView =
-        [[OmniboxKeyboardAccessoryView alloc] initWithButtons:buttonTitles
-                                                     delegate:delegate
-                                                  pasteTarget:textInput
-                                           templateURLService:templateURLService
-                                                    responder:textInput.view
-                                                  helpHandler:helpHandler];
+        [[OmniboxKeyboardAccessoryView alloc]
+               initWithButtons:buttonTitles
+                     showTools:ShouldShowKeyboardAccessoryFeatures()
+                      delegate:delegate
+                   pasteTarget:textInput
+            templateURLService:templateURLService
+                     responder:textInput.view
+                   helpHandler:helpHandler];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [textInput setInputAccessoryView:keyboardAccessoryView];
     return keyboardAccessoryView;

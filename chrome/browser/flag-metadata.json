@@ -2488,6 +2488,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-keyboard-accessory",
+    "owners": [ "stkhapugin@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 148
+  },
+  {
     "name": "disable-lacros-tts-support",
     "owners": [ "dtseng@chromium.org" ],
     "expiry_milestone": 120

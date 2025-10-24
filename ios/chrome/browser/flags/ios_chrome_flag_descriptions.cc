@@ -434,6 +434,11 @@ const char kDisableAutofillStrikeSystemDescription[] =
     "When enabled, the Autofill strike system will not block a feature from "
     "being offered.";
 
+const char kDisableKeyboardAccessoryName[] =
+    "Disable Omnibox Keyboard Accessory";
+const char kDisableKeyboardAccessoryDescription[] =
+    "Disables parts or all of omnibox keyboard accessory.";
+
 const char kDisableLensCameraName[] = "Disable Lens camera experience";
 const char kDisableLensCameraDescription[] =
     "When enabled, the option use Lens to search for images from your device "
