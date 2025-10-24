@@ -56,7 +56,7 @@ constexpr base::TimeDelta kMinimumLoadingTime = base::Milliseconds(500);
 constexpr CGFloat kSectionHeaderHeight = 6;
 
 // Height of the section footer.
-constexpr CGFloat kSectionFooterHeight = 8;
+constexpr CGFloat kSectionFooterHeight = 6;
 
 // Left inset of the table view's section separators.
 constexpr CGFloat kSectionSepatatorLeftInset = 16;

@@ -39,6 +39,9 @@ constexpr CGFloat kDataTypeIconSize = 18;
 constexpr CGFloat kHeaderViewBottomPadding = 12;
 // Leading and trailing padding for the header view.
 constexpr CGFloat kHeaderViewHorizontalPadding = 16;
+// Extra horizontal inset of the cells of a UITableView
+// (UITableViewStyleInsetGrouped) on iOS 26.
+constexpr CGFloat kIOS26TableViewCellExtraHorizontalInset = 4;
 // Top padding for the header view.
 constexpr CGFloat kHeaderViewTopPadding = 8;
 // Top padding for the header view when in a bottom popover.
@@ -114,6 +117,17 @@ UIImageSymbolConfiguration* GetCloseButtonSymbolConfiguration() {
                            scale:UIImageSymbolScaleMedium];
 }
 
+// Returns the trailing offset of the close button.
+// The image of the close button comes with a padding, which is noticable for a
+// larger button. An offset is needed to visually align the close button to the
+// trailing edge of the header view.
+// - `size` is the size of the image, also the size of the button.
+// - `kCloseButtonSize` is the point size for the symbol configuration of the
+// larger button, representing the size of the symbol on screen.
+CGFloat GetCloseButtonTrailingOffset(CGSize size) {
+  return std::max(size.width - kCloseButtonSize, 0.0) * 0.5;
+}
+
 // Returns the foreground color to use for the close button color palette.
 UIColor* GetCloseButtonForegroundColor() {
   if (@available(iOS 26, *)) {
@@ -133,6 +147,28 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
   }
 
   return kHeaderViewTopPadding;
+}
+
+// Returns the on-screen horizontal inset of `UITableViewCell`s based on the
+// inset from their layout margins.
+// As of iOS 26, the actual horizontal cell inset on iPhone is 4pt larger than
+// the obtained inset from the layout margins of a cell.
+// On iOS 18 and iPad, the two insets are identical.
+// This function takes into account the additional inset and returns a value
+// that can be used to align other UI elements with the cells.
+CGFloat GetUpdatedHorizontalInset(CGFloat inset) {
+  if (@available(iOS 26, *)) {
+    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+      return inset + kIOS26TableViewCellExtraHorizontalInset;
+    }
+  }
+  return inset;
+}
+
+// Returns the horizontal inset of the cells of a UITableView.
+CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
+  return GetUpdatedHorizontalInset(
+      tableView.visibleCells.firstObject.layoutMargins.left);
 }
 
 }  // namespace
@@ -183,6 +219,10 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
 
   // Button to close the view.
   ExtendedTouchTargetButton* _closeButton;
+
+  // Trailing offset of the `_closeButton` so the trailing edge of the image can
+  // be aligned with its parent.
+  CGFloat _closeButtonTrailingOffset;
 
   // Initial data type to present in the view. Reflects the type of the form the
   // user wants to fill.
@@ -243,10 +283,12 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
   // `_headerView` constraints.
   _headerViewLeadingConstraint = [_headerView.leadingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                     constant:kHeaderViewHorizontalPadding];
+                     constant:GetUpdatedHorizontalInset(
+                                  kHeaderViewHorizontalPadding)];
   _headerViewTrailingConstraint = [_headerView.trailingAnchor
       constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                     constant:-kHeaderViewHorizontalPadding];
+                     constant:-GetUpdatedHorizontalInset(
+                                  kHeaderViewHorizontalPadding)];
   _headerViewPopoverTopConstraint = [_headerView.topAnchor
       constraintEqualToAnchor:self.view.topAnchor
                      constant:kHeaderViewPopoverTopPadding];
@@ -295,7 +337,7 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
   UITableView* tableView = self.childViewController.tableView;
   UITableViewStyle style = tableView.style;
   CGFloat tableViewCellHorizontalInset =
-      tableView.visibleCells.firstObject.layoutMargins.left;
+      GetTableViewCellHorizontalInset(tableView);
 
   // If needed, update the horizontal contraints of the header view so that it
   // is horizontally aligned with the table view cells.
@@ -413,6 +455,7 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
       DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
                                      symbolConfiguration),
       @[ GetCloseButtonForegroundColor(), [UIColor tertiarySystemFillColor] ]);
+  _closeButtonTrailingOffset = GetCloseButtonTrailingOffset(buttonImage.size);
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
 
   [closeButton setContentHuggingPriority:UILayoutPriorityRequired
@@ -531,7 +574,8 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
       [closeButton.centerYAnchor
           constraintEqualToAnchor:headerTopView.centerYAnchor],
       [closeButton.trailingAnchor
-          constraintEqualToAnchor:headerTopView.trailingAnchor],
+          constraintEqualToAnchor:headerTopView.trailingAnchor
+                         constant:_closeButtonTrailingOffset],
 
       // `headerTopView` constraints.
       [headerTopView.topAnchor constraintEqualToAnchor:headerView.topAnchor],
