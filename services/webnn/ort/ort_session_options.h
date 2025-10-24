@@ -5,6 +5,7 @@
 #ifndef SERVICES_WEBNN_ORT_ORT_SESSION_OPTIONS_H_
 #define SERVICES_WEBNN_ORT_ORT_SESSION_OPTIONS_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/ort/scoped_ort_types.h"

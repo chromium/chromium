@@ -16,6 +16,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "gpu/gpu_gles2_export.h"

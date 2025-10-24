@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/ref_counted.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 

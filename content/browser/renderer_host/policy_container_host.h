@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

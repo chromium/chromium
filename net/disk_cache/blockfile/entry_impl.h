@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/heap_array.h"
+#include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"

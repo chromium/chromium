@@ -11,6 +11,7 @@
 #include <vulkan/vulkan.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/sequenced_task_runner_helpers.h"

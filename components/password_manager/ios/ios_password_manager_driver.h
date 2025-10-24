@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/field_data_manager.h"

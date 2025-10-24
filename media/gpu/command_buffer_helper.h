@@ -6,6 +6,7 @@
 #define MEDIA_GPU_COMMAND_BUFFER_HELPER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"

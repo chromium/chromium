@@ -12,6 +12,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"

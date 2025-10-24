@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_DISCOVERY_H_
 #define DEVICE_FIDO_VIRTUAL_FIDO_DEVICE_DISCOVERY_H_
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_discovery_factory.h"

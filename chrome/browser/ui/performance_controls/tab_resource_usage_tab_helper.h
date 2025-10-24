@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 
 #include "base/byte_count.h"
+#include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/performance_manager/public/features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
