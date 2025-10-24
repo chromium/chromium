@@ -917,6 +917,9 @@ struct PanelOpeningData {
   // If set, `conversation_id` will be a string with length >0. Empty
   // conversation IDs are not supported.
   string? conversation_id;
+  // If set, the textbox for user input will be populated with the given string
+  // before the panel opens.
+  string? prompt_suggestion;
 };
 
 // @generate glic_api

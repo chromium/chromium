@@ -1159,6 +1159,11 @@ export declare interface PanelOpeningData {
    * capability is present.
    */
   conversationId?: string;
+  /**
+   * If set, the textbox for user input will be populated with the given string
+   * before the panel opens.
+   */
+  promptSuggestion?: string;
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

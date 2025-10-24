@@ -168,6 +168,9 @@ class Host : public GlicSharingManagerProvider {
     // The ID of the conversation to open. If unset, the web client will open a
     // new conversation.
     std::optional<std::string> conversation_id;
+    // If set, the textbox for user input will be populated with the given
+    // string before the panel opens.
+    std::optional<std::string> prompt_suggestion;
   };
   void PanelWillOpen(mojom::InvocationSource invocation_source,
                      PanelWillOpenOptions options);

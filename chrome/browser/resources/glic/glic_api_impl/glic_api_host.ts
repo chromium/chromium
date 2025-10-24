@@ -2094,6 +2094,7 @@ function panelOpeningDataToClient(panelOpeningData: PanelOpeningDataMojo):
     panelState: panelStateToClient(panelOpeningData.panelState),
     invocationSource: panelOpeningData.invocationSource as number,
     conversationId: optionalToClient(panelOpeningData.conversationId),
+    promptSuggestion: optionalToClient(panelOpeningData.promptSuggestion),
   };
 }
 
