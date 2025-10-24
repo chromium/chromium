@@ -15,8 +15,10 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
@@ -78,7 +80,11 @@ DOMViewTransition::DOMViewTransition(
       ready_promise_property_(
           MakeGarbageCollected<PromiseProperty>(execution_context_)),
       dom_updated_promise_property_(
-          MakeGarbageCollected<PromiseProperty>(execution_context_)) {
+          MakeGarbageCollected<PromiseProperty>(execution_context_)),
+      task_state_(update_dom_callback_
+                      ? CaptureCurrentTaskStateIfMainWorld(
+                            update_dom_callback_->CallbackRelevantScriptState())
+                      : nullptr) {
   CHECK(execution_context_->GetAgent());
 }
 
@@ -254,6 +260,15 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
 
   ScriptPromise<IDLUndefined> result;
 
+  // This has to be set before the ScriptState::Scope, since creating that will
+  // cause the top-level check to fail.
+  std::optional<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope;
+  if (update_dom_callback_) {
+    task_attribution_scope = SetCurrentTaskStateIfTopLevel(
+        task_state_, execution_context_, TaskScopeType::kCallback);
+  }
+
   // It's ok to use the main world when there is no callback, since we're only
   // using it to call DOMChangeFinishedCallback which doesn't use the script
   // state or execute any script.
@@ -298,6 +313,7 @@ void DOMViewTransition::Trace(Visitor* visitor) const {
   visitor->Trace(finished_promise_property_);
   visitor->Trace(ready_promise_property_);
   visitor->Trace(dom_updated_promise_property_);
+  visitor->Trace(task_state_);
 
   ExecutionContextLifecycleObserver::Trace(visitor);
   ScriptWrappable::Trace(visitor);

@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
@@ -28,7 +27,6 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
@@ -62,12 +60,6 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionForElement(
   DCHECK(script_state);
   if (!element) {
     return nullptr;
-  }
-
-  if (callback) {
-    // Set the task state if we're not in an extension task (as extensions
-    // are not currently supported in TaskAttributionTracker).
-    callback->SetTaskState(CaptureCurrentTaskStateIfMainWorld(script_state));
   }
 
   auto* supplement = From(element->GetDocument());

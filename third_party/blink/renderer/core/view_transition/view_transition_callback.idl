@@ -3,7 +3,4 @@
 // found in the LICENSE file.
 
 // TODO(vmpstr): Rename this to UpdateDOMCallback
-[
-  SupportsTaskAttribution
-] callback ViewTransitionCallback = Promise<undefined>();
-
+callback ViewTransitionCallback = Promise<undefined>();

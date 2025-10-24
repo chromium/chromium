@@ -21,6 +21,10 @@ class ExecutionContext;
 class ScriptState;
 class ViewTransition;
 
+namespace scheduler {
+class TaskAttributionInfo;
+}
+
 // This class handles script interaction for the ViewTransition object. It
 // implements the ViewTransition IDL interface.
 class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
@@ -93,6 +97,10 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   Member<PromiseProperty> finished_promise_property_;
   Member<PromiseProperty> ready_promise_property_;
   Member<PromiseProperty> dom_updated_promise_property_;
+
+  // The task attribution task state to be restored for `update_dom_callback_`,
+  // captured on startViewTransition() path.
+  Member<scheduler::TaskAttributionInfo> task_state_;
 
   // The result of running the `update_dom_callback_`. This is set from
   // InvokeDOMChangeCallback.
