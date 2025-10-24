@@ -820,9 +820,23 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
       break;
     }
     case TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW:
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_MoveGroupToNewWindow"));
       SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(browser, uuid);
       break;
     case TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP:
+
+      if (std::optional<tab_groups::SavedTabGroup> group =
+              tab_group_service->GetGroup(uuid)) {
+        if (group->is_pinned()) {
+          base::RecordAction(
+              base::UserMetricsAction("TabGroups_SavedTabGroups_Unpinned"));
+        } else {
+          base::RecordAction(
+              base::UserMetricsAction("TabGroups_SavedTabGroups_Pinned"));
+        }
+      }
+
       SavedTabGroupUtils::ToggleGroupPinState(browser, uuid);
       break;
     case TabGroupMenuAction::Type::DELETE_GROUP:

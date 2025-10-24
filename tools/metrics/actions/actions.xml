@@ -48189,6 +48189,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_MoveGroupToNewWindow">
+  <owner>dominicaustria@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User opened a SavedTabGroup by clicking the move group to new window submenu
+    item from the tab groups app menu.
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_Opened">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

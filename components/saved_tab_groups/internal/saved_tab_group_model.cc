@@ -1041,19 +1041,10 @@ void SavedTabGroupModel::TogglePinState(base::Uuid id) {
   }
   const int index = GetIndexOf(id).value();
   SavedTabGroup saved_group = RemoveImpl(index);
-  bool was_pinned = saved_group.is_pinned();
   saved_group.SetPinned(!saved_group.is_pinned());
   InsertGroupImpl(std::move(saved_group));
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
-  }
-
-  if (was_pinned) {
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_SavedTabGroups_Unpinned"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_SavedTabGroups_Pinned"));
   }
 }
 
