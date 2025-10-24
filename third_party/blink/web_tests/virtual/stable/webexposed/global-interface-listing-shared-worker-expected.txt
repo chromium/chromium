@@ -1355,6 +1355,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter connectEnd
 [Worker]     getter connectStart
+[Worker]     getter contentEncoding
 [Worker]     getter decodedBodySize
 [Worker]     getter deliveryType
 [Worker]     getter domainLookupEnd

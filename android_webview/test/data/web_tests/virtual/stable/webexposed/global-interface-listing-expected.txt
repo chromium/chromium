@@ -6554,6 +6554,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     attribute @@toStringTag
     getter connectEnd
     getter connectStart
+    getter contentEncoding
     getter decodedBodySize
     getter deliveryType
     getter domainLookupEnd

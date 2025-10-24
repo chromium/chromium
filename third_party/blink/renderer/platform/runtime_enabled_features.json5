@@ -4203,7 +4203,7 @@
     },
     {
       name: "ResourceTimingContentEncoding",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ResourceTimingContentType",
