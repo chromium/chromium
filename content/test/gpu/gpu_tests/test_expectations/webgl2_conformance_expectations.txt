@@ -793,8 +793,8 @@ crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/ren
 crbug.com/436274257 [ linux amd-0x7480 ] deqp/functional/gles3/uniformbuffers/multi_nested_struct.html [ Failure ]
 
 ## Linux AMD 780M ##
-
-crbug.com/445727124 [ linux amd-0x1900 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
+# Commented out until full procurement is ready since UAT is done.
+# crbug.com/445727124 [ linux amd-0x1900 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
 
 ## Linux Intel Mesa Version **
 
