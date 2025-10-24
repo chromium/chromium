@@ -16039,25 +16039,6 @@
             ]
         }
     ],
-    "MojoPredictiveAllocation": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoPredictiveAllocation"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoUseEventFd": [
         {
             "platforms": [

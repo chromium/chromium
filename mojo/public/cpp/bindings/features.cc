@@ -29,8 +29,5 @@ BASE_FEATURE(kTaskPerMessage,
 // seen during the Connector's lifetime.
 BASE_FEATURE(kMojoRecordUnreadMessageCount, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables predictive allocation for Mojo serialization.
-BASE_FEATURE(kMojoPredictiveAllocation, base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features
 }  // namespace mojo
