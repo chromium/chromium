@@ -10,6 +10,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-icon-button-size: 36px;
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
@@ -317,7 +318,7 @@
   --cr-icon-button-hover-background-color:
       var(--color-searchbox-results-background-hovered);
   --cr-icon-button-margin-end: 0;
-  --cr-icon-button-size: 40px;
+  --cr-icon-button-size: 36px;
   position: absolute;
   right: 16px;
 }
@@ -391,14 +392,51 @@
   display: none;
 }
 
+#submitContainer {
+  border-radius: 50%;
+  cursor: default; /* For Lens side panel. */
+  height: var(--cr-icon-button-size);
+  bottom: var(--input-bottom-spacing);
+  position: absolute;
+  right: 16px;
+  width: var(--cr-icon-button-size);
+}
+
+:host-context([dir='rtl']) #submitContainer {
+  left: 16px;
+  right: unset;
+}
+
+:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitContainer {
+  cursor: pointer;
+}
+
+#submitOverlay {
+  border-radius: inherit;
+  display: inherit;
+  height: var(--cr-icon-button-size);
+  position: absolute;
+  width: var(--cr-icon-button-size);
+  z-index: 1;
+}
+
+:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitContainer:hover #submitOverlay {
+  background-color: var(--color-searchbox-results-background-hovered);
+}
+
 #submitIcon {
   --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 16px;
   background-color: var(--color-new-tab-page-composebox-submit-button);
-  bottom: var(--input-bottom-spacing);
-  cursor: default; /* For Lens side panel. */
+  bottom: 0;
   opacity: 30%; /* For Lens side panel. */
+  right: 0;
   transition: var(--submit-enabled-transition);
+}
+
+:host-context([dir='rtl']) #submitIcon {
+  left: 0;
+  right: unset;
 }
 
 #submitIcon:focus-visible:focus {
@@ -408,7 +446,6 @@
 }
 
 :host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitIcon {
-  cursor: pointer;
   display: block;
   opacity: 100%; /* For Lens side panel. */
 }

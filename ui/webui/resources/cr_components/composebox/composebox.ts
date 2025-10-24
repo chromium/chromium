@@ -42,7 +42,7 @@ export interface ComposeboxElement {
     cancelIcon: CrIconButtonElement,
     input: HTMLInputElement,
     composebox: HTMLElement,
-    submitIcon: CrIconButtonElement,
+    submitContainer: HTMLElement,
     matches: ComposeboxDropdownElement,
     context: ContextualEntrypointAndCarouselElement,
     errorScrim: ErrorScrimElement,
@@ -648,10 +648,14 @@ export class ComposeboxElement extends I18nMixinLit
     } else if (e.key === 'Tab') {
       // If focus goes past the last match, unselect the last match.
       if (this.selectedMatchIndex_ === this.result_.matches.length - 1) {
-        const focusedMatchElem =
-            this.shadowRoot.activeElement?.shadowRoot?.activeElement;
-        const focusedButtonElem = focusedMatchElem?.shadowRoot?.activeElement;
-        if (focusedButtonElem?.id === 'remove') {
+        if (this.selectedMatch_!.supportsDeletion) {
+          const focusedMatchElem =
+              this.shadowRoot.activeElement?.shadowRoot?.activeElement;
+          const focusedButtonElem = focusedMatchElem?.shadowRoot?.activeElement;
+          if (focusedButtonElem?.id === 'remove') {
+            this.$.matches.unselect();
+          }
+        } else {
           this.$.matches.unselect();
         }
       }

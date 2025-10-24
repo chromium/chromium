@@ -253,7 +253,7 @@ suite('Composebox', () => {
 
     // Grab the buttons to do visibility checks.
     const submitButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
     const cancelButton =
         composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
     assertTrue(!!submitButton);
@@ -270,8 +270,7 @@ suite('Composebox', () => {
     assertTrue(!!input);
 
     // Focusing the input should expand the composebox.
-    const container = submitButton.parentElement!;
-    const expansionPromise = getTransitionEndPromise(container, 'opacity');
+    const expansionPromise = getTransitionEndPromise(submitButton, 'opacity');
     input.focus();
     await expansionPromise;
 
@@ -288,7 +287,7 @@ suite('Composebox', () => {
     const cancelContainerShowPromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     const submitContainerShowPromise =
-        getTransitionEndPromise(submitButton.parentElement!, 'opacity');
+        getTransitionEndPromise(submitButton, 'opacity');
     input.dispatchEvent(new Event('input', {bubbles: true}));
     await waitAfterNextRender(composebox);
     await Promise.all([
@@ -301,8 +300,7 @@ suite('Composebox', () => {
     assertFalse(cancelButton.hasAttribute('disabled'));
 
     // Blur the input to collapse the composebox.
-    const submitHidePromise =
-        getTransitionEndPromise(submitButton.parentElement!, 'opacity');
+    const submitHidePromise = getTransitionEndPromise(submitButton, 'opacity');
     const cancelHidePromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     input.blur();
@@ -458,7 +456,7 @@ suite('Composebox', () => {
         composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
     assertTrue(!!input);
     const submitButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
     const cancelButton =
         composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
     assertTrue(!!submitButton);
@@ -502,7 +500,7 @@ suite('Composebox', () => {
     const cancelContainerShowPromise =
         getTransitionEndPromise(cancelButton.parentElement!, 'opacity');
     const submitContainerShowPromise =
-        getTransitionEndPromise(submitButton.parentElement!, 'opacity');
+        getTransitionEndPromise(submitButton, 'opacity');
     await Promise.all([
       cancelShowPromise,
       cancelContainerShowPromise,

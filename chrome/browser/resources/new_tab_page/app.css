@@ -38,12 +38,12 @@
  * Hide everything that should not display when the composebox is open
  * so they are not tabbable.
  */
-:host([show-composebox_]):not([ntp-realbox-next-enabled_]) cr-most-visited,
-:host([show-composebox_]):not([ntp-realbox-next-enabled_]) ntp-middle-slot-promo,
-:host([show-composebox_]):not([ntp-realbox-next-enabled_]) ntp-modules,
-:host([show-composebox_]):not([ntp-realbox-next-enabled_]) #backgroundImageAttribution,
-:host([show-composebox_]):not([ntp-realbox-next-enabled_]) ntp-customize-buttons,
-:host([show-composebox_]):not([ntp-realbox-next-enabled_]) setup-list-module-wrapper{
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) cr-most-visited,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-middle-slot-promo,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-modules,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) #backgroundImageAttribution,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) ntp-customize-buttons,
+:host([show-composebox_]:not([ntp-realbox-next-enabled_])) setup-list-module-wrapper{
   display: none;
 }
 
