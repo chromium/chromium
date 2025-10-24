@@ -1844,21 +1844,6 @@ export declare interface SuggestionContent {
   suggestion: string;
 }
 
-/**
- * Describes how long the user grants the actor with the permission to actuate.
- * Used when the actor is to actuate with sensitive data, such as entering
- * payment information or login credentials.
- */
-export enum UserGrantedPermissionDuration {
-  // The user only grants a one-time permission. The user will be asked again.
-  // This is the default behavior.
-  ONE_TIME = 0,
-  // The user grants a permission to always allow the actor to actuate with
-  // sensitive data. The persistence of this permission is defined differently
-  // for different features.
-  ALWAYS_ALLOW = 1
-}
-
 /** Credential selection dialog. */
 
 /** A credential used for the auto-login. */
@@ -2265,6 +2250,21 @@ export enum HostCapability {
   GET_MODEL_QUALITY_CLIENT_ID = 2,
   // Glic is in multi-instance mode.
   MULTI_INSTANCE = 3,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Describes how long the user grants the actor with the permission to actuate.
+// Used when the actor is to actuate with sensitive data, such as entering
+// payment information or login credentials.
+export enum UserGrantedPermissionDuration {
+  // The user only grants a one-time permission. The user will be asked again.
+  // This is the default behavior.
+  ONE_TIME = 0,
+  // The user grants a permission to always allow the actor to actuate with
+  // sensitive data. The persistence of this permission is defined differently
+  // for different features.
+  ALWAYS_ALLOW = 1,
 }
 
 

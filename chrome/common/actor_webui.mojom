@@ -17,6 +17,7 @@ struct TaskOptions {
   string? title;
 };
 
+// @generate glic_api
 // Describes how long the user grants the actor with the permission to actuate.
 // Used when the actor is to actuate with sensitive data, such as entering
 // payment information or login credentials.
@@ -78,7 +79,6 @@ struct SelectCredentialDialogResponse {
   // making a selection.
   int32? selected_credential_id;
 };
-
 
 // Contains information about the confirmation request
 // that also encodes what type of request is being sent.

@@ -19,6 +19,7 @@ def GlicCommonChecks(input_api, output_api):
 
 def _CheckGlicGeneratedApi(input_api, output_api):
     monitored_files = (
+        'chrome/common/actor_webui.mojom',
         'chrome/browser/glic/host/glic.mojom',
         'chrome/browser/resources/glic/glic_api_impl/generate.py',
         'chrome/browser/resources/glic/glic_api/glic_api.ts',

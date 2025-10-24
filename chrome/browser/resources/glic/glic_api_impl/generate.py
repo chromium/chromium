@@ -66,14 +66,13 @@ class Converter:
 
     def __init__(self):
         self.out = io.StringIO()
-        self.glic_tree = _ParseAst(
-            os.path.join(SOURCE_DIR, 'chrome/browser/glic/host/glic.mojom'))
-
-    def GetEnum(self, name):
-        for v in self.glic_tree.definition_list:
-            if isinstance(v, ast.Enum):
-                if v.mojom_name.name == name:
-                    return v
+        mojom_files = [
+            'chrome/browser/glic/host/glic.mojom',
+            'chrome/common/actor_webui.mojom',
+        ]
+        self.mojom_trees = [
+            _ParseAst(os.path.join(SOURCE_DIR, f)) for f in mojom_files
+        ]
 
     def PrintComments(self, node, indent=0):
         if not node.comments_before:
@@ -93,13 +92,14 @@ class Converter:
         return new_name
 
     def ConvertEnums(self, remappings):
-        for v in self.glic_tree.definition_list:
-            if not isinstance(v, ast.Enum):
-                continue
-            if v.comments_before and any(
-                (GENERATE_GLIC_API_RE.match(comment.value)
-                 for comment in v.comments_before)):
-                self.ConvertEnum(v, remappings.get(v.mojom_name.name, {}))
+        for tree in self.mojom_trees:
+            for v in tree.definition_list:
+                if not isinstance(v, ast.Enum):
+                    continue
+                if v.comments_before and any(
+                    (GENERATE_GLIC_API_RE.match(comment.value)
+                     for comment in v.comments_before)):
+                    self.ConvertEnum(v, remappings.get(v.mojom_name.name, {}))
 
     def ConvertEnum(self, enum, remap={}):
         enum_name = enum.mojom_name.name
