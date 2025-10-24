@@ -398,10 +398,18 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                         "Support lib method called on WebView that no longer exists.");
             }
 
-            sharedWebViewChromium
-                    .getAwContents()
-                    .getNavigationClients()
-                    .add(new SupportLibWebViewNavigationListenerAdapter(listener, executor));
+            final List<AwNavigationListener> navigationClients =
+                    sharedWebViewChromium.getAwContents().getNavigationClients();
+            for (AwNavigationListener navigationClient : navigationClients) {
+                // Invocation handlers implement equals by delegating to the wrapped object.
+                if (navigationClient.getSupportLibInvocationHandler().equals(listener)) {
+                    throw new IllegalStateException(
+                            "The NavigationListener has already been added to this WebView"
+                                    + " instance.");
+                }
+            }
+            navigationClients.add(
+                    new SupportLibWebViewNavigationListenerAdapter(listener, executor));
         }
     }
 
@@ -418,6 +426,7 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                         "Support lib method called on WebView that no longer exists.");
             }
 
+            // Invocation handlers implement equals by delegating to the wrapped object.
             sharedWebViewChromium
                     .getAwContents()
                     .getNavigationClients()
