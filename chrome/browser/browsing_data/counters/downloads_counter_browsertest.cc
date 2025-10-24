@@ -279,7 +279,8 @@ class DownloadsCounterTest : public InProcessBrowserTest,
 };
 
 // Tests that we count the total number of downloads correctly.
-IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Count) {
+// Disabled due to crbug.com/448186274.
+IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, DISABLED_Count) {
   Profile* profile = browser()->profile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
