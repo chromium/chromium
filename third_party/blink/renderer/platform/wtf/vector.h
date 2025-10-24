@@ -1258,10 +1258,11 @@ template <typename T,
 concept VectorCanAssignFromRange =
     std::ranges::input_range<Range> && std::ranges::sized_range<Range> &&
     std::indirectly_unary_invocable<Proj, std::ranges::iterator_t<Range>> &&
-    // This prevents accidental fallback from the more efficient code paths.
-    (!std::is_base_of_v<Vector<T, InlineCapacity, Allocator>,
-                        std::decay_t<Range>> ||
-     !std::is_same_v<Proj, std::identity>);
+    // This prevents accidental fallback from the more efficient code paths
+    // e.g., assignment from a vector with identity.
+    !(std::is_base_of_v<Vector<T, InlineCapacity, Allocator>,
+                        std::decay_t<Range>> &&
+      std::is_same_v<Proj, std::identity>);
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
@@ -1311,6 +1312,9 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   Vector& operator=(const Vector&);
   template <wtf_size_t otherCapacity>
   Vector& operator=(const Vector<T, otherCapacity, Allocator>&);
+
+  template <typename U>
+  explicit Vector(base::span<const U>);
 
   // Creates a vector with elements copied or moved from an input and sized
   // range, with optional projection. To move elements, use
@@ -1789,6 +1793,16 @@ Vector<T, InlineCapacity, Allocator>::Vector(
   ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
   size_ = other.size();
   TypeOperations::UninitializedCopy(base::span(other), base::span(*this),
+                                    VectorOperationOrigin::kConstruction);
+}
+
+template <typename T, wtf_size_t InlineCapacity, typename Allocator>
+template <typename U>
+Vector<T, InlineCapacity, Allocator>::Vector(base::span<const U> other)
+    : Base(other.size()) {
+  ANNOTATE_NEW_BUFFER(data(), capacity(), other.size());
+  size_ = other.size();
+  TypeOperations::UninitializedCopy(other, base::span(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
