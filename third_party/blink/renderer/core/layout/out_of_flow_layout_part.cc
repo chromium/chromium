@@ -2454,8 +2454,8 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     offset_info->overflows_containing_block = overflows_containing_block;
   }
   if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
-    if (element->EnsureOutOfFlowData().SetPendingRememberedScrollOffsets(
-            iter.GetCurrentUsedScrollOffsets())) {
+    if (element && element->SetPendingRememberedScrollOffsets(
+                       iter.GetCurrentUsedScrollOffsets())) {
       element->GetDocument()
           .GetStyleEngine()
           .MarkAnchorRememberedOffsetsChanged(*element);

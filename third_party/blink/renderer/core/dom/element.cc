@@ -8860,6 +8860,15 @@ OutOfFlowData* Element::GetOutOfFlowData() const {
   return nullptr;
 }
 
+bool Element::SetPendingRememberedScrollOffsets(
+    const OutOfFlowData::RememberedScrollOffsets* offsets) {
+  if (!offsets && !GetOutOfFlowData()) {
+    return false;
+  }
+
+  return EnsureOutOfFlowData().SetPendingRememberedScrollOffsets(offsets);
+}
+
 bool Element::SkippedContainerStyleRecalc() const {
   if (const ContainerQueryData* cq_data = GetContainerQueryData()) {
     return cq_data->SkippedStyleRecalc();

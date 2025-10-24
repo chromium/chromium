@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_filter.h"
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
@@ -115,7 +116,6 @@ class KURL;
 class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
-class OutOfFlowData;
 class Patch;
 class PointerLockOptions;
 class PopoverData;
@@ -1654,6 +1654,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   OutOfFlowData& EnsureOutOfFlowData();
   OutOfFlowData* GetOutOfFlowData() const;
+  bool SetPendingRememberedScrollOffsets(
+      const OutOfFlowData::RememberedScrollOffsets*);
 
   // See PostStyleUpdateScope::PseudoData::AddPendingBackdrop
   void ApplyPendingBackdropPseudoElementUpdate();
