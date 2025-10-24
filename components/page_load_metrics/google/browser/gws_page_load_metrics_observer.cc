@@ -27,9 +27,11 @@
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/gws_session_state.h"
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "net/http/http_connection_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -151,6 +153,8 @@ const char kHistogramGWSActivationToLargestContentfulPaint[] =
 const char kFineGrainedHistogramGWSActivationToLargestContentfulPaint[] =
     FINEGRAINED_HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
 
+const char kHistogramGWSWarmUpType[] = HISTOGRAM_PREFIX "WarmUpType";
+
 const char kHistogramPrerenderSuffix[] = ".Prerender";
 const char kHistogramNonPrerenderSuffix[] = ".NonPrerender";
 // ServiceWorker related histograms.
@@ -183,6 +187,57 @@ const char kHistogramNoServiceWorkerLoadSearch[] =
 }  // namespace internal
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WarmUpType)
+enum class WarmUpType {
+  kRegularSignedIn = 0,
+  kRegularPrewarmed = 1,
+  kReegularCold = 2,
+  kOffTheRecordSignedIn = 3,
+  kOffTheRecordPrewarmed = 4,
+  kOffTheRecordColdButRegularSignedIn = 5,
+  kOffTheRecordColdButRegularPrewarmed = 6,
+  kOffTheRecordAndRegularCold = 7,
+  kMaxValue = kOffTheRecordAndRegularCold,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/page/enums.xml:GwsWarmUpType)
+
+WarmUpType ClassifyIntoWarmUpType(content::BrowserContext* current_context,
+                                  content::BrowserContext* original_context) {
+  CHECK(current_context);
+  page_load_metrics::GWSSessionState* current_session_state =
+      page_load_metrics::GWSSessionState::GetOrCreateForBrowserContext(
+          current_context);
+  if (!original_context) {
+    if (current_session_state->IsSignedIn()) {
+      return WarmUpType::kRegularSignedIn;
+    } else if (current_session_state->IsPrewarmed()) {
+      return WarmUpType::kRegularPrewarmed;
+    } else {
+      return WarmUpType::kReegularCold;
+    }
+  } else {
+    if (current_session_state->IsSignedIn()) {
+      return WarmUpType::kOffTheRecordSignedIn;
+    } else if (current_session_state->IsPrewarmed()) {
+      return WarmUpType::kOffTheRecordPrewarmed;
+    } else {
+      page_load_metrics::GWSSessionState* original_session_state =
+          page_load_metrics::GWSSessionState::GetOrCreateForBrowserContext(
+              original_context);
+      if (original_session_state->IsSignedIn()) {
+        return WarmUpType::kOffTheRecordColdButRegularSignedIn;
+      } else if (original_session_state->IsPrewarmed()) {
+        return WarmUpType::kOffTheRecordColdButRegularPrewarmed;
+      } else {
+        return WarmUpType::kOffTheRecordAndRegularCold;
+      }
+    }
+  }
+}
 
 BASE_FEATURE(kRecordPrenavigationLatency, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -226,6 +281,7 @@ std::string GetProtocolSuffix(
   return base::StrCat(
       {".", net::HttpConnectionInfoCoarseToString(http_connection_info)});
 }
+
 }  // namespace
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
@@ -233,6 +289,8 @@ GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() {
   is_first_navigation_ = is_first_navigation;
   is_first_navigation = false;
 }
+
+GWSPageLoadMetricsObserver::~GWSPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSPageLoadMetricsObserver::OnStart(
@@ -559,6 +617,8 @@ GWSPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
+  RecordGWSSessionStateHistograms();
+
   const page_load_metrics::ContentfulPaintTimingInfo&
       all_frames_largest_contentful_paint =
           GetDelegate()
@@ -957,4 +1017,35 @@ void GWSPageLoadMetricsObserver::RecordSessionDetails(
   base::UmaHistogramBoolean(
       internal::kHistogramGWSHttpNetworkSessionQuicEnabled,
       session_details.http_network_session_quic_enabled);
+}
+
+void GWSPageLoadMetricsObserver::RecordGWSSessionStateHistograms() {
+  auto* browser_context = GetDelegate().GetWebContents()->GetBrowserContext();
+  CHECK(browser_context);
+
+  auto* gws_session_state =
+      page_load_metrics::GWSSessionState::GetOrCreateForBrowserContext(
+          browser_context);
+  if (!gws_session_state->IsSignedIn() && IsSignedIn(browser_context)) {
+    gws_session_state->SetSignedIn();
+  }
+
+  content::BrowserContext* original_browser_context =
+      browser_context->IsOffTheRecord() ? GetOriginalBrowserContext() : nullptr;
+  if (original_browser_context) {
+    auto* original_gws_session_state =
+        page_load_metrics::GWSSessionState::GetOrCreateForBrowserContext(
+            original_browser_context);
+    if (!original_gws_session_state->IsSignedIn() &&
+        IsSignedIn(original_browser_context)) {
+      original_gws_session_state->SetSignedIn();
+    }
+  }
+  WarmUpType type =
+      ClassifyIntoWarmUpType(browser_context, original_browser_context);
+  base::UmaHistogramEnumeration(internal::kHistogramGWSWarmUpType, type);
+
+  if (!gws_session_state->IsSignedIn() && aft_end_time_.has_value()) {
+    gws_session_state->SetPrewarmed();
+  }
 }

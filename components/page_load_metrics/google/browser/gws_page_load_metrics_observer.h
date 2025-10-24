@@ -10,6 +10,10 @@
 #include "content/public/browser/navigation_handle_timing.h"
 #include "net/http/http_connection_info.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace internal {
 // Exposed for tests.
 
@@ -103,6 +107,7 @@ class GWSPageLoadMetricsObserver
   GWSPageLoadMetricsObserver(const GWSPageLoadMetricsObserver&) = delete;
   GWSPageLoadMetricsObserver& operator=(const GWSPageLoadMetricsObserver&) =
       delete;
+  ~GWSPageLoadMetricsObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -166,10 +171,14 @@ class GWSPageLoadMetricsObserver
   // Records the histograms for possible connection reuse.
   void RecordConnectionReuseHistograms();
 
+  void RecordGWSSessionStateHistograms();
+
   virtual bool IsFromNewTabPage(
       content::NavigationHandle* navigation_handle) = 0;
   virtual bool IsBrowserStartupComplete() = 0;
   virtual bool IsIncognitoProfile() const = 0;
+  virtual bool IsSignedIn(content::BrowserContext* browser_context) const = 0;
+  virtual content::BrowserContext* GetOriginalBrowserContext() = 0;
   std::string AddHistogramSuffix(const std::string& histogram_name);
 
   content::NavigationHandleTiming navigation_handle_timing_;

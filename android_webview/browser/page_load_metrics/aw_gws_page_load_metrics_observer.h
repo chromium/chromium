@@ -21,6 +21,8 @@ class AwGWSPageLoadMetricsObserver : public GWSPageLoadMetricsObserver {
   bool IsFromNewTabPage(content::NavigationHandle* navigation_handle) override;
   bool IsBrowserStartupComplete() override;
   bool IsIncognitoProfile() const override;
+  bool IsSignedIn(content::BrowserContext* browser_context) const override;
+  content::BrowserContext* GetOriginalBrowserContext() override;
 };
 
 }  // namespace android_webview

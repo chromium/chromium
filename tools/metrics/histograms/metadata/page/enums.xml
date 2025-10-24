@@ -99,6 +99,21 @@ chromium-metrics-reviews@google.com.
       label="Ad Creative Origin Differs from Main Frame and Ad Not Throttled"/>
 </enum>
 
+<!-- LINT.IfChange(GwsWarmUpType) -->
+
+<enum name="GwsWarmUpType">
+  <int value="0" label="RegularSignedIn"/>
+  <int value="1" label="RegularPrewarmed"/>
+  <int value="2" label="ReegularCold"/>
+  <int value="3" label="OffTheRecordSignedIn"/>
+  <int value="4" label="OffTheRecordPrewarmed"/>
+  <int value="5" label="OffTheRecordColdButRegularSignedIn"/>
+  <int value="6" label="OffTheRecordColdButRegularPrewarmed"/>
+  <int value="7" label="OffTheRecordAndRegularCold"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/gws_page_load_metrics_observer.cc:WarmUpType) -->
+
 <enum name="HeavyAdStatus2">
   <int value="0" label="Not heavy"/>
   <int value="1" label="Network">

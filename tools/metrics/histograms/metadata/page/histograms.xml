@@ -1934,6 +1934,17 @@ chromium-metrics-reviews@google.com.
   <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.WarmUpType" enum="GwsWarmUpType"
+    expires_after="2026-12-01">
+  <owner>toyoshim@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the current cookie warm-up type of the browser session for the
+    Google search page. This metric is emitted when the navigation is completed
+    or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2026-02-22">

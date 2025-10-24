@@ -12,6 +12,8 @@ source_set("browser") {
     "gws_abandoned_page_load_metrics_observer.h",
     "gws_page_load_metrics_observer.cc",
     "gws_page_load_metrics_observer.h",
+    "gws_session_state.cc",
+    "gws_session_state.h",
     "histogram_suffixes.cc",
     "histogram_suffixes.h",
   ]

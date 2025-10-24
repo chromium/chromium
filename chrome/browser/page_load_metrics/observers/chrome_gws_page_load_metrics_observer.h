@@ -22,6 +22,8 @@ class ChromeGWSPageLoadMetricsObserver : public GWSPageLoadMetricsObserver {
   bool IsFromNewTabPage(content::NavigationHandle* navigation_handle) override;
   bool IsBrowserStartupComplete() override;
   bool IsIncognitoProfile() const override;
+  bool IsSignedIn(content::BrowserContext* browser_context) const override;
+  content::BrowserContext* GetOriginalBrowserContext() override;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CHROME_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
