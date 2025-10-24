@@ -214,6 +214,19 @@ const FeatureEntry::FeatureVariation kAIMPrototypeVariations[] = {
      std::size(kAIMPrototypeAllOmniboxEntrypoints), nullptr},
 };
 
+const FeatureEntry::FeatureParam kAIMPrototypeTabPickerCachedAPC[] = {
+    {kAIMPrototypeTabPickerParam, kAIMPrototypeTabPickerParamCachedAPC}};
+
+const FeatureEntry::FeatureParam kAIMPrototypeTabPickerOnFlightAPC[] = {
+    {kAIMPrototypeTabPickerParam, kAIMPrototypeTabPickerParamOnFlightAPC}};
+
+const FeatureEntry::FeatureVariation kAIMPrototypeTabPickerVariations[] = {
+    {"A) Use Cached APC", kAIMPrototypeTabPickerCachedAPC,
+     std::size(kAIMPrototypeTabPickerCachedAPC), nullptr},
+    {"B) Use On flight APC", kAIMPrototypeTabPickerOnFlightAPC,
+     std::size(kAIMPrototypeTabPickerOnFlightAPC), nullptr},
+};
+
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -2823,7 +2836,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kAIMPrototypeImmersiveSRP)},
     {"aim-prototype-tab-picker", flag_descriptions::kAIMPrototypeTabPickerName,
      flag_descriptions::kAIMPrototypeTabPickerDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAIMPrototypeTabPicker)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAIMPrototypeTabPicker,
+                                    kAIMPrototypeTabPickerVariations,
+                                    "AimPrototypeTabPicker")},
     {"ios-custom-file-upload-menu",
      flag_descriptions::kIOSCustomFileUploadMenuName,
      flag_descriptions::kIOSCustomFileUploadMenuDescription, flags_ui::kOsIos,

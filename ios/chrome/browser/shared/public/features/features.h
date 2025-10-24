@@ -303,6 +303,11 @@ BASE_DECLARE_FEATURE(kAIMPrototypeAutoattachTab);
 // Used to gate the immersive SRP in the AIM prototype.
 BASE_DECLARE_FEATURE(kAIMPrototypeImmersiveSRP);
 
+// Variations of AIM prototype tab picker.
+extern const char kAIMPrototypeTabPickerParam[];
+extern const char kAIMPrototypeTabPickerParamCachedAPC[];
+extern const char kAIMPrototypeTabPickerParamOnFlightAPC[];
+
 // Feature flag for the tab picker in the aim prototype.
 BASE_DECLARE_FEATURE(kAIMPrototypeTabPicker);
 
