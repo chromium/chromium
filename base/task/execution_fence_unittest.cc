@@ -49,9 +49,9 @@ enum class TaskType {
   // Task posted to a TaskQueue with best-effort priority.
   kTaskQueueBestEffort,
 };
-using TaskTypes = EnumSet<TaskType,
-                          TaskType::kThreadPoolDefault,
-                          TaskType::kTaskQueueBestEffort>;
+using TaskTypeSet = EnumSet<TaskType,
+                            TaskType::kThreadPoolDefault,
+                            TaskType::kTaskQueueBestEffort>;
 
 std::ostream& operator<<(std::ostream& os, TaskType task_type) {
   switch (task_type) {
@@ -66,7 +66,7 @@ std::ostream& operator<<(std::ostream& os, TaskType task_type) {
   }
 }
 
-std::ostream& operator<<(std::ostream& os, TaskTypes task_types) {
+std::ostream& operator<<(std::ostream& os, TaskTypeSet task_types) {
   std::string sep = "";
   os << "[";
   for (TaskType task_type : task_types) {
@@ -128,11 +128,11 @@ struct TestParams {
 
   // All TaskQueue task types that should run while a
   // ScopedBestEffortExecutionFence is up.
-  TaskTypes task_queue_types_during_best_effort_fence;
+  TaskTypeSet task_queue_types_during_best_effort_fence;
 
   // All TaskQueue task types that should run as soon as the last
   // ScopedBestEffortExecutionFence comes down.
-  TaskTypes task_queue_types_after_best_effort_fence;
+  TaskTypeSet task_queue_types_after_best_effort_fence;
 };
 
 class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
@@ -146,8 +146,8 @@ class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
   ~ExecutionFenceTest() override {
     // Flush every task runner being tested.
     RepeatingClosure barrier_closure =
-        BarrierClosure(TaskTypes::All().size(), task_env_.QuitClosure());
-    for (TaskType task_type : TaskTypes::All()) {
+        BarrierClosure(TaskTypeSet::All().size(), task_env_.QuitClosure());
+    for (TaskType task_type : TaskTypeSet::All()) {
       task_runners_.at(task_type)->PostTask(FROM_HERE, barrier_closure);
     }
     task_env_.RunUntilQuit();
@@ -162,7 +162,7 @@ class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
 
   // Wait for all posted tasks to get a chance to run, and then expect that one
   // each of `expected_tasks` ran since the last call.
-  void RunPostedTasksAndExpect(TaskTypes expected_tasks,
+  void RunPostedTasksAndExpect(TaskTypeSet expected_tasks,
                                const Location& location = Location::Current()) {
     SCOPED_TRACE(location.ToString());
 
@@ -182,7 +182,7 @@ class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
     // supposed to, missing the timeout would be a false negative. So a flaky
     // test should be considered a failure - it usually fails (correctly
     // detecting an error) but occasionally succeeds (incorrectly).
-    if (expected_tasks != TaskTypes::All()) {
+    if (expected_tasks != TaskTypeSet::All()) {
       TinyWait();
     }
 
@@ -198,7 +198,7 @@ class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
       AutoLock lock(tasks_that_ran_lock_);
       ASSERT_TRUE(tasks_that_ran_.empty());
     }
-    for (TaskType task_type : TaskTypes::All()) {
+    for (TaskType task_type : TaskTypeSet::All()) {
       task_runners_.at(task_type)->PostTask(
           FROM_HERE, BindLambdaForTesting([this, task_type] {
             AutoLock lock(tasks_that_ran_lock_);
@@ -235,7 +235,7 @@ class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
   // Each type of tasks that executes between calls to
   // RunPostedTasksAndExpect(). This is updated from multiple sequences and read
   // from the main thread.
-  TaskTypes tasks_that_ran_ GUARDED_BY(tasks_that_ran_lock_);
+  TaskTypeSet tasks_that_ran_ GUARDED_BY(tasks_that_ran_lock_);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -256,7 +256,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                      {TaskType::kTaskQueueBestEffort},
                              }));
 
-TEST_P(ExecutionFenceTest, SingleFence) {
+TEST_P(ExecutionFenceTest, BestEffortFence) {
   {
     ScopedBestEffortExecutionFence best_effort_fence;
 
@@ -274,8 +274,10 @@ TEST_P(ExecutionFenceTest, SingleFence) {
 
   // Now that the fence is down all tasks should run.
   PostTestTasks();
-  RunPostedTasksAndExpect(TaskTypes::All());
+  RunPostedTasksAndExpect(TaskTypeSet::All());
+}
 
+TEST_P(ExecutionFenceTest, ThreadPoolFence) {
   {
     ScopedThreadPoolExecutionFence thread_pool_fence;
 
@@ -291,7 +293,7 @@ TEST_P(ExecutionFenceTest, SingleFence) {
 
   // No more fences. All posted tasks run.
   PostTestTasks();
-  RunPostedTasksAndExpect(TaskTypes::All());
+  RunPostedTasksAndExpect(TaskTypeSet::All());
 }
 
 TEST_P(ExecutionFenceTest, NestedFences) {
@@ -357,7 +359,7 @@ TEST_P(ExecutionFenceTest, NestedFences) {
 
   // No more fences. All posted tasks run.
   PostTestTasks();
-  RunPostedTasksAndExpect(TaskTypes::All());
+  RunPostedTasksAndExpect(TaskTypeSet::All());
 }
 
 TEST_P(ExecutionFenceTest, StaggeredFences) {
@@ -408,7 +410,7 @@ TEST_P(ExecutionFenceTest, StaggeredFences) {
 
   // No more fences. All posted tasks run.
   PostTestTasks();
-  RunPostedTasksAndExpect(TaskTypes::All());
+  RunPostedTasksAndExpect(TaskTypeSet::All());
 }
 
 }  // namespace base

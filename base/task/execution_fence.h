@@ -25,6 +25,7 @@ class SequenceManager;
 // they were posted before entering this scope and do not violate the contract;
 // some of them could be CONTINUE_ON_SHUTDOWN and waiting for them to complete
 // is ill-advised).
+// TODO(crbug.com/454908699): Remove the "Scoped" prefix. It's too verbose.
 class BASE_EXPORT ScopedThreadPoolExecutionFence {
  public:
   ScopedThreadPoolExecutionFence();
@@ -42,6 +43,7 @@ class BASE_EXPORT ScopedThreadPoolExecutionFence {
 // By default this only applies to tasks posted to the ThreadPool, same as
 // ScopedThreadPoolExecutionFence. To apply fences to other task queues, call
 // AddSequenceManager.
+// TODO(crbug.com/454908699): Remove the "Scoped" prefix. It's too verbose.
 class BASE_EXPORT ScopedBestEffortExecutionFence {
  public:
   ScopedBestEffortExecutionFence();

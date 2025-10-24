@@ -1269,9 +1269,6 @@ SequenceManagerImpl::GetBestEffortPriority() const {
   const size_t priority_count =
       static_cast<size_t>(priority_settings.priority_count());
   CHECK_GT(priority_count, 0u);
-  if (priority_count == 1) {
-    return std::nullopt;
-  }
   auto lowest_priority =
       static_cast<TaskQueue::QueuePriority>(priority_count - 1);
   if (lowest_priority == priority_settings.default_priority()) {
