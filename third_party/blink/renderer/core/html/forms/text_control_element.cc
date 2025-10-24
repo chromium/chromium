@@ -423,8 +423,17 @@ void TextControlElement::setRangeText(const String& replacement,
   text.Append(replacement);
   text.Append(StringView(original_text, end));
 
-  SetValue(text.ToString(), TextFieldEventBehavior::kDispatchNoEvent,
-           TextControlSetValueSelection::kDoNotSet);
+  // Suppress SetValue()’s automatic full-value diff within this scope to avoid
+  // emitting a duplicate FormControlRange update; then commit the precise
+  // programmatic edit.
+  {
+    ScopedSkipValueAutoDiff skip_value_auto_diff(*this);
+    SetValue(text.ToString(), TextFieldEventBehavior::kDispatchNoEvent,
+             TextControlSetValueSelection::kDoNotSet);
+    if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
+      CommitProgrammaticFormControlRangeEdit(original_text, start, end);
+    }
+  }
 
   switch (selection_mode.AsEnum()) {
     case V8SelectionMode::Enum::kSelect:
@@ -1403,10 +1412,17 @@ void TextControlElement::CommitFormControlRangeEdit() {
 
   // After observable value mutation and before 'input' listeners, compute and
   // apply a selection-bounded single replace using the pre-edit baseline.
-  const String& old_value = pending_user_edit_->old_value;
+  ApplyFormControlRangeUpdate(pending_user_edit_->old_value,
+                              pending_user_edit_->selection_start,
+                              pending_user_edit_->selection_end);
+  pending_user_edit_.reset();
+}
+
+void TextControlElement::ApplyFormControlRangeUpdate(const String& old_value,
+                                                     unsigned sel_start,
+                                                     unsigned sel_end) {
   const String new_value = InnerEditorValue();
   if (old_value == new_value) {
-    pending_user_edit_.reset();
     return;
   }
 
@@ -1414,10 +1430,8 @@ void TextControlElement::CommitFormControlRangeEdit() {
   const unsigned new_length = new_value.length();
 
   // Clamp selection to valid range.
-  unsigned selection_start =
-      std::min(pending_user_edit_->selection_start, old_length);
-  unsigned selection_end =
-      std::min(pending_user_edit_->selection_end, old_length);
+  unsigned selection_start = std::min(sel_start, old_length);
+  unsigned selection_end = std::min(sel_end, old_length);
   if (selection_start > selection_end) {
     std::swap(selection_start, selection_end);
   }
@@ -1451,7 +1465,29 @@ void TextControlElement::CommitFormControlRangeEdit() {
   if (deleted_count || inserted_count) {
     NotifyFormControlRangesOfTextChange(prefix, deleted_count, inserted_count);
   }
+}
+
+void TextControlElement::CommitProgrammaticFormControlRangeEdit(
+    const String& old_value,
+    unsigned old_sel_start,
+    unsigned old_sel_end) {
+  if (!RuntimeEnabledFeatures::FormControlRangeEnabled() ||
+      form_control_ranges_.empty()) {
+    return;
+  }
+  // Clear any pending user pre-edit snapshot to avoid applying a user-driven
+  // diff after a programmatic value change.
   pending_user_edit_.reset();
+
+  ApplyFormControlRangeUpdate(old_value, old_sel_start, old_sel_end);
+}
+
+void TextControlElement::SetSkipNextSetValueAutoDiff(bool should_skip) {
+  skip_next_set_value_auto_diff_ = should_skip;
+}
+
+bool TextControlElement::ShouldSkipNextSetValueAutoDiff() const {
+  return skip_next_set_value_auto_diff_;
 }
 
 }  // namespace blink

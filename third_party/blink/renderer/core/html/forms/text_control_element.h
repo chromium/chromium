@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_ELEMENT_H_
 
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -202,6 +203,29 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // value mutation occurs, before 'input' listeners run.
   void CommitFormControlRangeEdit();
 
+  // Handles programmatic value changes by diffing the previous contents against
+  // the current InnerEditorValue(), using a selection-bounded replace model.
+  // Used when edits bypass 'beforeinput'.
+  void CommitProgrammaticFormControlRangeEdit(const String& old_value,
+                                              unsigned old_sel_start,
+                                              unsigned old_sel_end);
+
+  // Update FormControlRanges by diffing the old and current values,
+  // constrained to the original selection range.
+  void ApplyFormControlRangeUpdate(const String& old_value,
+                                   unsigned old_sel_start,
+                                   unsigned old_sel_end);
+
+  // Controls whether the next SetValue() call skips its automatic
+  // FormControlRange update. When true, the default full-value diff is
+  // suppressed so callers (e.g. setRangeText) can perform their own targeted
+  // update. Cleared immediately after that SetValue() call.
+  void SetSkipNextSetValueAutoDiff(bool should_skip);
+
+  // Returns whether the next SetValue() call should skip its automatic
+  // FormControlRange update.
+  bool ShouldSkipNextSetValueAutoDiff() const;
+
  protected:
   TextControlElement(const QualifiedName&, Document&);
   virtual HTMLElement* UpdatePlaceholderText() = 0;
@@ -333,6 +357,24 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   // Holds FormControlRange instances that observe this text control.
   HeapVector<Member<FormControlRange>> form_control_ranges_;
+
+  // RAII helper that temporarily skips SetValue()’s automatic FormControlRange
+  // full-value diff for this scope. The flag is restored on destruction.
+  class ScopedSkipValueAutoDiff final {
+   public:
+    explicit ScopedSkipValueAutoDiff(TextControlElement& element)
+        : auto_reset_(&element.skip_next_set_value_auto_diff_, true) {}
+    ScopedSkipValueAutoDiff(const ScopedSkipValueAutoDiff&) = delete;
+    ScopedSkipValueAutoDiff& operator=(const ScopedSkipValueAutoDiff&) = delete;
+
+   private:
+    base::AutoReset<bool> auto_reset_;
+  };
+
+  // Skip SetValue's automatic FormControlRange full-value diff on the next
+  // call. Used by setRangeText(), which issues its own precise, range-scoped
+  // update. Cleared immediately after that SetValue() call.
+  bool skip_next_set_value_auto_diff_ = false;
 
   // Indicate whether there is one scheduled selectionchange event.
   bool has_scheduled_selectionchange_event_ = false;

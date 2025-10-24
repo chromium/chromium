@@ -153,6 +153,13 @@ void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
     }
   }
 
+  // Special case: deletion of the entire old value collapses to [0,0].
+  if (deleted_count > 0 && change_offset == 0 && pre_end <= deleted_count) {
+    start_offset_in_value_ = 0;
+    end_offset_in_value_ = 0;
+    return;
+  }
+
   const unsigned change_end = change_offset + deleted_count;
   auto calculate_new_offset = [&](unsigned pos) -> unsigned {
     // Case 1: Position is before the change, so it remains unchanged.
@@ -170,17 +177,10 @@ void FormControlRange::UpdateOffsetsForTextChange(unsigned change_offset,
     return pos - deleted_count + inserted_count;
   };
 
-  unsigned new_start = calculate_new_offset(pre_start);
-  unsigned new_end = calculate_new_offset(pre_end);
-
   // Clamp to the current value length and ensure start does not exceed end.
   const unsigned value_length = form_control_->Value().length();
-  if (new_start > value_length) {
-    new_start = value_length;
-  }
-  if (new_end > value_length) {
-    new_end = value_length;
-  }
+  unsigned new_start = std::min(calculate_new_offset(pre_start), value_length);
+  unsigned new_end = std::min(calculate_new_offset(pre_end), value_length);
 
   // Auto-collapse to higher index if needed.
   if (new_start > new_end) {
