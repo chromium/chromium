@@ -10,9 +10,4 @@ namespace privacy_sandbox {
 
 BASE_FEATURE(kPrivacySandboxActWhatsNew, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxWhatsNewSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kPrivacySandboxWhatsNewSurveyDelay{
-    &kPrivacySandboxWhatsNewSurvey, "delay", base::Seconds(1)};
-
 }  // namespace privacy_sandbox

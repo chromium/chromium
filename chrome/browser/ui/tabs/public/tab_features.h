@@ -96,7 +96,6 @@ class PermissionIndicatorsTabData;
 
 namespace privacy_sandbox {
 class PrivacySandboxTabObserver;
-class PrivacySandboxIncognitoTabObserver;
 }  // namespace privacy_sandbox
 
 namespace sync_sessions {
@@ -188,11 +187,6 @@ class TabFeatures {
 
   privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
     return privacy_sandbox_tab_observer_.get();
-  }
-
-  privacy_sandbox::PrivacySandboxIncognitoTabObserver*
-  privacy_sandbox_incognito_tab_observer() {
-    return privacy_sandbox_incognito_tab_observer_.get();
   }
 
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
@@ -344,9 +338,6 @@ class TabFeatures {
 
   std::unique_ptr<privacy_sandbox::PrivacySandboxTabObserver>
       privacy_sandbox_tab_observer_;
-
-  std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
-      privacy_sandbox_incognito_tab_observer_;
 
   // The tab-scoped extension side-panel manager. There is a separate
   // window-scoped extension side-panel manager.

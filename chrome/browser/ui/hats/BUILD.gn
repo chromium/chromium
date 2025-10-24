@@ -65,7 +65,6 @@ source_set("impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/prefs",
-    "//chrome/browser/privacy_sandbox/incognito:incognito_features",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/browser/ui/safety_hub",

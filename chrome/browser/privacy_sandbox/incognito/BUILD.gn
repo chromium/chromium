@@ -3,75 +3,11 @@
 # found in the LICENSE file.
 
 group("incognito") {
-  public_deps = [
-    ":incognito_features",
-    ":tab_observer",
-  ]
-  if (is_win || is_mac || is_linux) {
-    public_deps += [ ":whats_new_survey" ]
-  }
-}
-
-group("unit_tests") {
-  testonly = true
-  deps = []
-
-  if (is_win || is_mac || is_linux) {
-    deps += [ ":whats_new_survey_unittest" ]
-  }
+  public_deps = [ ":incognito_features" ]
 }
 
 source_set("incognito_features") {
   sources = [ "privacy_sandbox_incognito_features.cc" ]
   public = [ "privacy_sandbox_incognito_features.h" ]
   deps = [ "//base" ]
-}
-
-source_set("tab_observer") {
-  sources = [ "privacy_sandbox_incognito_tab_observer.cc" ]
-  public = [ "privacy_sandbox_incognito_tab_observer.h" ]
-  deps = [
-    "//chrome/browser/profiles",
-    "//chrome/common",
-    "//content/public/browser",
-  ]
-  if (is_win || is_mac || is_linux) {
-    deps += [ ":whats_new_survey" ]
-  }
-}
-
-# What's New survey cannot work outside of those three - What's New page does not exist there.
-if (is_win || is_mac || is_linux) {
-  source_set("whats_new_survey") {
-    sources = [
-      "privacy_sandbox_whats_new_survey_service.cc",
-      "privacy_sandbox_whats_new_survey_service_factory.cc",
-    ]
-    public = [
-      "privacy_sandbox_whats_new_survey_service.h",
-      "privacy_sandbox_whats_new_survey_service_factory.h",
-    ]
-    deps = [
-      ":incognito_features",
-      "//chrome/app:branded_strings",
-      "//chrome/browser/profiles",
-      "//chrome/browser/ui/hats",
-      "//chrome/browser/ui/webui/whats_new",
-      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
-      "//content/public/browser",
-    ]
-  }
-
-  source_set("whats_new_survey_unittest") {
-    testonly = true
-    sources = [ "privacy_sandbox_whats_new_survey_service_unittest.cc" ]
-    deps = [
-      ":incognito_features",
-      ":whats_new_survey",
-      "//chrome/browser/ui/hats",
-      "//chrome/browser/ui/hats:test_support",
-      "//chrome/browser/ui/webui/whats_new",
-      "//chrome/test:test_support",
-    ]
-  }
 }

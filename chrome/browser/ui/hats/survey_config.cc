@@ -12,7 +12,6 @@
 #include "base/features.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
-#include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -169,11 +168,6 @@ constexpr char kHatsSurveyTriggerSigninNtpPromo[] = "signin-ntp-promo";
 constexpr char kHatsSurveyTriggerSigninBookmarkPromo[] =
     "signin-bookmark-promo";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-constexpr char kHatsSurveyTriggerPrivacySandboxWhatsNewSurvey[] =
-    "privacy-sandbox-whats-new-survey";
-#endif  // !BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 constexpr char kHatsSurveyTriggerComposeAcceptance[] = "compose-acceptance";
@@ -569,17 +563,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, std::nullopt,
       std::vector<std::string>{}, identity_string_psd_fields);
 
-  // Privacy sandbox What's New survey
-  survey_configs.emplace_back(  //
-      &privacy_sandbox::kPrivacySandboxWhatsNewSurvey,
-      kHatsSurveyTriggerPrivacySandboxWhatsNewSurvey,
-      /*presupplied_trigger_id=*/std::nullopt,
-      /*product_specific_bits_data_fields=*/
-      std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/
-      std::vector<std::string>{
-          "Has seen Incognito tracking protection features on What's New page",
-      });
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

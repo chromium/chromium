@@ -21,10 +21,6 @@ namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
 
-namespace privacy_sandbox {
-class PrivacySandboxIncognitoTabObserver;
-}  // namespace privacy_sandbox
-
 namespace lens {
 class TabContextualizationController;
 }  // namespace lens
@@ -54,8 +50,6 @@ class TabFeatures {
 
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
-  std::unique_ptr<privacy_sandbox::PrivacySandboxIncognitoTabObserver>
-      privacy_sandbox_incognito_tab_observer_;
   std::unique_ptr<QwacWebContentsObserver> qwac_web_contents_observer_;
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_pipeline_manager_;

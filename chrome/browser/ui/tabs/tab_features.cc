@@ -26,7 +26,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
-#include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -278,10 +277,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab.GetContents());
 
-    privacy_sandbox_incognito_tab_observer_ =
-        std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
-            tab.GetContents());
-
     if (tab_groups::TabGroupSyncService* tab_group_sync_service =
             tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
       saved_tab_group_web_contents_listener_ =
@@ -507,13 +502,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     privacy_sandbox_tab_observer_.reset();
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
-            new_contents);
-  }
-
-  if (privacy_sandbox_incognito_tab_observer_) {
-    privacy_sandbox_incognito_tab_observer_.reset();
-    privacy_sandbox_incognito_tab_observer_ =
-        std::make_unique<privacy_sandbox::PrivacySandboxIncognitoTabObserver>(
             new_contents);
   }
 

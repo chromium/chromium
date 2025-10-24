@@ -16,13 +16,6 @@ namespace privacy_sandbox {
 // Show ACT features on the What's New page.
 BASE_DECLARE_FEATURE(kPrivacySandboxActWhatsNew);
 
-// Privacy Sandbox ACT What's New survey. Displayed on a NTP provided the user
-// has seen the What's New with ACT release notes.
-BASE_DECLARE_FEATURE(kPrivacySandboxWhatsNewSurvey);
-
-extern const base::FeatureParam<base::TimeDelta>
-    kPrivacySandboxWhatsNewSurveyDelay;
-
 }  // namespace privacy_sandbox
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_INCOGNITO_PRIVACY_SANDBOX_INCOGNITO_FEATURES_H_
