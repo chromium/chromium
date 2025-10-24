@@ -80,8 +80,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
 
         verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
 
-        // Clear focus by tapping on the NTP scroll view.
-        Espresso.onView(ViewMatchers.withId(R.id.ntp_scrollview)).perform(ViewActions.click());
+        clearOmniboxFocusOnIncognitoNtp();
 
         verifyOmniboxFocusAndKeyboardVisibility(false, null);
 
@@ -137,16 +136,17 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
     public void whenVeryFirstTabOpened_andNotFirstTabEnabled_autofocusFails() {
-        // Open the first incognito tab. With the not_first_tab feature, it should not autofocus.
-        final Tab firstIncognitoNtpTab =
-                mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
-        verifyOmniboxFocusAndKeyboardVisibility(false, firstIncognitoNtpTab);
+        for (int i = 0; i < 4; i++) {
+            // With the not_first_tab feature enabled, autofocus should be skipped on the first
+            // incognito tab, but triggered on any subsequent ones.
+            final boolean isFirstTab = i == 0;
 
-        // Open more incognito tabs, it should autofocus on all of them.
-        for (int i = 0; i < 2; i++) {
             final Tab incognitoNtpTab =
                     mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
-            verifyOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
+            verifyOmniboxFocusAndKeyboardVisibility(!isFirstTab, incognitoNtpTab);
+
+            clearOmniboxFocusOnIncognitoNtp();
+            verifyOmniboxFocusAndKeyboardVisibility(false, incognitoNtpTab);
         }
     }
 
@@ -258,5 +258,10 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
                 () -> {
                     IncognitoNtpOmniboxAutofocusManager.setAutofocusEnabledForTesting(!enabled);
                 });
+    }
+
+    private void clearOmniboxFocusOnIncognitoNtp() {
+        // Clear focus by tapping on the NTP scroll view.
+        Espresso.onView(ViewMatchers.withId(R.id.ntp_scrollview)).perform(ViewActions.click());
     }
 }
