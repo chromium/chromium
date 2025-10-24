@@ -55,7 +55,7 @@ public class AuxiliarySearchBridge {
         AuxiliarySearchBridgeJni.get()
                 .getNonSensitiveTabs(
                         mNativeBridge,
-                        tabs.toArray(new Tab[0]),
+                        tabs,
                         new Callback<Object[]>() {
                             @Override
                             public void onResult(Object[] tabs) {
@@ -124,7 +124,9 @@ public class AuxiliarySearchBridge {
         long getForProfile(@JniType("Profile*") Profile profile);
 
         void getNonSensitiveTabs(
-                long nativeAuxiliarySearchProvider, Tab[] tabs, Callback<Object[]> callback);
+                long nativeAuxiliarySearchProvider,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+                Callback<Object[]> callback);
 
         void getNonSensitiveHistoryData(
                 long nativeAuxiliarySearchProvider,

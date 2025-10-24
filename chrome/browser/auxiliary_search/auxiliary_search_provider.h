@@ -42,7 +42,7 @@ class AuxiliarySearchProvider : public KeyedService {
 
   void GetNonSensitiveTabs(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_tabs_android,
+      std::vector<TabAndroid*> tabs,
       const base::android::JavaParamRef<jobject>& j_callback_obj) const;
 
   void GetNonSensitiveHistoryData(
@@ -73,12 +73,10 @@ class AuxiliarySearchProvider : public KeyedService {
   using NonSensitiveTabsCallback =
       base::OnceCallback<void(std::vector<base::WeakPtr<TabAndroid>>)>;
 
-  static void FilterTabsByScheme(
-      std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs);
+  static void FilterTabsByScheme(std::vector<TabAndroid*>& tabs);
 
-  void GetNonSensitiveTabsInternal(
-      std::vector<raw_ptr<TabAndroid, VectorExperimental>> all_tabs,
-      NonSensitiveTabsCallback callback) const;
+  void GetNonSensitiveTabsInternal(std::vector<TabAndroid*> all_tabs,
+                                   NonSensitiveTabsCallback callback) const;
 
   const raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;
 };
