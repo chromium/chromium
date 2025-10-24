@@ -52,6 +52,8 @@ public class TabCollectionMigrationUtilTest {
     }
 
     @Test
+    // TODO(crbug.com/454344854): Delete this test as part of feature cleanup as back migration
+    // will no longer be possible.
     @DisableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
     public void testSetAndGet_featureDisabled() {
         // Set to true explicitly to ensure the new value is written.

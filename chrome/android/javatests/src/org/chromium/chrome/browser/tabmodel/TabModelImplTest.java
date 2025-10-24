@@ -78,6 +78,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Tests for {@link TabModelImpl}. */
+// TODO(crbug.com/454298057): Decide what tests, if anything, should be kept for
+// TabCollectionTabModelImpl.
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,

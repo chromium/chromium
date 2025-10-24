@@ -424,6 +424,8 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/454344854): Remove this test as part of feature cleanup. This is not a valid
+    // state anymore.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testSuspendUninitializedCurrentTab() {
         mActivityTestRule.loadUrl(mStartingUrl);

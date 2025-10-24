@@ -55,6 +55,9 @@ import java.util.concurrent.TimeoutException;
  * Unit tests for undo and restoring of tabs in a {@link TabModel}. For additional tests that are
  * impossible or difficult to implement as unit test see {@link UndoTabModelTest}.
  */
+// TODO(crbug.com/454298057): TabModelImpl will be deleted (replaced by TabCollectionTabModelImpl).
+// These tests need to be migrated to UndoTabModelTest.java as the new implementation requires
+// native and a mock is insufficient here.
 @RunWith(BaseRobolectricTestRunner.class)
 public class UndoTabModelUnitTest {
     private static final long FAKE_NATIVE_ADDRESS = 123L;

@@ -146,6 +146,8 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    // TODO(crbug.com/454344854): Delete this test as part of feature cleanup as the legacy version
+    // will be deleted.
     @DisableFeatures({ChromeFeatureList.TAB_COLLECTION_ANDROID})
     public void testMoveTabCompatTest_Legacy() {
         moveTabCompatTest();

@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Set;
 
 /** Tests for {@link TabGroupVisualDataManager}. */
+// TODO(crbug.com/454344854): This class is disabled when the TAB_COLLECTION_ANDROID flag is
+// enabled. This test should be deleted when the flag is cleaned up.
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupVisualDataManagerUnitTest {

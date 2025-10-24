@@ -121,6 +121,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testPreventAddingUngroupedTabInsideTabGroup() {
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
@@ -139,6 +141,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testPreventAddingGroupedTabAwayFromGroup_BeforeGroup() {
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
@@ -156,6 +160,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testPreventAddingGroupedTabAwayFromGroup_AfterGroup() {
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
@@ -173,6 +179,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testAllowAddingGroupedTabInsideGroup() {
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
@@ -190,6 +198,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testOrderValid_WithIncorrectOrder() {
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
@@ -210,6 +220,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testOrderValid_WithIncorrectOrder_NestedGroup() {
         prepareTabs(Arrays.asList(new Integer[] {3, 2, 1}));
@@ -233,6 +245,8 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Remove assertOrderValid and assertFixedTabGroupRootIdCount
+    // as part of feature cleanup.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testOrderValid_WithValidOrder() {
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
@@ -256,6 +270,7 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Delete this test as part of feature cleanup; root id is obsolete.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testFixTabGroupRootIds() {
         prepareTabs(Arrays.asList(new Integer[] {3, 2, 1}));
@@ -312,6 +327,7 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/454344854): Delete this test as part of feature cleanup; root id is obsolete.
     @DisableFeatures(ChromeFeatureList.TAB_COLLECTION_ANDROID)
     public void testFixTabGroupRootIds_movesMetadata() {
         prepareTabs(Arrays.asList(new Integer[] {3, 2, 1}));

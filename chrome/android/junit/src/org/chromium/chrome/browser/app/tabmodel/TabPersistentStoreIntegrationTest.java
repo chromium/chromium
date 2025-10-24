@@ -88,7 +88,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @DisableFeatures({
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH,
     ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY,
-    // TODO(cbug.com/454298057): This test should use a mock TabModel or be changed to an
+    // TODO(crbug.com/454298057): This test should use a mock TabModel or be changed to an
     // instrumentation test. A unit test is not compatible with TabCollectionTabModelImpl as it
     // requires native initialization.
     ChromeFeatureList.TAB_COLLECTION_ANDROID

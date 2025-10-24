@@ -53,6 +53,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link TabModelImpl}. */
+// TODO(crbug.com/454298057): Decide what tests, if anything, should be kept for
+// TabCollectionTabModelImpl.
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelImplUnitTest {
     private static final long FAKE_NATIVE_ADDRESS = 123L;

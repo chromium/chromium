@@ -21,6 +21,8 @@ import java.util.Set;
 /**
  * Manages observers that monitor for updates to tab group visual aspects such as colors and titles.
  */
+// TODO(crbug.com/454344854): This class is disabled when the TAB_COLLECTION_ANDROID flag is
+// enabled. This class should be deleted when the flag is cleaned up.
 @NullMarked
 public class TabGroupVisualDataManager {
     private static final int DELETE_DATA_GROUP_SIZE_THRESHOLD = 1;

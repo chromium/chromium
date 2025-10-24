@@ -275,6 +275,9 @@ public class TabModelHolderFactory {
         return filter;
     }
 
+    // TODO(crbug.com/454298057): Replace TabGroupModelFilterImpl with a mock, fake, or stub in
+    // these testing methods.
+
     /** Creates a legacy {@link TabModelHolder} for testing. */
     public static TabModelHolder createTabModelHolderForTesting(TabModelInternal tabModelInternal) {
         return new TabModelHolder(
