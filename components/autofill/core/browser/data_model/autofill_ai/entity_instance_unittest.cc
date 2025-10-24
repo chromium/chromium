@@ -416,5 +416,15 @@ TEST(AutofillEntityInstanceTest, AreAttributesReadOnly_ForMutableEntity) {
   EXPECT_FALSE(entity.are_attributes_read_only());
 }
 
+TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
+  AttributeType type(kFlightReservationDepartureDate);
+  AttributeInstance attribute(type);
+  attribute.SetInfo(FLIGHT_RESERVATION_DEPARTURE_DATE, u"2025-01-01",
+                    /*app_locale=*/"", /*format_string=*/
+                    AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+                    VerificationStatus::kObserved);
+  EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE), u"Jan 1");
+}
+
 }  // namespace
 }  // namespace autofill

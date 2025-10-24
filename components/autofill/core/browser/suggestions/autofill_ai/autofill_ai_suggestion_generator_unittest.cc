@@ -793,6 +793,24 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionsAre(HasLabel(u"Flight · MUC–BEY")));
 }
 
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       LabelGeneration_FlightReservation_DepartureDateDisambiguation) {
+  base::Time departure_time;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-01-01", &departure_time));
+  SetEntities({test::GetFlightReservationEntityInstanceWithRandomGuid(
+                   {.ticket_number = u"123", .departure_time = departure_time}),
+               test::GetFlightReservationEntityInstanceWithRandomGuid(
+                   {.ticket_number = u"234",
+                    .departure_time = departure_time + base::Days(1)})});
+  SetForm({NAME_FULL, FLIGHT_RESERVATION_TICKET_NUMBER});
+
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(1));
+
+  EXPECT_THAT(suggestions, SuggestionsAre(HasLabel(u"Flight · Jan 1"),
+                                          HasLabel(u"Flight · Jan 2")));
+}
+
 // Tests that the Wallet suggestions show the IPH.
 TEST_F(AutofillAiSuggestionGeneratorTest, WalletSuggestionsShowIPH) {
   SetEntities({test::GetVehicleEntityInstanceWithRandomGuid(

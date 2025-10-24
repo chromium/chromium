@@ -64,7 +64,10 @@ sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics() {
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
   sync_pb::AutofillValuableSpecifics specifics =
       TestFlightReservationSpecifics();
-
+  base::Time departure_time;
+  ASSERT_TRUE(base::Time::FromUTCString("2025-01-01", &departure_time));
+  specifics.mutable_flight_reservation()->set_departure_date_unix_epoch_micros(
+      departure_time.InMillisecondsSinceUnixEpoch() * 1000);
   std::optional<EntityInstance> flight_reservation =
       CreateEntityInstanceFromSpecifics(specifics);
 
@@ -91,14 +94,16 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
   EXPECT_EQ(GetStringValue(*flight_reservation,
                            AttributeTypeName::kFlightReservationArrivalAirport),
             specifics.flight_reservation().arrival_airport());
+  EXPECT_EQ(GetStringValue(*flight_reservation,
+                           AttributeTypeName::kFlightReservationDepartureDate),
+            "2025-01-01");
   const AttributeInstance& name = *flight_reservation->attribute(
       AttributeType(AttributeTypeName::kFlightReservationPassengerName));
   EXPECT_EQ(name.GetRawInfo(FieldType::NAME_FULL), u"Joe Smith");
   EXPECT_EQ(name.GetVerificationStatus(FieldType::NAME_FULL),
             VerificationStatus::kServerParsed);
-  EXPECT_EQ(
-      test_api(*flight_reservation).frecency_override(),
-      base::TimeFormatAsIso8601(base::Time::FromSecondsSinceUnixEpoch(60)));
+  EXPECT_EQ(test_api(*flight_reservation).frecency_override(),
+            base::TimeFormatAsIso8601(departure_time));
 }
 
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly

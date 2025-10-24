@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace autofill {
 
@@ -135,6 +136,18 @@ GetFlightReservationAttributesFromSpecifics(
                 flight_reservation.departure_airport());
   add_attribute(kFlightReservationArrivalAirport,
                 flight_reservation.arrival_airport());
+  if (flight_reservation.has_departure_date_unix_epoch_micros()) {
+    // Timestamp is adjusted by Sync so that UTC date resembles the date in the
+    // departure airport's timezone.
+    base::Time departure_time = base::Time::FromMillisecondsSinceUnixEpoch(
+        specifics.flight_reservation().departure_date_unix_epoch_micros() /
+        1000);
+    // Departure date is stored in this format to be consistent with how
+    // other dates are stored.
+    add_attribute(kFlightReservationDepartureDate,
+                  base::UnlocalizedTimeFormatWithPattern(
+                      departure_time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
+  }
 
   ReadChromeValuablesMetadata(attributes,
                               EntityType(EntityTypeName::kFlightReservation),

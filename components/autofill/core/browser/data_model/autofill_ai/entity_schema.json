@@ -115,7 +115,7 @@
     "import constraints": [],
     "merge constraints": [],
     "strike keys": [],
-    "disambiguation order": [ "Departure airport", "Arrival airport" ],
+    "disambiguation order": [ "Departure airport", "Arrival airport", "Departure date" ],
     "syncable": true,
     "experiment feature": "AutofillAiWalletFlightReservation",
     "read only": true
