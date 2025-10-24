@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/receiver/get_receiver_connection_info_request.h"
@@ -139,10 +140,7 @@ class MockReceiverHandlerDelegate : public ReceiverHandlerDelegate {
   MockReceiverHandlerDelegate() = default;
   ~MockReceiverHandlerDelegate() override = default;
 
-  MOCK_METHOD(std::unique_ptr<boca::InvalidationService>,
-              CreateInvalidationService,
-              (boca::InvalidationServiceDelegate*),
-              (const, override));
+  MOCK_METHOD(boca::FCMHandler*, GetFcmHandler, (), (const, override));
 
   MOCK_METHOD(std::unique_ptr<google_apis::RequestSender>,
               CreateRequestSender,
@@ -179,12 +177,30 @@ class MockSpotlightRemotingClientManager
   MOCK_METHOD(std::string, GetDeviceRobotEmail, (), (override));
 };
 
-class MockInvalidationService : public boca::InvalidationService {
+class MockFCMHandler : public boca::FCMHandler {
  public:
-  MockInvalidationService() = default;
-  ~MockInvalidationService() override = default;
+  MockFCMHandler() = default;
+  ~MockFCMHandler() override = default;
 
-  MOCK_METHOD(void, ShutDown, (), (override));
+  MOCK_METHOD(void, StartListening, (), (override));
+  MOCK_METHOD(void, StopListening, (), (override));
+  MOCK_METHOD(void, StopListeningPermanently, (), (override));
+  MOCK_METHOD(bool, IsListening, (), (const, override));
+  MOCK_METHOD(void, AddListener, (boca::InvalidationsListener*), (override));
+  MOCK_METHOD(bool, HasListener, (boca::InvalidationsListener*), (override));
+  MOCK_METHOD(void, RemoveListener, (boca::InvalidationsListener*), (override));
+  MOCK_METHOD(void,
+              AddTokenObserver,
+              (boca::FCMRegistrationTokenObserver*),
+              (override));
+  MOCK_METHOD(void,
+              RemoveTokenObserver,
+              (boca::FCMRegistrationTokenObserver*),
+              (override));
+  MOCK_METHOD(const std::optional<std::string>&,
+              GetFCMRegistrationToken,
+              (),
+              (const, override));
 };
 
 class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
@@ -200,18 +216,31 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
                   task_environment_.GetMainThreadTaskRunner(),
                   "test-user-agent", traffic_annotation);
             });
-    ON_CALL(handler_delegate_, CreateInvalidationService)
-        .WillByDefault([this](boca::InvalidationServiceDelegate* delegate) {
-          invalidation_service_delegate_ = delegate;
-          auto invalidation_service =
-              std::make_unique<NiceMock<MockInvalidationService>>();
-          invalidation_service_ = invalidation_service.get();
-          return invalidation_service;
-        });
+    ON_CALL(handler_delegate_, GetFcmHandler).WillByDefault([this]() {
+      return &fcm_handler_;
+    });
     ON_CALL(handler_delegate_, IsAppEnabled).WillByDefault(Return(true));
-
+    ON_CALL(fcm_handler_, GetFCMRegistrationToken)
+        .WillByDefault([]() -> const std::optional<std::string>& {
+          static const std::optional<std::string> kFcmToken = "fcm-token";
+          return kFcmToken;
+        });
+    ON_CALL(fcm_handler_, AddTokenObserver)
+        .WillByDefault([this](boca::FCMRegistrationTokenObserver* observer) {
+          fcm_token_observer_ = observer;
+        });
+    ON_CALL(fcm_handler_, StartListening).WillByDefault([this]() {
+      fcm_token_observer_->OnFCMRegistrationTokenChanged();
+    });
     url_loader_factory_.AddResponse(register_url_.spec(),
                                     R"({"receiverId": "AB12"})");
+  }
+
+  void TearDown() override {
+    EXPECT_CALL(fcm_handler_, RemoveListener(handler_.get())).Times(1);
+    EXPECT_CALL(fcm_handler_, RemoveTokenObserver(handler_.get())).Times(1);
+    fcm_token_observer_ = nullptr;
+    handler_.reset();
   }
 
   std::string CreateConnectionInfo(
@@ -228,14 +257,6 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
         /*offsets=*/nullptr);
   }
 
-  void WaitForTokenUpload() {
-    base::test::TestFuture<bool> token_upload_future;
-    ASSERT_THAT(invalidation_service_delegate_, NotNull());
-    invalidation_service_delegate_->UploadToken(
-        "fcm-token", token_upload_future.GetCallback());
-    EXPECT_TRUE(token_upload_future.Get());
-  }
-
   std::string_view GetRequestBody(const GURL& url) {
     url_loader_factory_.WaitForRequest(url);
     const network::TestURLLoaderFactory::PendingRequest* pending_request =
@@ -247,19 +268,14 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
         .AsStringPiece();
   }
 
-  void ResetBocaReceiverPageHandler() {
-    invalidation_service_ = nullptr;
-    invalidation_service_delegate_ = nullptr;
-    handler_.reset();
-  }
-
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  NiceMock<MockFCMHandler> fcm_handler_;
   std::unique_ptr<BocaReceiverUntrustedPageHandler> handler_;
+  raw_ptr<boca::FCMRegistrationTokenObserver> fcm_token_observer_;
   network::TestURLLoaderFactory url_loader_factory_;
   NiceMock<MockReceiverHandlerDelegate> handler_delegate_;
   NiceMock<MockUntrustedPage> page_;
-  raw_ptr<NiceMock<MockInvalidationService>> invalidation_service_;
-  raw_ptr<boca::InvalidationServiceDelegate> invalidation_service_delegate_;
   const GURL register_url_ =
       GURL(boca::GetSchoolToolsUrl()).Resolve(RegisterReceiverRequest::kUrl);
   const GURL get_connection_url_ =
@@ -282,7 +298,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, InitWhenAppDisabled) {
   EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&signal]() {
     signal.GetCallback().Run();
   });
-  EXPECT_CALL(handler_delegate_, CreateInvalidationService).Times(0);
+  EXPECT_CALL(fcm_handler_, StartListening).Times(0);
   EXPECT_CALL(handler_delegate_, CreateRequestSender).Times(0);
 
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
@@ -299,20 +315,35 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterSuccess) {
         on_init_receiver_info_future.GetCallback().Run(
             std::move(received_info));
       });
-
+  EXPECT_CALL(fcm_handler_, StartListening).Times(1);
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
-  WaitForTokenUpload();
 
   mojom::ReceiverInfoPtr receiver_info = on_init_receiver_info_future.Take();
   EXPECT_EQ(receiver_info->id, kReceiverId);
   // `GetReceiverConnectionInfoRequest` should be invoked on registration
   // success.
   url_loader_factory_.WaitForRequest(get_connection_url_);
+}
 
-  // ShutDown should be called on dtor.
-  EXPECT_CALL(*invalidation_service_, ShutDown).Times(1);
-  ResetBocaReceiverPageHandler();
+TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterSuccessAlreadyListening) {
+  base::test::TestFuture<mojom::ReceiverInfoPtr> on_init_receiver_info_future;
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_future](
+                    mojom::ReceiverInfoPtr received_info) {
+        on_init_receiver_info_future.GetCallback().Run(
+            std::move(received_info));
+      });
+  EXPECT_CALL(fcm_handler_, StartListening).Times(0);
+  EXPECT_CALL(fcm_handler_, IsListening).WillOnce(Return(true));
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+
+  mojom::ReceiverInfoPtr receiver_info = on_init_receiver_info_future.Take();
+  EXPECT_EQ(receiver_info->id, kReceiverId);
+  // `GetReceiverConnectionInfoRequest` should be invoked on registration
+  // success.
+  url_loader_factory_.WaitForRequest(get_connection_url_);
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterFailure) {
@@ -326,20 +357,19 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterFailure) {
 
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
+  task_environment_.FastForwardUntilNoTasksRemain();
 
-  base::test::TestFuture<bool> token_upload_future;
-  ASSERT_THAT(invalidation_service_delegate_, NotNull());
-  invalidation_service_delegate_->UploadToken(
-      "fcm-token", token_upload_future.GetCallback());
-
-  EXPECT_FALSE(token_upload_future.Get());
   EXPECT_TRUE(signal.Wait());
 }
 
 TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
+  boca::InvalidationsListener* listener = nullptr;
+  EXPECT_CALL(fcm_handler_, AddListener)
+      .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
+        listener = listener_param;
+      });
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
-  WaitForTokenUpload();
   std::string connection_info_no_code =
       CreateConnectionInfo(kConnectionId, kStartRequested, "");
 
@@ -366,7 +396,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
       .Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  listener->OnInvalidationReceived("payload");
   auto [initiator, presenter] = connecting_future.Take();
   ASSERT_FALSE(initiator.is_null());
   EXPECT_EQ(initiator->name, kInitiatorName);
@@ -380,8 +410,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
       get_connection_url_.spec(),
       CreateConnectionInfo(kConnectionId, kStartRequested, kConnectionCodeJson,
                            kInitiatorGaiaId, kInitiatorGaiaId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   base::test::TestFuture<mojom::UserInfoPtr, mojom::UserInfoPtr>
       connecting_future;
   EXPECT_CALL(page_, OnConnecting)
@@ -397,7 +425,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
       .Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
 
   auto [initiator, presenter] = connecting_future.Take();
   ASSERT_FALSE(initiator.is_null());
@@ -408,8 +437,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
 TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   base::RepeatingCallback<void(SkBitmap, std::unique_ptr<webrtc::DesktopFrame>)>
       frame_received_cb;
   auto remoting_client =
@@ -422,7 +449,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
       });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
 
   // Verify the first state update to CONNECTING.
   EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
@@ -463,8 +491,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, FrameReceived) {
 TEST_F(BocaReceiverUntrustedPageHandlerTest, AudioPacketReceived) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   base::RepeatingCallback<void(std::unique_ptr<remoting::AudioPacket> packet)>
       audio_packet_received_cb;
   auto remoting_client =
@@ -478,7 +504,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, AudioPacketReceived) {
       });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
 
   url_loader_factory_.SimulateResponseForPendingRequest(
       update_connection_url_.spec(), kConnectingPair);
@@ -517,8 +544,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, AudioPacketReceived) {
 TEST_F(BocaReceiverUntrustedPageHandlerTest, InvalidAudioPacketNotSent) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   base::RepeatingCallback<void(std::unique_ptr<remoting::AudioPacket> packet)>
       audio_packet_received_cb;
   auto remoting_client =
@@ -532,7 +557,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, InvalidAudioPacketNotSent) {
       });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
 
   url_loader_factory_.SimulateResponseForPendingRequest(
       update_connection_url_.spec(), kConnectingPair);
@@ -559,8 +585,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, InvalidAudioPacketNotSent) {
 TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   base::OnceClosure session_ended_cb;
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
@@ -573,7 +597,8 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, CrdSessionEnded) {
       });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
 
   // Verify the first state update to CONNECTING.
   EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
@@ -599,15 +624,19 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
        StartRequestedWithDifferentConnectionId) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   auto remoting_client_first =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   auto* remoting_client_first_ptr = remoting_client_first.get();
   EXPECT_CALL(*remoting_client_first_ptr, StartCrdClient).Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client_first))));
-  WaitForTokenUpload();
+  boca::InvalidationsListener* listener = nullptr;
+  EXPECT_CALL(fcm_handler_, AddListener)
+      .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
+        listener = listener_param;
+      });
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
   EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);
   url_loader_factory_.SimulateResponseForPendingRequest(
       update_connection_url_.spec(), kConnectingPair);
@@ -637,7 +666,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest,
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client_second))));
 
-  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  listener->OnInvalidationReceived("payload");
 
   EXPECT_EQ(connection_closed_future.Get(),
             mojom::ConnectionClosedReason::kTakeOver);
@@ -652,9 +681,13 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedBeforeConnecting) {
   url_loader_factory_.AddResponse(
       get_connection_url_.spec(),
       CreateConnectionInfo(kConnectionId, "START_REQUESTED", ""));
+  boca::InvalidationsListener* listener = nullptr;
+  EXPECT_CALL(fcm_handler_, AddListener)
+      .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
+        listener = listener_param;
+      });
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
-  WaitForTokenUpload();
   // Now simulate a STOP_REQUESTED invalidation for the same connection.
   url_loader_factory_.AddResponse(
       get_connection_url_.spec(),
@@ -662,7 +695,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedBeforeConnecting) {
 
   EXPECT_CALL(page_, OnConnectionClosed).Times(0);
 
-  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  listener->OnInvalidationReceived("payload");
   EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
 }
 
@@ -670,15 +703,19 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedAfterConnecting) {
   // Establish a connection first.
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   auto* remoting_client_ptr = remoting_client.get();
   EXPECT_CALL(*remoting_client, StartCrdClient).Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  boca::InvalidationsListener* listener = nullptr;
+  EXPECT_CALL(fcm_handler_, AddListener)
+      .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
+        listener = listener_param;
+      });
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
   // Wait for CONNECTING update.
   url_loader_factory_.WaitForRequest(update_connection_url_);
   url_loader_factory_.SimulateResponseForPendingRequest(
@@ -698,7 +735,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedAfterConnecting) {
           });
   EXPECT_CALL(*remoting_client_ptr, StopCrdClient).Times(1);
 
-  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  listener->OnInvalidationReceived("payload");
 
   EXPECT_EQ(connection_closed_future.Get(),
             mojom::ConnectionClosedReason::kInitiatorClosed);
@@ -709,15 +746,19 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
   // Establish a connection first.
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
   auto* remoting_client_ptr = remoting_client.get();
   EXPECT_CALL(*remoting_client, StartCrdClient).Times(1);
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  boca::InvalidationsListener* listener = nullptr;
+  EXPECT_CALL(fcm_handler_, AddListener)
+      .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
+        listener = listener_param;
+      });
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
   // Wait for CONNECTING update.
   url_loader_factory_.WaitForRequest(update_connection_url_);
   url_loader_factory_.SimulateResponseForPendingRequest(
@@ -738,7 +779,7 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
   EXPECT_CALL(page_, OnConnectionClosed).Times(0);
   EXPECT_CALL(*remoting_client_ptr, StopCrdClient).Times(0);
 
-  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  listener->OnInvalidationReceived("payload");
 
   EXPECT_EQ(GetRequestBody(kUpdateOldConnectionUrl), kDisconnectedPair);
 }
@@ -751,9 +792,13 @@ TEST_P(BocaReceiverUntrustedPageHandlerNoActiveConnectionTest,
        UpdateConnectionState) {
   // No active connection on the client.
   url_loader_factory_.AddResponse(get_connection_url_.spec(), "{}");
+  boca::InvalidationsListener* listener = nullptr;
+  EXPECT_CALL(fcm_handler_, AddListener)
+      .WillOnce([&listener](boca::InvalidationsListener* listener_param) {
+        listener = listener_param;
+      });
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
-  WaitForTokenUpload();
 
   // Simulate an invalidation with a given state.
   const std::string_view connection_state = GetParam();
@@ -763,7 +808,7 @@ TEST_P(BocaReceiverUntrustedPageHandlerNoActiveConnectionTest,
 
   EXPECT_CALL(page_, OnConnectionClosed).Times(0);
 
-  invalidation_service_delegate_->OnInvalidationReceived("payload");
+  listener->OnInvalidationReceived("payload");
   EXPECT_EQ(GetRequestBody(update_connection_url_), kDisconnectedPair);
 }
 
@@ -788,8 +833,6 @@ TEST_P(BocaReceiverUntrustedPageHandlerCrdStateTest,
        CrdConnectionStateUpdated) {
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
-  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
-      page_.BindAndGetRemote(), &handler_delegate_);
   boca::SpotlightCrdStateUpdatedCallback state_updated_cb;
   auto remoting_client =
       std::make_unique<NiceMock<MockSpotlightRemotingClientManager>>();
@@ -802,7 +845,8 @@ TEST_P(BocaReceiverUntrustedPageHandlerCrdStateTest,
       });
   EXPECT_CALL(handler_delegate_, CreateRemotingClientManager)
       .WillOnce(Return(ByMove(std::move(remoting_client))));
-  WaitForTokenUpload();
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
 
   // Verify the first state update to CONNECTING.
   EXPECT_EQ(GetRequestBody(update_connection_url_), kConnectingPair);

@@ -10,6 +10,7 @@
 
 #include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
@@ -21,8 +22,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
-#include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
+#include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/receiver/boca_device_auth_token_service.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
@@ -46,17 +46,18 @@ ReceiverHandlerDelegateImpl::ReceiverHandlerDelegateImpl(content::WebUI* web_ui)
 
 ReceiverHandlerDelegateImpl::~ReceiverHandlerDelegateImpl() = default;
 
-std::unique_ptr<boca::InvalidationService>
-ReceiverHandlerDelegateImpl::CreateInvalidationService(
-    boca::InvalidationServiceDelegate* invalidation_service_delegate) const {
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  gcm::GCMDriver* gcm_driver =
-      gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
-  instance_id::InstanceIDDriver* instance_id_driver =
-      instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
-          ->driver();
-  return std::make_unique<boca::InvalidationServiceImpl>(
-      gcm_driver, instance_id_driver, invalidation_service_delegate);
+boca::FCMHandler* ReceiverHandlerDelegateImpl::GetFcmHandler() const {
+  static base::NoDestructor<boca::FCMHandlerImpl> fcm_handler;
+  if (!fcm_handler.get()->IsInitialized()) {
+    Profile* profile = Profile::FromWebUI(web_ui_);
+    gcm::GCMDriver* gcm_driver =
+        gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver();
+    instance_id::InstanceIDDriver* instance_id_driver =
+        instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
+            ->driver();
+    fcm_handler.get()->Init(gcm_driver, instance_id_driver);
+  }
+  return fcm_handler.get();
 }
 
 std::unique_ptr<google_apis::RequestSender>

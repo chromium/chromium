@@ -30,12 +30,30 @@ const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 // TODO(366316368): Revisit this TTL or should just remove it.
 const int kInstanceIDTokenTTLSeconds = 28 * 24 * 60 * 60;  // 4 weeks.
 
+FCMHandlerImpl::FCMHandlerImpl() = default;
+
 FCMHandlerImpl::FCMHandlerImpl(
     gcm::GCMDriver* gcm_driver,
-    instance_id::InstanceIDDriver* instance_id_driver)
-    : gcm_driver_(gcm_driver), instance_id_driver_(instance_id_driver) {}
+    instance_id::InstanceIDDriver* instance_id_driver) {
+  Init(gcm_driver, instance_id_driver);
+}
 
 FCMHandlerImpl::~FCMHandlerImpl() {}
+
+void FCMHandlerImpl::Init(gcm::GCMDriver* gcm_driver,
+                          instance_id::InstanceIDDriver* instance_id_driver) {
+  if (initialized_) {
+    LOG(ERROR) << "[Boca] FCM handler is already initialized.";
+    return;
+  }
+  gcm_driver_ = gcm_driver;
+  instance_id_driver_ = instance_id_driver;
+  initialized_ = true;
+}
+
+bool FCMHandlerImpl::IsInitialized() const {
+  return initialized_;
+}
 
 void FCMHandlerImpl::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

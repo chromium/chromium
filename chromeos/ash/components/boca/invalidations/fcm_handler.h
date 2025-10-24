@@ -94,11 +94,16 @@ class FCMHandler {
 // This handler is used to register with FCM and to process incoming messages.
 class FCMHandlerImpl : public FCMHandler, public gcm::GCMAppHandler {
  public:
+  FCMHandlerImpl();
   FCMHandlerImpl(gcm::GCMDriver* gcm_driver,
                  instance_id::InstanceIDDriver* instance_id_driver);
   ~FCMHandlerImpl() override;
   FCMHandlerImpl(const FCMHandlerImpl&) = delete;
   FCMHandlerImpl& operator=(const FCMHandlerImpl&) = delete;
+
+  void Init(gcm::GCMDriver* gcm_driver,
+            instance_id::InstanceIDDriver* instance_id_driver);
+  bool IsInitialized() const;
 
   // FCMHandler:
   void StartListening() override;
@@ -159,6 +164,8 @@ class FCMHandlerImpl : public FCMHandler, public gcm::GCMAppHandler {
                      /*check_empty=*/true,
                      /*allow_reentrancy=*/false>
       token_observers_;
+
+  bool initialized_ = false;
 
   base::WeakPtrFactory<FCMHandlerImpl> weak_ptr_factory_{this};
 };

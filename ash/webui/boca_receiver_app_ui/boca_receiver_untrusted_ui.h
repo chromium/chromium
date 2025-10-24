@@ -70,10 +70,10 @@ class BocaReceiverUntrustedUI
   mojo::Receiver<boca_receiver::mojom::UntrustedPageHandlerFactory>
       page_factory_receiver_{this};
 
+  std::unique_ptr<boca_receiver::ReceiverHandlerDelegate> delegate_;
+
   std::unique_ptr<boca_receiver::BocaReceiverUntrustedPageHandler>
       page_handler_;
-
-  std::unique_ptr<boca_receiver::ReceiverHandlerDelegate> delegate_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

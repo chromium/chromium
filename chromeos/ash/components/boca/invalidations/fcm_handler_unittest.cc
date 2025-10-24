@@ -121,6 +121,7 @@ TEST_F(FCMHandlerTest, ShouldReturnValidToken) {
   // Check that the handler gets the token through GetToken.
   EXPECT_CALL(mock_instance_id_, GetToken)
       .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_TRUE(fcm_handler_.IsInitialized());
 
   fcm_handler_.StartListening();
 
@@ -271,6 +272,15 @@ TEST_F(FCMHandlerTest, ShutdownHandler) {
   // Calling these after `ShutdownHandler` is a no-op.
   fcm_handler_.StopListening();
   fcm_handler_.StopListeningPermanently();
+}
+
+TEST_F(FCMHandlerTest, Init) {
+  FCMHandlerImpl fcm_handler;
+  EXPECT_FALSE(fcm_handler.IsInitialized());
+  fcm_handler.Init(&fake_gcm_driver_, &mock_instance_id_driver_);
+  EXPECT_TRUE(fcm_handler.IsInitialized());
+  fcm_handler.ShutdownHandler();
+  EXPECT_TRUE(fcm_handler.IsInitialized());
 }
 
 }  // namespace

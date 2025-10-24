@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/boca_request.h"
-#include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
+#include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/proto/receiver.pb.h"
 #include "chromeos/ash/components/boca/retriable_request_sender.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,19 +25,13 @@
 class SkBitmap;
 
 namespace ash::boca {
-class InvalidationService;
 class SpotlightRemotingClientManager;
 enum class CrdConnectionState;
 }  // namespace ash::boca
 
 namespace google_apis {
-class RequestSender;
 enum class HttpRequestMethod;
 }  // namespace google_apis
-
-namespace net {
-struct NetworkTrafficAnnotationTag;
-}  // namespace net
 
 namespace remoting {
 class AudioPacket;
@@ -52,7 +46,8 @@ namespace ash::boca_receiver {
 class ReceiverHandlerDelegate;
 
 class BocaReceiverUntrustedPageHandler
-    : public boca::InvalidationServiceDelegate {
+    : public boca::FCMRegistrationTokenObserver,
+      public boca::InvalidationsListener {
  public:
   BocaReceiverUntrustedPageHandler(
       mojo::PendingRemote<mojom::UntrustedPage> page,
@@ -68,25 +63,20 @@ class BocaReceiverUntrustedPageHandler
  private:
   using ConnectionInfoRequestSender =
       boca::RetriableRequestSender<::boca::KioskReceiverConnection>;
+  using RegistrationRequestSender = boca::RetriableRequestSender<std::string>;
   using UpdateReceiverStateRequestSender =
       boca::RetriableRequestSender<::boca::ReceiverConnectionState>;
 
-  // boca::InvalidationServiceDelegate:
-  void UploadToken(
-      const std::string& fcm_token,
-      base::OnceCallback<void(bool)> on_token_uploaded_cb) override;
+  // boca::FCMRegistrationTokenObserver:
+  void OnFCMRegistrationTokenChanged() override;
+
+  // boca:InvalidationsListener:
   void OnInvalidationReceived(const std::string& payload) override;
 
   void Init();
 
-  [[nodiscard]] std::unique_ptr<google_apis::RequestSender> SendRequest(
-      std::unique_ptr<boca::BocaRequest::Delegate> request_delegate,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation);
-
-  void Register(const std::string& fcm_token,
-                base::OnceCallback<void(bool)> on_done_cb);
-  void OnRegisterResponse(base::OnceCallback<void(bool)> on_done_cb,
-                          std::optional<std::string> receiver_id);
+  void Register(const std::string& fcm_token);
+  void OnRegisterResponse(std::optional<std::string> receiver_id);
 
   void UpdateConnection(const std::string& connection_id,
                         ::boca::ReceiverConnectionState request_state);
@@ -111,11 +101,13 @@ class BocaReceiverUntrustedPageHandler
   void OnCrdAudioPacketReceived(std::unique_ptr<remoting::AudioPacket> packet);
   void OnCrdConnectionStateUpdated(boca::CrdConnectionState state);
 
+  boca::FCMHandler* fcm_handler() const;
+
   mojo::Remote<mojom::UntrustedPage> page_;
   const raw_ptr<ReceiverHandlerDelegate> delegate_;
   std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_;
-  std::unique_ptr<boca::InvalidationService> invalidation_service_;
-  std::unique_ptr<google_apis::RequestSender> registration_request_sender_;
+  std::unique_ptr<RegistrationRequestSender>
+      registration_request_retriable_sender_;
   std::optional<std::string> receiver_id_;
   std::unique_ptr<ConnectionInfoRequestSender>
       connection_info_retriable_sender_;
