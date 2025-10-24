@@ -336,6 +336,8 @@ chromium-metrics-reviews@google.com.
   <int value="71" label="SubscribeToCaptureRegion"/>
   <int value="72" label="UnsubscribeFromCaptureRegion"/>
   <int value="73" label="OnRecordUseCounter"/>
+  <int value="74" label="InterruptActorTask"/>
+  <int value="75" label="UninterruptActorTask"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

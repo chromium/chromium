@@ -75,7 +75,8 @@ class ActorTask {
     kPausedByUser = 4,
     kCancelled = 5,
     kFinished = 6,
-    kMaxValue = kFinished,
+    kWaitingOnUser = 7,
+    kMaxValue = kWaitingOnUser,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ActorTaskState)
 
@@ -99,6 +100,13 @@ class ActorTask {
   // Resume() indicates the user wants server-driven actuation to resume. The
   // caller is responsible for sending new state to the server (e.g. APC).
   void Resume();
+
+  // Indicate we are waiting for user input. User interaction is still
+  // prevented.
+  void Interrupt();
+
+  // Uninterrupt from waiting on user input.
+  void Uninterrupt();
 
   bool IsPaused() const;
 

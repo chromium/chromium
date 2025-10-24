@@ -511,6 +511,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       this.stopActorTask = undefined;
       this.pauseActorTask = undefined;
       this.resumeActorTask = undefined;
+      this.interruptActorTask = undefined;
+      this.uninterruptActorTask = undefined;
       this.getActOnWebCapability = undefined;
     }
 
@@ -731,6 +733,18 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const response = await this.sender.requestWithResponse(
         'glicBrowserResumeActorTask', {taskId, tabContextOptions});
     return convertTabContextResultFromPrivate(response.resumeActorTaskResult);
+  }
+
+  interruptActorTask?(taskId: number): void {
+    this.sender.requestNoResponse('glicBrowserInterruptActorTask', {
+      taskId,
+    });
+  }
+
+  uninterruptActorTask?(taskId: number): void {
+    this.sender.requestNoResponse('glicBrowserUninterruptActorTask', {
+      taskId,
+    });
   }
 
   getActorTaskState(taskId: number): ObservableValueImpl<ActorTaskState> {

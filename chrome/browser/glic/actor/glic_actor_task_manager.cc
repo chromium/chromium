@@ -319,6 +319,34 @@ bool GlicActorTaskManager::IsActuating() const {
   return !!current_task_id_;
 }
 
+void GlicActorTaskManager::InterruptActorTask(actor::TaskId task_id) {
+  actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
+  if (!task) {
+    actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
+                                           "Failed to interrupt task",
+                                           actor::JournalDetailsBuilder()
+                                               .AddError("No such task")
+                                               .Add("id", task_id.value())
+                                               .Build());
+    return;
+  }
+  task->Interrupt();
+}
+
+void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
+  actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
+  if (!task) {
+    actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
+                                           "Failed to uninterrupt task",
+                                           actor::JournalDetailsBuilder()
+                                               .AddError("No such task")
+                                               .Add("id", task_id.value())
+                                               .Build());
+    return;
+  }
+  task->Uninterrupt();
+}
+
 base::WeakPtr<GlicActorTaskManager> GlicActorTaskManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

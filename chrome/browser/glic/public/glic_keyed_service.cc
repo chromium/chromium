@@ -497,6 +497,14 @@ void GlicKeyedService::ResumeActorTask(
                                        std::move(callback));
 }
 
+void GlicKeyedService::InterruptActorTask(actor::TaskId task_id) {
+  actor_task_manager_->InterruptActorTask(task_id);
+}
+
+void GlicKeyedService::UninterruptActorTask(actor::TaskId task_id) {
+  actor_task_manager_->UninterruptActorTask(task_id);
+}
+
 void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
   user_input_submitted_callback_list_.Notify();
 }

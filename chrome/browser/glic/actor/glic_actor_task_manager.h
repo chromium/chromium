@@ -46,6 +46,8 @@ class GlicActorTaskManager {
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
+  void InterruptActorTask(actor::TaskId task_id);
+  void UninterruptActorTask(actor::TaskId task_id);
 
   bool IsActuating() const;
 

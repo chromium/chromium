@@ -186,6 +186,18 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserInterruptActorTask: {
+    request: {
+      taskId: number,
+    },
+    backgroundAllowed: true,
+  },
+  glicBrowserUninterruptActorTask: {
+    request: {
+      taskId: number,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
@@ -783,6 +795,8 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         SubscribeToCaptureRegion: 71,
         UnsubscribeFromCaptureRegion: 72,
         OnRecordUseCounter: 73,
+        InterruptActorTask: 74,
+        UninterruptActorTask: 75,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

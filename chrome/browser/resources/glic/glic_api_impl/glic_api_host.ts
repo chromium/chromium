@@ -837,6 +837,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     };
   }
 
+  glicBrowserInterruptActorTask(request: {
+    taskId: number,
+  }): void {
+    this.handler.interruptActorTask(request.taskId);
+  }
+
+  glicBrowserUninterruptActorTask(request: {
+    taskId: number,
+  }): void {
+    this.handler.uninterruptActorTask(request.taskId);
+  }
+
   async glicBrowserResizeWindow(request: {
     size: {width: number, height: number},
     options?: {durationMs?: number},

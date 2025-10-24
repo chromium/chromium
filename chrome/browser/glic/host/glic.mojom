@@ -644,6 +644,19 @@ interface WebClientHandler {
   ResumeActorTask(int32 task_id, GetTabContextOptions context_options)
       => (GetContextResultWithActionResultCode result);
 
+  // Interrupts the task associated with the given id. This is
+  // different than pausing a task since this still prevents user
+  // interaction.
+  // No-op if a task with the given id does not exist.
+  // No-op if the state of the task not in the reflecting state.
+  InterruptActorTask(int32 task_id);
+
+  // Indicates the task associated with the given id is no longer waiting
+  // on user input.
+  // No-op if a task with the given id does not exist.
+  // No-op if the task is not in the interrupted state.
+  UninterruptActorTask(int32 task_id);
+
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   // If the widget doesn't exist yet, `size` will be used as its initial size

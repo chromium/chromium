@@ -337,6 +337,22 @@ export declare interface GlicBrowserHost {
       Promise<ResumeActorTaskResult>;
 
   /**
+   * Interrupts the actor task with the given ID in the browser if it exists.
+   * No-op otherwise.
+   *
+   * Interrupting is different than pausing. Interrupting changes the state
+   * indicating the task is waiting for user input but does not pause the
+   * task.
+   */
+  interruptActorTask?(taskId: number): void;
+
+  /**
+   * Indicates a task is no longer interrupted with the given ID in the browser
+   * if it exists. No-op otherwise.
+   */
+  uninterruptActorTask?(taskId: number): void;
+
+  /**
    * Returns the observable state of the actor task with the given ID. Updates
    * are sent whenever:
    * - The task is created, paused, resumed or stopped.

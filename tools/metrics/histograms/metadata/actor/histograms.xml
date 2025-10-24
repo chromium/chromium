@@ -32,6 +32,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PausedByActor" summary="ActorTask in PausedByActor state."/>
   <variant name="PausedByUser" summary="ActorTask in PausedByUser state."/>
   <variant name="Reflecting" summary="ActorTask in Reflecting state."/>
+  <variant name="WaitingOnUser" summary="ActorTask in WaitingOnUser state."/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->

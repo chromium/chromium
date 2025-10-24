@@ -130,6 +130,7 @@ chromium-metrics-reviews@google.com.
     <variant name="GetUserProfileInfo"/>
     <variant name="GetZeroStateSuggestionsAndSubscribe"/>
     <variant name="GetZeroStateSuggestionsForFocusedTab"/>
+    <variant name="InterruptActorTask"/>
     <variant name="JournalClear"/>
     <variant name="JournalRecordFeedback"/>
     <variant name="JournalSnapshot"/>
@@ -180,6 +181,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SubscribeToPageMetadata"/>
     <variant name="SubscribeToPinCandidates"/>
     <variant name="SwitchConversation"/>
+    <variant name="UninterruptActorTask"/>
     <variant name="UnpinAllTabs"/>
     <variant name="UnpinTabs"/>
     <variant name="UnsubscribeFromCaptureRegion"/>

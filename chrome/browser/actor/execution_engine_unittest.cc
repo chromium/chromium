@@ -567,6 +567,40 @@ TEST_F(ExecutionEngineTest, LatencyInfo) {
   EXPECT_NE(actions_result[0].end_time, base::TimeTicks());
 }
 
+TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  ActResultFuture result;
+
+  FakeChromeRenderFrame fake_chrome_render_frame;
+  fake_chrome_render_frame.OverrideBinder(main_rfh());
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  // Simulate the first active period
+  const base::TimeDelta active_duration1 = base::Milliseconds(100);
+  task_environment()->FastForwardBy(active_duration1);
+
+  task_->Interrupt();
+
+  // Time that passes while paused should not be counted.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  task_->Uninterrupt();
+
+  // Simulate the second active period
+  const base::TimeDelta active_duration2 = base::Milliseconds(50);
+  task_environment()->FastForwardBy(active_duration2);
+
+  task_->Stop(/*success=*/true);
+  histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
+                                    active_duration1 + active_duration2, 1);
+  histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
+}
+
 }  // namespace
 
 }  // namespace actor

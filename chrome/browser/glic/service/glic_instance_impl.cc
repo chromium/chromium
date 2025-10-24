@@ -361,6 +361,14 @@ void GlicInstanceImpl::ResumeActorTask(
                                        std::move(callback));
 }
 
+void GlicInstanceImpl::InterruptActorTask(actor::TaskId task_id) {
+  actor_task_manager_->InterruptActorTask(task_id);
+}
+
+void GlicInstanceImpl::UninterruptActorTask(actor::TaskId task_id) {
+  actor_task_manager_->UninterruptActorTask(task_id);
+}
+
 void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
     bool has_active_subscription,
     const mojom::ZeroStateSuggestionsOptions& options,

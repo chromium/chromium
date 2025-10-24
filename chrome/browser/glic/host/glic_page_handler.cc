@@ -1054,6 +1054,24 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         actor::TaskId(task_id), *context_options, std::move(callback));
   }
 
+  void InterruptActorTask(int32_t task_id) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "InterruptActorTask cannot be called without GlicActor enabled.");
+      return;
+    }
+    host().instance_delegate().InterruptActorTask(actor::TaskId(task_id));
+  }
+
+  void UninterruptActorTask(int32_t task_id) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+      receiver_.ReportBadMessage(
+          "UninterruptActorTask cannot be called without GlicActor enabled.");
+      return;
+    }
+    host().instance_delegate().UninterruptActorTask(actor::TaskId(task_id));
+  }
+
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
     host().CaptureScreenshot(std::move(callback));
   }
@@ -1633,6 +1651,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       switch (task.GetState()) {
         case actor::ActorTask::State::kCreated:
         case actor::ActorTask::State::kReflecting:
+        case actor::ActorTask::State::kWaitingOnUser:
           return mojom::ActorTaskState::kIdle;
         case actor::ActorTask::State::kActing:
           return mojom::ActorTaskState::kActing;

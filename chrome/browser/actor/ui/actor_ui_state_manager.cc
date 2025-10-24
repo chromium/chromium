@@ -133,6 +133,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
           << "Task state should never be set to kCreated from another state.";
     case ActorTask::State::kActing:
     case ActorTask::State::kReflecting:
+    case ActorTask::State::kWaitingOnUser:
       ui_tab_state = GetActorControlledUiTabState();
       break;
     case ActorTask::State::kPausedByUser:

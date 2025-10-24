@@ -155,6 +155,8 @@ class GlicInstanceImpl : public GlicInstance,
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
+  void InterruptActorTask(actor::TaskId task_id) override;
+  void UninterruptActorTask(actor::TaskId task_id) override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,

@@ -30,10 +30,15 @@ namespace actor {
 
 namespace {
 
-bool IsStateActive(ActorTask::State state) {
+bool IsStateActiveAndNotWaiting(ActorTask::State state) {
   return (state == ActorTask::State::kCreated ||
           state == ActorTask::State::kActing ||
           state == ActorTask::State::kReflecting);
+}
+
+bool IsStateActive(ActorTask::State state) {
+  return (IsStateActiveAndNotWaiting(state) ||
+          state == ActorTask::State::kWaitingOnUser);
 }
 
 void SetFocusState(content::WebContents* contents,
@@ -116,9 +121,13 @@ void ActorTask::SetState(State new_state) {
             {kReflecting, kPausedByActor, kPausedByUser, kCancelled,
              kFinished}},
            {kReflecting,
-            {kActing, kPausedByActor, kPausedByUser, kCancelled, kFinished}},
+            {kActing, kPausedByActor, kPausedByUser, kCancelled, kFinished,
+             kWaitingOnUser}},
            {kPausedByActor, {kReflecting, kCancelled, kFinished}},
            {kPausedByUser, {kReflecting, kCancelled, kFinished}},
+           {kWaitingOnUser,
+            {kActing, kReflecting, kPausedByActor, kPausedByUser, kCancelled,
+             kFinished}},
            {kCancelled, {}},
            {kFinished, {}}}));
   if (new_state != state_) {
@@ -133,7 +142,7 @@ void ActorTask::SetState(State new_state) {
 
   // If the old state was active, add its duration to the total active time for
   // the task.
-  if (IsActive()) {
+  if (IsStateActiveAndNotWaiting(old_state)) {
     total_active_time_ += old_state_duration;
   }
 
@@ -261,6 +270,20 @@ void ActorTask::Resume() {
 bool ActorTask::IsPaused() const {
   return (GetState() == State::kPausedByActor) ||
          (GetState() == State::kPausedByUser);
+}
+
+void ActorTask::Interrupt() {
+  if (GetState() != State::kReflecting) {
+    return;
+  }
+  SetState(State::kWaitingOnUser);
+}
+
+void ActorTask::Uninterrupt() {
+  if (GetState() != State::kWaitingOnUser) {
+    return;
+  }
+  SetState(State::kReflecting);
 }
 
 bool ActorTask::IsStopped() const {
@@ -507,6 +530,8 @@ std::string ToString(const ActorTask::State& state) {
       return "Cancelled";
     case kFinished:
       return "Finished";
+    case kWaitingOnUser:
+      return "WaitingOnUser";
   }
 }
 
