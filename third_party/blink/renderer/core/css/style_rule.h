@@ -760,7 +760,7 @@ class CORE_EXPORT StyleRuleMixin : public StyleRuleGroup {
 class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
  public:
   StyleRuleApplyMixin(AtomicString name,
-                      HeapVector<String> arguments,
+                      HeapVector<Member<CSSVariableData>> arguments,
                       StyleRule* fake_parent_rule_for_declarations)
       : StyleRuleBase(kApplyMixin),
         name_(std::move(name)),
@@ -769,7 +769,9 @@ class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
   StyleRuleApplyMixin(const StyleRuleMixin&) = delete;
 
   const AtomicString& GetName() const { return name_; }
-  const HeapVector<String>& GetArguments() const { return arguments_; }
+  const HeapVector<Member<CSSVariableData>>& GetArguments() const {
+    return arguments_;
+  }
 
   // Declarations argument (for @contents). May be nullptr.
   StyleRule* FakeParentRuleForDeclarations() const {
@@ -780,7 +782,7 @@ class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
 
  private:
   AtomicString name_;
-  HeapVector<String> arguments_;
+  HeapVector<Member<CSSVariableData>> arguments_;
   Member<StyleRule> fake_parent_rule_for_declarations_;
 };
 

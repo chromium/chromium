@@ -394,5 +394,39 @@
       assert_equals(getComputedStyle(target).getPropertyValue('--some-length'), '12px');
     }, 'var() typed default parameters are resolved against the element');
   </script>
+
+  <style>
+    @mixin --m16(--arg: !!) {  /* Invalid declaration. */
+      color: red;
+    }
+    #e16 {
+      color: green;
+      @apply --m16();
+    }
+  </style>
+  <div><div id="e16">This text should be green.</div></div>
+  <script>
+    test(() => {
+      let target = document.getElementById('e16');
+      assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
+    }, 'Invalid defaults should skip declaration, even on unused arguments');
+  </script>
+
+  <style>
+    @mixin --m17(--arg) {
+      color: red;
+    }
+    #e17 {
+      color: green;
+      @apply --m17(!!!);  /* Invalid invocation. */
+    }
+  </style>
+  <div><div id="e17">This text should be green.</div></div>
+  <script>
+    test(() => {
+      let target = document.getElementById('e17');
+      assert_equals(getComputedStyle(target).color, 'rgb(0, 128, 0)');
+    }, 'Invalid @apply arguments should skip declaration');
+  </script>
   </body>
 </html>

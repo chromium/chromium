@@ -1158,12 +1158,7 @@ void RuleSet::ApplyMixin(StyleRule* parent_rule,
           mixin_rule->GetParameters()[i];
       CSSVariableData* argument_data = nullptr;
       if (i < apply_mixin_rule->GetArguments().size()) {
-        // TODO(sesse): Should we store the CSSVariableData directly in the
-        // ApplyMixinRule?
-        argument_data = CSSVariableData::Create(
-            apply_mixin_rule->GetArguments()[i],
-            /*is_animation_tainted=*/false, /*is_attr_tainted=*/false,
-            /*needs_variable_resolution=*/true);
+        argument_data = apply_mixin_rule->GetArguments()[i];
       }
       if (!argument_data && !parameter.default_value) {
         // No parameter given, and no default. This isn't spec-ed yet;

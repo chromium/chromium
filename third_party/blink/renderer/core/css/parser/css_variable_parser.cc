@@ -338,6 +338,7 @@ static bool IsCustomFunction(const CSSParserToken& token) {
          css_parsing_utils::IsDashedFunctionName(token);
 }
 
+// Keep in sync with ConsumeMixinArguments() below.
 static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
                                   bool& has_references,
                                   bool& has_font_units,
@@ -402,6 +403,80 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
     return false;
   }
   return true;
+}
+
+// Keep in sync with ConsumeCustomFunction() above. The only real difference
+// between the two is that this one calls ConsumeUnparsedDeclaration() instead
+// of ConsumeUnparsedValue(), and stores the result.
+bool CSSVariableParser::ConsumeMixinArguments(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    HeapVector<Member<CSSVariableData>>& result) {
+  bool important_ignored;
+
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  // Consume the arguments.
+  while (!stream.AtEnd()) {
+    // Commas and "{}" blocks are normally not allowed in argument values
+    // (at the top level), unless the whole value is wrapped in a "{}" block.
+    //
+    // https://drafts.csswg.org/css-values-5/#component-function-commas
+    if (stream.Peek().GetType() == kLeftBraceToken) {
+      CSSParserTokenStream::BlockGuard brace_guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd()) {
+        // Empty values are not allowed. (The "{}" wrapper is not part
+        // of the value.)
+        return false;
+      }
+      CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/false,
+          /*comma_ends_declaration=*/false, important_ignored, context);
+      if (!variable_data) {
+        return false;
+      }
+      result.push_back(variable_data);
+    } else {
+      // Arguments that look like custom property declarations are reserved
+      // for named arguments.
+      //
+      // https://github.com/w3c/csswg-drafts/issues/11749
+      if (CSSVariableParser::StartsCustomPropertyDeclaration(stream)) {
+        return false;
+      }
+      // Passing restricted_value=true effectively disallows "{}".
+      CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/true,
+          /*comma_ends_declaration=*/true, important_ignored, context);
+      if (!variable_data) {
+        return false;
+      }
+      result.push_back(variable_data);
+    }
+    if (stream.Peek().GetType() == kCommaToken) {
+      stream.ConsumeIncludingWhitespace();  // kCommaToken
+      if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
+        // Empty values are not allowed. (ConsumeUnparsedValue returns true
+        // in that case.)
+        return false;
+      }
+      continue;
+    } else if (stream.AtEnd()) {
+      // No further arguments.
+      break;
+    }
+    // Unexpected token, e.g. '!'.
+    return false;
+  }
+  return stream.AtEnd();
 }
 
 // Utility function for ConsumeUnparsedDeclaration().

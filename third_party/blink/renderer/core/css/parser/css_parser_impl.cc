@@ -2582,21 +2582,17 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
   }
 
   // Parse arguments, if any.
-  HeapVector<String> arguments;
-  bool arguments_ok = true;
+  HeapVector<Member<CSSVariableData>> arguments;
   if (stream.Peek().GetType() == kIdentToken) {
     // @apply --name ...
     stream.ConsumeIncludingWhitespace();
   } else {
     // @apply --name( ...
-    CSSParserTokenStream::BlockGuard guard(stream);
-    arguments = CSSVariableParser::ConsumeFunctionArguments(
-        stream, std::numeric_limits<unsigned>::max());
-    arguments_ok = stream.AtEnd();
-  }
-  if (!arguments_ok) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
-    return nullptr;
+    if (!CSSVariableParser::ConsumeMixinArguments(stream, *context_,
+                                                  arguments)) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
+      return nullptr;
+    }
   }
 
   stream.EnsureLookAhead();
