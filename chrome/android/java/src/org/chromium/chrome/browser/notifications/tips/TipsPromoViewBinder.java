@@ -29,6 +29,12 @@ public class TipsPromoViewBinder {
         if (key == TipsPromoProperties.FEATURE_TIP_PROMO_DATA) {
             FeatureTipPromoData promoData = model.get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA);
 
+            ButtonCompat mainPagePositiveButton =
+                    view.findViewById(R.id.tips_promo_settings_button);
+            mainPagePositiveButton.setText(promoData.positiveButtonText);
+            ButtonCompat detailPagePositiveButton =
+                    view.findViewById(R.id.tips_promo_details_settings_button);
+            detailPagePositiveButton.setText(promoData.positiveButtonText);
             TextView mainPageTitleView = view.findViewById(R.id.main_page_title_text);
             mainPageTitleView.setText(promoData.mainPageTitle);
             TextView mainPageDescriptionView = view.findViewById(R.id.main_page_description_text);

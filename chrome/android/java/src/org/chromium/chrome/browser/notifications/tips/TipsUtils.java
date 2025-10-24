@@ -29,6 +29,7 @@ public class TipsUtils {
      */
     public static FeatureTipPromoData getFeatureTipPromoDataForType(
             Context context, @TipsNotificationsFeatureType int featureType) {
+        final @StringRes int positiveButtonTextRes;
         final @StringRes int mainPageTitleRes;
         final @StringRes int mainPageDescriptionRes;
         final @StringRes int detailPageTitleRes;
@@ -36,6 +37,7 @@ public class TipsUtils {
 
         switch (featureType) {
             case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_esb;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_esb;
@@ -47,6 +49,7 @@ public class TipsUtils {
                         context.getString(R.string.tips_promo_bottom_sheet_third_step_esb));
                 break;
             case TipsNotificationsFeatureType.QUICK_DELETE:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_quick_delete;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_quick_delete;
@@ -61,6 +64,7 @@ public class TipsUtils {
                                 R.string.tips_promo_bottom_sheet_third_step_quick_delete));
                 break;
             case TipsNotificationsFeatureType.GOOGLE_LENS:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_lens;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
                 mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_lens;
                 detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_lens;
@@ -72,6 +76,7 @@ public class TipsUtils {
                         context.getString(R.string.tips_promo_bottom_sheet_third_step_lens));
                 break;
             case TipsNotificationsFeatureType.BOTTOM_OMNIBOX:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text;
                 mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_bottom_omnibox;
                 mainPageDescriptionRes =
                         R.string.tips_promo_bottom_sheet_description_bottom_omnibox;
@@ -89,12 +94,14 @@ public class TipsUtils {
             default:
                 assert false : "Invalid feature type: " + featureType;
 
+                positiveButtonTextRes = Resources.ID_NULL;
                 mainPageTitleRes = Resources.ID_NULL;
                 mainPageDescriptionRes = Resources.ID_NULL;
                 detailPageTitleRes = Resources.ID_NULL;
         }
 
         return new FeatureTipPromoData(
+                context.getString(positiveButtonTextRes),
                 context.getString(mainPageTitleRes),
                 context.getString(mainPageDescriptionRes),
                 context.getString(detailPageTitleRes),

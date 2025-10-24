@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.Featur
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TipsPromoViewBinderUnitTest {
+    private static final String POSITIVE_BUTTON_TEXT = "button_text";
     private static final String PROMO_TITLE = "title";
     private static final String PROMO_DESCRIPTION = "description";
     private static final String DETAILS_TITLE = "details_title";
@@ -52,6 +54,8 @@ public class TipsPromoViewBinderUnitTest {
     private Activity mActivity;
     private PropertyModel mModel;
     private View mView;
+    private ButtonCompat mMainPagePositiveButtonView;
+    private ButtonCompat mDetailPagePositiveButtonView;
     private TextView mTitleView;
     private TextView mDescriptionView;
     private TextView mDetailsTitleView;
@@ -64,6 +68,8 @@ public class TipsPromoViewBinderUnitTest {
         mView =
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.tips_promo_bottom_sheet, null, false);
+        mMainPagePositiveButtonView = mView.findViewById(R.id.tips_promo_settings_button);
+        mDetailPagePositiveButtonView = mView.findViewById(R.id.tips_promo_details_settings_button);
         mTitleView = mView.findViewById(R.id.main_page_title_text);
         mDescriptionView = mView.findViewById(R.id.main_page_description_text);
         mDetailsTitleView = mView.findViewById(R.id.details_page_title_text);
@@ -81,9 +87,14 @@ public class TipsPromoViewBinderUnitTest {
     public void testFeatureTipPromoData() {
         FeatureTipPromoData promoData =
                 new FeatureTipPromoData(
-                        PROMO_TITLE, PROMO_DESCRIPTION, DETAILS_TITLE, Collections.emptyList());
+                        POSITIVE_BUTTON_TEXT,
+                        PROMO_TITLE,
+                        PROMO_DESCRIPTION,
+                        DETAILS_TITLE,
+                        Collections.emptyList());
         mModel.set(TipsPromoProperties.FEATURE_TIP_PROMO_DATA, promoData);
-
+        assertEquals(POSITIVE_BUTTON_TEXT, mMainPagePositiveButtonView.getText());
+        assertEquals(POSITIVE_BUTTON_TEXT, mDetailPagePositiveButtonView.getText());
         assertEquals(PROMO_TITLE, mTitleView.getText());
         assertEquals(PROMO_DESCRIPTION, mDescriptionView.getText());
         assertEquals(DETAILS_TITLE, mDetailsTitleView.getText());

@@ -35,6 +35,7 @@ public class TipsPromoProperties {
     /** Contains information needed by the Tips Promo View to display UI. */
     @NullMarked
     public static class FeatureTipPromoData {
+        public final String positiveButtonText;
         public final String mainPageTitle;
         public final String mainPageDescription;
         public final String detailPageTitle;
@@ -43,16 +44,19 @@ public class TipsPromoProperties {
         /**
          * Create a {@link FeatureTipPromoData} object containing feature tip data.
          *
+         * @param positiveButtonText The text on the positive button on the promo.
          * @param mainPageTitle The title of the main page of the promo.
          * @param mainPageDescription The description of the main page of the promo.
          * @param detailPageTitle The title of the detail page of the promo.
          * @param detailPageSteps The info steps for the detail page of the promo.
          */
         public FeatureTipPromoData(
+                String positiveButtonText,
                 String mainPageTitle,
                 String mainPageDescription,
                 String detailPageTitle,
                 List<String> detailPageSteps) {
+            this.positiveButtonText = positiveButtonText;
             this.mainPageTitle = mainPageTitle;
             this.mainPageDescription = mainPageDescription;
             this.detailPageTitle = detailPageTitle;

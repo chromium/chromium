@@ -55,6 +55,5 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
-        android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"
-        android:text="@string/tips_promo_bottom_sheet_positive_button_text"/>
+        android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"/>
 </LinearLayout>

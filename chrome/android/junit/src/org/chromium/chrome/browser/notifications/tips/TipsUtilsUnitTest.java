@@ -39,6 +39,9 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getFeatureTipPromoDataForType(
                         mActivity, TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
         assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text),
+                promoData.positiveButtonText);
+        assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_esb),
                 promoData.mainPageTitle);
         assertEquals(
@@ -64,6 +67,9 @@ public class TipsUtilsUnitTest {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
                         mActivity, TipsNotificationsFeatureType.QUICK_DELETE);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text),
+                promoData.positiveButtonText);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_quick_delete),
                 promoData.mainPageTitle);
@@ -91,6 +97,9 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getFeatureTipPromoDataForType(
                         mActivity, TipsNotificationsFeatureType.GOOGLE_LENS);
         assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_lens),
+                promoData.positiveButtonText);
+        assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_lens),
                 promoData.mainPageTitle);
         assertEquals(
@@ -116,6 +125,9 @@ public class TipsUtilsUnitTest {
         FeatureTipPromoData promoData =
                 TipsUtils.getFeatureTipPromoDataForType(
                         mActivity, TipsNotificationsFeatureType.BOTTOM_OMNIBOX);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text),
+                promoData.positiveButtonText);
         assertEquals(
                 mActivity.getString(R.string.tips_promo_bottom_sheet_title_bottom_omnibox),
                 promoData.mainPageTitle);
