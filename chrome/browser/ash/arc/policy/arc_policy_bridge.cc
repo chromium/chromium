@@ -307,7 +307,7 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
   }
 }
 
-void FilterApps(base::Value::Dict* arc_policy,
+void FilterAppsOnReven(base::Value::Dict* arc_policy,
                 const std::unordered_set<std::string>& allowed_packages) {
   base::Value::List* applications =
       arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
@@ -320,7 +320,13 @@ void FilterApps(base::Value::Dict* arc_policy,
     const base::Value::Dict& application = val.GetDict();
     const std::string* package_name =
         application.FindString(ArcPolicyBridge::kPackageName);
-    return package_name && !base::Contains(allowed_packages, *package_name);
+    if (!package_name) {
+      return true;
+    }
+
+    bool is_allowed = base::Contains(allowed_packages, *package_name);
+    bool is_zscaler = package_name->find("zscaler.com.") == 0;
+    return !is_allowed && !is_zscaler;
   });
 }
 
@@ -342,7 +348,7 @@ void ConfigureRevenPolicies(base::Value::Dict* arc_policy) {
       "com.fortinet.forticlient_fa",
       "com.forcepoint.sslvpn"};
 
-  FilterApps(arc_policy, allowed_packages);
+  FilterAppsOnReven(arc_policy, allowed_packages);
 }
 
 base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
