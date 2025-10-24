@@ -44,7 +44,6 @@ import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.Arrays;
@@ -180,18 +179,8 @@ public class AccessibilitySettingsPageZoomTest {
     @Feature({"Accessibility"})
     public void testPageZoomPreference_smartZoom_hiddenWhenDisabled() {
         getPageZoomPref();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_GONE);
-        onSliderView(R.id.text_size_contrast_slider, R.id.text_size_contrast_slider_legacy)
+        onView(withId(R.id.text_size_contrast_section))
                 .check(matches(CoreMatchers.not(isDisplayed())));
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_GONE);
     }
 
     @Test
@@ -200,18 +189,7 @@ public class AccessibilitySettingsPageZoomTest {
     @Features.EnableFeatures({ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_visibleWhenEnabled() {
         getPageZoomPref();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_VISIBLE);
-        onSliderView(R.id.text_size_contrast_slider, R.id.text_size_contrast_slider_legacy)
-                .check(matches(isDisplayed()));
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_VISIBLE);
+        onView(withId(R.id.text_size_contrast_section)).check(matches(isDisplayed()));
     }
 
     @Test

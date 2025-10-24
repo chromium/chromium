@@ -50,6 +50,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
+        android:visibility="gone"
         app:backgroundStyle="card">
 
         <TextView
@@ -57,7 +58,6 @@ found in the LICENSE file.
             style="@style/PreferenceTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:text="@string/text_size_contrast_title" />
 
         <TextView
@@ -65,7 +65,6 @@ found in the LICENSE file.
             style="@style/PreferenceSummary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:text="@string/text_size_contrast_summary" />
 
         <TextView
@@ -74,13 +73,11 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/page_zoom_view_level_padding_large"
-            android:visibility="gone"
             android:textAlignment="center" />
 
         <include
             android:id="@+id/text_size_contrast_layout_container"
-            layout="@layout/text_size_contrast_slider"
-            android:visibility="gone" />
+            layout="@layout/text_size_contrast_slider"/>
     </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
 
     <!-- PREVIEW-->

@@ -103,16 +103,12 @@ public abstract class PageZoomPreference extends Preference {
 
         // Set up text size contrast slider.
         if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
-            holder.findViewById(R.id.text_size_contrast_title).setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_summary).setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_layout_container)
-                    .setVisibility(View.VISIBLE);
+            holder.findViewById(R.id.text_size_contrast_section).setVisibility(View.VISIBLE);
 
             mTextSizeContrastCurrentLevelText =
                     (TextView) holder.findViewById(R.id.text_size_contrast_current_value_text);
             mTextSizeContrastCurrentLevelText.setText(
                     resources.getString(R.string.text_size_contrast_level, 0));
-            mTextSizeContrastCurrentLevelText.setVisibility(View.VISIBLE);
 
             mTextSizeContrastDecreaseButton =
                     (ChromeImageButton)
