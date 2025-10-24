@@ -237,6 +237,15 @@
     "expires": "Jan 1, 2026"
   },
   {
+    "prefix": "connection-allowlist",
+    "owners": [ "mkwst@chromium.org" ],
+    "platforms": [ "Linux" ],
+    "bases": [ "external/wpt/connection-allowlist" ],
+    "exclusive_tests": "ALL",
+    "args": [ "--enable-features=ConnectionAllowlists" ],
+    "expires": "Jul 1, 2026"
+  },
+  {
     "prefix": "controls-refresh-hc",
     "owners": [
       "masonf@chromium.org",
