@@ -2303,16 +2303,45 @@ bool UserMediaProcessor::IsCurrentRequestInfo(
          current_request_info_->request() == user_media_request;
 }
 
-bool UserMediaProcessor::DeleteUserMediaRequest(
+bool UserMediaProcessor::CancelRequest(UserMediaRequest* user_media_request) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (current_request_info_ &&
+      current_request_info_->request() == user_media_request) {
+    SendLogMessage(base::StringPrintf("CancelRequest(request_id=%d)",
+                                      user_media_request->request_id()));
+    switch (current_request_info_->state()) {
+      case RequestInfo::State::kSentForGeneration:
+        // Let the browser process know that the previously sent request must be
+        // canceled.
+        GetMediaStreamDispatcherHost()->CancelRequest(
+            current_request_info_->request_id());
+        [[fallthrough]];
+
+      case RequestInfo::State::kNotSentForGeneration:
+        DeleteUserMediaRequest(user_media_request);
+        break;
+
+      case RequestInfo::State::kGenerated:
+        // Don't delete the request if it has already been generated as the
+        // request might be trying to start tracks and deleting it at this point
+        // might cause issues.
+        break;
+    }
+    blink::LogUserMediaRequestResult(
+        MediaStreamRequestResult::REQUEST_CANCELLED);
+    return true;
+  }
+  return false;
+}
+
+void UserMediaProcessor::DeleteUserMediaRequest(
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (current_request_info_ &&
       current_request_info_->request() == user_media_request) {
     current_request_info_ = nullptr;
     std::move(request_completed_cb_).Run();
-    return true;
   }
-  return false;
 }
 
 void UserMediaProcessor::StopAllProcessing() {

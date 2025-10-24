@@ -141,17 +141,7 @@ void UserMediaClient::RequestQueue::EnqueueAndMaybeProcess(Request* request) {
 void UserMediaClient::RequestQueue::CancelUserMediaRequest(
     UserMediaRequest* user_media_request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  {
-    // TODO(guidou): Remove this conditional logging. https://crbug.com/764293
-    UserMediaRequest* request = user_media_processor_->CurrentRequest();
-    if (request == user_media_request) {
-      blink::WebRtcLogMessage(
-          base::StringPrintf("UMCI::CancelUserMediaRequest. request_id=%d",
-                             request->request_id()));
-    }
-  }
-
-  if (!user_media_processor_->DeleteUserMediaRequest(user_media_request)) {
+  if (!user_media_processor_->CancelRequest(user_media_request)) {
     for (auto it = pending_requests_.begin(); it != pending_requests_.end();
          ++it) {
       if ((*it)->IsUserMedia() &&
