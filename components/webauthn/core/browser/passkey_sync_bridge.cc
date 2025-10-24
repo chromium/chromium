@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
@@ -362,23 +363,29 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
   return true;
 }
 
-bool PasskeySyncBridge::SetPasskeyHidden(const std::string& credential_id,
-                                         bool hidden) {
+bool PasskeySyncBridge::HidePasskey(const std::string& credential_id,
+                                    base::Time hidden_time) {
   return UpdateSinglePasskey(
       credential_id,
       base::BindOnce(
-          [](bool hidden, base::Clock* clock,
+          [](base::Time hidden_time,
              sync_pb::WebauthnCredentialSpecifics* passkey) -> bool {
-            passkey->set_hidden(hidden);
-            if (hidden) {
-              passkey->set_hidden_time(
-                  clock->Now().InMillisecondsSinceUnixEpoch());
-            } else {
-              passkey->clear_hidden_time();
-            }
+            passkey->set_hidden(true);
+            passkey->set_hidden_time(
+                hidden_time.InMillisecondsSinceUnixEpoch());
             return true;
           },
-          hidden, clock_));
+          hidden_time));
+}
+
+bool PasskeySyncBridge::UnhidePasskey(const std::string& credential_id) {
+  return UpdateSinglePasskey(
+      credential_id,
+      base::BindOnce([](sync_pb::WebauthnCredentialSpecifics* passkey) -> bool {
+        passkey->set_hidden(false);
+        passkey->clear_hidden_time();
+        return true;
+      }));
 }
 
 // The following implementation is more efficient than the simple one which

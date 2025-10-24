@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -576,7 +577,8 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest, Unrecognized_Found) {
 TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
        Unrecognized_AlreadyHidden) {
   AddPasskey(kCredentialId1);
-  passkey_model_->SetPasskeyHidden(kCredentialId1, true);
+  passkey_model_->HidePasskey(kCredentialId1,
+                              /*hidden_time=*/base::Time::Now());
   delegate_.PasskeyUnrecognized(web_contents(), test_origin_,
                                 ToByteVector(kCredentialId1), kRpId);
   EXPECT_TRUE(GetPasskey(kCredentialId1).hidden());
@@ -593,7 +595,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
     delegate_.PasskeyUnrecognized(web_contents(), test_origin_,
                                   ToByteVector(kCredentialId1), kRpId);
   }
-  passkey_model_->SetPasskeyHidden(kCredentialId1, false);
+  passkey_model_->UnhidePasskey(kCredentialId1);
   delegate_.PasskeyUnrecognized(web_contents(), test_origin_,
                                 ToByteVector(kCredentialId1), kRpId);
   EXPECT_TRUE(GetPasskey(kCredentialId1).hidden());
@@ -622,7 +624,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
        ++i) {
     delegate_.PasskeyUnrecognized(web_contents(), test_origin_,
                                   ToByteVector(kCredentialId1), kRpId);
-    passkey_model_->SetPasskeyHidden(kCredentialId1, false);
+    passkey_model_->UnhidePasskey(kCredentialId1);
   }
   base::HistogramTester histogram_tester;
   delegate_.PasskeyUnrecognized(web_contents(), test_origin_,
@@ -741,7 +743,7 @@ TEST_F(ChromeWebAuthenticationSignalApiHidePasskeysTest,
   }
 
   // Attempt making another change that would hide the passkey.
-  passkey_model_->SetPasskeyHidden(kCredentialId1, false);
+  passkey_model_->UnhidePasskey(kCredentialId1);
   base::HistogramTester histogram_tester;
   std::vector<std::vector<uint8_t>> credentials = {
       ToByteVector(kCredentialId2)};

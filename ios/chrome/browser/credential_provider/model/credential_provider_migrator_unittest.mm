@@ -346,6 +346,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
       test_passkey_model_.GetAllPasskeys();
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_FALSE(passkeys[0].hidden());
+  EXPECT_FALSE(passkeys[0].has_hidden_time());
 
   // Verify temporal store is empty.
   store =
@@ -384,6 +385,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   passkeys = test_passkey_model_.GetAllPasskeys();
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_TRUE(passkeys[0].hidden());
+  EXPECT_EQ(passkeys[0].hidden_time(), kJan1st2024);
 }
 
 TEST_F(CredentialProviderMigratorWithSignalAPITest,

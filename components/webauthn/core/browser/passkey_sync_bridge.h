@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -84,7 +85,9 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
   bool DeletePasskey(const std::string& credential_id,
                      const base::Location& location) override;
-  bool SetPasskeyHidden(const std::string& credential_id, bool hidden) override;
+  bool HidePasskey(const std::string& credential_id,
+                   base::Time hidden_time) override;
+  bool UnhidePasskey(const std::string& credential_id) override;
   void DeleteAllPasskeys() override;
   bool UpdatePasskey(const std::string& credential_id,
                      PasskeyUpdate change,

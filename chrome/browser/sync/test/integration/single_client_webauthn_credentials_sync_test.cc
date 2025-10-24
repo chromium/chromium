@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -710,7 +709,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     PasskeyChangeObservationChecker change_checker(
         kSingleProfile, {{webauthn::PasskeyModelChange::ChangeType::UPDATE,
                           passkey.sync_id()}});
-    EXPECT_TRUE(GetModel().SetPasskeyHidden(passkey.credential_id(), true));
+    EXPECT_TRUE(GetModel().HidePasskey(passkey.credential_id(),
+                                       /*hidden_time=*/base::Time::Now()));
     EXPECT_TRUE(ServerPasskeysMatchChecker(
                     UnorderedElementsAre(AllOf(EntityHasHidden(true),
                                                EntityHasCurrentHiddenTime())))
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     PasskeyChangeObservationChecker change_checker(
         kSingleProfile, {{webauthn::PasskeyModelChange::ChangeType::UPDATE,
                           passkey.sync_id()}});
-    EXPECT_TRUE(GetModel().SetPasskeyHidden(passkey.credential_id(), false));
+    EXPECT_TRUE(GetModel().UnhidePasskey(passkey.credential_id()));
     EXPECT_TRUE(
         ServerPasskeysMatchChecker(UnorderedElementsAre(EntityHasHidden(false)))
             .Wait());
@@ -1174,26 +1174,24 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
                        PRE_DeleteOldHiddenPasskeysOnLoad) {
   ASSERT_TRUE(SetupSync());
-  base::SimpleTestClock test_clock;
-  GetModel().set_clock_for_testing(&test_clock);
 
   // Create and hide a passkey a little before `kHiddenPasskeyLifetime`.
   sync_pb::WebauthnCredentialSpecifics old_passkey = NewPasskey();
   old_passkey.set_user_display_name("Old");
   GetModel().AddNewPasskeyForTesting(old_passkey);
-  test_clock.SetNow(base::Time::Now() -
-                    webauthn::PasskeyModel::kHiddenPasskeyLifetime -
-                    base::Seconds(1));
-  GetModel().SetPasskeyHidden(old_passkey.credential_id(), true);
+  GetModel().HidePasskey(old_passkey.credential_id(),
+                         /*hidden_time=*/base::Time::Now() -
+                             webauthn::PasskeyModel::kHiddenPasskeyLifetime -
+                             base::Seconds(1));
 
   // Create and hide a passkey a little after `kHiddenPasskeyLifetime`.
   sync_pb::WebauthnCredentialSpecifics new_passkey = NewPasskey();
   new_passkey.set_user_display_name("New");
   GetModel().AddNewPasskeyForTesting(new_passkey);
-  test_clock.SetNow(base::Time::Now() -
-                    webauthn::PasskeyModel::kHiddenPasskeyLifetime +
-                    base::Days(1));
-  GetModel().SetPasskeyHidden(new_passkey.credential_id(), true);
+  GetModel().HidePasskey(new_passkey.credential_id(),
+                         /*hidden_time=*/base::Time::Now() -
+                             webauthn::PasskeyModel::kHiddenPasskeyLifetime +
+                             base::Days(1));
 
   // The passkey should not have been deleted yet, since
   // `kHiddenPasskeyLifetime` hasn't passed yet.

@@ -127,10 +127,16 @@ class PasskeyModel : public KeyedService {
   virtual bool DeletePasskey(const std::string& credential_id,
                              const base::Location& location) = 0;
 
-  // Sets the `hidden` property for the passkey with the given `credential_id`.
-  // Returns true if a passkey was found and updated, false otherwise.
-  virtual bool SetPasskeyHidden(const std::string& credential_id,
-                                bool hidden) = 0;
+  // Sets `hidden = true` and `hidden_time` for the passkey with the given
+  // `credential_id`. Returns true if a passkey was found and updated, false
+  // otherwise.
+  virtual bool HidePasskey(const std::string& credential_id,
+                           base::Time hidden_time) = 0;
+
+  // Sets `hidden = false` for the passkey with the given `credential_id`
+  // and clears its `hidden_time` property. Returns true if a
+  // passkey was found and updated, false otherwise.
+  virtual bool UnhidePasskey(const std::string& credential_id) = 0;
 
   // Deletes all passkeys.
   virtual void DeleteAllPasskeys() = 0;

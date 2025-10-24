@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -115,9 +116,14 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
         if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
             credential_specifics->hidden() != credential.hidden) {
           // TODO(crbug.com/432260316): Log metrics.
-          // TODO(crbug.com/432260316): Pass hidden time as well.
           // TODO(crbug.com/432260316): Add PasskeyChangeQuotaTracker.
-          _passkeyStore->SetPasskeyHidden(credentialId, credential.hidden);
+          if (credential.hidden) {
+            _passkeyStore->HidePasskey(
+                credentialId, base::Time::FromMillisecondsSinceUnixEpoch(
+                                  credential.hiddenTime));
+          } else {
+            _passkeyStore->UnhidePasskey(credentialId);
+          }
         }
 
         std::string username = base::SysNSStringToUTF8(credential.username);

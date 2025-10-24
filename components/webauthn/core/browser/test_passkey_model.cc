@@ -151,15 +151,30 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id,
   return true;
 }
 
-bool TestPasskeyModel::SetPasskeyHidden(const std::string& credential_id,
-                                        bool hidden) {
+bool TestPasskeyModel::HidePasskey(const std::string& credential_id,
+                                   base::Time hidden_time) {
   const auto credential_it =
       std::ranges::find(credentials_, credential_id,
                         &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }
-  credential_it->set_hidden(hidden);
+  credential_it->set_hidden(true);
+  credential_it->set_hidden_time(hidden_time.InMillisecondsSinceUnixEpoch());
+  NotifyPasskeysChanged({PasskeyModelChange(
+      PasskeyModelChange::ChangeType::UPDATE, *credential_it)});
+  return true;
+}
+
+bool TestPasskeyModel::UnhidePasskey(const std::string& credential_id) {
+  const auto credential_it =
+      std::ranges::find(credentials_, credential_id,
+                        &sync_pb::WebauthnCredentialSpecifics::credential_id);
+  if (credential_it == credentials_.end()) {
+    return false;
+  }
+  credential_it->set_hidden(false);
+  credential_it->clear_hidden_time();
   NotifyPasskeysChanged({PasskeyModelChange(
       PasskeyModelChange::ChangeType::UPDATE, *credential_it)});
   return true;

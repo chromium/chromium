@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/web_authentication_proxy_service.h"
@@ -263,8 +264,12 @@ void HideAndRestorePasskeys(
             kNoPasskeyChanged);
     return;
   }
-  passkey_store->SetPasskeyHidden(passkey_it->credential_id(),
-                                  !passkey_in_list);
+
+  if (passkey_in_list) {
+    passkey_store->UnhidePasskey(passkey_it->credential_id());
+  } else {
+    passkey_store->HidePasskey(passkey_it->credential_id(), base::Time::Now());
+  }
   quota_tracker->TrackChange(origin);
   LogSignalAllAcceptedCredentials(
       passkey_in_list ? ChromeWebAuthenticationDelegate::
@@ -451,8 +456,8 @@ void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
       return;
     }
     quota_tracker->TrackChange(origin);
-    passkey_store->SetPasskeyHidden(std::move(credential_id),
-                                    /*hidden=*/true);
+    passkey_store->HidePasskey(std::move(credential_id),
+                               /*hidden_time=*/base::Time::Now());
     LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyHidden);
   } else {
     passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
