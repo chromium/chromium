@@ -5398,7 +5398,7 @@
     {
       // Fix for https://crbug.com/354497121
       name: "UseSpecValuesInTextFormatUpdateEventStyles",
-      status: "test"
+      status: "stable"
     },
     {
       name: "UseUndoStepElementDispatchBeforeInput",
