@@ -38,6 +38,8 @@ namespace {
 // The margin between the cell and the sheet.
 constexpr CGFloat kSideMargins = 16.;
 
+const CGFloat kButtonImageSize = 18;
+
 // Size of the symbols.
 constexpr CGFloat kErrorSymbolSize = 22.;
 
@@ -55,9 +57,6 @@ constexpr CGFloat kLastSecondaryAccountLeftSeparatorInset = 60.;
 
 // Per Apple guidelines, touch targets should be at least 44x44.
 constexpr CGFloat kMinimumTouchTargetSize = 44.0;
-
-// The corner radius of the half sheet.
-constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
 // Sections used in the account menu.
 typedef NS_ENUM(NSUInteger, SectionIdentifier) {
@@ -97,8 +96,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 @implementation AccountMenuViewController {
   UITableViewDiffableDataSource* _accountMenuDataSource;
-  UIButton* _closeButton;
-  UIButton* _ellipsisButton;
+  UIBarButtonItem* _closeButton;
+  UIBarButtonItem* _ellipsisButton;
   CentralAccountView* _identityAccountView;
   // The index path of the cell on which the user tapped while account switching
   // is in progress. It should be reset to nil before any table content occurs.
@@ -296,15 +295,15 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   ellipsisMenu = [UIMenu
       menuWithChildren:@[ manageYourAccountAction, editAccountListAction ]];
 
-  _ellipsisButton =
-      [self addTopButtonWithSymbolName:kEllipsisCircleFillSymbol
-                   symbolConfiguration:symbolConfiguration
-                             isLeading:YES
-               accessibilityIdentifier:kAccountMenuSecondaryActionMenuButtonId];
-  _ellipsisButton.menu = ellipsisMenu;
-  _ellipsisButton.showsMenuAsPrimaryAction = true;
+  _ellipsisButton = [[UIBarButtonItem alloc]
+      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol, kButtonImageSize)
+               menu:ellipsisMenu];
   _ellipsisButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ICON_OPTION_MENU);
+  _ellipsisButton.accessibilityIdentifier =
+      kAccountMenuSecondaryActionMenuButtonId;
+
+  self.navigationItem.leftBarButtonItem = _ellipsisButton;
 }
 
 // Decides if the Close button should be shown.
@@ -324,21 +323,17 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   }
   if (shouldShowCloseButton) {
     // Add the Close button.
-    UIImageSymbolConfiguration* symbolConfiguration =
-        [UIImageSymbolConfiguration
-            configurationWithPointSize:kButtonSize
-                                weight:UIImageSymbolWeightRegular
-                                 scale:UIImageSymbolScaleMedium];
-    _closeButton = [self addTopButtonWithSymbolName:kXMarkCircleFillSymbol
-                                symbolConfiguration:symbolConfiguration
-                                          isLeading:NO
-                            accessibilityIdentifier:kAccountMenuCloseButtonId];
-    [_closeButton addTarget:self
-                     action:@selector(userTappedOnClose)
-           forControlEvents:UIControlEventTouchUpInside];
+    _closeButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                             target:self
+                             action:@selector(userTappedOnClose)];
+    _closeButton.accessibilityIdentifier = kAccountMenuCloseButtonId;
+
+    self.navigationItem.rightBarButtonItem = _closeButton;
+
   } else {
     // Remove the Close button.
-    [_closeButton removeFromSuperview];
+    self.navigationItem.rightBarButtonItem = nil;
     _closeButton = nil;
   }
 }
@@ -483,7 +478,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
       self.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
   // In case of compact width only, adjust detents.
   if (self.traitCollection.horizontalSizeClass ==
