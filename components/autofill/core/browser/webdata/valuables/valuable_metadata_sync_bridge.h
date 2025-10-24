@@ -79,6 +79,11 @@ class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data);
 
+  // Uploads local data that is not part of `entity_data` sent from the server
+  // during initial `MergeFullSyncData()`.
+  void UploadInitialLocalData(syncer::MetadataChangeList* metadata_change_list,
+                              const syncer::EntityChangeList& entity_data);
+
   // To ensures that metadata and model data is  committed in a single
   // transaction, `CreateMetadataChangeList()` is implemented using an
   // `InMemoryMetadataChangeList`. This function transfers the changes from the
@@ -90,6 +95,9 @@ class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
 
   // Returns the `EntityTable` associated with the `web_data_backend_`.
   EntityTable* GetEntityTable();
+
+  // Returns a const `EntityTable` associated with the `web_data_backend_`.
+  const EntityTable* GetEntityTable() const;
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

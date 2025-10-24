@@ -34,6 +34,7 @@ namespace autofill {
 namespace {
 
 using base::test::EqualsProto;
+using testing::_;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Pair;
@@ -43,10 +44,13 @@ using testing::UnorderedElementsAre;
 
 namespace {
 syncer::EntityData SpecificsToEntity(
-    const sync_pb::AutofillValuableMetadataSpecifics& specifics) {
-  syncer::EntityData data;
-  *data.specifics.mutable_autofill_valuable_metadata() = specifics;
-  return data;
+    const sync_pb::AutofillValuableMetadataSpecifics& metadata_specifics) {
+  syncer::EntityData entity_data;
+  entity_data.name = metadata_specifics.valuable_id();
+  sync_pb::AutofillValuableMetadataSpecifics* specifics =
+      entity_data.specifics.mutable_autofill_valuable_metadata();
+  specifics->CopyFrom(metadata_specifics);
+  return entity_data;
 }
 
 EntityInstance::EntityMetadata test_metadata() {
@@ -102,6 +106,10 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
 
   EntityTable& entity_table() { return entity_table_; }
 
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
+    return mock_processor_;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -111,7 +119,7 @@ class ValuableMetadataSyncBridgeTest : public testing::Test {
   EntityTable entity_table_;
   AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
-  syncer::MockDataTypeLocalChangeProcessor mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ValuableMetadataSyncBridge> bridge_;
   base::test::ScopedFeatureList feature_list_{
       syncer::kSyncAutofillValuableMetadata};
@@ -160,6 +168,92 @@ TEST_F(ValuableMetadataSyncBridgeTest,
                 .ByteSizeLong(),
             0u);
 }
+
+// Test that MergeFullSyncData() correctly merges remote data when there is no
+// local data.
+TEST_F(ValuableMetadataSyncBridgeTest, MergeFullSyncData_NoLocalData) {
+  syncer::EntityChangeList entity_change_list;
+  const EntityInstance::EntityMetadata metadata = test_metadata();
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *metadata.guid,
+      SpecificsToEntity(CreateSpecificsFromEntityMetadata(metadata))));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+
+  EXPECT_FALSE(bridge()
+                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                      std::move(entity_change_list))
+                   .has_value());
+
+  EXPECT_THAT(GetMetadataEntries(), UnorderedElementsAre(metadata));
+}
+
+// Test that MergeFullSyncData() correctly merges remote data when local data
+// is a subset of remote data.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       MergeFullSyncData_LocalDataSubsetOfServerData) {
+  const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000"});
+  entity_table().AddOrUpdateEntityInstance(vehicle1);
+
+  syncer::EntityChangeList entity_change_list;
+  const EntityInstance vehicle2 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *vehicle1.guid(), SpecificsToEntity(CreateSpecificsFromEntityMetadata(
+                            vehicle1.metadata()))));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *vehicle2.guid(), SpecificsToEntity(CreateSpecificsFromEntityMetadata(
+                            vehicle2.metadata()))));
+
+  // No data is uploaded to the server.
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+
+  EXPECT_FALSE(bridge()
+                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                      std::move(entity_change_list))
+                   .has_value());
+
+  EXPECT_THAT(GetMetadataEntries(),
+              UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
+}
+
+// Test that MergeFullSyncData() correctly merges remote data and uploads
+// local-only data.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       MergeFullSyncData_LocalDataSupersetOfServerData) {
+  const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-2000-8000-300000000000"});
+  const EntityInstance vehicle2 = CreateServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  entity_table().AddOrUpdateEntityInstance(vehicle1);
+  entity_table().AddOrUpdateEntityInstance(vehicle2);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *vehicle1.guid(), SpecificsToEntity(CreateSpecificsFromEntityMetadata(
+                            vehicle1.metadata()))));
+
+  EXPECT_CALL(mock_processor(), Put(*vehicle2.guid(), _, _));
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+
+  EXPECT_FALSE(bridge()
+                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                      std::move(entity_change_list))
+                   .has_value());
+
+  EXPECT_THAT(GetMetadataEntries(),
+              UnorderedElementsAre(vehicle1.metadata(), vehicle2.metadata()));
+}
+
 // Test that supported fields and nested messages are successfully trimmed but
 // that unsupported fields are preserved.
 TEST_F(ValuableMetadataSyncBridgeTest,
