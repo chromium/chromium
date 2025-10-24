@@ -250,13 +250,13 @@ void ImmersiveFocusWatcher::RecreateBubbleObserver() {
       transient_children =
           aura::client::GetTransientWindowClient()->GetTransientChildren(
               GetWidgetWindow());
-  for (size_t i = 0; i < transient_children.size(); ++i) {
-    aura::Window* transient_child = transient_children[i];
+  for (const auto& transient_child : transient_children) {
     views::View* anchor_view = GetAnchorView(transient_child);
     if (anchor_view &&
         immersive_fullscreen_controller_->top_container()->Contains(
-            anchor_view))
+            anchor_view)) {
       bubble_observer_->StartObserving(transient_child);
+    }
   }
 }
 
