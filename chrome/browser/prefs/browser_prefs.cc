@@ -2027,7 +2027,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   commerce::CommerceUiTabHelper::RegisterProfilePrefs(registry);
   contextual_cueing::prefs::RegisterProfilePrefs(registry);
   DriveService::RegisterProfilePrefs(registry);
-  extensions::TabsCaptureVisibleTabFunction::RegisterProfilePrefs(registry);
   first_run::RegisterProfilePrefs(registry);
   gcm::RegisterProfilePrefs(registry);
   GoogleCalendarPageHandler::RegisterProfilePrefs(registry);
@@ -2221,6 +2220,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kLensDesktopNTPSearchEnabled, true);
 #endif
 
+  registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
   registry->RegisterListPref(
       webauthn::pref_names::kRemoteDesktopAllowedOrigins);
 

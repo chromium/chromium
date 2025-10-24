@@ -1726,11 +1726,6 @@ std::string TabsCaptureVisibleTabFunction::CaptureResultToErrorMessage(
                                         reason_description);
 }
 
-void TabsCaptureVisibleTabFunction::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
-}
-
 ExecuteCodeInTabFunction::ExecuteCodeInTabFunction() = default;
 ExecuteCodeInTabFunction::~ExecuteCodeInTabFunction() = default;
 

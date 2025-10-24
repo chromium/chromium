@@ -379,8 +379,6 @@ class TabsCaptureVisibleTabFunction :
   TabsCaptureVisibleTabFunction& operator=(
       const TabsCaptureVisibleTabFunction&) = delete;
 
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   static void set_disable_throttling_for_tests(
       bool disable_throttling_for_test) {
     disable_throttling_for_test_ = disable_throttling_for_test;
