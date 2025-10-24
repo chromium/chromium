@@ -82,12 +82,17 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
 
   void TearDown() override {
     arc_session_manager_->Shutdown();
+
+    // Destroy profile dependents before the profile.
+    arc_vm_data_migration_notifier_.reset();
     notification_tester_.reset();
-    profile_manager_->DeleteTestingProfile(kProfileName);
+
+    // Clear the raw_ptr BEFORE specifically deleting the profile it points to.
     testing_profile_ = nullptr;
+    profile_manager_->DeleteTestingProfile(kProfileName);
+
     profile_manager_.reset();
     fake_user_manager_.Reset();
-    arc_vm_data_migration_notifier_.reset();
     arc_session_manager_.reset();
     ash::ConciergeClient::Shutdown();
     ChromeAshTestBase::TearDown();
@@ -109,7 +114,7 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_ =
+  raw_ptr<TestingProfile> testing_profile_ =
       nullptr;  // Owned by |profile_manager_|.
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 };

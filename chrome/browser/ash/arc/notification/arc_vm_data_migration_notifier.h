@@ -34,7 +34,7 @@ class ArcVmDataMigrationNotifier : public ArcSessionManagerObserver {
       bool auto_resume_enabled) override;
 
  private:
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<Profile> profile_;
 
   void ShowNotification();
 
