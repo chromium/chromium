@@ -1316,6 +1316,10 @@ if (use_blink) {
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    if (enable_guest_contents && !is_chromeos) {
+      deps += [ "//components/guest_contents/browser:browser_tests" ]
+    }
   }
 
   test("components_perftests") {
