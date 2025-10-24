@@ -8,6 +8,7 @@ import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
@@ -32,6 +33,7 @@ export class ReloadButtonAppElement extends CrLitElement {
                   (isMenuEnabled ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
                                    RELOAD_BUTTON_TOOLTIP_RELOAD));
         });
+    ColorChangeUpdater.forDocument().start();
   }
 
   static get is() {

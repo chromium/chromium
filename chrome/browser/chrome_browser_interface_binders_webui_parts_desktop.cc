@@ -634,6 +634,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
 
   if (features::IsWebUIReloadButtonEnabled()) {
     registry.ForWebUI<ReloadButtonUI>()
+        .Add<color_change_listener::mojom::PageHandler>()
         .Add<reload_button::mojom::PageHandlerFactory>();
   }
 }

@@ -37,6 +37,7 @@ source_set("impl") {
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
+    ":mojo_bindings",
     ":reload_button",
     "//chrome/app:command_ids",
     "//chrome/browser/resources/reload_button:resources_grit",

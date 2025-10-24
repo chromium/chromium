@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
+#include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/reload_button_resources.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
@@ -50,6 +53,12 @@ void ReloadButtonUI::BindInterface(
     mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReloadButtonUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void ReloadButtonUI::SetReloadButtonState(bool is_loading,
