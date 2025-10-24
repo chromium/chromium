@@ -94,7 +94,11 @@ def check_response_contains_mcp_response(agent_response: str, context):
     server_path = config.get('server_path')
     tool = config.get('tool')
     server = McpClient(server_path)
+    case_sensitive = config.get('case_sensitive', False)
     content_text = server.call_text(tool)
+    if not case_sensitive:
+        content_text = content_text.lower()
+        agent_response = agent_response.lower()
     return {
         'pass': content_text in agent_response,
         'reason': f'"{content_text}" was in the response: "{agent_response}".',

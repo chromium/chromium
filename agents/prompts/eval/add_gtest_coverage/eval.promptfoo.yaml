@@ -29,3 +29,6 @@ tests:
       config:
         binary: viz_unittests
         filter: 'RegionCaptureBoundsTest.*'
+    metadata:
+      pass_k_threshold: 1
+      runs_per_test: 5

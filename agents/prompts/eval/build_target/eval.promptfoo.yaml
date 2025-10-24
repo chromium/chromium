@@ -10,4 +10,4 @@ providers:
 tests:
   - assert:
     - type: icontains
-      value: viz_unittests
+      value: unit_tests
