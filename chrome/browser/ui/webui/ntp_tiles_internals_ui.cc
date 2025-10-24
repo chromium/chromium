@@ -39,6 +39,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "components/prefs/pref_service.h"
 #endif
@@ -90,8 +91,9 @@ bool ChromeNTPTilesInternalsMessageHandlerClient::SupportsNTPTiles() {
 
 std::unique_ptr<ntp_tiles::MostVisitedSites>
 ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
-  auto most_visited_sites = ChromeMostVisitedSitesFactory::NewForProfile(
-      Profile::FromWebUI(web_ui()));
+  Profile* profile = Profile::FromWebUI(web_ui());
+  auto most_visited_sites =
+      ChromeMostVisitedSitesFactory::NewForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
   // Custom links on Android: ntp_prefs::kNtpCustomLinksVisible is
   // unavailable. Use feature list instead.
@@ -102,27 +104,15 @@ ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
               chrome::android::kMostVisitedTilesCustomization)));
 #else
   // Custom links on Desktop.
-  const bool enterprise_shortcuts_feature_enabled =
-      base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
-
-  // If the enterprise shortcuts feature is disabled, but the preference is set
-  // to enterprise shortcuts, treat MostVisitedSites as if enterpise shortcuts
-  // is disabled and custom links is enabled. This may occur if the user is
-  // moved in and out of the experiment.
-  const bool custom_links_enabled =
-      GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible) ||
-      (!enterprise_shortcuts_feature_enabled &&
-       GetPrefs()->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
-  const bool top_sites_enabled = !custom_links_enabled;
-  const bool enterprise_shortcuts_enabled =
-      enterprise_shortcuts_feature_enabled &&
-      GetPrefs()->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible);
-
+  auto enabled_types = GetEnabledTileTypes(profile);
   most_visited_sites->EnableTileTypes(
       ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
-          .with_top_sites(top_sites_enabled)
-          .with_custom_links(custom_links_enabled)
-          .with_enterprise_shortcuts(enterprise_shortcuts_enabled));
+          .with_top_sites(
+              base::Contains(enabled_types, ntp_tiles::TileType::kTopSites))
+          .with_custom_links(
+              base::Contains(enabled_types, ntp_tiles::TileType::kCustomLinks))
+          .with_enterprise_shortcuts(base::Contains(
+              enabled_types, ntp_tiles::TileType::kEnterpriseShortcuts)));
 #endif
   return most_visited_sites;
 }

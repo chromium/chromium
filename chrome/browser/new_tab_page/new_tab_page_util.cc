@@ -12,7 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/common/pref_names.h"
+#include "components/ntp_tiles/features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
@@ -253,4 +255,55 @@ void LogModuleError(const base::Feature& feature,
       optimization_guide_common::mojom::LogSource::NTP_MODULE,
       OptimizationGuideLogger::GetInstance())
       << feature.name << " error: " << error_message;
+}
+
+bool IsTopSitesEnabled(Profile* profile) {
+  return !IsCustomLinksEnabled(profile);
+}
+
+bool IsCustomLinksEnabled(Profile* profile) {
+  // If the enterprise shortcuts feature is disabled, but the preference is set
+  // to enterprise shortcuts visible, treat MostVisitedSites as if enterpise
+  // shortcuts is disabled and custom links is enabled. This may occur if the
+  // user is moved in and out of the experiment.
+  return profile->GetPrefs()->GetBoolean(ntp_prefs::kNtpCustomLinksVisible) ||
+         (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+          profile->GetPrefs()->GetBoolean(
+              ntp_prefs::kNtpEnterpriseShortcutsVisible));
+}
+
+bool IsEnterpriseShortcutsEnabled(Profile* profile) {
+  return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+         profile->GetPrefs()->GetBoolean(
+             ntp_prefs::kNtpEnterpriseShortcutsVisible);
+}
+
+bool IsPersonalShortcutsVisible(Profile* profile) {
+  // Always return true if enterprise shortcuts feature is disabled. Rely on
+  // `IsTopSitesEnabled()` and `IsCustomLinksEnabled()` only.
+  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts)) {
+    return true;
+  }
+  // If enterprise shortcuts mixing is disabled, return the opposite of
+  // `IsEnterpriseShortcutsEnabled()` since only enterprise OR personal
+  // shortcuts should be visible.
+  if (!ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
+    return !IsEnterpriseShortcutsEnabled(profile);
+  }
+  return profile->GetPrefs()->GetBoolean(
+      ntp_prefs::kNtpPersonalShortcutsVisible);
+}
+
+std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile) {
+  std::set<ntp_tiles::TileType> enabled_types;
+  if (IsPersonalShortcutsVisible(profile) && IsCustomLinksEnabled(profile)) {
+    enabled_types.insert(ntp_tiles::TileType::kCustomLinks);
+  }
+  if (IsPersonalShortcutsVisible(profile) && IsTopSitesEnabled(profile)) {
+    enabled_types.insert(ntp_tiles::TileType::kTopSites);
+  }
+  if (IsEnterpriseShortcutsEnabled(profile)) {
+    enabled_types.insert(ntp_tiles::TileType::kEnterpriseShortcuts);
+  }
+  return enabled_types;
 }

@@ -28,4 +28,7 @@ BASE_FEATURE(kNtpEnterpriseShortcuts,
 const base::FeatureParam<bool> kNtpEnterpriseShortcutsUseFakeDataParam{
     &kNtpEnterpriseShortcuts, "use_fake_data", false};
 
+const base::FeatureParam<bool> kNtpEnterpriseShortcutsAllowMixingParam{
+    &kNtpEnterpriseShortcuts, "allow_mixing", false};
+
 }  // namespace ntp_tiles
