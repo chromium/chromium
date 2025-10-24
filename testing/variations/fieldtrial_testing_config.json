@@ -17248,29 +17248,6 @@
             ]
         }
     ],
-    "OptimizeHTMLElementUrls": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "cache_size": "100"
-                    },
-                    "enable_features": [
-                        "OptimizeHTMLElementUrls"
-                    ]
-                }
-            ]
-        }
-    ],
     "OrcaEnabled": [
         {
             "platforms": [
@@ -19072,27 +19049,6 @@
                     "enable_features": [
                         "PrefixCookieHostHttp",
                         "PrefixCookieHttp"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PreloadInlineDeferredImages": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Preload_20250402",
-                    "enable_features": [
-                        "DocumentPolicyExpectNoLinkedResources",
-                        "PreloadLinkRelDataUrls"
                     ]
                 }
             ]

@@ -1866,13 +1866,13 @@ BASE_FEATURE(kNoThrowForCSPBlockedWorker, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptimizeHTMLElementUrls, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOptimizeHTMLElementUrls, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(size_t,
                    kDocumentURLCacheSize,
                    &kOptimizeHTMLElementUrls,
                    "cache_size",
-                   100);
+                   500);
 
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
              "OriginAgentClusterDefaultEnable",

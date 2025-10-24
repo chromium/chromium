@@ -3878,7 +3878,7 @@
       // Used to allow preloading data: URLs with link rel=preload.
       // https://crbug.com/348442535
       name: "PreloadLinkRelDataUrls",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Used to allow chrome://flags to turn off prerendering. (Without using
