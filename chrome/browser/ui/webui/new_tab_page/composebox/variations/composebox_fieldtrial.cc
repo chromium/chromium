@@ -296,8 +296,10 @@ bool IsNtpRealboxNextEnabled(Profile* profile) {
     return false;
   }
 
-  return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      AimEligibilityServiceFactory::GetForProfile(profile), kNtpRealboxNext);
+  return base::FeatureList::IsEnabled(kNtpRealboxNext) &&
+         AimEligibilityService::GenericKillSwitchFeatureCheck(
+             AimEligibilityServiceFactory::GetForProfile(profile),
+             kNtpRealboxNext);
 }
 
 BASE_FEATURE(kNtpRealboxNext, base::FEATURE_DISABLED_BY_DEFAULT);
