@@ -74,7 +74,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:mediator",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_mode",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:selected_grid_items",
     "//ios/chrome/browser/tabs/model",
@@ -86,6 +88,7 @@ source_set("coordinator") {
     "//ios/chrome/common:string_conversions",
     "//ios/chrome/common/ui/favicon",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
+    "//ios/web",
     "//ios/web/public",
     "//ui/base",
   ]

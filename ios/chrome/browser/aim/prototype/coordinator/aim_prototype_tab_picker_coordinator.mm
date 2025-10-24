@@ -56,8 +56,13 @@
 #pragma mark - AimPrototypeTabsAttachmentDelegate
 
 - (void)attachSelectedTabs:(AimPrototypeTabPickerMediator*)tabPickerMediator
-       selectedIdentifiers:(NSSet<GridItemIdentifier*>*)selectedIdentifiers {
-  // TODO(crbug.com/449657332): Pass the selected webstates to the aim mediator.
+       selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs {
+  [self.delegate attachSelectedTabsWithWebStateIDs:selectedWebStateIDs];
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (std::set<web::WebStateID>)preselectedWebStateIDs {
+  return [self.delegate webStateIDsForAttachedTabs];
 }
 
 @end

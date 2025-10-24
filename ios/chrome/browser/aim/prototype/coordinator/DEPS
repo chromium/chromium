@@ -33,5 +33,7 @@ include_rules = [
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/selected_grid_items.h",
-  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
+  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h",
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h",
 ]

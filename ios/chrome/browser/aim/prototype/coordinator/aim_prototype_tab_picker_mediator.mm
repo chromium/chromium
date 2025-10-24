@@ -5,10 +5,14 @@
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_tab_picker_mediator.h"
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_tab_picker_consumer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/selected_grid_items.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
+#import "ios/web/public/web_state.h"
 
 @implementation AimPrototypeTabPickerMediator {
   /// The grid consumer.
@@ -41,8 +45,25 @@
   [super setBrowser:browser];
 
   if (self.webStateList) {
-    [_gridConsumer populateItems:CreateItems(self.webStateList)
-          selectedItemIdentifier:nil];
+    NSArray<GridItemIdentifier*>* items = CreateItems(self.webStateList);
+    [_gridConsumer populateItems:items selectedItemIdentifier:nil];
+
+    std::set<web::WebStateID> preselectedWebStatesIDs =
+        [self.tabsAttachmentDelegate preselectedWebStateIDs];
+    for (GridItemIdentifier* item in items) {
+      if (item.type != GridItemType::kTab) {
+        continue;
+      }
+
+      web::WebStateID webStateID = item.tabSwitcherItem.identifier;
+
+      if (!webStateID.valid()) {
+        continue;
+      }
+      if (preselectedWebStatesIDs.contains(webStateID)) {
+        [self addToSelectionItemID:item];
+      }
+    }
   }
 }
 
@@ -72,7 +93,7 @@
   if (self.selectedEditingItems.itemsIdentifiers.count) {
     [_tabsAttachmentDelegate
          attachSelectedTabs:self
-        selectedIdentifiers:self.selectedEditingItems.itemsIdentifiers];
+        selectedWebStateIDs:self.selectedEditingItems.allTabs];
   }
 }
 

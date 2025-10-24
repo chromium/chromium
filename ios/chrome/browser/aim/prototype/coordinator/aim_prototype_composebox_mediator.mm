@@ -7,9 +7,14 @@
 #import <PDFKit/PDFKit.h>
 
 #import <memory>
+#import <queue>
+#import <set>
+#import <unordered_map>
+#import <utility>
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
+#import "base/ios/block_types.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
@@ -39,11 +44,120 @@
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "ui/base/page_transition_types.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
+
+// Utilitary to delay execution until the web state is loaded.
+@interface WebStateDefferedExecutor : NSObject <CRWWebStateObserver>
+
+// Executes the given `completion` once the web state is loaded.
+- (void)webState:(web::WebState*)webState
+    executeOnceLoaded:(ProceduralBlock)completion;
+
+@end
+
+@implementation WebStateDefferedExecutor {
+  // Observer for the web state loading.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  // Stores the callbacks to be used once the web state is loaded.
+  std::unordered_map<web::WebStateID, ProceduralBlock> _callbacks;
+  // Temporarily stores the active observations.
+  std::unordered_map<web::WebStateID, base::WeakPtr<web::WebState>>
+      _activeObservations;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+  }
+
+  return self;
+}
+
+- (void)webState:(web::WebState*)webState
+    executeOnceLoaded:(ProceduralBlock)completion {
+  _callbacks[webState->GetUniqueIdentifier()] = completion;
+  BOOL realized = webState->IsRealized();
+  BOOL loading = webState->IsLoading();
+
+  if (!realized) {
+    [self observeWebState:webState];
+    [self forceRealizeWebState:webState];
+    return;
+  }
+
+  if (loading) {
+    [self observeWebState:webState];
+    return;
+  }
+
+  [self callCompletionForID:webState->GetUniqueIdentifier()];
+}
+
+#pragma mark - Private
+
+- (void)observeWebState:(web::WebState*)webState {
+  webState->AddObserver(_webStateObserverBridge.get());
+  _activeObservations[webState->GetUniqueIdentifier()] = webState->GetWeakPtr();
+}
+
+- (void)removeObserverForWebState:(web::WebState*)webState {
+  webState->RemoveObserver(_webStateObserverBridge.get());
+  _activeObservations.erase(webState->GetUniqueIdentifier());
+}
+
+- (void)forceRealizeWebState:(web::WebState*)webState {
+  web::IgnoreOverRealizationCheck();
+  webState->ForceRealized();
+}
+
+- (void)callCompletionForID:(web::WebStateID)webStateID {
+  if (auto block = _callbacks[webStateID]) {
+    block();
+    _callbacks.erase(webStateID);
+  }
+}
+
+- (void)removeRemainingWebStateObservations {
+  std::vector<base::WeakPtr<web::WebState>> remainingObservedWebStates;
+  remainingObservedWebStates.reserve(_activeObservations.size());
+
+  for (auto kv : _activeObservations) {
+    remainingObservedWebStates.push_back(kv.second);
+  }
+
+  for (base::WeakPtr<web::WebState> weakWebState : remainingObservedWebStates) {
+    web::WebState* webState = weakWebState.get();
+    if (webState) {
+      [self removeObserverForWebState:webState];
+    }
+  }
+}
+
+- (void)dealloc {
+  [self removeRemainingWebStateObservations];
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+  [self removeObserverForWebState:webState];
+  [self callCompletionForID:webState->GetUniqueIdentifier()];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self removeObserverForWebState:webState];
+  [self callCompletionForID:webState->GetUniqueIdentifier()];
+}
+
+@end
 
 namespace {
 
@@ -130,6 +244,17 @@ CreateInputDataFromAnnotatedPageContent(
   PageContextWrapper* _pageContextWrapper;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Stores the page context wrappers for the duration of the APC retrieval.
+  std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
+  std::unordered_map<base::UnguessableToken,
+                     web::WebStateID,
+                     base::UnguessableTokenHash>
+      _latestTabSelectionMapping;
+
+  // Utilitary to delay execution until the web state is loaded.
+  WebStateDefferedExecutor* _webStateDefferedExecutor;
+
   // Check that the different methods are called from the correct sequence, as
   // this class defers work via PostTask APIs.
   SEQUENCE_CHECKER(_sequenceChecker);
@@ -150,6 +275,7 @@ CreateInputDataFromAnnotatedPageContent(
     _composeboxQueryController->NotifySessionStarted();
     _webStateList = webStateList;
     _faviconLoader = faviconLoader;
+    _webStateDefferedExecutor = [[WebStateDefferedExecutor alloc] init];
   }
   return self;
 }
@@ -280,25 +406,179 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
+#pragma mark - AimPrototypeTabPickerSelectionDelegate
+
+- (std::set<web::WebStateID>)webStateIDsForAttachedTabs {
+  std::set<web::WebStateID> webStateIDs;
+  for (AIMInputItem* item in _items) {
+    web::WebStateID webStateID = _latestTabSelectionMapping[item.token];
+    if (webStateID.valid()) {
+      webStateIDs.insert(webStateID);
+    }
+  }
+
+  return webStateIDs;
+}
+
+- (void)attachSelectedTabsWithWebStateIDs:
+    (std::set<web::WebStateID>)selectedWebStateIDs {
+  _pageContextWrappers.clear();
+
+  std::set<web::WebStateID> alreadyProcessedIDs =
+      [self webStateIDsForAttachedTabs];
+
+  std::set<web::WebStateID> deselectedIDs;
+  set_difference(alreadyProcessedIDs.begin(), alreadyProcessedIDs.end(),
+                 selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
+                 inserter(deselectedIDs, deselectedIDs.begin()));
+  [self removeDeselectedIDs:deselectedIDs];
+
+  std::set<web::WebStateID> newlyAddedIDs;
+  set_difference(selectedWebStateIDs.begin(), selectedWebStateIDs.end(),
+                 alreadyProcessedIDs.begin(), alreadyProcessedIDs.end(),
+                 inserter(newlyAddedIDs, newlyAddedIDs.begin()));
+
+  __weak __typeof(self) weakSelf = self;
+  for (int i = 0; i < _webStateList->count(); ++i) {
+    web::WebState* webState = _webStateList->GetWebStateAt(i);
+    web::WebStateID candidateID = webState->GetUniqueIdentifier();
+    if (!newlyAddedIDs.contains(candidateID)) {
+      continue;
+    }
+
+    const base::UnguessableToken token =
+        [self createInputItemForWebState:webState];
+    _latestTabSelectionMapping[token] = webState->GetUniqueIdentifier();
+    [_webStateDefferedExecutor webState:webState
+                      executeOnceLoaded:^{
+                        [weakSelf attachWebStateContent:webState
+                                        includeSnapshot:NO
+                                                  token:token];
+                      }];
+  }
+}
+
+- (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs {
+  NSArray<AIMInputItem*>* items = [_items copy];
+  for (AIMInputItem* item in items) {
+    web::WebStateID webStateID = _latestTabSelectionMapping[item.token];
+    if (webStateID.valid() && deselectedIDs.contains(webStateID)) {
+      [self removeItem:item];
+      _latestTabSelectionMapping.erase(item.token);
+    }
+  }
+}
+
+- (const base::UnguessableToken)createInputItemForWebState:
+    (web::WebState*)webState {
+  AIMInputItem* item = [[AIMInputItem alloc]
+      initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeTab];
+  item.title = base::SysUTF16ToNSString(webState->GetTitle());
+  [_items addObject:item];
+  [self updateConsumerItems];
+
+  __weak __typeof(self) weakSelf = self;
+  const base::UnguessableToken token = item.token;
+
+  /// Based on the favicon loader API, this callback could be called twice.
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+    if (attributes.faviconImage) {
+      [weakSelf didLoadFaviconIcon:attributes.faviconImage
+                  forItemWithToken:token];
+    }
+  };
+
+  _faviconLoader->FaviconForPageUrl(
+      webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
+      /*fallback_to_google_server=*/true, faviconLoadedBlock);
+
+  return token;
+}
+
+- (void)attachWebStateContent:(web::WebState*)webState
+              includeSnapshot:(BOOL)includeSnapshot
+                        token:(const base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  __weak __typeof(self) weakSelf = self;
+
+  base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+  PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
+        initWithWebState:webState
+      completionCallback:base::BindOnce(^(
+                             PageContextWrapperCallbackResponse response) {
+        [weakSelf handlePageContextResponse:std::move(response)
+                                   webState:weakWebState.get()
+                            includeSnapshot:includeSnapshot
+                                      token:token];
+      })];
+
+  pageContextWrapper.shouldGetAnnotatedPageContent = YES;
+  pageContextWrapper.shouldGetSnapshot = includeSnapshot;
+  [pageContextWrapper populatePageContextFieldsAsync];
+
+  _pageContextWrappers[webState->GetUniqueIdentifier()] = pageContextWrapper;
+}
+
+// Transforms the page context into input data and uploads the data after a page
+// snapshot is generated.
+- (void)handlePageContextResponse:
+            (PageContextWrapperCallbackResponse)pageContextResponse
+                         webState:(web::WebState*)webState
+                  includeSnapshot:(BOOL)includeSnapshot
+                            token:(const base::UnguessableToken)token {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  _pageContextWrappers.erase(webState->GetUniqueIdentifier());
+
+  if (!pageContextResponse.has_value() || !webState) {
+    return;
+  }
+
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(pageContextResponse.value());
+
+  __block std::unique_ptr<lens::ContextualInputData> input_data =
+      CreateInputDataFromAnnotatedPageContent(
+          base::WrapUnique(page_context->release_annotated_page_content()),
+          webState);
+
+  if (includeSnapshot) {
+    __weak __typeof(self) weakSelf = self;
+    SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
+        ^(UIImage* image) {
+          [weakSelf didRetrieveColorSnapshot:image
+                                   inputData:std::move(input_data)
+                                       token:token];
+        });
+
+    return;
+  }
+
+  [self startFileUploadFlowWithToken:token inputData:std::move(input_data)];
+}
+
+- (void)startFileUploadFlowWithToken:(const base::UnguessableToken)token
+                           inputData:
+                               (std::unique_ptr<lens::ContextualInputData>)
+                                   input_data {
+  // TODO(crbug.com/40280872): Plumb encoding options from a central config.
+  lens::ImageEncodingOptions image_options;
+  image_options.max_width = 1024;
+  image_options.max_height = 1024;
+  image_options.compression_quality = 80;
+  _composeboxQueryController->StartFileUploadFlow(token, std::move(input_data),
+                                                  image_options);
+}
+
 - (void)attachCurrentTabContent {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   web::WebState* webState = _webStateList->GetActiveWebState();
   if (!webState) {
     return;
   }
-
-  __weak __typeof(self) weakSelf = self;
-  _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:webState
-      completionCallback:base::BindOnce(^(
-                             PageContextWrapperCallbackResponse response) {
-        if (response.has_value()) {
-          [weakSelf didGetPageContext:std::move(response)];
-        }
-      })];
-  _pageContextWrapper.shouldGetAnnotatedPageContent = YES;
-  _pageContextWrapper.shouldGetSnapshot = YES;
-  [_pageContextWrapper populatePageContextFieldsAsync];
+  const base::UnguessableToken token =
+      [self createInputItemForWebState:webState];
+  [self attachWebStateContent:webState includeSnapshot:YES token:token];
 }
 
 #pragma mark - ComposeboxFileUploadObserver
@@ -475,53 +755,6 @@ CreateInputDataFromAnnotatedPageContent(
   return nil;
 }
 
-// Transforms the page context into input data and uploads the data after a page
-// snapshot is generated.
-- (void)didGetPageContext:
-    (PageContextWrapperCallbackResponse)pageContextResponse {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  web::WebState* webState = _webStateList->GetActiveWebState();
-
-  if (!pageContextResponse.has_value() || !webState) {
-    return;
-  }
-
-  AIMInputItem* item = [[AIMInputItem alloc]
-      initWithAimInputItemType:AIMInputItemType::kAIMInputItemTypeTab];
-  item.title = base::SysUTF16ToNSString(webState->GetTitle());
-  [_items addObject:item];
-  [self updateConsumerItems];
-  const base::UnguessableToken token = item.token;
-
-  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
-      std::move(pageContextResponse.value());
-
-  __block std::unique_ptr<lens::ContextualInputData> input_data =
-      CreateInputDataFromAnnotatedPageContent(
-          base::WrapUnique(page_context->release_annotated_page_content()),
-          webState);
-
-  __weak __typeof(self) weakSelf = self;
-
-  /// Based on the favicon loader API, this callback could be called twice.
-  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-    if (attributes.faviconImage) {
-      [weakSelf didLoadFaviconIcon:attributes.faviconImage
-                  forItemWithToken:token];
-    }
-  };
-
-  _faviconLoader->FaviconForPageUrl(
-      webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
-      /*fallback_to_google_server=*/true, faviconLoadedBlock);
-
-  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-      ^(UIImage* image) {
-        [weakSelf didRetrieveColorSnapshot:image
-                                 inputData:std::move(input_data)
-                                     token:token];
-      });
-}
 
 // Handles uploading the context after the snapshot is generated.
 - (void)didRetrieveColorSnapshot:(UIImage*)image
@@ -537,13 +770,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
   [self didLoadPreviewImage:image forItemWithToken:token];
 
-  // TODO(crbug.com/40280872): Plumb encoding options from a central config.
-  lens::ImageEncodingOptions image_options;
-  image_options.max_width = 1024;
-  image_options.max_height = 1024;
-  image_options.compression_quality = 80;
-  _composeboxQueryController->StartFileUploadFlow(token, std::move(input_data),
-                                                  image_options);
+  [self startFileUploadFlowWithToken:token inputData:std::move(input_data)];
 }
 
 // Handles the read `data` from the given `url` for the item with the given

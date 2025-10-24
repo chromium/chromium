@@ -11,6 +11,7 @@
 
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_omnibox_client_delegate.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_tab_picker_coordinator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_consumer.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -26,6 +27,7 @@ class WebStateList;
     : NSObject <AIMOmniboxClientDelegate,
                 AIMPrototypeComposeboxMutator,
                 ComposeboxFileUploadObserver,
+                AimPrototypeTabPickerSelectionDelegate,
                 LoadQueryCommands>
 
 @property(nonatomic, weak) id<AIMPrototypeComposeboxConsumer> consumer;

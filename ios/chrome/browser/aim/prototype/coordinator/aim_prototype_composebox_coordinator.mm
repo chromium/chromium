@@ -137,6 +137,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                           faviconLoader:faviconLoader];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
+  _tabPickerCoordinator.delegate = _mediator;
   _viewController.mutator = _mediator;
   _voiceSearchController.dispatcher = _mediator;
 

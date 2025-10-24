@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_TAB_PICKER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_AIM_PROTOTYPE_COORDINATOR_AIM_PROTOTYPE_TAB_PICKER_MEDIATOR_H_
 
+#import <set>
+
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_tab_picker_mutator.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/base_grid_mediator.h"
+#import "ios/web/public/web_state.h"
 
 @class AimPrototypeTabPickerMediator;
 @protocol AimPrototypeTabPickerConsumer;
@@ -16,7 +19,10 @@
 
 /// Sends the selected tabs identifiers to the tabs attachment delegate.
 - (void)attachSelectedTabs:(AimPrototypeTabPickerMediator*)tabPickerMediator
-       selectedIdentifiers:(NSSet<GridItemIdentifier*>*)selectedIdentifiers;
+       selectedWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs;
+
+/// Returns the web state IDs that are preselected.
+- (std::set<web::WebStateID>)preselectedWebStateIDs;
 
 @end
 
