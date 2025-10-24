@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 
 #import <memory>
 
+#import "base/apple/foundation_util.h"
 #import "base/base64url.h"
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
@@ -507,13 +503,10 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
     self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
     return;
   }
-  std::string encodedString;
-  base::span<const uint8_t> signals = base::span<const uint8_t>(
-      static_cast<const uint8_t*>(result.suggestSignals.bytes),
-      result.suggestSignals.length);
 
-  Base64UrlEncode(signals, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                  &encodedString);
+  std::string encodedString;
+  Base64UrlEncode(base::apple::NSDataToSpan(result.suggestSignals),
+                  base::Base64UrlEncodePolicy::INCLUDE_PADDING, &encodedString);
 
   if (!encodedString.empty()) {
     lens::proto::LensOverlaySuggestInputs response;
