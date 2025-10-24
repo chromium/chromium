@@ -52,6 +52,12 @@ void ExclusiveAccessManagerAndroid::ExitFullscreenModeForTab(
   eam_.fullscreen_controller()->ExitFullscreenModeForTab(wc);
 }
 
+bool ExclusiveAccessManagerAndroid::HasExclusiveAccess(JNIEnv* env) {
+  return eam_.fullscreen_controller()->IsTabFullscreen() ||
+         eam_.pointer_lock_controller()->IsPointerLocked() ||
+         eam_.keyboard_lock_controller()->IsKeyboardLockActive();
+}
+
 bool ExclusiveAccessManagerAndroid::IsFullscreenForTabOrPending(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jweb_contents) {

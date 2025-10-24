@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenBackPressHandler;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.host_zoom.HostZoomListenerFactory;
@@ -659,8 +660,14 @@ public class RootUiCoordinator
                             mFullscreenManager,
                             mActivityTabProvider,
                             mDesktopWindowStateManager);
+            mBackPressManager.addHandler(
+                    new ExclusiveAccessManagerBackPressHandler(mExclusiveAccessManager),
+                    BackPressHandler.Type.FULLSCREEN);
         } else {
             mExclusiveAccessManager = null;
+            mBackPressManager.addHandler(
+                    new FullscreenBackPressHandler(mBrowserControlsManager.getFullscreenManager()),
+                    BackPressHandler.Type.FULLSCREEN);
         }
 
         if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) {

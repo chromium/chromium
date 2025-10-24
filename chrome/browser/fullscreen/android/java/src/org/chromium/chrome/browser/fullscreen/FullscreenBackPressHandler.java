@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.fullscreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
@@ -27,9 +26,7 @@ public class FullscreenBackPressHandler implements BackPressHandler {
                 mFullscreenManager.getPersistentFullscreenMode()
                         ? BackPressResult.SUCCESS
                         : BackPressResult.FAILURE;
-        if (!ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
-            mFullscreenManager.exitPersistentFullscreenMode();
-        }
+        mFullscreenManager.exitPersistentFullscreenMode();
         return res;
     }
 
