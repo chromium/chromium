@@ -124,6 +124,10 @@ void TabStateStorageServiceAndroid::LoadAllTabs(
   tab_state_storage_service_->LoadAllTabs(std::move(load_all_tabs_callback));
 }
 
+void TabStateStorageServiceAndroid::ClearState(JNIEnv* env) {
+  tab_state_storage_service_->ClearState();
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 TabStateStorageServiceAndroid::GetJavaObject() {
   return base::android::ScopedJavaLocalRef<jobject>(java_obj_);

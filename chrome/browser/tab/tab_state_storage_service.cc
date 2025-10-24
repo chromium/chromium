@@ -143,6 +143,10 @@ void TabStateStorageService::LoadAllTabs(LoadAllTabsCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void TabStateStorageService::ClearState() {
+  tab_backend_->ClearAllNodes();
+}
+
 void TabStateStorageService::OnAllTabsLoaded(LoadAllTabsCallback callback,
                                              std::vector<NodeState> entries) {
   std::vector<LoadedTabState> loaded_tabs;

@@ -35,6 +35,8 @@ class TabStateStorageBackend {
 
   void LoadAllNodes(base::OnceCallback<void(std::vector<NodeState>)> callback);
 
+  void ClearAllNodes();
+
  private:
   void OnDBReady(bool success);
   void OnWrite(bool success);

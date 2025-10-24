@@ -93,6 +93,9 @@ class TabStateStorageDatabase {
   // Loads all nodes from the database.
   std::vector<NodeState> LoadAllNodes();
 
+  // Clears all nodes from the database.
+  void ClearAllNodes();
+
  private:
   std::unique_ptr<OpenTransaction> open_transaction_;
   base::FilePath profile_path_;

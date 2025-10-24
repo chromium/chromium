@@ -28,6 +28,8 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
   void LoadAllTabs(JNIEnv* env,
                    const jni_zero::JavaParamRef<jobject>& j_callback);
 
+  void ClearState(JNIEnv* env);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:

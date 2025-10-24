@@ -67,6 +67,11 @@ public class TabStateStorageService {
         TabStateStorageServiceJni.get().loadAllTabs(mNativeTabStateStorageService, callback);
     }
 
+    /** Clears all the tabs from persistent storage. */
+    public void clearState() {
+        TabStateStorageServiceJni.get().clearState(mNativeTabStateStorageService);
+    }
+
     @CalledByNative
     public static LoadedTabState createLoadedTabState(
             @TabId int tabId, TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
@@ -119,5 +124,7 @@ public class TabStateStorageService {
 
         void loadAllTabs(
                 long nativeTabStateStorageServiceAndroid, Callback<LoadedTabState[]> callback);
+
+        void clearState(long nativeTabStateStorageServiceAndroid);
     }
 }

@@ -257,4 +257,11 @@ std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
   return entries;
 }
 
+void TabStateStorageDatabase::ClearAllNodes() {
+  static constexpr char kDeleteAllTabsSql[] = "DELETE FROM nodes";
+  sql::Statement delete_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllTabsSql));
+  delete_statement.Run();
+}
+
 }  // namespace tabs

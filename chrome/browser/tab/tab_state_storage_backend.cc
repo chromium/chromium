@@ -68,6 +68,12 @@ void TabStateStorageBackend::LoadAllNodes(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void TabStateStorageBackend::ClearAllNodes() {
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearAllNodes,
+                                base::Unretained(database_.get())));
+}
+
 void TabStateStorageBackend::OnDBReady(bool success) {}
 
 void TabStateStorageBackend::OnWrite(bool success) {}

@@ -13,6 +13,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
 import org.chromium.chrome.browser.tab.Tab;
@@ -147,6 +148,12 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void onNativeLibraryReady() {
+        if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
+            catchUpAndBeginTracking();
+        }
+    }
+
+    private void catchUpAndBeginTracking() {
         assert mTabRegistrationObserver == null && mTabMoveObserver == null;
         mTabRegistrationObserver = new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
@@ -209,7 +216,7 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void clearState() {
-        // TODO(https://crbug.com/448151845): Raze the db.
+        mTabStateStorageService.clearState();
     }
 
     @Override
@@ -368,6 +375,14 @@ public class TabStateStore implements TabPersistentStore {
 
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onStateLoaded();
+        }
+        if (!ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
+            // When we aren't the authoritative source we don't trust ourselves to be correct.
+            // Raze the db and rebuild from the loaded tab state to ensure we are in a known good
+            // state. This is a no-op if we are the authoritative source as there shouldn't be a
+            // delta and if there is we need a less blunt mechanism to reconcile the difference.
+            clearState();
+            catchUpAndBeginTracking();
         }
     }
 

@@ -58,6 +58,8 @@ class TabStateStorageService : public KeyedService,
 
   void LoadAllTabs(LoadAllTabsCallback callback);
 
+  void ClearState();
+
   // Returns a Java object of the type TabStateStorageService. This is
   // implemented in tab_state_storage_service_android.cc
   static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
