@@ -42,7 +42,7 @@ class ContextualCueingPageDataTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(ContextualCueingPageDataTest, Basic) {
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -53,12 +53,12 @@ TEST_F(ContextualCueingPageDataTest, Basic) {
                                           std::move(metadata),
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("basic label", future.Get().value());
+  EXPECT_EQ("basic label", future.Get().value().cue_label);
 }
 
 TEST_F(ContextualCueingPageDataTest, EarlyDestruction) {
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -84,7 +84,7 @@ TEST_F(ContextualCueingPageDataTest, EarlyDestruction) {
 
 TEST_F(ContextualCueingPageDataTest, NonPdfPageFails) {
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -108,7 +108,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountFails) {
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -136,7 +136,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountPasses) {
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -155,7 +155,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountPasses) {
   InvokePdfPageCountReceived(4);
 
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("pdf label", future.Get().value());
+  EXPECT_EQ("pdf label", future.Get().value().cue_label);
 }
 
 TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
@@ -163,7 +163,7 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
       ->SetMainFrameMimeType(pdf::kPDFMimeType);
 
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -184,7 +184,7 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
                                           std::move(metadata),
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("basic label", future.Get().value());
+  EXPECT_EQ("basic label", future.Get().value().cue_label);
 }
 
 class ContextualCueingPageDataTestDynamicCue
@@ -202,7 +202,7 @@ class ContextualCueingPageDataTestDynamicCue
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, Basic) {
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -213,12 +213,12 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, Basic) {
                                           std::move(metadata),
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("dynamic label", future.Get().value());
+  EXPECT_EQ("dynamic label", future.Get().value().cue_label);
 }
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
   base::test::TestFuture<
-      base::expected<std::string, contextual_cueing::NudgeDecision>>
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
       future;
   optimization_guide::proto::GlicContextualCueingMetadata metadata;
   auto* config = metadata.add_cueing_configurations();
@@ -228,7 +228,25 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
                                           std::move(metadata),
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ("basic label", future.Get().value());
+  EXPECT_EQ("basic label", future.Get().value().cue_label);
+}
+
+TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
+  base::test::TestFuture<
+      base::expected<CueingResult, contextual_cueing::NudgeDecision>>
+      future;
+  optimization_guide::proto::GlicContextualCueingMetadata metadata;
+  auto* config = metadata.add_cueing_configurations();
+  config->set_cue_label("should not use this label");
+  config->set_dynamic_cue_label("dynamic label");
+  config->set_default_text("prompt suggestion");
+
+  ContextualCueingPageData::CreateForPage(web_contents_->GetPrimaryPage(),
+                                          std::move(metadata),
+                                          future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ("dynamic label", future.Get().value().cue_label);
+  EXPECT_EQ("prompt suggestion", future.Get().value().prompt_suggestion);
 }
 
 }  // namespace contextual_cueing

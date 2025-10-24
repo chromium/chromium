@@ -368,7 +368,8 @@ void BrowserCommandHandler::OpenGlic() {
 
   glic_service->window_controller().Toggle(
       browser_window, /*prevent_close=*/false,
-      glic::mojom::InvocationSource::kWhatsNew);
+      glic::mojom::InvocationSource::kWhatsNew,
+      /*prompt_suggestion=*/std::nullopt);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 

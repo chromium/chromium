@@ -51,12 +51,19 @@ class GlicNudgeController {
   // reason of nudge removal.
   void UpdateNudgeLabel(content::WebContents* web_contents,
                         const std::string& nudge_label,
+                        std::optional<std::string> prompt_suggestion,
                         std::optional<GlicNudgeActivity> activity,
                         GlicNudgeActivityCallback callback);
 
   void OnNudgeActivity(GlicNudgeActivity activity);
 
   void SetNudgeActivityCallbackForTesting();
+
+  std::optional<std::string> GetPromptSuggestion() {
+    return prompt_suggestion_;
+  }
+
+  void ClearPromptSuggestion() { prompt_suggestion_.reset(); }
 
  private:
   // Called when the active tab changes, to update the nudge UI appropriate for
@@ -67,6 +74,9 @@ class GlicNudgeController {
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   raw_ptr<GlicNudgeDelegate> delegate_ = nullptr;
+
+  // The suggested prompt associated with the nudge label.
+  std::optional<std::string> prompt_suggestion_;
 
   // Callback to invoke for user actions on the nudge.
   GlicNudgeActivityCallback nudge_activity_callback_;

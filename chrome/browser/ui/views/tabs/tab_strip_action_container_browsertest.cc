@@ -511,7 +511,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest, PreloadFreOnNudge) {
 
   nudge_controller->UpdateNudgeLabel(
       browser()->tab_strip_model()->GetActiveWebContents(), "test",
-      std::nullopt, base::DoNothing());
+      /*prompt_suggestion=*/std::nullopt, /*activity=*/std::nullopt,
+      base::DoNothing());
 
   ShowTabStripNudgeButton(GlicNudgeButton());
 

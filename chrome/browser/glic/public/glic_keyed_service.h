@@ -110,7 +110,8 @@ class GlicKeyedService : public KeyedService,
   // TODO(b:448888544): remove `prevent_close` in favor of a Show method.
   void ToggleUI(BrowserWindowInterface* bwi,
                 bool prevent_close,
-                mojom::InvocationSource source);
+                mojom::InvocationSource source,
+                std::optional<std::string> prompt_suggestion = std::nullopt);
 
   void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
                              mojom::InvocationSource source);

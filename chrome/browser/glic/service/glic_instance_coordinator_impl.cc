@@ -165,9 +165,11 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   return GetInstanceImplForTab(tab);
 }
 
-void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
-                                         bool prevent_close,
-                                         mojom::InvocationSource source) {
+void GlicInstanceCoordinatorImpl::Toggle(
+    BrowserWindowInterface* browser,
+    bool prevent_close,
+    mojom::InvocationSource source,
+    std::optional<std::string> prompt_suggestion) {
   if (!browser) {
     ToggleFloaty(prevent_close);
     return;

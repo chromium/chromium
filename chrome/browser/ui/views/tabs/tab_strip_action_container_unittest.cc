@@ -304,7 +304,8 @@ TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
 TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   glic_nudge_controller_->UpdateNudgeLabel(
-      web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
+      web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
+      /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 }
 
@@ -315,7 +316,8 @@ TEST_P(TabStripActionContainerTest, GlicButtonHideNudgeOnTabChange) {
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
 
   glic_nudge_controller_->UpdateNudgeLabel(
-      web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
+      web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
+      /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
 

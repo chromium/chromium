@@ -31,6 +31,7 @@ GlicNudgeController::~GlicNudgeController() = default;
 void GlicNudgeController::UpdateNudgeLabel(
     content::WebContents* web_contents,
     const std::string& nudge_label,
+    std::optional<std::string> prompt_suggestion,
     std::optional<GlicNudgeActivity> activity,
     GlicNudgeActivityCallback callback) {
   auto* const tab_interface =
@@ -68,6 +69,8 @@ void GlicNudgeController::UpdateNudgeLabel(
   } else {
     OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeShown);
   }
+
+  prompt_suggestion_ = prompt_suggestion;
 }
 
 void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {

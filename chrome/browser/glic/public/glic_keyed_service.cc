@@ -237,7 +237,8 @@ void GlicKeyedService::Shutdown() {
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
-                                mojom::InvocationSource source) {
+                                mojom::InvocationSource source,
+                                std::optional<std::string> prompt_suggestion) {
   // Glic may be disabled for certain user profiles (the user is browsing in
   // incognito or guest mode, policy, etc). In those cases, the entry points to
   // this method should already have been removed.
@@ -265,7 +266,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   }
 
   window_controller().Toggle(bwi ? bwi : GetActiveGlicEligibleBrowser(profile_),
-                             prevent_close, source);
+                             prevent_close, source, prompt_suggestion);
 }
 
 void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,

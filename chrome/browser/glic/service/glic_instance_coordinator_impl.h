@@ -92,7 +92,8 @@ class GlicInstanceCoordinatorImpl
   // sources are user initiated.
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
-              mojom::InvocationSource source) override;
+              mojom::InvocationSource source,
+              std::optional<std::string> prompt_suggestion) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   // Shuts down all hosts. Only call it before destruction of the instance
   // coordinator.

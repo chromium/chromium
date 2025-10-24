@@ -162,7 +162,7 @@ void ContextualCueingHelper::DidFinishNavigation(
   auto* glic_nudge_controller = GetGlicNudgeController();
   if (glic_nudge_controller) {
     glic_nudge_controller->UpdateNudgeLabel(
-        web_contents(), std::string(),
+        web_contents(), std::string(), /*prompt_suggestion=*/std::nullopt,
         tabs::GlicNudgeActivity::kNudgeIgnoredNavigation, base::DoNothing());
   }
 
@@ -345,7 +345,7 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
 void ContextualCueingHelper::OnCueingDecision(
     std::unique_ptr<ScopedNudgeDecisionRecorder> decision_recorder,
     base::TimeTicks document_available_time,
-    base::expected<std::string, NudgeDecision> decision_result) {
+    base::expected<CueingResult, NudgeDecision> decision_result) {
   CHECK_EQ(NudgeDecision::kUnknown, decision_recorder->nudge_decision());
   if (ContextualCueingPageData::GetForPage(web_contents()->GetPrimaryPage())) {
     ContextualCueingPageData::DeleteForPage(web_contents()->GetPrimaryPage());
@@ -356,7 +356,8 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
-  std::string cue_label = decision_result.value();
+  std::string cue_label = decision_result.value().cue_label;
+  std::string prompt_suggestion = decision_result.value().prompt_suggestion;
   if (IsBrowserBlockingNudges(decision_recorder.get())) {
     return;
   }
@@ -369,7 +370,10 @@ void ContextualCueingHelper::OnCueingDecision(
   }
 
   GetGlicNudgeController()->UpdateNudgeLabel(
-      web_contents(), cue_label, /*activity=*/std::nullopt,
+      web_contents(), cue_label,
+      prompt_suggestion.empty() ? std::nullopt
+                                : std::make_optional(prompt_suggestion),
+      /*activity=*/std::nullopt,
       base::BindRepeating(&ContextualCueingService::OnNudgeActivity,
                           contextual_cueing_service_->GetWeakPtr(),
                           web_contents(), document_available_time));

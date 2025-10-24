@@ -27,7 +27,10 @@ class MockGlicWindowController
 
   MOCK_METHOD(void,
               Toggle,
-              (BrowserWindowInterface*, bool, mojom::InvocationSource),
+              (BrowserWindowInterface*,
+               bool,
+               mojom::InvocationSource,
+               std::optional<std::string>),
               (override));
   MOCK_METHOD(void, ShowAfterSignIn, (base::WeakPtr<Browser>), (override));
   MOCK_METHOD(void, Attach, (), ());

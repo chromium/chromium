@@ -273,17 +273,21 @@ void GlicWindowControllerImpl::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
   Toggle(browser.get(), true,
          // Prefer the source that triggered the sign-in, but if that's not
          // available, report it as coming from the sign-in flow.
-         opening_source_.value_or(mojom::InvocationSource::kAfterSignIn));
+         opening_source_.value_or(mojom::InvocationSource::kAfterSignIn),
+         prompt_suggestion_);
 }
 
-void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
-                                      bool prevent_close,
-                                      mojom::InvocationSource source) {
+void GlicWindowControllerImpl::Toggle(
+    BrowserWindowInterface* bwi,
+    bool prevent_close,
+    mojom::InvocationSource source,
+    std::optional<std::string> prompt_suggestion) {
   Browser* new_attached_browser =
       bwi ? bwi->GetBrowserForMigrationOnly() : nullptr;
 
   if (!AlwaysDetached()) {
-    ToggleWhenNotAlwaysDetached(new_attached_browser, prevent_close, source);
+    ToggleWhenNotAlwaysDetached(new_attached_browser, prevent_close, source,
+                                prompt_suggestion);
     return;
   }
 
@@ -301,7 +305,7 @@ void GlicWindowControllerImpl::Toggle(BrowserWindowInterface* bwi,
 
   // If floaty is closed, open floaty
   if (state_ == State::kClosed) {
-    Show(new_attached_browser, source);
+    Show(new_attached_browser, source, prompt_suggestion);
     return;
   }
 
@@ -345,7 +349,8 @@ void GlicWindowControllerImpl::MaybeSendViewChangeRequest(
 void GlicWindowControllerImpl::ToggleWhenNotAlwaysDetached(
     Browser* new_attached_browser,
     bool prevent_close,
-    mojom::InvocationSource source) {
+    mojom::InvocationSource source,
+    std::optional<std::string> prompt_suggestion) {
   auto maybe_close = [this, prevent_close] {
     if (!prevent_close) {
       Close();
@@ -425,7 +430,7 @@ void GlicWindowControllerImpl::ToggleWhenNotAlwaysDetached(
     // Currently in the process of showing the widget, allow that to finish.
     return;
   } else {
-    Show(new_attached_browser, source);
+    Show(new_attached_browser, source, prompt_suggestion);
   }
 }
 
@@ -443,7 +448,7 @@ void GlicWindowControllerImpl::FocusIfOpen() {
 
 void GlicWindowControllerImpl::ShowDetachedForTesting() {
   glic::GlicProfileManager::GetInstance()->SetActiveGlic(glic_service_);
-  Show(nullptr, mojom::InvocationSource::kOsHotkey);
+  Show(nullptr, mojom::InvocationSource::kOsHotkey, std::nullopt);
 }
 
 void GlicWindowControllerImpl::SetPreviousPositionForTesting(
@@ -474,7 +479,8 @@ GlicInstance* GlicWindowControllerImpl::GetInstanceForTab(
 
 bool GlicWindowControllerImpl::BeforeViewCreated(
     Browser* browser,
-    mojom::InvocationSource source) {
+    mojom::InvocationSource source,
+    std::optional<std::string> prompt_suggestion) {
   if (state_ == State::kWaitingForSidePanelToShow) {
     return false;
   }
@@ -482,6 +488,7 @@ bool GlicWindowControllerImpl::BeforeViewCreated(
   // unset.
   CHECK(!attached_browser_);
   opening_source_ = source;
+  prompt_suggestion_ = prompt_suggestion;
   if (!glic_service_->GetAuthController().CheckAuthBeforeShowSync(
           base::BindOnce(&GlicWindowControllerImpl::ShowAfterSignIn,
                          weak_ptr_factory_.GetWeakPtr(),
@@ -513,7 +520,12 @@ void GlicWindowControllerImpl::AfterViewShown() {
   // `NotifyIfPanelStateChanged()` first, so that the host will receive the
   // correct panel state.
   NotifyIfPanelStateChanged();
-  host().PanelWillOpen(opening_source_.value(), {});
+  Host::PanelWillOpenOptions open_options;
+  if (prompt_suggestion_) {
+    open_options.prompt_suggestion = prompt_suggestion_.value();
+  }
+  host().PanelWillOpen(opening_source_.value(), std::move(open_options));
+  prompt_suggestion_.reset();
 
   if (login_page_committed_) {
     // This indicates that we've warmed the web client and it has hit a login
@@ -526,9 +538,11 @@ void GlicWindowControllerImpl::AfterViewShown() {
   }
 }
 
-void GlicWindowControllerImpl::Show(Browser* browser,
-                                    mojom::InvocationSource source) {
-  if (!BeforeViewCreated(browser, source)) {
+void GlicWindowControllerImpl::Show(
+    Browser* browser,
+    mojom::InvocationSource source,
+    std::optional<std::string> prompt_suggestion) {
+  if (!BeforeViewCreated(browser, source, prompt_suggestion)) {
     return;
   }
   if (browser && !AlwaysDetached()) {
@@ -546,7 +560,8 @@ std::unique_ptr<views::View> GlicWindowControllerImpl::CreateViewForSidePanel(
   // Browser
   auto* browser = tab.GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
   // TODO: Add Invocation source for toolbar button
-  if (BeforeViewCreated(browser, mojom::InvocationSource::kThreeDotsMenu) &&
+  if (BeforeViewCreated(browser, mojom::InvocationSource::kThreeDotsMenu,
+                        std::nullopt) &&
       browser) {
     AttachToBrowser(*browser, AttachChangeReason::kInit);
   }
