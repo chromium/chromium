@@ -137,9 +137,6 @@ template("system_webview_apk_or_module_tmpl") {
     _is_bundle_module = _target_type == "android_app_bundle_module"
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
-    if (!defined(min_sdk_version) && _is_trichrome) {
-      min_sdk_version = 29
-    }
     if (defined(expected_android_manifest)) {
       if (android_64bit_target_cpu) {
         _version_code_offset = chrome_32_version_code
