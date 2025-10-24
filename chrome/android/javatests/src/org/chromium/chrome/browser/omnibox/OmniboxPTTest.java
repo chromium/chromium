@@ -37,7 +37,10 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Build(sdk_equals = Build.VERSION_CODES.BAKLAVA, message = "crbug.com/424223725")
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.R,
+        sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
+        message = "Flaky in S, crbug.com/372709072")
 public class OmniboxPTTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
@@ -57,10 +60,6 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.R,
-            sdk_is_less_than = Build.VERSION_CODES.TIRAMISU,
-            message = "Flaky in S, crbug.com/372709072")
     public void testOpenTypeDelete_fromWebPage() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         WebPageStation blankPage = mCtaTestRule.start();
@@ -73,7 +72,6 @@ public class OmniboxPTTest {
 
     @LargeTest
     @Test
-    @DisabledTest(message = "crbug.com/424223725")
     public void testOpenTypeDelete_fromNtp() {
         ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         WebPageStation blankPage = mCtaTestRule.start();
