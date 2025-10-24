@@ -416,13 +416,28 @@ public class StripLayoutHelper
                             computeAndUpdateTabWidth(
                                     /* animate= */ true, /* deferAnimations= */ true);
                     assumeNonNull(pinnedAnimations);
+
+                    // Animate the moving tab to the pinned boundary. Normally we animate from drawX
+                    // to idealX, but if the first unpinned slot is off-screen, a newly unpinned tab
+                    // would “fly” toward the strip start. To make it appear to fly into the
+                    // unpinned section instead, animate offsetX toward the absolute pinned
+                    // boundary.
+                    boolean rtl = LocalizationUtils.isLayoutRtl();
+                    float pinnedWidth = getEffectiveTabWidth(/* isPinned= */ true);
+                    // For pinning, subtract one tab width, because the total pinned width already
+                    // includes the newly pinned tab width, but the animation should target the
+                    // x-position before it was included.
+                    float animationEndX =
+                            getPinnedTabsBoundary() + (isPinned && !rtl ? -pinnedWidth : 0f);
+                    float startOffsetX = stripTab.getDrawX() - stripTab.getIdealX();
+                    float endOffsetX = animationEndX - stripTab.getIdealX();
                     pinnedAnimations.add(
                             CompositorAnimator.ofFloatProperty(
                                     mUpdateHost.getAnimationHandler(),
                                     stripTab,
                                     StripLayoutView.X_OFFSET,
-                                    stripTab.getDrawX() - stripTab.getIdealX(),
-                                    0f,
+                                    startOffsetX,
+                                    endOffsetX,
                                     ANIM_TAB_MOVE_MS));
 
                     queueAnimations(
@@ -433,6 +448,7 @@ public class StripLayoutHelper
                                     stripTab.setIsForegrounded(/* isForegrounded= */ false);
                                     mTabDelegate.setIsTabNonDragReordering(
                                             stripTab, /* isNonDragReordering= */ false);
+                                    stripTab.setOffsetX(0f);
                                 }
                             });
 
@@ -959,6 +975,13 @@ public class StripLayoutHelper
             }
         }
         return width == 0.f ? 0.f : width + mScrollDelegate.getReorderStartMargin();
+    }
+
+    /** Returns the pinned tabs boundary on tab strip. */
+    private float getPinnedTabsBoundary() {
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        return getStartPositionForStripViews()
+                + (isRtl ? -getTotalPinnedTabsWidth() : getTotalPinnedTabsWidth());
     }
 
     /** Returns the visual offset to be applied to the new tab button. */
