@@ -142,6 +142,7 @@ source_set("unit_tests") {
   deps = [
     ":credential_provider",
     "//base/test:test_support",
+    "//components/sync/protocol",
     "//testing/gtest",
   ]
 }

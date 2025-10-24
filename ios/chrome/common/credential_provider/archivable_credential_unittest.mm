@@ -5,6 +5,8 @@
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
 #import "base/test/ios/wait_util.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -290,6 +292,28 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 
   EXPECT_NSNE(credential, nil);
+}
+
+TEST_F(ArchivableCredentialTest, HiddenTimeNotSetForNotHiddenPasskey) {
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
+                                   recordIdentifier:@"recordIdentifier"
+                                             syncId:StringToData("syncId")
+                                           username:@"username"
+                                    userDisplayName:@"userDisplayName"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
+                                               rpId:@"rpId"
+                                         privateKey:StringToData("test")
+                                          encrypted:nil
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:0
+                                       editedByUser:NO];
+
+  EXPECT_FALSE(PasskeyFromCredential(credential).has_hidden_time());
 }
 
 }  // namespace

@@ -46,7 +46,9 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
   credential_specifics.set_last_used_time_windows_epoch_micros(
       credential.lastUsedTime);
   credential_specifics.set_hidden(credential.hidden);
-  credential_specifics.set_hidden_time(credential.hiddenTime);
+  if (credential.hidden) {
+    credential_specifics.set_hidden_time(credential.hiddenTime);
+  }
   credential_specifics.set_edited_by_user(credential.editedByUser);
 
   if ([credential.privateKey length] > 0) {
