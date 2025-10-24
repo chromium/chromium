@@ -102,6 +102,7 @@ void ModelBrokerImpl::SolutionProvider::UpdateSubscribers() {
   for (auto& subscriber : subscribers_) {
     UpdateSubscriber(*subscriber);
   }
+  UpdateSubscriber(local_subscriber_);
 }
 
 void ModelBrokerImpl::SolutionProvider::UpdateSubscriber(

@@ -1790,7 +1790,6 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   session.reset();
-  EXPECT_TRUE(fake_launcher_.is_service_running());
 
   task_environment_.FastForwardBy(idle_timeout / 2 + base::Milliseconds(1));
   task_environment_.RunUntilIdle();

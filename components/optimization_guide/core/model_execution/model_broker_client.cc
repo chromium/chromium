@@ -104,40 +104,35 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
     opts.sampling_params = *config_params.sampling_params;
   }
 
-  return std::make_unique<SessionImpl>(key_, std::move(opts), std::nullopt);
+  return std::make_unique<SessionImpl>(key_, std::move(opts), config_params);
 }
 
 void ModelClient::OnDisconnect() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-ModelSubscriber::ModelSubscriber(
-    mojo::PendingReceiver<mojom::ModelSubscriber> pending)
-    : receiver_(this, std::move(pending)) {
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&ModelSubscriber::Unavailable, base::Unretained(this),
-                     mojom::ModelUnavailableReason::kNotSupported));
-}
-ModelSubscriber::~ModelSubscriber() = default;
+ModelSubscriberImpl::ModelSubscriberImpl() = default;
+ModelSubscriberImpl::~ModelSubscriberImpl() = default;
 
-void ModelSubscriber::CreateSession(const SessionConfigParams& config_params,
-                                    CreateSessionCallback callback) {
+void ModelSubscriberImpl::CreateSession(
+    const SessionConfigParams& config_params,
+    CreateSessionCallback callback) {
   WaitForClient(base::BindOnce(&CreateSessionWithParams, config_params)
                     .Then(std::move(callback)));
 }
 
-void ModelSubscriber::WaitForClient(ClientCallback callback) {
+void ModelSubscriberImpl::WaitForClient(ClientCallback callback) {
   callbacks_.emplace_back(std::move(callback));
   FlushCallbacks();
 }
 
-void ModelSubscriber::Unavailable(mojom::ModelUnavailableReason reason) {
+void ModelSubscriberImpl::Unavailable(mojom::ModelUnavailableReason reason) {
   unavailable_reason_ = reason;
   client_.reset();
   FlushCallbacks();
 }
 
-void ModelSubscriber::Available(
+void ModelSubscriberImpl::Available(
     mojom::ModelSolutionConfigPtr config,
     mojo::PendingRemote<mojom::ModelSolution> remote) {
   unavailable_reason_ = std::nullopt;
@@ -145,7 +140,7 @@ void ModelSubscriber::Available(
   FlushCallbacks();
 }
 
-void ModelSubscriber::FlushCallbacks() {
+void ModelSubscriberImpl::FlushCallbacks() {
   if (client_) {
     std::vector to_call(std::move(callbacks_));
     callbacks_.clear();
@@ -162,6 +157,18 @@ void ModelSubscriber::FlushCallbacks() {
     }
     return;
   }
+}
+
+ModelSubscriber::ModelSubscriber(
+    mojo::PendingReceiver<mojom::ModelSubscriber> pending)
+    : receiver_(this, std::move(pending)) {
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&ModelSubscriber::OnDisconnect, base::Unretained(this)));
+}
+ModelSubscriber::~ModelSubscriber() = default;
+
+void ModelSubscriber::OnDisconnect() {
+  Unavailable(mojom::ModelUnavailableReason::kNotSupported);
 }
 
 ModelBrokerClient::ModelBrokerClient(

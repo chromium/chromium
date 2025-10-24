@@ -196,32 +196,10 @@ std::unique_ptr<OnDeviceSession> OnDeviceModelServiceController::CreateSession(
     return nullptr;
   }
 
-  auto* solution = static_cast<OnDeviceModelServiceController::Solution*>(
-      maybe_solution->get());
-
-  CHECK(base_model_controller_->model_metadata());
-  CHECK(features::internal::GetOptimizationTargetForCapability(feature));
-  MaybeAdaptationMetadata adaptation_metadata =
-      adaptation_metadata_.Get(feature);
-  CHECK(adaptation_metadata.has_value());
-
-  OnDeviceOptions opts;
-  opts.model_client = std::make_unique<OnDeviceModelClient>(
-      feature, weak_ptr_factory_.GetWeakPtr(), solution->model_controller());
-  opts.model_versions =
-      GetModelVersions(*base_model_controller_->model_metadata(),
-                       safety_client_, adaptation_metadata->version());
-  opts.safety_checker =
-      std::make_unique<SafetyChecker>(solution->safety_checker());
-  opts.token_limits = solution->adapter()->GetTokenLimits();
-  opts.adapter = solution->adapter();
-
-  opts.capabilities = config_params.capabilities;
-  if (config_params.sampling_params) {
-    opts.sampling_params = *config_params.sampling_params;
-  }
-
-  return std::make_unique<SessionImpl>(feature, std::move(opts), config_params);
+  return model_broker_impl_.GetSolutionProvider(feature)
+      .local_subscriber()
+      .client()
+      ->CreateSession(config_params);
 }
 
 void OnDeviceModelServiceController::SetLanguageDetectionModel(
@@ -274,43 +252,6 @@ void OnDeviceModelServiceController::OnServiceDisconnected(
     case on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary:
     case on_device_model::ServiceDisconnectReason::kUnspecified:
       break;
-  }
-}
-
-OnDeviceModelServiceController::OnDeviceModelClient::OnDeviceModelClient(
-    ModelBasedCapabilityKey feature,
-    base::WeakPtr<OnDeviceModelServiceController> controller,
-    base::WeakPtr<ModelController> model_controller)
-    : feature_(feature),
-      controller_(std::move(controller)),
-      model_controller_(std::move(model_controller)) {}
-
-OnDeviceModelServiceController::OnDeviceModelClient::~OnDeviceModelClient() =
-    default;
-
-std::unique_ptr<OnDeviceOptions::Client>
-OnDeviceModelServiceController::OnDeviceModelClient::Clone() const {
-  return std::make_unique<OnDeviceModelServiceController::OnDeviceModelClient>(
-      feature_, controller_, model_controller_);
-}
-
-bool OnDeviceModelServiceController::OnDeviceModelClient::ShouldUse() {
-  return controller_ && model_controller_ &&
-         controller_->access_controller_->ShouldStartNewSession() ==
-             OnDeviceModelEligibilityReason::kSuccess;
-}
-
-void OnDeviceModelServiceController::OnDeviceModelClient::StartSession(
-    mojo::PendingReceiver<on_device_model::mojom::Session> pending,
-    on_device_model::mojom::SessionParamsPtr params) {
-  model_controller_->GetOrCreateRemote()->StartSession(std::move(pending),
-                                                       std::move(params));
-}
-
-void OnDeviceModelServiceController::OnDeviceModelClient::
-    OnResponseCompleted() {
-  if (controller_) {
-    controller_->access_controller_->OnResponseCompleted();
   }
 }
 

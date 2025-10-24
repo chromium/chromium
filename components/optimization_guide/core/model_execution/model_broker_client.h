@@ -77,11 +77,10 @@ class ModelClient final : public TextSafetyClient {
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};
 };
 
-class ModelSubscriber final : public mojom::ModelSubscriber {
+class ModelSubscriberImpl : public mojom::ModelSubscriber {
  public:
-  explicit ModelSubscriber(
-      mojo::PendingReceiver<mojom::ModelSubscriber> pending);
-  ~ModelSubscriber() override;
+  ModelSubscriberImpl();
+  ~ModelSubscriberImpl() override;
 
   using CreateSessionResult = std::unique_ptr<OnDeviceSession>;
   using CreateSessionCallback = base::OnceCallback<void(CreateSessionResult)>;
@@ -92,6 +91,8 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
     return unavailable_reason_;
   }
 
+  std::optional<ModelClient>& client() { return client_; }
+
   // Creates and returns a session via callback as soon as a model is available.
   // Calls the callback with nullptr if the state become NotSupported.
   void CreateSession(const SessionConfigParams& config_params,
@@ -101,7 +102,7 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
   // Calls the callback with nullptr if the state become NotSupported.
   void WaitForClient(ClientCallback callback);
 
- private:
+ protected:
   // mojom::ModelSubscriber
   void Unavailable(mojom::ModelUnavailableReason) override;
   void Available(mojom::ModelSolutionConfigPtr config,
@@ -114,6 +115,16 @@ class ModelSubscriber final : public mojom::ModelSubscriber {
   std::optional<mojom::ModelUnavailableReason> unavailable_reason_ =
       mojom::ModelUnavailableReason::kUnknown;
   std::optional<ModelClient> client_;
+};
+
+class ModelSubscriber final : public ModelSubscriberImpl {
+ public:
+  explicit ModelSubscriber(
+      mojo::PendingReceiver<mojom::ModelSubscriber> pending);
+  ~ModelSubscriber() override;
+
+ private:
+  void OnDisconnect();
   mojo::Receiver<mojom::ModelSubscriber> receiver_;
 };
 

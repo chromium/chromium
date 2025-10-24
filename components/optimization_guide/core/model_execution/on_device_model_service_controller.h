@@ -270,28 +270,7 @@ class OnDeviceModelServiceController final {
     base::WeakPtrFactory<BaseModelController> weak_ptr_factory_{this};
   };
 
-  // Implements OnDeviceOptions::Client for Sessions created by this object.
-  class OnDeviceModelClient final : public OnDeviceOptions::Client {
-   public:
-    OnDeviceModelClient(
-        ModelBasedCapabilityKey feature,
-        base::WeakPtr<OnDeviceModelServiceController> controller,
-        base::WeakPtr<ModelController> model_controller);
-    ~OnDeviceModelClient() override;
-    std::unique_ptr<OnDeviceOptions::Client> Clone() const override;
-    bool ShouldUse() override;
-    void StartSession(
-        mojo::PendingReceiver<on_device_model::mojom::Session> pending,
-        on_device_model::mojom::SessionParamsPtr params) override;
-    void OnResponseCompleted() override;
-
-   private:
-    ModelBasedCapabilityKey feature_;
-    base::WeakPtr<OnDeviceModelServiceController> controller_;
-    base::WeakPtr<ModelController> model_controller_;
-  };
   friend class OnDeviceModelAdaptationController;
-  friend class OnDeviceModelClient;
 
   // Called when the service disconnects unexpectedly.
   void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
