@@ -182,6 +182,10 @@ void AuthService::StartAuthentication(AuthStatusCallback callback) {
         base::BindOnce(&AuthService::OnAuthCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         scopes_or_consumer_id_);
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), NOT_READY, std::string()));
   }
 }
 
