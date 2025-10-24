@@ -7,20 +7,31 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
+
 namespace testing {
 
-extern const char kCalendarFilePath[];
-extern const char kMobileConfigFilePath[];
-extern const char kAppleWalletOrderFilePath[];
-extern const char kPkPassFilePath[];
-extern const char kBundledPkPassFilePath[];
-extern const char kSemiValidBundledPkPassFilePath[];
-extern const char kUsdzFilePath[];
-extern const char kVcardFilePath[];
+inline constexpr base::FilePath::StringViewType kCalendarFilePath =
+    "ios/testing/data/http_server_files/sample.ics";
+inline constexpr base::FilePath::StringViewType kMobileConfigFilePath =
+    "ios/testing/data/http_server_files/sample.mobileconfig";
+inline constexpr base::FilePath::StringViewType kAppleWalletOrderFilePath =
+    "ios/testing/data/http_server_files/sample.order";
+inline constexpr base::FilePath::StringViewType kPkPassFilePath =
+    "ios/testing/data/http_server_files/generic.pkpass";
+inline constexpr base::FilePath::StringViewType kBundledPkPassFilePath =
+    "ios/testing/data/http_server_files/bundle.pkpasses";
+inline constexpr base::FilePath::StringViewType
+    kSemiValidBundledPkPassFilePath =
+        "ios/testing/data/http_server_files/semi_bundle.pkpasses";
+inline constexpr base::FilePath::StringViewType kUsdzFilePath =
+    "ios/testing/data/http_server_files/redchair.usdz";
+inline constexpr base::FilePath::StringViewType kVcardFilePath =
+    "ios/testing/data/http_server_files/vcard.vcf";
 
 // Returns contents of the test file at the given relative path in the chrome
 // test directory.
-std::string GetTestFileContents(const char* file_path);
+std::string GetTestFileContents(base::FilePath::StringViewType file_path);
 
 }  // namespace testing
 
