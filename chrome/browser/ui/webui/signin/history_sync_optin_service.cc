@@ -22,6 +22,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -87,14 +88,21 @@ bool HistorySyncOptinService::StartHistorySyncOptinFlow(
 
 bool HistorySyncOptinService::
     ResumeShowHistorySyncOptinScreenFlowForManagedUser(
-        const AccountInfo& account_info,
+        CoreAccountId account_id,
         std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
         signin_metrics::AccessPoint access_point) {
+  auto account_info = IdentityManagerFactory::GetForProfile(profile_)
+                          ->FindExtendedAccountInfoByAccountId(account_id);
+  CHECK(!account_info.IsEmpty());
   bool should_start =
       Initialize(account_info, std::move(delegate), access_point);
   CHECK(should_start);
+  // Sanity check that this method should be invoked for managed accounts only.
+  // The information about the management should already be available as during
+  // the profile swap the account is moved to the new managed profile.
+  CHECK(account_info.IsManaged() == signin::Tribool::kTrue);
   history_sync_optin_helper_
-      ->ResumeShowHistorySyncOptinScreenFlowForManagedAccount(account_info);
+      ->ResumeShowHistorySyncOptinScreenFlowForManagedAccount(account_id);
   return true;
 }
 

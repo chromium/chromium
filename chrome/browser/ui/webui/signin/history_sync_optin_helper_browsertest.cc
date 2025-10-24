@@ -16,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
@@ -251,6 +252,9 @@ IN_PROC_BROWSER_TEST_P(
           .WillOnce(
               [&](const CoreAccountId&, signin_metrics::AccessPoint,
                   base::OnceCallback<void(Profile*, bool)> callback) {
+                // Mark management as accepted.
+                enterprise_util::SetUserAcceptedAccountManagement(GetProfile(),
+                                                                  true);
                 // The callback is executed asynchronously, to better reflect
                 // the production implementation.
                 base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

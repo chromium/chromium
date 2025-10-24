@@ -59,7 +59,7 @@ class HistorySyncOptinService : public KeyedService,
       signin_metrics::AccessPoint access_point);
 
   bool ResumeShowHistorySyncOptinScreenFlowForManagedUser(
-      const AccountInfo& account_info,
+      CoreAccountId account_id,
       std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate,
       signin_metrics::AccessPoint access_point);
 
@@ -74,9 +74,12 @@ class HistorySyncOptinService : public KeyedService,
     return history_sync_optin_helper_.get();
   }
 
+  void SetDelegateForTesting(
+      std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HistorySyncOptinServiceTest,
-                           FlowInProgressDuringOriginalProfileTeardown);
+                           ShowsManagementScreenThenHistorySyncOnNewProfile);
   FRIEND_TEST_ALL_PREFIXES(HistorySyncOptinServiceTest, MultipleObservers);
 
   bool Initialize(const AccountInfo& account_info,
@@ -94,9 +97,6 @@ class HistorySyncOptinService : public KeyedService,
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
-
-  void SetDelegateForTesting(
-      std::unique_ptr<HistorySyncOptinHelper::Delegate> delegate);
 
   std::unique_ptr<HistorySyncOptinHelper::Delegate>
       history_sync_optin_delegate_ = nullptr;

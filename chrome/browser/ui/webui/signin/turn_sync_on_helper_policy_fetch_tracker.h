@@ -44,7 +44,7 @@ class TurnSyncOnHelperPolicyFetchTracker {
 
   static std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> CreateInstance(
       Profile* profile,
-      const AccountInfo& account_info);
+      const CoreAccountInfo& account_info);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_POLICY_FETCH_TRACKER_H_

@@ -26,7 +26,7 @@ class PolicyFetchTracker
     : public TurnSyncOnHelperPolicyFetchTracker,
       public policy::PolicyService::ProviderUpdateObserver {
  public:
-  PolicyFetchTracker(Profile* profile, const AccountInfo& account_info)
+  PolicyFetchTracker(Profile* profile, const CoreAccountInfo& account_info)
       : profile_(profile), account_info_(account_info) {}
   ~PolicyFetchTracker() override = default;
 
@@ -146,7 +146,7 @@ class PolicyFetchTracker
   }
 
   raw_ptr<Profile> profile_;
-  const AccountInfo account_info_;
+  const CoreAccountInfo account_info_;
 
   // Policy credentials we keep while determining whether to create
   // a new profile for an enterprise user or not.
@@ -169,6 +169,6 @@ class PolicyFetchTracker
 std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>
 TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
     Profile* profile,
-    const AccountInfo& account_info) {
+    const CoreAccountInfo& account_info) {
   return std::make_unique<PolicyFetchTracker>(profile, account_info);
 }

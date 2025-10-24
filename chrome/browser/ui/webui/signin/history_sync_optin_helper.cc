@@ -178,10 +178,9 @@ std::string_view UserChoiceToStringMetric(
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/histograms.xml:Signin.HistorySyncOptIn)
 
-bool AccountMayHaveCloudPolicies(Profile* profile,
-                                 const AccountInfo& account_info) {
+bool AccountMayHaveCloudPolicies(Profile* profile, const std::string& email) {
   return signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
-             account_info.email) ||
+             email) ||
          policy::ManagementServiceFactory::GetForProfile(profile)
              ->HasManagementAuthority(
                  policy::EnterpriseManagementAuthority::CLOUD) ||
@@ -226,9 +225,9 @@ SyncServiceStartupStateObserver::
     MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
         syncer::SyncService* sync_service,
         Profile* profile,
-        const AccountInfo& account_info,
+        const CoreAccountInfo& account_info,
         base::OnceClosure callback) {
-  if (AccountMayHaveCloudPolicies(profile, account_info) &&
+  if (AccountMayHaveCloudPolicies(profile, account_info.email) &&
       SyncStartupTracker::GetServiceStartupState(sync_service) ==
           SyncStartupTracker::ServiceStartupState::kPending) {
     return std::make_unique<SyncServiceStartupStateObserver>(
@@ -252,7 +251,7 @@ void SyncServiceStartupStateObserver::OnSyncStartupStateChanged(
 
 HistorySyncOptinPolicyHelper::HistorySyncOptinPolicyHelper(
     Profile* profile,
-    const AccountInfo& account_info,
+    const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> on_register_for_policies_callback,
     base::OnceClosure on_policies_fetched_callback)
     : profile_(profile),
@@ -430,11 +429,6 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
 }
 
 void HistorySyncOptinHelper::AwaitSyncStartupAndShowHistorySyncScreen() {
-  if (AccountIsManaged(account_info()) == signin::Tribool::kTrue) {
-    CHECK_EQ(management_status_state_,
-             HistorySyncOptinHelper::ManagementStatusState::
-                 kManagementDisclaimerComplete);
-  }
   // For managed users the polices are fetched when the user accepts
   // management, which is done as part of
   // `DetermineManagementStatusAndShowManagementScreens`. We are ready to get
@@ -577,7 +571,6 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
   // HistorySyncOptinHelperInBrowser since we only reach this method
   // if the user is managed.
   CHECK_EQ(maybe_managed_account(), signin::Tribool::kTrue);
-
   if (!chosen_profile) {
     // Note, if we need the exact reason we need to modify the disclaimer
     // service to provide this. However both valid reasons are treated the same
@@ -590,7 +583,8 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
       kManagementDisclaimerComplete;
 
   if (profile() == chosen_profile) {
-    AwaitSyncStartupAndShowHistorySyncScreen();
+    ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
+        account_info().account_id);
     return;
   }
 
@@ -600,7 +594,7 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
   CHECK(history_sync_optin_service);
   history_sync_optin_service
       ->ResumeShowHistorySyncOptinScreenFlowForManagedUser(
-          account_info(),
+          account_info().account_id,
           std::make_unique<HistorySyncOptinServiceDefaultDelegate>(),
           access_point());
 
@@ -610,8 +604,9 @@ void HistorySyncOptinHelperInBrowser::OnManagementAccepted(
 
 void HistorySyncOptinHelperInBrowser::
     ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
-        const AccountInfo& managed_account_info) {
-  CHECK_EQ(account_info().account_id, managed_account_info.account_id);
+        const CoreAccountId& managed_account_id) {
+  CHECK_EQ(account_info().account_id, managed_account_id);
+  CHECK(enterprise_util::UserAcceptedAccountManagement(profile()));
   management_status_state_ = HistorySyncOptinHelper::ManagementStatusState::
       kManagementDisclaimerComplete;
   AwaitSyncStartupAndShowHistorySyncScreen();
@@ -647,8 +642,11 @@ void HistorySyncOptinHelperInProfilePicker::
   // Register for policies to determine if the user is managed.
   // Show the management screen for managed user, before proceeding with the
   // flow.
+  auto extended_account_info =
+      IdentityManagerFactory::GetForProfile(profile())->FindExtendedAccountInfo(
+          account_info());
   policy_helper_ = std::make_unique<HistorySyncOptinPolicyHelper>(
-      profile(), account_info(),
+      profile(), extended_account_info,
       /*on_register_for_policies_callback=*/
       base::BindOnce(&HistorySyncOptinHelperInProfilePicker::
                          MaybeShowAccountManagementScreen,
@@ -714,7 +712,7 @@ void HistorySyncOptinHelperInProfilePicker::
 
 void HistorySyncOptinHelperInProfilePicker::
     ResumeShowHistorySyncOptinScreenFlowForManagedAccount(
-        const AccountInfo& managed_account_info) {
+        const CoreAccountId& managed_account_id) {
   // This method is only used for the browser case.
   NOTREACHED();
 }
