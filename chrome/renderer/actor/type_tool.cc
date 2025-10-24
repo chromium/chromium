@@ -635,12 +635,13 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
                      "No widget during incremental typing"));
       return;
     }
-
-    WebInputEventResult char_result =
-        CreateAndDispatchKeyEvent(*widget, WebInputEvent::Type::kChar, params);
-    if (char_result == WebInputEventResult::kHandledSuppressed) {
-      ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
-                  << " suppressed.";
+    if (params.dom_key != "Dead") {
+      WebInputEventResult char_result = CreateAndDispatchKeyEvent(
+          *widget, WebInputEvent::Type::kChar, params);
+      if (char_result == WebInputEventResult::kHandledSuppressed) {
+        ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
+                    << " suppressed.";
+      }
     }
 
     is_key_down_ = true;
