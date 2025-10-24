@@ -1760,29 +1760,17 @@ IN_PROC_BROWSER_TEST_F(
       "PageLoad.Clients.Ads.FrameCounts.AdFrames.Total", 0, 1);
 }
 
-enum class ReduceTransferSizeUpdatedIPCTestCase {
-  kEnabled,
-  kDisabled,
-};
-
 // This test harness does not start the test server and allows
 // ControllableHttpResponses to be declared.
 class AdsPageLoadMetricsObserverResourceBrowserTestBase
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ReduceTransferSizeUpdatedIPCTestCase>&
-          info) {
-    switch (info.param) {
-      case ReduceTransferSizeUpdatedIPCTestCase::kEnabled:
-        return "ReduceTransferSizeUpdatedIPCEnabled";
-      case ReduceTransferSizeUpdatedIPCTestCase::kDisabled:
-        return "ReduceTransferSizeUpdatedIPCDisabled";
-    }
+  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
+    return info.param ? "ReduceTransferSizeUpdatedIPCEnabled"
+                      : "ReduceTransferSizeUpdatedIPCDisabled";
   }
 
-  explicit AdsPageLoadMetricsObserverResourceBrowserTestBase(
-      ReduceTransferSizeUpdatedIPCTestCase reduce) {
+  AdsPageLoadMetricsObserverResourceBrowserTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kAdTagging, {}},
          {subresource_filter::kAdsInterventionsEnforced, {}},
@@ -1793,7 +1781,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
          {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
           {{"host-threshold", "3"}}}},
         {});
-    if (reduce == ReduceTransferSizeUpdatedIPCTestCase::kEnabled) {
+    if (IsReduceTransferSizeUpdatedIPCEnabled()) {
       reduce_ipc_feature_list_.InitAndEnableFeature(
           network::features::kReduceTransferSizeUpdatedIPC);
     } else {
@@ -1803,6 +1791,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
   }
 
   ~AdsPageLoadMetricsObserverResourceBrowserTestBase() override = default;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -1822,6 +1811,8 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
+
+  virtual bool IsReduceTransferSizeUpdatedIPCEnabled() const { return false; }
 
   // This function loads a |large_resource| and if |will_block| is set, then
   // checks to see the resource is blocked, otherwise, it uses the |waiter| to
@@ -1872,19 +1863,18 @@ class AdsPageLoadMetricsObserverResourceBrowserTestBase
 
 class AdsPageLoadMetricsObserverResourceBrowserTest
     : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
-      public ::testing::WithParamInterface<
-          ReduceTransferSizeUpdatedIPCTestCase> {
+      public ::testing::WithParamInterface<bool> {
  public:
-  AdsPageLoadMetricsObserverResourceBrowserTest()
-      : AdsPageLoadMetricsObserverResourceBrowserTestBase(GetParam()) {}
+  bool IsReduceTransferSizeUpdatedIPCEnabled() const override {
+    return GetParam();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AdsPageLoadMetricsObserverResourceBrowserTest,
-    testing::ValuesIn({ReduceTransferSizeUpdatedIPCTestCase::kDisabled,
-                       ReduceTransferSizeUpdatedIPCTestCase::kEnabled}),
-    AdsPageLoadMetricsObserverResourceBrowserTest::DescribeParams);
+    testing::Bool(),
+    &AdsPageLoadMetricsObserverResourceBrowserTest::DescribeParams);
 
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
                        ReceivedAdResources) {
@@ -2510,8 +2500,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention
 INSTANTIATE_TEST_SUITE_P(
     All,
     AdsPageLoadMetricsObserverResourceBrowserTestWithoutHeavyAdIntervention,
-    testing::ValuesIn({ReduceTransferSizeUpdatedIPCTestCase::kDisabled,
-                       ReduceTransferSizeUpdatedIPCTestCase::kEnabled}),
+    testing::Bool(),
     AdsPageLoadMetricsObserverResourceBrowserTest::DescribeParams);
 
 // Check that when the heavy ad feature is disabled we don't navigate
@@ -3202,9 +3191,7 @@ class AdsPageLoadMetricsObserverSurfaceBrowserTest
     : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
       public ::testing::WithParamInterface<std::tuple<SurfaceTestCase, bool>> {
  public:
-  AdsPageLoadMetricsObserverSurfaceBrowserTest()
-      : AdsPageLoadMetricsObserverResourceBrowserTestBase(
-            ReduceTransferSizeUpdatedIPCTestCase::kDisabled) {}
+  bool IsReduceTransferSizeUpdatedIPCEnabled() const override { return false; }
 };
 
 // The ad script requests an image via various methods. We
