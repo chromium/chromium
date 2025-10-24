@@ -32,8 +32,8 @@ ContextualTasksContextControllerFactory::
     : ProfileKeyedServiceFactory(
           "ContextualTasksContextController",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(ContextualTasksServiceFactory::GetInstance());
 }

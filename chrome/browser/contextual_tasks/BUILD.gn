@@ -189,6 +189,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/sync",
     "//chrome/test:test_support",
     "//components/contextual_tasks/public",
     "//content/test:test_support",

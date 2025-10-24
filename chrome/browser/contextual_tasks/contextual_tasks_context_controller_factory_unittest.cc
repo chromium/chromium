@@ -44,14 +44,23 @@ TEST_F(ContextualTasksContextControllerFactoryTest,
 }
 
 TEST_F(ContextualTasksContextControllerFactoryTest,
-       DoesNotCreateServiceForIncognito) {
+       CreatesServiceForIncognito) {
   feature_list_.InitAndEnableFeature(kContextualTasks);
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
   Profile* otr_profile = profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
   ContextualTasksContextController* controller =
       ContextualTasksContextControllerFactory::GetForProfile(otr_profile);
-  EXPECT_EQ(nullptr, controller);
+  EXPECT_NE(nullptr, controller);
+}
+
+TEST_F(ContextualTasksContextControllerFactoryTest, CreatesServiceForGuest) {
+  feature_list_.InitAndEnableFeature(kContextualTasks);
+  std::unique_ptr<TestingProfile> profile =
+      TestingProfile::Builder().SetGuestSession().Build();
+  ContextualTasksContextController* controller =
+      ContextualTasksContextControllerFactory::GetForProfile(profile.get());
+  EXPECT_NE(nullptr, controller);
 }
 
 }  // namespace contextual_tasks

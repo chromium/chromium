@@ -48,6 +48,7 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
           "ContextualTasksService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(AimEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
@@ -86,6 +87,9 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<TabStripContextDecorator>(profile));
 #endif
 
+  bool supports_ephemeral_only =
+      profile->IsOffTheRecord() || profile->IsGuestSession();
+
   return std::make_unique<ContextualTasksServiceImpl>(
       chrome::GetChannel(),
       DataTypeStoreServiceFactory::GetForProfile(
@@ -93,7 +97,7 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetStoreFactory(),
       CreateCompositeContextDecorator(favicon_service, history_service,
                                       std::move(additional_decorators)),
-      aim_eligibility_service, identity_manager, profile->IsOffTheRecord());
+      aim_eligibility_service, identity_manager, supports_ephemeral_only);
 }
 
 }  // namespace contextual_tasks
