@@ -34,6 +34,7 @@ if (is_android) {
 } else if (is_ios) {
   import("//build/config/apple/mobile_config.gni")
   import("//build/config/apple/swift_source_set.gni")
+  import("//build/config/ios/ios_app_ipa.gni")
 
   if (target_platform == "iphoneos") {
     import("//content/shell/app/ios/extensions.gni")
@@ -695,6 +696,11 @@ if (is_android) {
     ]
     entitlements_path = ios_content_shell_entitlements_path
     bundle_identifier = ios_content_shell_bundle_identifier
+  }
+
+  ios_app_ipa("content_shell_ipa") {
+    testonly = true
+    bundle_target = ":content_shell"
   }
 
   ios_framework_bundle("content_shell_framework") {
