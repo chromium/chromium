@@ -547,8 +547,7 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->backend_type = ml::ModelBackendType::kGpuBackend;
   params->assets = std::move(assets);
-  // TODO(crbug.com/302402959): Choose max_tokens based on device.
-  params->max_tokens = features::GetOnDeviceModelMaxTokens();
+  params->max_tokens = kOnDeviceModelMaxTokens;
   params->adaptation_ranks = supported_adaptation_ranks_;
 
   proto::OnDeviceModelPerformanceHint hint =

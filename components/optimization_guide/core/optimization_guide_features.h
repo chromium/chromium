@@ -270,29 +270,6 @@ base::TimeDelta GetOnDeviceModelIdleTimeout();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay();
 
-// These params determine how context processing works for the on device model.
-// The model will process at least min tokens before responding. While waiting
-// for the ExecuteModel() call, up to max tokens will be processed in chunks of
-// the given size.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMinTokensForContext();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTokensForContext();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelContextTokenChunkSize();
-
-// The maximum tokens for the input when executing the model.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTokensForExecute();
-
-// The maximum tokens the model will output if the maximum input is given.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTokensForOutput();
-
-// The maximum total tokens, for input and output combined.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-uint32_t GetOnDeviceModelMaxTokens();
-
 // Returns the number of crashes without a successful response before the
 // on-device model won't be used.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

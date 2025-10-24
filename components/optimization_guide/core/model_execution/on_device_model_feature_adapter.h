@@ -32,6 +32,10 @@ namespace optimization_guide {
 class Redactor;
 class ResponseParser;
 
+// The maximum number of tokens then model will support.
+// TODO(crbug.com/302402959): Choose max_tokens based on device + model.
+inline constexpr uint32_t kOnDeviceModelMaxTokens = 10240;
+
 // Adapts the on-device model to be used for a particular feature, based on
 // a configuration proto.
 class OnDeviceModelFeatureAdapter final

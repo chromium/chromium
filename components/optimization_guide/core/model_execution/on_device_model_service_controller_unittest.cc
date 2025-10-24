@@ -147,10 +147,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel,
-          {{"on_device_model_min_tokens_for_context", "10"},
-           {"on_device_model_max_tokens_for_context", "22"},
-           {"on_device_model_context_token_chunk_size", "4"},
-           {"on_device_model_topk", "1"},
+          {{"on_device_model_topk", "1"},
            {"on_device_model_temperature", "0"},
            {"on_device_model_disable_crash_count", "3"},
            {"on_device_model_crash_backoff_base_time", "1m"},
@@ -357,15 +354,6 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, TokenLimits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {
-          {"on_device_model_min_tokens_for_context", "10"},
-          {"on_device_model_max_tokens_for_context", "10"},
-          {"on_device_model_max_tokens_for_execute", "5"},
-          {"on_device_model_max_tokens_for_output", "2"},
-      });
   auto config = SimpleComposeConfig();
   config.mutable_input_config()->set_min_context_tokens(5);
   config.mutable_input_config()->set_max_context_tokens(5);
@@ -380,7 +368,7 @@ TEST_F(OnDeviceModelServiceControllerTest, TokenLimits) {
   });
   auto session = CreateSession(SessionConfigParams{});
   const TokenLimits& limits = session->GetTokenLimits();
-  EXPECT_EQ(limits.max_tokens, 17u);
+  EXPECT_EQ(limits.max_tokens, 10240u);
   EXPECT_EQ(limits.min_context_tokens, 5u);
   EXPECT_EQ(limits.max_context_tokens, 5u);
   EXPECT_EQ(limits.max_execute_tokens, 3u);
@@ -388,20 +376,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TokenLimits) {
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, TokenLimitsCapped) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {
-          {"on_device_model_min_tokens_for_context", "10"},
-          {"on_device_model_max_tokens_for_context", "10"},
-          {"on_device_model_max_tokens_for_execute", "5"},
-          {"on_device_model_max_tokens_for_output", "2"},
-      });
   auto config = SimpleComposeConfig();
-  config.mutable_input_config()->set_min_context_tokens(1000);
-  config.mutable_input_config()->set_max_context_tokens(1000);
-  config.mutable_input_config()->set_max_execute_tokens(1000);
-  config.mutable_output_config()->set_max_output_tokens(1000);
+  config.mutable_input_config()->set_min_context_tokens(100000);
+  config.mutable_input_config()->set_max_context_tokens(100000);
+  config.mutable_input_config()->set_max_execute_tokens(100000);
+  config.mutable_output_config()->set_max_output_tokens(100000);
   FakeAdaptationAsset compose_asset({.config = config});
   Initialize(InitializeParams{
       .base_model = &standard_assets_.base_model,
@@ -411,11 +390,11 @@ TEST_F(OnDeviceModelServiceControllerTest, TokenLimitsCapped) {
   });
   auto session = CreateSession(SessionConfigParams{});
   const TokenLimits& limits = session->GetTokenLimits();
-  EXPECT_EQ(limits.max_tokens, 17u);
-  EXPECT_EQ(limits.min_context_tokens, 17u);
-  EXPECT_EQ(limits.max_context_tokens, 17u);
-  EXPECT_EQ(limits.max_execute_tokens, 17u);
-  EXPECT_EQ(limits.max_output_tokens, 17u);
+  EXPECT_EQ(limits.max_tokens, 10240u);
+  EXPECT_EQ(limits.min_context_tokens, 10240u);
+  EXPECT_EQ(limits.max_context_tokens, 10240u);
+  EXPECT_EQ(limits.max_execute_tokens, 10240u);
+  EXPECT_EQ(limits.max_output_tokens, 10240u);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
@@ -3165,7 +3144,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
     session->ExecuteModel(proto::ExampleForTestingRequest(),
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
-    EXPECT_EQ(*response.value(), "<image> max:22<image> max:1024");
+    EXPECT_EQ(*response.value(), "<image> max:8192<image> max:1024");
   }
 
   // Session without capabilities should not allow images.
@@ -3178,7 +3157,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
                           response.GetStreamingCallback());
     ASSERT_TRUE(response.GetFinalStatus());
     EXPECT_EQ(*response.value(),
-              "<unsupported> max:22<unsupported> "
+              "<unsupported> max:8192<unsupported> "
               "max:1024");
   }
 }
@@ -3271,7 +3250,7 @@ TEST_F(OnDeviceModelServiceControllerTest, KeepInputOnExtension) {
   altered_clone->ExecuteModel(proto::ExampleForTestingRequest(),
                               altered_response.GetStreamingCallback());
   ASSERT_TRUE(altered_response.GetFinalStatus());
-  EXPECT_EQ(*altered_response.value(), "v1<image><audio>v2v3v4 max:22");
+  EXPECT_EQ(*altered_response.value(), "v1<image><audio>v2v3v4 max:8192");
 
   // The clone that only extended should have sent input in separate chunks.
   ResponseHolder extended_response;
@@ -3279,19 +3258,19 @@ TEST_F(OnDeviceModelServiceControllerTest, KeepInputOnExtension) {
                                extended_response.GetStreamingCallback());
   ASSERT_TRUE(extended_response.GetFinalStatus());
   EXPECT_EQ(*extended_response.value(),
-            "v1<image><audio> max:22"
-            "v2 max:22"
-            "v3 max:4"
-            "v4 max:4");
+            "v1<image><audio> max:8192"
+            "v2 max:8192"
+            "v3 max:8174"
+            "v4 max:8174");
 
   // The original should have input in separate chunks.
   session->ExecuteModel(proto::ExampleForTestingRequest(),
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(),
-            "v1<image><audio> max:22"
-            "v2 max:22"
-            "v3 max:4");
+            "v1<image><audio> max:8192"
+            "v2 max:8192"
+            "v3 max:8174");
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
