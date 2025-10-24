@@ -159,7 +159,8 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   // nullopt if no suitable entry is found. Called from
   // `OnTabStripModelChanged()` when there's an active entry being shown in the
   // side panel.
-  std::optional<UniqueKey> GetNewActiveKeyOnTabChanged();
+  std::optional<UniqueKey> GetNewActiveKeyOnTabChanged(
+      SidePanelEntry::PanelType type);
 
   SidePanelEntryWaiter* waiter(SidePanelEntry::PanelType type) const;
 

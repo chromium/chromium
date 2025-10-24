@@ -179,11 +179,11 @@ SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(
 }
 
 std::optional<SidePanelUIBase::UniqueKey>
-SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
+SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
   // This function should only be called when the side panel view is shown.
   // TODO(crbug.com/445442616): update IsSidePanelShowing to use a passed in
   // PanelType param once it is added.
-  CHECK(IsSidePanelShowing(SidePanelEntry::PanelType::kContent));
+  CHECK(IsSidePanelShowing(type));
 
   // Attempt to return an entry in the following fallback order:
   //  - the new tab's registry's active entry
@@ -202,12 +202,10 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
   // that entry will be active in its owning registry.
   auto* active_contextual_registry = GetActiveContextualRegistry();
   if (active_contextual_registry &&
-      active_contextual_registry->GetActiveEntryFor(
-          SidePanelEntry::PanelType::kContent)) {
-    return UniqueKey{browser_->GetActiveTabInterface()->GetHandle(),
-                     (*active_contextual_registry->GetActiveEntryFor(
-                          SidePanelEntry::PanelType::kContent))
-                         ->key()};
+      active_contextual_registry->GetActiveEntryFor(type)) {
+    return UniqueKey{
+        browser_->GetActiveTabInterface()->GetHandle(),
+        (*active_contextual_registry->GetActiveEntryFor(type))->key()};
   }
 
   if (current_key(SidePanelEntry::PanelType::kContent) &&
@@ -217,8 +215,7 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
         current_key(SidePanelEntry::PanelType::kContent)->key);
   }
 
-  if (auto entry = window_registry_->GetActiveEntryFor(
-          SidePanelEntry::PanelType::kContent)) {
+  if (auto entry = window_registry_->GetActiveEntryFor(type)) {
     return GetUniqueKeyForKey((*entry)->key());
   }
 
