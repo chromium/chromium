@@ -717,4 +717,16 @@ TEST_F(SafeBrowsingUIManagerTest,
   EXPECT_EQ(threat_type, redirect_resource.threat_type);
 }
 
+TEST_F(SafeBrowsingUIManagerTest, AllowlistViewSource) {
+  const char* view_source_url = "view-source:https://www.malware.com";
+  StartNavigation(view_source_url);
+  AddToAllowlistForMalware(view_source_url, /*pending=*/false);
+  EXPECT_TRUE(IsAllowlistedForMalware(view_source_url));
+  EXPECT_FALSE(IsAllowlistedForMalware(kBadURL));
+
+  content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
+  EXPECT_TRUE(IsAllowlistedForMalware(view_source_url));
+  EXPECT_FALSE(IsAllowlistedForMalware(kBadURL));
+}
+
 }  // namespace safe_browsing

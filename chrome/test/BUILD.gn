@@ -5972,6 +5972,8 @@ if (!is_android) {
 
     sources += [ "../browser/ui/singleton_tabs_browsertest.cc" ]
 
+    sources += [ "//chrome/browser/enterprise/data_protection/view_source_navigation_throttle_browsertest.cc" ]
+
     if (is_win || is_mac || is_linux) {
       sources += [
         "../browser/ui/startup/first_run_service_browsertest.cc",

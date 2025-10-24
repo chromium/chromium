@@ -10,6 +10,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
+#include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
 #include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
@@ -472,6 +473,8 @@ void CreateAndAddChromeThrottlesForNavigation(
         std::make_unique<safe_browsing::DelayedWarningNavigationThrottle>(
             registry));
   }
+  enterprise_data_protection::ViewSourceNavigationThrottle::MaybeCreateAndAdd(
+      registry, ui_manager);
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
