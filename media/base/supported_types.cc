@@ -13,6 +13,7 @@
 #include "media/base/media.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -341,7 +342,10 @@ bool IsDecoderDolbyAc4Supported(const AudioType& type) {
 }
 
 bool IsEncoderH264BuiltInVideoType(const VideoType& type) {
-#if BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (!IsOpenH264SoftwareEncoderEnabled()) {
+    return false;
+  }
+
   switch (type.profile) {
     case H264PROFILE_BASELINE:
     case H264PROFILE_MAIN:
@@ -361,9 +365,6 @@ bool IsEncoderH264BuiltInVideoType(const VideoType& type) {
     default:
       NOTREACHED();
   }
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 }
 
 bool IsEncoderVp8BuiltInVideoType(const VideoType& type) {
@@ -556,8 +557,9 @@ bool IsEncoderOptionalVideoType(const media::VideoType& type) {
   }
   switch (type.codec) {
     case media::VideoCodec::kH264:
-      // Android and iOS won't bundle OpenH264.
-      return BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264);
+      // IsEncoderBuiltInVideoType() has already checked OpenH264 encoder
+      // availability. We can always return false here.
+      return false;
     case media::VideoCodec::kAV1:
       // Android won't bundle libaom.
       return !BUILDFLAG(ENABLE_LIBAOM);
@@ -599,7 +601,7 @@ bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
 bool MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec codec) {
   // Allow OS software encoding when we don't have an equivalent
   // software encoder.
-  constexpr bool kHasBundledH264Encoder = BUILDFLAG(ENABLE_OPENH264);
+  const bool kHasBundledH264Encoder = IsOpenH264SoftwareEncoderEnabled();
   constexpr bool kHasOSSoftwareH264Encoder =
       BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID);
   constexpr bool kHasOSSoftwareHEVCEncoder =

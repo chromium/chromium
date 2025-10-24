@@ -42,6 +42,14 @@ std::optional<base::TimeTicks> PLATFORM_EXPORT ConvertToOptionalTimeTicks(
 std::optional<base::TimeDelta> PLATFORM_EXPORT
 ConvertToOptionalTimeDelta(std::optional<webrtc::TimeDelta> time_delta);
 
+// Checks if H.264 CBP is available for accelerated encoding on the current
+// platform.
+bool PLATFORM_EXPORT
+IsH264ConstrainedBaselineProfileAvailableForAcceleratedEncoder();
+
+// Checks whether the accelerated H.264 encoder can be used in WebRTC.
+bool PLATFORM_EXPORT UseH264AcceleratedEncoderForWebRTC();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_UTIL_H_

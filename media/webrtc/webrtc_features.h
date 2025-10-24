@@ -52,6 +52,11 @@ BASE_DECLARE_FEATURE(kWebRtcH265L1T3);
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAV1HWEncode);
 
+// Returns whether the OpenH264 encoder is available in WebRTC based on
+// build flags and OpenH264SoftwareEncoder feature flag status.
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+bool IsOpenH264SoftwareEncoderEnabledForWebRTC();
+
 }  // namespace features
 
 #endif  // MEDIA_WEBRTC_WEBRTC_FEATURES_H_

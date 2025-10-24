@@ -371,11 +371,11 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoQualityBrowserTest,
                        MAYBE_MANUAL_TestVideoQualityH264) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
-    LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
-        "Skipping WebRtcVideoQualityBrowserTest.MANUAL_TestVideoQualityH264 "
-        "(test \"OK\")";
+  if (!base::FeatureList::IsEnabled(media::kOpenH264SoftwareEncoder)) {
+    LOG(WARNING)
+        << "Run-time feature OpenH264SoftwareEncoder disabled. "
+           "Skipping WebRtcVideoQualityBrowserTest.MANUAL_TestVideoQualityH264 "
+           "(test \"OK\")";
     return;
   }
   TestVideoQuality("H264", true /* prefer_hw_video_codec */);

@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace features {
@@ -73,5 +75,16 @@ BASE_FEATURE(kWebRtcAV1HWEncode,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_WIN)
 );
+
+bool IsOpenH264SoftwareEncoderEnabledForWebRTC() {
+// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
+// should be detangled such that software decoding can be enabled without
+// software encoding.
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(ENABLE_OPENH264)
+  return base::FeatureList::IsEnabled(media::kOpenH264SoftwareEncoder);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(ENABLE_OPENH264)
+}
 
 }  // namespace features

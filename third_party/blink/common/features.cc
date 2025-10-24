@@ -2546,18 +2546,6 @@ BASE_FEATURE(kWebFontsCacheAwareTimeoutAdaption,
 #endif
 );
 
-// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
-// should be detangled such that software decoding can be enabled without
-// software encoding.
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
-    BUILDFLAG(ENABLE_OPENH264)
-// Run-time feature for the |rtc_use_h264| encoder/decoder.
-BASE_FEATURE(kWebRtcH264WithOpenH264FFmpeg,
-             "WebRTC-H264WithOpenH264FFmpeg",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-        // BUILDFLAG(ENABLE_OPENH264)
-
 // Causes WebRTC to replace host ICE candidate IP addresses with generated
 // names ending in ".local" and resolve them using mDNS.
 // http://crbug.com/878465

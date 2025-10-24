@@ -22,6 +22,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/video_codecs.h"
@@ -279,10 +280,10 @@ void UmaHistogramForCodecImpl(bool uses_acceleration, media::VideoCodec codec) {
 std::optional<media::VideoCodecProfile> GetMediaVideoCodecProfileForSwEncoder(
     media::VideoCodec codec) {
   switch (codec) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_OPENH264)
     case media::VideoCodec::kH264:
-      return media::H264PROFILE_BASELINE;
-#endif  // BUILDFLAG(ENABLE_OPENH264)
+      return media::IsOpenH264SoftwareEncoderEnabled()
+                 ? std::optional(media::H264PROFILE_BASELINE)
+                 : std::nullopt;
     case media::VideoCodec::kVP8:
       return media::VP8PROFILE_ANY;
     case media::VideoCodec::kVP9:

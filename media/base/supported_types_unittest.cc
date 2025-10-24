@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/media_util.h"
 #include "media/mojo/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -344,8 +345,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeWithHdrMetadataBasics) {
 }
 
 TEST(SupportedTypesTest, IsEncoderSupportedVideoType_H264Profiles) {
-  const bool is_h264_supported =
-      BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS);
+  const bool is_h264_supported = IsOpenH264SoftwareEncoderEnabled();
 
   EXPECT_EQ(
       IsEncoderSupportedVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
@@ -409,7 +409,7 @@ TEST(SupportedTypesTest, IsEncoderBuiltInVideoType) {
   // `IsEncoderSupportedVideoType_${*}` tests should already cover this.
   EXPECT_EQ(
       IsEncoderBuiltInVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
-      BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS));
+      IsOpenH264SoftwareEncoderEnabled());
   EXPECT_EQ(
       IsEncoderBuiltInVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
       BUILDFLAG(ENABLE_LIBAOM));
@@ -425,9 +425,8 @@ TEST(SupportedTypesTest, IsEncoderBuiltInVideoType) {
 }
 
 TEST(SupportedTypesTest, IsEncoderOptionalVideoType) {
-  EXPECT_EQ(
-      IsEncoderOptionalVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}),
-      BUILDFLAG(USE_PROPRIETARY_CODECS) && !BUILDFLAG(ENABLE_OPENH264));
+  EXPECT_FALSE(
+      IsEncoderOptionalVideoType({VideoCodec::kH264, H264PROFILE_BASELINE}));
 
   EXPECT_EQ(
       IsEncoderOptionalVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
@@ -483,7 +482,7 @@ TEST(SupportedTypesTest, MayHaveAndAllowSelectOSSoftwareEncoder) {
             BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER));
   EXPECT_EQ(MayHaveAndAllowSelectOSSoftwareEncoder(VideoCodec::kH264),
             (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)) &&
-                !BUILDFLAG(ENABLE_OPENH264));
+                !IsOpenH264SoftwareEncoderEnabled());
 }
 
 }  // namespace media

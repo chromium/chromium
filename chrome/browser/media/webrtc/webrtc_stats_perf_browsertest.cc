@@ -325,9 +325,8 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_H264) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // Only run test if run-time feature corresponding to |rtc_use_h264| is on.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
-    LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
+  if (!base::FeatureList::IsEnabled(media::kOpenH264SoftwareEncoder)) {
+    LOG(WARNING) << "Run-time feature OpenH264SoftwareEncoder disabled. "
                     "Skipping WebRtcPerfBrowserTest."
                     "MANUAL_RunsAudioAndVideoCallCollectingMetrics_VideoCodec_"
                     "H264 (test "

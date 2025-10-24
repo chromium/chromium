@@ -66,7 +66,7 @@ declare_args() {
   # Enable usage of OpenH264 within the media library. Used for software based
   # encoding of H264 content.
   media_use_openh264 = true
-  if (is_ios || is_android || !proprietary_codecs) {
+  if (is_ios || (is_android && current_cpu == "arm") || !proprietary_codecs) {
     media_use_openh264 = false
   }
 

@@ -23,6 +23,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -103,12 +104,12 @@ media::VideoCodecProfile GetTestVideoCodecProfile(media::VideoCodec id) {
       return media::VideoCodecProfile::VP8PROFILE_ANY;
     case media::VideoCodec::kVP9:
       return media::VideoCodecProfile::VP9PROFILE_PROFILE0;
-// Note: The H264 tests in this file are written explicitly for OpenH264 and
-// will fail for hardware encoders that aren't 1 in 1 out.
-#if BUILDFLAG(ENABLE_OPENH264)
     case media::VideoCodec::kH264:
-      return media::VideoCodecProfile::H264PROFILE_MIN;
-#endif
+      if (media::IsOpenH264SoftwareEncoderEnabled()) {
+        return media::VideoCodecProfile::H264PROFILE_MIN;
+      } else {
+        break;
+      }
 #if BUILDFLAG(ENABLE_LIBAOM)
     case media::VideoCodec::kAV1:
       return media::VideoCodecProfile::AV1PROFILE_MIN;
@@ -117,6 +118,14 @@ media::VideoCodecProfile GetTestVideoCodecProfile(media::VideoCodec id) {
       break;
   }
   NOTREACHED() << "Unsupported video codec";
+}
+
+bool ShouldSkipTestForCodec(media::VideoCodec codec) {
+  if (codec == media::VideoCodec::kH264) {
+    // Don't test H264 encoder when software fallback is not available.
+    return !media::IsOpenH264SoftwareEncoderEnabled();
+  }
+  return false;
 }
 
 }  // namespace
@@ -433,18 +442,10 @@ class VideoTrackRecorderTestWithAllCodecs : public ::testing::Test,
 };
 
 TEST_F(VideoTrackRecorderTestWithAllCodecs, NoCrashInConfigureEncoder) {
-  constexpr std::pair<media::VideoCodec, bool> kTestCodecSupport[] = {
+  const std::pair<media::VideoCodec, bool> kTestCodecSupport[] = {
       {media::VideoCodec::kVP8, true},
       {media::VideoCodec::kVP9, true},
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      {media::VideoCodec::kH264,
-#if BUILDFLAG(ENABLE_OPENH264)
-       true
-#else
-       false
-#endif  // BUILDFLAG(ENABLE_OPENH264)
-      },
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+      {media::VideoCodec::kH264, media::IsOpenH264SoftwareEncoderEnabled()},
       {media::VideoCodec::kAV1,
 #if BUILDFLAG(ENABLE_LIBAOM)
        true
@@ -453,8 +454,11 @@ TEST_F(VideoTrackRecorderTestWithAllCodecs, NoCrashInConfigureEncoder) {
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
       },
   };
-  for (auto [codec_id, can_sw_encode] : kTestCodecSupport) {
-    InitializeRecorder(codec_id);
+  for (auto [codec, can_sw_encode] : kTestCodecSupport) {
+    if (ShouldSkipTestForCodec(codec)) {
+      continue;
+    }
+    InitializeRecorder(codec);
     const scoped_refptr<media::VideoFrame> video_frame =
         CreateFrameForTest(TestFrameType::kI420,
                            gfx::Size(kVEAEncoderMinResolutionWidth,
@@ -483,6 +487,11 @@ class VideoTrackRecorderTestWithCodec : public TestWithParam<media::VideoCodec>,
  public:
   VideoTrackRecorderTestWithCodec() = default;
   ~VideoTrackRecorderTestWithCodec() override = default;
+  void SetUp() override {
+    if (ShouldSkipTestForCodec(GetParam())) {
+      GTEST_SKIP() << "Test doesn't support the requested codec.";
+    }
+  }
 };
 
 // Construct and destruct all objects, in particular |video_track_recorder_| and
@@ -533,6 +542,11 @@ class VideoTrackRecorderTestParam
  public:
   VideoTrackRecorderTestParam() = default;
   ~VideoTrackRecorderTestParam() override = default;
+  void SetUp() override {
+    if (ShouldSkipTestForCodec(testing::get<0>(GetParam()))) {
+      GTEST_SKIP() << "Test doesn't support the requested codec.";
+    }
+  }
 };
 
 // Matches whether a scoped_refptr<DecoderBuffer> is a key frame or not.
@@ -1256,9 +1270,7 @@ TEST_F(VideoTrackRecorderTestNoParam, RequiredRefreshRate) {
   test::RunDelayedTasks(base::Seconds(1));
 }
 
-class VideoTrackRecorderPassthroughTest
-    : public TestWithParam<media::VideoCodec>,
-      public VideoTrackRecorderTestBase {
+class VideoTrackRecorderPassthroughTest : public VideoTrackRecorderTestBase {
  public:
   VideoTrackRecorderPassthroughTest()
       : mock_source_(new MockMediaStreamVideoSource()) {
@@ -1279,6 +1291,11 @@ class VideoTrackRecorderPassthroughTest
     EXPECT_TRUE(scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
   }
+
+  VideoTrackRecorderPassthroughTest(const VideoTrackRecorderPassthroughTest&) =
+      delete;
+  VideoTrackRecorderPassthroughTest& operator=(
+      const VideoTrackRecorderPassthroughTest&) = delete;
 
   ~VideoTrackRecorderPassthroughTest() override {
     component_ = nullptr;
@@ -1306,6 +1323,19 @@ class VideoTrackRecorderPassthroughTest
   std::unique_ptr<VideoTrackRecorderPassthrough> video_track_recorder_;
 };
 
+class VideoTrackRecorderPassthroughTestParam
+    : public TestWithParam<media::VideoCodec>,
+      public VideoTrackRecorderPassthroughTest {
+ public:
+  VideoTrackRecorderPassthroughTestParam() = default;
+  ~VideoTrackRecorderPassthroughTestParam() override = default;
+  void SetUp() override {
+    if (ShouldSkipTestForCodec(GetParam())) {
+      GTEST_SKIP() << "Test doesn't support the requested codec.";
+    }
+  }
+};
+
 scoped_refptr<FakeEncodedVideoFrame> CreateFrame(bool is_key_frame,
                                                  media::VideoCodec codec) {
   return FakeEncodedVideoFrame::Builder()
@@ -1315,12 +1345,6 @@ scoped_refptr<FakeEncodedVideoFrame> CreateFrame(bool is_key_frame,
       .BuildRefPtr();
 }
 
-TEST_F(VideoTrackRecorderPassthroughTest, RequestsAndFinishesEncodedOutput) {
-  EXPECT_CALL(*mock_source_, OnEncodedSinkEnabled);
-  EXPECT_CALL(*mock_source_, OnEncodedSinkDisabled);
-  InitializeRecorder();
-}
-
 void DoNothing() {}
 
 // Matcher for checking codec type
@@ -1328,7 +1352,7 @@ MATCHER_P(IsSameCodec, codec, "") {
   return arg.codec == codec;
 }
 
-TEST_P(VideoTrackRecorderPassthroughTest, HandlesFrames) {
+TEST_P(VideoTrackRecorderPassthroughTestParam, HandlesFrames) {
   ON_CALL(*mock_source_, OnEncodedSinkEnabled).WillByDefault(DoNothing);
   ON_CALL(*mock_source_, OnEncodedSinkDisabled).WillByDefault(DoNothing);
   InitializeRecorder();
@@ -1353,7 +1377,26 @@ TEST_P(VideoTrackRecorderPassthroughTest, HandlesFrames) {
   video_track_recorder_->OnEncodedVideoFrameForTesting(now, frame, now);
 }
 
-TEST_F(VideoTrackRecorderPassthroughTest, DoesntForwardDeltaFrameFirst) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         VideoTrackRecorderPassthroughTestParam,
+                         ValuesIn(kTrackRecorderTestCodec));
+
+class VideoTrackRecorderPassthroughTestNoParam
+    : public ::testing::Test,
+      public VideoTrackRecorderPassthroughTest {
+ public:
+  VideoTrackRecorderPassthroughTestNoParam() = default;
+  ~VideoTrackRecorderPassthroughTestNoParam() override = default;
+};
+
+TEST_F(VideoTrackRecorderPassthroughTestNoParam,
+       RequestsAndFinishesEncodedOutput) {
+  EXPECT_CALL(*mock_source_, OnEncodedSinkEnabled);
+  EXPECT_CALL(*mock_source_, OnEncodedSinkDisabled);
+  InitializeRecorder();
+}
+
+TEST_F(VideoTrackRecorderPassthroughTestNoParam, DoesntForwardDeltaFrameFirst) {
   EXPECT_CALL(*mock_source_, OnEncodedSinkEnabled);
   InitializeRecorder();
   Mock::VerifyAndClearExpectations(mock_source_);
@@ -1391,7 +1434,7 @@ TEST_F(VideoTrackRecorderPassthroughTest, DoesntForwardDeltaFrameFirst) {
   EXPECT_CALL(*mock_source_, OnEncodedSinkDisabled);
 }
 
-TEST_F(VideoTrackRecorderPassthroughTest, PausesAndResumes) {
+TEST_F(VideoTrackRecorderPassthroughTestNoParam, PausesAndResumes) {
   InitializeRecorder();
   // Frame 1 (keyframe)
   auto frame = CreateFrame(/*is_key_frame=*/true, media::VideoCodec::kVP9);
@@ -1427,10 +1470,6 @@ TEST_F(VideoTrackRecorderPassthroughTest, PausesAndResumes) {
   now = base::TimeTicks::Now();
   video_track_recorder_->OnEncodedVideoFrameForTesting(now, frame, now);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         VideoTrackRecorderPassthroughTest,
-                         ValuesIn(kTrackRecorderTestCodec));
 
 TEST(VideoTrackRecorder, DefaultCodecWithoutGpuFactories) {
   EXPECT_EQ(media::VideoCodec::kVP8, VideoTrackRecorderImpl::GetPreferredCodec(

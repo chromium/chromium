@@ -36,16 +36,6 @@ namespace blink {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Enables H.264 CBP encode acceleration.
-BASE_FEATURE(kPlatformH264CbpEncoding,
-#if BUILDFLAG(IS_WIN)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 // Convert media::SVCScalabilityMode to webrtc::ScalabilityMode and fill
 // format.scalability_modes.
 void FillScalabilityModes(
@@ -97,37 +87,14 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
   }
   if (profile.profile >= media::H264PROFILE_MIN &&
       profile.profile <= media::H264PROFILE_MAX) {
-#if !BUILDFLAG(IS_ANDROID)
-    // Enable H264 HW encode for WebRTC when SW fallback is available, which is
-    // checked by kWebRtcH264WithOpenH264FFmpeg flag. This check should be
-    // removed when SW implementation is fully enabled.
-    bool webrtc_h264_sw_enabled = false;
-// TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
-// should be detangled such that software decoding can be enabled without
-// software encoding.
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
-    BUILDFLAG(ENABLE_OPENH264)
-    webrtc_h264_sw_enabled = base::FeatureList::IsEnabled(
-        blink::features::kWebRtcH264WithOpenH264FFmpeg);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-        // BUILDFLAG(ENABLE_OPENH264)
-    if (!webrtc_h264_sw_enabled) {
+    if (!UseH264AcceleratedEncoderForWebRTC()) {
       return std::nullopt;
     }
-#endif
 
     webrtc::H264Profile h264_profile;
     switch (profile.profile) {
       case media::H264PROFILE_BASELINE:
-#if BUILDFLAG(IS_ANDROID)
-        // Force HW H264 on Android to be CBP for most compatibility, since:
-        // - Only HW H264 is available on Android at present.
-        // - MediaCodec only advise BP, which works same as CBP in most cases.
-        // - Some peers only expect CBP in negotiation.
-        h264_profile = webrtc::H264Profile::kProfileConstrainedBaseline;
-#else
         h264_profile = webrtc::H264Profile::kProfileBaseline;
-#endif  // BUILDFLAG(IS_ANDROID)
         break;
       case media::H264PROFILE_MAIN:
         h264_profile = webrtc::H264Profile::kProfileMain;
@@ -327,9 +294,8 @@ SupportedFormats GetSupportedFormatsInternal(
       supported_formats.profiles.push_back(profile.profile);
       supported_formats.sdp_formats.push_back(std::move(*format));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       const bool kShouldAddH264Cbp =
-          base::FeatureList::IsEnabled(kPlatformH264CbpEncoding) &&
+          IsH264ConstrainedBaselineProfileAvailableForAcceleratedEncoder() &&
           profile.profile == media::VideoCodecProfile::H264PROFILE_BASELINE;
 
       if (kShouldAddH264Cbp) {
@@ -337,7 +303,6 @@ SupportedFormats GetSupportedFormatsInternal(
         webrtc::AddH264ConstrainedBaselineProfileToSupportedFormats(
             &supported_formats.sdp_formats);
       }
-#endif
     }
   }
 

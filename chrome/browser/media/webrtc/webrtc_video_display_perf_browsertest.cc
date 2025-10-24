@@ -414,9 +414,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcVideoDisplayPerfBrowserTest,
 #if BUILDFLAG(RTC_USE_H264)
 IN_PROC_BROWSER_TEST_P(WebRtcVideoDisplayPerfBrowserTest,
                        MANUAL_TestVideoDisplayPerfH264) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebRtcH264WithOpenH264FFmpeg)) {
-    LOG(WARNING) << "Run-time feature WebRTC-H264WithOpenH264FFmpeg disabled. "
+  if (!base::FeatureList::IsEnabled(media::kOpenH264SoftwareEncoder)) {
+    LOG(WARNING) << "Run-time feature OpenH264SoftwareEncoder disabled. "
                     "Skipping WebRtcVideoDisplayPerfBrowserTest.MANUAL_"
                     "TestVideoDisplayPerfH264 "
                     "(test \"OK\")";

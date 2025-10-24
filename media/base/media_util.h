@@ -38,6 +38,12 @@ MEDIA_EXPORT AudioParameters::Format ConvertAudioCodecToBitstreamFormat(
 
 // Returns true if tracing is enabled for the media category.
 MEDIA_EXPORT bool MediaTraceIsEnabled();
+
+// Returns `true` if the OpenH264 software encoder is enabled. Availability is
+// controlled by ENABLE_OPENH264 build flag and kOpenH264SoftwareEncoder
+// feature flag.
+MEDIA_EXPORT bool IsOpenH264SoftwareEncoderEnabled();
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_MEDIA_UTIL_H_

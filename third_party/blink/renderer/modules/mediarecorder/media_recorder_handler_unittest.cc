@@ -19,6 +19,7 @@
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_util.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_frame.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -205,12 +206,11 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   }
 
   bool IsVideoCodecSupported(const String codecs) {
-#if !BUILDFLAG(ENABLE_OPENH264)
-    if (codecs.Find("h264") != kNotFound || codecs.Find("avc1") != kNotFound ||
-        codecs.Find("avc3") != kNotFound) {
+    if (!media::IsOpenH264SoftwareEncoderEnabled() &&
+        (codecs.Find("h264") != kNotFound || codecs.Find("avc1") != kNotFound ||
+         codecs.Find("avc3") != kNotFound)) {
       return false;
     }
-#endif
 #if !BUILDFLAG(ENABLE_LIBAOM)
     if (codecs.Find("av1") != kNotFound || codecs.Find("av01") != kNotFound) {
       return false;
@@ -398,13 +398,13 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
                                     GetParam().has_audio) {}
 
   bool IsCodecSupported() {
-#if !BUILDFLAG(ENABLE_OPENH264)
     // Test requires OpenH264 encoder. It can't use the VEA encoder.
-    if (String(GetParam().codecs).Find("avc1") != kNotFound ||
-        String(GetParam().codecs).Find("avc3") != kNotFound) {
+    if (!media::IsOpenH264SoftwareEncoderEnabled() &&
+        (String(GetParam().codecs).Find("h264") != kNotFound ||
+         String(GetParam().codecs).Find("avc1") != kNotFound ||
+         String(GetParam().codecs).Find("avc3") != kNotFound)) {
       return false;
     }
-#endif
 #if !BUILDFLAG(ENABLE_LIBAOM)
     if (std::string(GetParam().codecs) == "av01") {
       return false;
@@ -448,7 +448,7 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   EXPECT_TRUE(CanSupportMimeType(mime_type_video, example_good_codecs_3));
   const String example_good_codecs_4("H264");
   EXPECT_EQ(CanSupportMimeType(mime_type_video, example_good_codecs_4),
-            BUILDFLAG(ENABLE_OPENH264));
+            media::IsOpenH264SoftwareEncoderEnabled());
 
   const String example_unsupported_codecs_1("daala");
   EXPECT_FALSE(
@@ -472,13 +472,13 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
   const String example_good_codecs_11("avc1.42E01E");
   const String example_good_codecs_12("avc3.42E01E");
   EXPECT_EQ(CanSupportMimeType(mime_type_video, example_good_codecs_9),
-            BUILDFLAG(ENABLE_OPENH264));
+            media::IsOpenH264SoftwareEncoderEnabled());
   EXPECT_EQ(CanSupportMimeType(mime_type_video, example_good_codecs_10),
-            BUILDFLAG(ENABLE_OPENH264));
+            media::IsOpenH264SoftwareEncoderEnabled());
   EXPECT_EQ(CanSupportMimeType(mime_type_video, example_good_codecs_11),
-            BUILDFLAG(ENABLE_OPENH264));
+            media::IsOpenH264SoftwareEncoderEnabled());
   EXPECT_EQ(CanSupportMimeType(mime_type_video, example_good_codecs_12),
-            BUILDFLAG(ENABLE_OPENH264));
+            media::IsOpenH264SoftwareEncoderEnabled());
 
   const String example_unsupported_codecs_2("vorbis");
   EXPECT_FALSE(
@@ -577,6 +577,14 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   }
 
   if (!IsTargetAudioCodecSupported(GetParam().codecs)) {
+    return;
+  }
+
+  if (!media::IsOpenH264SoftwareEncoderEnabled() &&
+      (String(GetParam().codecs).Find("h264") != kNotFound ||
+       String(GetParam().codecs).Find("avc1") != kNotFound ||
+       String(GetParam().codecs).Find("avc3") != kNotFound)) {
+    // Return when software encoder is not enabled for H264.
     return;
   }
 
@@ -1379,6 +1387,10 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedVideoDataOnStop) {
 
 #if BUILDFLAG(ENABLE_OPENH264)
 TEST_F(MediaRecorderHandlerAudioVideoTest, CorrectH264LevelOnWrite) {
+  if (!media::IsOpenH264SoftwareEncoderEnabled()) {
+    GTEST_SKIP() << "Test is skipped since OpenH264 is not enabled.";
+  }
+
   AddTracks();
   V8TestingScope scope;
   auto* recorder = MakeGarbageCollected<MockMediaRecorder>(scope);
