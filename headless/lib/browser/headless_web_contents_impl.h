@@ -99,6 +99,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents,
   // HeadlessWindowDelegate:
   void OnVisibilityChanged() override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
+  void OnWindowStateChanged(HeadlessWindowState old_window_state) override;
 
  private:
   explicit HeadlessWebContentsImpl(
@@ -106,6 +107,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents,
 
   void InitializeWindow(const gfx::Rect& bounds,
                         HeadlessWindowState window_state);
+
+  void SetFocus(bool focus);
 
   uint64_t begin_frame_sequence_number_ =
       viz::BeginFrameArgs::kStartingFrameNumber;
@@ -117,6 +120,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents,
   std::unique_ptr<HeadlessWindow> headless_window_;
   int window_id_ = 0;
   std::unique_ptr<content::WebContents> const web_contents_;
+  bool restore_minimized_window_focus_ = false;
 
   class PendingFrame;
   base::WeakPtr<PendingFrame> pending_frame_;

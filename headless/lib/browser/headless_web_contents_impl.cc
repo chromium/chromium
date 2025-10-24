@@ -551,6 +551,30 @@ void HeadlessWebContentsImpl::OnBoundsChanged(const gfx::Rect& old_bounds) {
   browser()->SetWebContentsBounds(this, bounds);
 }
 
+void HeadlessWebContentsImpl::OnWindowStateChanged(
+    HeadlessWindowState old_window_state) {
+  if (headless_window_->window_state() == HeadlessWindowState::kMinimized) {
+    SetFocus(/*focus=*/false);
+    restore_minimized_window_focus_ = true;
+  } else if (restore_minimized_window_focus_) {
+    CHECK_EQ(old_window_state, HeadlessWindowState::kMinimized);
+    restore_minimized_window_focus_ = false;
+    SetFocus(/*focus=*/true);
+  }
+}
+
+void HeadlessWebContentsImpl::SetFocus(bool focus) {
+  if (content::RenderWidgetHost* rwh = web_contents_->GetPrimaryMainFrame()
+                                           ->GetRenderViewHost()
+                                           ->GetWidget()) {
+    if (focus) {
+      rwh->Focus();
+    } else {
+      rwh->Blur();
+    }
+  }
+}
+
 // HeadlessWebContents::Builder ----------------------------------------------
 
 HeadlessWebContents::Builder::Builder(

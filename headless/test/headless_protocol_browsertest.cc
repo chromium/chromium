@@ -609,8 +609,7 @@ HEADLESS_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 HEADLESS_PROTOCOL_TEST(RequestFullscreenOnSecondaryScreen,
                        "shared/request-fullscreen-on-secondary-screen.js")
 
-// Fails on all platforms, see https://crbug.com/429017383
-HEADLESS_PROTOCOL_TEST(DISABLED_MinimizeRestoreWindow,
+HEADLESS_PROTOCOL_TEST(MinimizeRestoreWindow,
                        "shared/minimize-restore-window.js")
 
 HEADLESS_PROTOCOL_TEST(MaximizeRestoreWindow,
