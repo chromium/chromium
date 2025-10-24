@@ -18892,8 +18892,6 @@ void RenderFrameHostImpl::CookieChangeListener::OnCookieChange(
   cookie_change_info_.cookie_modification_count++;
   if (change.cookie.IsHttpOnly()) {
     cookie_change_info_.http_only_cookie_modification_count++;
-  } else {
-    cookie_change_info_.non_http_only_cookie_modification_count++;
   }
 }
 

@@ -1711,13 +1711,6 @@ class CONTENT_EXPORT NavigationRequest
     return !!view_transition_resources_;
   }
 
-  bool HasCookieChangeListener() const {
-    return !!cookie_change_listener_.get();
-  }
-  // Checks whether cookies for the navigation target changed since the
-  // navigation started.
-  bool DidCookiesChangeAfterStart(bool exclude_http_only) const;
-
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
