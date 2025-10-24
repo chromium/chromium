@@ -222,6 +222,10 @@ class GlicProfileManagerPreloadingTest
                                    delay_ms},
                                   {features::kGlicWarmingJitterMs.name, "0"}}}},
           /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kGlicWarming});
     }
 
     // We initialize memory pressure to moderate to prevent any premature
@@ -309,7 +313,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
   }
   ResetMemoryPressure();
   browser()->profile()->NotifyWillBeDestroyed();
-  EXPECT_EQ(WaitForShouldPreload(), GlicPrewarmingChecksResult::kProfileGone);
+  EXPECT_EQ(WaitForShouldPreload(),
+            GlicPrewarmingChecksResult::kBrowserShuttingDown);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,

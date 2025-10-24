@@ -412,6 +412,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Blocked By Shown Glic"/>
   <int value="12" label="Under Memory Pressure"/>
   <int value="13" label="Cellular Connection"/>
+  <int value="14" label="Browser app is shutting down"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_profile_manager.h:GlicPrewarmingChecksResult) -->

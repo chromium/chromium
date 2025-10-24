@@ -705,8 +705,6 @@ const base::FeatureParam<bool> kGlicScrollToEnforceURLForPDF{
 
 BASE_FEATURE(kGlicWarming, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicDisableWarming, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch that controls whether the guest WebContents visibility state is
 // set to hidden when the Glic panel is warming.
 BASE_FEATURE(kGlicGuestContentsVisibilityState,
