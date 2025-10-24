@@ -11,8 +11,6 @@
 namespace mojo {
 namespace features {
 
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) BASE_DECLARE_FEATURE(kTaskPerMessage);
-
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 BASE_DECLARE_FEATURE(kMojoRecordUnreadMessageCount);
 

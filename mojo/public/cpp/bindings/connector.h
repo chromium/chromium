@@ -326,7 +326,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   bool paused_ = false;
 
   // See |set_force_immediate_dispatch()|.
-  bool force_immediate_dispatch_;
+  bool force_immediate_dispatch_ = false;
 
   OutgoingSerializationMode outgoing_serialization_mode_;
   IncomingSerializationMode incoming_serialization_mode_;
