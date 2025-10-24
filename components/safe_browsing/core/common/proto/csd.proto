@@ -452,11 +452,11 @@ message LoginReputationClientRequest {
   optional string page_url = 1;
 
   // Type for the request.
-  // It could be low reputation request or password reuse request.
   enum TriggerType {
     TRIGGER_TYPE_UNSPECIFIED = 0;
     UNFAMILIAR_LOGIN_PAGE = 1;
     PASSWORD_REUSE_EVENT = 2;
+    ONE_TIME_PASSWORD_FIELD_DETECTED = 3;
   }
   optional TriggerType trigger_type = 2;
 
