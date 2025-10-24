@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -32,6 +31,7 @@
 #include "base/values.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
+#include "crypto/obsolete/md5.h"
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_common_callbacks.h"
@@ -111,6 +111,12 @@ bool EntryMatchWithQuery(const ChangeResource& entry,
       return false;
   }
   return true;
+}
+
+std::string GetMd5Checksum(std::string_view input) {
+  return base::ToLowerASCII(
+      base::HexEncode(crypto::obsolete::Md5::HashForTesting(
+          base::as_bytes(base::span(input)))));
 }
 
 void ScheduleUploadRangeCallback(UploadRangeCallback callback,
@@ -1265,7 +1271,7 @@ CancelCallbackOnce FakeDriveService::ResumeUpload(
     return CancelCallbackOnce();
   }
 
-  file->set_md5_checksum(base::MD5String(content_data));
+  file->set_md5_checksum(GetMd5Checksum(content_data));
   entry->content_data = content_data;
   file->set_file_size(end_position);
   AddNewChangestamp(change, file->team_drive_id());
@@ -1653,7 +1659,7 @@ const FakeDriveService::EntryInfo* FakeDriveService::AddNewEntry(
       !util::IsKnownHostedDocumentMimeType(content_type)) {
     new_entry->content_data = content_data;
     new_file->set_file_size(content_data.size());
-    new_file->set_md5_checksum(base::MD5String(content_data));
+    new_file->set_md5_checksum(GetMd5Checksum(content_data));
   }
 
   if (shared_with_me) {
