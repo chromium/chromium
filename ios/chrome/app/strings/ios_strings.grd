@@ -6986,6 +6986,33 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SWITCH_PROFILE_SWITCH_TITLE" desc="Title for the switch profile developer panel in Settings-&gt;Switch Profile giving the list of loaded profiles [iOS only]">
         Switch to another profile
       </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_ACTION" desc="The action button text for the snackbar shown after new tab page preferences have been applied. [iOS only]">
+        Undo
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_MESSAGE_HOMEPAGE" desc="The message text for the snackbar shown after homepage preferences have been applied. [iOS only]">
+        Applied your homepage preferences
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_MESSAGE_NTP" desc="The message text for the snackbar shown after new tab page preferences have been applied. [iOS only]">
+        Applied your new tab page preferences
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_ACTION" desc="The action button text for the snackbar that prompts the user to apply their synced new tab page settings. [iOS only]">
+        Apply
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_MESSAGE_HOMEPAGE" desc="The message text for the snackbar that prompts the user to apply their synced homepage settings from another device. [iOS only]">
+        Would you like to apply your homepage customizations from another device?
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_MESSAGE_NTP" desc="The message text for the snackbar that prompts the user to apply their synced new tab page settings from another device. [iOS only]">
+        Would you like to apply your new tab page customizations from another device?
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_ACTION" desc="The action button text for the snackbar shown after new tab page preferences have been removed. [iOS only]">
+        Redo
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_MESSAGE_HOMEPAGE" desc="The message text for the snackbar shown after homepage preferences have been removed. [iOS only]">
+        Removed homepage preferences
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_MESSAGE_NTP" desc="The message text for the snackbar shown after new tab page preferences have been removed. [iOS only]">
+        Removed new tab page preferences
+      </message>
       <message name="IDS_IOS_SYNCED_SET_UP_SUBTITLE_TEXT" desc="Subtitle text on the Synced Set Up screen, indicating that the user's data is being loaded. [iOS only]">
         Getting your stuff…
       </message>
