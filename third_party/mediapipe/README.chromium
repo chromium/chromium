@@ -28,8 +28,7 @@ To update this library
 2) Run the `update.sh` script in this directory.
 
 3) Fix the build and get everything compiling and `components_unittests`
-  passing with the gn arg `build_with_mediapipe_lib = true` and optionally with
-  `mediapipe_build_with_gpu_support = true`.
+  passing with the gn arg `build_with_mediapipe_lib = true`.
 
 
 To make a new patch file
@@ -135,9 +134,3 @@ Here's the set of functions that were added to the generated file:
                                        &(const_cast<AnyLite*>(this)->value_));
     return any_metadata.Is<T>();
   }
-
-* dont-use-dedicated-context-for-some-calculators.patch - temporary patch that
-is only needed when unit-testing with GPU support (not yet official). Will be
-removed after MediaPipe w/ GPU is taught how to use Chromium's GL thread and
-GL context instead of creating its own.
-TODO(https://crbug.com/1492217): remove this patch once it is no longer needed.
