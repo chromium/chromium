@@ -24,6 +24,7 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                               {
                                   {"/v1/aida:codeComplete", "POST"},
                                   {"/v1/registerClientEvent", "POST"},
+                                  {"/v1/aida:generateCode", "POST"},
                               },
                               std::make_unique<AidaServiceHandler>()));
   services_.push_back(
