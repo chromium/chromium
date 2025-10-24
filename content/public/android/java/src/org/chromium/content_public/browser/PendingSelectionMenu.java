@@ -203,7 +203,8 @@ public final class PendingSelectionMenu {
                             mGroupsWithIcon[group],
                             true,
                             item.clickListener,
-                            item.intent));
+                            item.intent,
+                            item.order));
         }
     }
 

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -43,6 +42,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -245,16 +245,9 @@ public class ChromeActionModeHandler {
         }
 
         @Override
-        public boolean onDropdownItemClicked(
-                int groupId,
-                int id,
-                @Nullable Intent intent,
-                View.@Nullable OnClickListener clickListener,
-                boolean closeMenu) {
+        public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
             boolean res =
-                    handleItemClick(id)
-                            || mHelper.onDropdownItemClicked(
-                                    groupId, id, intent, clickListener, closeMenu);
+                    handleItemClick(item.id) || mHelper.onDropdownItemClicked(item, closeMenu);
             if (closeMenu) mHelper.dismissMenu();
             return res;
         }

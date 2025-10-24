@@ -85,29 +85,6 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
     }
 
     @Override
-    public int getGroupId(PropertyModel itemModel) {
-        return PropertyModel.getFromModelOrDefault(itemModel, ListMenuItemProperties.GROUP_ID, 0);
-    }
-
-    @Override
-    public int getItemId(PropertyModel itemModel) {
-        return PropertyModel.getFromModelOrDefault(
-                itemModel, ListMenuItemProperties.MENU_ITEM_ID, 0);
-    }
-
-    @Override
-    public @Nullable Intent getItemIntent(PropertyModel itemModel) {
-        return PropertyModel.<@Nullable Intent>getFromModelOrDefault(
-                itemModel, ListMenuItemProperties.INTENT, null);
-    }
-
-    @Override
-    public View.@Nullable OnClickListener getClickListener(PropertyModel itemModel) {
-        return PropertyModel.<View.@Nullable OnClickListener>getFromModelOrDefault(
-                itemModel, ListMenuItemProperties.CLICK_LISTENER, null);
-    }
-
-    @Override
     public ListItem getDivider() {
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS)
@@ -131,7 +108,8 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
             boolean groupContainsIcon,
             boolean enabled,
             View.@Nullable OnClickListener clickListener,
-            @Nullable Intent intent) {
+            @Nullable Intent intent,
+            int order) {
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, title)
@@ -147,7 +125,8 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
                                 groupContainsIcon)
                         .with(
                                 ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                                BrowserUiListMenuUtils.getDefaultTextAppearanceStyle());
+                                BrowserUiListMenuUtils.getDefaultTextAppearanceStyle())
+                        .with(ListMenuItemProperties.ORDER, order);
         if (isIconTintable) {
             modelBuilder.with(
                     ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,

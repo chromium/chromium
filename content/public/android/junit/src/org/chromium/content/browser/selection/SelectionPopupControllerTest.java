@@ -1037,13 +1037,11 @@ public class SelectionPopupControllerTest {
 
         // Click on the main menu item with submenu, menu should not be dismissed.
         listener.onItemClick(mainListItem.model);
-        Mockito.verify(mActionModeCallback, times(1))
-                .onDropdownItemClicked(anyInt(), anyInt(), any(), any(), eq(false));
+        Mockito.verify(mActionModeCallback, times(1)).onDropdownItemClicked(any(), eq(false));
 
         // Click on the submenu item, menu should be dismissed.
         listener.onItemClick(submenuItems.get(0).model);
-        Mockito.verify(mActionModeCallback, times(1))
-                .onDropdownItemClicked(anyInt(), anyInt(), any(), any(), eq(true));
+        Mockito.verify(mActionModeCallback, times(1)).onDropdownItemClicked(any(), eq(true));
     }
 
     private void showSelectionMenu(

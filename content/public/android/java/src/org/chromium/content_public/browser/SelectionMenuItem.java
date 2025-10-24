@@ -238,9 +238,18 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
             return this;
         }
 
+        /** Should not be used directly unless constructing from an existing SelectionMenuItem. */
+        public Builder setOrder(int order) {
+            if (order < 0) {
+                throw new IllegalArgumentException("Invalid order. Must be >= 0");
+            }
+            mOrder = order;
+            return this;
+        }
+
         /**
-         * Must be a {@link MenuItem} constant bit combination
-         * (i.e. MenuItem.SHOW_AS_ACTION_IF_ROOM) otherwise 0.
+         * Must be a {@link MenuItem} constant bit combination (i.e.
+         * MenuItem.SHOW_AS_ACTION_IF_ROOM) otherwise 0.
          */
         public Builder setShowAsActionFlags(int showAsActionFlags) {
             mShowAsActionFlags = showAsActionFlags;

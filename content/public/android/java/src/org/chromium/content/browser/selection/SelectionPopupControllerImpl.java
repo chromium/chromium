@@ -671,16 +671,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             SelectionDropdownMenuDelegate delegate) {
         return item -> {
             assumeNonNull(mCallback);
-            final int groupId = delegate.getGroupId(item);
-            final int id = delegate.getItemId(item);
-            logSelectionAction(groupId, id);
+            SelectionMenuItem menuItem = delegate.getMinimalMenuItem(item);
+            logSelectionAction(menuItem.groupId, menuItem.id);
             boolean isSubmenuParent = item.containsKey(ListMenuSubmenuItemProperties.SUBMENU_ITEMS);
-            mCallback.onDropdownItemClicked(
-                    groupId,
-                    id,
-                    delegate.getItemIntent(item),
-                    delegate.getClickListener(item),
-                    !isSubmenuParent);
+            mCallback.onDropdownItemClicked(menuItem, !isSubmenuParent);
         };
     }
 
@@ -1061,19 +1055,14 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @Override
-    public boolean onDropdownItemClicked(
-            int groupId,
-            int id,
-            @Nullable Intent intent,
-            View.@Nullable OnClickListener clickListener,
-            boolean closeMenu) {
+    public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
         // Use the click listener for the item if it has one.
-        if (clickListener != null) {
-            clickListener.onClick(null);
+        if (item.clickListener != null) {
+            item.clickListener.onClick(null);
         } else {
-            handleMenuItemClick(id);
+            handleMenuItemClick(item.id);
         }
-        if (id != R.id.select_action_menu_select_all) {
+        if (item.id != R.id.select_action_menu_select_all) {
             // We will clear the selection for all actions other
             // than select all.
             clearSelection();

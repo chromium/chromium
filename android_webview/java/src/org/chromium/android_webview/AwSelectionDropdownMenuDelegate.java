@@ -26,10 +26,8 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.listmenu.BasicListMenu;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * WebView implementation of dropdown text selection menu delegate. The functionality provided by
@@ -140,30 +138,6 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
     }
 
     @Override
-    public int getGroupId(PropertyModel itemModel) {
-        return PropertyModel.getFromModelOrDefault(itemModel, ListMenuItemProperties.GROUP_ID, 0);
-    }
-
-    @Override
-    public int getItemId(PropertyModel itemModel) {
-        return PropertyModel.getFromModelOrDefault(
-                itemModel, ListMenuItemProperties.MENU_ITEM_ID, 0);
-    }
-
-    @Nullable
-    @Override
-    public Intent getItemIntent(PropertyModel itemModel) {
-        return PropertyModel.getFromModelOrDefault(itemModel, ListMenuItemProperties.INTENT, null);
-    }
-
-    @Nullable
-    @Override
-    public View.OnClickListener getClickListener(PropertyModel itemModel) {
-        return PropertyModel.getFromModelOrDefault(
-                itemModel, ListMenuItemProperties.CLICK_LISTENER, null);
-    }
-
-    @Override
     public ListItem getDivider() {
         return BasicListMenu.buildMenuDivider(/* isIncognito= */ false);
     }
@@ -179,7 +153,8 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
             boolean groupContainsIcon,
             boolean enabled,
             @Nullable View.OnClickListener clickListener,
-            @Nullable Intent intent) {
+            @Nullable Intent intent,
+            int order) {
         return BasicListMenu.buildListMenuItem(
                 title,
                 contentDescription,
@@ -190,7 +165,8 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
                 groupContainsIcon,
                 enabled,
                 clickListener,
-                intent);
+                intent,
+                order);
     }
 
     /** For nulling out references after drop-down dismissal or the inability to show. */

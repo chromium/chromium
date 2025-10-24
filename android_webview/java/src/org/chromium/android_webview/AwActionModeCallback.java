@@ -18,14 +18,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
@@ -108,18 +107,14 @@ public class AwActionModeCallback extends ActionModeCallback implements IntentCa
     }
 
     @Override
-    public boolean onDropdownItemClicked(
-            int groupId,
-            int id,
-            @Nullable Intent intent,
-            @Nullable View.OnClickListener clickListener,
-            boolean closeMenu) {
-        if (isProcessTextMenuItem(groupId)) {
-            assert intent != null : "Text processing item must have an intent associated with it";
-            processText(intent);
+    public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
+        if (isProcessTextMenuItem(item.groupId)) {
+            assert item.intent != null
+                    : "Text processing item must have an intent associated with it";
+            processText(item.intent);
             return true;
         }
-        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener, closeMenu);
+        return mHelper.onDropdownItemClicked(item, closeMenu);
     }
 
     private boolean isProcessTextMenuItem(final int groupId) {

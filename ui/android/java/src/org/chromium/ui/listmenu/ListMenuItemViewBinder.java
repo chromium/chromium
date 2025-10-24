@@ -153,6 +153,9 @@ public class ListMenuItemViewBinder {
             view.setOnKeyListener(model.get(ListMenuItemProperties.KEY_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.TOUCH_LISTENER) {
             view.setOnTouchListener(model.get(ListMenuItemProperties.TOUCH_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.ORDER) {
+            // Not tracked intentionally because it's used by clients to keep track of items. The
+            // order field is used to recreate a SelectionMenuItem when an item is clicked.
         } else {
             assert false : "Supplied propertyKey not implemented in ListMenuItemProperties.";
         }
