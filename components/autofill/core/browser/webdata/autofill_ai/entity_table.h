@@ -110,6 +110,11 @@ class EntityTable : public WebDatabaseTable {
   // database.
   bool EntityInstanceExists(const EntityInstance::EntityId& guid) const;
 
+  // Adds or updates the entity `metadata` in the `entities_metadata` table.
+  // Returns true on success.
+  bool AddOrUpdateValuableMetadata(
+      const EntityInstance::EntityMetadata& metadata);
+
   // Returns the valid entity instances; ignores invalid instances.
   //
   // An instance is valid only if all the following is true:
@@ -146,6 +151,9 @@ class EntityTable : public WebDatabaseTable {
   // Returns true if adding the entity `metadata` to the `entities_metadata`
   // table succeeded.
   bool AddEntityMetadata(const EntityInstance::EntityMetadata& metadata);
+
+  // Returns true if removing the entity metadata succeeded.
+  bool RemoveEntityMetadata(const EntityInstance::EntityId& guid);
 
   // Returns true if adding the attribute to the `attributes` table succeeded.
   bool AddAttribute(const EntityInstance& entity,

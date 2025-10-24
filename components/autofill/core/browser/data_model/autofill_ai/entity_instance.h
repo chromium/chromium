@@ -207,6 +207,9 @@ class EntityInstance final {
     base::Time date_modified;
     size_t use_count;
     base::Time use_date;
+
+    friend bool operator==(const EntityMetadata&,
+                           const EntityMetadata&) = default;
   };
 
   // Controls whether the attributes of the entity instance can be edited by the

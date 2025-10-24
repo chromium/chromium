@@ -79,8 +79,17 @@ class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data);
 
-  // Returns the `ValuablesTable` associated with the `web_data_backend_`.
-  ValuablesTable* GetValuablesTable();
+  // To ensures that metadata and model data is  committed in a single
+  // transaction, `CreateMetadataChangeList()` is implemented using an
+  // `InMemoryMetadataChangeList`. This function transfers the changes from the
+  // `metadata_change_list` to `GetSyncMetadataStore()`. It assumes that
+  // `metadata_change_list` was created using the bridge's
+  // `CreateMetadataChangeList()`.
+  std::optional<syncer::ModelError> ApplyMetadataChanges(
+      std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
+
+  // Returns the `EntityTable` associated with the `web_data_backend_`.
+  EntityTable* GetEntityTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 

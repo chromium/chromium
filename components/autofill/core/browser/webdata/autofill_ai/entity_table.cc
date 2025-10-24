@@ -369,6 +369,18 @@ bool EntityTable::AddEntityMetadata(
   return s.Run();
 }
 
+bool EntityTable::RemoveEntityMetadata(const EntityInstance::EntityId& guid) {
+  return DeleteWhereColumnEq(db(), entities_metadata::kTableName,
+                             entities_metadata::kEntityGuid, *guid);
+}
+
+bool EntityTable::AddOrUpdateValuableMetadata(
+    const EntityInstance::EntityMetadata& metadata) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() && RemoveEntityMetadata(metadata.guid) &&
+         AddEntityMetadata(metadata) && transaction.Commit();
+}
+
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   HandleTestSwitchesIfNeeded(db(), *this);
 

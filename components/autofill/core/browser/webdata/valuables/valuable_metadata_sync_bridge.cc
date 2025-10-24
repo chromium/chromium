@@ -9,10 +9,12 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/autofill_valuable_metadata_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -71,10 +73,7 @@ AutofillSyncMetadataTable* ValuableMetadataSyncBridge::GetSyncMetadataStore() {
 std::unique_ptr<syncer::MetadataChangeList>
 ValuableMetadataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetSyncMetadataStore(), syncer::AUTOFILL_VALUABLE_METADATA,
-      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
-                          change_processor()->GetWeakPtr()));
+  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError> ValuableMetadataSyncBridge::MergeFullSyncData(
@@ -168,12 +167,72 @@ std::optional<syncer::ModelError>
 ValuableMetadataSyncBridge::MergeRemoteChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  // TODO(crbug.com/436551488): Implement.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::unique_ptr<sql::Transaction> transaction =
+      web_data_backend_->GetDatabase()->AcquireTransaction();
+  EntityTable* table = GetEntityTable();
+
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        const sync_pb::AutofillValuableMetadataSpecifics& specifics =
+            change->data().specifics.autofill_valuable_metadata();
+        EntityInstance::EntityMetadata remote =
+            CreateValuableMetadataFromSpecifics(specifics);
+        if (!table->AddOrUpdateValuableMetadata(remote)) {
+          return syncer::ModelError(
+              FROM_HERE, syncer::ModelError::Type::
+                             kAutofillValuableMetadataFailedToLoadDatabase);
+        }
+        break;
+      }
+      case syncer::EntityChange::ACTION_DELETE: {
+        // Similar to AutofillWalletMetadataSyncBridge, ignore remote deletions
+        // to avoid delete-create ping pongs. The metadata will be deleted when
+        // the valuable itself is deleted. A cleanup mechanism for orphan
+        // metadata might be needed.
+        break;
+      }
+    }
+  }
+
+  if (std::optional<syncer::ModelError> error =
+          ApplyMetadataChanges(std::move(metadata_change_list))) {
+    return error;
+  }
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
+  web_data_backend_->CommitChanges();
+  if (transaction && !transaction->Commit()) {
+    return syncer::ModelError(
+        FROM_HERE,
+        syncer::ModelError::Type::
+            kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync);
+  }
+
+  web_data_backend_->NotifyOnAutofillChangedBySync(
+      syncer::AUTOFILL_VALUABLE_METADATA);
+
   return std::nullopt;
 }
 
-ValuablesTable* ValuableMetadataSyncBridge::GetValuablesTable() {
-  return ValuablesTable::FromWebDatabase(web_data_backend_->GetDatabase());
+std::optional<syncer::ModelError>
+ValuableMetadataSyncBridge::ApplyMetadataChanges(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
+  syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
+      GetSyncMetadataStore(), syncer::AUTOFILL_VALUABLE_METADATA,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
+  metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
+  return change_processor()->GetError();
+}
+
+EntityTable* ValuableMetadataSyncBridge::GetEntityTable() {
+  return EntityTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
 }  // namespace autofill
