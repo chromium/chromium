@@ -42,12 +42,14 @@ struct DialogText {
 };
 
 DialogText GetPromptDialogTextFromStatus(
-    const collaboration::ServiceStatus& status) {
+    const collaboration::ServiceStatus& status,
+    std::string email) {
   bool valid;
   int title_id = 0;
   int body_id = 0;
   int ok_button_text_id = 0;
   int footnote_id = IDS_SYNC_HISTORY_FOOTER;
+  std::u16string body;
 
   switch (status.signin_status) {
     case collaboration::SigninStatus::kNotSignedIn:
@@ -107,7 +109,8 @@ DialogText GetPromptDialogTextFromStatus(
         body_id = IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_SYNC_HISTORY_BODY;
         break;
       case collaboration::SigninStatus::kSignedIn:
-        body_id = IDS_DATA_SHARING_NEED_SYNC_HISTORY_BODY;
+        body = l10n_util::GetStringFUTF16(
+            IDS_DATA_SHARING_NEED_SYNC_HISTORY_BODY, base::UTF8ToUTF16(email));
         break;
       default:
         break;
@@ -115,9 +118,13 @@ DialogText GetPromptDialogTextFromStatus(
   }
 #endif
 
+  if (body.empty()) {
+    CHECK(body_id);
+    body = l10n_util::GetStringUTF16(body_id);
+  }
+
   if (valid) {
-    return DialogText(valid, l10n_util::GetStringUTF16(title_id),
-                      l10n_util::GetStringUTF16(body_id),
+    return DialogText(valid, l10n_util::GetStringUTF16(title_id), body,
                       l10n_util::GetStringUTF16(ok_button_text_id),
                       l10n_util::GetStringUTF16(footnote_id));
   } else {
@@ -499,74 +506,84 @@ void CollaborationControllerDelegateDesktop::
     return;
   }
 
-  DialogText dialog_text = GetPromptDialogTextFromStatus(status);
-  if (dialog_text.valid) {
-    ui::DialogModel::Builder dialog_builder = ui::DialogModel::Builder();
-    dialog_builder.SetTitle(dialog_text.title)
-        .AddParagraph(ui::DialogModelLabel(dialog_text.body))
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        .SetBannerImage(
-            ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_LIGHT),
-            ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_DARK))
+  AccountInfo account_for_promo =
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      signin_ui_util::GetSingleAccountForPromos(
+          IdentityManagerFactory::GetForProfile(browser_->profile()));
+#else
+      GetAccountInfoFromProfile(browser_->profile());
 #endif
-        .AddCancelButton(
-            base::BindOnce(
-                &CollaborationControllerDelegateDesktop::OnPromptDialogCancel,
-                weak_ptr_factory_.GetWeakPtr()),
-            ui::DialogModel::Button::Params().SetEnabled(true).SetId(
-                kDataSharingSigninPromptDialogCancelButtonElementId))
-        .AddOkButton(
-            base::BindOnce(
-                &CollaborationControllerDelegateDesktop::OnPromptDialogOk,
-                weak_ptr_factory_.GetWeakPtr()),
-            ui::DialogModel::Button::Params()
-                .SetLabel(dialog_text.ok_button_text)
-                .SetEnabled(true));
+
+  DialogText dialog_text =
+      GetPromptDialogTextFromStatus(status, account_for_promo.email);
+  if (!dialog_text.valid) {
+    return;
+  }
+
+  ui::DialogModel::Builder dialog_builder = ui::DialogModel::Builder();
+  dialog_builder.SetTitle(dialog_text.title)
+      .AddParagraph(ui::DialogModelLabel(dialog_text.body))
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      .SetBannerImage(
+          ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_LIGHT),
+          ui::ImageModel::FromResourceId(IDR_SHARED_TAB_GROUPS_DARK))
+#endif
+      .AddCancelButton(
+          base::BindOnce(
+              &CollaborationControllerDelegateDesktop::OnPromptDialogCancel,
+              weak_ptr_factory_.GetWeakPtr()),
+          ui::DialogModel::Button::Params().SetEnabled(true).SetId(
+              kDataSharingSigninPromptDialogCancelButtonElementId))
+      .AddOkButton(
+          base::BindOnce(
+              &CollaborationControllerDelegateDesktop::OnPromptDialogOk,
+              weak_ptr_factory_.GetWeakPtr()),
+          ui::DialogModel::Button::Params()
+              .SetLabel(dialog_text.ok_button_text)
+              .SetEnabled(true));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    AccountInfo account_for_promo = signin_ui_util::GetSingleAccountForPromos(
-        IdentityManagerFactory::GetForProfile(browser_->profile()));
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
 
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      dialog_builder.SetFootnote(ui::DialogModelLabel(dialog_text.footnote));
-
-      // Record metrics about signin and history sync opt in being offered.
-      switch (status.signin_status) {
-        case collaboration::SigninStatus::kSigninDisabled:
-          break;
-        case collaboration::SigninStatus::kNotSignedIn:
-          signin_metrics::LogSignInOffered(
-              signin_metrics::AccessPoint::kCollaborationShareTabGroup,
-              account_for_promo.IsEmpty()
-                  ? signin_metrics::PromoAction::
-                        PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-                  : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
-          signin_metrics::LogHistorySyncOptInOffered(
-              signin_metrics::AccessPoint::kCollaborationShareTabGroup);
-          break;
-        case collaboration::SigninStatus::kSignedInPaused:
-        case collaboration::SigninStatus::kSignedIn:
-          signin_metrics::LogHistorySyncOptInOffered(
-              signin_metrics::AccessPoint::kCollaborationShareTabGroup);
-          break;
-      }
+    // Record metrics about signin and history sync opt in being offered.
+    switch (status.signin_status) {
+      case collaboration::SigninStatus::kSigninDisabled:
+        break;
+      case collaboration::SigninStatus::kNotSignedIn:
+        signin_metrics::LogSignInOffered(
+            signin_metrics::AccessPoint::kCollaborationShareTabGroup,
+            account_for_promo.IsEmpty()
+                ? signin_metrics::PromoAction::
+                      PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+                : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+        signin_metrics::LogHistorySyncOptInOffered(
+            signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+        break;
+      case collaboration::SigninStatus::kSignedInPaused:
+      case collaboration::SigninStatus::kSignedIn:
+        signin_metrics::LogHistorySyncOptInOffered(
+            signin_metrics::AccessPoint::kCollaborationShareTabGroup);
+        break;
     }
-
-#else
-    AccountInfo account_for_promo =
-        GetAccountInfoFromProfile(browser_->profile());
+  }
 #endif
 
+  // Don't show the account card when the user is signed in, since the email is
+  // already mentioned in the body.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      status.signin_status != collaboration::SigninStatus::kSignedIn) {
     dialog_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::make_unique<AccountCardView>(account_for_promo),
             views::BubbleDialogModelHost::FieldType::kText));
-
-    std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
-    prompt_dialog_widget_ =
-        chrome::ShowBrowserModal(browser_, std::move(dialog_model));
   }
+
+  std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
+  prompt_dialog_widget_ =
+      chrome::ShowBrowserModal(browser_, std::move(dialog_model));
 }
 
 void CollaborationControllerDelegateDesktop::OnPromptDialogOk() {

@@ -12928,7 +12928,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           To share tabs and collaborate with others, sign in to Chrome and sync your history and tabs. You’ll also get your passwords and more on all your devices.
         </message>
         <message name="IDS_DATA_SHARING_NEED_SYNC_HISTORY_BODY" desc="The body of dialog that prompts users to sign in and opt in to history sync.">
-          To share tabs and collaborate with others, sync your history and tabs
+          To share tabs and collaborate with others, sync your history and tabs to <ph name="EMAIL">$1<ex>foo@gmail.com</ex></ph>
         </message>
         <message name="IDS_DATA_SHARING_NEED_VERIFY_ACCOUNT_SYNC_HISTORY_BODY" desc="The body of dialog that prompts users to verify account.">
           To share tabs and collaborate with others, verify it’s you and sync your history and tabs
