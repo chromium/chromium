@@ -3594,6 +3594,7 @@ test("base_unittests") {
     "task/default_delayed_task_handle_delegate_unittest.cc",
     "task/deferred_sequenced_task_runner_unittest.cc",
     "task/delayed_task_handle_unittest.cc",
+    "task/execution_fence_unittest.cc",
     "task/lazy_thread_pool_task_runner_unittest.cc",
     "task/post_job_unittest.cc",
     "task/scoped_set_task_priority_for_current_thread_unittest.cc",
