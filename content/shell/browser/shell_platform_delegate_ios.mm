@@ -622,7 +622,10 @@ void ShellPlatformDelegate::CreatePlatformWindow(
   UIWindow* window =
       [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
   window.backgroundColor = [UIColor whiteColor];
+#if !BUILDFLAG(IS_IOS_TVOS)
+  // Leaves `tintColor` by default on tvOS. Refer to crbug.com/454180134.
   window.tintColor = [UIColor darkGrayColor];
+#endif
 
   ContentShellWindowDelegate* controller =
       [[ContentShellWindowDelegate alloc] initWithShell:shell];
