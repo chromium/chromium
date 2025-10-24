@@ -1404,6 +1404,10 @@ inline constexpr char kGlicDefaultToLastActiveConversationName[] =
 inline constexpr char kGlicDefaultToLastActiveConversationDescription[] =
     "Enables the last active conversation as the default conversation when "
     "opening a new Glic side panel instance.";
+inline constexpr char kGlicButtonPressedStateName[] =
+    "Glic Button Pressed State";
+inline constexpr char kGlicButtonPressedStateDescription[] =
+    "Enables visual changes to the Glic entry button when Glic is open.";
 
 inline constexpr char kGlicDaisyChainNewTabsName[] =
     "Glic Daisy chain new tabs";

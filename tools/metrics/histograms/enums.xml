@@ -14687,6 +14687,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentHideSteadyStateUrlScheme:disabled"/>
   <int value="132907995" label="DownloadProgressMessage:enabled"/>
   <int value="133215861" label="SystemEmojiPickerMojoSearch:enabled"/>
+  <int value="133279735" label="GlicButtonPressedState:enabled"/>
   <int value="133482330" label="AppNotificationStatusMessaging:enabled"/>
   <int value="133529502"
       label="EnableNearbyBluetoothClassicAdvertising:enabled"/>
@@ -17366,6 +17367,7 @@ from previous Chrome versions.
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
   <int value="1090937981" label="ImeFstDecoderParamsUpdate:enabled"/>
+  <int value="1091146736" label="GlicButtonPressedState:disabled"/>
   <int value="1091157601" label="SearchNavigationPrefetch:enabled"/>
   <int value="1091197787" label="LinkCrossDeviceInternals:enabled"/>
   <int value="1091520021" label="LauncherKeywordExtractionScoring:disabled"/>
