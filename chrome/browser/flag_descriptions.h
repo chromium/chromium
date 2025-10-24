@@ -3995,6 +3995,11 @@ inline constexpr char kSideBySideSessionRestoreDescription[] =
     "Allows users to restore tabs in split view "
     "from previous session when the browser restarts.";
 
+inline constexpr char kOpenDraggedLinksSameTabName[] =
+    "Open Dragged Links in the Same Tab";
+inline constexpr char kOpenDraggedLinksSameTabDescription[] =
+    "Allows users to drag a single link to a tab to open in that tab.";
+
 inline constexpr char kDefaultSiteInstanceGroupsName[] =
     "Default SiteInstanceGroups";
 inline constexpr char kDefaultSiteInstanceGroupsDescription[] =

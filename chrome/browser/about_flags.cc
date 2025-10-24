@@ -12480,6 +12480,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSideBySideSessionRestoreName,
      flag_descriptions::kSideBySideSessionRestoreDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSideBySideSessionRestore)},
+
+    {"open-dragged-links-same-tab",
+     flag_descriptions::kOpenDraggedLinksSameTabName,
+     flag_descriptions::kOpenDraggedLinksSameTabDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(blink::features::kSupportOpeningDraggedLinksInSameTab)},
 #endif
 
     {"enable-secure-payment-confirmation-fallback-ux",
