@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom-forward.h"
-#include "device/vr/test/test_hook.h"
+#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test_hook_types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -34,7 +34,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
 
   // device_test::mojom::XRTestHook
   void OnFrameSubmitted(
-      std::vector<device_test::mojom::ViewDataPtr> views,
+      const std::vector<device::ViewData>& views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
@@ -76,7 +76,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   void SetCanCreateSession(bool can_create_session);
   void SetVisibilityMaskForTesting(
       uint32_t view_index,
-      device_test::mojom::XRVisibilityMaskPtr mask);
+      std::optional<device::VisibilityMaskData> mask);
   uint32_t GetFrameCount() { return frame_count_; }
   void WaitNumFrames(uint32_t num_frames);
   void WaitForTotalFrameCount(uint32_t total_count);
@@ -86,7 +86,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   // called *after* the frame count has been incremented but *before* any
   // potenital wait loop is signaled.
   virtual void ProcessSubmittedFrameUnlocked(
-      std::vector<device_test::mojom::ViewDataPtr> views) {}
+      const std::vector<device::ViewData>& views) {}
 
   SEQUENCE_CHECKER(mock_device_sequence_);
   SEQUENCE_CHECKER(main_sequence_);
@@ -96,7 +96,7 @@ class MockXRDeviceHookBase : public device_test::mojom::XRTestHook {
   base::flat_map<uint32_t, device::ControllerFrameData> controller_data_map_
       GUARDED_BY(lock_);
   std::queue<device_test::mojom::EventData> event_data_queue_ GUARDED_BY(lock_);
-  absl::flat_hash_map<uint32_t, device_test::mojom::XRVisibilityMaskPtr>
+  absl::flat_hash_map<uint32_t, std::optional<device::VisibilityMaskData>>
       visibility_masks_ GUARDED_BY(lock_);
 
  private:

@@ -322,13 +322,8 @@ if (enable_vr) {
     }
   }
 
-  component("vr_test_hook") {
-    defines = [ "IS_VR_TEST_HOOK_IMPL" ]
-
-    sources = [
-      "test/test_hook.cc",
-      "test/test_hook.h",
-    ]
+  source_set("vr_test_hook") {
+    sources = [ "test/test_hook.h" ]
 
     deps = [
       "//device/vr/public/mojom:test_mojom",

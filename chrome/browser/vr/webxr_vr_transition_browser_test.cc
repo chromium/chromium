@@ -188,11 +188,10 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
                        TestVisibilityMaskChangeEventReceived) {
   MockXRDeviceHookBase mock;
-  auto visibility_mask = device_test::mojom::XRVisibilityMask::New();
-  visibility_mask->vertices = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f};
-  visibility_mask->indices = {0, 1, 2};
-  mock.SetVisibilityMaskForTesting(0, visibility_mask.Clone());
-  mock.SetVisibilityMaskForTesting(1, visibility_mask.Clone());
+  device::VisibilityMaskData visibility_mask{
+      .vertices = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f}, .indices = {0, 1, 2}};
+  mock.SetVisibilityMaskForTesting(0, visibility_mask);
+  mock.SetVisibilityMaskForTesting(1, visibility_mask);
 
   LoadFileAndAwaitInitialization("test_visibility_mask_change_event");
   EnterSessionWithUserGestureOrFail();

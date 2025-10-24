@@ -13,63 +13,6 @@
 #include "components/webxr/android/openxr_device_provider.h"
 #endif
 
-// TODO(crbug.com/41418750): Remove these conversion functions as part of
-// the switch to only mojom types.
-device_test::mojom::ControllerRole DeviceToMojoControllerRole(
-    device::ControllerRole role) {
-  switch (role) {
-    case device::kControllerRoleInvalid:
-      return device_test::mojom::ControllerRole::kControllerRoleInvalid;
-    case device::kControllerRoleRight:
-      return device_test::mojom::ControllerRole::kControllerRoleRight;
-    case device::kControllerRoleLeft:
-      return device_test::mojom::ControllerRole::kControllerRoleLeft;
-    case device::kControllerRoleVoice:
-      return device_test::mojom::ControllerRole::kControllerRoleVoice;
-  }
-}
-
-device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
-    const device::ControllerFrameData& data) {
-  device_test::mojom::ControllerFrameDataPtr ret =
-      device_test::mojom::ControllerFrameData::New();
-  ret->packet_number = data.packet_number;
-  ret->buttons_pressed = data.buttons_pressed;
-  ret->buttons_touched = data.buttons_touched;
-  ret->supported_buttons = data.supported_buttons;
-  for (unsigned int i = 0; i < device::kMaxNumAxes; ++i) {
-    ret->axis_data.emplace_back(device_test::mojom::ControllerAxisData::New());
-    ret->axis_data[i]->x = data.axis_data[i].x;
-    ret->axis_data[i]->y = data.axis_data[i].y;
-    ret->axis_data[i]->axis_type = data.axis_data[i].axis_type;
-  }
-  ret->role = DeviceToMojoControllerRole(data.role);
-  ret->is_valid = data.is_valid;
-  ret->pose_data = data.pose_data;
-
-  if (data.has_hand_data) {
-    device::mojom::XRHandTrackingDataPtr hand_tracking_data =
-        device::mojom::XRHandTrackingData::New();
-    hand_tracking_data->hand_joint_data =
-        std::vector<device::mojom::XRHandJointDataPtr>{};
-    auto& joint_data = hand_tracking_data->hand_joint_data;
-
-    // We need to use `resize` here to create default data fields so we can use
-    // [] indexing to ensure things are added to the right spot.
-    joint_data.resize(std::size(data.hand_data));
-    for (const auto& joint_entry : data.hand_data) {
-      uint32_t joint_index = static_cast<uint32_t>(joint_entry.joint);
-
-      joint_data[joint_index] = device::mojom::XRHandJointData::New(
-          joint_entry.joint, joint_entry.mojo_from_joint, joint_entry.radius);
-    }
-
-    ret->hand_data = std::move(hand_tracking_data);
-  }
-
-  return ret;
-}
-
 MockXRDeviceHookBase::MockXRDeviceHookBase() {
   thread_ = std::make_unique<base::Thread>("MockXRDeviceHookThread");
   thread_->Start();
@@ -150,7 +93,7 @@ void MockXRDeviceHookBase::WaitForTotalFrameCount(uint32_t total_count) {
 }
 
 void MockXRDeviceHookBase::OnFrameSubmitted(
-    std::vector<device_test::mojom::ViewDataPtr> views,
+    const std::vector<device::ViewData>& views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   frame_count_++;
@@ -166,11 +109,7 @@ void MockXRDeviceHookBase::OnFrameSubmitted(
 void MockXRDeviceHookBase::WaitGetDeviceConfig(
     device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  device_test::mojom::DeviceConfigPtr ret =
-      device_test::mojom::DeviceConfig::New();
-  ret->interpupillary_distance = 0.1f;
-  ret->projection_left = device_test::mojom::ProjectionRaw::New(1, 1, 1, 1);
-  ret->projection_right = device_test::mojom::ProjectionRaw::New(1, 1, 1, 1);
+  device::DeviceConfig ret = {.interpupillary_distance = 0.1f};
   std::move(callback).Run(std::move(ret));
 }
 
@@ -191,13 +130,12 @@ void MockXRDeviceHookBase::WaitGetControllerRoleForTrackedDeviceIndex(
     device_test::mojom::XRTestHook::
         WaitGetControllerRoleForTrackedDeviceIndexCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  device_test::mojom::ControllerRole role =
-      device_test::mojom::ControllerRole::kControllerRoleInvalid;
+  device::ControllerRole role = device::ControllerRole::kControllerRoleInvalid;
   {
     base::AutoLock lock(lock_);
     auto iter = controller_data_map_.find(index);
     if (iter != controller_data_map_.end()) {
-      role = DeviceToMojoControllerRole(iter->second.role);
+      role = iter->second.role;
     }
   }
 
@@ -222,7 +160,7 @@ void MockXRDeviceHookBase::WaitGetControllerData(
       data.is_valid = false;
     }
   }
-  std::move(callback).Run(DeviceToMojoControllerFrameData(data));
+  std::move(callback).Run(std::move(data));
 }
 
 void MockXRDeviceHookBase::WaitGetEventData(
@@ -306,7 +244,7 @@ void MockXRDeviceHookBase::SetCanCreateSession(bool can_create_session) {
 
 void MockXRDeviceHookBase::SetVisibilityMaskForTesting(
     uint32_t view_index,
-    device_test::mojom::XRVisibilityMaskPtr mask) {
+    std::optional<device::VisibilityMaskData> mask) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
   base::AutoLock lock(lock_);
   visibility_masks_[view_index] = std::move(mask);
@@ -316,11 +254,11 @@ void MockXRDeviceHookBase::WaitGetVisibilityMask(
     uint32_t view_index,
     device_test::mojom::XRTestHook::WaitGetVisibilityMaskCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  device_test::mojom::XRVisibilityMaskPtr mask;
+  std::optional<device::VisibilityMaskData> mask;
   {
     base::AutoLock lock(lock_);
     if (visibility_masks_.contains(view_index)) {
-      mask = visibility_masks_[view_index].Clone();
+      mask = visibility_masks_[view_index];
     }
   }
 

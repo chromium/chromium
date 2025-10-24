@@ -193,8 +193,6 @@ browser_exposed_mojom_targets = [
   "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
   "//device/bluetooth/public/mojom:mojom",
   "//device/gamepad/public/mojom:mojom",
-  "//device/vr/public/mojom:isolated_xr_service",
-  "//device/vr/public/mojom:test_mojom",
   "//device/vr/public/mojom:vr_service",
   "//device/vr/public/mojom:xr_common",
   "//extensions/common:mojom",

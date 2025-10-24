@@ -8,48 +8,6 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
 namespace webxr {
-
-// TODO(crbug.com/41418750): Remove these as conversion functions as part
-// of the switch to only mojom types.
-device::ControllerRole MojoToDeviceControllerRole(
-    device_test::mojom::ControllerRole role) {
-  switch (role) {
-    case device_test::mojom::ControllerRole::kControllerRoleInvalid:
-      return device::kControllerRoleInvalid;
-    case device_test::mojom::ControllerRole::kControllerRoleLeft:
-      return device::kControllerRoleLeft;
-    case device_test::mojom::ControllerRole::kControllerRoleRight:
-      return device::kControllerRoleRight;
-    case device_test::mojom::ControllerRole::kControllerRoleVoice:
-      return device::kControllerRoleVoice;
-  }
-  return device::kControllerRoleInvalid;
-}
-
-device_test::mojom::Eye XrEyeToMojoEye(device::XrEye eye) {
-  switch (eye) {
-    case device::XrEye::kLeft:
-      return device_test::mojom::Eye::LEFT;
-    case device::XrEye::kRight:
-      return device_test::mojom::Eye::RIGHT;
-    case device::XrEye::kNone:
-      return device_test::mojom::Eye::NONE;
-  }
-}
-
-device::VisibilityMaskData MojoToDeviceVisibilityData(
-    const device_test::mojom::XRVisibilityMaskPtr& visibility_mask) {
-  device::VisibilityMaskData ret;
-  for (uint32_t i = 0; i < device::kNumVisibilityMaskVerticesForTest; i++) {
-    ret.vertices[i] = visibility_mask->vertices[i];
-  }
-  for (uint32_t i = 0; i < device::kNumVisibilityMaskIndicesForTest; i++) {
-    ret.indices[i] = visibility_mask->indices[i];
-  }
-
-  return ret;
-}
-
 XRTestHookWrapper::XRTestHookWrapper(
     mojo::PendingRemote<device_test::mojom::XRTestHook> pending_hook)
     : pending_hook_(std::move(pending_hook)) {}
@@ -57,40 +15,17 @@ XRTestHookWrapper::XRTestHookWrapper(
 void XRTestHookWrapper::OnFrameSubmitted(
     const std::vector<device::ViewData>& views) {
   if (hook_) {
-    std::vector<device_test::mojom::ViewDataPtr> submitted_views;
-    for (const device::ViewData& view : views) {
-      device_test::mojom::ViewDataPtr view_data =
-          device_test::mojom::ViewData::New();
-      view_data->color = device_test::mojom::Color::New(
-          view.color.r, view.color.g, view.color.b, view.color.a);
-      view_data->viewport = view.viewport;
-      view_data->eye = XrEyeToMojoEye(view.eye);
-      submitted_views.push_back(std::move(view_data));
-    }
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    hook_->OnFrameSubmitted(std::move(submitted_views));
+    hook_->OnFrameSubmitted(views);
   }
 }
 
 device::DeviceConfig XRTestHookWrapper::WaitGetDeviceConfig() {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::DeviceConfigPtr config;
+    device::DeviceConfig config;
     hook_->WaitGetDeviceConfig(&config);
-    if (config) {
-      device::DeviceConfig ret = {};
-      ret.interpupillary_distance = config->interpupillary_distance;
-      ret.viewport_left[0] = config->projection_left->left;
-      ret.viewport_left[1] = config->projection_left->right;
-      ret.viewport_left[2] = config->projection_left->top;
-      ret.viewport_left[3] = config->projection_left->left;
-
-      ret.viewport_right[0] = config->projection_right->left;
-      ret.viewport_right[1] = config->projection_right->right;
-      ret.viewport_right[2] = config->projection_right->top;
-      ret.viewport_right[3] = config->projection_right->left;
-      return ret;
-    }
+    return config;
   }
 
   return {};
@@ -122,50 +57,21 @@ device::ControllerRole
 XRTestHookWrapper::WaitGetControllerRoleForTrackedDeviceIndex(uint32_t index) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::ControllerRole role;
+    device::ControllerRole role;
     hook_->WaitGetControllerRoleForTrackedDeviceIndex(index, &role);
-    return MojoToDeviceControllerRole(role);
+    return role;
   }
 
-  return device::kControllerRoleInvalid;
+  return device::ControllerRole::kControllerRoleInvalid;
 }
 
 device::ControllerFrameData XRTestHookWrapper::WaitGetControllerData(
     uint32_t index) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::ControllerFrameDataPtr data;
+    device::ControllerFrameData data;
     hook_->WaitGetControllerData(index, &data);
-    if (data) {
-      device::ControllerFrameData ret = {};
-      ret.packet_number = data->packet_number;
-      ret.buttons_pressed = data->buttons_pressed;
-      ret.buttons_touched = data->buttons_touched;
-      ret.supported_buttons = data->supported_buttons;
-      ret.pose_data = data->pose_data;
-      ret.role = MojoToDeviceControllerRole(data->role);
-      ret.is_valid = data->is_valid;
-      for (uint32_t i = 0; i < device::kMaxNumAxes; ++i) {
-        ret.axis_data[i].x = data->axis_data[i]->x;
-        ret.axis_data[i].y = data->axis_data[i]->y;
-        ret.axis_data[i].axis_type = data->axis_data[i]->axis_type;
-      }
-      if (data->hand_data) {
-        ret.has_hand_data = true;
-        auto& joint_data = ret.hand_data;
-        CHECK_GE(std::size(joint_data),
-                 data->hand_data->hand_joint_data.size());
-
-        for (const auto& joint_entry : data->hand_data->hand_joint_data) {
-          uint32_t joint_index = static_cast<uint32_t>(joint_entry->joint);
-
-          joint_data[joint_index] = {joint_entry->joint,
-                                     joint_entry->mojo_from_joint,
-                                     joint_entry->radius};
-        }
-      }
-      return ret;
-    }
+    return data;
   }
 
   return {};
@@ -202,11 +108,9 @@ std::optional<device::VisibilityMaskData>
 XRTestHookWrapper::WaitGetVisibilityMask(uint32_t view_index) {
   if (hook_) {
     mojo::ScopedAllowSyncCallForTesting scoped_allow_sync;
-    device_test::mojom::XRVisibilityMaskPtr mask;
+    std::optional<device::VisibilityMaskData> mask;
     hook_->WaitGetVisibilityMask(view_index, &mask);
-    if (mask) {
-      return MojoToDeviceVisibilityData(mask);
-    }
+    return mask;
   }
 
   return std::nullopt;

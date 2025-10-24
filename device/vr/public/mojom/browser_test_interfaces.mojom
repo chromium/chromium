@@ -28,20 +28,8 @@ struct ViewData {
   gfx.mojom.Rect viewport;
 };
 
-
-// Each component is the tangent of the up/down/left/right view frustum.
-struct ProjectionRaw {
-  float left;
-  float right;
-  float top;
-  float bottom;
-};
-
 struct DeviceConfig {
   float interpupillary_distance; // Distance between the eyes.
-
-  ProjectionRaw projection_left;
-  ProjectionRaw projection_right;
 };
 
 struct ControllerAxisData {

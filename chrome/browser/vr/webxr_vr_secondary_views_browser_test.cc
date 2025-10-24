@@ -22,17 +22,7 @@ class MyXRMock : public MockXRDeviceHookBase {
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
       final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-    device_test::mojom::DeviceConfigPtr config =
-        device_test::mojom::DeviceConfig::New();
-    config->interpupillary_distance = kIpd;
-
-    // Unused, but the mojom contract requires this to be set.
-    config->projection_left =
-        device_test::mojom::ProjectionRaw::New(0.1f, 0.2f, 0.3f, 0.4f);
-    config->projection_right =
-        device_test::mojom::ProjectionRaw::New(0.5f, 0.6f, 0.7f, 0.8f);
-
-    std::move(callback).Run(std::move(config));
+    std::move(callback).Run({.interpupillary_distance = kIpd});
   }
 
   void WaitGetPresentingPose(
