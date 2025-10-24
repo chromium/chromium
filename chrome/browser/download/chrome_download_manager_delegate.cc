@@ -49,6 +49,7 @@
 #include "chrome/browser/download/save_package_file_picker.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -1086,7 +1087,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     bool is_content_initiated,
     content::WebContents* web_contents) {
   PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+      ChromePolicyBlocklistServiceFactory::GetForProfile(profile_);
   policy::URLBlocklist::URLBlocklistState blocklist_state =
       service->GetURLBlocklistState(url);
   if (blocklist_state ==

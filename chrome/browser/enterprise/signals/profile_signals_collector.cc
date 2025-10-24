@@ -9,7 +9,9 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/device_signals/core/browser/browser_utils.h"
@@ -22,7 +24,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 namespace device_signals {
 
@@ -42,7 +43,7 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
                                base::Unretained(this))},
       }),
       policy_blocklist_service_(
-          PolicyBlocklistFactory::GetForBrowserContext(profile)),
+          ChromePolicyBlocklistServiceFactory::GetForProfile(profile)),
       profile_prefs_(profile->GetPrefs()),
       policy_manager_(profile->GetCloudPolicyManager()),
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)

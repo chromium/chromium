@@ -16,6 +16,7 @@
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/plugins/pdf_iframe_navigation_throttle.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_navigation_throttle.h"
@@ -49,7 +50,6 @@
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
@@ -401,7 +401,8 @@ void CreateAndAddChromeThrottlesForNavigation(
       handle.GetWebContents()->GetBrowserContext();
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
       registry, user_prefs::UserPrefs::Get(context),
-      PolicyBlocklistFactory::GetForBrowserContext(context),
+      ChromePolicyBlocklistServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context)),
       SafeSearchFactory::GetForBrowserContext(context)));
 
   // Before setting up SSL error detection, configure SSLErrorHandler to invoke

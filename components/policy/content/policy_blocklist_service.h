@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 
@@ -42,30 +40,6 @@ class PolicyBlocklistService : public KeyedService {
  private:
   std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager_;
   raw_ptr<PrefService> user_prefs_;
-};
-
-class PolicyBlocklistFactory : public BrowserContextKeyedServiceFactory {
- public:
-  PolicyBlocklistFactory(const PolicyBlocklistFactory&) = delete;
-  PolicyBlocklistFactory& operator=(const PolicyBlocklistFactory&) = delete;
-
-  static PolicyBlocklistFactory* GetInstance();
-  static PolicyBlocklistService* GetForBrowserContext(
-      content::BrowserContext* context);
-
- private:
-  PolicyBlocklistFactory();
-  ~PolicyBlocklistFactory() override;
-  friend struct base::DefaultSingletonTraits<PolicyBlocklistFactory>;
-
-  // BrowserContextKeyedServiceFactory:
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const override;
-
-  // Finds which browser context (if any) to use.
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
-
 };
 
 #endif  // COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_SERVICE_H_

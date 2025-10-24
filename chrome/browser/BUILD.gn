@@ -1011,6 +1011,8 @@ static_library("browser") {
     "policy/browsing_history_policy_handler.h",
     "policy/chrome_browser_policy_connector.cc",
     "policy/chrome_browser_policy_connector.h",
+    "policy/chrome_policy_blocklist_service_factory.cc",
+    "policy/chrome_policy_blocklist_service_factory.h",
     "policy/chrome_policy_conversions_client.cc",
     "policy/chrome_policy_conversions_client.h",
     "policy/cloud/cloud_policy_invalidator.cc",

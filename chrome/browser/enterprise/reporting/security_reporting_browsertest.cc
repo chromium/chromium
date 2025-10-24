@@ -15,6 +15,7 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
@@ -323,7 +324,7 @@ class SecurityReportingBrowserTest
                   prefs::kBuiltInDnsClientEnabled));
     EXPECT_EQ(profile_signals_report.chrome_remote_desktop_app_blocked(),
               device_signals::GetChromeRemoteDesktopAppBlocked(
-                  PolicyBlocklistFactory::GetForBrowserContext(
+                  ChromePolicyBlocklistServiceFactory::GetForProfile(
                       browser()->profile())));
     EXPECT_EQ(profile_signals_report.password_protection_warning_trigger(),
               TranslatePasswordProtectionTrigger(

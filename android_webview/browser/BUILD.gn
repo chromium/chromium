@@ -103,6 +103,8 @@ source_set("browser") {
     "aw_pdf_exporter.h",
     "aw_permission_manager.cc",
     "aw_permission_manager.h",
+    "aw_policy_blocklist_service_factory.cc",
+    "aw_policy_blocklist_service_factory.h",
     "aw_preconnector.cc",
     "aw_preconnector.h",
     "aw_print_manager.cc",

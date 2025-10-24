@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 
 #include "chrome/browser/ash/login/session/user_session_manager.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/net/always_on_vpn_manager.h"
@@ -100,7 +101,8 @@ void AlwaysOnVpnPreConnectUrlAllowlistService::
         enforce_alwayson_pre_connect_url_allowlist_);
   }
   PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(browser_context_.get());
+      ChromePolicyBlocklistServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_));
   service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
       enforce_alwayson_pre_connect_url_allowlist_);
 }

@@ -117,6 +117,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/plugins/plugin_utils.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -1109,8 +1110,8 @@ void LaunchURL(
 
   bool is_allowlisted = false;
   PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
+      ChromePolicyBlocklistServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   if (ShouldHonorPolicies() && service) {
     const policy::URLBlocklist::URLBlocklistState url_state =
         service->GetURLBlocklistState(url);
@@ -7329,7 +7330,8 @@ bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
   // If the debug URL being visited is listed in the URLBlocklist policy it
   // should be blocked.
   PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(context);
+      ChromePolicyBlocklistServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
   using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
   URLBlocklistState blocklist_state = service->GetURLBlocklistState(url);
   return blocklist_state == URLBlocklistState::URL_IN_BLOCKLIST;

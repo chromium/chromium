@@ -30,6 +30,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -178,7 +179,7 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
 
   // 3) Check if the Tasks URL is blocked by policy.
   const auto* const policy_blocklist_service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
+      ChromePolicyBlocklistServiceFactory::GetForProfile(profile_);
   if (!policy_blocklist_service ||
       policy_blocklist_service->GetURLBlocklistState(GURL(kTasksUrl)) ==
           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {

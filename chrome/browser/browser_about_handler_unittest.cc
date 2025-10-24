@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -62,7 +63,7 @@ class BrowserAboutHandlerTest : public testing::Test {
 
   void SetUp() override {
     profile_ = TestingProfile::Builder().Build();
-    PolicyBlocklistFactory::GetInstance()->SetTestingFactory(
+    ChromePolicyBlocklistServiceFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
         base::BindLambdaForTesting([&](content::BrowserContext* context) {
           return std::unique_ptr<KeyedService>(

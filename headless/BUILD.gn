@@ -413,6 +413,8 @@ component("headless_non_renderer") {
       "lib/browser/policy/headless_browser_policy_connector.h",
       "lib/browser/policy/headless_policies.cc",
       "lib/browser/policy/headless_policies.h",
+      "lib/browser/policy/headless_policy_blocklist_service_factory.cc",
+      "lib/browser/policy/headless_policy_blocklist_service_factory.h",
       "lib/browser/policy/headless_prefs.cc",
       "lib/browser/policy/headless_prefs.h",
     ]

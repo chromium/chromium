@@ -277,7 +277,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif
     "PasswordManagerInternalsService",
     "PasswordRequirementsServiceFactory",
-    "PolicyBlocklist",
     "PolicyClipboardRestriction",
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ReportingEventRouter",
@@ -293,6 +292,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PluginInfoHostImpl",
     "TurnSyncOnHelperShutdownNotifier",
+
+    // This service is needed to handle navigations in the Profile Picker.
+    "ChromePolicyBlocklistService",
   };
   // clang-format on
 
@@ -325,7 +327,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     BUILDFLAG(IS_CHROMEOS)
     "PasswordManagerBlocklist",
 #endif
-    "PolicyBlocklist",
     "PolicyClipboardRestriction",
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ReportingEventRouter",
@@ -345,6 +346,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     // Picker.
     "feature_engagement::Tracker",
     "UserEducationService",
+
+    // This service is needed to handle navigations in the Profile Picker.
+    "ChromePolicyBlocklistService",
   };
   // clang-format on
 

@@ -158,6 +158,17 @@ class PolicyBlocklistNavigationThrottleTest
 
     user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
     policy::URLBlocklistManager::RegisterProfilePrefs(pref_service_.registry());
+
+    auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
+        &pref_service_, policy::policy_prefs::kUrlBlocklist,
+        policy::policy_prefs::kUrlAllowlist);
+    policy_blocklist_service_ = std::make_unique<PolicyBlocklistService>(
+        std::move(url_blocklist_manager), &pref_service_);
+  }
+
+  void TearDown() override {
+    policy_blocklist_service_.reset();
+    SafeSitesNavigationThrottleTest::TearDown();
   }
 
  protected:
@@ -165,7 +176,7 @@ class PolicyBlocklistNavigationThrottleTest
   void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
         registry, user_prefs::UserPrefs::Get(browser_context()),
-        PolicyBlocklistFactory::GetForBrowserContext(browser_context()),
+        policy_blocklist_service_.get(),
         SafeSearchFactory::GetForBrowserContext(browser_context())));
   }
 
@@ -194,6 +205,7 @@ class PolicyBlocklistNavigationThrottleTest
   bool IsProceedUntilResponseEnabled() { return GetParam(); }
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -561,9 +573,7 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
       policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
       base::Value(std::move(list)));
 
-  PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(browser_context());
-  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+  policy_blocklist_service_->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
       /*enforced=*/true);
 
   task_environment()->RunUntilIdle();
@@ -580,7 +590,7 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
             navigation_simulator->GetLastThrottleCheckResult());
 
-  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+  policy_blocklist_service_->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
       /*enforced=*/false);
 
   task_environment()->RunUntilIdle();

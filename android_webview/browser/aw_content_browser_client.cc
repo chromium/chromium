@@ -26,6 +26,7 @@
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
 #include "android_webview/browser/aw_origin_matched_header.h"
+#include "android_webview/browser/aw_policy_blocklist_service_factory.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
@@ -80,7 +81,6 @@
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/prefs/pref_service.h"
@@ -692,7 +692,7 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
       AwBrowserContext::FromWebContents(navigation_handle.GetWebContents());
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
       registry, user_prefs::UserPrefs::Get(context),
-      PolicyBlocklistFactory::GetForBrowserContext(context),
+      AwPolicyBlocklistServiceFactory::GetForBrowserContext(context),
       SafeSearchFactory::GetForBrowserContext(context)));
 
   AwSafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry);
