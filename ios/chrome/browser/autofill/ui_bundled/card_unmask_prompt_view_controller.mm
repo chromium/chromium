@@ -412,6 +412,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   cardInfoItem.text = data.cardNameAndLastFourDigits;
   cardInfoItem.iconBackgroundColor = UIColor.clearColor;
   cardInfoItem.iconImage = data.icon;
+  cardInfoItem.detailTextNumberOfLines = 1;
+  cardInfoItem.textLineBreakMode = NSLineBreakByTruncatingMiddle;
+  cardInfoItem.detailTextLineBreakMode = NSLineBreakByTruncatingMiddle;
+
   return cardInfoItem;
 }
 
@@ -651,13 +655,7 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   }
 
   if (rowItemType == ItemTypeCardInfo) {
-    TableViewDetailIconCell* rowCell =
-        base::apple::ObjCCastStrict<TableViewDetailIconCell>(cell);
-    rowCell.backgroundColor = [UIColor colorNamed:kGrey200Color];
-    rowCell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    rowCell.textLabel.numberOfLines = 1;
-    rowCell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    rowCell.detailTextLabel.numberOfLines = 1;
+    cell.backgroundColor = [UIColor colorNamed:kGrey200Color];
   }
 
   return cell;

@@ -46,6 +46,8 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+    "//ui/strings",
   ]
 }
 

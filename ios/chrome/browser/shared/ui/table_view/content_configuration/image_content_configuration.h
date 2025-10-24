@@ -17,7 +17,8 @@
 // The image to be displayed.
 @property(nonatomic, strong) UIImage* image;
 
-// The size of the image.
+// The size of the image. Use CGSizeZero (the default) to have the image use its
+// own size.
 @property(nonatomic, assign) CGSize imageSize;
 
 // The content mode of the image. Default is UIViewContentModeScaleAspectFit.

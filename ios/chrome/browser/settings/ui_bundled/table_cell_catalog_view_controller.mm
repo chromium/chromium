@@ -141,7 +141,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   symbolItem.iconImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol, 18);
   symbolItem.iconBackgroundColor = UIColorFromRGB(0xFBBC04);
   symbolItem.iconTintColor = UIColor.whiteColor;
-  symbolItem.iconCornerRadius = 7;
   [model addItem:symbolItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewDetailIconItem* tableViewBlueDotItem =
@@ -152,6 +151,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewBlueDotItem.iconImage =
       DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
   [model addItem:tableViewBlueDotItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewDetailIconItem* tableViewNewBadgeItem =
+      [[TableViewDetailIconItem alloc]
+          initWithType:ItemTypeTableViewWithBlueDot];
+  tableViewNewBadgeItem.badgeType = BadgeType::kNew;
+  tableViewNewBadgeItem.text = @"I have a new badge!";
+  tableViewNewBadgeItem.iconImage =
+      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  [model addItem:tableViewNewBadgeItem
       toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewTextItem* textItem =

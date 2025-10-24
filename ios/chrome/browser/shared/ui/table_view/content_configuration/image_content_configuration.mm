@@ -12,6 +12,7 @@
   self = [super init];
   if (self) {
     _imageContentMode = UIViewContentModeScaleAspectFit;
+    _imageSize = CGSizeZero;
   }
   return self;
 }

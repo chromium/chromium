@@ -12,6 +12,4 @@ NSString* const kEditProfileBottomSheetCancelButton =
 NSString* const kEditProfileBottomSheetViewIdentfier =
     @"EditProfileBottomSheetViewIdentfier";
 
-NSString* const kDetailIconCellIdentifier = @"DetailIconCell";
-
 base::TimeDelta const kConfirmationDismissDelay = base::Seconds(1.5);

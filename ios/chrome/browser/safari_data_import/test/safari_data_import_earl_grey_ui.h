@@ -42,8 +42,9 @@ void ExpectImportTableHasRowCount(int expected_count);
 void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected);
 
 /// Tap the "info" button to display invalid passwords. Fail if there is no
-/// invalid passwords.
-void TapInfoButtonForInvalidPasswords();
+/// invalid passwords. `imported` is the number of successfully imported
+/// passwords, `failed` the number of failed imports.
+void TapInfoButtonForInvalidPasswords(int imported, int failed);
 
 /// Exits the import workflow after file is imported.
 void CompletesImportWorkflow();

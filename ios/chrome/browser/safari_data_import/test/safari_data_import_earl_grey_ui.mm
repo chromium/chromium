@@ -15,7 +15,11 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/earl_grey_scoped_block_swizzler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/strings/grit/ui_strings.h"
 
+using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::PromoScreenPrimaryButtonMatcher;
 using chrome_test_util::StaticTextWithAccessibilityLabelId;
@@ -158,9 +162,20 @@ void ExpectPasswordConflictCellAtIndexSelected(int idx, bool selected) {
       assertWithMatcher:selected ? grey_sufficientlyVisible() : grey_nil()];
 }
 
-void TapInfoButtonForInvalidPasswords() {
-  id<GREYMatcher> password_cell = ButtonWithAccessibilityLabelId(
+void TapInfoButtonForInvalidPasswords(int imported, int failed) {
+  NSString* title = l10n_util::GetNSString(
       IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_TITLE_PASSWORDS);
+  NSString* subtitle = l10n_util::GetNSStringF(
+      IDS_CONCAT_TWO_STRINGS_WITH_PERIODS,
+      l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_PASSWORDS,
+          imported),
+      l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS,
+          failed));
+  id<GREYMatcher> password_cell = ButtonWithAccessibilityLabel(
+      [NSString stringWithFormat:@"%@, %@", title, subtitle]);
+
   [[EarlGrey selectElementWithMatcher:password_cell]
       assertWithMatcher:grey_sufficientlyVisible()];
   id<GREYMatcher> info_button =

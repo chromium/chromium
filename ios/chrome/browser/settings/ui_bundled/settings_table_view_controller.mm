@@ -759,8 +759,6 @@ struct EnhancedSafeBrowsingActivePromoData
   _defaultBrowserCellItem.iconBackgroundColor =
       [UIColor colorNamed:kPurple500Color];
   _defaultBrowserCellItem.iconTintColor = UIColor.whiteColor;
-  _defaultBrowserCellItem.iconCornerRadius =
-      kColorfulBackgroundSymbolCornerRadius;
 
   [self updateDefaultBrowserSettingsBlueDot];
 
@@ -1156,7 +1154,6 @@ struct EnhancedSafeBrowsingActivePromoData
     detailItem.iconBackgroundColor = backgroundColor;
     detailItem.iconTintColor = UIColor.whiteColor;
   }
-  detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   return detailItem;
 }
 

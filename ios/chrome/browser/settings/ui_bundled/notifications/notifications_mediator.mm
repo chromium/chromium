@@ -269,7 +269,6 @@
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
   detailItem.iconImage = symbol;
   detailItem.iconTintColor = tint;
-  detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   detailItem.iconBackgroundColor = backgroundColor;
 
   return detailItem;

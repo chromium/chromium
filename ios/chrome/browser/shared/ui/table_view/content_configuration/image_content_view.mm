@@ -25,10 +25,12 @@
     _heightConstraint = [self.heightAnchor
         constraintEqualToConstant:configuration.imageSize.height];
 
-    [NSLayoutConstraint activateConstraints:@[
-      _widthConstraint,
-      _heightConstraint,
-    ]];
+    [self
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [self setContentHuggingPriority:UILayoutPriorityRequired - 1
+                            forAxis:UILayoutConstraintAxisHorizontal];
 
     _configuration = configuration;
 
@@ -66,6 +68,10 @@
   self.contentMode = _configuration.imageContentMode;
   _widthConstraint.constant = _configuration.imageSize.width;
   _heightConstraint.constant = _configuration.imageSize.height;
+
+  BOOL useImageSize = CGSizeEqualToSize(_configuration.imageSize, CGSizeZero);
+  _widthConstraint.active = !useImageSize;
+  _heightConstraint.active = !useImageSize;
 }
 
 @end

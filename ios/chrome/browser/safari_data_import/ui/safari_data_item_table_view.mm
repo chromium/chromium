@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -192,7 +194,9 @@ UIView* GetCheckmark() {
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     self.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-    RegisterTableViewCell<TableViewDetailIconCell>(self);
+
+    [TableViewCellContentConfiguration registerCellForTableView:self];
+
     [self reset];
   }
   return self;
@@ -301,30 +305,36 @@ UIView* GetCheckmark() {
 }
 
 /// Returns the cell with the properties of the `item` displayed.
-- (TableViewDetailIconCell*)cellForIndexPath:(NSIndexPath*)indexPath
-                              itemIdentifier:(NSNumber*)identifier {
+- (UITableViewCell*)cellForIndexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(NSNumber*)identifier {
   /// Check that cells are requested only when all items are available.
   SafariDataItem* item = _itemDictionary[identifier];
   CHECK(item);
-  TableViewDetailIconCell* cell =
-      DequeueTableViewCell<TableViewDetailIconCell>(self);
+
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = GetTextForItemType(item.type);
+  configuration.subtitle = [self descriptionForItem:item];
+
+  ColorfulSymbolContentConfiguration* symbolConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  symbolConfiguration.symbolImage = GetImageForItemType(item.type);
+  symbolConfiguration.symbolTintColor = [UIColor colorNamed:kBlueColor];
+
+  configuration.leadingConfiguration = symbolConfiguration;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:self];
+  cell.contentConfiguration = configuration;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  cell.textLabel.text = GetTextForItemType(item.type);
-  [self setupDescriptionForItem:item forCell:cell];
-  cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
-  [cell setIconImage:GetImageForItemType(item.type)
-            tintColor:[UIColor colorNamed:kBlueColor]
-      backgroundColor:UIColor.clearColor
-         cornerRadius:0];
   [self setupAccessoryForItem:item forCell:cell];
   cell.accessibilityIdentifier =
       GetSafariDataItemTableViewCellAccessibilityIdentifier(indexPath.item);
   return cell;
 }
 
-/// Helper method that sets up the description for `item`.
-- (void)setupDescriptionForItem:(SafariDataItem*)item
-                        forCell:(TableViewDetailIconCell*)cell {
+/// Returns the description for `item`.
+- (NSString*)descriptionForItem:(SafariDataItem*)item {
   NSString* description;
   switch (item.status) {
     case SafariDataItemImportStatus::kReady:
@@ -352,13 +362,12 @@ UIView* GetCheckmark() {
                                           base::SysNSStringToUTF16(description),
                                           invalidCountString);
   }
-  [cell setDetailText:description];
-  cell.detailTextNumberOfLines = 0;
+  return description;
 }
 
 /// Helper method that sets up the trailing accessory for `item`.
 - (void)setupAccessoryForItem:(SafariDataItem*)item
-                      forCell:(TableViewDetailIconCell*)cell {
+                      forCell:(UITableViewCell*)cell {
   switch (item.status) {
     case SafariDataItemImportStatus::kBlockedByPolicy:
     case SafariDataItemImportStatus::kReady:

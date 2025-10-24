@@ -170,7 +170,6 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
            }];
 
   [TableViewCellContentConfiguration registerCellForTableView:tableView];
-  RegisterTableViewCell<TableViewDetailIconCell>(tableView);
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(tableView);
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
   RegisterTableViewHeaderFooter<TableViewAttributedStringHeaderFooterView>(

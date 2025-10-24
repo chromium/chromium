@@ -194,30 +194,32 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   }
 
   _title.text = _configuration.title;
+  _title.textColor =
+      _configuration.titleColor ?: [UIColor colorNamed:kTextPrimaryColor];
   if (_configuration.attributedTitle) {
     _title.attributedText = _configuration.attributedTitle;
   }
   _title.hidden = !_title.text;
-  _title.textColor =
-      _configuration.titleColor ?: [UIColor colorNamed:kTextPrimaryColor];
   _title.enabled = !_configuration.textDisabled;
+  _title.lineBreakMode = _configuration.titleLineBreakMode;
 
   _subtitle.text = _configuration.subtitle;
+  _subtitle.textColor =
+      _configuration.subtitleColor ?: [UIColor colorNamed:kTextSecondaryColor];
   if (_configuration.attributedSubtitle) {
     _subtitle.attributedText = _configuration.attributedSubtitle;
   }
   _subtitle.hidden = !_subtitle.text;
-  _subtitle.textColor =
-      _configuration.subtitleColor ?: [UIColor colorNamed:kTextSecondaryColor];
   _subtitle.enabled = !_configuration.textDisabled;
+  _subtitle.lineBreakMode = _configuration.subtitleLineBreakMode;
 
   _trailingLabel.text = _configuration.trailingText;
+  _trailingLabel.textColor = _configuration.trailingTextColor
+                                 ?: [UIColor colorNamed:kTextSecondaryColor];
   if (_configuration.attributedTrailingText) {
     _trailingLabel.attributedText = _configuration.attributedTrailingText;
   }
   _trailingLabel.hidden = !_trailingLabel.text;
-  _trailingLabel.textColor = _configuration.trailingTextColor
-                                 ?: [UIColor colorNamed:kTextSecondaryColor];
   _trailingLabel.enabled = !_configuration.textDisabled;
 
   [self updateNumberOfLines];

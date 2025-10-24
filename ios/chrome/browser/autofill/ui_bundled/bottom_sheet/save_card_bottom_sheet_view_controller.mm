@@ -13,14 +13,13 @@
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Credit card icon corner radius.
-CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Default spacing used for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
@@ -166,9 +165,9 @@ CGFloat const kChromeLogoHeight = 22;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewDetailIconCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:kDetailIconCellIdentifier
-                                      forIndexPath:indexPath];
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView
+                                                 forIndexPath:indexPath];
   return [self layoutCell:cell
         forTableViewWidth:tableView.frame.size.width
               atIndexPath:indexPath];
@@ -197,8 +196,7 @@ CGFloat const kChromeLogoHeight = 22;
   UITableView* tableView = [super createTableView];
 
   tableView.dataSource = self;
-  [tableView registerClass:TableViewDetailIconCell.class
-      forCellReuseIdentifier:kDetailIconCellIdentifier];
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
 
   return tableView;
 }
@@ -208,7 +206,7 @@ CGFloat const kChromeLogoHeight = 22;
 }
 
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
+  UITableViewCell* cell = [[UITableViewCell alloc] init];
   CGFloat tableWidth = [self tableViewWidth];
   cell = [self layoutCell:cell
         forTableViewWidth:[self tableViewWidth]
@@ -287,22 +285,27 @@ CGFloat const kChromeLogoHeight = 22;
 
 // Configures the cell for the table view with information of the card to be
 // saved.
-- (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
-                     forTableViewWidth:(CGFloat)tableViewWidth
-                           atIndexPath:(NSIndexPath*)indexPath {
+- (UITableViewCell*)layoutCell:(UITableViewCell*)cell
+             forTableViewWidth:(CGFloat)tableViewWidth
+                   atIndexPath:(NSIndexPath*)indexPath {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = _cardNameAndLastFourDigits;
+  configuration.subtitle = _cardExpiryDate;
+  configuration.customAccessibilityLabel = _cardAccessibilityLabel;
+
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image = _cardIcon;
+
+  configuration.leadingConfiguration = imageConfiguration;
+
+  cell.contentConfiguration = configuration;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = NO;
   cell.accessibilityIdentifier = _cardNameAndLastFourDigits;
-  cell.customAccessibilityLabel = _cardAccessibilityLabel;
-  [cell.textLabel setText:_cardNameAndLastFourDigits];
-  [cell setDetailText:_cardExpiryDate];
-  [cell setIconImage:_cardIcon
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCreditCardIconCornerRadius];
-  [cell updateIconBackgroundWidthToFitContent:YES];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];
   return cell;

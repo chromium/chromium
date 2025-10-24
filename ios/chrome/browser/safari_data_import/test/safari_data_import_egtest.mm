@@ -252,7 +252,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
                             IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_DONE)];
     ExpectImportTableHasRowCount(4);
     /// Check invalid passwords.
-    TapInfoButtonForInvalidPasswords();
+    TapInfoButtonForInvalidPasswords(3, 1);
     [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                             kInvalidPasswordUsername)]
         assertWithMatcher:grey_sufficientlyVisible()];

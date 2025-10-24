@@ -173,11 +173,6 @@ class CardUnmaskPromptViewControllerTest
                                  cellForRowAtIndexPath:cvc_index_path];
   }
 
-  // Fetches the card info cell from the tableView's datasource.
-  TableViewDetailIconCell* GetCardInfoCell() {
-    return GetCell(/*item=*/0, /*section*/ 0);
-  }
-
   TableViewDetailIconItem* GetCardInfoItem() {
     return GetItem(/*item=*/0, /*section=*/0);
   }

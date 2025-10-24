@@ -17,6 +17,8 @@
     _titleNumberOfLines = 0;
     _subtitleNumberOfLines = 0;
     _trailingTextNumberOfLines = 1;
+    _titleLineBreakMode = NSLineBreakByWordWrapping;
+    _subtitleLineBreakMode = NSLineBreakByWordWrapping;
   }
   return self;
 }
@@ -31,6 +33,15 @@
 + (TableViewCell*)dequeueTableViewCell:(UITableView*)tableView {
   TableViewCell* cell = [tableView
       dequeueReusableCellWithIdentifier:NSStringFromClass(self.class)];
+  cell.isAccessibilityElement = YES;
+  return cell;
+}
+
++ (UITableViewCell*)dequeueTableViewCell:(UITableView*)tableView
+                            forIndexPath:(NSIndexPath*)indexPath {
+  TableViewCell* cell =
+      [tableView dequeueReusableCellWithIdentifier:NSStringFromClass(self.class)
+                                      forIndexPath:indexPath];
   cell.isAccessibilityElement = YES;
   return cell;
 }
@@ -71,14 +82,17 @@
   copy.attributedTitle = self.attributedTitle;
   copy.titleColor = self.titleColor;
   copy.titleNumberOfLines = self.titleNumberOfLines;
+  copy.titleLineBreakMode = self.titleLineBreakMode;
   copy.subtitle = self.subtitle;
   copy.attributedSubtitle = self.attributedSubtitle;
   copy.subtitleColor = self.subtitleColor;
   copy.subtitleNumberOfLines = self.subtitleNumberOfLines;
+  copy.subtitleLineBreakMode = self.subtitleLineBreakMode;
   copy.trailingText = self.trailingText;
   copy.attributedTrailingText = self.attributedTrailingText;
   copy.trailingTextColor = self.trailingTextColor;
   copy.trailingTextNumberOfLines = self.trailingTextNumberOfLines;
+  copy.customAccessibilityLabel = self.customAccessibilityLabel;
   // LINT.ThenChange(table_view_cell_content_configuration.h:Copy)
   return copy;
 }
@@ -86,6 +100,9 @@
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
+  if (self.customAccessibilityLabel) {
+    return self.customAccessibilityLabel;
+  }
   NSMutableArray* parts = [NSMutableArray array];
 
   if (self.attributedTitle.length > 0) {

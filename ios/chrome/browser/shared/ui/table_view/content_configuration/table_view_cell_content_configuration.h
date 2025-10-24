@@ -44,6 +44,8 @@
 @property(nonatomic, strong) UIColor* titleColor;
 // Defaults to 0 (unlimited).
 @property(nonatomic, assign) NSInteger titleNumberOfLines;
+// Defaults to NSLineBreakByWordWrapping.
+@property(nonatomic, assign) NSLineBreakMode titleLineBreakMode;
 
 // The subtitle of the cell. `attributedSubtitle` takes precedence over
 // `subtitle`.
@@ -52,6 +54,8 @@
 @property(nonatomic, strong) UIColor* subtitleColor;
 // Defaults to 0 (unlimited).
 @property(nonatomic, assign) NSInteger subtitleNumberOfLines;
+// Defaults to NSLineBreakByWordWrapping.
+@property(nonatomic, assign) NSLineBreakMode subtitleLineBreakMode;
 
 // The trailing details of the cell. `attributedTrailingText` takes precedence
 // over `trailingText`.
@@ -61,6 +65,9 @@
 // Defaults to 1.
 @property(nonatomic, assign) NSInteger trailingTextNumberOfLines;
 
+// Custom accessibility label, overriding the default one.
+@property(nonatomic, copy) NSString* customAccessibilityLabel;
+
 // LINT.ThenChange(table_view_cell_content_configuration.mm:Copy)
 
 // Registers/Dequeues a TableViewCell for this content configuration. This
@@ -68,6 +75,8 @@
 // configuration can be reused for the same configurations.
 + (void)registerCellForTableView:(UITableView*)tableView;
 + (UITableViewCell*)dequeueTableViewCell:(UITableView*)tableView;
++ (UITableViewCell*)dequeueTableViewCell:(UITableView*)tableView
+                            forIndexPath:(NSIndexPath*)indexPath;
 
 // TODO(crbug.com/443034511): Remove this method.
 // **DO NOT use both the legacy and non-legacy versions on the same
