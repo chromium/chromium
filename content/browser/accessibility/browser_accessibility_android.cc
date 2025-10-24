@@ -1151,11 +1151,6 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetMultiselectableStateDescription());
   }
 
-  if (GetRole() == ax::mojom::Role::kToggleButton) {
-    // For Toggle buttons, we will append "on"/"off" in the state description.
-    state_descs.push_back(GetToggleStateDescription());
-  }
-
   // For radio buttons, we will communicate how many radio buttons are in the
   // group and which one is selected/checked (e.g. "in group, option x of y")
   if (GetRole() == ax::mojom::Role::kRadioButton) {
