@@ -1464,6 +1464,7 @@ _CONFIG = [
             'third_party/blink/public/platform/web_policy_container.h',
         ],
         'allowed': [
+            'network::ConnectionAllowlists',
             'network::IntegrityPolicy',
         ],
     },

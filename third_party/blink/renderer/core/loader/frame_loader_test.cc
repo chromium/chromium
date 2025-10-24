@@ -257,6 +257,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies{
+          network::ConnectionAllowlists(),
           network::mojom::CrossOriginEmbedderPolicyValue::kNone,
           network::IntegrityPolicy(),
           network::IntegrityPolicy(),
@@ -269,6 +270,7 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(*mojom::blink::PolicyContainerPolicies::New(
+                network::ConnectionAllowlists(),
                 network::CrossOriginEmbedderPolicy(
                     network::mojom::CrossOriginEmbedderPolicyValue::kNone),
                 network::IntegrityPolicy(), network::IntegrityPolicy(),

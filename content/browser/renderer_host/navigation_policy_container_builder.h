@@ -90,6 +90,11 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // if the entry had no policies.
   const PolicyContainerPolicies* HistoryPolicies() const;
 
+  // Sets the connection allowlists for the new document.
+  //
+  // This must be called before `ComputePolicies()`.
+  void SetConnectionAllowlists(network::ConnectionAllowlists allowlists);
+
   // Sets the cross origin opener policy of the new document.
   //
   // This must be called before `ComputePolicies()`.

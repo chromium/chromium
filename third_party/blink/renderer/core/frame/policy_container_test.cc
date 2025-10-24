@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-blink-forward.h"
@@ -19,6 +20,7 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
   test::TaskEnvironment task_environment;
   MockPolicyContainerHost host;
   auto policies = mojom::blink::PolicyContainerPolicies::New(
+      network::ConnectionAllowlists(),
       network::CrossOriginEmbedderPolicy(
           network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone),
       network::IntegrityPolicy(), network::IntegrityPolicy(),
@@ -39,6 +41,7 @@ TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   test::TaskEnvironment task_environment;
   MockPolicyContainerHost host;
   auto policies = mojom::blink::PolicyContainerPolicies::New(
+      network::ConnectionAllowlists(),
       network::CrossOriginEmbedderPolicy(
           network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone),
       network::IntegrityPolicy(), network::IntegrityPolicy(),

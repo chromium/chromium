@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/connection_allowlist.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/integrity_policy.mojom";
@@ -16,6 +17,7 @@ import "services/network/public/mojom/web_sandbox_flags.mojom";
 // except for referrer_policy and content_security_policies which might be
 // updated through meta tags (see PolicyContainerHost).
 struct PolicyContainerPolicies {
+  network.mojom.ConnectionAllowlists connection_allowlists;
   network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy;
   network.mojom.IntegrityPolicy integrity_policy;
   network.mojom.IntegrityPolicy integrity_policy_report_only;

@@ -16,6 +16,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
 
   return std::make_unique<blink::WebPolicyContainer>(
       blink::WebPolicyContainerPolicies{
+          in->policies->connection_allowlists,
           in->policies->cross_origin_embedder_policy.value,
           in->policies->integrity_policy,
           in->policies->integrity_policy_report_only,

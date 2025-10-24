@@ -139,6 +139,12 @@ void NavigationPolicyContainerBuilder::AddContentSecurityPolicies(
   delivered_policies_.AddContentSecurityPolicies(std::move(policies));
 }
 
+void NavigationPolicyContainerBuilder::SetConnectionAllowlists(
+    network::ConnectionAllowlists allowlists) {
+  DCHECK(!HasComputedPolicies());
+  delivered_policies_.connection_allowlists = std::move(allowlists);
+}
+
 void NavigationPolicyContainerBuilder::SetCrossOriginOpenerPolicy(
     network::CrossOriginOpenerPolicy coop) {
   DCHECK(!HasComputedPolicies());

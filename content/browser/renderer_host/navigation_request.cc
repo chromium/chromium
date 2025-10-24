@@ -10350,6 +10350,17 @@ void NavigationRequest::ComputePoliciesToCommit() {
         true);
   }
 
+  if (response_head_) {
+    CHECK(base::FeatureList::IsEnabled(
+              network::features::kConnectionAllowlists) ||
+          (!response_head_->parsed_headers->connection_allowlists.enforced
+                .has_value() &&
+           !response_head_->parsed_headers->connection_allowlists.report_only
+                .has_value()));
+    policy_container_builder_->SetConnectionAllowlists(
+        std::move(response_head_->parsed_headers->connection_allowlists));
+  }
+
   if (!devtools_instrumentation::ShouldBypassCSP(*this)) {
     if (response_head_) {
       policy_container_builder_->AddContentSecurityPolicies(

@@ -4037,6 +4037,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
                                 : network::mojom::IPAddressSpace::kUnknown,
             /*allow_non_secure_local_network_access=*/false,
             /*is_web_secure_context=*/false,
+            parent_policies.connection_allowlists,
             std::vector<network::mojom::ContentSecurityPolicyPtr>(),
             parent_policies.cross_origin_opener_policy,
             parent_policies.cross_origin_embedder_policy,
