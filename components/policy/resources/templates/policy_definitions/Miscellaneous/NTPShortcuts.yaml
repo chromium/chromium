@@ -1,10 +1,8 @@
-caption: Setting shortcuts on the New Tab Page (Beta)
+caption: Setting shortcuts on the New Tab Page
 desc: |-
-  In development: for early preview only.
-
   Setting the policy pre-configures up to 10 custom shortcuts on the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> New Tab page.
 
-  If set, users will see these shortcuts by default and users can toggle between “My shortcuts," "Most visited sites" or "My organization's shortcuts" on the "Customize Chrome" panel. If empty or unset, the user will only be able to toggle between “My shortcuts" or "Most visited sites" on the "Customize Chrome" panel.
+  If set, users will see these shortcuts by default, in addition to their personal shortcuts. Users can control visibility of their organization's shortcuts on the "Customize Chrome" panel.
 
   Shortcut URLs must be unique.
 
