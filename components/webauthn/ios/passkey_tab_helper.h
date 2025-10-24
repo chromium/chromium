@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 #define COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_
 
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace webauthn {
@@ -13,7 +14,8 @@ class PasskeyModel;
 
 // Handles script messages received from PasskeyJavaScriptFeature related to
 // interactions with WebAuthn credentials and for now logs appropriate metrics.
-class PasskeyTabHelper : public web::WebStateUserData<PasskeyTabHelper> {
+class PasskeyTabHelper : public web::WebStateObserver,
+                         public web::WebStateUserData<PasskeyTabHelper> {
  public:
   PasskeyTabHelper(const PasskeyTabHelper&) = delete;
   PasskeyTabHelper& operator=(const PasskeyTabHelper&) = delete;
@@ -38,8 +40,16 @@ class PasskeyTabHelper : public web::WebStateUserData<PasskeyTabHelper> {
                             webauthn::PasskeyModel* passkey_model,
                             bool allow_modal_login);
 
+  // WebStateObserver:
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+
   // Provides access to stored WebAuthn credentials.
-  raw_ptr<webauthn::PasskeyModel> passkey_model_;
+  const raw_ref<webauthn::PasskeyModel> passkey_model_;
+
+  // The WebState with which this object is associated.
+  const raw_ref<web::WebState> web_state_;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_

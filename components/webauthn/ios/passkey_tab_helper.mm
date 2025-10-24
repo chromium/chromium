@@ -6,6 +6,7 @@
 
 #import "base/base64.h"
 #import "base/base64url.h"
+#import "base/check_deref.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/webauthn/core/browser/passkey_model.h"
@@ -75,10 +76,22 @@ void PasskeyTabHelper::HandleGetResolvedEvent(
 PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
                                    webauthn::PasskeyModel* passkey_model,
                                    bool allow_modal_login)
-    : passkey_model_(passkey_model) {
-  CHECK(web_state);
-  CHECK(passkey_model_);
+    : passkey_model_(CHECK_DEREF(passkey_model)),
+      web_state_(CHECK_DEREF(web_state)) {
+  web_state->AddObserver(this);
 
   PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
       allow_modal_login);
+}
+
+// WebStateObserver
+
+void PasskeyTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // TODO(crbug.com/385174410): Explicitly allow passkey requests.
+}
+
+void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state->RemoveObserver(this);
 }
