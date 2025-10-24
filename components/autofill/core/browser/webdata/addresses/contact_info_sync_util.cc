@@ -434,6 +434,7 @@ bool AreContactInfoSpecificsValid(
   return base::Uuid::ParseLowercase(specifics.guid()).is_valid();
 }
 
+// LINT.IfChange(TrimContactInfoSpecificsData)
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
     const sync_pb::ContactInfoSpecifics& contact_info_specifics) {
   sync_pb::ContactInfoSpecifics trimmed_specifics =
@@ -595,5 +596,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   return trimmed_specifics;
 }
+// LINT.ThenChange(//components/sync/protocol/contact_info_specifics.proto:ContactInfoSpecifics)
 
 }  // namespace autofill

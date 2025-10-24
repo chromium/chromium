@@ -14,6 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(ContactInfoSpecifics)
 message ContactInfoSpecifics {
   // Used to distinguish whether the address is the dedicated Home or Work
   // address of the user's account.
@@ -255,3 +256,4 @@ message ContactInfoSpecifics {
   reserved 6;
   reserved "name_honorific";
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/addresses/contact_info_sync_util.cc:TrimContactInfoSpecificsData)
