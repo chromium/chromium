@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -44,6 +45,7 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ui::TestClipboard::CreateForCurrentThread();
@@ -70,7 +72,7 @@ class DataProtectionClipboardBrowserTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_MAC)
     content::HandleMissingKeyWindow();
 #endif
-    if (web_contents == nullptr) {
+    if (!web_contents) {
       web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     }
     web_contents->Focus();
@@ -362,12 +364,14 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   EXPECT_EQ(content::EvalJs(rfh(), "pasted_text"), "Allowed");
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/452329561) fix flaky focus on macOS.
 #define MAYBE_ChromePrintReportsInitiator DISABLED_ChromePrintReportsInitiator
 #else
 #define MAYBE_ChromePrintReportsInitiator ChromePrintReportsInitiator
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
                        MAYBE_ChromePrintReportsInitiator) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
@@ -386,7 +390,6 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   content::WebContents* preview_web_contents =
       print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
 
-  FocusWebContents(preview_web_contents);
   WriteTextToClipboard("Blocked", preview_web_contents);
 
   // Verify that nothing was written to the clipboard.
@@ -394,9 +397,57 @@ IN_PROC_BROWSER_TEST_F(DataProtectionClipboardBrowserTest,
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
       future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
-#endif
+
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/452329561) fix flaky focus on macOS.
+#define MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe \
+  DISABLED_ChromePrintReportsPrimaryMainFrameURLWithinSubframe
+#else
+#define MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe \
+  ChromePrintReportsPrimaryMainFrameURLWithinSubframe
+#endif  // BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(
+    DataProtectionClipboardBrowserTest,
+    MAYBE_ChromePrintReportsPrimaryMainFrameURLWithinSubframe) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                    "sources": { "urls": ["a.com"] },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  content::WebContents* original_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  content::RenderFrameHost* main_frame =
+      original_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* sub_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_EQ(sub_frame->GetLastCommittedOrigin().host(), "b.com");
+
+  printing::TestPrintPreviewObserver print_preview_observer(
+      /*wait_for_loaded=*/true);
+  content::ExecuteScriptAsync(sub_frame, R"(window.print();)");
+  content::WebContents* preview_web_contents =
+      print_preview_observer.WaitUntilPreviewIsReadyAndReturnPreviewDialog();
+
+  WriteTextToClipboard("Blocked", preview_web_contents);
+
+  // Verify that nothing was written to the clipboard. Only consider the
+  // primary main frame when matching Data Control rules.
+  base::test::TestFuture<std::u16string> future;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr,
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 }  // namespace enterprise_data_protection

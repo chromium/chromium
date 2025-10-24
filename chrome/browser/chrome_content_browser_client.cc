@@ -7514,16 +7514,15 @@ std::optional<GURL>
 ChromeContentBrowserClient::MaybeOverrideSourceURLForClipboardAccess(
     content::RenderFrameHost* render_frame_host,
     const GURL& original_url) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (render_frame_host &&
-      printing::PrintPreviewDialogController::IsPrintPreviewURL(original_url)) {
-    return std::make_optional(
-        printing::PrintPreviewDialogController::GetInstance()
-            ->GetInitiator(WebContents::FromRenderFrameHost(render_frame_host))
-            ->GetPrimaryMainFrame()
-            ->GetLastCommittedURL());
+  DCHECK(render_frame_host);
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  if (printing::PrintPreviewDialogController::IsPrintPreviewURL(original_url)) {
+    return printing::PrintPreviewDialogController::GetInstance()
+        ->GetInitiator(WebContents::FromRenderFrameHost(render_frame_host))
+        ->GetPrimaryMainFrame()
+        ->GetLastCommittedURL();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   return std::nullopt;
 }
 

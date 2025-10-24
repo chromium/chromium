@@ -2754,8 +2754,8 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::optional<LegacyTechCookieIssueDetails> cookie_issue_details);
 
   // Get the desired URL for clipboard source/destination reporting, if one
-  // exists. For example, given chrome://print and its rfh, return the URL of
-  // the page being printed.
+  // exists, from a non-null RenderFrameHost. For example, given chrome://print
+  // and its rfh, return the URL of the page being printed.
   virtual std::optional<GURL> MaybeOverrideSourceURLForClipboardAccess(
       RenderFrameHost* render_frame_host,
       const GURL& original_url);
