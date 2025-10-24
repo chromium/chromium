@@ -16,9 +16,6 @@
 
 namespace blink {
 
-PLATFORM_EXPORT void LogUserMediaRequestResult(
-    mojom::MediaStreamRequestResult result);
-
 // Helper method used to collect information about the number of times
 // different WebRTC APIs are called from JavaScript.
 //

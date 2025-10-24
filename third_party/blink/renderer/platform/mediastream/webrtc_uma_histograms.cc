@@ -11,12 +11,6 @@
 
 namespace blink {
 
-void LogUserMediaRequestResult(mojom::blink::MediaStreamRequestResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "WebRTC.UserMediaRequest.Result2", result,
-      mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
-}
-
 void UpdateWebRTCMethodCount(RTCAPIName api_name) {
   DVLOG(3) << "Incrementing WebRTC.webkitApiCount for "
            << static_cast<int>(api_name);

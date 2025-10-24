@@ -85,6 +85,27 @@ void LogEchoCancellationMode(EchoCancellationMode mode) {
       "Media.MediaDevices.GetUserMedia.EchoCancellationMode", mode);
 }
 
+void UpdateRequestResult(UserMediaRequestType media_type,
+                         MediaStreamRequestResult result) {
+  switch (media_type) {
+    case UserMediaRequestType::kUserMedia:
+      base::UmaHistogramEnumeration(
+          "WebRTC.UserMediaRequest.GetUserMedia.Result", result,
+          mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+      return;
+    case UserMediaRequestType::kDisplayMedia:
+      base::UmaHistogramEnumeration(
+          "WebRTC.UserMediaRequest.GetDisplayMedia.Result", result,
+          mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+      return;
+    case UserMediaRequestType::kAllScreensMedia:
+      base::UmaHistogramEnumeration(
+          "WebRTC.UserMediaRequest.GetAllScreensMedia.Result", result,
+          mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
+      return;
+  }
+}
+
 const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
   switch (value) {
     case MediaStreamRequestResult::OK:
@@ -1294,8 +1315,6 @@ void UserMediaProcessor::OnStreamsGenerated(
     SendLogMessage(base::StringPrintf(
         "OnStreamsGenerated([request_id=%d]) => (ERROR: invalid request ID)",
         request_id));
-    blink::LogUserMediaRequestResult(
-        MediaStreamRequestResult::REQUEST_CANCELLED);
     for (const mojom::blink::StreamDevicesPtr& stream_devices :
          stream_devices_set->stream_devices) {
       OnStreamGeneratedForCancelledRequest(*stream_devices);
@@ -2149,7 +2168,8 @@ void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
       "DelayedGetUserMediaRequestSucceeded({request_id=%d}, {result=%s})",
       request_id,
       MediaStreamRequestResultToString(MediaStreamRequestResult::OK)));
-  blink::LogUserMediaRequestResult(MediaStreamRequestResult::OK);
+  UpdateRequestResult(user_media_request->MediaRequestType(),
+                      MediaStreamRequestResult::OK);
   DeleteUserMediaRequest(user_media_request);
   if (!user_media_request->IsTransferredTrackRequest()) {
     // For transferred tracks, user_media_request has already been resolved in
@@ -2189,7 +2209,7 @@ void UserMediaProcessor::DelayedGetUserMediaRequestFailed(
     MediaStreamRequestResult result,
     const String& constraint_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  blink::LogUserMediaRequestResult(result);
+  UpdateRequestResult(user_media_request->MediaRequestType(), result);
   SendLogMessage(base::StringPrintf(
       "DelayedGetUserMediaRequestFailed({request_id=%d}, {result=%s})",
       request_id, MediaStreamRequestResultToString(result)));
@@ -2327,8 +2347,8 @@ bool UserMediaProcessor::CancelRequest(UserMediaRequest* user_media_request) {
         // might cause issues.
         break;
     }
-    blink::LogUserMediaRequestResult(
-        MediaStreamRequestResult::REQUEST_CANCELLED);
+    UpdateRequestResult(user_media_request->MediaRequestType(),
+                        MediaStreamRequestResult::REQUEST_CANCELLED);
     return true;
   }
   return false;
@@ -2347,6 +2367,8 @@ void UserMediaProcessor::DeleteUserMediaRequest(
 void UserMediaProcessor::StopAllProcessing() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (current_request_info_) {
+    UpdateRequestResult(current_request_info_->request()->MediaRequestType(),
+                        MediaStreamRequestResult::REQUEST_CANCELLED);
     switch (current_request_info_->state()) {
       case RequestInfo::State::kSentForGeneration:
         // Let the browser process know that the previously sent request must be
