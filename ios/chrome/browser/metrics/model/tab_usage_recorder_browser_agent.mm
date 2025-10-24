@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 
 #import <UIKit/UIKit.h>
+
+#import <array>
 
 #import "base/metrics/histogram_macros.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -459,18 +456,18 @@ bool TabUsageRecorderBrowserAgent::ShouldRecordPageLoadStartForNavigation(
     return false;
   }
 
-  static const ui::PageTransition kRecordedPageTransitionTypes[] = {
-      ui::PAGE_TRANSITION_TYPED,
-      ui::PAGE_TRANSITION_LINK,
-      ui::PAGE_TRANSITION_GENERATED,
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      ui::PAGE_TRANSITION_FORM_SUBMIT,
-      ui::PAGE_TRANSITION_KEYWORD,
-      ui::PAGE_TRANSITION_KEYWORD_GENERATED,
-  };
+  static constexpr auto kRecordedPageTransitionTypes =
+      std::to_array<ui::PageTransition>({
+          ui::PAGE_TRANSITION_TYPED,
+          ui::PAGE_TRANSITION_LINK,
+          ui::PAGE_TRANSITION_GENERATED,
+          ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+          ui::PAGE_TRANSITION_FORM_SUBMIT,
+          ui::PAGE_TRANSITION_KEYWORD,
+          ui::PAGE_TRANSITION_KEYWORD_GENERATED,
+      });
 
-  for (size_t i = 0; i < std::size(kRecordedPageTransitionTypes); ++i) {
-    const ui::PageTransition recorded_type = kRecordedPageTransitionTypes[i];
+  for (const ui::PageTransition recorded_type : kRecordedPageTransitionTypes) {
     if (ui::PageTransitionCoreTypeIs(transition, recorded_type)) {
       return true;
     }
