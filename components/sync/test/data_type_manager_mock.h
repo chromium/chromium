@@ -28,7 +28,6 @@ class DataTypeManagerMock : public DataTypeManager {
               (DataTypeSet, const ConfigureContext&),
               (override));
   MOCK_METHOD(void, DataTypePreconditionChanged, (DataType), (override));
-  MOCK_METHOD(void, ResetDataTypeErrors, (), (override));
   MOCK_METHOD(void, PurgeForMigration, (DataTypeSet), (override));
   MOCK_METHOD(void, Stop, (SyncStopMetadataFate), (override));
   MOCK_METHOD(DataTypeSet, GetRegisteredDataTypes, (), (const override));

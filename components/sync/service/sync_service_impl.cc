@@ -1549,10 +1549,6 @@ base::Time SyncServiceImpl::GetLastSyncedTimeForDebugging() const {
 void SyncServiceImpl::OnSelectedTypesChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (data_type_manager_) {
-    data_type_manager_->ResetDataTypeErrors();
-  }
-
   ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
                            /*bypass_setup_in_progress_check=*/false);
 }

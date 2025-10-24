@@ -41,7 +41,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   void Configure(DataTypeSet preferred_types,
                  const ConfigureContext& context) override;
   void DataTypePreconditionChanged(DataType type) override;
-  void ResetDataTypeErrors() override;
 
   // Needed only for backend migration.
   void PurgeForMigration(DataTypeSet undesired_types) override;
@@ -105,6 +104,8 @@ class DataTypeManagerImpl : public DataTypeManager,
   void ForceReconfiguration();
 
   void Restart();
+
+  void ResetDataTypeErrors();
 
   void NotifyStart();
   void NotifyDone(ConfigureStatus status);

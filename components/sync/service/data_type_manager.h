@@ -84,9 +84,6 @@ class DataTypeManager {
   // started again. No-op if the type's state didn't actually change.
   virtual void DataTypePreconditionChanged(DataType type) = 0;
 
-  // Resets all data type error state.
-  virtual void ResetDataTypeErrors() = 0;
-
   virtual void PurgeForMigration(DataTypeSet undesired_types) = 0;
 
   // Synchronously stops all registered data types. If called after Configure()
