@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
@@ -585,6 +586,86 @@ TEST_P(HistorySyncOptinServiceTest,
       .Run(HistorySyncOptinHelper::ScreenChoiceResult::kAccepted);
   // Completing the flow results in destructing the helper, but this should
   // happen only when it is no longer in use.
+}
+
+TEST_P(HistorySyncOptinServiceTest,
+       AbortsFlowOnManagedUserProfileCreationConflict) {
+  base::HistogramTester histogram_tester;
+  TestingProfile::TestingFactories testing_factories =
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactories();
+  testing_factories.emplace_back(SyncServiceFactory::GetInstance(),
+                                 base::BindRepeating(&BuildTestSyncService));
+  testing_factories.emplace_back(
+      HistorySyncOptinServiceFactory::GetInstance(),
+      base::BindRepeating(&BuildHistorySyncOptinService));
+  TestingProfile* new_managed_profile = profile_manager_.CreateTestingProfile(
+      "ManagedProfile", std::move(testing_factories), nullptr);
+
+  IdentityTestEnvironmentProfileAdaptor new_profile_adaptor(
+      new_managed_profile);
+
+  auto* disclaimer_service =
+      ProfileManagementDisclaimerServiceFactory::GetForProfile(
+          new_managed_profile);
+
+  // Sign-in with the managed user account to the new profile and setup the
+  // disclaimer service (real instance) to see this account as the candidate for
+  // management. Do not make the management info known to the disclaimer service
+  // yet, so that the `original_managed_account_info` remains the candidate for
+  // creating a managed profile.
+  bool with_managed_account_info_available = false;
+  AccountInfo original_managed_account_info = MakePrimaryAccountAvailable(
+      kManagedEmail, &new_profile_adaptor, with_managed_account_info_available);
+  disclaimer_service->EnsureManagedProfileForAccount(
+      original_managed_account_info.account_id,
+      signin_metrics::AccessPoint::kSettings, base::DoNothing());
+  ASSERT_EQ(disclaimer_service->GetAccountBeingConsideredForManagementIfAny(),
+            original_managed_account_info.account_id);
+
+  // Make the second managed account available.
+  AccountInfo other_account_info =
+      new_profile_adaptor.identity_test_env()->MakeAccountAvailable(
+          kManagedEmail2);
+  new_profile_adaptor.identity_test_env()->UpdateAccountInfoForAccount(
+      other_account_info);
+  if (IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(other_account_info, &new_profile_adaptor);
+  }
+
+  // The disclaimer service still sees the first account as the candidate for
+  // management.
+  ASSERT_EQ(disclaimer_service->GetAccountBeingConsideredForManagementIfAny(),
+            original_managed_account_info.account_id);
+
+  auto* history_sync_optin_service =
+      HistorySyncOptinServiceFactory::GetForProfile(new_managed_profile);
+  ResetObserver service_observer(history_sync_optin_service);
+
+  // Start the history sync opt-in flow with the second managed account.
+  // During the management flow a collision should be detected and the flow
+  // should be aborted.
+  bool flow_started = history_sync_optin_service->StartHistorySyncOptinFlow(
+      other_account_info,
+      std::make_unique<MockHistorySyncOptinHelperDelegate>(),
+      signin_metrics::AccessPoint::kAccountMenu);
+  EXPECT_TRUE(flow_started);
+
+  if (!IsManagedAccountInfoAvailableInAdvance()) {
+    UpdateAccountManagementInfo(other_account_info, &new_profile_adaptor);
+  }
+  // The history sync optin service is reset when the flow is aborted.
+  service_observer.WaitForReset();
+  service_observer.StopObserving();
+  EXPECT_FALSE(
+      history_sync_optin_service->GetHistorySyncOptinHelperForTesting());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.HistorySyncOptIn.Aborted",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ManagedUserProfileCreationConflict", true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
