@@ -605,7 +605,6 @@ class CC_EXPORT GpuImageDecodeCache
 
   scoped_refptr<GpuImageDecodeCache::ImageData> CreateImageData(
       const DrawImage& image,
-      bool allow_hardware_decode,
       bool speculative_decode);
   void WillAddCacheEntry(const DrawImage& draw_image)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

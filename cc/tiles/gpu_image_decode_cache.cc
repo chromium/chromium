@@ -1066,13 +1066,8 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
       draw_image, cache_key, task_type == TaskType::kInRaster);
   scoped_refptr<ImageData> new_data;
   if (!image_data) {
-    // We need an ImageData, create one now. Note that hardware decode
-    // acceleration is allowed only in the TaskType::kInRaster case. This
-    // prevents the img.decode() and checkerboard images paths from going
-    // through hardware decode acceleration.
     new_data = CreateImageData(
         draw_image,
-        task_type == TaskType::kInRaster /* allow_hardware_decode */,
         speculative);
     image_data = new_data.get();
   } else if (image_data->decode.decode_failure) {
@@ -1223,8 +1218,7 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
   ImageData* image_data = GetImageDataForDrawImage(draw_image, cache_key, true);
   if (!image_data) {
     // We didn't find the image, create a new entry.
-    auto data = CreateImageData(draw_image, true /* allow_hardware_decode */,
-                                false /* speculative_decode */);
+    auto data = CreateImageData(draw_image, false /* speculative_decode */);
     image_data = data.get();
     AddToPersistentCache(draw_image, std::move(data));
   }
@@ -2286,7 +2280,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
 
 scoped_refptr<GpuImageDecodeCache::ImageData>
 GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
-                                     bool allow_hardware_decode,
                                      bool speculative_decode) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::CreateImageData");
@@ -2600,8 +2593,8 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
 
 size_t GpuImageDecodeCache::GetDrawImageSizeForTesting(const DrawImage& image) {
   base::AutoLock lock(lock_);
-  scoped_refptr<ImageData> data = CreateImageData(
-      image, false /* allow_hardware_decode */, false /* speculative_decode */);
+  scoped_refptr<ImageData> data =
+      CreateImageData(image, false /* speculative_decode */);
   return data->GetTotalSize();
 }
 
