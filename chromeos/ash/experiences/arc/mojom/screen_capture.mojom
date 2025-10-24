@@ -16,7 +16,7 @@ module arc.mojom;
 
 import "chromeos/ash/experiences/arc/mojom/gfx.mojom";
 import "chromeos/ash/experiences/arc/mojom/video_common.mojom";
-import "services/viz/public/mojom/compositing/shared_image_format.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 
 // Implemented by Chrome in order to allow requesting of permissions to perform
 // desktop capture as well as creating a session for it.
@@ -64,13 +64,13 @@ interface ScreenCaptureSession {
   // the passed in buffer.
   // graphics_buffer should be a handle to the buffer which corresponds to the
   //     surface being rendered to
-  // format gives the general format of the buffer
-  // format_modifier is an additional buffer format modifier value
+  // buffer_format gives the general format of the buffer
+  // buffer_format_modifier is an additional buffer format modifier value
   //     (See DRM_FORMAT_MOD_* in drm_fourcc.h)
   // stride is the stride in pixels for each row of the buffer
   [MinVersion=2] SetOutputBuffer@1(handle graphics_buffer,
-                                   viz.mojom.SharedImageFormat format,
-                                   uint64 format_modifier,
+                                   gfx.mojom.BufferFormat buffer_format,
+                                   uint64 buffer_format_modifier,
                                    uint32 stride) => ();
 };
 
