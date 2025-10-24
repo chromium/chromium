@@ -18268,6 +18268,7 @@
                         "MacCriticalDiskSpacePressureThresholdMB": "250"
                     },
                     "enable_features": [
+                        "AsyncSetCookie",
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
                         "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "AvoidUnnecessaryShouldRenderRichAnimation",
