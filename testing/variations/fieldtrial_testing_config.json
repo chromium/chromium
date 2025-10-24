@@ -394,6 +394,21 @@
             ]
         }
     ],
+    "AccountRetrievalWaitsForRestoration": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccountRetrievalWaitsForRestoration"
+                    ]
+                }
+            ]
+        }
+    ],
     "AddSuggestStrongPasswordFromAddPassword": [
         {
             "platforms": [
