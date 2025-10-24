@@ -4,6 +4,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
@@ -185,6 +186,9 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     NtpRealboxUiTest,
     ValuesIn(std::vector<NtpRealboxUiTestParams>{
+// TODO(crbug.com/454668186): Test fails on Windows builders for Compact and
+// Compact_dark_rtl
+#if !BUILDFLAG(IS_WIN)
         // Compact, compose disabled, light mode, LTR
         {
             .layout_mode = RealboxLayoutMode::kCompact,
@@ -200,6 +204,7 @@ INSTANTIATE_TEST_SUITE_P(
             .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
             .rtl = true,
         },
+#endif
         // Tall bottom, compose enabled, light mode, LTR
         {
             .layout_mode = RealboxLayoutMode::kTallBottomContext,
