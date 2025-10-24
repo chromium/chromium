@@ -72,18 +72,7 @@ class BrowserViewLayout::BrowserModalDialogHostViews
   }
 
   gfx::Size GetMaximumDialogSize() override {
-    // Modals use NativeWidget and cannot be rendered beyond the browser
-    // window boundaries. Restricting them to the browser window bottom
-    // boundary and let the dialog to figure out a good layout.
-    // WARNING: previous attempts to allow dialog to extend beyond the browser
-    // boundaries have caused regressions in a number of dialogs. See
-    // crbug.com/364463378, crbug.com/369739216, crbug.com/363205507.
-    // TODO(crbug.com/334413759, crbug.com/346974105): use desktop widgets
-    // universally.
-    views::View* view = browser_view_layout_->views().contents_container;
-    gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
-    const int top = browser_view_layout_->dialog_top_y();
-    return gfx::Size(content_area.width(), content_area.bottom() - top);
+    return browser_view_layout_->GetMaximumDialogSize();
   }
 
   views::Widget* GetHostWidget() const {

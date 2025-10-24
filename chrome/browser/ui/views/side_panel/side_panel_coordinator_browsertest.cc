@@ -228,6 +228,15 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         ->side_panel_registry();
   }
 
+  // TODO(https://crbug.com/454583671): Eliminate this in favor of something
+  // that actually returns the specific width needed by the test, or else find
+  // some other way to calculate this in the test itself.
+  int GetMinWebContentsWidth() const {
+    return static_cast<BrowserViewLayout*>(
+               browser()->GetBrowserView().GetLayoutManager())
+        ->GetMinWebContentsWidthForTesting();
+  }
+
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
   // `enabled` and returns when the API call is complete.
   void RunSetOptions(const extensions::Extension& extension,
@@ -614,13 +623,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
                          .width(),
                      two_thirds_browser_width));
 
-  BrowserViewLayout* layout_manager = static_cast<BrowserViewLayout*>(
-      browser()->GetBrowserView().GetLayoutManager());
   // the web contents width will either be it's min width or 1/3 the browser
   // width minus the side panel separator width.
-  const int web_contents_width =
-      std::max(layout_manager->GetMinWebContentsWidthForTesting(),
-               (browser_width - two_thirds_browser_width - 1));
+  const int web_contents_width = std::max(
+      GetMinWebContentsWidth(), (browser_width - two_thirds_browser_width - 1));
   EXPECT_EQ(browser()->GetBrowserView().contents_web_view()->width(),
             web_contents_width);
 }
@@ -657,10 +663,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorWithSideBySideTest,
       large_increment, true);
   views::test::RunScheduledLayout(&browser()->GetBrowserView());
 
-  BrowserViewLayout* layout_manager = static_cast<BrowserViewLayout*>(
-      browser()->GetBrowserView().GetLayoutManager());
   EXPECT_EQ(browser()->GetBrowserView().multi_contents_view()->width(),
-            layout_manager->GetMinWebContentsWidthForTesting());
+            GetMinWebContentsWidth());
   EXPECT_EQ(
       browser()->GetBrowserView().multi_contents_view()->width(),
       browser()->GetBrowserView().multi_contents_view()->GetMinViewWidth() * 2);
@@ -735,10 +739,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().Restore();
 #endif
   browser()->GetBrowserView().SetBounds(new_bounds);
-  BrowserViewLayout* layout_manager = static_cast<BrowserViewLayout*>(
-      browser()->GetBrowserView().GetLayoutManager());
-  const int min_web_contents_width =
-      layout_manager->GetMinWebContentsWidthForTesting();
+  const int min_web_contents_width = GetMinWebContentsWidth();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     // Within a couple of pixels.

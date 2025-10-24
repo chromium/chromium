@@ -139,6 +139,12 @@ class BrowserViewLayout : public views::LayoutManager {
   bool IsInfobarVisibleForTesting() const;
   void SetDelegateForTesting(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate);
+
+  // DEPRECATED - do not call.
+  //
+  // TODO(https://crbug.com/454583671): Eliminate this in favor of something
+  // that actually returns the specific width needed by the test, or else find
+  // some other way to calculate this in the test itself.
   virtual int GetMinWebContentsWidthForTesting() const = 0;
 
  protected:
@@ -154,10 +160,8 @@ class BrowserViewLayout : public views::LayoutManager {
   BrowserViewLayoutDelegate& delegate() { return *delegate_; }
   const BrowserViewLayoutDelegate& delegate() const { return *delegate_; }
 
-  void set_dialog_top_y(int dialog_top_y) { dialog_top_y_ = dialog_top_y; }
-  int dialog_top_y() const { return dialog_top_y_; }
-
   virtual gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const = 0;
+  virtual gfx::Size GetMaximumDialogSize() const = 0;
 
   // Returns the current pref for vertical tabs by accessing the vertical
   // tab strip state controller
@@ -167,9 +171,7 @@ class BrowserViewLayout : public views::LayoutManager {
   bool IsInfobarVisible() const;
 
   // Updates bubbles, dialogs, and infobars.
-  //
-  // Must be called *after* contents pane is laid out, and after
-  // `set_dialog_top_y()` for the current layout.
+  // Must be called *after* contents pane is laid out.
   void UpdateBubbles();
 
  private:
@@ -193,10 +195,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // The latest contents bounds applied during a layout pass, in screen
   // coordinates.
   gfx::Rect latest_contents_bounds_;
-
-  // The distance the web contents modal dialog is from the top of the dialog
-  // host widget.
-  int dialog_top_y_ = -1;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_H_

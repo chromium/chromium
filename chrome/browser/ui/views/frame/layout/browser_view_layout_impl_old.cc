@@ -119,8 +119,8 @@ void BrowserViewLayoutImplOld::Layout(views::View* browser_view) {
   }
   LayoutToolbar(main_container_bounds);
 
-  set_dialog_top_y(main_container_bounds.y() + views().main_container->y() -
-                   kConstrainedWindowOverlap);
+  dialog_top_y_ = main_container_bounds.y() + views().main_container->y() -
+                  kConstrainedWindowOverlap;
 
   LayoutBookmarkAndInfoBars(main_container_bounds);
 
@@ -759,5 +759,20 @@ gfx::Point BrowserViewLayoutImplOld::GetDialogPosition(
   }
   const int middle_x =
       leading_x + layout_result.contents_container_bounds.width() / 2;
-  return gfx::Point(middle_x - dialog_size.width() / 2, dialog_top_y());
+  return gfx::Point(middle_x - dialog_size.width() / 2, dialog_top_y_);
+}
+
+gfx::Size BrowserViewLayoutImplOld::GetMaximumDialogSize() const {
+  // Modals use NativeWidget and cannot be rendered beyond the browser
+  // window boundaries. Restricting them to the browser window bottom
+  // boundary and let the dialog to figure out a good layout.
+  // WARNING: previous attempts to allow dialog to extend beyond the browser
+  // boundaries have caused regressions in a number of dialogs. See
+  // crbug.com/364463378, crbug.com/369739216, crbug.com/363205507.
+  // TODO(crbug.com/334413759, crbug.com/346974105): use desktop widgets
+  // universally.
+  views::View* view = views().contents_container;
+  gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
+  const int top = dialog_top_y_;
+  return gfx::Size(content_area.width(), content_area.bottom() - top);
 }

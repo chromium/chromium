@@ -33,6 +33,7 @@ class BrowserViewLayoutImplOld : public BrowserViewLayout {
 
  protected:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
+  gfx::Size GetMaximumDialogSize() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, BrowserViewLayout);
@@ -72,6 +73,10 @@ class BrowserViewLayoutImplOld : public BrowserViewLayout {
 
   // Whether or not to use the browser based content minimum size.
   const bool use_browser_content_minimum_size_ = false;
+
+  // The distance the web contents modal dialog is from the top of the dialog
+  // host widget.
+  int dialog_top_y_ = -1;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_OLD_H_
