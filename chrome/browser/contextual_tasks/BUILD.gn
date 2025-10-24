@@ -102,6 +102,7 @@ if (!is_android) {
     public_deps = [
       ":contextual_tasks",
       ":mojo_bindings",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/new_tab_page/composebox",
       "//chrome/browser/ui/webui/searchbox",
@@ -203,5 +204,34 @@ source_set("unit_tests") {
       ":ui",
       "//components/passage_embeddings",
     ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+
+  if (!is_android) {
+    sources +=
+        [ "contextual_tasks_side_panel_coordinator_interactive_uitest.cc" ]
+  }
+
+  deps = [
+    ":contextual_tasks",
+    ":impl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/contextual_tasks/public",
+    "//content/test:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (!is_android) {
+    deps += [ ":ui" ]
   }
 }

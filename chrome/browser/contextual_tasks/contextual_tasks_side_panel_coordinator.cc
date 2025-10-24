@@ -4,7 +4,10 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -12,8 +15,11 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
 
 using SidePanelWebUIViewT_ContextualTasksUI =
     SidePanelWebUIViewT<ContextualTasksUI>;
@@ -21,23 +27,41 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ContextualTasksUI,
                         SidePanelWebUIViewT)
 END_METADATA
 
-namespace contextual_tasks {
-
 namespace {
-
 inline constexpr char kContextualTasksUrl[] = "chrome://contextual-tasks/";
 
+std::unique_ptr<content::WebContents> CreateWebContents(
+    content::BrowserContext* context) {
+  content::WebContents::CreateParams create_params(context);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+  web_contents->GetController().LoadURL(
+      GURL(kContextualTasksUrl), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+  return web_contents;
+}
+
 }  // namespace
+
+namespace contextual_tasks {
 
 DEFINE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     BrowserWindowInterface* browser_window,
     SidePanelCoordinator* side_panel_coordinator)
-    : side_panel_coordinator_(side_panel_coordinator),
+    : browser_window_(browser_window),
+      side_panel_coordinator_(side_panel_coordinator),
+      context_controller_(
+          ContextualTasksContextControllerFactory::GetForProfile(
+              browser_window->GetProfile())),
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CreateAndRegisterEntry(side_panel_coordinator_->GetWindowRegistry());
+  active_tab_subscription_ =
+      browser_window->RegisterActiveTabDidChange(base::BindRepeating(
+          &ContextualTasksSidePanelCoordinator::OnActiveTabChanged,
+          base::Unretained(this)));
 }
 
 ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() =
@@ -58,12 +82,12 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
 
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks),
-      base::BindRepeating(&ContextualTasksSidePanelCoordinator::CreateWebView,
-                          base::Unretained(this)),
+      base::BindRepeating(
+          &ContextualTasksSidePanelCoordinator::CreateSidePanelView,
+          base::Unretained(this)),
       /*default_content_width_callback=*/base::NullCallback());
   entry->set_should_show_header(false);
   entry->set_should_show_outline(false);
-  entry->AddObserver(this);
   global_registry->Register(std::move(entry));
 }
 
@@ -72,18 +96,64 @@ void ContextualTasksSidePanelCoordinator::Show() {
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
 
-void ContextualTasksSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {}
+content::WebContents*
+ContextualTasksSidePanelCoordinator::GetActiveWebContentsForTesting() {
+  return web_view_ ? web_view_->web_contents() : nullptr;
+}
 
-std::unique_ptr<views::View> ContextualTasksSidePanelCoordinator::CreateWebView(
+void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
+    BrowserWindowInterface* browser_interface) {
+  if (!web_view_) {
+    return;
+  }
+
+  content::WebContents* web_contents =
+      MaybeGetOrCreateSidePanelWebContentsForActiveTab();
+  if (web_contents) {
+    web_view_->SetWebContents(web_contents);
+  }
+}
+
+std::unique_ptr<views::View>
+ContextualTasksSidePanelCoordinator::CreateSidePanelView(
     SidePanelEntryScope& scope) {
-  // TODO(crbug.com/449225421): Add web contents cache for existing threads.
-  return std::make_unique<SidePanelWebUIViewT<ContextualTasksUI>>(
-      scope, base::RepeatingClosure(), base::RepeatingClosure(),
-      std::make_unique<WebUIContentsWrapperT<ContextualTasksUI>>(
-          GURL(kContextualTasksUrl),
-          scope.GetBrowserWindowInterface().GetProfile(),
-          IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE,
-          /*esc_closes_ui=*/false));
+  std::unique_ptr<views::WebView> web_view =
+      std::make_unique<views::WebView>(browser_window_->GetProfile());
+
+  content::WebContents* web_contents =
+      MaybeGetOrCreateSidePanelWebContentsForActiveTab();
+  if (web_contents) {
+    web_view->SetWebContents(web_contents);
+  }
+
+  web_view_ = web_view.get();
+  web_view->SetProperty(views::kElementIdentifierKey,
+                        kContextualTasksSidePanelWebViewElementId);
+  return web_view;
+}
+
+content::WebContents* ContextualTasksSidePanelCoordinator::
+    MaybeGetOrCreateSidePanelWebContentsForActiveTab() {
+  content::WebContents* active_web_contents =
+      browser_window_->GetTabStripModel()->GetActiveWebContents();
+  if (!active_web_contents) {
+    return nullptr;
+  }
+
+  std::optional<ContextualTask> task =
+      context_controller_->GetContextualTaskForTab(
+          sessions::SessionTabHelper::IdForTab(active_web_contents));
+  if (!task) {
+    return nullptr;
+  }
+
+  base::Uuid task_id = task->GetTaskId();
+  if (!base::Contains(task_id_to_web_contents_cache_, task_id)) {
+    task_id_to_web_contents_cache_.emplace(
+        task_id, CreateWebContents(browser_window_->GetProfile()));
+  }
+
+  return task_id_to_web_contents_cache_.at(task_id).get();
 }
 
 }  // namespace contextual_tasks
