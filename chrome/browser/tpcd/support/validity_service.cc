@@ -48,8 +48,6 @@ std::optional<ContentSettingsType> GetTrialContentSettingsType(
   switch (mechanism) {
     case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
       return ContentSettingsType::TPCD_TRIAL;
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
-      return ContentSettingsType::TOP_LEVEL_TPCD_TRIAL;
     default:
       // The other mechanisms do not map to a |ContentSettingsType| for a
       // third-party cookie deprecation trial.
@@ -221,12 +219,6 @@ void ValidityService::CheckTrialStatusOnUiThread(
           url::Origin::Create(url), partition_origin,
           blink::mojom::OriginTrialFeature::kTpcd, base::Time::Now());
       break;
-    case ContentSettingsType::TOP_LEVEL_TPCD_TRIAL:
-      enabled = trial_delegate->IsFeaturePersistedForOrigin(
-          url::Origin::Create(first_party_url), partition_origin,
-          blink::mojom::OriginTrialFeature::kTopLevelTpcd, base::Time::Now());
-
-      break;
     default:
       NOTREACHED() << "ContentSettingsType::" << trial_settings_type
                    << " is not associated with a 3PCD trial.";
@@ -249,14 +241,6 @@ bool ValidityService::CheckTrialContentSetting(
   switch (trial_settings_type) {
     case ContentSettingsType::TPCD_TRIAL:
       return (settings_map->GetContentSetting(url, first_party_url,
-                                              trial_settings_type,
-                                              info) == CONTENT_SETTING_ALLOW);
-    case ContentSettingsType::TOP_LEVEL_TPCD_TRIAL:
-      // Top-level 3pcd trial settings use
-      // |WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE| by default and as a result
-      // only use a primary pattern (with wildcard placeholder for the secondary
-      // pattern).
-      return (settings_map->GetContentSetting(first_party_url, first_party_url,
                                               trial_settings_type,
                                               info) == CONTENT_SETTING_ALLOW);
     default:

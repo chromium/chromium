@@ -75,6 +75,8 @@ constexpr char kGeolocationMigrateDefaultValue[] =
     "profile.default_content_setting_values.migrate_geolocation";
 
 #if !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteTopLevelTpcdTrialDefaultPref[] =
+    "profile.default_content_setting_values.top_level_3pcd_support";
 // This setting was accidentally bound to a UI surface intended for a different
 // setting (https://crbug.com/364820109). It should not have been settable
 // except via enterprise policy, so it is temporarily cleaned up here to revert
@@ -130,6 +132,7 @@ void DefaultProvider::RegisterProfilePrefs(
   // be deleted on startup (see DiscardOrMigrateObsoletePreferences).
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteNfcDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteTopLevelTpcdTrialDefaultPref, 0);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
@@ -384,6 +387,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   // deleted.
 #if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteNfcDefaultPref);
+  prefs_->ClearPref(kObsoleteTopLevelTpcdTrialDefaultPref);
 #if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);

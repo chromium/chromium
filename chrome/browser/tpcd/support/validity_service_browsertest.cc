@@ -10,8 +10,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tpcd/support/top_level_trial_service.h"
-#include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
@@ -110,10 +108,6 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
         GetActiveWebContents()->GetBrowserContext());
   }
 
-  TopLevelTrialService* GetTopLevelTrialService() {
-    return TopLevelTrialServiceFactory::GetForProfile(GetProfile());
-  }
-
   TpcdTrialService* GetTpcdTrialService() {
     return TpcdTrialServiceFactory::GetForProfile(GetProfile());
   }
@@ -157,16 +151,6 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
         content::NavigateIframeToURL(web_contents, kIframeId, iframe_url));
   }
 
-  // Most other cookie-related content settings compare their primary patterns'
-  // against embedded/requesting sites and their secondary patterns'
-  // against top-level sites. This convenience function helps avoid confusion
-  // since |TOP_LEVEL_TPCD_TRIAL| content settings only use a primary pattern
-  // which is compared against top-level sites.
-  ContentSettingChangeObserver CreateTopLevelTrialSettingsObserver(GURL url) {
-    return ContentSettingChangeObserver(
-        GetProfile(), url, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_TRIAL);
-  }
-
   // Creates a |TPCD_TRIAL| content setting allowing
   // |embedded_url| to access third-party cookies under |top_level_url|
   // without actually providing an origin trial token and enabling the
@@ -197,31 +181,6 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
                   top_level_url, {}, nullptr),
               content_settings::CookieSettingsBase::
                   ThirdPartyCookieAllowMechanism::kAllowBy3PCD);
-  }
-
-  // Creates a |TOP_LEVEL_TPCD_TRIAL| content setting allowing sites embedded
-  // under |top_level_url| to access third-party cookies without actually
-  // providing an origin trial token and enabling the associated origin trial.
-  void CreateAndVerifyFirstPartyTrialGrant(const GURL& top_level_url,
-                                           bool match_subdomains) {
-    // Create the content setting.
-    ContentSettingChangeObserver setting_observer =
-        CreateTopLevelTrialSettingsObserver(top_level_url);
-    GetTopLevelTrialService()->UpdateTopLevelTrialSettingsForTesting(
-        url::Origin::Create(top_level_url), match_subdomains, /*enabled=*/true);
-    setting_observer.Wait();
-
-    // Verify that a |TOP_LEVEL_TPCD_TRIAL| content setting now allows all sites
-    // access to cookies as a third-party when embedded by |top_level_url|.
-    content_settings::CookieSettings* settings =
-        CookieSettingsFactory::GetForProfile(GetProfile()).get();
-    ASSERT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                         top_level_url, {}, nullptr),
-              CONTENT_SETTING_ALLOW);
-    ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                  GURL(), net::SiteForCookies(), top_level_url, {}, nullptr),
-              content_settings::CookieSettingsBase::
-                  ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
   }
 
   virtual bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
@@ -625,219 +584,6 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
   // embedded by |top_level_url|.
   EXPECT_EQ(settings->GetCookieSetting(kTrialEnabledSite, net::SiteForCookies(),
                                        top_level_url, {}, nullptr),
-            CONTENT_SETTING_ALLOW);
-}
-
-class ValidityService1pTrialBrowserTest
-    : public ValidityServiceBrowserTestBase {
-  void SetUp() override {
-    features_.InitWithFeaturesAndParameters(
-        {{net::features::kTopLevelTpcdTrialSettings, {}},
-         {content_settings::features::kTrackingProtection3pcd, {}}},
-        {});
-
-    PlatformBrowserTest::SetUp();
-  }
-
-  bool OnRequest(
-      content::URLLoaderInterceptor::RequestParams* params) override {
-    std::string host = params->url_request.url.GetHost();
-    std::string path = params->url_request.url.GetPath().substr(1);
-
-    if (host != kTrialEnabledDomain || path != kTrialEnabledTopLevelPath) {
-      return false;
-    }
-
-    URLLoaderInterceptor::WriteResponse(
-        base::StrCat({"HTTP/1.1 200 OK\n", "Content-type: text/html\n",
-                      "Origin-Trial: ", k1pDeprecationTrialToken, "\n", "\n"}),
-        ("<html><head><title>Trial enabled page with iframe</title></head>"
-         "<body>"
-         "<iframe id='test'></iframe>"
-         "</body></html>"),
-        params->client.get());
-    return true;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
-                       RemovesInvalidSettingOnJsCookieAccess) {
-  content::WebContents* web_contents = GetActiveWebContents();
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(GetProfile()).get();
-
-  NavigateToPageWithIFrame(kTrialEnabledSite.GetHost(), "a.test");
-
-  // Create a |TOP_LEVEL_TPCD_TRIAL| setting for |top_level_url| without
-  // actually enabling the "TopLevelTpcd" trial.
-  GURL top_level_url =
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-  GURL iframe_url = GetIFrame()->GetLastCommittedURL();
-  CreateAndVerifyFirstPartyTrialGrant(top_level_url,
-                                      /*match_subdomains=*/false);
-
-  // Access third-party cookies via javascript in the iframe, which should cause
-  // the setting to be removed.
-  ContentSettingChangeObserver setting_observer =
-      CreateTopLevelTrialSettingsObserver(top_level_url);
-  AccessCookieViaJsIn(web_contents, GetIFrame());
-  setting_observer.Wait();
-
-  // Verify third-party cookie access is no longer permitted under
-  // |top_level_url|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                       top_level_url, {}, nullptr),
-            CONTENT_SETTING_BLOCK);
-}
-
-IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
-                       RemoveInvalidSettingOnNavigationCookieAccess) {
-  content::WebContents* web_contents = GetActiveWebContents();
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(GetProfile()).get();
-
-  // Navigate to |top_level_url|, which has a blank iframe.
-  GURL top_level_url =
-      https_server_->GetURL(kTrialEnabledSite.GetHost(), "/iframe_blank.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents, top_level_url));
-
-  // Create a |TOP_LEVEL_TPCD_TRIAL| setting for |top_level_url| without
-  // actually enabling the "TopLevelTpcd" trial.
-  CreateAndVerifyFirstPartyTrialGrant(top_level_url,
-                                      /*match_subdomains=*/false);
-
-  // Navigate the iframe to |iframe_url| to set a cookie via a network response,
-  // which should cause the setting to be removed.
-  ContentSettingChangeObserver setting_observer =
-      CreateTopLevelTrialSettingsObserver(top_level_url);
-  GURL iframe_url = https_server_->GetURL(
-      "a.test", "/set-cookie?name=value;Secure;SameSite=None");
-  ASSERT_TRUE(NavigateIFrameAndWaitForCookieAccess(iframe_url));
-  setting_observer.Wait();
-
-  // Verify third-party cookie access is no longer permitted under
-  // |top_level_url|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                       top_level_url, {}, nullptr),
-            CONTENT_SETTING_BLOCK);
-}
-
-IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
-                       RemoveInvalidSubdomainMatchingSettingOnCookieAccess) {
-  content::WebContents* web_contents = GetActiveWebContents();
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(GetProfile()).get();
-
-  NavigateToPageWithIFrame("a.test", kTrialEnabledSiteSubdomain.GetHost());
-
-  // Create a subdomain-matching |TOP_LEVEL_TPCD_TRIAL| setting for |grant_url|
-  // (which |top_level_url| is a subdomain of) without actually enabling the
-  // "TopLevelTpcd" trial.
-  GURL top_level_url =
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
-  GURL iframe_url = GetIFrame()->GetLastCommittedURL();
-  GURL grant_url = GURL(base::StrCat(
-      {"https://", kTrialEnabledSite.GetHost(), ":", top_level_url.GetPort()}));
-
-  CreateAndVerifyFirstPartyTrialGrant(grant_url,
-                                      /*match_subdomains=*/true);
-
-  // Access cookies via javascript in the iframe, which should cause the setting
-  // to be removed.
-  ContentSettingChangeObserver setting_observer =
-      CreateTopLevelTrialSettingsObserver(top_level_url);
-  AccessCookieViaJsIn(web_contents, GetIFrame());
-  setting_observer.Wait();
-
-  // Verify third-party cookie access is no longer permitted under
-  // |top_level_url| or |grant_url|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                       top_level_url, {}, nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(), grant_url,
-                                       {}, nullptr),
-            CONTENT_SETTING_BLOCK);
-}
-
-IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
-                       PreserveValidSettings) {
-  content::WebContents* web_contents = GetActiveWebContents();
-  content_settings::CookieSettings* settings =
-      CookieSettingsFactory::GetForProfile(GetProfile()).get();
-  GURL top_level_url =
-      GURL(kTrialEnabledSite.spec() + kTrialEnabledTopLevelPath);
-  GURL iframe_url = https_server_->GetURL("a.test", "/title1.html");
-  const std::string kIframeId = "test";
-
-  // Navigate to a |top_level_url| page that returns its origin trial
-  // token in its HTTP response headers and has an iframe.
-  {
-    ContentSettingChangeObserver setting_observer =
-        CreateTopLevelTrialSettingsObserver(top_level_url);
-
-    ASSERT_TRUE(content::NavigateToURL(web_contents, top_level_url));
-    ASSERT_TRUE(
-        content::NavigateIframeToURL(web_contents, kIframeId, iframe_url));
-
-    setting_observer.Wait();
-
-    // Verify third-party cookie access is now permitted under
-    // |top_level_url|.
-    ASSERT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                         top_level_url, {}, nullptr),
-              CONTENT_SETTING_ALLOW);
-    ASSERT_EQ(settings->GetThirdPartyCookieAllowMechanism(
-                  GURL(), net::SiteForCookies(), top_level_url, {}, nullptr),
-              content_settings::CookieSettingsBase::
-                  ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD);
-  }
-
-  // Write a third-party cookie from the iframe.
-  AccessCookieViaJsIn(web_contents, GetIFrame());
-
-  // Since we can't deterministically wait for the ValidityService to do nothing
-  // in response to a third-party cookie access permitted by a valid
-  // |TOP_LEVEL_TPCD_TRIAL| content setting, navigate to a different top-level
-  // site (with an invalid setting) and trigger a third-party cookie access,
-  // then after the invalid setting has been removed, check that the
-  // |kTrialEnabledSite| content setting still remains.
-  {
-    GURL other_top_level_url =
-        https_server_->GetURL("different-host.test", "/iframe_blank.html");
-    ASSERT_TRUE(content::NavigateToURL(web_contents, other_top_level_url));
-    ASSERT_TRUE(
-        content::NavigateIframeToURL(web_contents, kIframeId, iframe_url));
-
-    // Create a |TOP_LEVEL_TPCD_TRIAL| setting for |other_top_level_url| without
-    // actually enabling the "TopLevelTpcd" trial.
-    CreateAndVerifyFirstPartyTrialGrant(other_top_level_url,
-                                        /*match_subdomains=*/false);
-
-    // Access cookies via javascript in the iframe, which should cause the
-    // setting to be removed.
-    ContentSettingChangeObserver setting_observer =
-        CreateTopLevelTrialSettingsObserver(other_top_level_url);
-    AccessCookieViaJsIn(web_contents, GetIFrame());
-    setting_observer.Wait();
-
-    // Verify third-party cookie access is no longer permitted under
-    // |other_top_level_url|.
-    EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                         other_top_level_url, {}, nullptr),
-              CONTENT_SETTING_BLOCK);
-  }
-
-  // Verify third-party cookie access is still permitted under
-  // |top_level_url|.
-  EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
-                                       top_level_url, {}, nullptr),
-            CONTENT_SETTING_ALLOW);
-
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(GetProfile());
-  EXPECT_EQ(settings_map->GetContentSetting(
-                top_level_url, GURL(),
-                ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr),
             CONTENT_SETTING_ALLOW);
 }
 }  // namespace tpcd::trial

@@ -19,7 +19,7 @@ namespace tpcd::trial {
 // ValidityService is responsible for ensuring the Tpcd deprecation trials (for
 // third-parties and for top-level sites) is still enabled for the appropriate
 // origin of any third-party cookie access that is (or could have been) allowed
-// as a result of a |TPCD_TRIAL| or |TOP_LEVEL_TPCD_TRIAL| content setting. This
+// as a result of a |TPCD_TRIAL| content setting. This
 // is necessary since |content::OriginTrialsControllerDelegate| doesn't notify
 // its observers when a trial is disabled for a reason other than all tokens
 // being cleared or an origin intentionally disable it (by not supplying the
@@ -46,7 +46,7 @@ class ValidityService : public content::WebContentsObserver,
   explicit ValidityService(content::WebContents* web_contents);
 
   // Called when a third party cookie access is (or could have been) allowed by
-  // a |TPCD_TRIAL| or |TOP_LEVEL_TPCD_TRIAL| content setting. Posts a task to
+  // a |TPCD_TRIAL| content setting. Posts a task to
   // the UI thread to check if the appropriate trial is enabled for the
   // specified context. Upon completion of the task, |update_callback| is run
   // with |url|, |first_party_url|, and the trial enablement status as

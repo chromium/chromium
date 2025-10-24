@@ -54,7 +54,6 @@ class SafeBrowsingChildNavigationThrottleAdTaggingTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kTPCDAdHeuristicSubframeRequestTagging,
           {{"check_exceptions", "true"}}},
-         {net::features::kTopLevelTpcdTrialSettings, {}},
          {net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
@@ -209,7 +208,6 @@ class SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kTPCDAdHeuristicSubframeRequestTagging,
           {{"check_exceptions", "false"}}},
-         {net::features::kTopLevelTpcdTrialSettings, {}},
          {net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});

@@ -157,6 +157,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 #endif
   static char kObsoletePrivateNetworkChooserDataPref[] =
       "profile.content_settings.exceptions.private_network_chooser_data";
+  static char kObsoleteTopLevelTpcdTrialExceptionsPref[] =
+      "profile.content_settings.exceptions.top_level_3pcd_support";
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
   static const char kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref[] =
@@ -183,6 +185,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
                  pref_data.Clone());
 #endif
   prefs->SetDict(kObsoletePrivateNetworkChooserDataPref, pref_data.Clone());
+  prefs->SetDict(kObsoleteTopLevelTpcdTrialExceptionsPref, pref_data.Clone());
   prefs->SetDict(kGeolocationPrefPath, std::move(pref_data));
   prefs->SetList(kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref,
                  std::move(pref_list));
@@ -199,6 +202,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
       prefs->HasPrefPath(kObsoleteInstalledWebAppMetadataExceptionsPref));
 #endif
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePrivateNetworkChooserDataPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdTrialExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(
       kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref));
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));

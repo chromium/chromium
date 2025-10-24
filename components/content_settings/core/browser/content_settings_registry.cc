@@ -314,16 +314,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, "top-level-3pcd-support",
-           CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
-
   Register(ContentSettingsType::TPCD_HEURISTICS_GRANTS,
            "3pcd-heuristics-grants", CONTENT_SETTING_BLOCK,
            WebsiteSettingsInfo::UNSYNCABLE,

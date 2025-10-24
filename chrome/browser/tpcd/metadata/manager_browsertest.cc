@@ -18,8 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/tpcd/support/top_level_trial_service.h"
-#include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -93,8 +91,7 @@ class ManagerBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {content_settings::features::kTrackingProtection3pcd,
          net::features::kTpcdMetadataGrants,
-         net::features::kTpcdMetadataStageControl,
-         net::features::kTopLevelTpcdTrialSettings},
+         net::features::kTpcdMetadataStageControl},
         {});
 
     // Disable the validity service so it doesn't remove manually created
@@ -318,112 +315,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
     EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
         kEmbedded2, net::SiteForCookies(), kEmbedder2, {},
         cookie_partition_key_2));
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
-                       TpcdDtGracePeriodEnforced_ValidDtToken) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  const GURL first_party_url = https_server()->GetURL(kFirstPartyHost, "/");
-  const GURL third_party_url_1 = https_server()->GetURL(kThirdPartyHost1, "/");
-  const GURL third_party_url_2 = https_server()->GetURL(kThirdPartyHost2, "/");
-  const GURL third_party_url_3 = https_server()->GetURL(kThirdPartyHost3, "/");
-
-  const std::string secondary_pattern_spec =
-      ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-  const std::string primary_pattern_spec_1 =
-      ContentSettingsPattern::FromURLNoWildcard(third_party_url_1).ToString();
-  const std::string primary_pattern_spec_2 =
-      ContentSettingsPattern::FromURLNoWildcard(third_party_url_2).ToString();
-  const std::string primary_pattern_spec_3 =
-      ContentSettingsPattern::FromURLNoWildcard(third_party_url_3).ToString();
-
-  Metadata metadata;
-
-  const uint32_t dtrp_guarantees_grace_period_forced_on = 0;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec_1, secondary_pattern_spec,
-      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_on);
-
-  const uint32_t dtrp_guarantees_grace_period_forced_off = 100;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec_2, secondary_pattern_spec,
-      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_off);
-
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec_3,
-                                              secondary_pattern_spec,
-                                              Parser::kSourceCriticalSector);
-
-  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
-  MockComponentInstallation(metadata);
-  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 3u);
-
-  auto* service = tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(
-      browser()->profile());
-  auto embedder_origin = url::Origin::Create(first_party_url);
-  net::CookiePartitionKey cookie_partition_key =
-      net::CookiePartitionKey::FromURLForTesting(embedder_origin.GetURL());
-  service->UpdateTopLevelTrialSettingsForTesting(
-      embedder_origin, /*match_subdomains=*/true, /*enabled=*/true);
-
-  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1, net::SiteForCookies(), embedder_origin, {},
-      cookie_partition_key));
-  {
-    base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
-    NavigateToPageWithFrame(kFirstPartyHost);
-    NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), /*expected=*/true);
-    observer.Wait();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
-  }
-
-  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_2, net::SiteForCookies(), embedder_origin, {},
-      cookie_partition_key));
-  {
-    base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
-    NavigateToPageWithFrame(kFirstPartyHost);
-    NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), /*expected=*/true);
-    observer.Wait();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD, 2);
-  }
-
-  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_3, net::SiteForCookies(), embedder_origin, {},
-      cookie_partition_key));
-  {
-    base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
-    NavigateToPageWithFrame(kFirstPartyHost);
-    NavigateFrameTo(kThirdPartyHost3, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), /*expected=*/true);
-    observer.Wait();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::
-            kAllowBy3PCDMetadataSourceCriticalSector,
-        2);
   }
 }
 

@@ -357,12 +357,6 @@ enum ContentSettingsType {
   // Content Setting for 3PC accesses granted via 3PC deprecation trial.
   TPCD_TRIAL,
 
-  // Content Setting for 3PC accesses granted via top-level 3PC deprecation
-  // trial. Similar to TPCD_TRIAL, but applicable at the page-level for the
-  // lifetime of the page that served the token, rather than being specific to a
-  // requesting-origin/top-level-site combination and persistent.
-  TOP_LEVEL_TPCD_TRIAL,
-
   // Content setting used to indicate whether entering picture-in-picture
   // automatically should be enabled.
   AUTO_PICTURE_IN_PICTURE,

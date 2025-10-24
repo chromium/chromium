@@ -226,10 +226,6 @@ BASE_FEATURE(kTpcdTrialSettings,
              "TpcdSupportSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTopLevelTpcdTrialSettings,
-             "TopLevelTpcdSupportSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTpcdMetadataGrants, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTpcdMetadataStageControl, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -64,6 +64,8 @@ constexpr char kGeolocationMigrateExceptionsPref[] =
     "profile.content_settings.exceptions.migrate_geolocation";
 
 #if !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteTopLevelTpcdTrialExceptionsPref[] =
+    "profile.content_settings.exceptions.top_level_3pcd_support";
 // This setting was accidentally bound to a UI surface intended for a different
 // setting (https://crbug.com/364820109). It should not have been settable
 // except via enterprise policy, so it is temporarily cleaned up here to revert
@@ -112,6 +114,7 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePrivateNetworkChooserDataPref);
 #if !BUILDFLAG(IS_IOS)
+  registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
 #endif  // !BUILDFLAG(IS_IOS)
@@ -436,6 +439,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePrivateNetworkChooserDataPref);
 
 #if !BUILDFLAG(IS_IOS)
+  prefs_->ClearPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
