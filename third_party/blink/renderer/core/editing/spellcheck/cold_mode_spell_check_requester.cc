@@ -79,16 +79,37 @@ const Element* ColdModeSpellCheckRequester::QualifyingEditable() const {
   // enough to prevent a user focused field from being taken advantage of.
   // For more see:
   // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  bool skip_due_to_contents = false;
   if (base::FeatureList::IsEnabled(
           features::kRestrictSpellingAndGrammarHighlights) &&
-      features::kRestrictSpellingAndGrammarHighlightsChangedContents.Get() &&
-      !LocalFrame::HasTransientUserActivation(window_->GetFrame())) {
-    base::UmaHistogramBoolean(
-        "WebCore.Editing.SpellCheckUserActionLimitation.Cold.Contents", true);
-    return nullptr;
+      features::kRestrictSpellingAndGrammarHighlightsChangedContents.Get()) {
+    skip_due_to_contents =
+        !LocalFrame::HasTransientUserActivation(window_->GetFrame());
   }
   base::UmaHistogramBoolean(
-      "WebCore.Editing.SpellCheckUserActionLimitation.Cold.Contents", false);
+      "WebCore.Editing.SpellCheckUserActionLimitation.Cold.Contents",
+      skip_due_to_contents);
+
+  // We can skip this pass if the selection isn't the result of a user gesture
+  // and `kRestrictSpellingAndGrammarHighlightsChangedSelection` is enabled.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  bool skip_due_to_selection = false;
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedSelection.Get()) {
+    const Element* focused_element = window_->document()->FocusedElement();
+    skip_due_to_selection =
+        focused_element && !focused_element->WasLastFocusFromUserGesture();
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Cold.Selection",
+      skip_due_to_selection);
+
+  // We wait until here to reject to ensure that histograms are recorded.
+  if (skip_due_to_contents || skip_due_to_selection) {
+    return nullptr;
+  }
 
   const Position position =
       window_->GetFrame()->Selection().GetSelectionInDOMTree().Focus();

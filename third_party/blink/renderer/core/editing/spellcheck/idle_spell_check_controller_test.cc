@@ -227,8 +227,12 @@ TEST_P(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
 
   // Advance to cold mode invocation
   IdleChecker().ForceInvocationForTesting();
-  IdleChecker().SkipColdModeTimerForTesting();
-  ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+  if (IsRestrictionActiveForSelection()) {
+    ASSERT_EQ(State::kInactive, IdleChecker().GetState());
+  } else {
+    IdleChecker().SkipColdModeTimerForTesting();
+    ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+  }
 
   // Shouldn't crash
   IdleChecker().ForceInvocationForTesting();
@@ -270,7 +274,9 @@ TEST_P(IdleSpellCheckControllerTest, SpellcheckAttribute) {
   SetBodyContent("<div contenteditable=\"true\" spellcheck=\"true\">foo</div>");
 
   // Focus element and track lifecycle
-  QuerySelector("div")->Focus();
+  QuerySelector("div")->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                                          mojom::blink::FocusType::kMouse,
+                                          /*capabilities=*/nullptr));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(State::kHotModeRequested, IdleChecker().GetState());
   IdleChecker().ForceInvocationForTesting();
@@ -327,6 +333,37 @@ TEST_P(IdleSpellCheckControllerTest, UserActivation) {
   ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+}
+
+TEST_P(IdleSpellCheckControllerTest, SelectionFocusType) {
+  for (int focus_type = (int)mojom::blink::FocusType::kMinValue;
+       focus_type <= (int)mojom::blink::FocusType::kMaxValue; focus_type++) {
+    // Setup focusable content
+    IdleChecker().Deactivate();
+    SetBodyContent(
+        "<div contenteditable=\"true\" spellcheck=\"true\">foo</div>");
+    UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+
+    // Attempt focus and check resulting state
+    QuerySelector("div")->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                                            (mojom::blink::FocusType)focus_type,
+                                            /*capabilities=*/nullptr));
+    UpdateAllLifecyclePhasesForTest();
+    IdleChecker().ForceInvocationForTesting();
+    if (IsRestrictionActiveForSelection() &&
+        ((mojom::blink::FocusType)focus_type ==
+             mojom::blink::FocusType::kNone ||
+         (mojom::blink::FocusType)focus_type ==
+             mojom::blink::FocusType::kScript)) {
+      ASSERT_EQ(State::kInactive, IdleChecker().GetState());
+    } else {
+      IdleChecker().SkipColdModeTimerForTesting();
+      ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
+      IdleChecker().ForceInvocationForTesting();
+      EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+    }
+  }
 }
 
 }  // namespace blink

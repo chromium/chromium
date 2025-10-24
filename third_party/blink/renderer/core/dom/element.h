@@ -31,6 +31,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -1167,6 +1168,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsFocusedElementInDocument() const;
   Element* AdjustedFocusedElementInTreeScope() const;
   bool IsAutofocusable() const;
+
+  // Returns true if `last_focus_type_` was not the result of an unknown or
+  // script source. For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  bool WasLastFocusFromUserGesture() const {
+    return last_focus_type_ != mojom::blink::FocusType::kNone &&
+           last_focus_type_ != mojom::blink::FocusType::kScript;
+  }
 
   // Returns false if the event was canceled, and true otherwise.
   virtual bool DispatchFocusEvent(
@@ -2466,6 +2475,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // only when they are added. Attribute _values_ are not part of this
   // filter, except for the values of class="".
   uint32_t attribute_or_class_bloom_ = 0;
+
+  // This records the last type of a focus on this element via `SetFocused`.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  mojom::blink::FocusType last_focus_type_ = mojom::blink::FocusType::kNone;
 };
 
 template <>

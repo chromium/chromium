@@ -121,6 +121,24 @@ void IdleSpellCheckController::RespondToChangedSelection() {
     return;
   }
 
+  // We can skip this pass if the selection isn't the result of a user gesture
+  // and `kRestrictSpellingAndGrammarHighlightsChangedSelection` is enabled.
+  // For more see:
+  // https://explainers-by-googlers.github.io/user-dictionary-leaks/
+  if (base::FeatureList::IsEnabled(
+          features::kRestrictSpellingAndGrammarHighlights) &&
+      features::kRestrictSpellingAndGrammarHighlightsChangedSelection.Get()) {
+    const Element* focused_element = GetDocument().FocusedElement();
+    if (focused_element && !focused_element->WasLastFocusFromUserGesture()) {
+      Deactivate();
+      base::UmaHistogramBoolean(
+          "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", true);
+      return;
+    }
+  }
+  base::UmaHistogramBoolean(
+      "WebCore.Editing.SpellCheckUserActionLimitation.Hot.Selection", false);
+
   if (IsInInvocation())
     return;
 
