@@ -224,8 +224,8 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
     if (handle.planes.empty()) {
       return nullptr;
     }
-    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
-                                                           std::move(handle));
+    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
+        size, viz::GetSharedImageFormat(format), std::move(handle));
   }
 
   // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
