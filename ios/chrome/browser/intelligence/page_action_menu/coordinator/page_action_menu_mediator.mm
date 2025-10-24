@@ -20,6 +20,8 @@
 #import "ios/chrome/browser/infobars/model/overlays/default_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
@@ -34,6 +36,7 @@
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -89,6 +92,9 @@ const CGFloat kFeatureRowIconSize = 20;
     _hostContentSettingsMap = hostContentSettingsMap;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
+    if (IsZeroStateSuggestionsAIHubEnabled()) {
+      [self executeGeminiZeroStateSuggestions];
+    }
   }
   return self;
 }
@@ -526,6 +532,23 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
 
   InfobarOverlayRequestInserter::FromWebState(webState)->InsertOverlayRequest(
       params);
+}
+
+// Fetches zero-state suggestions from the BWG tab helper and pass them to the
+// UI provider through a callback.
+- (void)executeGeminiZeroStateSuggestions {
+  if (!IsZeroStateSuggestionsAIHubEnabled()) {
+    return;
+  }
+  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_webState);
+  if (!tabHelper) {
+    return;
+  }
+
+  tabHelper->ExecuteZeroStateSuggestions(
+      base::BindOnce(^(NSArray<NSString*>* suggestions) {
+        ios::provider::SetZeroStateSuggestions(suggestions);
+      }));
 }
 
 @end

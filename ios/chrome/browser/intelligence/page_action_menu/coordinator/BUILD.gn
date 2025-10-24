@@ -28,6 +28,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
     "//ios/chrome/browser/intelligence/proto_wrappers",
@@ -52,6 +54,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/web/model",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public",
     "//ios/web/public/permissions",
   ]

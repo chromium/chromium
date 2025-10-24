@@ -66,7 +66,8 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.sessionHandler = bwg_session_handler_;
 
-    gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc] init];
+    gemini_suggestion_handler_ = [[GeminiSuggestionHandler alloc]
+        initWithWebStateList:browser_->GetWebStateList()];
     // TODO(crbug.com/454000012): Add suggestion handler to gateway.
   }
 }

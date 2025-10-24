@@ -27,6 +27,10 @@ class BwgTabHelper : public web::WebStateObserver,
 
   ~BwgTabHelper() override;
 
+  // Executes the zero-state suggestions flow.
+  void ExecuteZeroStateSuggestions(
+      base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback);
+
   // Sets the state of `is_bwg_ui_showing_`.
   void SetBwgUiShowing(bool showing);
 
@@ -93,6 +97,8 @@ class BwgTabHelper : public web::WebStateObserver,
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
+  struct ZeroStateSuggestionsService;
+
   explicit BwgTabHelper(web::WebState* web_state);
 
   friend class web::WebStateUserData<BwgTabHelper>;
@@ -166,6 +172,9 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Whether to prevent contextual panel entry point.
   bool prevent_contextual_panel_entry_point_ = false;
+
+  // The zero-state suggestions service.
+  std::unique_ptr<ZeroStateSuggestionsService> zero_state_suggestions_service_;
 
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };

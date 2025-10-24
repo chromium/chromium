@@ -18,8 +18,10 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -28,8 +30,10 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
+#import "mojo/public/cpp/bindings/remote.h"
 #import "url/gurl.h"
 
 namespace {
@@ -68,7 +72,45 @@ std::optional<const base::Value::Dict*> GetSessionDictFromPrefs(
   return std::nullopt;
 }
 
+// Parses the mojo response for zero-state suggestions and executes `callback`
+// with an NSArray of strings.
+void ParseSuggestionsResponse(
+    base::OnceCallback<void(NSArray<NSString*>*)> callback,
+    ai::mojom::ZeroStateSuggestionsResponseResultPtr result) {
+  if (result->is_error()) {
+    std::move(callback).Run(nil);
+    return;
+  }
+
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
+      response_proto_optional =
+          result->get_response()
+              .As<optimization_guide::proto::ZeroStateSuggestionsResponse>();
+  if (!response_proto_optional.has_value()) {
+    std::move(callback).Run(nil);
+    return;
+  }
+  optimization_guide::proto::ZeroStateSuggestionsResponse response_proto =
+      response_proto_optional.value();
+
+  NSMutableArray<NSString*>* suggestionList = [NSMutableArray array];
+  for (const auto& suggestion : response_proto.suggestions()) {
+    [suggestionList addObject:base::SysUTF8ToNSString(suggestion.label())];
+  }
+  std::move(callback).Run(suggestionList);
+}
+
 }  // namespace
+
+struct BwgTabHelper::ZeroStateSuggestionsService {
+  // The remote for the zero state suggestions service.
+  mojo::Remote<ai::mojom::ZeroStateSuggestionsService>
+      zero_state_suggestions_service;
+
+  // The implementation of the zero state suggestions service.
+  std::unique_ptr<ai::ZeroStateSuggestionsServiceImpl>
+      zero_state_suggestions_service_impl;
+};
 
 BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
   ProfileIOS* profile =
@@ -76,6 +118,18 @@ BwgTabHelper::BwgTabHelper(web::WebState* web_state) : web_state_(web_state) {
   optimization_guide_decider_ =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   web_state_observation_.Observe(web_state);
+
+  if (IsZeroStateSuggestionsEnabled()) {
+    zero_state_suggestions_service_ =
+        std::make_unique<ZeroStateSuggestionsService>();
+    mojo::PendingReceiver<ai::mojom::ZeroStateSuggestionsService>
+        zero_state_suggestions_receiver =
+            zero_state_suggestions_service_->zero_state_suggestions_service
+                .BindNewPipeAndPassReceiver();
+    zero_state_suggestions_service_->zero_state_suggestions_service_impl =
+        std::make_unique<ai::ZeroStateSuggestionsServiceImpl>(
+            std::move(zero_state_suggestions_receiver), web_state);
+  }
 }
 
 BwgTabHelper::~BwgTabHelper() {
@@ -84,6 +138,21 @@ BwgTabHelper::~BwgTabHelper() {
     web_state_ = nullptr;
   }
   optimization_guide_decider_ = nullptr;
+}
+
+void BwgTabHelper::ExecuteZeroStateSuggestions(
+    base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback) {
+  if (!zero_state_suggestions_service_->zero_state_suggestions_service) {
+    std::move(callback).Run(nil);
+    return;
+  }
+
+  base::OnceCallback<void(ai::mojom::ZeroStateSuggestionsResponseResultPtr)>
+      serviceCallback =
+          base::BindOnce(&ParseSuggestionsResponse, std::move(callback));
+
+  zero_state_suggestions_service_->zero_state_suggestions_service
+      ->FetchZeroStateSuggestions(std::move(serviceCallback));
 }
 
 void BwgTabHelper::SetBwgUiShowing(bool showing) {

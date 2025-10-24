@@ -8,4 +8,5 @@ include_rules = [
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
   "+ios/web/util/content_type_util.h",
+  "+ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h",
 ]

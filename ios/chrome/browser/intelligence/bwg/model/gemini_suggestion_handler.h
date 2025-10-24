@@ -9,8 +9,15 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 
+class WebStateList;
+
 // Handler for Gemini suggestion chips.
 @interface GeminiSuggestionHandler : NSObject <GeminiSuggestionDelegate>
+
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

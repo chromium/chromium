@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -138,6 +139,10 @@
     _pageContextWrapper = nil;
   }
 
+  if (IsZeroStateSuggestionsAskGeminiEnabled()) {
+    [self executeZeroStateSuggestions];
+  }
+
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
   base::OnceCallback<void(PageContextWrapperCallbackResponse)>
@@ -198,6 +203,24 @@
   }
 
   return BwgTabHelper::FromWebState(activeWebState);
+}
+
+// Fetches zero-state suggestions from the BWG tab helper and pass them to the
+// UI provider through a callback.
+- (void)executeZeroStateSuggestions {
+  if (!IsZeroStateSuggestionsAskGeminiEnabled()) {
+    return;
+  }
+
+  BwgTabHelper* tabHelper = [self activeWebStateBWGTabHelper];
+  if (!tabHelper) {
+    return;
+  }
+
+  tabHelper->ExecuteZeroStateSuggestions(
+      base::BindOnce(^(NSArray<NSString*>* suggestions) {
+        ios::provider::SetZeroStateSuggestions(suggestions);
+      }));
 }
 
 @end
