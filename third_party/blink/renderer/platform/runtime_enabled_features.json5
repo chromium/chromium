@@ -2654,7 +2654,7 @@
     },
     {
       name: "GamepadWindowEventHandlers",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Tracking bug for the implementation: https://crbug.com/430204832
