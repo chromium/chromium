@@ -6,10 +6,11 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_TETHERING_HANDLER_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"

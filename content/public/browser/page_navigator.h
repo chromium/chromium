@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/frame_tree_node_id.h"

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/common/content_export.h"

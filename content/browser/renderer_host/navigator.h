@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"

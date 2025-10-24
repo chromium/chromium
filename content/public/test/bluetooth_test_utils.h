@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_BLUETOOTH_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_BLUETOOTH_TEST_UTILS_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace device {
 class BluetoothAdapter;

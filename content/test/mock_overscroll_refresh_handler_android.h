@@ -5,7 +5,7 @@
 #ifndef CONTENT_TEST_MOCK_OVERSCROLL_REFRESH_HANDLER_ANDROID_H_
 #define CONTENT_TEST_MOCK_OVERSCROLL_REFRESH_HANDLER_ANDROID_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/test/mock_overscroll_observer.h"
 #include "ui/android/overscroll_refresh_handler.h"
 

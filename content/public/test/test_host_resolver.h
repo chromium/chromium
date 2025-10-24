@@ -5,7 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_HOST_RESOLVER_H_
 #define CONTENT_PUBLIC_TEST_TEST_HOST_RESOLVER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace net {
 class HostResolverProc;

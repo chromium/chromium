@@ -74,7 +74,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"

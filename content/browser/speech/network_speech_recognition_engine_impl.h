@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/speech/audio_encoder.h"
 #include "components/speech/chunked_byte_buffer.h"
