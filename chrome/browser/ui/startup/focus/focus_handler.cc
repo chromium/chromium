@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/startup/focus/focus_result_file_writer.h"
 #include "chrome/browser/ui/startup/focus/match_candidate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -36,6 +37,11 @@ FocusResult::FocusResult(FocusStatus status,
 
 FocusResult::FocusResult(FocusStatus status, Error error_type)
     : status(status), error_type(error_type) {}
+
+FocusResult::FocusResult(FocusStatus status, std::string opened_url)
+    : status(status),
+      opened_url(std::move(opened_url)),
+      error_type(Error::kNone) {}
 
 FocusResult::FocusResult(const FocusResult& other) = default;
 
@@ -206,35 +212,22 @@ FocusResult ProcessFocusRequest(const base::CommandLine& command_line,
   return ProcessFocusRequestWithDetails(command_line, profile);
 }
 
-int FocusResultToExitCode(const FocusResult& result) {
-  switch (result.status) {
-    case FocusStatus::kFocused:
-      return 0;
-    case FocusStatus::kNoMatch:
-      return 1;
-    case FocusStatus::kParseError:
-      return 2;
-  }
-  return 1;
-}
+FocusResult ProcessFocusRequestWithResultFile(
+    const base::CommandLine& command_line,
+    Profile& profile) {
+  FocusResult result = ProcessFocusRequestWithDetails(command_line, profile);
 
-std::string FocusResultToString(const FocusResult& result) {
-  switch (result.status) {
-    case FocusStatus::kFocused:
-      return "focused";
-    case FocusStatus::kNoMatch:
-      return "no_match";
-    case FocusStatus::kParseError:
-      switch (result.error_type) {
-        case FocusResult::Error::kEmptySelector:
-          return "parse_error: Empty selector string";
-        case FocusResult::Error::kInvalidFormat:
-          return "parse_error: Invalid selector format";
-        default:
-          return "parse_error";
-      }
+  // Write results to file if --focus-result-file is specified.
+  // Skip writing result files for off-the-record profiles for privacy.
+  if (command_line.HasSwitch(switches::kFocusResultFile) &&
+      !profile.IsOffTheRecord()) {
+    base::FilePath result_file_path =
+        command_line.GetSwitchValuePath(switches::kFocusResultFile);
+
+    WriteResultToFile(result_file_path.AsUTF8Unsafe(), result);
   }
-  return "unknown";
+
+  return result;
 }
 
 }  // namespace focus

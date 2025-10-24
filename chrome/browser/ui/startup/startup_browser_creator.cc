@@ -1036,8 +1036,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       command_line.HasSwitch(switches::kFocus) &&
       profile_info.mode == StartupProfileMode::kBrowserWindow &&
       profile_info.profile) {
-    focus::FocusResult focus_result =
-        focus::ProcessFocusRequest(command_line, *profile_info.profile);
+    focus::FocusResult focus_result = focus::ProcessFocusRequestWithResultFile(
+        command_line, *profile_info.profile);
     // Early return for successful focus, parse errors, or when there's no
     // fallback URL. When focus succeeds or parsing fails, we're done. When no
     // match is found but there are no command line args to fall back to

@@ -22,16 +22,17 @@ class CommandLine;
 namespace focus {
 
 enum class FocusStatus {
-  kFocused,     // Successfully focused an existing tab/window
-  kNoMatch,     // No matching tab/window found for the selectors
-  kParseError,  // Failed to parse the selector string
+  kFocused,         // Successfully focused an existing tab/window.
+  kNoMatch,         // No matching tab/window found for the selectors.
+  kParseError,      // Failed to parse the selector string.
+  kOpenedFallback,  // Opened a new tab/window with fallback URL.
 };
 
 struct FocusResult {
   enum class Error {
-    kNone,           // No error occurred
-    kEmptySelector,  // Selector string was empty
-    kInvalidFormat,  // Selector format was invalid
+    kNone,           // No error occurred.
+    kEmptySelector,  // Selector string was empty.
+    kInvalidFormat,  // Selector format was invalid.
   };
 
   explicit FocusResult(FocusStatus status);
@@ -39,6 +40,7 @@ struct FocusResult {
               const std::string& matched_selector,
               const std::string& matched_url);
   FocusResult(FocusStatus status, Error error_type);
+  FocusResult(FocusStatus status, std::string opened_url);
   FocusResult(const FocusResult& other);
   FocusResult(FocusResult&& other) noexcept;
   FocusResult& operator=(const FocusResult& other);
@@ -51,19 +53,18 @@ struct FocusResult {
   FocusStatus status;
   std::optional<std::string> matched_selector;
   std::optional<std::string> matched_url;
+  std::optional<std::string> opened_url;
   Error error_type;
 };
-
-// Converts FocusResult to appropriate exit code for command line usage.
-int FocusResultToExitCode(const FocusResult& result);
-
-// Converts FocusResult to a human-readable string representation.
-std::string FocusResultToString(const FocusResult& result);
 
 // Main entry point for processing focus requests from command line arguments.
 FocusResult ProcessFocusRequest(const base::CommandLine& command_line,
                                 Profile& profile);
 
+// Process focus request and write JSON results to file if specified.
+FocusResult ProcessFocusRequestWithResultFile(
+    const base::CommandLine& command_line,
+    Profile& profile);
 }  // namespace focus
 
 #endif  // CHROME_BROWSER_UI_STARTUP_FOCUS_FOCUS_HANDLER_H_

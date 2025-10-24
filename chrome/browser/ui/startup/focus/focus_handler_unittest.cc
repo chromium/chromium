@@ -10,8 +10,11 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/startup/focus/focus_result_file_writer.h"
 #include "chrome/browser/ui/startup/focus/match_candidate.h"
 #include "chrome/browser/ui/startup/focus/selector.h"
 #include "chrome/common/chrome_switches.h"
@@ -28,11 +31,19 @@ class FocusHandlerTest : public testing::Test {
   ~FocusHandlerTest() override = default;
 
  protected:
-  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    profile_ = std::make_unique<TestingProfile>();
+  }
 
   void TearDown() override { profile_.reset(); }
 
+  base::FilePath GetTempFilePath(const std::string& filename) {
+    return temp_dir_.GetPath().AppendASCII(filename);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -60,26 +71,79 @@ TEST_F(FocusHandlerTest, ProcessFocusRequestInvalidSelector) {
   EXPECT_EQ(FocusStatus::kParseError, result.status);
 }
 
-TEST_F(FocusHandlerTest, FocusResultToExitCode) {
-  EXPECT_EQ(0, FocusResultToExitCode(FocusResult(FocusStatus::kFocused)));
-  EXPECT_EQ(1, FocusResultToExitCode(FocusResult(FocusStatus::kNoMatch)));
-  EXPECT_EQ(2, FocusResultToExitCode(FocusResult(FocusStatus::kParseError)));
+TEST_F(FocusHandlerTest, CreateFocusJsonString_Focused) {
+  FocusResult result(FocusStatus::kFocused, "https://example.com",
+                     "https://example.com/path");
+  std::string json = CreateFocusJsonString(result);
+
+  EXPECT_TRUE(json.find("\"status\":\"focused\"") != std::string::npos);
+  EXPECT_TRUE(json.find("\"exit_code\":0") != std::string::npos);
 }
 
-TEST_F(FocusHandlerTest, FocusResultToString) {
-  EXPECT_EQ("focused", FocusResultToString(FocusResult(FocusStatus::kFocused)));
-  EXPECT_EQ("no_match",
-            FocusResultToString(FocusResult(FocusStatus::kNoMatch)));
-  EXPECT_EQ("parse_error",
-            FocusResultToString(FocusResult(FocusStatus::kParseError)));
+TEST_F(FocusHandlerTest, CreateFocusJsonString_NoMatch) {
+  FocusResult result(FocusStatus::kNoMatch);
+  std::string json = CreateFocusJsonString(result);
 
-  // Test error enum functionality.
-  EXPECT_EQ("parse_error: Empty selector string",
-            FocusResultToString(FocusResult(
-                FocusStatus::kParseError, FocusResult::Error::kEmptySelector)));
-  EXPECT_EQ("parse_error: Invalid selector format",
-            FocusResultToString(FocusResult(
-                FocusStatus::kParseError, FocusResult::Error::kInvalidFormat)));
+  EXPECT_TRUE(json.find("\"status\":\"no_match\"") != std::string::npos);
+  EXPECT_TRUE(json.find("\"exit_code\":1") != std::string::npos);
 }
 
+TEST_F(FocusHandlerTest, CreateFocusJsonString_ParseError) {
+  FocusResult result(FocusStatus::kParseError,
+                     FocusResult::Error::kInvalidFormat);
+  std::string json = CreateFocusJsonString(result);
+
+  EXPECT_TRUE(json.find("\"status\":\"parse_error\"") != std::string::npos);
+  EXPECT_TRUE(json.find("\"error\":\"Invalid selector format\"") !=
+              std::string::npos);
+  EXPECT_TRUE(json.find("\"exit_code\":2") != std::string::npos);
+}
+
+TEST_F(FocusHandlerTest, CreateFocusJsonString_Opened) {
+  FocusResult result(FocusStatus::kOpenedFallback, "https://fallback.com");
+  std::string json = CreateFocusJsonString(result);
+
+  EXPECT_TRUE(json.find("\"status\":\"opened\"") != std::string::npos);
+  EXPECT_TRUE(json.find("\"exit_code\":0") != std::string::npos);
+}
+
+TEST_F(FocusHandlerTest, WriteResultToFile) {
+  base::FilePath test_file = GetTempFilePath("focus_result.json");
+
+  FocusResult result(FocusStatus::kFocused, "https://example.com",
+                     "https://example.com/path");
+  WriteResultToFile(test_file.AsUTF8Unsafe(), result);
+
+  // Wait for async write to complete.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(base::PathExists(test_file));
+
+  std::string file_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_file, &file_contents));
+
+  EXPECT_TRUE(file_contents.find("\"status\":\"focused\"") !=
+              std::string::npos);
+  EXPECT_TRUE(file_contents.find("\"exit_code\":0") != std::string::npos);
+}
+
+TEST_F(FocusHandlerTest, IncognitoDoesNotWriteResultFile) {
+  base::FilePath test_file = GetTempFilePath("incognito_result.json");
+
+  // Create an incognito profile
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(profile_.get());
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kFocus, "https://example.com");
+  command_line.AppendSwitchASCII(switches::kFocusResultFile,
+                                 test_file.AsUTF8Unsafe());
+
+  FocusResult result =
+      ProcessFocusRequestWithResultFile(command_line, *incognito_profile);
+
+  // Result file should NOT be created in incognito mode
+  EXPECT_FALSE(base::PathExists(test_file));
+  EXPECT_EQ(FocusStatus::kNoMatch, result.status);  // No tabs to match
+}
 }  // namespace focus

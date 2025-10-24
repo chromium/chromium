@@ -8,8 +8,14 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -375,6 +381,76 @@ IN_PROC_BROWSER_TEST_F(FocusHandlerWebAppBrowserTest,
   // is_delete_scheduled(), or because it's no longer in a valid state to
   // be focused.
   EXPECT_EQ(FocusStatus::kNoMatch, result.status);
+}
+
+// Tests for focus result file writing functionality.
+IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
+                       ResultFile_WrittenForNormalProfile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const GURL test_url("https://example.com/test");
+  NavigateToURLInCurrentTab(test_url);
+
+  // Set up command line with focus and result file switches.
+  base::FilePath result_file = temp_dir.GetPath().AppendASCII("result.json");
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kFocus, test_url.spec());
+  command_line.AppendSwitchPath(switches::kFocusResultFile, result_file);
+
+  // Process focus request with result file writing.
+  FocusResult result =
+      ProcessFocusRequestWithResultFile(command_line, *browser()->profile());
+
+  EXPECT_EQ(FocusStatus::kFocused, result.status);
+
+  // Wait for async file write to complete.
+  // The file write is posted to ThreadPool, so we need to flush those tasks.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Verify the result file was written for normal profile.
+  ASSERT_TRUE(base::PathExists(result_file));
+
+  std::string file_content;
+  ASSERT_TRUE(base::ReadFileToString(result_file, &file_content));
+  EXPECT_FALSE(file_content.empty());
+  EXPECT_NE(file_content.find("\"status\":\"focused\""), std::string::npos);
+  EXPECT_NE(file_content.find("\"exit_code\":0"), std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(FocusHandlerBrowserTest,
+                       ResultFile_NotWrittenForOTRProfile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const GURL test_url("https://example.com/secret");
+
+  // Create incognito browser and navigate to test URL.
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  ui_test_utils::NavigateToURLWithDisposition(
+      incognito_browser, test_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Set up command line with focus and result file switches.
+  base::FilePath result_file = temp_dir.GetPath().AppendASCII("result.json");
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kFocus, test_url.spec());
+  command_line.AppendSwitchPath(switches::kFocusResultFile, result_file);
+
+  // Process focus request with result file writing on OTR profile.
+  FocusResult result = ProcessFocusRequestWithResultFile(
+      command_line, *incognito_browser->profile());
+
+  EXPECT_EQ(FocusStatus::kFocused, result.status);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Verify the result file was NOT written for OTR profile.
+  // The file write is skipped synchronously for OTR profiles,
+  // so no async task is even posted.
+  EXPECT_FALSE(base::PathExists(result_file));
 }
 
 }  // namespace focus

@@ -504,6 +504,9 @@ const char kOpenInNewWindow[] = "new-window";
 // Example: --focus=https://meet.google.com/*,app:abc123
 const char kFocus[] = "focus";
 
+// Specifies a file path to write JSON focus result information.
+const char kFocusResultFile[] = "focus-result-file";
+
 // Packages an extension to a .crx installable file from a given directory.
 const char kPackExtension[] = "pack-extension";
 

@@ -12,6 +12,8 @@ source_set("focus") {
   sources = [
     "focus_handler.cc",
     "focus_handler.h",
+    "focus_result_file_writer.cc",
+    "focus_result_file_writer.h",
     "match_candidate.cc",
     "match_candidate.h",
     "selector.cc",
