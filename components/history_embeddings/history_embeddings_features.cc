@@ -139,10 +139,10 @@ const base::FeatureParam<bool> kAnswersInOmniboxScoped(&kHistoryEmbeddings,
 
 const base::FeatureParam<bool> kSendQualityLog(&kHistoryEmbeddings,
                                                "SendQualityLog",
-                                               true);
+                                               false);
 const base::FeatureParam<bool> kSendQualityLogV2(&kHistoryEmbeddings,
                                                  "SendQualityLogV2",
-                                                 true);
+                                                 false);
 
 const base::FeatureParam<int> kMaxPassagesPerPage(&kHistoryEmbeddings,
                                                   "MaxPassagesPerPage",
