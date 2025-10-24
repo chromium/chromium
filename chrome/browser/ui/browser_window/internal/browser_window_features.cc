@@ -159,6 +159,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -700,6 +701,10 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
                       BrowserElementsViews::From(browser_view->browser())
                           ->GetViewAs<TabStripActionContainer>(
                               kTabStripActionContainerElementId));
+          actor_task_list_bubble_controller_ =
+              GetUserDataFactory()
+                  .CreateInstance<ActorTaskListBubbleController>(*browser_,
+                                                                 browser_);
         } else {
           glic_actor_task_icon_controller_ =
               GetUserDataFactory()
@@ -806,6 +811,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   glic_button_controller_.reset();
   glic_actor_task_icon_controller_.reset();
   glic_actor_nudge_controller_.reset();
+  actor_task_list_bubble_controller_.reset();
 #endif
 
   contextual_tasks_side_panel_coordinator_.reset();

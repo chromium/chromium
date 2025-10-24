@@ -28,6 +28,7 @@ class GlicActorNudgeController;
 class ActorUiWindowController;
 
 class ActorBorderViewController;
+class ActorTaskListBubbleController;
 class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
 class BreadcrumbManagerBrowserAgent;
@@ -616,6 +617,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<tabs::GlicActorTaskIconController>
       glic_actor_task_icon_controller_;
   std::unique_ptr<tabs::GlicActorNudgeController> glic_actor_nudge_controller_;
+  std::unique_ptr<ActorTaskListBubbleController>
+      actor_task_list_bubble_controller_;
   std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
   std::unique_ptr<glic::GlicLegacySidePanelCoordinator>
