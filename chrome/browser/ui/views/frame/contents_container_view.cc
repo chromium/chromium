@@ -222,6 +222,12 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
         content_lower_rounded_corners);
   }
 
+  if (actor_overlay_web_view_) {
+    // ActorOverlayWebView should use the same radii as the contents view since
+    // it acts as a full transparent layer directly over the main web content.
+    actor_overlay_web_view_->holder()->SetCornerRadii(radii);
+  }
+
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_border_) {
     glic_border_->SetRoundedCorners(content_rounded_corners);
@@ -243,6 +249,10 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
   }
 
   contents_scrim_view_->SetRoundedCorners(kNoRoundedCorners);
+
+  if (actor_overlay_web_view_) {
+    actor_overlay_web_view_->holder()->SetCornerRadii(kNoRoundedCorners);
+  }
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (glic_border_) {
