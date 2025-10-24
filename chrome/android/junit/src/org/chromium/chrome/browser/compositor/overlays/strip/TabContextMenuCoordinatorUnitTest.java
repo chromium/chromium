@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +45,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -90,6 +93,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
@@ -123,6 +127,7 @@ public class TabContextMenuCoordinatorUnitTest {
     private static final String COLLABORATION_ID = "CollaborationId";
     private static final GURL EXAMPLE_URL = new GURL("https://example.com");
     private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
+    private static final GURL CHROME_NATIVE_URL = new GURL("chrome-native://newtab");
     private static final int INSTANCE_ID_1 = 5;
     private static final int INSTANCE_ID_2 = 6;
     private static final String WINDOW_TITLE_1 = "Window Title 1";
@@ -194,6 +199,11 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private View mView;
+    @Mock private WebContents mWebContents;
+    @Mock private Tab mChromeSchemeTabWithWebContents;
+    @Mock private Tab mChromeSchemeTabWithoutWebContents;
+    @Mock private Tab mChromeNativeSchemeTabWithWebContents;
+    @Mock private Tab mChromeNativeSchemeTabWithoutWebContents;
     @Mock private BiConsumer<List<Integer>, Boolean> mReorderFunction;
     private Activity mActivity;
 
@@ -229,6 +239,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabModel.setTabCreatorForTesting(mTabCreator);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab1.getUrl()).thenReturn(EXAMPLE_URL);
+        when(mTab2.getUrl()).thenReturn(EXAMPLE_URL);
         when(mTabOutsideOfGroup.getTabGroupId()).thenReturn(null);
         when(mTabOutsideOfGroup.getUrl()).thenReturn(EXAMPLE_URL);
         when(mNonUrlTab.getTabGroupId()).thenReturn(null);
@@ -255,6 +266,19 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
                 .thenReturn(Collections.singletonList(INSTANCE_INFO_1));
+
+        // Mute related setup.
+        when(mTab1.getWebContents()).thenReturn(mWebContents);
+        when(mTab2.getWebContents()).thenReturn(null);
+        when(mChromeSchemeTabWithWebContents.getUrl()).thenReturn(CHROME_SCHEME_URL);
+        when(mChromeSchemeTabWithWebContents.getWebContents()).thenReturn(mWebContents);
+        when(mChromeSchemeTabWithoutWebContents.getUrl()).thenReturn(CHROME_SCHEME_URL);
+        when(mChromeSchemeTabWithoutWebContents.getWebContents()).thenReturn(null);
+        when(mChromeNativeSchemeTabWithWebContents.getUrl()).thenReturn(CHROME_NATIVE_URL);
+        when(mChromeNativeSchemeTabWithWebContents.getWebContents()).thenReturn(mWebContents);
+        when(mChromeNativeSchemeTabWithoutWebContents.getUrl()).thenReturn(CHROME_NATIVE_URL);
+        when(mChromeNativeSchemeTabWithoutWebContents.getWebContents()).thenReturn(null);
+
         mSavedTabGroupTab.localId = TAB_ID;
         mSavedTabGroupTab.url = EXAMPLE_URL;
         mSavedTabGroup.savedTabs = Arrays.asList(mSavedTabGroupTab);
@@ -1734,5 +1758,73 @@ public class TabContextMenuCoordinatorUnitTest {
         modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
 
         verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
+    }
+
+    @Test
+    public void testAreAllTabsMuted_earlyReturn() {
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        when(mTabModel.isMuted(mTab1)).thenReturn(false);
+        when(mTabModel.isMuted(mTab2)).thenReturn(true);
+
+        assertFalse(
+                "Should return false as the first tab is not muted.",
+                mTabContextMenuCoordinator.areAllTabsMuted(tabs));
+
+        // Verify that the check stopped after finding the unmuted tab.
+        verify(mTabModel).isMuted(mTab1);
+        verify(mTabModel, never()).isMuted(mTab2);
+    }
+
+    @Test
+    public void testAreAllTabsMuted_IgnoreInvalidTabs() {
+        List<Tab> tabs =
+                List.of(
+                        mTab1,
+                        mChromeSchemeTabWithWebContents,
+                        mChromeSchemeTabWithoutWebContents,
+                        mChromeNativeSchemeTabWithWebContents,
+                        mChromeNativeSchemeTabWithoutWebContents,
+                        mTab2);
+
+        // Scenario 1: All valid tabs are muted. Invalid tabs have various mute states but
+        // should be ignored.
+        when(mTabModel.isMuted(mTab1)).thenReturn(true);
+        when(mTabModel.isMuted(mTab2)).thenReturn(true);
+        when(mTabModel.isMuted(mChromeSchemeTabWithWebContents)).thenReturn(true);
+        when(mTabModel.isMuted(mChromeNativeSchemeTabWithWebContents)).thenReturn(true);
+
+        // These shouldn't be called, but we set them to false to be sure they are ignored.
+        when(mTabModel.isMuted(mChromeSchemeTabWithoutWebContents)).thenReturn(false);
+        when(mTabModel.isMuted(mChromeNativeSchemeTabWithoutWebContents)).thenReturn(false);
+
+        assertTrue(
+                "Should return true as all valid tabs are muted, and invalid tabs are ignored.",
+                mTabContextMenuCoordinator.areAllTabsMuted(tabs));
+
+        // Verify isMuted is called only for valid tabs.
+        verify(mTabModel, times(1)).isMuted(mTab1);
+        verify(mTabModel, times(1)).isMuted(mTab2);
+        verify(mTabModel, times(1)).isMuted(mChromeSchemeTabWithWebContents);
+        verify(mTabModel, times(1)).isMuted(mChromeNativeSchemeTabWithWebContents);
+        verify(mTabModel, never()).isMuted(mChromeSchemeTabWithoutWebContents);
+        verify(mTabModel, never()).isMuted(mChromeNativeSchemeTabWithoutWebContents);
+
+        Mockito.clearInvocations(mTabModel);
+
+        // Scenario 2: One of the valid tabs is not muted.
+        when(mTabModel.isMuted(mTab2)).thenReturn(false);
+
+        assertFalse(
+                "Should return false as one of the valid tabs is not muted.",
+                mTabContextMenuCoordinator.areAllTabsMuted(tabs));
+
+        // Verify isMuted is called only for valid tabs.
+        verify(mTabModel, times(1)).isMuted(mTab1);
+        verify(mTabModel, times(1)).isMuted(mTab2);
+        verify(mTabModel, times(1)).isMuted(mChromeSchemeTabWithWebContents);
+        verify(mTabModel, times(1)).isMuted(mChromeNativeSchemeTabWithWebContents);
+        verify(mTabModel, never()).isMuted(mChromeNativeSchemeTabWithoutWebContents);
+        verify(mTabModel, never()).isMuted(mChromeSchemeTabWithoutWebContents);
     }
 }

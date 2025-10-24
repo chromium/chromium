@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabStripReorderingHelper
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -81,6 +82,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -239,6 +241,27 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
                                 /* allowDialog= */ true);
             }
         };
+    }
+
+    @VisibleForTesting
+    boolean areAllTabsMuted(List<Tab> tabs) {
+        TabModel tabModel = mTabModelSupplier.get();
+        for (Tab tab : tabs) {
+            GURL url = tab.getUrl();
+            if (url.isEmpty()) continue;
+
+            String scheme = url.getScheme();
+            boolean isChromeScheme =
+                    UrlConstants.CHROME_SCHEME.equals(scheme)
+                            || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme);
+
+            if (isChromeScheme && tab.getWebContents() == null) continue;
+
+            if (!tabModel.isMuted(tab)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -458,14 +481,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
     }
 
     private ListItem createMuteUnmuteSiteItem(List<Tab> tabs, boolean isIncognito) {
-        boolean showUnmute = true;
-        TabModel tabModel = mTabModelSupplier.get();
-        for (Tab tab : tabs) {
-            if (!tabModel.isMuted(tab)) {
-                showUnmute = false;
-                break;
-            }
-        }
+        boolean showUnmute = areAllTabsMuted(tabs);
         String title =
                 showUnmute
                         ? mContext.getResources()
