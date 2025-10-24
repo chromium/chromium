@@ -29,6 +29,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -2401,8 +2402,18 @@ bool OmniboxViewViews::AreAimHintImpressionLimitsReached() const {
 }
 
 bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
-  return omnibox_feature_configs::AiModeOmniboxEntryPoint::Get().enabled &&
-         model()->is_caret_visible();
+  // `location_bar_view_` can be null in tests.
+  if (!location_bar_view_) {
+    return false;
+  }
+
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(
+          location_bar_view_->profile());
+  const bool is_aim_entrypoint_enabled =
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
+
+  return is_aim_entrypoint_enabled && model()->is_caret_visible();
 }
 
 void OmniboxViewViews::RecordAimHintImpression() {
