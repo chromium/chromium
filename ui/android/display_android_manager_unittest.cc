@@ -84,6 +84,7 @@ class DisplayAndroidManagerTest : public testing::Test {
         display_android_manager_(false) {
     display_android_manager_.SetPrimaryDisplayId(
         env_, kPrimaryDisplayParams.sdk_display_id);
+    display_android_manager_.SetIsDisplayTopologyAvailableForTesting(true);
   }
 
   void AddDisplay(const DisplayParams& display_params) {
@@ -206,9 +207,6 @@ TEST_F(DisplayAndroidManagerTest, WorkArea) {
 }
 
 TEST_F(DisplayAndroidManagerTest, DisplayTopology) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kAndroidUseDisplayTopology);
-
   // Display Topology
   //             (0, -1440) +-------------+
   //                        |             |

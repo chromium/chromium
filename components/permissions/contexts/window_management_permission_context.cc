@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "components/permissions/features.h"
+#include "ui/android/display_android_manager.h"
 #endif  // IS_ANDROID
 
 namespace permissions {
@@ -44,7 +45,8 @@ WindowManagementPermissionContext::GetContentSettingStatusInternal(
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
   if (base::FeatureList::IsEnabled(
-          permissions::features::kAndroidWindowManagementWebApi)) {
+          permissions::features::kAndroidWindowManagementWebApi) &&
+      ui::DisplayAndroidManager::IsDisplayTopologyAvailable()) {
     const ContentSetting content_setting =
         ContentSettingPermissionContextBase::GetContentSettingStatusInternal(
             render_frame_host, requesting_origin, embedding_origin);

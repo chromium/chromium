@@ -8,6 +8,7 @@
 
 #include <initializer_list>
 #include <map>
+#include <optional>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
@@ -40,6 +41,10 @@ using base::android::AttachCurrentThread;
 using display::Display;
 using display::DisplayList;
 
+namespace {
+static std::optional<bool> is_display_topology_available = std::nullopt;
+}
+
 void SetScreenAndroid(bool use_display_wide_color_gamut) {
   TRACE_EVENT0("startup", "SetScreenAndroid");
   // Do not override existing Screen.
@@ -51,6 +56,21 @@ void SetScreenAndroid(bool use_display_wide_color_gamut) {
 
   JNIEnv* env = AttachCurrentThread();
   Java_DisplayAndroidManager_onNativeSideCreated(env, (jlong)manager);
+}
+
+bool DisplayAndroidManager::IsDisplayTopologyAvailable() {
+  if (!is_display_topology_available.has_value()) {
+    JNIEnv* env = AttachCurrentThread();
+    is_display_topology_available =
+        Java_DisplayAndroidManager_isDisplayTopologyAvailable(env);
+  }
+
+  return is_display_topology_available.value();
+}
+
+void DisplayAndroidManager::SetIsDisplayTopologyAvailableForTesting(
+    bool value) {
+  is_display_topology_available = value;
 }
 
 DisplayAndroidManager::DisplayAndroidManager(bool use_display_wide_color_gamut)
@@ -75,7 +95,7 @@ Display DisplayAndroidManager::GetDisplayNearestView(
 
 Display DisplayAndroidManager::GetDisplayNearestPoint(
     const gfx::Point& point) const {
-  if (base::FeatureList::IsEnabled(kAndroidUseDisplayTopology)) {
+  if (IsDisplayTopologyAvailable()) {
     return ScreenBase::GetDisplayNearestPoint(point);
   }
 
@@ -85,7 +105,7 @@ Display DisplayAndroidManager::GetDisplayNearestPoint(
 
 Display DisplayAndroidManager::GetDisplayMatching(
     const gfx::Rect& match_rect) const {
-  if (base::FeatureList::IsEnabled(kAndroidUseDisplayTopology)) {
+  if (IsDisplayTopologyAvailable()) {
     return ScreenBase::GetDisplayMatching(match_rect);
   }
 

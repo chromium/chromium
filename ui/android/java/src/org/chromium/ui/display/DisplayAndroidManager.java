@@ -28,6 +28,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -71,7 +72,7 @@ public class DisplayAndroidManager {
             // newDisplaysAbsoluteCoordinates)} when {@link
             // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
             // absoluteBounds)} is triggered.
-            if (!mIsDisplayTopologyAvailable) {
+            if (!isDisplayTopologyAvailable()) {
                 removeDisplay(sdkDisplayId);
             }
         }
@@ -104,6 +105,7 @@ public class DisplayAndroidManager {
     private static @Nullable DisplayAndroidManager sDisplayAndroidManager;
 
     private static boolean sDisableHdrSdkRatioCallback;
+    private static @Nullable Boolean sIsDisplayTopologyAvailable;
 
     private static final long IS_NULL_DISPLAY_REMOVED_DELAY_MS = 1000;
 
@@ -117,7 +119,6 @@ public class DisplayAndroidManager {
 
     private long mNativePointer;
     private int mMainSdkDisplayId;
-    private boolean mIsDisplayTopologyAvailable;
     @VisibleForTesting final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
     private final DisplayListenerBackend mBackend = new DisplayListenerBackend();
 
@@ -155,6 +156,18 @@ public class DisplayAndroidManager {
             return getGlobalDefaultDisplay();
         }
         return getDisplayForContextNoChecks(context);
+    }
+
+    @CalledByNative
+    public static boolean isDisplayTopologyAvailable() {
+        if (sIsDisplayTopologyAvailable == null) {
+            sIsDisplayTopologyAvailable =
+                    UiAndroidFeatureList.sAndroidUseDisplayTopology.isEnabled()
+                            && AconfigFlaggedApiDelegate.getInstance() != null
+                            && AconfigFlaggedApiDelegate.getInstance()
+                                    .isDisplayTopologyAvailable(getDisplayManager());
+        }
+        return sIsDisplayTopologyAvailable;
     }
 
     private static Display getGlobalDefaultDisplay() {
@@ -201,13 +214,12 @@ public class DisplayAndroidManager {
         }
 
         mMainSdkDisplayId = defaultDisplay.getDisplayId(); // Note this display is never removed.
-        mIsDisplayTopologyAvailable = isDisplayTopologyAvailable();
 
-        Log.i(TAG, "Is Display Topology available: " + mIsDisplayTopologyAvailable);
+        Log.i(TAG, "Is Display Topology available: " + isDisplayTopologyAvailable());
         RecordHistogram.recordBooleanHistogram(
-                IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME, mIsDisplayTopologyAvailable);
+                IS_DISPLAY_TOPOLOGY_AVAILABLE_HISTOGRAM_NAME, isDisplayTopologyAvailable());
 
-        if (mIsDisplayTopologyAvailable) {
+        if (isDisplayTopologyAvailable()) {
             mDisplaysAbsoluteCoordinates =
                     assumeNonNull(
                             assumeNonNull(AconfigFlaggedApiDelegate.getInstance())
@@ -233,13 +245,6 @@ public class DisplayAndroidManager {
         for (int i = 0; i < mIdMap.size(); ++i) {
             updateDisplayOnNativeSide(mIdMap.valueAt(i));
         }
-    }
-
-    private boolean isDisplayTopologyAvailable() {
-        return UiAndroidFeatureList.sAndroidUseDisplayTopology.isEnabled()
-                && AconfigFlaggedApiDelegate.getInstance() != null
-                && AconfigFlaggedApiDelegate.getInstance()
-                        .isDisplayTopologyAvailable(getDisplayManager());
     }
 
     /* package */ DisplayAndroid getDisplayAndroid(Display display) {
@@ -288,7 +293,7 @@ public class DisplayAndroidManager {
     }
 
     private void removeDisplay(int sdkDisplayId) {
-        if (mIsDisplayTopologyAvailable) {
+        if (isDisplayTopologyAvailable()) {
             mNullDisplayIds.remove(sdkDisplayId);
         }
 
@@ -422,10 +427,15 @@ public class DisplayAndroidManager {
 
     public static void setInstanceForTesting(DisplayAndroidManager displayAndroidManager) {
         sDisplayAndroidManager = displayAndroidManager;
+        ResettersForTesting.register(() -> resetInstanceForTesting()); // IN-TEST
     }
 
     /** Clears the object returned by {@link #getInstance()} */
     public static void resetInstanceForTesting() {
         sDisplayAndroidManager = null;
+    }
+
+    public static void resetIsDisplayTopologyAvailableForTesting() {
+        sIsDisplayTopologyAvailable = null;
     }
 }

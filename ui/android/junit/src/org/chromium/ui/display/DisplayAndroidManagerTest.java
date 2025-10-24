@@ -77,6 +77,7 @@ public class DisplayAndroidManagerTest {
     @After
     public void teardown() {
         DisplayAndroidManager.resetInstanceForTesting();
+        DisplayAndroidManager.resetIsDisplayTopologyAvailableForTesting();
         ShadowDisplayManager.reset();
         mBounds.clear();
     }
@@ -231,6 +232,7 @@ public class DisplayAndroidManagerTest {
         DisplayAndroidManager displayAndroidManager = DisplayAndroidManager.getInstance();
 
         DisplayAndroidManager.resetInstanceForTesting();
+        DisplayAndroidManager.resetIsDisplayTopologyAvailableForTesting();
         doReturn(false)
                 .when(mAconfigFlaggedApiDelegate)
                 .isDisplayTopologyAvailable(mDisplayManager);

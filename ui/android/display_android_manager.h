@@ -24,6 +24,9 @@ class WindowAndroid;
 
 class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
  public:
+  static bool IsDisplayTopologyAvailable();
+  static void SetIsDisplayTopologyAvailableForTesting(bool value);
+
   DisplayAndroidManager(const DisplayAndroidManager&) = delete;
   DisplayAndroidManager& operator=(const DisplayAndroidManager&) = delete;
 

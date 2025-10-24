@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/test/metrics/histogram_tester.h"
+#include "ui/android/display_android_manager.h"
 #endif  // IS_ANDROID
 
 using blink::PermissionType;
@@ -386,17 +387,45 @@ TEST_F(PermissionManagerTest, GetPermissionStatusAfterSet) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionManagerTest, AndroidWindowManagementPermissionDenied) {
+  SetPermission(PermissionType::WINDOW_MANAGEMENT, PermissionStatus::GRANTED);
+
+  // Feature flag and Display Topology are disabled.
+  CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                        PermissionStatus::DENIED);
+
+  ui::DisplayAndroidManager::SetIsDisplayTopologyAvailableForTesting(true);
+
+  // Display Topology is enabled, but Feature flag is disabled.
+  CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                        PermissionStatus::DENIED);
+
+  // Enable kAndroidWindowManagementWebApi flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      permissions::features::kAndroidWindowManagementWebApi, true);
+  ui::DisplayAndroidManager::SetIsDisplayTopologyAvailableForTesting(false);
+
+  // Feature flag is enabled, but Display Topology is disabled.
+  CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                        PermissionStatus::DENIED);
+}
+
 TEST_F(PermissionManagerTest, AndroidWindowManagementPermission) {
-  // Enable kAndroidWindowManagementWebApi flag
+  // Enable kAndroidWindowManagementWebApi flag.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureState(
       permissions::features::kAndroidWindowManagementWebApi, true);
 
+  // Set display topology availability
+  ui::DisplayAndroidManager::SetIsDisplayTopologyAvailableForTesting(true);
+
+  CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
+                        PermissionStatus::ASK);
+
   {
     base::HistogramTester histogram_tester;
 
-    CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
-                          PermissionStatus::ASK);
     SetPermission(PermissionType::WINDOW_MANAGEMENT, PermissionStatus::GRANTED);
     CheckPermissionStatus(PermissionType::WINDOW_MANAGEMENT,
                           PermissionStatus::GRANTED);
