@@ -207,6 +207,10 @@ String DOMSelection::direction() const {
       DocumentUpdateReason::kSelection);
 
   if (!Selection().IsDirectional() ||
+      (RuntimeEnabledFeatures::SelectionCollapsedDirectionNoneEnabled() &&
+       // Use IsCaret() instead of isCollapsed() so that directionality is still
+       // reported for selections that cross shadow boundaries.
+       Selection().GetSelectionInDOMTree().IsCaret()) ||
       Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return "none";
   }

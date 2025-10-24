@@ -4516,6 +4516,10 @@
       status: "experimental",
     },
     {
+      name: "SelectionCollapsedDirectionNone",
+      status: "stable",
+    },
+    {
       // Killswitch M141.
       name: "SelectionHandleWithBottomClipped",
       status: "stable",
