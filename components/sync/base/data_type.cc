@@ -654,6 +654,8 @@ DataTypeSet EncryptableUserTypes() {
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
+  // Account settings are read-only and therefore never encrypted.
+  encryptable_user_types.Remove(ACCOUNT_SETTING);
   if (base::FeatureList::IsEnabled(kSyncMakeAutofillValuableNonEncryptable)) {
     // Valuables are never encrypted because they can be generated from outside
     // of Chrome.
