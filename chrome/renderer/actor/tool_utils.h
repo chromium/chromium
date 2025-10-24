@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
@@ -29,6 +30,7 @@ class PointF;
 
 namespace actor {
 
+struct ResolvedTarget;
 class ToolBase;
 
 // Returns the Blink node for the given DOMNodeId if one exists and its document
@@ -60,7 +62,7 @@ std::string ToDebugString(const mojom::ToolTargetPtr& target);
 void CreateAndDispatchClick(
     blink::WebMouseEvent::Button button,
     int count,
-    const gfx::PointF& click_point,
+    const ResolvedTarget& click_point,
     base::WeakPtr<ToolBase> tool,
     base::OnceCallback<void(mojom::ActionResultPtr)> on_complete);
 

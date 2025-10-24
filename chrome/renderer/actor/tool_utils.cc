@@ -34,6 +34,7 @@ using ::blink::WebInputEvent;
 using ::blink::WebInputEventResult;
 using ::blink::WebMouseEvent;
 using ::blink::WebNode;
+using ::blink::WebWidget;
 
 std::optional<gfx::PointF> InteractionPointFromWebNode(
     const blink::WebNode& node) {
@@ -128,7 +129,7 @@ bool IsNodeWithinViewport(const blink::WebNode& node) {
 void CreateAndDispatchClick(
     WebMouseEvent::Button button,
     int count,
-    const gfx::PointF& click_point,
+    const ResolvedTarget& target,
     base::WeakPtr<ToolBase> tool,
     base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
   if (!tool) {
@@ -141,12 +142,22 @@ void CreateAndDispatchClick(
     return;
   }
 
-  WebFrameWidget* widget = tool->frame()->GetWebFrame()->FrameWidget();
+  WebWidget* widget = target.GetWidget(*tool);
+  if (!widget) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(on_complete),
+                       MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                                  /*requires_page_stabilization=*/true,
+                                  "No widget when dispatching mouse down")));
+    return;
+  }
+
   WebMouseEvent mouse_down(WebInputEvent::Type::kMouseDown,
                            WebInputEvent::kNoModifiers, ui::EventTimeForNow());
   mouse_down.button = button;
   mouse_down.click_count = count;
-  mouse_down.SetPositionInWidget(click_point);
+  mouse_down.SetPositionInWidget(target.widget_point);
   // TODO(crbug.com/402082828): Find a way to set screen position.
   //   const gfx::Rect offset =
   //     render_frame_host_->GetRenderWidgetHost()->GetView()->GetViewBounds();
@@ -173,7 +184,8 @@ void CreateAndDispatchClick(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](blink::WebMouseEvent mouse_up, base::WeakPtr<ToolBase> tool,
+          [](blink::WebMouseEvent mouse_up, ResolvedTarget target,
+             base::WeakPtr<ToolBase> tool,
              base::OnceCallback<void(mojom::ActionResultPtr)> on_complete) {
             if (!tool) {
               std::move(on_complete)
@@ -182,20 +194,18 @@ void CreateAndDispatchClick(
                                   "Tool destroyed before mouse up."));
               return;
             }
-            blink::WebLocalFrame* web_frame = tool->frame()->GetWebFrame();
-            if (!web_frame || !web_frame->FrameWidget()) {
+            WebWidget* widget = target.GetWidget(*tool);
+            if (!widget) {
               std::move(on_complete)
-                  .Run(MakeResult(
-                      mojom::ActionResultCode::kFrameWentAway,
-                      /*requires_page_stabilization=*/false,
-                      "WebFrame or WebFrameWidget was null before mouse up."));
+                  .Run(MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                                  /*requires_page_stabilization=*/false,
+                                  "No widget when dispatching mouse up"));
               return;
             }
+
             mouse_up.SetTimeStamp(ui::EventTimeForNow());
-            WebInputEventResult result =
-                web_frame->FrameWidget()->HandleInputEvent(
-                    WebCoalescedInputEvent(std::move(mouse_up),
-                                           ui::LatencyInfo()));
+            WebInputEventResult result = widget->HandleInputEvent(
+                WebCoalescedInputEvent(std::move(mouse_up), ui::LatencyInfo()));
             if (result == WebInputEventResult::kHandledSuppressed) {
               std::move(on_complete)
                   .Run(MakeResult(mojom::ActionResultCode::kClickSuppressed,
@@ -204,7 +214,7 @@ void CreateAndDispatchClick(
             }
             std::move(on_complete).Run(MakeOkResult());
           },
-          std::move(mouse_up), std::move(tool), std::move(on_complete)),
+          std::move(mouse_up), target, std::move(tool), std::move(on_complete)),
       delay);
 }
 

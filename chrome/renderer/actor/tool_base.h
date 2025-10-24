@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACTOR_TOOL_BASE_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -16,12 +17,33 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/renderer/actor/journal.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_page_popup.h"
+#include "third_party/blink/public/web/web_widget.h"
 
 namespace content {
 class RenderFrame;
 }
 
 namespace actor {
+
+class ToolBase;
+
+// Struct to return the resolved information about a tool target.
+struct ResolvedTarget {
+  // The node identified by the target. May be null if the node has been
+  // removed from DOM.
+  blink::WebNode node;
+
+  // The interaction point of node in Blink (physical) pixels, relative to the
+  // resolved widget's origin.
+  gfx::PointF widget_point;
+
+  // The widget this target resolved to. This can be either the frame's widget
+  // or (soon) the popup widget. Since a widget can be destroyed by script or
+  // during async yields, callers should always access via this getter, rather
+  // than holding onto the pointer.
+  blink::WebWidget* GetWidget(const ToolBase& tool) const;
+};
 
 class ToolBase {
  public:
@@ -59,16 +81,6 @@ class ToolBase {
   content::RenderFrame* frame() const { return &frame_.get(); }
 
  protected:
-  // Struct to hold the resolved target information.
-  struct ResolvedTarget {
-    // The node identified by the target. May be null if the node has been
-    // removed from DOM.
-    blink::WebNode node;
-    // The interaction point of node in viewport coordinates. Currently defaults
-    // to center point of node's bounding rect.
-    gfx::PointF point;
-  };
-
   using ResolveResult = base::expected<ResolvedTarget, mojom::ActionResultPtr>;
 
   // Resolves the given target into the ResolvedTarget struct which includes

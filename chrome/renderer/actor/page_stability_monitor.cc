@@ -22,14 +22,12 @@
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 
 namespace actor {
 
 using ::blink::WebDocument;
-using ::blink::WebFrameWidget;
 using ::blink::WebLocalFrame;
 using ::content::RenderFrame;
 using ::content::RenderFrameObserver;

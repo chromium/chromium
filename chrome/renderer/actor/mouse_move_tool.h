@@ -37,7 +37,8 @@ class MouseMoveTool : public ToolBase {
   std::string DebugString() const override;
 
  private:
-  using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
+  using ValidatedResult =
+      base::expected<ResolvedTarget, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
   mojom::MouseMoveActionPtr action_;

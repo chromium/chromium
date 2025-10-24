@@ -61,8 +61,6 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  gfx::PointF click_point = validated_result.value();
-
   WebMouseEvent::Button button;
   switch (action_->type) {
     case mojom::ClickAction::Type::kLeft: {
@@ -86,11 +84,13 @@ void ClickTool::Execute(ToolFinishedCallback callback) {
     }
   }
 
-  journal_->Log(task_id_, "ClickTool::Execute",
-                JournalDetailsBuilder().Add("point", click_point).Build());
+  ResolvedTarget target = validated_result.value();
+  journal_->Log(
+      task_id_, "ClickTool::Execute",
+      JournalDetailsBuilder().Add("point", target.widget_point).Build());
 
   CreateAndDispatchClick(
-      button, click_count, click_point, weak_ptr_factory_.GetWeakPtr(),
+      button, click_count, target, weak_ptr_factory_.GetWeakPtr(),
       base::BindOnce(&ClickTool::OnActionComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -132,7 +132,7 @@ ClickTool::ValidatedResult ClickTool::Validate() const {
     }
   }
 
-  return resolved_target->point;
+  return resolved_target;
 }
 
 }  // namespace actor

@@ -54,6 +54,7 @@ using ::blink::WebLocalFrame;
 using ::blink::WebMouseEvent;
 using ::blink::WebNode;
 using ::blink::WebString;
+using ::blink::WebWidget;
 
 namespace {
 
@@ -363,6 +364,7 @@ std::string_view WebInputEventResultToString(WebInputEventResult result) {
 }  // namespace
 
 WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
+    WebWidget& widget,
     WebInputEvent::Type type,
     KeyParams key_params) {
   WebKeyboardEvent key_event(type, key_params.modifiers, ui::EventTimeForNow());
@@ -375,9 +377,8 @@ WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
   key_event.text[0] = key_params.text;
   key_event.unmodified_text[0] = key_params.unmodified_text;
 
-  WebInputEventResult result =
-      frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
-          WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
+  WebInputEventResult result = widget.HandleInputEvent(
+      WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
   journal_->Log(task_id_, WebInputEvent::GetName(type),
                 JournalDetailsBuilder()
                     .Add("key", key_params.dom_key)
@@ -387,8 +388,17 @@ WebInputEventResult TypeTool::CreateAndDispatchKeyEvent(
   return result;
 }
 mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
-  WebInputEventResult down_result =
-      CreateAndDispatchKeyEvent(WebInputEvent::Type::kRawKeyDown, params);
+  CHECK(resolved_target_);
+
+  WebWidget* widget = resolved_target_->GetWidget(*this);
+  if (!widget) {
+    return MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "No widget during simulate key down");
+  }
+
+  WebInputEventResult down_result = CreateAndDispatchKeyEvent(
+      *widget, WebInputEvent::Type::kRawKeyDown, params);
 
   // Only the KeyDown event will check for and report failure. The reason the
   // other events don't is that if the KeyDown event was dispatched to the page,
@@ -404,17 +414,35 @@ mojom::ActionResultPtr TypeTool::SimulateKeyPress(TypeTool::KeyParams params) {
                       absl::StrFormat("Suppressed char[%s]", params.dom_key));
   }
 
+  // Input handling could cause the widget to be destroyed so it must be
+  // re-read.
+  widget = resolved_target_->GetWidget(*this);
+  if (!widget) {
+    return MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "No widget after simulate key down");
+  }
+
   if (params.dom_key != "Dead") {
     WebInputEventResult char_result =
-        CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+        CreateAndDispatchKeyEvent(*widget, WebInputEvent::Type::kChar, params);
     if (char_result == WebInputEventResult::kHandledSuppressed) {
       ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
                   << " suppressed.";
     }
   }
 
+  // Input handling could cause the widget to be destroyed so it must be
+  // re-read.
+  widget = resolved_target_->GetWidget(*this);
+  if (!widget) {
+    return MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "No widget after simulate key char");
+  }
+
   WebInputEventResult up_result =
-      CreateAndDispatchKeyEvent(WebInputEvent::Type::kKeyUp, params);
+      CreateAndDispatchKeyEvent(*widget, WebInputEvent::Type::kKeyUp, params);
   if (up_result == WebInputEventResult::kHandledSuppressed) {
     ACTOR_LOG() << "Warning: KeyUp event for key " << params.dom_key
                 << " suppressed.";
@@ -431,19 +459,22 @@ void TypeTool::Execute(ToolFinishedCallback callback) {
   }
 
   // Injecting a click to get focus.
-  gfx::PointF coordinate = *validated_target;
+  resolved_target_ = validated_target.value();
   journal_->Log(task_id_, "TypeTool::Execute::Focus",
-                JournalDetailsBuilder().Add("coord", coordinate).Build());
-  CreateAndDispatchClick(blink::WebMouseEvent::Button::kLeft, 1, coordinate,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         base::BindOnce(&TypeTool::OnFocusingClickComplete,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        coordinate, std::move(callback)));
+                JournalDetailsBuilder()
+                    .Add("coord", resolved_target_->widget_point)
+                    .Build());
+  CreateAndDispatchClick(
+      blink::WebMouseEvent::Button::kLeft, 1, *resolved_target_,
+      weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&TypeTool::OnFocusingClickComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
-                                       ToolFinishedCallback callback,
+void TypeTool::OnFocusingClickComplete(ToolFinishedCallback callback,
                                        mojom::ActionResultPtr click_result) {
+  CHECK(resolved_target_.has_value());
+
   // Cancel rest of typing if initial click failed.
   if (!IsOk(*click_result)) {
     journal_->Log(
@@ -452,6 +483,23 @@ void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
     std::move(callback).Run(std::move(click_result));
     return;
   }
+
+  WebWidget* widget = resolved_target_->GetWidget(*this);
+  if (!widget) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                   /*requires_page_stabilization=*/false,
+                   "Widget went away after focusing click."));
+    return;
+  }
+
+  // Preparing the target editable and checks on focused element currently
+  // assume we're using a FrameWidget. We'd have to rewrite those to be Widget
+  // agonistic in order to support these for popups. Skip for now since this
+  // isn't really a use case today.
+  // TODO(b/454392379): Set this correctly once ResolveTarget resolves to
+  // popups.
+  bool is_for_popup = false;
 
   // Note: Focus and preparing the target performs actions which lead to
   // script execution so `node` may no longer be focused (it or its frame
@@ -462,8 +510,11 @@ void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
   // Only prepare target if the click resulted in focusing an editable.
   // TODO(crbug.com/421133798): If the target isn't editable, the existing
   // TypeAction modes don't make sense.
-  WebLocalFrame* focused_frame =
-      frame_->GetWebFrame()->FrameWidget()->FocusedWebLocalFrameInWidget();
+  WebLocalFrame* focused_frame = is_for_popup
+                                     ? nullptr
+                                     : frame_->GetWebFrame()
+                                           ->FrameWidget()
+                                           ->FocusedWebLocalFrameInWidget();
   WebElement focused_element =
       focused_frame ? focused_frame->GetDocument().FocusedElement()
                     : WebElement();
@@ -546,9 +597,18 @@ void TypeTool::OnFocusingClickComplete(gfx::PointF coordinate,
 void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
   const KeyParams& params = key_sequence_[current_key_];
 
+  CHECK(resolved_target_.has_value());
+  WebWidget* widget = resolved_target_->GetWidget(*this);
+  if (!widget) {
+    std::move(callback).Run(MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                                       /*requires_page_stabilization=*/true,
+                                       "No widget during incremental typing"));
+    return;
+  }
+
   if (!is_key_down_) {
-    WebInputEventResult down_result =
-        CreateAndDispatchKeyEvent(WebInputEvent::Type::kRawKeyDown, params);
+    WebInputEventResult down_result = CreateAndDispatchKeyEvent(
+        *widget, WebInputEvent::Type::kRawKeyDown, params);
 
     // Only the KeyDown event will check for and report failure. The reason the
     // other events don't is that if the KeyDown event was dispatched to the
@@ -566,8 +626,18 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
       return;
     }
 
+    // Input handling could destroy the widget so it needs to be re-read.
+    widget = resolved_target_->GetWidget(*this);
+    if (!widget) {
+      std::move(callback).Run(
+          MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                     /*requires_page_stabilization=*/true,
+                     "No widget during incremental typing"));
+      return;
+    }
+
     WebInputEventResult char_result =
-        CreateAndDispatchKeyEvent(WebInputEvent::Type::kChar, params);
+        CreateAndDispatchKeyEvent(*widget, WebInputEvent::Type::kChar, params);
     if (char_result == WebInputEventResult::kHandledSuppressed) {
       ACTOR_LOG() << "Warning: Char event for key " << params.dom_key
                   << " suppressed.";
@@ -576,7 +646,7 @@ void TypeTool::ContinueIncrementalTyping(ToolFinishedCallback callback) {
     is_key_down_ = true;
   } else {
     WebInputEventResult up_result =
-        CreateAndDispatchKeyEvent(WebInputEvent::Type::kKeyUp, params);
+        CreateAndDispatchKeyEvent(*widget, WebInputEvent::Type::kKeyUp, params);
     if (up_result == WebInputEventResult::kHandledSuppressed) {
       ACTOR_LOG() << "Warning: KeyUp event for key " << params.dom_key
                   << " suppressed.";
@@ -665,7 +735,7 @@ TypeTool::ValidatedResult TypeTool::Validate() const {
       }
     }
   }
-  return resolved_target->point;
+  return resolved_target;
 }
 
 bool TypeTool::ProcessInputText(std::vector<KeyParams>& key_sequence) const {

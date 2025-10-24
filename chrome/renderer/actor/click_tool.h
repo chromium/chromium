@@ -18,10 +18,6 @@ namespace content {
 class RenderFrame;
 }  // namespace content
 
-namespace gfx {
-class PointF;
-}  // namespace gfx
-
 namespace actor {
 
 // A tool that can be invoked to perform a click on a target.
@@ -41,7 +37,8 @@ class ClickTool : public ToolBase {
   bool SupportsPaintStability() const override;
 
  private:
-  using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
+  using ValidatedResult =
+      base::expected<ResolvedTarget, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
   void OnActionComplete(ToolFinishedCallback callback,

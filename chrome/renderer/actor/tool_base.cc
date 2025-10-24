@@ -28,7 +28,10 @@
 
 using base::UmaHistogramEnumeration;
 using blink::WebElement;
+using blink::WebHitTestResult;
+using blink::WebLocalFrame;
 using blink::WebNode;
+using blink::WebWidget;
 
 namespace actor {
 namespace {
@@ -54,6 +57,15 @@ enum class TimeOfUseResult {
 
 }  // namespace
 
+WebWidget* ResolvedTarget::GetWidget(const ToolBase& tool) const {
+  WebLocalFrame* web_frame = tool.frame()->GetWebFrame();
+  if (!web_frame || !web_frame->FrameWidget()) {
+    return nullptr;
+  }
+
+  return web_frame->FrameWidget();
+}
+
 base::TimeDelta ToolBase::ExecutionObservationDelay() const {
   return base::TimeDelta();
 }
@@ -77,8 +89,14 @@ ToolBase::~ToolBase() = default;
 
 ToolBase::ResolveResult ToolBase::ResolveTarget(
     const mojom::ToolTarget& target) const {
-  ResolvedTarget resolved_target;
+  WebNode node;
+  gfx::PointF point;
+  WebWidget* widget = frame_->GetWebFrame()->FrameWidget();
+  CHECK(widget);
+
   if (target.is_coordinate_dip()) {
+    // TODO(bokan) Move DIPsToBlinkSpace onto WebWidget but this shouldn't
+    // matter since it's just a scale factor global to the page.
     gfx::PointF coordinate_point =
         frame_->GetWebFrame()->FrameWidget()->DIPsToBlinkSpace(
             gfx::PointF(target.get_coordinate_dip()));
@@ -89,36 +107,35 @@ ToolBase::ResolveResult ToolBase::ResolveTarget(
                      absl::StrFormat("Point (physical) [%s]",
                                      coordinate_point.ToString())));
     }
-    resolved_target.point = coordinate_point;
+    point = coordinate_point;
 
     // Perform a hit test to find the node at the coordinates.
-    const blink::WebHitTestResult hit_test_result =
-        frame_->GetWebFrame()->FrameWidget()->HitTestResultAt(
-            resolved_target.point);
-    resolved_target.node = hit_test_result.GetNodeOrPseudoNode();
+    const WebHitTestResult hit_test_result = widget->HitTestResultAt(point);
+    node = hit_test_result.GetNodeOrPseudoNode();
   } else if (target.is_dom_node_id()) {
     int32_t dom_node_id = target.get_dom_node_id();
-    resolved_target.node = GetNodeFromId(frame_.get(), dom_node_id);
-    if (resolved_target.node.IsNull()) {
+    node = GetNodeFromId(frame_.get(), dom_node_id);
+    if (node.IsNull()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
     }
 
     std::optional<gfx::PointF> node_interaction_point =
-        InteractionPointFromWebNode(resolved_target.node);
+        InteractionPointFromWebNode(node);
     if (!node_interaction_point.has_value()) {
       return base::unexpected(
           MakeResult(mojom::ActionResultCode::kElementOffscreen,
                      /*requires_page_stabilization=*/false,
-                     absl::StrFormat("[Element %s]",
-                                     base::ToString(resolved_target.node))));
+                     absl::StrFormat("[Element %s]", base::ToString(node))));
     }
-    resolved_target.point = *node_interaction_point;
+    point = *node_interaction_point;
   } else {
     NOTREACHED();
   }
 
-  return resolved_target;
+  // TODO(b/454392379): Add a popup_handle so GetWidget can return the popup
+  // widget.
+  return ResolvedTarget{.node = node, .widget_point = point};
 }
 
 ToolBase::ResolveResult ToolBase::ValidateAndResolveTarget() const {
@@ -163,7 +180,7 @@ void ToolBase::EnsureTargetInView() {
 
 mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     const ResolvedTarget& resolved_target) const {
-  const blink::WebNode& target_node = resolved_target.node;
+  const WebNode& target_node = resolved_target.node;
 
   // For coordinate target, check the observed node matches the live DOM hit
   // test target.
@@ -178,7 +195,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       return MakeOkResult();
     }
 
-    const blink::WebNode& observed_target_node =
+    const WebNode& observed_target_node =
         GetNodeFromId(*frame_, *observed_target_->node_attribute->dom_node_id);
 
     if (observed_target_node.IsNull()) {
@@ -230,12 +247,13 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     }
   } else {
     CHECK(target_->is_dom_node_id());
+    WebWidget* widget = resolved_target.GetWidget(*this);
+    CHECK(widget);
     // Check that the interaction point will actually hit
     // on the intended element, i.e. centre point of node is not occluded.
-    const blink::WebHitTestResult hit_test_result =
-        frame_->GetWebFrame()->FrameWidget()->HitTestResultAt(
-            resolved_target.point);
-    const blink::WebElement hit_element = hit_test_result.GetElement();
+    const WebHitTestResult hit_test_result =
+        widget->HitTestResultAt(resolved_target.widget_point);
+    const WebElement hit_element = hit_test_result.GetElement();
     // The action target from APC is not as granular as the live DOM hit test.
     // Include shadow host element as the hit test would land on those. Also
     // check if the hit element was pulled in via a Web Components slot.
@@ -273,7 +291,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
           JournalDetailsBuilder()
               .Add("obs_node_id",
                    *observed_target_->node_attribute->dom_node_id)
-              .Add("point", gfx::ToFlooredPoint(resolved_target.point))
+              .Add("point", gfx::ToFlooredPoint(resolved_target.widget_point))
               .AddError("No geometry for node")
               .Build());
       // TODO(crbug.com/418280472): return error after retry for failed task
@@ -287,11 +305,12 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     // box from last APC.
     const gfx::Rect observed_bounds =
         observed_target_->node_attribute->geometry->outer_bounding_box;
-    if (!observed_bounds.Contains(gfx::ToFlooredPoint(resolved_target.point))) {
+    if (!observed_bounds.Contains(
+            gfx::ToFlooredPoint(resolved_target.widget_point))) {
       journal_->Log(task_id_, "TimeOfUseValidation",
                     JournalDetailsBuilder()
                         .Add("resolved_target_point",
-                             gfx::ToFlooredPoint(resolved_target.point))
+                             gfx::ToFlooredPoint(resolved_target.widget_point))
                         .Add("bounding_box", observed_bounds)
                         .AddError("Point not in box")
                         .Build());

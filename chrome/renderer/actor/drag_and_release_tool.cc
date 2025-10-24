@@ -28,6 +28,7 @@ using ::blink::WebInputEvent;
 using ::blink::WebInputEventResult;
 using ::blink::WebLocalFrame;
 using ::blink::WebMouseEvent;
+using ::blink::WebWidget;
 using ::blink::mojom::EventType;
 
 DragAndReleaseTool::DragAndReleaseTool(
@@ -53,29 +54,49 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  gfx::PointF from_point = validated_result->from;
-  gfx::PointF to_point = validated_result->to;
+  ResolvedTarget from_target = validated_result->from;
+  ResolvedTarget to_target = validated_result->to;
+
+  WebWidget* widget = from_target.GetWidget(*this);
+  CHECK(widget);
 
   // TODO(crbug.com/409333494): How should partial success be returned.
 
   // Move and press down the mouse on the from_point.
-  if (!InjectMouseEvent(EventType::kMouseMove, from_point,
+  if (!InjectMouseEvent(*widget, from_target.widget_point,
+                        EventType::kMouseMove,
                         WebMouseEvent::Button::kNoButton)) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kDragAndReleaseFromMoveSuppressed));
     return;
   }
 
-  if (!InjectMouseEvent(EventType::kMouseDown, from_point,
-                        WebMouseEvent::Button::kLeft)) {
+  // Re-check widget after each input since it could be destroyed as part of
+  // input handling.
+  widget = from_target.GetWidget(*this);
+  if (!widget) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway));
+    return;
+  }
+
+  if (!InjectMouseEvent(*widget, from_target.widget_point,
+                        EventType::kMouseDown, WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kDragAndReleaseDownSuppressed,
                    /*requires_page_stabilization=*/true));
     return;
   }
 
+  widget = from_target.GetWidget(*this);
+  if (!widget) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway));
+    return;
+  }
+
   // Move and release the mouse on the to_point.
-  if (!InjectMouseEvent(EventType::kMouseMove, to_point,
+  if (!InjectMouseEvent(*widget, to_target.widget_point, EventType::kMouseMove,
                         WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kDragAndReleaseToMoveSuppressed,
@@ -83,7 +104,14 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  if (!InjectMouseEvent(EventType::kMouseUp, to_point,
+  widget = from_target.GetWidget(*this);
+  if (!widget) {
+    std::move(callback).Run(
+        MakeResult(mojom::ActionResultCode::kFrameWentAway));
+    return;
+  }
+
+  if (!InjectMouseEvent(*widget, to_target.widget_point, EventType::kMouseUp,
                         WebMouseEvent::Button::kLeft)) {
     std::move(callback).Run(
         MakeResult(mojom::ActionResultCode::kDragAndReleaseUpSuppressed,
@@ -121,14 +149,21 @@ DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
     return base::unexpected(std::move(resolved_to.error()));
   }
 
+  if (resolved_from->GetWidget(*this) != resolved_to->GetWidget(*this)) {
+    // Drag across widgets (i.e. between frame and popup) isn't currently
+    // supported.
+    return base::unexpected(MakeErrorResult());
+  }
+
   // TODO(b/450018073): This should be checking the targets for time-of-use
   // validity.
 
-  return DragParams{resolved_from.value().point, resolved_to.value().point};
+  return DragParams{resolved_from.value(), resolved_to.value()};
 }
 
-bool DragAndReleaseTool::InjectMouseEvent(WebInputEvent::Type type,
-                                          const gfx::PointF& position_in_widget,
+bool DragAndReleaseTool::InjectMouseEvent(WebWidget& widget,
+                                          gfx::PointF& position_in_widget,
+                                          WebInputEvent::Type type,
                                           WebMouseEvent::Button button) {
   WebMouseEvent mouse_event(type, WebInputEvent::kNoModifiers,
                             ui::EventTimeForNow());
@@ -140,9 +175,8 @@ bool DragAndReleaseTool::InjectMouseEvent(WebInputEvent::Type type,
     mouse_event.click_count = 1;
   }
 
-  WebInputEventResult result =
-      frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
-          WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
+  WebInputEventResult result = widget.HandleInputEvent(
+      WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
   return result != WebInputEventResult::kHandledSuppressed;
 }
 

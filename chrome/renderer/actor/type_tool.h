@@ -19,6 +19,10 @@
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/web/web_element.h"
 
+namespace blink {
+class WebWidget;
+}  // namespace blink
+
 namespace content {
 class RenderFrame;
 }  // namespace content
@@ -64,7 +68,8 @@ class TypeTool : public ToolBase {
     char16_t unmodified_text = u'\0';
   };
 
-  using ValidatedResult = base::expected<gfx::PointF, mojom::ActionResultPtr>;
+  using ValidatedResult =
+      base::expected<ResolvedTarget, mojom::ActionResultPtr>;
   ValidatedResult Validate() const;
 
   // Return true if input text can be procssed into a series of keypresses.
@@ -72,16 +77,19 @@ class TypeTool : public ToolBase {
   KeyParams GetEnterKeyParams() const;
   std::optional<KeyParams> GetKeyParamsForChar(char16_t c) const;
   blink::WebInputEventResult CreateAndDispatchKeyEvent(
+      blink::WebWidget& widget,
       blink::WebInputEvent::Type type,
       KeyParams key_params);
   mojom::ActionResultPtr SimulateKeyPress(TypeTool::KeyParams params);
 
-  void OnFocusingClickComplete(gfx::PointF coordinate,
-                               ToolFinishedCallback callback,
+  void OnFocusingClickComplete(ToolFinishedCallback callback,
                                mojom::ActionResultPtr click_result);
   void ContinueIncrementalTyping(ToolFinishedCallback callback);
 
   mojom::TypeActionPtr action_;
+
+  // Null until validation is completed.
+  std::optional<ResolvedTarget> resolved_target_;
 
   // Used when typing incrementally.
   std::vector<KeyParams> key_sequence_;
