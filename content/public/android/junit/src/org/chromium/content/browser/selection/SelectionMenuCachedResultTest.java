@@ -7,6 +7,7 @@ package org.chromium.content.browser.selection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import android.content.Context;
 import android.view.textclassifier.TextClassification;
 
 import org.junit.Assert;
@@ -19,13 +20,11 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionClient.Result;
-import org.chromium.content_public.browser.SelectionMenuGroup;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
-
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /** Unit tests for {@link SelectionMenuCachedResult}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -34,15 +33,16 @@ public class SelectionMenuCachedResultTest {
     @Mock private TextClassification mTextClassification1;
     @Mock private TextClassification mTextClassification2;
     @Mock private SelectionActionMenuDelegate mSelectionActionMenuDelegate;
+    @Mock private Context mContext;
     private final SelectionClient.Result mClassificationResult1 = new Result();
     private final SelectionClient.Result mClassificationResult2 = new Result();
 
-    private SortedSet<SelectionMenuGroup> mMenuItems;
+    private PendingSelectionMenu mMenuItems;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMenuItems = new TreeSet<>();
+        mMenuItems = new PendingSelectionMenu(mContext);
 
         mClassificationResult1.setTextClassificationForTesting(mTextClassification1);
         Mockito.when(mSelectionActionMenuDelegate.canReuseCachedSelectionMenu()).thenReturn(true);
@@ -51,8 +51,10 @@ public class SelectionMenuCachedResultTest {
 
     @Test
     public void testCachedMenuResultGetter() {
-        SelectionMenuGroup defaultGroup = new SelectionMenuGroup(1, 1);
-        mMenuItems.add(defaultGroup);
+        mMenuItems.addMenuItem(
+                new SelectionMenuItem.Builder("Test")
+                        .setOrderAndCategory(0, SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS)
+                        .build());
 
         SelectionMenuCachedResult menuParams =
                 new SelectionMenuCachedResult(null, false, true, "test", mMenuItems);

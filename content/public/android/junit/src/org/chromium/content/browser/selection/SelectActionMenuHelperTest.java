@@ -5,7 +5,9 @@
 package org.chromium.content.browser.selection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -18,6 +20,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.TypedArray;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +33,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.R;
-import org.chromium.content_public.browser.SelectionMenuGroup;
+import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 
@@ -55,25 +58,26 @@ public class SelectActionMenuHelperTest {
             for (SelectionMenuItem.Builder builder : menuItemBuilders) {
                 int menuItemOrder = getMenuItemOrder(builder.mId);
                 if (menuItemOrder == -1) continue;
-                builder.setOrderInCategory(menuItemOrder);
+                builder.setOrderAndCategory(
+                        menuItemOrder, SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS);
             }
         }
 
         private int getMenuItemOrder(int id) {
             if (id == R.id.select_action_menu_cut) {
-                return 1;
+                return 0;
             } else if (id == R.id.select_action_menu_copy) {
-                return 2;
+                return 1;
             } else if (id == R.id.select_action_menu_paste) {
-                return 3;
+                return 2;
             } else if (id == R.id.select_action_menu_paste_as_plain_text) {
-                return 4;
+                return 3;
             } else if (id == R.id.select_action_menu_select_all) {
-                return 5;
+                return 4;
             } else if (id == R.id.select_action_menu_share) {
-                return 6;
+                return 5;
             } else if (id == R.id.select_action_menu_web_search) {
-                return 7;
+                return 6;
             }
             return -1;
         }
@@ -112,6 +116,11 @@ public class SelectActionMenuHelperTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        // Used to mock out getting menu item icons.
+        TypedArray a = mock(TypedArray.class);
+        when(mContext.obtainStyledAttributes(any(int[].class))).thenReturn(a);
+        when(a.getResourceId(anyInt(), anyInt())).thenReturn(0);
+
         when(mDelegate.canCut()).thenReturn(true);
         when(mDelegate.canCopy()).thenReturn(true);
         when(mDelegate.canPaste()).thenReturn(true);
@@ -124,23 +133,24 @@ public class SelectActionMenuHelperTest {
     @Test
     @Feature({"TextInput"})
     public void testDefaultMenuItemsOrder() {
-        SelectionMenuGroup menuGroup =
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        pendingMenu.addAll(
                 SelectActionMenuHelper.getDefaultItems(
                         mContext,
                         mDelegate,
                         null,
                         /* isSelectionPassword= */ true,
                         /* isSelectionReadOnly= */ true,
-                        /* selectedText= */ "test");
-        assertEquals(7, menuGroup.items.size());
-        SelectionMenuItem[] items = menuGroup.items.toArray(new SelectionMenuItem[0]);
-        assertEquals(items[0].id, R.id.select_action_menu_cut);
-        assertEquals(items[1].id, R.id.select_action_menu_copy);
-        assertEquals(items[2].id, R.id.select_action_menu_paste);
-        assertEquals(items[3].id, R.id.select_action_menu_paste_as_plain_text);
-        assertEquals(items[4].id, R.id.select_action_menu_share);
-        assertEquals(items[5].id, R.id.select_action_menu_select_all);
-        assertEquals(items[6].id, R.id.select_action_menu_web_search);
+                        /* selectedText= */ "test"));
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertEquals(7, menuItems.size());
+        assertEquals(menuItems.get(0).id, R.id.select_action_menu_cut);
+        assertEquals(menuItems.get(1).id, R.id.select_action_menu_copy);
+        assertEquals(menuItems.get(2).id, R.id.select_action_menu_paste);
+        assertEquals(menuItems.get(3).id, R.id.select_action_menu_paste_as_plain_text);
+        assertEquals(menuItems.get(4).id, R.id.select_action_menu_share);
+        assertEquals(menuItems.get(5).id, R.id.select_action_menu_select_all);
+        assertEquals(menuItems.get(6).id, R.id.select_action_menu_web_search);
     }
 
     @Test
@@ -148,23 +158,24 @@ public class SelectActionMenuHelperTest {
     public void testDefaultMenuItemsOrderUsingSelectionActionMenuDelegate() {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
-        SelectionMenuGroup menuGroup =
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        pendingMenu.addAll(
                 SelectActionMenuHelper.getDefaultItems(
                         mContext,
                         mDelegate,
                         selectionActionMenuDelegate,
                         /* isSelectionPassword= */ true,
                         /* isSelectionReadOnly= */ true,
-                        /* selectedText= */ "test");
-        assertEquals(7, menuGroup.items.size());
-        SelectionMenuItem[] items = menuGroup.items.toArray(new SelectionMenuItem[0]);
-        assertEquals(items[0].id, R.id.select_action_menu_cut);
-        assertEquals(items[1].id, R.id.select_action_menu_copy);
-        assertEquals(items[2].id, R.id.select_action_menu_paste);
-        assertEquals(items[3].id, R.id.select_action_menu_paste_as_plain_text);
-        assertEquals(items[4].id, R.id.select_action_menu_select_all);
-        assertEquals(items[5].id, R.id.select_action_menu_share);
-        assertEquals(items[6].id, R.id.select_action_menu_web_search);
+                        /* selectedText= */ "test"));
+        List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
+        assertEquals(7, menuItems.size());
+        assertEquals(menuItems.get(0).id, R.id.select_action_menu_cut);
+        assertEquals(menuItems.get(1).id, R.id.select_action_menu_copy);
+        assertEquals(menuItems.get(2).id, R.id.select_action_menu_paste);
+        assertEquals(menuItems.get(3).id, R.id.select_action_menu_paste_as_plain_text);
+        assertEquals(menuItems.get(4).id, R.id.select_action_menu_select_all);
+        assertEquals(menuItems.get(5).id, R.id.select_action_menu_share);
+        assertEquals(menuItems.get(6).id, R.id.select_action_menu_web_search);
     }
 
     @Test
@@ -184,29 +195,56 @@ public class SelectActionMenuHelperTest {
                 };
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
-        SelectionMenuGroup group =
+        List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
                         mContext, false, true, "test", intentHandler, null);
-        assertEquals(1, group.items.size());
+        assertNotNull(textProcessingItems);
+        assertEquals(1, textProcessingItems.size());
 
-        group =
+        textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
                         mContext, false, true, "test", intentHandler, selectionActionMenuDelegate);
-        assertEquals(0, group.items.size());
+        assertNotNull(textProcessingItems);
+        assertTrue(textProcessingItems.isEmpty());
     }
 
     @Test
     @Feature({"TextInput"})
     public void testGetTextProcessingItems_emptySelection() {
         SelectActionMenuHelper.TextProcessingIntentHandler intentHandler =
-                new SelectActionMenuHelper.TextProcessingIntentHandler() {
-                    @Override
-                    public void handleIntent(Intent textProcessingIntent) {}
-                };
-        SelectionMenuGroup group =
+                textProcessingIntent -> {};
+        List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
                         mContext, false, true, "", intentHandler, null);
-        assertNull(group);
+        assertNull(textProcessingItems);
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    public void setMenuItemOrder_doesNotSpillIntoNextGroup() {
+        int largeOffset = 10000;
+        SelectionMenuItem primaryAssistItem =
+                new SelectionMenuItem.Builder("")
+                        .setOrderAndCategory(
+                                largeOffset, SelectionMenuItem.ItemGroupOffset.ASSIST_ITEMS)
+                        .build();
+        SelectionMenuItem defaultItem =
+                new SelectionMenuItem.Builder("")
+                        .setOrderAndCategory(
+                                largeOffset, SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS)
+                        .build();
+        SelectionMenuItem secondaryAssistItem =
+                new SelectionMenuItem.Builder("")
+                        .setOrderAndCategory(
+                                largeOffset,
+                                SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
+                        .build();
+
+        assertTrue(primaryAssistItem.order < SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS);
+        assertTrue(defaultItem.order < SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
+        assertTrue(
+                secondaryAssistItem.order
+                        < SelectionMenuItem.ItemGroupOffset.TEXT_PROCESSING_ITEMS);
     }
 
     private ResolveInfo createResolveInfoWithActivityInfo(String activityName, boolean exported) {

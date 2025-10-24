@@ -37,7 +37,9 @@ public class AutofillSelectionMenuItemHelper {
                                             .autofill_long_press_passkey_option)
                             .setId(R.id.select_action_menu_passkey_entry)
                             .setGroupId(R.id.select_action_menu_delegate_items)
-                            .setOrderInCategory(Menu.FIRST)
+                            .setOrderAndCategory(
+                                    Menu.FIRST,
+                                    SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_ALWAYS
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
@@ -48,7 +50,9 @@ public class AutofillSelectionMenuItemHelper {
                     new SelectionMenuItem.Builder(mAutofillMenuItemTitle)
                             .setId(android.R.id.autofill)
                             .setGroupId(R.id.select_action_menu_delegate_items)
-                            .setOrderInCategory(Menu.CATEGORY_SECONDARY)
+                            .setOrderAndCategory(
+                                    Menu.CATEGORY_SECONDARY, // Show at end of section.
+                                    SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_NEVER
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)

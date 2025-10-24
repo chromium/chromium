@@ -66,11 +66,11 @@ import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
+import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
-import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
@@ -90,7 +90,6 @@ import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 
 /** Unit tests for {@link SelectionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -776,7 +775,7 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
         showSelectionMenu(
                 mController,
                 AMPHITHEATRE_FULL,
@@ -784,7 +783,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertSame(result, mController.getMenuItems());
+        Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu());
     }
 
     @Test
@@ -801,7 +800,7 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
         showSelectionMenu(
                 mController,
                 AMPHITHEATRE_FULL,
@@ -809,7 +808,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertNotSame(result, mController.getMenuItems());
+        Assert.assertNotSame(pendingMenu, mController.getPendingSelectionMenu());
     }
 
     @Test
@@ -826,7 +825,7 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
         showSelectionMenu(
                 mController,
                 AMPHITHEATRE_FULL,
@@ -834,7 +833,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertSame(result, mController.getMenuItems());
+        Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu());
     }
 
     @Test
@@ -847,15 +846,16 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
         showSelectionMenu(
                 mController, AMPHITHEATRE, /* selectionStartOffset= */ 0, MenuSourceType.MOUSE);
 
         // Check the menu is different and not similar to the one we have stored.
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertNotSame(result, mController.getMenuItems());
+        Assert.assertNotSame(pendingMenu, mController.getPendingSelectionMenu());
         Assert.assertNotSame(
-                mController.getSelectionMenuCachedResultForTesting(), mController.getMenuItems());
+                mController.getSelectionMenuCachedResultForTesting(),
+                mController.getPendingSelectionMenu());
     }
 
     @Test

@@ -6,12 +6,11 @@ package org.chromium.content.browser.selection;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 
 import java.util.Objects;
-import java.util.SortedSet;
 
 /**
  * Stores text selection state and corresponding menu items for caching purposes. The {@link
@@ -31,23 +30,23 @@ public class SelectionMenuCachedResult {
     private final boolean mIsSelectionPassword;
     private final boolean mIsSelectionReadOnly;
     private final String mSelectedText;
-    private final SortedSet<SelectionMenuGroup> mLastSelectionMenuItems;
+    private final PendingSelectionMenu mLastSelectionMenu;
 
     public SelectionMenuCachedResult(
             SelectionClient.@Nullable Result classificationResult,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
-            SortedSet<SelectionMenuGroup> lastSelectionMenuItems) {
+            PendingSelectionMenu lastSelectionMenu) {
         mClassificationResult = classificationResult;
         mIsSelectionPassword = isSelectionPassword;
         mIsSelectionReadOnly = isSelectionReadOnly;
         mSelectedText = selectedText;
-        mLastSelectionMenuItems = lastSelectionMenuItems;
+        mLastSelectionMenu = lastSelectionMenu;
     }
 
-    public SortedSet<SelectionMenuGroup> getResult() {
-        return mLastSelectionMenuItems;
+    public PendingSelectionMenu getResult() {
+        return mLastSelectionMenu;
     }
 
     /**

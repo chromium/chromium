@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.provider.Browser;
@@ -61,10 +60,10 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeEventObserver;
+import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -92,7 +91,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 
 /** Implementation of the interface {@link SelectionPopupController}. */
 @JNINamespace("content")
@@ -690,57 +688,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         MVCListAdapter.ModelList items = new MVCListAdapter.ModelList();
         if (mDropdownMenuDelegate != null) {
             assumeNonNull(mContext);
-            SortedSet<SelectionMenuGroup> allItemGroups = getMenuItems();
-
-            int groupIndex = 0;
-            for (SelectionMenuGroup group : allItemGroups) {
-                // First determine if any item in the group contains an icon. Given
-                // there will always be a small amount of items in the menu it is
-                // okay to run this loop twice. This property will be used later on when
-                // rendering the items to determine title spacing.
-                boolean groupContainsIcon = false;
-                for (SelectionMenuItem item : group.items) {
-                    groupContainsIcon = item.isEnabled && item.getIcon(mContext) != null;
-
-                    // Exit early if there is an icon found.
-                    if (groupContainsIcon) {
-                        break;
-                    }
-                }
-
-                // Add a divider above the new group.
-                final boolean addDivider = groupIndex > 0;
-
-                int itemIndexInGroup = 0;
-                // Populate the items from the group.
-                for (SelectionMenuItem item : group.items) {
-                    if (!item.isEnabled) {
-                        // We will only add items if they are enabled.
-                        continue;
-                    }
-                    if (itemIndexInGroup++ == 0 && addDivider) {
-                        items.add(mDropdownMenuDelegate.getDivider());
-                    }
-
-                    CharSequence title = item.getTitle(mContext);
-                    CharSequence contentDescription = item.contentDescription;
-                    items.add(
-                            mDropdownMenuDelegate.getMenuItem(
-                                    title != null ? title.toString() : null,
-                                    contentDescription != null
-                                            ? contentDescription.toString()
-                                            : null,
-                                    group.id,
-                                    item.id,
-                                    item.getIcon(mContext),
-                                    item.isIconTintable,
-                                    groupContainsIcon,
-                                    true,
-                                    item.clickListener,
-                                    item.intent));
-                }
-                groupIndex++;
-            }
+            PendingSelectionMenu pendingMenu = getPendingSelectionMenu();
+            items = pendingMenu.getMenuAsDropdown(mDropdownMenuDelegate);
         }
         return items;
     }
@@ -963,27 +912,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         assumeNonNull(mContext);
-        SortedSet<SelectionMenuGroup> menuItems = getMenuItems();
-
-        SelectActionMenuHelper.removeAllAddedGroupsFromMenu(menu);
-        mCustomActionMenuItemClickListeners.clear();
-        initializeActionMenu(
-                mContext,
-                menuItems,
-                menu,
-                mCustomActionMenuItemClickListeners,
-                item -> {
-                    logSelectionAction(item.getGroupId(), item.getItemId());
-                    return false;
-                });
-
+        PendingSelectionMenu pendingMenu = getPendingSelectionMenu();
+        pendingMenu.getMenuAsActionMode(menu, mCustomActionMenuItemClickListeners);
         return true;
     }
 
-    // TODO(crbug.com/445155873): Refactor this to directly populate the Menu for ActionMode and the
-    //  MVCListAdapter.ModelList for dropdown menus.
     @VisibleForTesting
-    public SortedSet<SelectionMenuGroup> getMenuItems() {
+    public PendingSelectionMenu getPendingSelectionMenu() {
         TextProcessingIntentHandler textProcessingIntentHandler =
                 isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT) ? this::processText : null;
 
@@ -996,98 +931,31 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         getSelectedText(),
                         mSelectionActionMenuDelegate)) {
             assert mContext != null;
+            PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+            SelectActionMenuHelper.populateMenuItems(
+                    this,
+                    pendingMenu,
+                    mContext,
+                    mClassificationResult,
+                    isSelectionPassword(),
+                    !isFocusedNodeEditable(),
+                    getSelectedText(),
+                    textProcessingIntentHandler,
+                    mSelectionActionMenuDelegate);
             mSelectionMenuCachedResult =
                     new SelectionMenuCachedResult(
                             mClassificationResult,
                             isSelectionPassword(),
                             !isFocusedNodeEditable(),
                             getSelectedText(),
-                            SelectActionMenuHelper.getMenuItems(
-                                    this,
-                                    mContext,
-                                    mClassificationResult,
-                                    isSelectionPassword(),
-                                    !isFocusedNodeEditable(),
-                                    getSelectedText(),
-                                    textProcessingIntentHandler,
-                                    mSelectionActionMenuDelegate));
+                            pendingMenu);
         }
 
         // Return the cached menu items for this selection.
         return mSelectionMenuCachedResult.getResult();
     }
 
-    /**
-     * Initializes the action menu.
-     *
-     * @param customMenuItemClickListeners map to populate any custom click listeners for menu
-     *     items.
-     * @param additionalMenuItemClickListener executes after every menu item is clicked.
-     */
-    public static void initializeActionMenu(
-            Context context,
-            SortedSet<SelectionMenuGroup> menuGroups,
-            Menu menu,
-            Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
-            MenuItem.@Nullable OnMenuItemClickListener additionalMenuItemClickListener) {
-        for (SelectionMenuGroup group : menuGroups) {
-            addMenuItemsToActionMenu(
-                    context,
-                    group,
-                    menu,
-                    customMenuItemClickListeners,
-                    additionalMenuItemClickListener);
-        }
-    }
-
-    /**
-     * Adds the menu items from the {@link SelectionMenuGroup} to the action menu.
-     *
-     * @param additionalMenuItemClickListener executes after every menu item is clicked.
-     */
-    private static void addMenuItemsToActionMenu(
-            Context context,
-            SelectionMenuGroup group,
-            Menu menu,
-            Map<MenuItem, View.OnClickListener> customMenuItemClickListeners,
-            MenuItem.@Nullable OnMenuItemClickListener additionalMenuItemClickListener) {
-        // All menu items and groups are sorted already at this point, so this is just passing
-        // 1-indexed value as order.
-        int menuItemCount = menu.size();
-        for (SelectionMenuItem item : group.items) {
-            if (!item.isEnabled) {
-                // We will only add items if they are enabled. This will prevent us from
-                // needing to remove them.
-                continue;
-            }
-            MenuItem menuItem =
-                    menu.add(group.id, item.id, ++menuItemCount, item.getTitle(context))
-                            .setShowAsActionFlags(item.showAsActionFlags);
-            @Nullable Drawable icon = item.getIcon(context);
-            if (icon != null) {
-                menuItem.setIcon(icon);
-            }
-            @Nullable Character alphabeticShortcut = item.alphabeticShortcut;
-            if (alphabeticShortcut != null) {
-                menuItem.setAlphabeticShortcut(alphabeticShortcut);
-            }
-            @Nullable CharSequence contentDescription = item.contentDescription;
-            if (contentDescription != null) {
-                menuItem.setContentDescription(contentDescription);
-            }
-            if (item.clickListener != null) {
-                customMenuItemClickListeners.put(menuItem, item.clickListener);
-            }
-            menuItem.setOnMenuItemClickListener(
-                    clickedMenuItem -> {
-                        if (additionalMenuItemClickListener != null) {
-                            additionalMenuItemClickListener.onMenuItemClick(clickedMenuItem);
-                        }
-                        return false;
-                    });
-            menuItem.setIntent(item.intent);
-        }
-    }
+    // TextSelectionCapabilitiesDelegate overrides
 
     /** Checks if copy action is available. */
     @Override
@@ -1144,6 +1012,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return Clipboard.getInstance().hasHTMLOrStyledText();
     }
 
+    // End of TextSelectionCapabilitiesDelegate overrides.
+
     /** Testing use only. Initialize the menu items for processing text, if there is any. */
     /* package */ void initializeTextProcessingMenuForTesting(ActionMode mode, Menu menu) {
         if (!isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT)) {
@@ -1151,7 +1021,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
         assert mContext != null;
 
-        SelectionMenuGroup textProcessingItems =
+        List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
                         mContext,
                         false,
@@ -1159,9 +1029,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         "test",
                         this::processText,
                         mSelectionActionMenuDelegate);
-        if (textProcessingItems != null && !textProcessingItems.items.isEmpty()) {
-            addMenuItemsToActionMenu(
-                    mContext, textProcessingItems, menu, mCustomActionMenuItemClickListeners, null);
+        if (textProcessingItems != null && !textProcessingItems.isEmpty()) {
+            PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+            pendingMenu.addAll(textProcessingItems);
+            pendingMenu.getMenuAsActionMode(menu, mCustomActionMenuItemClickListeners);
         }
     }
 
