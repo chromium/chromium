@@ -351,7 +351,8 @@ const base::FeatureParam<int> kGlicActorUiCompletedTaskExpiryDelaySeconds{
     &kGlicActorUi, kGlicActorUiCompletedTaskExpiryDelaySecondsName, 10};
 
 // Controls renderer tool observation timeout when waiting on local
-// (non-network) work.
+// (non-network) work. This has no effect when kGlicActorPageStabilityMinWait is
+// enabled.
 const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityLocalTimeout{
     &kGlicActor, "glic-actor-page-stability-local-timeout", base::Seconds(3)};
 
@@ -360,11 +361,16 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityTimeout{
     &kGlicActor, "glic-actor-page-stability-timeout", base::Seconds(4)};
 
 // An artificial delay before signalling the tools that the page has become
-// stable.
+// stable. This has no effect when kGlicActorPageStabilityMinWait is enabled.
 const base::FeatureParam<base::TimeDelta>
     kGlicActorPageStabilityInvokeCallbackDelay{
         &kGlicActor, "glic-actor-page-stability-invoke-callback-delay",
         base::Milliseconds(200)};
+
+// The minimum amount of time to wait for page stability before invoking the
+// callback.
+const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityMinWait{
+    &kGlicActor, "glic-actor-page-stability-min-wait", base::Milliseconds(500)};
 
 // The overall observation timeout when waiting for a tool to complete.
 // This timeout is long but based on the NavigationToLoadEventFired UMA. This

@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -62,6 +63,23 @@ using optimization_guide::proto::ClickAction;
 // Note: this file doesn't actually exist, the response is manually provided by
 // tests.
 const char* kFetchPath = "/fetchtarget.html";
+
+std::string DescribePaintStabilityMode(
+    ::features::ActorPaintStabilityMode paint_monitor_mode) {
+  std::stringstream params_description;
+  switch (paint_monitor_mode) {
+    case ::features::ActorPaintStabilityMode::kDisabled:
+      params_description << "PaintMonitorDisabled";
+      break;
+    case ::features::ActorPaintStabilityMode::kLogOnly:
+      params_description << "PaintMonitorLog";
+      break;
+    case ::features::ActorPaintStabilityMode::kEnabled:
+      params_description << "PaintMonitorEnabled";
+      break;
+  }
+  return params_description.str();
+}
 
 // Tests for the PageStabilityMonitor's functionality of delaying renderer-tool
 // completion until the page is ready for an observation.
@@ -146,6 +164,29 @@ class ActorPageStabilityTestBase : public InProcessBrowserTest {
     fetch_response_->Done();
   }
 
+  mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor(
+      features::ActorPaintStabilityMode paint_stability_mode) {
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame;
+    main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &chrome_render_frame);
+
+    // TODO(bokan): Once paint stability ships, the param should be replaced by
+    // a new one since some tools will continue to not support it.
+    bool use_paint_stability =
+        paint_stability_mode != features::ActorPaintStabilityMode::kDisabled;
+
+    mojo::Remote<mojom::PageStabilityMonitor> monitor_remote;
+    chrome_render_frame->CreatePageStabilityMonitor(
+        monitor_remote.BindNewPipeAndPassReceiver(), actor::TaskId(),
+        use_paint_stability);
+
+    // Ensure the monitor is created in the renderer before returning it.
+    monitor_remote.FlushForTesting();
+
+    return monitor_remote;
+  }
+
  protected:
   TaskId task_id_;
 
@@ -177,6 +218,8 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase,
          {features::kGlicActor,
           {{"glic-actor-page-stability-local-timeout", local_timeout},
            {"glic-actor-page-stability-timeout", global_timeout},
+           // Do not use min wait.
+           {"glic-actor-page-stability-min-wait", "0ms"},
            {::features::kActorPaintStabilityMode.name,
             ::features::kActorPaintStabilityMode.GetName(GetParam())},
            {::features::kActorPaintStabilityIntialPaintTimeout.name,
@@ -484,25 +527,8 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
   }
 
   mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor() {
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-        chrome_render_frame;
-    main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &chrome_render_frame);
-
-    // TODO(bokan): Once paint stability ships, the param should be replaced by
-    // a new one since some tools will continue to not support it.
-    bool use_paint_stability =
-        GetParam() != features::ActorPaintStabilityMode::kDisabled;
-
-    mojo::Remote<mojom::PageStabilityMonitor> monitor_remote;
-    chrome_render_frame->CreatePageStabilityMonitor(
-        monitor_remote.BindNewPipeAndPassReceiver(), actor::TaskId(),
-        use_paint_stability);
-
-    // Ensure the monitor is created in the renderer before returning it.
-    monitor_remote.FlushForTesting();
-
-    return monitor_remote;
+    return ActorPageStabilityTestBase::CreatePageStabilityMonitor(
+        /*paint_stability_mode=*/GetParam());
   }
 
   std::unique_ptr<TestNavigationThrottleInserter>
@@ -519,25 +545,6 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
         }));
   }
 
-  // Provides meaningful param names instead of /0, /1, ...
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    auto paint_monitor_mode = info.param;
-    std::stringstream params_description;
-    switch (paint_monitor_mode) {
-      case ::features::ActorPaintStabilityMode::kDisabled:
-        params_description << "PaintMonitorDisabled";
-        break;
-      case ::features::ActorPaintStabilityMode::kLogOnly:
-        params_description << "PaintMonitorLog";
-        break;
-      case ::features::ActorPaintStabilityMode::kEnabled:
-        params_description << "PaintMonitorEnabled";
-        break;
-    }
-    return params_description.str();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -550,7 +557,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(::features::ActorPaintStabilityMode::kDisabled,
                     ::features::ActorPaintStabilityMode::kLogOnly,
                     ::features::ActorPaintStabilityMode::kEnabled),
-    ActorGeneralPageStabilityTest::DescribeParams);
+    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
+           info) { return DescribePaintStabilityMode(info.param); });
 
 // Ensure the page isn't considered stable until after a network fetch is
 // resolved.
@@ -823,6 +831,62 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 
   EXPECT_TRUE(result.Wait());
 }
+
+class ActorPageStabilityMinWaitTest : public ActorPageStabilityTestBase,
+                                      public ::testing::WithParamInterface<
+                                          ::features::ActorPaintStabilityMode> {
+ public:
+  static constexpr int kMinWaitInMs = 3000;
+
+  ActorPageStabilityMinWaitTest() {
+    std::string min_wait = absl::StrFormat("%dms", kMinWaitInMs);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ::features::kGlicActor,
+        {{features::kActorGeneralPageStabilityMode.name,
+          features::kActorGeneralPageStabilityMode.GetName(
+              features::ActorGeneralPageStabilityMode::kAllEnabled)},
+         {::features::kActorPaintStabilityMode.name,
+          ::features::kActorPaintStabilityMode.GetName(GetParam())},
+         {"glic-actor-page-stability-min-wait", min_wait}});
+  }
+
+  mojo::Remote<mojom::PageStabilityMonitor> CreatePageStabilityMonitor() {
+    return ActorPageStabilityTestBase::CreatePageStabilityMonitor(
+        /*paint_stability_mode=*/GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ActorPageStabilityMinWaitTest, MinWaitTimeRespected) {
+  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  base::ElapsedTimer timer;
+
+  mojo::Remote<actor::mojom::PageStabilityMonitor> monitor =
+      CreatePageStabilityMonitor();
+
+  TestFuture<void> result;
+  monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
+                            result.GetCallback());
+
+  ASSERT_TRUE(result.Wait());
+
+  // The page is quickly stable, so most of the delay should be the minimum
+  // wait time.
+  EXPECT_GE(timer.Elapsed(), base::Milliseconds(kMinWaitInMs));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ActorPageStabilityMinWaitTest,
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled),
+    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
+           info) { return DescribePaintStabilityMode(info.param); });
 
 }  // namespace
 

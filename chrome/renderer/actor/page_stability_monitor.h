@@ -160,6 +160,9 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // Amount of time to delay before monitoring begins.
   base::TimeDelta monitoring_start_delay_;
 
+  // The time at which monitoring begins.
+  base::TimeTicks start_monitoring_time_;
+
   // A navigation may commit while waiting to start monitoring. Cancel the task
   // and don't move to `kStartMonitoring` when the delay expires in this case.
   base::DelayedTaskHandle start_monitoring_delayed_handle_;
@@ -172,6 +175,12 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // monitoring an unsupported interaction. This must be destroyed before
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
+
+  // The main thread may be idle and move to `kMaybeDelayCallback` while the
+  // task to move to `kPaintStabilityReached` is in queue.
+  // Cancel the task to avoid this race condition when
+  // kGlicActorPageStabilityMinWait is enabled.
+  base::DelayedTaskHandle paint_stability_delayed_handle_;
 
   bool render_frame_did_go_away_ = false;
 
