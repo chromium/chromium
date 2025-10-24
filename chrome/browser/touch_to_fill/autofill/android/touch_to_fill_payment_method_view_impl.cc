@@ -293,13 +293,8 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
         env, controller, issuer_context, app_locale));
   }
 
-  // Pass only the raw string to Java. The link's start/end indices from
-  // `GetBnplUiFooterText()` are no longer needed, as the link's position is
-  // defined declaratively by `<link>` tags within the string resource. The
-  // Android UI layer is responsible for creating the clickable span.
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuers(
-      env, java_object_, std::move(issuer_context_array),
-      ConvertUTF16ToJavaString(env, payments::GetBnplUiFooterText()));
+      env, java_object_, std::move(issuer_context_array));
   return true;
 }
 

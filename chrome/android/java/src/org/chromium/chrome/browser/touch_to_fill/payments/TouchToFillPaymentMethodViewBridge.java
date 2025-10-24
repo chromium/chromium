@@ -118,8 +118,8 @@ class TouchToFillPaymentMethodViewBridge {
 
     @CalledByNative
     private void showBnplIssuers(
-            @JniType("std::vector") List<BnplIssuerContext> bnplIssuerContexts, String footerText) {
-        mComponent.showBnplIssuers(bnplIssuerContexts, footerText);
+            @JniType("std::vector") List<BnplIssuerContext> bnplIssuerContexts) {
+        mComponent.showBnplIssuers(bnplIssuerContexts);
     }
 
     @CalledByNative

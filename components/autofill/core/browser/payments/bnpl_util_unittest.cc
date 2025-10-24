@@ -282,16 +282,6 @@ TEST_F(BnplUtilTest,
 }
 
 TEST_F(BnplUtilTest, GetBnplUiFooterText) {
-#if BUILDFLAG(IS_ANDROID)
-  std::u16string expected_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_BOTTOM_SHEET_FOOTNOTE_HIDE_OPTION);
-
-  EXPECT_EQ(GetBnplUiFooterText(), expected_text);
-
-  // Check that link tags are present on the resource string.
-  EXPECT_THAT(base::UTF16ToUTF8(expected_text), testing::HasSubstr("<link>"));
-  EXPECT_THAT(base::UTF16ToUTF8(expected_text), testing::HasSubstr("</link>"));
-#else
   constexpr std::string_view kPaymentSettingsLinkText = "payment settings";
   size_t offset = 0;
   std::u16string text = l10n_util::GetStringFUTF16(
@@ -303,7 +293,6 @@ TEST_F(BnplUtilTest, GetBnplUiFooterText) {
       testing::FieldsAre(
           text, gfx::Range(offset, offset + kPaymentSettingsLinkText.length()),
           testing::_));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Verify that if the triggering field is CVC, the BNPL option should not be

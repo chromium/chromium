@@ -129,8 +129,8 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts, String footerText) {
-        mMediator.showBnplIssuers(bnplIssuerContexts, footerText);
+    public void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts) {
+        mMediator.showBnplIssuers(bnplIssuerContexts);
     }
 
     @Override

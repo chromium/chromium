@@ -425,8 +425,6 @@ public class TouchToFillPaymentMethodViewTest {
                             /* isLinked= */ true,
                             /* isEligible= */ false);
     private static final String BNPL_ISSUER_TOS_ITEM_TEXT = "Affirm ToS text";
-    private static final String BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT =
-            "To hide pay later options, go to <link>payment settings</link>";
     private static final String TITLE_TEXT = "test title string";
     private static final String LEGAL_MESSAGE_LINE = "legal message";
     private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
@@ -1844,7 +1842,9 @@ public class TouchToFillPaymentMethodViewTest {
                                             createBnplSelectionProgressFooterModel(
                                                     /* termsTextId= */ R.string
                                                             .autofill_bnpl_issuer_bottom_sheet_terms_label,
-                                                    /* hideOptionsLinkText= */ BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT,
+                                                    /* hideOptionsLinkText= */ getString(
+                                                            R.string
+                                                                    .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
                                                     /* onLinkClickCallback= */ actionCallback,
                                                     /* isLinkEnabled= */ false)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
@@ -1884,7 +1884,9 @@ public class TouchToFillPaymentMethodViewTest {
                                             createBnplSelectionProgressFooterModel(
                                                     /* termsTextId= */ R.string
                                                             .autofill_bnpl_issuer_bottom_sheet_terms_label,
-                                                    /* hideOptionsLinkText= */ BNPL_HIDE_OPTIONS_LINK_FOOTER_TEXT,
+                                                    /* hideOptionsLinkText= */ getString(
+                                                            R.string
+                                                                    .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
                                                     /* onLinkClickCallback= */ actionCallback,
                                                     /* isLinkEnabled= */ true)));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
