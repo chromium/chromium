@@ -4,6 +4,9 @@
 
 #include "components/download/public/common/download_item.h"
 
+#include "base/check.h"
+#include "base/notreached.h"
+
 namespace download {
 
 DownloadItem::Observer::~Observer() {
@@ -14,7 +17,7 @@ void DownloadItem::SetStateForTesting(DownloadState state) {
   NOTREACHED();
 }
 
-void DownloadItem::SetDownloadUrlForTesting(GURL url) {
+void DownloadItem::SetDownloadUrlForTesting(const GURL& url) {
   NOTREACHED();
 }
 

@@ -239,7 +239,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   virtual DownloadState GetState() const = 0;
 
   virtual void SetStateForTesting(DownloadState state);
-  virtual void SetDownloadUrlForTesting(GURL url);
+  virtual void SetDownloadUrlForTesting(const GURL& url);
 
   // Returns the most recent interrupt reason for this download. Returns
   // |DOWNLOAD_INTERRUPT_REASON_NONE| if there is no previous interrupt reason.

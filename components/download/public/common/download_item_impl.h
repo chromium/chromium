@@ -269,7 +269,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const std::string& GetGuid() const override;
   DownloadState GetState() const override;
   void SetStateForTesting(DownloadState state) override;
-  void SetDownloadUrlForTesting(GURL url) override;
+  void SetDownloadUrlForTesting(const GURL& url) override;
   DownloadInterruptReason GetLastReason() const override;
   bool IsPaused() const override;
   bool AllowMetered() const override;

@@ -824,7 +824,7 @@ void DownloadItemImpl::SetStateForTesting(DownloadItem::DownloadState state) {
   state_ = ExternalToInternalState(state);
 }
 
-void DownloadItemImpl::SetDownloadUrlForTesting(GURL url) {
+void DownloadItemImpl::SetDownloadUrlForTesting(const GURL& url) {
   request_info_.url_chain.push_back(url);
 }
 
