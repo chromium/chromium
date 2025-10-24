@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.82.0, 1.81.0]
+        rust: [nightly, beta, stable, 1.87.0]
         os: [ubuntu]
         cc: [g++]
         flags: ['']

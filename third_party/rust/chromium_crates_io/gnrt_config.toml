@@ -454,12 +454,6 @@ allow_unsafe = false
 extra_kv = { allow_unsafe = true }
 shipped = false
 
-[crate.rustversion]
-allow_first_party_usage = false
-build_script_outputs = ["version.expr"]
-extra_build_script_src_roots = ['../build/rustc.rs']
-extra_kv = { allow_unsafe = false }
-
 [crate.ryu.extra_kv]
 allow_unsafe = true
 

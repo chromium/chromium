@@ -1,13 +1,13 @@
 [package]
 name = "cxxbridge-flags"
-version = "1.0.186"
+version = "1.0.187"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi", "compilers"]
 description = "Compiler configuration of the `cxx` crate (implementation detail)"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
-rust-version = "1.81"
+rust-version = "1.87"
 
 [features]
 default = [] # c++11

@@ -166,7 +166,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "codespan-reporting"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "serde",
@@ -192,7 +192,7 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.186"
+version = "1.0.187"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cc",
@@ -206,7 +206,7 @@ dependencies = [
 
 [[package]]
 name = "cxx-build"
-version = "1.0.186"
+version = "1.0.187"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cc",
@@ -220,7 +220,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.186"
+version = "1.0.187"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "clap",
@@ -233,18 +233,17 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.186"
+version = "1.0.187"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.186"
+version = "1.0.187"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "indexmap",
  "proc-macro2",
  "quote",
- "rustversion",
  "syn",
 ]
 
@@ -876,11 +875,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rustc-demangle",
 ]
-
-[[package]]
-name = "rustversion"
-version = "1.0.22"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ryu"

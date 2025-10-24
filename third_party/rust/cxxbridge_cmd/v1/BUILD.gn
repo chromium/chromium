@@ -99,13 +99,13 @@ cargo_crate("cxxbridge") {
   cargo_pkg_description =
       "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.186"
+  cargo_pkg_version = "1.0.187"
 
   allow_unsafe = false
 
   deps = [
     "//third_party/rust/clap/v4:lib",
-    "//third_party/rust/codespan_reporting/v0_12:lib",
+    "//third_party/rust/codespan_reporting/v0_13:lib",
     "//third_party/rust/indexmap/v2:lib",
     "//third_party/rust/proc_macro2/v1:lib",
     "//third_party/rust/quote/v1:lib",

@@ -1,0 +1,11 @@
+Name: codespan-reporting
+URL: https://crates.io/crates/codespan-reporting
+Version: 0.13.0
+Revision: 2d36d83b77897245515336328b0d83c098f38875
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/codespan-reporting-v0_13/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Beautiful diagnostic reporting for text-based programming languages

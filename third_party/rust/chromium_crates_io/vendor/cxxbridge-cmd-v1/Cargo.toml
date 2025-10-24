@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.87"
 name = "cxxbridge-cmd"
-version = "1.0.186"
+version = "1.0.187"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = ["build.rs"]
@@ -52,7 +52,7 @@ features = [
 default-features = false
 
 [dependencies.codespan-reporting]
-version = "0.12"
+version = "0.13"
 
 [dependencies.indexmap]
 version = "2.9.0"

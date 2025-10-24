@@ -422,23 +422,23 @@ unsafe impl UniquePtrTarget for CxxString {
     fn __null() -> MaybeUninit<*mut c_void> {
         let mut repr = MaybeUninit::uninit();
         unsafe {
-            unique_ptr_std_string_null(&mut repr);
+            unique_ptr_std_string_null(&raw mut repr);
         }
         repr
     }
     unsafe fn __raw(raw: *mut Self) -> MaybeUninit<*mut c_void> {
         let mut repr = MaybeUninit::uninit();
-        unsafe { unique_ptr_std_string_raw(&mut repr, raw) }
+        unsafe { unique_ptr_std_string_raw(&raw mut repr, raw) }
         repr
     }
     unsafe fn __get(repr: MaybeUninit<*mut c_void>) -> *const Self {
-        unsafe { unique_ptr_std_string_get(&repr) }
+        unsafe { unique_ptr_std_string_get(&raw const repr) }
     }
     unsafe fn __release(mut repr: MaybeUninit<*mut c_void>) -> *mut Self {
-        unsafe { unique_ptr_std_string_release(&mut repr) }
+        unsafe { unique_ptr_std_string_release(&raw mut repr) }
     }
     unsafe fn __drop(mut repr: MaybeUninit<*mut c_void>) {
-        unsafe { unique_ptr_std_string_drop(&mut repr) }
+        unsafe { unique_ptr_std_string_drop(&raw mut repr) }
     }
 }
 

@@ -101,6 +101,13 @@ mod unordered {
         pub(crate) fn retain(&mut self, f: impl FnMut(&T) -> bool) {
             self.0.retain(f);
         }
+
+        #[cfg_attr(not(proc_macro), expect(dead_code))]
+        pub(crate) fn extend(&mut self, iter: impl IntoIterator<Item = T>) {
+            for value in iter {
+                self.insert(value);
+            }
+        }
     }
 }
 

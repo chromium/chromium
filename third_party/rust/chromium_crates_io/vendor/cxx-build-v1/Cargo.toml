@@ -6,13 +6,13 @@
 # by `tools/crates/run_gnrt.py vendor`. Do not edit!
 #
 # This is an empty placeholder that has replaced the
-# `cxx-build-1.0.186` crate.
+# `cxx-build-1.0.187` crate.
 #
 # See `//tools/crates/gnrt/removed_crate.md` to learn more.
 
 [package]
 name = "cxx-build"
-version = "1.0.186"
+version = "1.0.187"
 
 [package.metadata.gnrt]
 is_placeholder = true
@@ -24,7 +24,7 @@ is_placeholder = true
 version = "^1.0.101"
 default_features = false
 [dependencies.codespan-reporting]
-version = "^0.12"
+version = "^0.13"
 default_features = false
 [dependencies.indexmap]
 version = "^2.9.0"

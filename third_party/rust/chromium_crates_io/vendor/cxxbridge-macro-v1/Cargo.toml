@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.87"
 name = "cxxbridge-macro"
-version = "1.0.186"
+version = "1.0.187"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = [
@@ -57,9 +57,6 @@ version = "1.0.74"
 
 [dependencies.quote]
 version = "1.0.35"
-
-[dependencies.rustversion]
-version = "1"
 
 [dependencies.syn]
 version = "2.0.46"

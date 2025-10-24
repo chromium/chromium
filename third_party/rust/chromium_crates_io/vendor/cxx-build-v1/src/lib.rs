@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `cxx-build-1.0.186` crate.
+// `cxx-build-1.0.187` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
