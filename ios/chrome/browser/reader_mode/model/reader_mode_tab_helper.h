@@ -173,6 +173,9 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // `distillation_already_failed_` is set to true.
   void RecordDistillationFailure();
 
+  // Completes distillation for the specified `access_point`.
+  void CompleteDistillation(ReaderModeAccessPoint access_point);
+
   // Applies the language settings from the original source page.
   void ApplyLanguageSettingsFromSource();
 

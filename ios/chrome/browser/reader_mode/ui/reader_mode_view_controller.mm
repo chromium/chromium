@@ -153,6 +153,8 @@
   if (_tabsClosureAnimation.type == TabsClosureAnimationType::kHideGridCells) {
     [self.view removeFromSuperview];
     [self removeFromParentViewController];
+  } else {
+    [self.delegate readerModeViewControllerAnimationDidComplete:self];
   }
   [self didMoveToParentViewController:self.parentViewController];
   _tabsClosureAnimation = nil;

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
 #import "base/containers/fixed_flat_set.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -564,37 +565,18 @@ void ReaderModeTabHelper::CreateReaderModeContent(
     }
   }
 
-  if (IsReaderModeTranslationAvailable()) {
-    ChromeIOSTranslateClient* translate_client =
-        ChromeIOSTranslateClient::FromWebState(web_state_.get());
-    TranslationState source_translation_state;
-    source_translation_state.is_original_source_translated =
-        IsTranslateEnabled(translate_client);
-    if (source_translation_state.is_original_source_translated) {
-      source_translation_state.source_code =
-          GetSourceLanguageCode(translate_client);
-      source_translation_state.target_code =
-          GetTargetLanguageCode(translate_client, web_state_.get());
-      if (base::FeatureList::IsEnabled(
-              kEnableReaderModeTranslationWithInfobar)) {
-        translate_client->GetTranslateManager()->RevertTranslation();
-      }
-    }
-    source_translation_state_ = source_translation_state;
+  // Apply a blurring effect to the original web page as part of the translation
+  // settings experiment.
+  if (reader_mode_handler_ &&
+      base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar)) {
+    [reader_mode_handler_
+        showReaderModeBlurOverlay:
+            base::CallbackToBlock(
+                base::BindOnce(&ReaderModeTabHelper::CompleteDistillation,
+                               weak_ptr_factory_.GetWeakPtr(), access_point))];
+  } else {
+    CompleteDistillation(access_point);
   }
-
-  std::unique_ptr<ReaderModeDistillerPage> distiller_page =
-      std::make_unique<ReaderModeDistillerPage>(web_state_);
-  distiller_viewer_ = std::make_unique<ReaderModeDistillerViewer>(
-      reader_mode_web_state_.get(), distiller_service_,
-      std::move(distiller_page), web_state_->GetLastCommittedURL(),
-      base::BindOnce(&ReaderModeTabHelper::PageDistillationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), access_point));
-
-  reader_mode_distillation_timer_.Start(
-      FROM_HERE, ReaderModeDistillationTimeout(),
-      base::BindOnce(&ReaderModeTabHelper::CancelDistillation,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ReaderModeTabHelper::DestroyReaderModeContent(
@@ -614,6 +596,9 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
 
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();
+
+  // Remove blur effect on the web page if available.
+  [reader_mode_handler_ hideReaderModeBlurOverlay];
 
   // Ensure that any infobars created in Reading Mode state are removed prior
   // to creating new ones attached to the original web page.
@@ -695,4 +680,39 @@ void ReaderModeTabHelper::ApplyLanguageSettingsFromSource() {
                                        /*auto_translate=*/true,
                                        /*triggered_from_menu=*/true);
   }
+}
+
+void ReaderModeTabHelper::CompleteDistillation(
+    ReaderModeAccessPoint access_point) {
+  if (IsReaderModeTranslationAvailable()) {
+    ChromeIOSTranslateClient* translate_client =
+        ChromeIOSTranslateClient::FromWebState(web_state_.get());
+    TranslationState source_translation_state;
+    source_translation_state.is_original_source_translated =
+        IsTranslateEnabled(translate_client);
+    if (source_translation_state.is_original_source_translated) {
+      source_translation_state.source_code =
+          GetSourceLanguageCode(translate_client);
+      source_translation_state.target_code =
+          GetTargetLanguageCode(translate_client, web_state_.get());
+      if (base::FeatureList::IsEnabled(
+              kEnableReaderModeTranslationWithInfobar)) {
+        translate_client->GetTranslateManager()->RevertTranslation();
+      }
+    }
+    source_translation_state_ = source_translation_state;
+  }
+
+  std::unique_ptr<ReaderModeDistillerPage> distiller_page =
+      std::make_unique<ReaderModeDistillerPage>(web_state_);
+  distiller_viewer_ = std::make_unique<ReaderModeDistillerViewer>(
+      reader_mode_web_state_.get(), distiller_service_,
+      std::move(distiller_page), web_state_->GetLastCommittedURL(),
+      base::BindOnce(&ReaderModeTabHelper::PageDistillationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), access_point));
+
+  reader_mode_distillation_timer_.Start(
+      FROM_HERE, ReaderModeDistillationTimeout(),
+      base::BindOnce(&ReaderModeTabHelper::CancelDistillation,
+                     weak_ptr_factory_.GetWeakPtr()));
 }

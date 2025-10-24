@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "reader_mode_blur_overlay_view_controller.h",
+    "reader_mode_blur_overlay_view_controller.mm",
     "reader_mode_consumer.h",
     "reader_mode_mutator.h",
     "reader_mode_view_controller.h",

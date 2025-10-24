@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "reader_mode_blur_overlay_coordinator.h",
+    "reader_mode_blur_overlay_coordinator.mm",
     "reader_mode_coordinator.h",
     "reader_mode_coordinator.mm",
     "reader_mode_mediator.h",
@@ -24,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/common/ui/util",
     "//ios/web/public",
   ]
 }
@@ -74,6 +77,7 @@ source_set("options") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "reader_mode_blur_overlay_coordinator_unittest.mm",
     "reader_mode_mediator_unittest.mm",
     "reader_mode_options_mediator_unittest.mm",
   ]
@@ -86,6 +90,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/reader_mode/ui",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",

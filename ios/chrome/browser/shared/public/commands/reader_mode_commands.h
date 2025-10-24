@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 
 // Commands protocol to show/hide the Reader mode UI.
@@ -17,6 +18,12 @@
 
 // Hides the Reader mode UI.
 - (void)hideReaderMode;
+
+// Shows a blur overlay for Reader mode.
+- (void)showReaderModeBlurOverlay:(ProceduralBlock)completion;
+
+// Hides the blur overlay for Reader mode.
+- (void)hideReaderModeBlurOverlay;
 
 @end
 

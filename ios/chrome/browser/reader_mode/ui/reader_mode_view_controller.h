@@ -9,12 +9,21 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
 
+@class ReaderModeViewController;
 @protocol ReaderModeMutator;
 @protocol OverscrollActionsControllerDelegate;
+
+// Delegate for ReaderModeViewController.
+@protocol ReaderModeViewControllerDelegate <NSObject>
+// Called when the tabs closure animation completes.
+- (void)readerModeViewControllerAnimationDidComplete:
+    (ReaderModeViewController*)controller;
+@end
 
 // View controller for displaying the Reader mode content.
 @interface ReaderModeViewController : UIViewController <ReaderModeConsumer>
 
+@property(nonatomic, weak) id<ReaderModeViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<ReaderModeMutator> mutator;
 // Required to support Overscroll Actions UI, which is displayed when Reader
 // mode is pulled down.

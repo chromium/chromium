@@ -33,6 +33,7 @@
 - (void)startAnimated:(BOOL)animated {
   _viewController = [[ReaderModeViewController alloc] init];
   _viewController.overscrollDelegate = self.overscrollDelegate;
+  _viewController.delegate = self;
   ProfileIOS* profile = self.browser->GetProfile();
   BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
   DistillerService* distiller_service =
@@ -75,6 +76,13 @@
 
 - (void)stop {
   [self stopAnimated:NO];
+}
+
+#pragma mark - ReaderModeViewControllerDelegate
+
+- (void)readerModeViewControllerAnimationDidComplete:
+    (ReaderModeViewController*)controller {
+  [self.delegate readerModeCoordinatorAnimationDidComplete:self];
 }
 
 #pragma mark - ReaderModeOptionsCommands

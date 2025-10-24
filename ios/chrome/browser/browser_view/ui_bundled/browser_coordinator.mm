@@ -173,6 +173,7 @@
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_legacy_coordinator.h"
+#import "ios/chrome/browser/reader_mode/coordinator/reader_mode_blur_overlay_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
@@ -405,6 +406,7 @@ const char kChromeAppStoreUrl[] =
     QuickDeleteCommands,
     ReaderModeBrowserAgentDelegate,
     ReaderModeCommands,
+    ReaderModeCoordinatorDelegate,
     ReadingListCoordinatorDelegate,
     RecentTabsCoordinatorDelegate,
     ReminderNotificationsCommands,
@@ -691,7 +693,11 @@ const char kChromeAppStoreUrl[] =
   FileUploadPanelCoordinator* _fileUploadPanelCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
   GoogleOneCoordinator* _googleOneCoordinator;
+
+  // Coordinator to display a web page in Reader Mode UI.
   ReaderModeCoordinator* _readerModeCoordinator;
+  ReaderModeBlurOverlayCoordinator* _readerModeBlurOverlayCoordinator;
+
   // Coordinator to display the "Set a reminder" screen for the user's current
   // tab.
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
@@ -751,6 +757,7 @@ const char kChromeAppStoreUrl[] =
   _readerModeCoordinator = [[ReaderModeCoordinator alloc]
       initWithBaseViewController:self.browserContainerCoordinator.viewController
                          browser:self.browser];
+  _readerModeCoordinator.delegate = self;
   [_readerModeCoordinator setOverscrollDelegate:self];
   [_readerModeCoordinator startAnimated:animated];
 }
@@ -762,6 +769,13 @@ const char kChromeAppStoreUrl[] =
   }
   [_readerModeCoordinator stopAnimated:animated];
   _readerModeCoordinator = nil;
+}
+
+#pragma mark - ReaderModeCoordinatorDelegate
+
+- (void)readerModeCoordinatorAnimationDidComplete:
+    (ReaderModeCoordinator*)coordinator {
+  [self hideReaderModeBlurOverlay];
 }
 
 #pragma mark - ChromeCoordinator
@@ -915,6 +929,10 @@ const char kChromeAppStoreUrl[] =
   [self.readingListCoordinator stop];
   self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
+
+  [_readerModeCoordinator stopAnimated:YES];
+  _readerModeCoordinator = nil;
+  [self hideReaderModeBlurOverlay];
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
@@ -2890,6 +2908,24 @@ const char kChromeAppStoreUrl[] =
     }
   }
   std::move(deactivateReader).Run();
+}
+
+- (void)showReaderModeBlurOverlay:(ProceduralBlock)completion {
+  if (_readerModeBlurOverlayCoordinator) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+  _readerModeBlurOverlayCoordinator = [[ReaderModeBlurOverlayCoordinator alloc]
+      initWithBaseViewController:self.browserContainerCoordinator.viewController
+                         browser:self.browser];
+  [_readerModeBlurOverlayCoordinator startWithCompletion:completion];
+}
+
+- (void)hideReaderModeBlurOverlay {
+  [_readerModeBlurOverlayCoordinator stop];
+  _readerModeBlurOverlayCoordinator = nil;
 }
 
 #pragma mark - FileUploadPanelCommands
