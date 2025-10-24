@@ -1138,36 +1138,34 @@ public class ToolbarPhone extends ToolbarLayout
         // the omnibox is focused. When the fake omnibox is scrolled, the color should not
         // change.
         if ((urlHasFocus() || !isLocationBarShownInNtp()) && mTabSwitcherState == STATIC_TAB) {
-                boolean isInGeneralNtp =
-                        isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage;
-                // Add a special case for general NTP to the defaultColor to ensure that the color
-                // is right and changes smoothly during the un-focus animation.
-                boolean shouldUseFocusColor = isInGeneralNtp && mUrlFocusChangeInProgress;
-                @ColorInt int defaultColor = getToolbarDefaultColor(shouldUseFocusColor);
-                @ColorInt
-                int defaultLocationBarColor =
-                        getLocationBarDefaultColorForToolbarColor(
-                                defaultColor, shouldUseFocusColor);
-                @ColorInt
-                int primaryColor =
-                        isInGeneralNtp
-                                ? mToolbarBackgroundColorForNtp
-                                : getToolbarDataProvider().getPrimaryColor();
-                @ColorInt
-                int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
+            boolean isInGeneralNtp =
+                    isLocationBarShownInGeneralNtp() || mIsInLoadingPhaseFromNtpToWebpage;
+            // Add a special case for general NTP to the defaultColor to ensure that the color is
+            // right and changes smoothly during the un-focus animation.
+            boolean shouldUseFocusColor = isInGeneralNtp && mUrlFocusChangeInProgress;
+            @ColorInt int defaultColor = getToolbarDefaultColor(shouldUseFocusColor);
+            @ColorInt
+            int defaultLocationBarColor =
+                    getLocationBarDefaultColorForToolbarColor(defaultColor, shouldUseFocusColor);
+            @ColorInt
+            int primaryColor =
+                    isInGeneralNtp
+                            ? mToolbarBackgroundColorForNtp
+                            : getToolbarDataProvider().getPrimaryColor();
+            @ColorInt int themedLocationBarColor = getLocationBarColorForToolbarColor(primaryColor);
 
-                updateToolbarBackground(
-                        ColorUtils.blendColorsMultiply(
-                                primaryColor, defaultColor, mUrlFocusChangeFraction));
+            updateToolbarBackground(
+                    ColorUtils.blendColorsMultiply(
+                            primaryColor, defaultColor, mUrlFocusChangeFraction));
 
-                updateModernLocationBarColor(
-                        ColorUtils.blendColorsMultiply(
-                                themedLocationBarColor,
-                                defaultLocationBarColor,
-                                mUrlFocusChangeFraction));
+            updateModernLocationBarColor(
+                    ColorUtils.blendColorsMultiply(
+                            themedLocationBarColor,
+                            defaultLocationBarColor,
+                            mUrlFocusChangeFraction));
 
-                updateModernLocationBarCorners();
-            }
+            updateModernLocationBarCorners();
+        }
     }
 
     /**
