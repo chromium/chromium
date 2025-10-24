@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -51,6 +53,12 @@ public class TabListEditorLayoutBinder {
             layoutParams.topMargin = model.get(TabListEditorProperties.TOP_MARGIN);
             // Calling setLayoutParams to requestLayout() for margin to take effect.
             view.setLayoutParams(layoutParams);
+        } else if (TabListEditorProperties.CREATION_MODE == propertyKey) {
+            // Read the mode from the model and pass it to the view's setter.
+            TabListEditorActionViewLayout actionViewLayout =
+                    view.findViewById(R.id.action_view_layout);
+            @CreationMode int creationMode = model.get(TabListEditorProperties.CREATION_MODE);
+            actionViewLayout.setCreationMode(creationMode);
         }
     }
 }

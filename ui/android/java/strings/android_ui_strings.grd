@@ -224,6 +224,11 @@
       <message name="IDS_HIERARCHICALMENU_A11Y_DEFAULT_PANE_TITLE" desc="Accessibility pane title used to tell users about navigation in a list menu (between layers of submenus). This string is only used when we cannot determine the header title.">
         List menu
       </message>
+
+      <!-- Done Button -->
+      <message name="IDS_DONE_BUTTON_TEXT" desc="Text for the Done button used to confirm selections in the Tab Editor/Item Picker. [CHAR_LIMIT=12]">
+        Done
+      </message>
     </messages>
   </release>
 </grit>

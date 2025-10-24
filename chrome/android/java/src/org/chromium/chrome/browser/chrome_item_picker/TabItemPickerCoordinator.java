@@ -173,7 +173,7 @@ public class TabItemPickerCoordinator {
                 modalDialogManager,
                 /* desktopWindowStateManager= */ null,
                 /* edgeToEdgeSupplier= */ null,
-                CreationMode.FULL_SCREEN,
+                CreationMode.ITEM_PICKER,
                 /* undoBarExplicitTrigger= */ null,
                 /* componentName= */ "TabItemPickerCoordinator");
     }

@@ -220,6 +220,8 @@ class TabListEditorMediator
         mTabListEditorToolbar = mTabListEditorLayout.getToolbar();
         mResetHandler = resetHandler;
 
+        mModel.set(TabListEditorProperties.CREATION_MODE, mCreationMode);
+
         mModel.set(TabListEditorProperties.TOOLBAR_NAVIGATION_LISTENER, mNavigationClickListener);
         updateColors(
                 assumeNonNull(mCurrentTabGroupModelFilterSupplier.get())
