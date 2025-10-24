@@ -22,9 +22,13 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browser_controls.TopControlLayer;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -69,7 +73,7 @@ import java.util.function.Supplier;
 
 /** A coordinator for the top toolbar component. */
 @NullMarked
-public class TopToolbarCoordinator implements Toolbar {
+public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
     /** Observes toolbar color change. */
     public interface ToolbarColorObserver {
@@ -107,6 +111,8 @@ public class TopToolbarCoordinator implements Toolbar {
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
     private final ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
+    private final BrowserControlsStateProvider mBrowserControls;
+    private final TopControlsStacker mTopControlsStacker;
 
     private ObservableSupplier<Integer> mTabCountSupplier;
 
@@ -214,6 +220,8 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setOnLongClickListener(onLongClickListener);
         mLocationBarView = mToolbarLayout.findViewById(R.id.location_bar);
         mIndexOfLocationBarInToolbar = mToolbarLayout.indexOfChild(mLocationBarView);
+        mBrowserControls = browserControlsStateProvider;
+        mTopControlsStacker = topControlsStacker;
 
         ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
         if (reloadButton != null) {
@@ -246,9 +254,7 @@ public class TopToolbarCoordinator implements Toolbar {
                 browserStateBrowserControlsVisibilityDelegate,
                 layoutStateProviderSupplier,
                 fullscreenManager,
-                topControlsStacker,
-                toolbarDataProvider,
-                browserControlsStateProvider);
+                toolbarDataProvider);
         mToolbarLayout.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -271,6 +277,9 @@ public class TopToolbarCoordinator implements Toolbar {
                 (show) -> mToolbarLayout.onHomeButtonIsEnabledUpdate(show));
         homepageNonNtpSupplier.addObserver(
                 (isNonNtp) -> mToolbarLayout.onHomepageIsNonNtpUpdate(isNonNtp));
+
+        // Add the layer after toolbar / control container is initialized.
+        mTopControlsStacker.addControl(this);
     }
 
     /**
@@ -452,6 +461,7 @@ public class TopToolbarCoordinator implements Toolbar {
             mTabStripTransitionCoordinator.destroy();
             mTabStripTransitionCoordinator = null;
         }
+        mTopControlsStacker.removeControl(this);
     }
 
     /**
@@ -814,5 +824,37 @@ public class TopToolbarCoordinator implements Toolbar {
 
     public void onContentViewScrollingStateChanged(boolean scrolling) {
         mControlContainer.onContentViewScrollingStateChanged(scrolling);
+    }
+
+    // TopControlLayer implementation:
+
+    @Override
+    public @TopControlType int getTopControlType() {
+        return TopControlType.TOOLBAR;
+    }
+
+    @Override
+    public int getTopControlHeight() {
+        return mControlContainer.getToolbarHeight();
+    }
+
+    @Override
+    public int getTopControlVisibility() {
+        if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP) {
+            return TopControlVisibility.HIDDEN;
+        }
+        return TopControlVisibility.VISIBLE;
+    }
+
+    @Override
+    public void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {
+        if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP) {
+            return;
+        }
+
+        // TODO(crbug.com/417238089): This may be better placed in the hairline view itself.
+        // If this layer is at the bottom of the stacker, the hairline should be visible.
+        boolean isToolbarAtTheBottom = mTopControlsStacker.isLayerAtBottom(getTopControlType());
+        mToolbarLayout.setHairlineVisibility(isToolbarAtTheBottom);
     }
 }

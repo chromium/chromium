@@ -769,7 +769,6 @@ public class RootUiCoordinator
             if (mMicStateObserver != null && mToolbarManager.getVoiceRecognitionHandler() != null) {
                 mToolbarManager.getVoiceRecognitionHandler().removeObserver(mMicStateObserver);
             }
-            mTopControlsStacker.removeControl(mToolbarContainer);
             mToolbarManager.destroy();
             mToolbarManager = null;
         }
@@ -1589,7 +1588,6 @@ public class RootUiCoordinator
             final View controlContainer = mActivity.findViewById(R.id.control_container);
             assert controlContainer != null;
             mToolbarContainer = (ToolbarControlContainer) controlContainer;
-            mTopControlsStacker.addControl(mToolbarContainer);
 
             Callback<Boolean> urlFocusChangedCallback =
                     hasFocus -> {

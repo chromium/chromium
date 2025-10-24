@@ -39,13 +39,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.browser_controls.TopControlLayer;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -84,7 +78,7 @@ import java.util.function.Supplier;
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 @NullMarked
 public class ToolbarControlContainer extends OptimizedFrameLayout
-        implements ControlContainer, AppHeaderObserver, TopControlLayer, Observer {
+        implements ControlContainer, AppHeaderObserver, Observer {
     private boolean mIncognito;
     private boolean mMidVisibilityToggle;
     private boolean mIsCompositorInitialized;
@@ -107,9 +101,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
-    private TopControlsStacker mTopControlsStacker;
     private ToolbarDataProvider mToolbarDataProvider;
-    private BrowserControlsStateProvider mBrowserControls;
 
     /**
      * Constructs a new control container.
@@ -382,8 +374,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      *     captures are stale and not able to be taken.
      * @param layoutStateProviderSupplier Used to check the current layout type.
      * @param fullscreenManager Used to check whether in fullscreen.
-     * @param topControlsStacker The TopControlsStacker for |this| to query layer states.
-     * @param browserControlsStateProvider BrowserControlsStateProvider to provide control position.
      */
     @Initializer
     public void setPostInitializationDependencies(
@@ -397,14 +387,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             FullscreenManager fullscreenManager,
-            TopControlsStacker topControlsStacker,
-            ToolbarDataProvider toolbarDataProvider,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            ToolbarDataProvider toolbarDataProvider) {
         mToolbar = toolbar;
         mIncognito = isIncognito;
-        mTopControlsStacker = topControlsStacker;
         mToolbarDataProvider = toolbarDataProvider;
-        mBrowserControls = browserControlsStateProvider;
         mToolbarDataProvider.addToolbarDataProviderObserver(this);
 
         BooleanSupplier isVisible = () -> this.getVisibility() == View.VISIBLE;
@@ -974,37 +960,5 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
         setVisibility(Boolean.TRUE.equals(fullSpaceMode) ? View.INVISIBLE : View.VISIBLE);
-    }
-
-    // TopControlLayer implementation:
-
-    @Override
-    public @TopControlType int getTopControlType() {
-        return TopControlType.TOOLBAR;
-    }
-
-    @Override
-    public int getTopControlHeight() {
-        return getToolbarHeight();
-    }
-
-    @Override
-    public int getTopControlVisibility() {
-        // TODO(crbug.com/417238089): Possibly add way to notify stacker of visibility changes.
-        return isToolbarContainerFullyVisible()
-                        && mBrowserControls.getControlsPosition() == ControlsPosition.TOP
-                ? TopControlVisibility.VISIBLE
-                : TopControlVisibility.HIDDEN;
-    }
-
-    @Override
-    public void onTopControlLayerHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-        // TODO(crbug.com/417238089): This may be better placed in the hairline view itself.
-        // If this layer is at the bottom, the hairline should be visible.
-        mToolbarHairline.setVisibility(
-                mTopControlsStacker != null
-                                && mTopControlsStacker.isLayerAtBottom(getTopControlType())
-                        ? View.VISIBLE
-                        : View.GONE);
     }
 }

@@ -688,6 +688,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                         + getName(layer.getTopControlType())
                         + "] yOffset="
                         + yOffset
+                        + " height="
+                        + layer.getTopControlHeight()
                         + " scrollType="
                         + layer.getScrollBehavior()
                         + " visibility="
