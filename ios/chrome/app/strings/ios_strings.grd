@@ -6986,6 +6986,15 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SWITCH_PROFILE_SWITCH_TITLE" desc="Title for the switch profile developer panel in Settings-&gt;Switch Profile giving the list of loaded profiles [iOS only]">
         Switch to another profile
       </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_SUBTITLE_TEXT" desc="Subtitle text on the Synced Set Up screen, indicating that the user's data is being loaded. [iOS only]">
+        Getting your stuff…
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_WELCOME_MESSAGE_TITLE" desc="Title of the Synced Set Up screen shown while the user's settings are being fetched. This is the default title shown when the user's name is not available. [iOS only]">
+        Welcome back!
+      </message>
+      <message name="IDS_IOS_SYNCED_SET_UP_WELCOME_MESSAGE_WITH_USER_NAME_TITLE" desc="Title of the Synced Set Up screen that includes the user's name, shown while their settings are being fetched. It includes a placeholder for the user's first name ($1). [iOS only]">
+        Welcome back, <ph name="USER_NAME">$1<ex>Benjamin</ex></ph>!
+      </message>
       <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_CONTINUE" desc="Action of a dialog to enable saving addresses to the Google Account. If the user chose to continue, addresses will start syncing.">
         Continue
       </message>
