@@ -24,4 +24,5 @@ found in the LICENSE file.
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintHorizontal_weight="1"
     app:layout_constraintWidth_min="@dimen/location_bar_min_url_width"
+    app:leading="@dimen/text_size_large_leading"
     android:importantForAutofill="no"/>
