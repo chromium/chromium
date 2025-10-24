@@ -10,6 +10,7 @@
 @protocol BWGLinkOpeningDelegate;
 @protocol BWGPageStateChangeDelegate;
 @protocol BWGSessionDelegate;
+@protocol GeminiSuggestionDelegate;
 
 // Protocol for the BWG gateway, exposing what's needed upstream.
 @protocol BWGGatewayProtocol
@@ -19,6 +20,10 @@
 @property(nonatomic, weak) id<BWGPageStateChangeDelegate>
     pageStateChangeHandler;
 @property(nonatomic, weak) id<BWGSessionDelegate> sessionHandler;
+
+// TODO(crbug.com/454000012): Remove optional.
+@optional
+@property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 
 @end
 

@@ -22,6 +22,7 @@ class PageContext;
 @class BWGLinkOpeningHandler;
 @class BWGPageStateChangeHandler;
 @class BWGSessionHandler;
+@class GeminiSuggestionHandler;
 
 @protocol BWGGatewayProtocol;
 
@@ -61,6 +62,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
 
   // Handler for the BWG sessions.
   __strong BWGSessionHandler* bwg_session_handler_ = nullptr;
+
+  // Handler for Gemini suggestion chips.
+  __strong GeminiSuggestionHandler* gemini_suggestion_handler_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_BROWSER_AGENT_H_
