@@ -582,30 +582,86 @@ class AppMenuHandlerImpl
             return;
         }
 
-        for (int i = startIndex; i < modelList.size(); i++) {
-            PropertyModel model = modelList.get(i).model;
+        updateModelForHighlightAndClickRecursively(
+                modelList::get,
+                modelList::size,
+                highlightedId,
+                appMenuClickHandler,
+                startIndex,
+                withAssertions);
+    }
+
+    /**
+     * Recursively sets the click handler, position, and highlight state for all items in a
+     * list-like structure and its nested sub-lists. This helper is abstracted to work on any
+     * list-like structure (e.g., {@link ModelList} or {@link java.util.List}) by using function
+     * references.
+     *
+     * @param itemGetter A function to retrieve a {@link ListItem} by its index (e.g., {@code
+     *     list::get}).
+     * @param sizeGetter A supplier for the list's total size (e.g., {@code list::size}).
+     * @param highlightedId The menu item ID to mark as highlighted. If null, no item will be
+     *     marked.
+     * @param appMenuClickHandler The {@link AppMenuClickHandler} to attach to each menu item.
+     * @param startIndex The index in the list to start processing from.
+     * @param withAssertions Whether to run assertions (e.g., that handlers aren't already set).
+     */
+    private void updateModelForHighlightAndClickRecursively(
+            Function<Integer, ListItem> itemGetter,
+            Supplier<Integer> sizeGetter,
+            @Nullable Integer highlightedId,
+            AppMenuClickHandler appMenuClickHandler,
+            int startIndex,
+            boolean withAssertions) {
+        for (int i = startIndex; i < sizeGetter.get(); i++) {
+            PropertyModel model = itemGetter.apply(i).model;
+
             if (withAssertions) {
                 // Not like other keys which is set by AppMenuPropertiesDelegateImpl, CLICK_HANDLER
                 // and HIGHLIGHTED should not be set yet.
-                assert model.get(AppMenuItemProperties.CLICK_HANDLER) == null;
+                assert !model.containsKey(AppMenuItemProperties.CLICK_HANDLER)
+                        || model.get(AppMenuItemProperties.CLICK_HANDLER) == null;
                 assert !model.get(AppMenuItemProperties.HIGHLIGHTED);
             }
-            model.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
-            model.set(AppMenuItemProperties.POSITION, i);
+
+            if (model.containsKey(AppMenuItemProperties.CLICK_HANDLER)) {
+                model.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
+            }
+
+            if (model.containsKey(AppMenuItemProperties.POSITION)) {
+                model.set(AppMenuItemProperties.POSITION, i);
+            }
 
             if (highlightedId != null) {
                 model.set(
                         AppMenuItemProperties.HIGHLIGHTED,
                         model.get(AppMenuItemProperties.MENU_ITEM_ID) == highlightedId);
-                if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
-                    ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
-                    for (int j = 0; j < subList.size(); j++) {
-                        PropertyModel subModel = subList.get(j).model;
-                        subModel.set(AppMenuItemProperties.CLICK_HANDLER, appMenuClickHandler);
-                        subModel.set(
-                                AppMenuItemProperties.HIGHLIGHTED,
-                                subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == highlightedId);
-                    }
+            }
+
+            if (model.containsKey(AppMenuItemProperties.ADDITIONAL_ICONS)) {
+                ModelList additionalIcons = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
+                if (additionalIcons != null) {
+                    updateModelForHighlightAndClickRecursively(
+                            additionalIcons::get,
+                            additionalIcons::size,
+                            highlightedId,
+                            appMenuClickHandler,
+                            /* startIndex= */ 0,
+                            withAssertions);
+                }
+            }
+
+            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS)) {
+                List<ListItem> submenuItems =
+                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                if (submenuItems != null) {
+                    updateModelForHighlightAndClickRecursively(
+                            submenuItems::get,
+                            submenuItems::size,
+                            highlightedId,
+                            appMenuClickHandler,
+                            /* startIndex= */ 0,
+                            withAssertions);
                 }
             }
         }
