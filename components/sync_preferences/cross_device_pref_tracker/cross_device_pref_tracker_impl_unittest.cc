@@ -1740,7 +1740,7 @@ TEST_F(CrossDevicePrefTrackerTest,
                              base::Value(100), recent_time, std::nullopt);
 
   // Set up an expired device that should be garbage collected.
-  const base::Time expired_time = base::Time::Now() - base::Days(31);
+  const base::Time expired_time = base::Time::Now() - base::Days(15);
   const std::string expired_guid = "guid_expired";
   GetTracker()->Add(
       CreateDeviceInfo(expired_guid, syncer::DeviceInfo::OsType::kMac,
@@ -1792,7 +1792,7 @@ TEST_F(CrossDevicePrefTrackerTest,
       nullptr);
 
   // Fast forward time, making the original timestamps stale.
-  task_environment_.FastForwardBy(base::Days(31));
+  task_environment_.FastForwardBy(base::Days(15));
 
   // Simulate one device coming back online by updating its timestamp.
   const base::Time updated_time = base::Time::Now();
@@ -1818,7 +1818,7 @@ TEST_F(CrossDevicePrefTrackerTest,
 TEST_F(CrossDevicePrefTrackerTest,
        NotifiesObserverForReactivatedExpiredDevice) {
   // Start with an expired device with an existing pref entry.
-  const base::Time expired_time = base::Time::Now() - base::Days(31);
+  const base::Time expired_time = base::Time::Now() - base::Days(15);
   const std::string guid = "guid_reactivated";
   GetTracker()->Add(CreateDeviceInfo(guid, syncer::DeviceInfo::OsType::kWindows,
                                      syncer::DeviceInfo::FormFactor::kDesktop,

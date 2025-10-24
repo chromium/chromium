@@ -73,7 +73,7 @@ constexpr char kTrackerAvailabilityAtQueryHistogram[] =
 
 // Maximum allowed time since a device last connected to the Sync servers before
 // its entries are considered inactive and garbage collected.
-constexpr base::TimeDelta kDeviceExpirationTimeout = base::Days(30);
+constexpr base::TimeDelta kDeviceExpirationTimeout = base::Days(14);
 
 // Helper to determine if a device is considered inactive/expired based on its
 // last sync activity timestamp.
