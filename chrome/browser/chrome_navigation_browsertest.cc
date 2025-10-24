@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -135,7 +136,7 @@ class ChromeNavigationBrowserTest : public InProcessBrowserTest {
 // with a remote URL shows the correct tab title.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, TestViewFrameSource) {
   // The local page file:// URL.
-  GURL local_page_with_iframe_url = ui_test_utils::GetTestUrl(
+  GURL local_page_with_iframe_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("iframe.html")));
 

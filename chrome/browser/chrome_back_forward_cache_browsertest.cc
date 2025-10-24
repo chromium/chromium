@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -274,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   // Navigate to a page with picture-in-picture functionality.
   const base::FilePath::CharType picture_in_picture_page[] =
       FILE_PATH_LITERAL("media/picture-in-picture/window-size.html");
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(picture_in_picture_page));
   EXPECT_TRUE(content::NavigateToURL(web_contents(), test_page_url));
