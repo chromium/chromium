@@ -17,7 +17,7 @@ namespace blink {
 
 bool ShouldBlockRequestViaConnectionAllowlist(ExecutionContext* context,
                                               const KURL& url) {
-  network::ConnectionAllowlists allowlists =
+  const network::ConnectionAllowlists& allowlists =
       context->GetPolicyContainer()->GetPolicies().connection_allowlists;
 
   // TODO(447954811): Sending reports for violations of both enforced and
@@ -40,9 +40,9 @@ bool ShouldBlockRequestViaConnectionAllowlist(ExecutionContext* context,
   // mechanism. Ideally, we'll treat these strings as URLPatterns, but also
   // compile them _once_ (even more ideally in the network stack, though that
   // will be somewhat difficult to do while also supporting regex).
-  String serialized_origin = origin->ToString();
+  const String serialized_origin = origin->ToString();
   if (base::Contains(allowlists.enforced->allowlist,
-                     origin->ToString().Ascii())) {
+                     serialized_origin.Ascii())) {
     return false;
   }
 
