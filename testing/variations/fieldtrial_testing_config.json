@@ -24660,6 +24660,21 @@
             ]
         }
     ],
+    "SustainedMPUrgentDiscarding": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SustainedMPUrgentDiscarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "SwiftShaderDeprecation": [
         {
             "platforms": [

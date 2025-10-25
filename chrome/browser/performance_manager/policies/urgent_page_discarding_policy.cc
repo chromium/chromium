@@ -38,10 +38,22 @@ std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
 }  // namespace
 
 UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
-    : memory_pressure_listener_registration_(
+    : sustained_memory_pressure_timer_(
           FROM_HERE,
-          base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
-          this) {}
+          base::Seconds(5),
+          base::BindRepeating(
+              &UrgentPageDiscardingPolicy::HandleMemoryPressureEvent,
+              base::Unretained(this))) {
+  if (base::FeatureList::IsEnabled(features::kSustainedPMUrgentDiscarding)) {
+    sustained_memory_pressure_evaluator_.emplace(base::BindRepeating(
+        &UrgentPageDiscardingPolicy::OnSustainedMemoryPressure,
+        base::Unretained(this)));
+  } else {
+    memory_pressure_listener_registration_.emplace(
+        FROM_HERE, base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
+        this);
+  }
+}
 UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;
 
 void UrgentPageDiscardingPolicy::OnPassedToGraph(Graph* graph) {
@@ -95,6 +107,30 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
     base::MemoryPressureLevel new_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (new_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    return;
+  }
+
+  HandleMemoryPressureEvent();
+}
+
+void UrgentPageDiscardingPolicy::OnSustainedMemoryPressure(
+    bool is_sustained_memory_pressure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_sustained_memory_pressure) {
+    HandleMemoryPressureEvent();
+    // Start the time that will continuously discard a tab while under sustained
+    // memory pressure.
+    sustained_memory_pressure_timer_.Reset();
+  } else {
+    sustained_memory_pressure_timer_.Stop();
+  }
+}
+
+void UrgentPageDiscardingPolicy::HandleMemoryPressureEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (g_disabled_for_testing) {
     return;
   }
@@ -102,8 +138,7 @@ void UrgentPageDiscardingPolicy::OnMemoryPressure(
   // The Memory Pressure Monitor will send notifications at regular interval,
   // |handling_memory_pressure_notification_| prevents this class from trying to
   // reply to multiple notifications at the same time.
-  if (handling_memory_pressure_notification_ ||
-      new_level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (handling_memory_pressure_notification_) {
     return;
   }
 

@@ -8,6 +8,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -32,6 +33,9 @@ class UrgentPageDiscardingPolicyTest
   void SetUp() override {
     testing::GraphTestHarnessWithMockDiscarder::SetUp();
 
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kSustainedPMUrgentDiscarding);
+
     // Create the policy and pass it to the graph.
     auto policy = std::make_unique<UrgentPageDiscardingPolicy>();
     policy_ = policy.get();
@@ -44,6 +48,8 @@ class UrgentPageDiscardingPolicyTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   raw_ptr<UrgentPageDiscardingPolicy> policy_ = nullptr;
 };
 
