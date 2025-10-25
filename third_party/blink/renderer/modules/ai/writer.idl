@@ -12,7 +12,7 @@ enum WriterLength { "short", "medium", "long" };
 dictionary WriterCreateCoreOptions {
   WriterTone tone = "neutral";
   WriterFormat format = "plain-text";
-  WriterLength length = "medium";
+  WriterLength length = "short";
 
   sequence<DOMString> expectedInputLanguages;
   sequence<DOMString> expectedContextLanguages;
