@@ -35,21 +35,6 @@ bool ObjectValuePresentAndEquals(const JSONObject& object,
   return str_val == value;
 }
 
-bool ObjectValuePresentAndEndsWith(const JSONObject& object,
-                                   const String& key,
-                                   const String& value) {
-  JSONValue* json_value = object.Get(key);
-  if (!json_value) {
-    return false;
-  }
-  if (json_value->GetType() != JSONValue::kTypeString) {
-    return false;
-  }
-  String str_val;
-  json_value->AsString(&str_val);
-  return str_val.EndsWith(value);
-}
-
 bool ObjectValuePresentAndFalse(const JSONObject& object, const String& key) {
   JSONValue* json_value = object.Get(key);
   if (!json_value) {
@@ -71,6 +56,24 @@ bool ObjectValuePresentAndFalse(const JSONObject& object, const String& key) {
   return bool_val == false;
 }
 
+// Helper function to parse JSON, with fallbacks for common syntax errors.
+std::unique_ptr<JSONValue> ParsePaidContentJSON(const String& json_string) {
+  // The JSON provided by some websites has trailing commas, which is not
+  // strictly valid JSON. We can allow this by using
+  // `ParseJSONWithCommentsDeprecated`.
+  JSONParseError error;
+  std::unique_ptr<JSONValue> json_value =
+      ParseJSONWithCommentsDeprecated(json_string, &error);
+  if (!json_value) {
+    // The JSON provided by some websites has unescaped newlines in strings,
+    // which is not strictly valid JSON. We can work around this by replacing
+    // them with spaces.
+    String json_text = json_string;
+    json_text.Replace('\n', ' ');
+    json_value = ParseJSONWithCommentsDeprecated(json_text, &error);
+  }
+  return json_value;
+}
 }  // namespace
 
 bool PaidContent::IsPaidElement(const Element* element) const {
@@ -95,23 +98,36 @@ bool PaidContent::IsPaidElement(const Element* element) const {
 
 // Check if the script element is ld+json and has paid content.  Returns the
 // script object if paid content is found, and nullptr otherwise.
-std::unique_ptr<JSONObject> ScriptHasPaidContent(HTMLScriptElement& script_element) {
+std::unique_ptr<JSONObject> ScriptHasPaidContent(
+    HTMLScriptElement& script_element) {
   ScriptElementBase& script_element_base =
       static_cast<ScriptElementBase&>(script_element);
   if (script_element_base.TypeAttributeValue() != "application/ld+json") {
     return nullptr;
   }
-  std::unique_ptr<JSONValue> json_value = ParseJSON(script_element.textContent());
+  // The JSON provided by some websites has trailing commas, which is not
+  // strictly valid JSON. We can allow this by using
+  std::unique_ptr<JSONValue> json_value =
+      ParsePaidContentJSON(script_element.textContent());
   if (!json_value || json_value->GetType() != JSONValue::kTypeObject) {
     // JSON parsing failed or it's not an object.
     return nullptr;
   }
   // We know it's an object, so we can safely cast and transfer ownership.
-  std::unique_ptr<JSONObject> script_obj =
-      std::unique_ptr<JSONObject>(static_cast<JSONObject*>(json_value.release()));
+  std::unique_ptr<JSONObject> script_obj = std::unique_ptr<JSONObject>(
+      static_cast<JSONObject*>(json_value.release()));
 
-  // check for "@context":"https://schema.org" (or "http://schema.org")
-  if (!ObjectValuePresentAndEndsWith(*script_obj, "@context", "//schema.org")) {
+  // check for "schema.org" in "@context"
+  JSONValue* context_value = script_obj->Get("@context");
+  bool is_context_valid = false;
+  if (context_value && context_value->GetType() == JSONValue::kTypeString) {
+    String str_val;
+    context_value->AsString(&str_val);
+    if (str_val.Contains("schema.org")) {
+      is_context_valid = true;
+    }
+  }
+  if (!is_context_valid) {
     return nullptr;
   }
 
@@ -152,7 +168,8 @@ bool PaidContent::QueryPaidElements(Document& document) {
   }
   for (HTMLScriptElement& script_element :
        Traversal<HTMLScriptElement>::ChildrenOf(*head)) {
-    std::unique_ptr<JSONObject> script_obj = ScriptHasPaidContent(script_element);
+    std::unique_ptr<JSONObject> script_obj =
+        ScriptHasPaidContent(script_element);
     if (!script_obj) {
       continue;
     }
@@ -210,5 +227,4 @@ bool PaidContent::AppendHasPartElements(Document& document,
   }
   return false;
 }
-
 }  // namespace blink

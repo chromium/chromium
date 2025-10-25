@@ -101,7 +101,8 @@ class FrameMetadataObserverRegistryTest : public testing::Test {
     EXPECT_EQ(meta_tags[0]->content, "Gary");
   }
 
-  void VerifyAuthorMetaTagNoContent(const Vector<mojom::blink::MetaTagPtr>& meta_tags) {
+  void VerifyAuthorMetaTagNoContent(
+      const Vector<mojom::blink::MetaTagPtr>& meta_tags) {
     ASSERT_EQ(meta_tags.size(), 1u);
     EXPECT_EQ(meta_tags[0]->name, "author");
     EXPECT_EQ(meta_tags[0]->content, "");
@@ -203,7 +204,8 @@ TEST_F(FrameMetadataObserverRegistryTest, PaidContentAddedDynamically) {
   EXPECT_TRUE(observer.future().Get());
 }
 
-TEST_F(FrameMetadataObserverRegistryTest, PaidContentUnaffectedByOtherElements) {
+TEST_F(FrameMetadataObserverRegistryTest,
+       PaidContentUnaffectedByOtherElements) {
   LoadHTML(R"HTML(
     <head>
       <script type="application/ld+json">{
@@ -226,8 +228,8 @@ TEST_F(FrameMetadataObserverRegistryTest, PaidContentUnaffectedByOtherElements) 
 
   // Add a meta element, which should not trigger the observer.
   observer.future().Clear();
-  auto* meta_element =
-      MakeGarbageCollected<HTMLMetaElement>(*GetDocument(), CreateElementFlags());
+  auto* meta_element = MakeGarbageCollected<HTMLMetaElement>(
+      *GetDocument(), CreateElementFlags());
   meta_element->setAttribute(html_names::kNameAttr, AtomicString("author"));
   meta_element->setAttribute(html_names::kContentAttr, AtomicString("Gary"));
   GetDocument()->head()->AppendChild(meta_element);
@@ -235,6 +237,54 @@ TEST_F(FrameMetadataObserverRegistryTest, PaidContentUnaffectedByOtherElements) 
 
   EXPECT_FALSE(observer.future().IsReady());
 }
+
+TEST_F(FrameMetadataObserverRegistryTest,
+       PaidContentWithSchemaOrgTrailingSlash) {
+  LoadHTML(R"HTML(
+    <head>
+      <script type="application/ld+json">{
+        "@context": "http://schema.org/",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false
+      }</script>
+    </head>
+    <body></body>
+  )HTML");
+  BindRegistry();
+
+  MockPaidContentMetadataObserver observer;
+  registry_->AddPaidContentMetadataObserver(
+      observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Get());
+}
+
+TEST_F(FrameMetadataObserverRegistryTest, PaidContentWithUnescapedNewlines) {
+  LoadHTML(R"HTML(
+    <head>
+      <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": false,
+        "description": "This is a description
+with unescaped newlines."
+      }</script>
+    </head>
+    <body></body>
+  )HTML");
+  BindRegistry();
+
+  MockPaidContentMetadataObserver observer;
+  registry_->AddPaidContentMetadataObserver(
+      observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Get());
+}
+
 TEST_F(FrameMetadataObserverRegistryTest, MetaTags) {
   LoadHTML(R"HTML(
     <head>
@@ -418,9 +468,8 @@ TEST_F(FrameMetadataObserverRegistryTest, MetaTagsUnaffectedByOtherElements) {
 
   // Add a script element, which should not trigger the observer.
   observer.future().Clear();
-  auto* script_element =
-      MakeGarbageCollected<HTMLScriptElement>(*GetDocument(),
-                                              CreateElementFlags());
+  auto* script_element = MakeGarbageCollected<HTMLScriptElement>(
+      *GetDocument(), CreateElementFlags());
   script_element->setTextContent("console.log('hello');");
   GetDocument()->head()->AppendChild(script_element);
   test::RunPendingTasks();
