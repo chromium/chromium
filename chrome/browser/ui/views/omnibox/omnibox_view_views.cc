@@ -70,6 +70,7 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/search.h"
 #include "components/security_state/core/security_state.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -407,9 +408,16 @@ void OmniboxViewViews::InstallPlaceholderText() {
                                                 ->client()
                                                 ->GetTemplateURLService()
                                                 ->GetDefaultSearchProvider()) {
-    // Otherwise, if a DSE is set, use the DSE placeholder text.
-    SetPlaceholderText(l10n_util::GetStringFUTF16(
-        IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
+        search::DefaultSearchProviderIsGoogle(
+            controller()->client()->GetTemplateURLService())) {
+      SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_WEBUI_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
+    } else {
+      // Otherwise, if a DSE is set, use the DSE placeholder text.
+      SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_OMNIBOX_PLACEHOLDER_TEXT, default_provider->short_name()));
+    }
   } else {
     SetPlaceholderText(std::u16string());
   }
