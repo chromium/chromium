@@ -318,6 +318,9 @@
      =1 {This folder contains a bookmark. Are you sure you want to delete it?}
      other {This folder contains # bookmarks. Are you sure you want to delete it?}}
   </message>
+  <message name="IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_SUBTITLE" desc="The subtitle of the tab group convert to bookmark folder dialog.">
+    When you click save, this tab group will become a bookmark folder and will be removed from your groups on all devices
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_EDITOR_NEW_FOLDER_BUTTON" desc="Text on the new folder button.">
       New folder
@@ -336,6 +339,9 @@
     </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="The title of the Bookmark All Tabs dialog.">
       Bookmark all tabs
+    </message>
+    <message name="IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_TITLE" desc="The subtitle of the tab group convert to bookmark folder dialog.">
+      Convert tab group into bookmark folder
     </message>
   </if>
   <if expr="use_titlecase">
@@ -356,6 +362,9 @@
     </message>
     <message name="IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE" desc="In Title Case: The title of the Bookmark All Tabs dialog.">
       Bookmark All Tabs
+    </message>
+    <message name="IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_TITLE" desc="The title of the tab group convert to bookmark folder dialog.">
+      Convert Tab Group into Bookmark Folder
     </message>
   </if>
   <!-- End of Bookmarks Editor strings. -->

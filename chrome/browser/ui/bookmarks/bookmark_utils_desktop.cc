@@ -635,7 +635,8 @@ void ShowBookmarkTabGroupDialog(
 
   const BookmarkNode* parent = GetParentForNewNodes(model);
   BookmarkEditor::EditDetails details =
-      BookmarkEditor::EditDetails::AddFolder(parent, parent->children().size());
+      BookmarkEditor::EditDetails::TabGroupToFolder(
+          parent, parent->children().size(), tab_group.visual_data()->title());
 
   GetURLsAndFoldersForTabGroup(browser, tab_group,
                                &(details.bookmark_data.children));

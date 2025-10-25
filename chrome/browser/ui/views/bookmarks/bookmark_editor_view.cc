@@ -447,9 +447,21 @@ void BookmarkEditorView::AddLabels() {
     url = details_.existing_node->url();
   } else if (details_.type == EditDetails::NEW_FOLDER) {
     title = l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME);
+  } else if (details_.type == EditDetails::CONVERT_TAB_GROUP_TO_FOLDER) {
+    title = details_.bookmark_data.title.empty()
+                ? l10n_util::GetStringUTF16(IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME)
+                : details_.bookmark_data.title;
   } else if (details_.type == EditDetails::NEW_URL) {
     url = details_.bookmark_data.url.value();
     title = details_.bookmark_data.title;
+  }
+
+  // Add a subtitle to tab group to folder dialog.
+  if (details_.type == EditDetails::CONVERT_TAB_GROUP_TO_FOLDER) {
+    views::Label* subtitle = AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_SUBTITLE)));
+    subtitle->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    subtitle->SetMultiLine(true);
   }
 
   auto* labels = AddChildView(std::make_unique<views::View>());
