@@ -387,6 +387,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1244917379075403655">Klikk på «Innstillinger»</translation>
 <translation id="1245331638296910488">Filer flyttes til OneDrive når de åpnes i Microsoft 365</translation>
 <translation id="1245628370644070008">Gjenoppretting av lokale data</translation>
+<translation id="1246420197935327230">Velg et område</translation>
 <translation id="1246863218384630739">Kunne ikke installere <ph name="VM_NAME" />: Nettadressen til bildet returnerte feilkoden <ph name="HTTP_ERROR" />. Kontakt administratoren din.</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Varsler er ikke tillatt for 1 nettsted}other{Varsler er ikke tillatt for {NUM_SITES} nettsteder}}</translation>
@@ -2823,6 +2824,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2916745397441987255">Søk i utvidelser</translation>
 <translation id="2918484639460781603">Gå til Innstillinger</translation>
 <translation id="2918484644467055090">Denne enheten kan ikke registreres i organisasjonen som kontoen din tilhører. Enheten er merket for administrering av en annen organisasjon.</translation>
+<translation id="2920346489891435227">Åpne linken i høyre visning</translation>
 <translation id="2920852127376356161">Nettsteder som ikke har lov til å behandle protokoller</translation>
 <translation id="2921081876747860777">Opprett et passord for å beskytte de lokale dataene dine.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> låses nå.
@@ -4598,6 +4600,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4133265950310064865">Økt beskyttelse</translation>
 <translation id="4134838386867070505">Trinn 1 av 4: Beskriv problemet</translation>
 <translation id="413534985210133938">«<ph name="LOCAL_FOLDER" />» er bare lagret på denne enheten. Hvis du flytter dette bokmerket til «<ph name="LOCAL_FOLDER" />», mister du tilgang til det på de andre enhetene dine.</translation>
+<translation id="4135370802895537423">Åpne linken i høyre visning</translation>
 <translation id="4135746311382563554">Tilleggsvilkår for bruk av Google Chrome og ChromeOS</translation>
 <translation id="4136203100490971508">Nattlys blir slått av automatisk ved soloppgang</translation>
 <translation id="41365691917097717">Hvis du fortsetter, blir ADB-feilsøking slått på for utvikling og testing av Android-apper. Merk at dette gjør det mulig å installere Android-apper som ikke er verifisert av Google, og enheten må tilbakestilles til fabrikkinnstillingene hvis du vil slå av ADB igjen.</translation>
@@ -4683,6 +4686,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4209251085232852247">Slått av</translation>
 <translation id="4210048056321123003">Laster ned den virtuelle maskinen</translation>
 <translation id="4210380525132844778">Årsak: Fant <ph name="RULE" /> på «<ph name="LIST_NAME" />»-listen.</translation>
+<translation id="4210428686880035809">Åpne linken i venstre visning</translation>
 <translation id="4211362364312260125">Identifiser det viktigste landemerket på nettsider for assisterende teknologi</translation>
 <translation id="421182450098841253">&amp;Vis bokmerkerad</translation>
 <translation id="4211904048067111541">Slutt å bruke med Android-apper</translation>
@@ -5779,7 +5783,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4979263087381759787">Utvikleralternativer</translation>
 <translation id="4979510648199782334">Konfigureringen av Microsoft 365 er fullført</translation>
 <translation id="4980805016576257426">Denne utvidelsen inneholder skadelig programvare.</translation>
-<translation id="498274622779591291">Synkroniser loggen og fanene dine for å dele faner og samarbeide med andre.</translation>
 <translation id="4983159853748980742">Passordet ditt ble ikke delt. Sjekk internettilkoblingen, og sjekk at du er logget på Chrome. Prøv deretter på nytt.</translation>
 <translation id="498624032394115435">Alle som har linken, kan redigere alle faner.</translation>
 <translation id="4986706507552097681">Du kan når som helst velge hva du vil synkronisere, i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
@@ -6058,6 +6061,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5184662919967270437">Oppdaterer enheten</translation>
 <translation id="5185386675596372454">Den nyeste versjonen av <ph name="EXTENSION_NAME" /> er deaktivert fordi den krever ytterligere tillatelser.</translation>
 <translation id="5185500136143151980">Ingen internettilkobling</translation>
+<translation id="5186362203408605578">Bruk en annen enhet ved å skanne QR-koden</translation>
 <translation id="5186381005592669696">Tilpass visningsspråket for støttede apper</translation>
 <translation id="5186788525428341874">Du kan bruke denne passnøkkelen for å logge på raskere på alle enhetene dine. Den lagres i Google Passordlagring for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Installer siden som en app…</translation>
@@ -6441,6 +6445,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5457082343331641453">Legg til i søket</translation>
 <translation id="5457113250005438886">Ugyldig</translation>
 <translation id="5457459357461771897">lese og slette bilder, musikk og andre medier fra datamaskinen din</translation>
+<translation id="5457795687441958389">Forbli logget av</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Du har oppgitt feil PIN-kode for mange ganger. For å få tilgang til passnøklene og passordene dine, endre PIN-koden.</translation>
 <translation id="5459470938885464873">Feil ved import av sertifikatet</translation>
@@ -7452,6 +7457,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6175910054050815932">Få en link</translation>
 <translation id="6177412385419165772">Fjerner …</translation>
 <translation id="6177478397823976397">Fant ingen enheter. Åpne en brukerstøtteartikkel på en ny fane.</translation>
+<translation id="6177779807714496775">Åpne linken i venstre visning</translation>
 <translation id="6178664161104547336">Velg et sertifikat</translation>
 <translation id="6178682841350631965">Påloggingsinformasjonen ble oppdatert</translation>
 <translation id="6179830757749383456">Nettleseren administreres av <ph name="BROWSER_DOMAIN" />, og profilen administreres av <ph name="PROFILE_DOMAIN" /></translation>
@@ -8589,6 +8595,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6973611239564315524">En oppgradering for Debian 10 (Buster) er tilgjengelig</translation>
 <translation id="69739764870135975">Hvis Google også er standardsøkemotoren din, ser du bedre og mer kontekstuelt relevante forslag</translation>
 <translation id="697508444536771064">Avslutt Linux</translation>
+<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> lagrer informasjon på mobilenheten din</translation>
 <translation id="6978121630131642226">Søkemotorer</translation>
 <translation id="6978717888677691380">Nettsteder du har blokkert</translation>
 <translation id="6979041727349121225">Strømsparing</translation>
@@ -11968,6 +11975,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="984705303330760860">Legg til språk for stavekontroll</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Generelt</translation>
+<translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> henter informasjon fra mobilenheten din</translation>
 <translation id="988320949174893488">Hakker av og til</translation>
 <translation id="988978206646512040">Tomme passordfraser er ikke tillatt</translation>
 <translation id="992032470292211616">Utvidelser, apper og temaer kan skade enheten din. Er du sikker på at du vil fortsette?</translation>

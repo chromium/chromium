@@ -595,6 +595,7 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />: добавлена закладка</translation>
 <translation id="3740525748616366977">Голосовой поиск недоступен на этом устройстве.</translation>
 <translation id="376561056759077985">Некоторые данные ещё не сохранены</translation>
+<translation id="3770620323585347665">Добавить название окна</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
 <translation id="3771290962915251154">Эта настройка отключена, так как работает родительский контроль</translation>
 <translation id="3771694256347217732">Условия использования Google</translation>
@@ -788,6 +789,7 @@
 <translation id="4668279686271488041">Данные для оценки эффективности рекламы регулярно удаляются с вашего устройства.</translation>
 <translation id="4668347365065281350">Все данные, хранимые на устройстве сайтами, включая файлы cookie.</translation>
 <translation id="4673702426794876519">Окно в режиме инкогнито</translation>
+<translation id="4675298276894277358">Этот сайт больше не будет показываться.</translation>
 <translation id="4678082183394354975">Тёмная тема для сайтов включена в Chrome.</translation>
 <translation id="4682306524980568490">Невозможно открыть все окна. Максимальное количество: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
@@ -989,6 +991,7 @@
 <translation id="5556459405103347317">Перезагрузить</translation>
 <translation id="555671485580955310">Синхронизировать историю и вкладки</translation>
 <translation id="555816257274242153">Отслеживание цен прекращено.</translation>
+<translation id="5559778750856177186">Ярлык откреплен.</translation>
 <translation id="5561445479436807659">Забавная игра Chrome Dino.</translation>
 <translation id="5561549206367097665">Поиск сети…</translation>
 <translation id="5568069709869097550">Не удается войти</translation>
@@ -1662,6 +1665,7 @@
 <translation id="8281886186245836920">Пропустить</translation>
 <translation id="8282297628636750033">Использовать тёмную тему для сайтов, если возможно</translation>
 <translation id="8282950411412455249">Открыть настройки безопасности</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Закрыть 1 окно в режиме инкогнито}one{Закрыть # окно в режиме инкогнито}few{Закрыть # окна в режиме инкогнито}many{Закрыть # окон в режиме инкогнито}other{Закрыть # окна в режиме инкогнито}}</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
 <translation id="8317318757008452355">Открыть параметры печати</translation>
 <translation id="8320212361750431956">Недавние действия</translation>

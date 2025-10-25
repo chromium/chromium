@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए, विंडो को स्क्रीन के सबसे ऊपरी हिस्से से खींचकर नीचे की ओर छोड़ें और 'वापस जाएं' बटन पर टैप करें</translation>
 <translation id="1138458427267715730">पूरे वेब पर मौजूद किसी भी साइट पर, कीमत में गिरावट होने पर सूचना पाएं</translation>
 <translation id="1142713751288681188">पेपर टाइप</translation>
+<translation id="1142965388643537393">यात्रा की जानकारी</translation>
 <translation id="1144136880160289237">आपके पास अभी तक कोई ऐक्टिव विषय नहीं है</translation>
 <translation id="1149617035358809955">अपनी पहचान की पुष्टि करें, ताकि यह आपके क्रेडिट/डेबिट कार्ड की जानकारी भर सके</translation>
 <translation id="1150565364351027703">धूप के चश्मे</translation>
@@ -838,6 +839,7 @@
 <translation id="2357481397660644965">आपके डिवाइस को <ph name="DEVICE_MANAGER" /> और खाते को <ph name="ACCOUNT_MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="2359629602545592467">एक से ज़्यादा</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
+<translation id="236000571258713023">वाहन</translation>
 <translation id="2361263712565360498">275 x 395 मि॰मी॰</translation>
 <translation id="236340516568226369">टॉगल मेन्यू का साइज़ बदलें</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> डालें</translation>
@@ -2199,6 +2201,7 @@
 <translation id="4598556348158889687">डिवाइस की मेमोरी का प्रबंधन</translation>
 <translation id="459914240367517409">वेब डिज़ाइन और डेवलपमेंट</translation>
 <translation id="4602465984861132303">बॉलिंग</translation>
+<translation id="4603727370377253901">फ़्लाइट की बुकिंग</translation>
 <translation id="4607608436550361748">Chrome की सलाह देखें</translation>
 <translation id="460848736049414407">एडमिन ने ब्लॉक किया है</translation>
 <translation id="4610279718074907952">यह साइट, <ph name="SET_OWNER" /> के तय किए गए ग्रुप में है. यह आपकी गतिविधि देख सकती है</translation>
@@ -2207,6 +2210,7 @@
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4622292761762557753">फिर भी ट्रांसफ़र करें</translation>
 <translation id="4622647778991854660">सूचना केंद्र में जाकर, सूचनाएं पाने की सुविधा चालू करें. <ph name="LINK" /> खोलें.</translation>
+<translation id="4623894491222334521">पहचान की पुष्टि करने वाले दस्तावेज़</translation>
 <translation id="4627675673814409125">इस नीति को Chrome के प्रोफ़ाइल लेवल पर सेट नहीं किया जा सकता और इसे नज़रअंदाज़ कर दिया जाएगा.</translation>
 <translation id="4628678854894591460">छुट्टियों के लिए ऑफ़र</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>

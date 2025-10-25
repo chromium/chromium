@@ -779,6 +779,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="152913213824448541">Contactos da funcionalidade Partilhar na proximidade</translation>
 <translation id="1529769834253316556">Altura da linha</translation>
 <translation id="1529891865407786369">Fonte de alimentação</translation>
+<translation id="1530376661400379364">O Chrome repôs estas definições</translation>
 <translation id="1531275250079031713">Mostrar o botão "Adicionar nova rede Wi-Fi"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Compreendo que esta transferência vai causar danos ao meu computador</translation>
@@ -1070,6 +1071,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1709916727352927457">Elimine o token de acesso</translation>
 <translation id="1709972045049031556">Não é possível partilhar</translation>
 <translation id="1712143791363119140">Em curso</translation>
+<translation id="1714265454085143857">Separadores fixos</translation>
 <translation id="1714326320203665217">Ficheiros de anotações do nó principal transferidos</translation>
 <translation id="1714644264617423774">Ativa as funcionalidades de acessibilidade para facilitar a utilização do dispositivo. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Eliminar os dados e as autorizações do site <ph name="SITE_NAME" /> e da respetiva app instalada?</translation>
@@ -1192,6 +1194,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1805967612549112634">Confirmar PIN</translation>
 <translation id="1806335016774576568">Mudar para outra app aberta</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1807542511544484064">Estas definições foram alteradas fora do Chrome. Para sua proteção, o Chrome repôs as definições.</translation>
 <translation id="180759455458343539">Adicionar imagem</translation>
 <translation id="1808571181382454540">Aceder à página Definições</translation>
 <translation id="1808805149659872686">Nova entrada</translation>
@@ -5780,7 +5783,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4979263087381759787">Opções de programador</translation>
 <translation id="4979510648199782334">Configuração do Microsoft 365 concluída</translation>
 <translation id="4980805016576257426">Esta extensão contém um software malicioso.</translation>
-<translation id="498274622779591291">Para partilhar separadores e colaborar com outras pessoas, sincronize o seu histórico e separadores</translation>
 <translation id="4983159853748980742">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chrome. Em seguida, tente novamente.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
 <translation id="4986706507552097681">Pode sempre escolher o que quer sincronizar nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
@@ -7437,6 +7439,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6160290816917599257">Código inválido. A sua entrada deve ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />Endereço de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID correspondente opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Disponibilizar certificados para autenticação</translation>
 <translation id="6160887111111841751">As informações guardadas aparecem aqui</translation>
+<translation id="616290554291007512">Não permita que o Gemini inicie sessão por si</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Definições Kerberos</translation>
 <translation id="6163522313638838258">Expandir tudo...</translation>
@@ -7749,6 +7752,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6379228010899751161">Valide a sua identidade para se certificar de que pode sempre usar as palavras-passe na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Não, continuar a trabalhar neste perfil</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
+<translation id="6380618366311601172">O Gemini não vai conseguir concluir tarefas que exijam o início de sessão em <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">O modo de leitura não está disponível nesta página</translation>
 <translation id="638418309848716977">Links suportados</translation>
 <translation id="6384275966486438344">Alterar as definições de pesquisa para: <ph name="SEARCH_HOST" /></translation>
@@ -9459,6 +9463,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7585106857920830898">A verificar as políticas de segurança da sua organização…</translation>
 <translation id="7585490016012953607">Palavra-passe de recuperação – Guardada temporariamente durante um máximo de 3 meses</translation>
 <translation id="7586498138629385861">O Chrome continuará em execução enquanto as Apps Chrome estiverem abertas.</translation>
+<translation id="7587297195142686341">O Gemini pode iniciar sessão por si</translation>
 <translation id="7587806318633605613">Histórico de sugestões</translation>
 <translation id="7588381637439911806">Criar novo grupo</translation>
 <translation id="7589448773774086276">Nova vista dividida com separador atual</translation>
@@ -10817,6 +10822,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="849488240089599592">Voltar às transferências recentes</translation>
 <translation id="8496717697661868878">Executar este plugin</translation>
 <translation id="8497219075884839166">Utilitários do Windows</translation>
+<translation id="8497819894150712946">Guardado a partir do Chrome</translation>
 <translation id="8498214519255567734">Torna mais fácil olhar para o ecrã ou ler com pouca luz</translation>
 <translation id="8499083585497694743">Reativar microfone</translation>
 <translation id="8500044868721690197">Este site foi impedido de controlar e reprogramar os seus dispositivos MIDI</translation>
@@ -11589,6 +11595,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9016827136585652292">botão do ecrã de privacidade</translation>
 <translation id="90181708067259747">Data de validade: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Instalação concluída</translation>
+<translation id="9018677074423884999">Motor de pesquisa predefinido (DSE)</translation>
 <translation id="901876615920222131">Para reabrir o grupo, clique neste</translation>
 <translation id="9019062154811256702">Ler e alterar as definições de preenchimento automático</translation>
 <translation id="9019956081903586892">Não foi possível transferir o dicionário de verificação ortográfica.</translation>
@@ -11645,6 +11652,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9045160989383249058">A sua lista de leitura foi movida para o novo painel lateral. Experimente-a aqui.</translation>
 <translation id="9048745018038487540">Selecionar todos os tipos de letra</translation>
 <translation id="9050666287014529139">Frase de acesso</translation>
+<translation id="905137631551495997">Extensões</translation>
 <translation id="905145695813415387">A pasta "<ph name="LOCAL_FOLDER" />" está guardada apenas neste dispositivo. Se mover esta pasta para "<ph name="LOCAL_FOLDER" />", deixa de a ter nos seus outros dispositivos.</translation>
 <translation id="9052404922357793350">Continuar a bloquear</translation>
 <translation id="90528604757378587">A atividade em segundo plano e alguns efeitos visuais, como o deslocamento suave, podem ser limitados.</translation>
@@ -11673,6 +11681,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9069417381769492963">Não existem marcadores que correspondam à sua pesquisa</translation>
 <translation id="9070231741075992882">As autorizações que concede à app <ph name="APP_NAME" /> também são concedidas às apps que esta instala e das quais faz stream.</translation>
 <translation id="9070342919388027491">Separador movido para a esquerda</translation>
+<translation id="9072918088200875065">Deu autorização ao Gemini para iniciar sessão nestes sites de modo a concluir tarefas por si</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB ligado</translation>
 <translation id="9075413375877487220">Esta extensão não é considerada fidedigna pela Navegação segura melhorada.</translation>

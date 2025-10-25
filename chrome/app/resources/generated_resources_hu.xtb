@@ -5760,6 +5760,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4961318399572185831">Képernyő átküldése</translation>
 <translation id="4961594008939394243">Útközben vásárolhat, fordíthat, és azonosíthatja a látott dolgokat a kamera segítségével.</translation>
 <translation id="496185450405387901">Ezt az alkalmazást az Ön adminisztrátora telepítette.</translation>
+<translation id="4963068409841400707">További információ az <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> és az <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /> rendszerre vonatkozó kezdő lépésekről.</translation>
 <translation id="4963603093937263654">Ellenőrizze, hogy be vannak-e kapcsolva az értesítések a következőn: <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Jelenlegi lap eltávolítása</translation>
 <translation id="4964455510556214366">Elrendezés</translation>
@@ -5785,7 +5786,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4979263087381759787">Fejlesztői beállítások</translation>
 <translation id="4979510648199782334">A Microsoft 365 beállítása befejeződött</translation>
 <translation id="4980805016576257426">Ez a bővítmény rosszindulatú programot tartalmaz.</translation>
-<translation id="498274622779591291">Ha meg szeretne osztani lapokat, és együtt szeretne dolgozni másokkal, szinkronizálja az előzményeit és a lapjait.</translation>
 <translation id="4983159853748980742">A jelszó megosztása nem sikerült. Ellenőrizze az internetkapcsolatot, és győződjön meg arról, hogy be van jelentkezve a Chrome-ba. Ezután próbálkozzon újra.</translation>
 <translation id="498624032394115435">A link birtokában bárki szerkesztheti az összes lapot.</translation>
 <translation id="4986706507552097681">A beállítások között bármikor módosíthatja a szinkronizálni kívánt elemeket. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>

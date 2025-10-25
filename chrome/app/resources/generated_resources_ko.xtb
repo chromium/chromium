@@ -5763,6 +5763,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4961318399572185831">화면 전송</translation>
 <translation id="4961594008939394243">이동 중에도 카메라를 사용해 지금 보고 있는 항목을 쇼핑하고, 번역하고, 알아보세요.</translation>
 <translation id="496185450405387901">이 앱은 관리자가 설치했습니다.</translation>
+<translation id="4963068409841400707"><ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> 및 <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" />에서 시작하는 방법을 알아보세요.</translation>
 <translation id="4963603093937263654"><ph name="DEVICE_NAME" />에 알림이 사용 설정되어 있는지 확인하세요</translation>
 <translation id="4963789650715167449">현재 탭 삭제</translation>
 <translation id="4964455510556214366">배열</translation>
@@ -5788,7 +5789,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4979263087381759787">개발자 옵션</translation>
 <translation id="4979510648199782334">Microsoft 365 설정 완료</translation>
 <translation id="4980805016576257426">확장 프로그램에 멀웨어가 포함되어 있습니다.</translation>
-<translation id="498274622779591291">탭을 공유하고 다른 사용자와 공동작업하려면 방문 기록 및 탭을 동기화하세요.</translation>
 <translation id="4983159853748980742">비밀번호가 공유되지 않았습니다. 인터넷 연결을 확인하고 Chrome에 로그인되어 있는지 확인하세요. 그럼 다음 다시 시도해 보세요.</translation>
 <translation id="498624032394115435">링크가 있는 사용자가 모든 탭을 수정할 수 있습니다.</translation>
 <translation id="4986706507552097681">언제든지 설정에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>

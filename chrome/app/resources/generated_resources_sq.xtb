@@ -5744,6 +5744,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4961318399572185831">Ekrani i transmetimit</translation>
 <translation id="4961594008939394243">Bli, përkthe dhe identifiko ato që shikon me kamerën tënde në lëvizje</translation>
 <translation id="496185450405387901">Ky aplikacion është instaluar nga administratori yt.</translation>
+<translation id="4963068409841400707">Mëso se si të fillosh në <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> dhe <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Sigurohu që njoftimet janë të aktivizuara në pajisjen tënde <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Hiqe skedën aktuale</translation>
 <translation id="4964455510556214366">Sistemimi</translation>
@@ -5769,7 +5770,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4979263087381759787">Opsionet e zhvilluesit</translation>
 <translation id="4979510648199782334">Konfigurimi i Microsoft 365 përfundoi</translation>
 <translation id="4980805016576257426">Kjo shtesë përmban një softuer keqdashës.</translation>
-<translation id="498274622779591291">Për të ndarë skedat dhe për të bashkëpunuar me të tjerët, sinkronizo historikun dhe skedat</translation>
 <translation id="4983159853748980742">Fjalëkalimi yt nuk është ndarë. Kontrollo lidhjen e internetit dhe sigurohu që të jesh identifikuar në Chrome. Më pas provo përsëri.</translation>
 <translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
 <translation id="4986706507552097681">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>

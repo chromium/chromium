@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Để thoát khỏi chế độ toàn màn hình, hãy kéo từ trên xuống rồi nhấn vào nút quay lại</translation>
 <translation id="1138458427267715730">Nhận thông báo khi có chương trình giảm giá tại bất cứ trang nào trên web</translation>
 <translation id="1142713751288681188">Loại giấy</translation>
+<translation id="1142965388643537393">Thông tin du lịch</translation>
 <translation id="1144136880160289237">Bạn chưa có chủ đề đang được sử dụng nào</translation>
 <translation id="1149617035358809955">xác minh danh tính của bạn để Chrome có thể giúp bạn điền thông tin thanh toán</translation>
 <translation id="1150565364351027703">Kính mát</translation>
@@ -837,6 +838,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2357481397660644965">Thiết bị của bạn do <ph name="DEVICE_MANAGER" /> quản lý, còn tài khoản của bạn do <ph name="ACCOUNT_MANAGER" /> quản lý.</translation>
 <translation id="2359629602545592467">Nhiều</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
+<translation id="236000571258713023">Xe cộ</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Đổi kích thước trình đơn bật/tắt</translation>
 <translation id="2365355378251437925">Nhập <ph name="FIELD" /></translation>
@@ -2199,6 +2201,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4598556348158889687">Quản lý bộ nhớ</translation>
 <translation id="459914240367517409">Thiết kế và phát triển web</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Thông tin đặt trước chuyến bay</translation>
 <translation id="4607608436550361748">Xem các mẹo khi dùng Chrome</translation>
 <translation id="460848736049414407">Bị quản trị viên chặn</translation>
 <translation id="4610279718074907952">Trang web này nằm trong nhóm do <ph name="SET_OWNER" /> xác định và có thể xem hoạt động của bạn</translation>
@@ -2207,6 +2210,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4619564267100705184">Xác minh danh tính của bạn</translation>
 <translation id="4622292761762557753">Vẫn chuyển</translation>
 <translation id="4622647778991854660">Bật thông báo trong Trung tâm thông báo. Mở <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Giấy tờ tuỳ thân</translation>
 <translation id="4627675673814409125">Bạn không thể đặt chính sách ở cấp hồ sơ trên Chrome và hệ thống sẽ bỏ qua chính sách này.</translation>
 <translation id="4628678854894591460">Gói kỳ nghỉ</translation>
 <translation id="4628948037717959914">Ảnh</translation>

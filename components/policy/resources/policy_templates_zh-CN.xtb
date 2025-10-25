@@ -8145,6 +8145,13 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6520802717075138474">首次运行时，从默认浏览器导入搜索引擎</translation>
 <translation id="6521971538031711337">禁止受管用户配置设备主机名</translation>
 <translation id="6523079496775454310">为非受管设备上的受管用户启用设备信号意见征求功能</translation>
+<translation id="6523608518493993483">此政策让管理员能够对磁盘上的浏览器 HTTP 缓存进行加密。
+
+如果此政策已启用，浏览器缓存将会加密。
+
+如果此政策已停用或未设置，浏览器缓存将不会加密。
+
+加密浏览器缓存可能会影响性能。</translation>
 <translation id="6527674993612811419">在不安全的表单中显示警告并停用自动填充功能</translation>
 <translation id="6532769014584932288">允许使用唤醒锁定</translation>
 <translation id="6533881418188970751">下载前询问用户要将文件保存到何处</translation>

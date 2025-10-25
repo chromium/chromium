@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1007349221964075684">Gebruik schermvergrendeling om geopende incognitovensters te bekijken</translation>
 <translation id="1010283278930414892">Geen opgeslagen wachtwoorden op dit apparaat</translation>
 <translation id="1011749477052068769">Hierheen verplaatsen</translation>
 <translation id="1014083013111769343">Voorkeuren voor de leesmodus zijn op volledige hoogte geopend</translation>
@@ -1167,6 +1168,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6312687380483398334">Web-apps (stil)</translation>
 <translation id="6315386555979018699">Verwijderen en doorgaan</translation>
 <translation id="6316139424528454185">Android-versie wordt niet ondersteund</translation>
+<translation id="631839948975905034">Incognitovensters vergrendelen als je Chrome sluit</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6324977638108296054">Kan geen link naar de markering maken</translation>
 <translation id="6333140779060797560">Delen via <ph name="APPLICATION" /></translation>

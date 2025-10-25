@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="1007349221964075684">Ашылған инкогнито терезелерін көру үшін экран құлпын пайдалану</translation>
 <translation id="1010283278930414892">Бұл құрылғыда сақталған құпия сөздер жоқ</translation>
 <translation id="1011749477052068769">Мұнда жылжыту</translation>
 <translation id="1014083013111769343">Оқу режимінің параметрлері толығымен ашылды</translation>
@@ -1167,6 +1168,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6312687380483398334">Веб-қолданбалар (дыбыссыз)</translation>
 <translation id="6315386555979018699">Жою және жалғастыру</translation>
 <translation id="6316139424528454185">Android: қолдау көрсетілмейді</translation>
+<translation id="631839948975905034">Chrome-нан шығу кезінде инкогнито терезелерін құлыптау</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>
 <translation id="6324977638108296054">Ерекшеленген мәтіннің сілтемесі жасалмады.</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> арқылы бөлісу</translation>
@@ -1625,6 +1627,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8135406045838672858">Жүктеп алынған PDF файлдары <ph name="APP_NAME" /> қолданбасымен автоматты түрде ашылады.</translation>
 <translation id="8137562778192957619">Бұл құпия сөзді есте сақтаудың қажеті жоқ. Ол Google Password Manager қызметіне сақталады.</translation>
 <translation id="8152331954420209374">Lens-ге өту</translation>
+<translation id="8153206878708357851">Белсенді курсор режимін қосу/өшіру</translation>
 <translation id="8163820386638255770">Құпия сөздерді Google аккаунтыңызда пайдалану және сақтау үшін жеке басыңызды растаңыз.</translation>
 <translation id="8175940240143658258">{ARCHIVED_TAB_COUNT,plural, =1{Әрекетсіз (1) элемент}other{Әрекетсіз (#) элемент}}</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл қалды</translation>

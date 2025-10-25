@@ -8390,6 +8390,13 @@ Chính sách này không ảnh hưởng đến quá trình phân tích nội dun
 <translation id="6520802717075138474">Nhập công cụ tìm kiếm từ trình duyệt mặc định trong lần chạy đầu tiên</translation>
 <translation id="6521971538031711337">Ngăn người dùng được quản lý định cấu hình tên máy chủ của thiết bị</translation>
 <translation id="6523079496775454310">Bật chính sách đề nghị người dùng được quản lý cho phép chia sẻ tín hiệu của thiết bị trên các thiết bị không được quản lý</translation>
+<translation id="6523608518493993483">Chính sách này cho phép quản trị viên mã hoá bộ nhớ đệm http của trình duyệt trên ổ đĩa.
+
+Khi bạn đặt chính sách này thành Enabled (Bật), bộ nhớ đệm của trình duyệt sẽ được mã hoá.
+
+Khi bạn không đặt chính sách này hoặc đặt thành Disabled (Tắt), bộ nhớ đệm của trình duyệt sẽ không được mã hoá.
+
+Việc mã hoá bộ nhớ đệm của trình duyệt có thể ảnh hưởng đến hiệu suất.</translation>
 <translation id="6527674993612811419">Hiện cảnh báo và tắt tính năng tự động điền trên các biểu mẫu không an toàn</translation>
 <translation id="6532769014584932288">Cho phép khóa chế độ thức</translation>
 <translation id="6533881418188970751">Hỏi người dùng vị trí lưu tệp trước khi tải xuống</translation>
@@ -9800,6 +9807,17 @@ thì hệ thống sẽ bật tính năng đọc to.</translation>
       Khi bạn bật hoặc không đặt chính sách này, các trang web chỉ có thể gọi getDisplayMedia() qua các bối cảnh được phép của chính sách về quyền thu thập dữ liệu màn hình.
 
       Khi bạn tắt chính sách này, các trang web có thể gọi getDisplayMedia() ngay cả qua các bối cảnh không được phép của chính sách về quyền thu thập dữ liệu màn hình. Xin lưu ý rằng các hạn chế khác vẫn có thể được áp dụng.</translation>
+<translation id="750408442628578356">Kiểm soát việc ứng dụng Gemini có được phép hành động trên các trang web thay mặt người dùng hay không.
+
+0/không đặt  = Ứng dụng Gemini được phép hành động trên các trang web.
+
+1 = Ứng dụng Gemini không được phép hành động trên các trang web.
+
+Chính sách này không có hiệu lực khi ứng dụng Gemini bị tắt. Ví dụ: Ứng dụng Gemini có thể bị tắt theo chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Để biết thêm thông tin về Gemini trong Chrome, vui lòng truy cập https://support.google.com/chrome/a/answer/16291696.
+
+Một số quốc gia hoặc một số ngôn ngữ không hỗ trợ việc kích hoạt các tính năng của Gemini. Việc thiết lập chính sách này không đảm bảo rằng tính năng sẽ được kích hoạt; điều này vẫn tuỳ thuộc vào khả năng sử dụng tính năng. Để biết thêm thông tin về việc ra mắt tính năng, hãy xem Ghi chú phát hành của Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=en</translation>
 <translation id="7506745375479451616">Chính sách này kiểm soát lệnh sẽ dùng để mở URL trong <ph name="PRODUCT_NAME" /> khi chuyển từ <ph name="IE_PRODUCT_NAME" />. Bạn có thể đặt chính sách này thành một đường dẫn tệp thực thi hoặc <ph name="PRODUCT_NAME_PLACEHOLDER" /> để tự động phát hiện vị trí của <ph name="PRODUCT_NAME" />.
 
       Nếu bạn không đặt chính sách này, thì <ph name="IE_PRODUCT_NAME" /> sẽ tự động phát hiện đường dẫn thực thi riêng của <ph name="PRODUCT_NAME" /> khi chạy <ph name="PRODUCT_NAME" /> từ Internet Explorer.

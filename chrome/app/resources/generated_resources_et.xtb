@@ -5753,6 +5753,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4961318399572185831">Ekraani ülekandmine</translation>
 <translation id="4961594008939394243">Saate liikvel olles ostelda, tõlkida ja kaameraga nähtavat tuvastada</translation>
 <translation id="496185450405387901">Selle rakenduse installis administraator.</translation>
+<translation id="4963068409841400707">Vaadake, kuidas alustada <ph name="BEGIN_LINK_ANDROID" />Androidis<ph name="END_LINK_ANDROID" /> ja <ph name="BEGIN_LINK_IOS" />iOS-is<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Veenduge, et teie seadmes <ph name="DEVICE_NAME" /> oleksid märguanded sisse lülitatud</translation>
 <translation id="4963789650715167449">Eemalda praegune vaheleht</translation>
 <translation id="4964455510556214366">Asetus</translation>
@@ -5778,7 +5779,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4979263087381759787">Arendaja valikud</translation>
 <translation id="4979510648199782334">Teenuse Microsoft 365 seadistamine on lõpetatud</translation>
 <translation id="4980805016576257426">Laiendus sisaldab pahavara.</translation>
-<translation id="498274622779591291">Vahelehtede jagamiseks ja koostööfunktsioonide kasutamiseks sünkroonige ajalugu ja vahelehed</translation>
 <translation id="4983159853748980742">Teie parooli ei jagatud. Kontrollige internetiühendust ja veenduge, et oleksite Chrome'i sisse logitud. Seejärel proovige uuesti.</translation>
 <translation id="498624032394115435">Igaüks, kellel on link, saab muuta kõiki vahelehti.</translation>
 <translation id="4986706507552097681">Jaotises Seaded saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>

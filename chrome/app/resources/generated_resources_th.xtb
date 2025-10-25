@@ -5750,6 +5750,7 @@
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
 <translation id="4961594008939394243">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้องได้ทุกที่ทุกเวลา</translation>
 <translation id="496185450405387901">ผู้ดูแลระบบเป็นคนติดตั้งแอปนี้</translation>
+<translation id="4963068409841400707">ดูวิธีเริ่มต้นใช้งานบน <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> และ <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">ตรวจสอบว่าการแจ้งเตือนใน <ph name="DEVICE_NAME" /> เปิดอยู่</translation>
 <translation id="4963789650715167449">นำแท็บปัจจุบันออก</translation>
 <translation id="4964455510556214366">การจัดเรียง</translation>
@@ -5775,7 +5776,6 @@
 <translation id="4979263087381759787">ตัวเลือกสำหรับนักพัฒนาแอป</translation>
 <translation id="4979510648199782334">การตั้งค่า Microsoft 365 เสร็จสมบูรณ์</translation>
 <translation id="4980805016576257426">ส่วนขยายนี้มีมัลแวร์</translation>
-<translation id="498274622779591291">หากต้องการแชร์แท็บและทำงานร่วมกับผู้อื่น คุณจะต้องซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="4983159853748980742">ไม่ได้แชร์รหัสผ่าน ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและดูว่าคุณลงชื่อเข้าใช้ Chrome แล้ว จากนั้นลองอีกครั้ง</translation>
 <translation id="498624032394115435">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้</translation>
 <translation id="4986706507552097681">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>

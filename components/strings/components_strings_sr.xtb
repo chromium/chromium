@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Да бисте изашли из режима целог екрана, превуците од врха и додирните дугме Назад</translation>
 <translation id="1138458427267715730">Добијајте обавештења када падне цена на било ком сајту широм веба</translation>
 <translation id="1142713751288681188">Тип папира</translation>
+<translation id="1142965388643537393">Информације у вези са путовањем</translation>
 <translation id="1144136880160289237">Још немате ниједну активну тему</translation>
 <translation id="1149617035358809955">да провери да ли сте то ви да би могао да унесе информације о плаћању</translation>
 <translation id="1150565364351027703">Наочари за сунце</translation>
@@ -837,6 +838,7 @@
 <translation id="2357481397660644965">Уређајем управља <ph name="DEVICE_MANAGER" />, а налогом <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Више</translation>
 <translation id="2359808026110333948">Настави</translation>
+<translation id="236000571258713023">Возила</translation>
 <translation id="2361263712565360498">275×395 mm</translation>
 <translation id="236340516568226369">Мени за промену величине</translation>
 <translation id="2365355378251437925">Унесите <ph name="FIELD" /></translation>
@@ -2199,6 +2201,7 @@
 <translation id="4598556348158889687">Управљање меморијским простором</translation>
 <translation id="459914240367517409">Веб-дизајн и програмирање</translation>
 <translation id="4602465984861132303">Куглање</translation>
+<translation id="4603727370377253901">Резервације летова</translation>
 <translation id="4607608436550361748">Прикажи Chrome савете</translation>
 <translation id="460848736049414407">Блокирао је администратор</translation>
 <translation id="4610279718074907952">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
@@ -2207,6 +2210,7 @@
 <translation id="4619564267100705184">Потврдите идентитет</translation>
 <translation id="4622292761762557753">Ипак пренеси</translation>
 <translation id="4622647778991854660">Омогућите обавештења у Центру за обавештења. Отворите <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Лични документи</translation>
 <translation id="4627675673814409125">Ове смернице не могу да се подесе на нивоу Chrome профила и биће занемарене.</translation>
 <translation id="4628678854894591460">Понуде за одмор</translation>
 <translation id="4628948037717959914">Слика</translation>

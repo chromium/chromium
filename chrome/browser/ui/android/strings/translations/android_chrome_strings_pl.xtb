@@ -595,6 +595,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3739899004075612870">Utworzono zakładkę w: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Na tym urządzeniu wyszukiwanie głosowe jest niedostępne</translation>
 <translation id="376561056759077985">Niektóre dane nie zostały jeszcze zapisane</translation>
+<translation id="3770620323585347665">Dodaj nazwę okna</translation>
 <translation id="3771033907050503522">Karty incognito</translation>
 <translation id="3771290962915251154">To ustawienie jest wyłączone, ponieważ włączona jest kontrola rodzicielska</translation>
 <translation id="3771694256347217732">Warunki korzystania z usług Google</translation>
@@ -788,6 +789,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4668279686271488041">Dane pomiarowe reklam są regularnie usuwane z urządzenia</translation>
 <translation id="4668347365065281350">Wszystkie dane przechowywane przez strony, w tym pliki cookie i inne dane przechowywane lokalnie</translation>
 <translation id="4673702426794876519">Okno incognito</translation>
+<translation id="4675298276894277358">Ta witryna nie będzie już wyświetlana</translation>
 <translation id="4678082183394354975">Włączono ciemny motyw witryn w Chrome</translation>
 <translation id="4682306524980568490">Maksymalna liczba okien, które można wyświetlić: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Synchronizuj wszystko</translation>
@@ -989,6 +991,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="555671485580955310">Synchronizuj historię i karty</translation>
 <translation id="555816257274242153">Nie monitoruję już ceny</translation>
+<translation id="5559778750856177186">Skrót został odpięty</translation>
 <translation id="5561445479436807659">Zagraj w grę z dinozaurem</translation>
 <translation id="5561549206367097665">Czekam na sieć…</translation>
 <translation id="5568069709869097550">Nie można się zalogować</translation>
@@ -1662,6 +1665,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8282297628636750033">Stosuj ciemny motyw witryn tam, gdzie to możliwe</translation>
 <translation id="8282950411412455249">Otwórz ustawienia zabezpieczeń</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Zamknij 1 okno incognito}few{Zamknij # okna incognito}many{Zamknij # okien incognito}other{Zamknij # okna incognito}}</translation>
 <translation id="831192587911042850">Dodaje otwartą witrynę do listy obserwowanych.</translation>
 <translation id="8317318757008452355">Otwórz opcje drukowania</translation>
 <translation id="8320212361750431956">Ostatnia aktywność</translation>

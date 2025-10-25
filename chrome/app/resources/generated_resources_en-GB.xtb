@@ -5762,6 +5762,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="4961594008939394243">Shop, translate and identify what you see with your camera on the go</translation>
 <translation id="496185450405387901">This app has been installed by your administrator.</translation>
+<translation id="4963068409841400707">Learn how to get started on <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> and <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Make sure that notifications are turned on on your <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Remove current tab</translation>
 <translation id="4964455510556214366">Arrangement</translation>
@@ -5787,7 +5788,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4979263087381759787">Developer Options</translation>
 <translation id="4979510648199782334">Microsoft 365 setup complete</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>
-<translation id="498274622779591291">To share tabs and collaborate with others, sync your history and tabs</translation>
 <translation id="4983159853748980742">Your password wasn’t shared. Check your internet connection and make sure you’re signed in to Chrome. Then try again.</translation>
 <translation id="498624032394115435">Anyone with the link can edit all tabs.</translation>
 <translation id="4986706507552097681">You can always choose what to sync in settings. Google may personalise Search and other services based on your history.</translation>
