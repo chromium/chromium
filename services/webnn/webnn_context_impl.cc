@@ -326,14 +326,6 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
               return;
             }
 
-            auto representation_access = representation->BeginScopedAccess();
-            if (!representation_access) {
-              std::move(callback).Run(ToError<mojom::CreateTensorResult>(
-                  mojom::Error::Code::kUnknownError,
-                  kWebNNCreateTensorErrorMessage));
-              return;
-            }
-
             auto result = self->CreateTensorFromSharedImageImpl(
                 std::move(receiver), std::move(tensor_info),
                 std::move(representation));
@@ -343,8 +335,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
               return;
             }
 
-            if (!result.value()->ImportTensorImpl(
-                    std::move(representation_access))) {
+            if (!result.value()->ImportTensorImpl()) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(
                   mojom::Error::Code::kUnknownError,
                   kWebNNCreateTensorErrorMessage));

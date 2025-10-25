@@ -134,18 +134,7 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
               return;
             }
 
-            CHECK(self->representation_)
-                << "Tensor must have a representation to import.";
-
-            auto representation_access =
-                self->representation_->BeginScopedAccess();
-            if (!representation_access) {
-              LOG(ERROR) << "[WebNN] Failed to begin access from shared image.";
-              std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
-              return;
-            }
-
-            if (!self->ImportTensorImpl(std::move(representation_access))) {
+            if (!self->ImportTensorImpl()) {
               LOG(ERROR)
                   << "[WebNN] Failed to import tensor from shared image.";
               std::move(bad_message_cb).Run(kBadMessageInvalidTensor);

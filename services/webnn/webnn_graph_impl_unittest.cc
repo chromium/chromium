@@ -103,11 +103,7 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
   void ReadTensorImpl(ReadTensorCallback callback) override {}
   void WriteTensorImpl(mojo_base::BigBuffer src_buffer) override {}
   // Interop is not required by tests.
-  bool ImportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
-      override {
-    return false;
-  }
+  bool ImportTensorImpl() override { return false; }
   void ExportTensorImpl(
       std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access)
       override {}

@@ -115,8 +115,7 @@ void TensorImplOrt::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
   task->Enqueue();
 }
 
-bool TensorImplOrt::ImportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) {
+bool TensorImplOrt::ImportTensorImpl() {
   NOTIMPLEMENTED();
   return false;
 }

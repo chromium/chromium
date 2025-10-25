@@ -69,9 +69,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   // Backend subclasses implement this to perform any necessary
   // device synchronization and store the access. Returns true on success.
   // On success, the subclass should assign `representation_access_` to
-  // `access`.
-  virtual bool ImportTensorImpl(
-      std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) = 0;
+  // gpu::WebNNTensorRepresentation::BeginScopedAccess().
+  virtual bool ImportTensorImpl() = 0;
 
  protected:
   ~WebNNTensorImpl() override;

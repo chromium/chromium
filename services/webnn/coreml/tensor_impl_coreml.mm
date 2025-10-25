@@ -353,9 +353,13 @@ TensorImplCoreml::GetBufferState() const {
   return buffer_state_;
 }
 
-bool TensorImplCoreml::ImportTensorImpl(
-    std::unique_ptr<gpu::WebNNTensorRepresentation::ScopedAccess> access) {
-  representation_access_ = std::move(access);
+bool TensorImplCoreml::ImportTensorImpl() {
+  CHECK(representation_);
+  representation_access_ = representation_->BeginScopedAccess();
+  if (!representation_access_) {
+    return false;
+  }
+
   // Always true since CoreML requires no device synchronization.
   return true;
 }
