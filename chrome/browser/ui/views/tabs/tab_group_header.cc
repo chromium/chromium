@@ -41,8 +41,8 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -95,10 +95,10 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
 
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
-    return SkPath().addRoundRect(
+    return SkPath::RRect(SkRRect::MakeRectXY(
         gfx::RectToSkRect(chip_->bounds()),
         style_->GetHighlightPathGeneratorCornerRadius(title_),
-        style_->GetHighlightPathGeneratorCornerRadius(title_));
+        style_->GetHighlightPathGeneratorCornerRadius(title_)));
   }
 
  private:

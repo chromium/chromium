@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
@@ -82,18 +83,12 @@ void PaintThemedFrame(gfx::Canvas* canvas,
 // for the rounded corner of the frame header.
 SkPath GetFrameHeaderPath(const gfx::Rect& bounds, int corner_radius) {
   const SkScalar sk_corner_radius = SkIntToScalar(corner_radius);
-  const SkScalar radii[8] = {sk_corner_radius,
-                             sk_corner_radius,  // top-left
-                             sk_corner_radius,
-                             sk_corner_radius,  // top-right
-                             0,
-                             0,  // bottom-right
-                             0,
-                             0};  // bottom-left
-  SkPath frame_path;
-  frame_path.addRoundRect(gfx::RectToSkRect(bounds), radii,
-                          SkPathDirection::kCW);
-  return frame_path;
+  const SkVector radii[4] = {{sk_corner_radius, sk_corner_radius},  // top-left
+                             {sk_corner_radius, sk_corner_radius},  // top-right
+                             {0, 0},   // bottom-right
+                             {0, 0}};  // bottom-left
+  return SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds), radii));
 }
 
 // Tiles |frame_image| and |frame_overlay_image| into an area, rounding the top

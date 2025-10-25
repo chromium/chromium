@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/actions/actions.h"
@@ -72,16 +74,17 @@ class ToolbarButtonHighlightPathGenerator
     gfx::Rect rect(view->size());
     rect.Inset(GetToolbarInkDropInsets(view));
 
-    SkPath path;
     const SkScalar left_radius =
         toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kLeft);
     const SkScalar right_radius =
         toolbar_button_->GetCornerRadiusFor(ToolbarButton::Edge::kRight);
-    const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
-                               right_radius, right_radius, right_radius,
-                               left_radius,  left_radius};
-    path.addRoundRect(gfx::RectToSkRect(rect), radii);
-    return path;
+    const SkVector radii[4] = {{left_radius,  left_radius},
+                               {right_radius, right_radius},
+                               {right_radius, right_radius},
+                               {left_radius,  left_radius}};
+
+    return SkPath::RRect(
+        SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
   }
 
  private:

@@ -27,6 +27,8 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -416,9 +418,7 @@ void PopupBaseView::RemoveWidgetObservers() {
 void PopupBaseView::UpdateClipPath() {
   SkRect local_bounds = gfx::RectToSkRect(GetLocalBounds());
   SkScalar radius = SkIntToScalar(GetCornerRadius());
-  SkPath clip_path;
-  clip_path.addRoundRect(local_bounds, radius, radius);
-  SetClipPath(clip_path);
+  SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(local_bounds, radius, radius)));
 }
 
 gfx::Rect PopupBaseView::GetContentAreaBounds() const {

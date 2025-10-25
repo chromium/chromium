@@ -483,9 +483,7 @@ void OmniboxSuggestionButtonRowView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
   const auto bounds = GetLocalBounds();
-  SkPath path;
-  path.addRect(RectToSkRect(bounds), SkPathDirection::kCW, 0);
-  SetClipPath(path);
+  SetClipPath(SkPath::Rect(RectToSkRect(bounds)));
 }
 
 void OmniboxSuggestionButtonRowView::UpdateFromModel() {

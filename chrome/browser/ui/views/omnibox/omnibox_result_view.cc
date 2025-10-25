@@ -43,7 +43,8 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -145,17 +146,17 @@ class OmniboxResultSelectionIndicator : public views::View {
   // represented using a fill path. This matches the style and implementation
   // used in Tab Groups.
   SkPath GetPath() const {
-    SkPath path;
-
-    path.moveTo(0, 0);
-    path.arcTo(kStrokeThickness, kStrokeThickness, 0, SkPath::kSmall_ArcSize,
-               SkPathDirection::kCW, kStrokeThickness, kStrokeThickness);
-    path.lineTo(kStrokeThickness, height() - kStrokeThickness);
-    path.arcTo(kStrokeThickness, kStrokeThickness, 0, SkPath::kSmall_ArcSize,
-               SkPathDirection::kCW, 0, height());
-    path.close();
-
-    return path;
+    return SkPathBuilder()
+        .moveTo(0, 0)
+        .arcTo(SkVector(kStrokeThickness, kStrokeThickness), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(kStrokeThickness, kStrokeThickness))
+        .lineTo(kStrokeThickness, height() - kStrokeThickness)
+        .arcTo(SkVector(kStrokeThickness, kStrokeThickness), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(0, height()))
+        .close()
+        .detach();
   }
 };
 

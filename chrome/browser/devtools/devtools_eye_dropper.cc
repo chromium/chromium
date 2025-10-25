@@ -234,10 +234,9 @@ void DevToolsEyeDropper::UpdateCursor() {
 
   // Clip circle for magnified projection.
   float padding = (kCursorSize - kDiameter) / 2;
-  SkPath clip_path;
-  clip_path.addOval(SkRect::MakeXYWH(padding, padding, kDiameter, kDiameter));
-  clip_path.close();
-  canvas.clipPath(clip_path, SkClipOp::kIntersect, true);
+  canvas.clipPath(
+      SkPath::Oval(SkRect::MakeXYWH(padding, padding, kDiameter, kDiameter)),
+      SkClipOp::kIntersect, true);
 
   // Project pixels.
   int pixel_count = kDiameter / kPixelSize;

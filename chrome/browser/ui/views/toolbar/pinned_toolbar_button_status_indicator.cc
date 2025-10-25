@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -64,9 +66,8 @@ PinnedToolbarButtonStatusIndicator::PinnedToolbarButtonStatusIndicator() {
 
 void PinnedToolbarButtonStatusIndicator::OnPaint(gfx::Canvas* canvas) {
   canvas->SaveLayerAlpha(SK_AlphaOPAQUE);
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(GetLocalBounds()), height() / 2,
-                    height() / 2);
+  const SkPath path = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(GetLocalBounds()), height() / 2, height() / 2));
 
   cc::PaintFlags flags;
 

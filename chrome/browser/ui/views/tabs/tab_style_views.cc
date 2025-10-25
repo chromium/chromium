@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -311,10 +313,9 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
         SkVector(bottom_right_corner_radius, bottom_right_corner_radius),
         SkVector(bottom_left_corner_radius, bottom_left_corner_radius)};
 
-    SkRRect rrect;
-    rrect.setRectRadii(SkRect::MakeLTRB(left, top, right, bottom), radii);
-    SkPath path;
-    path.addRRect(rrect);
+    SkPathBuilder path;
+    path.addRRect(SkRRect::MakeRectRadii(
+        SkRect::MakeLTRB(left, top, right, bottom), radii));
 
     // Convert path to be relative to the tab origin.
     gfx::PointF origin(tab()->origin());
@@ -326,7 +327,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
       path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
     }
 
-    return path;
+    return path.detach();
   }
 
   // Compute `extension` as the width outside the separators.  This is a fixed
@@ -367,8 +368,6 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   }
   const bool compact_left_to_bottom = ShouldCompactLeadingEdge(path_type);
 
-  SkPath path;
-
   float left_extension_corner_radius = extension_corner_radius;
   if (compact_left_to_bottom) {
     left_extension_corner_radius = (tab_style()->GetBottomCornerRadius() -
@@ -387,6 +386,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     left_extension_corner_radius = 0;
   }
 
+  SkPathBuilder path;
   // Avoid mallocs at every new path verb by preallocating an
   // empirically-determined amount of space in the verb and point buffers.
   const int kMaxPathPoints = 20;
@@ -424,18 +424,19 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     //   │ Content │
     // ┌━╝         ╰─┐
     path.lineTo(tab_left - left_extension_corner_radius, tab_bottom);
-    path.arcTo(left_extension_corner_radius, left_extension_corner_radius, 0,
-               SkPath::kSmall_ArcSize, SkPathDirection::kCCW, tab_left,
-               tab_bottom - left_extension_corner_radius);
+    path.arcTo(
+        SkVector(left_extension_corner_radius, left_extension_corner_radius), 0,
+        SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+        SkPoint(tab_left, tab_bottom - left_extension_corner_radius));
 
     // Draw the ascender and top-left curve.
     //   ╔─────────╮
     //   ┃ Content │
     // ┌─╯         ╰─┐
     path.lineTo(tab_left, tab_top + top_left_corner_radius);
-    path.arcTo(top_left_corner_radius, top_left_corner_radius, 0,
-               SkPath::kSmall_ArcSize, SkPathDirection::kCW,
-               tab_left + top_left_corner_radius, tab_top);
+    path.arcTo(SkVector(top_left_corner_radius, top_left_corner_radius), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(tab_left + top_left_corner_radius, tab_top));
   }
 
   // Draw the top crossbar.
@@ -453,18 +454,18 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     //   ╭─────────╗
     //   │ Content │
     // ┌─╯         ╰─┐
-    path.arcTo(top_right_corner_radius, top_right_corner_radius, 0,
-               SkPath::kSmall_ArcSize, SkPathDirection::kCW, tab_right,
-               tab_top + top_right_corner_radius);
+    path.arcTo(SkVector(top_right_corner_radius, top_right_corner_radius), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(tab_right, tab_top + top_right_corner_radius));
 
     // Draw the descender and bottom-right corner.
     //   ╭─────────╮
     //   │ Content ┃
     // ┌─╯         ╚━┐
     path.lineTo(tab_right, tab_bottom - extension_corner_radius);
-    path.arcTo(extension_corner_radius, extension_corner_radius, 0,
-               SkPath::kSmall_ArcSize, SkPathDirection::kCCW,
-               tab_right + extension_corner_radius, tab_bottom);
+    path.arcTo(SkVector(extension_corner_radius, extension_corner_radius), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+               SkPoint(tab_right + extension_corner_radius, tab_bottom));
     if (tab_bottom != extended_bottom) {
       path.lineTo(right, tab_bottom);
     }
@@ -494,7 +495,7 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
   }
 
-  return path;
+  return path.detach();
 }
 
 gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {

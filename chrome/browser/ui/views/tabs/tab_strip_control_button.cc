@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/chrome_features.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -44,11 +45,13 @@ class ControlButtonHighlightPathGenerator
         control_button_->GetScaledCornerRadius(corner_radius, Edge::kLeft);
     const SkScalar right_radius =
         control_button_->GetScaledCornerRadius(corner_radius, Edge::kRight);
-    const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
-                               right_radius, right_radius, right_radius,
-                               left_radius,  left_radius};
-    path.addRoundRect(gfx::RectToSkRect(rect), radii);
-    return path;
+    const SkVector radii[4] = {{left_radius,  left_radius},
+                               {right_radius, right_radius},
+                               {right_radius, right_radius},
+                               {left_radius,  left_radius}};
+
+    return SkPath::RRect(
+        SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
   }
 
  private:
@@ -288,17 +291,17 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
       GetScaledCornerRadius(top_radius, Edge::kLeft);
   const SkScalar top_right_radius =
       GetScaledCornerRadius(top_radius, Edge::kRight);
-  const SkScalar radii[8] = {top_left_radius,     top_left_radius,
-                             top_right_radius,    top_right_radius,
-                             bottom_right_radius, bottom_right_radius,
-                             bottom_left_radius,  bottom_left_radius};
+  const SkVector radii[4] = {{top_left_radius,     top_left_radius},
+                             {top_right_radius,    top_right_radius},
+                             {bottom_right_radius, bottom_right_radius},
+                             {bottom_left_radius,  bottom_left_radius}};
 
   gfx::Rect rect = GetContentsBounds();
   if (extend_to_top) {
     rect.SetVerticalBounds(0, rect.bottom());
   }
 
-  mask->addRoundRect(gfx::RectToSkRect(rect), radii);
+  *mask = SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
 
   return true;
 }

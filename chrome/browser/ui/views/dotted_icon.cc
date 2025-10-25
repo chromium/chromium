@@ -6,6 +6,7 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -40,8 +41,9 @@ void PaintArc(gfx::Canvas* canvas,
   const double inset = stroke_width / 2.0;
   oval.Inset(inset);
 
-  SkPath path;
-  path.arcTo(RectFToSkRect(oval), start_angle, sweep, true);
+  const SkPath path = SkPathBuilder()
+                          .arcTo(RectFToSkRect(oval), start_angle, sweep, true)
+                          .detach();
   canvas->DrawPath(path, flags);
 }
 

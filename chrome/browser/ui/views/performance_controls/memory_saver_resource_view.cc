@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -146,11 +147,13 @@ class GaugeView : public views::FlexLayoutView {
                const gfx::PointF center,
                const int angle_degrees,
                const SkColor color) {
-    SkPath arc_path;
-    arc_path.addArc(
-        SkRect::MakeXYWH(center.x() - kGaugeRadius, center.y() - kGaugeRadius,
-                         2 * kGaugeRadius, 2 * kGaugeRadius),
-        180, angle_degrees);
+    const SkPath arc_path =
+        SkPathBuilder()
+            .addArc(SkRect::MakeXYWH(center.x() - kGaugeRadius,
+                                     center.y() - kGaugeRadius,
+                                     2 * kGaugeRadius, 2 * kGaugeRadius),
+                    180, angle_degrees)
+            .detach();
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kStroke_Style);

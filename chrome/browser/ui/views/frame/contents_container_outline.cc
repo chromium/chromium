@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -72,15 +73,15 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
   // Generate the outline path starting from the left edge right below the
   // rounded rect arc and then conditionally either raws out a rounded rect
   // or a path that overlaps with the mini-toolbar view in clockwise direction.
-  SkPath path;
+  SkPathBuilder path;
   path.moveTo(local_bounds.x(), local_bounds.y() + corner_radius);
-  path.arcTo(corner_radius, corner_radius, 0.0f, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, local_bounds.x() + corner_radius,
-             local_bounds.y());
+  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(local_bounds.x() + corner_radius, local_bounds.y()));
   path.lineTo(local_bounds.right() - corner_radius, local_bounds.y());
-  path.arcTo(corner_radius, corner_radius, 0.0f, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, local_bounds.right(),
-             local_bounds.y() + corner_radius);
+  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(local_bounds.right(), local_bounds.y() + corner_radius));
 
   if (is_active_ &&
       (is_highlighted_ ||
@@ -88,9 +89,10 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
            features::MiniToolbarActiveConfiguration::Hide)) {
     // If the mini toolbar is hidden on active view, just draw the rounded rect.
     path.lineTo(local_bounds.right(), local_bounds.bottom() - corner_radius);
-    path.arcTo(corner_radius, corner_radius, 0.0f, SkPath::kSmall_ArcSize,
-               SkPathDirection::kCW, local_bounds.right() - corner_radius,
-               local_bounds.bottom());
+    path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(local_bounds.right() - corner_radius,
+                       local_bounds.bottom()));
   } else {
     // Draw the path around the mini toolbar. This uses a corner radius which
     // is half thickness greater than the clip path. The outline path needs
@@ -99,31 +101,33 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
     const gfx::SizeF mini_toolbar_size(mini_toolbar_->size());
     path.lineTo(local_bounds.right(),
                 local_bounds.bottom() - mini_toolbar_size.height());
-    path.arcTo(
-        kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-        SkPathDirection::kCW, local_bounds.right() - kCornerRadius,
-        local_bounds.bottom() - mini_toolbar_size.height() + kCornerRadius);
+    path.arcTo(SkVector(kCornerRadius, kCornerRadius), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(local_bounds.right() - kCornerRadius,
+                       local_bounds.bottom() - mini_toolbar_size.height() +
+                           kCornerRadius));
     path.lineTo(
         local_bounds.right() - mini_toolbar_size.width() + kCornerRadius * 2,
         local_bounds.bottom() - mini_toolbar_size.height() + kCornerRadius);
-    path.arcTo(
-        kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-        SkPathDirection::kCCW,
-        local_bounds.right() - mini_toolbar_size.width() + kCornerRadius,
-        local_bounds.bottom() - mini_toolbar_size.height() + kCornerRadius * 2);
+    path.arcTo(SkVector(kCornerRadius, kCornerRadius), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+               SkPoint(local_bounds.right() - mini_toolbar_size.width() +
+                           kCornerRadius,
+                       local_bounds.bottom() - mini_toolbar_size.height() +
+                           kCornerRadius * 2));
     path.lineTo(
         local_bounds.right() - mini_toolbar_size.width() + kCornerRadius,
         local_bounds.bottom() - kCornerRadius);
-    path.arcTo(kCornerRadius, kCornerRadius, 0, SkPath::kSmall_ArcSize,
-               SkPathDirection::kCW,
-               local_bounds.right() - mini_toolbar_size.width(),
-               local_bounds.bottom());
+    path.arcTo(SkVector(kCornerRadius, kCornerRadius), 0,
+               SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+               SkPoint(local_bounds.right() - mini_toolbar_size.width(),
+                       local_bounds.bottom()));
   }
 
   path.lineTo(local_bounds.x() + corner_radius, local_bounds.bottom());
-  path.arcTo(corner_radius, corner_radius, 0.0f, SkPath::kSmall_ArcSize,
-             SkPathDirection::kCW, local_bounds.x(),
-             local_bounds.bottom() - corner_radius);
+  path.arcTo(SkVector(corner_radius, corner_radius), 0.0f,
+             SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+             SkPoint(local_bounds.x(), local_bounds.bottom() - corner_radius));
   path.close();
 
   if (base::i18n::IsRTL()) {
@@ -134,7 +138,7 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
     path.transform(flip);
   }
 
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
 }
 
 void ContentsContainerOutline::OnViewBoundsChanged(views::View* observed_view) {
@@ -157,22 +161,23 @@ void ContentsContainerOutline::SetClipPath() {
   mini_toolbar_rect.Inset(half_thickness);
   const float corner_radius = kCornerRadius - half_thickness;
 
-  SkPath clip_path;
+  SkPathBuilder clip_path;
   clip_path.moveTo(mini_toolbar_rect.right(), mini_toolbar_rect.y());
-  clip_path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-                  SkPathDirection::kCW,
-                  mini_toolbar_rect.right() - corner_radius,
-                  mini_toolbar_rect.y() + corner_radius);
+  clip_path.arcTo(SkVector(corner_radius, corner_radius), 0,
+                  SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+                  SkPoint(mini_toolbar_rect.right() - corner_radius,
+                          mini_toolbar_rect.y() + corner_radius));
   clip_path.lineTo(mini_toolbar_rect.x() + corner_radius * 2,
                    mini_toolbar_rect.y() + corner_radius);
-  clip_path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-                  SkPathDirection::kCCW, mini_toolbar_rect.x() + corner_radius,
-                  mini_toolbar_rect.y() + corner_radius * 2);
+  clip_path.arcTo(SkVector(corner_radius, corner_radius), 0,
+                  SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
+                  SkPoint(mini_toolbar_rect.x() + corner_radius,
+                          mini_toolbar_rect.y() + corner_radius * 2));
   clip_path.lineTo(mini_toolbar_rect.x() + corner_radius,
                    mini_toolbar_rect.bottom() - corner_radius);
-  clip_path.arcTo(corner_radius, corner_radius, 0, SkPath::kSmall_ArcSize,
-                  SkPathDirection::kCW, mini_toolbar_rect.x(),
-                  mini_toolbar_rect.bottom());
+  clip_path.arcTo(SkVector(corner_radius, corner_radius), 0,
+                  SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+                  SkPoint(mini_toolbar_rect.x(), mini_toolbar_rect.bottom()));
   clip_path.lineTo(mini_toolbar_rect.right(), mini_toolbar_rect.bottom());
   clip_path.lineTo(mini_toolbar_rect.right(), mini_toolbar_rect.y());
 
@@ -185,7 +190,7 @@ void ContentsContainerOutline::SetClipPath() {
     clip_path.transform(flip);
   }
 
-  mini_toolbar_->SetClipPath(clip_path);
+  mini_toolbar_->SetClipPath(clip_path.detach());
 }
 
 BEGIN_METADATA(ContentsContainerOutline)

@@ -25,6 +25,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -450,11 +451,10 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   float scale = canvas->UndoDeviceScaleFactor();
   const float radius = kBubbleCornerRadius * scale;
 
-  std::array<SkScalar, 8> rad{};
+  std::array<SkVector, 4> rad{};
   auto round_corner = [&rad, radius](gfx::RRectF::Corner c) {
     int index = base::to_underlying(c);
-    rad[2 * index] = radius;
-    rad[2 * index + 1] = radius;
+    rad[index] = {radius, radius};
   };
 
   // Top Edges - if the bubble is in its bottom position (sticking downwards),
@@ -528,8 +528,8 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
   // Align to pixel centers now that the layout is correct.
   bubble_rect.Inset(0.5);
 
-  SkPath path;
-  path.addRoundRect(gfx::RectFToSkRect(bubble_rect), rad);
+  const SkPath path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectFToSkRect(bubble_rect), rad.data()));
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kStroke_Style);

@@ -49,12 +49,12 @@ END_METADATA
 
 void CustomImageView::OnPaint(gfx::Canvas* canvas) {
   // Remove the part of the ImageView that contains the badge.
-  SkPath mask;
-  mask.addCircle(
-      GetMirroredXInView(kBadgedProfilePhotoWidth - kBadgeIconSize / 2),
-      kBadgedProfilePhotoHeight - kBadgeIconSize / 2,
-      kBadgeIconSize / 2 + kBadgeBorderWidth);
-  mask.toggleInverseFillType();
+  const SkPath mask =
+      SkPath::Circle(
+          GetMirroredXInView(kBadgedProfilePhotoWidth - kBadgeIconSize / 2),
+          kBadgedProfilePhotoHeight - kBadgeIconSize / 2,
+          kBadgeIconSize / 2 + kBadgeBorderWidth)
+          .makeFillType(SkPathFillType::kInverseWinding);
   canvas->ClipPath(mask, true);
   ImageView::OnPaint(canvas);
 }

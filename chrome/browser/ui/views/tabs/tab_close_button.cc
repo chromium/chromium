@@ -195,7 +195,7 @@ views::View* TabCloseButton::TargetForRect(views::View* root,
 
 bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
   // We need to define this so hit-testing won't include the border region.
-  mask->addRect(gfx::RectToSkRect(GetMirroredRect(GetContentsBounds())));
+  *mask = SkPath::Rect(gfx::RectToSkRect(GetMirroredRect(GetContentsBounds())));
   return true;
 }
 void TabCloseButton::UpdateIcon() {

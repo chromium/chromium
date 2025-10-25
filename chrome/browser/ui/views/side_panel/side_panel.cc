@@ -29,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -133,15 +134,14 @@ class SidePanelBorder : public views::Border {
       gfx::ScopedCanvas scoped_rescale(canvas);
       canvas->Scale(dsf, dsf);
 
-      const SkScalar border_radii[8] = {
-          border_radii_.upper_left(),  border_radii_.upper_left(),
-          border_radii_.upper_right(), border_radii_.upper_right(),
-          border_radii_.lower_right(), border_radii_.lower_right(),
-          border_radii_.lower_left(),  border_radii_.lower_left()};
+      const SkVector border_radii[4] = {
+          {border_radii_.upper_left(),  border_radii_.upper_left()},
+          {border_radii_.upper_right(), border_radii_.upper_right()},
+          {border_radii_.lower_right(), border_radii_.lower_right()},
+          {border_radii_.lower_left(),  border_radii_.lower_left()}};
 
-      SkPath rounded_border_path;
-      rounded_border_path.addRoundRect(gfx::RectToSkRect(view.GetLocalBounds()),
-                                       border_radii, SkPathDirection::kCW);
+      const SkPath rounded_border_path = SkPath::RRect(SkRRect::MakeRectRadii(
+          gfx::RectToSkRect(view.GetLocalBounds()), border_radii));
 
       // Add another clip to the canvas that rounds the outer corners of the
       // border. This is done in DIPs because for some device scale factors, the
