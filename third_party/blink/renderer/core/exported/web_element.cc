@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -359,10 +360,9 @@ std::vector<gfx::Rect> WebElement::ClientRectsInWidget() {
   }
 
   std::vector<gfx::Rect> result;
-  DOMRectList* rects = element->getClientRects();
-  for (size_t idx = 0; idx < rects->length(); idx++) {
-    result.emplace_back(
-        view->FrameToViewport(rects->item(idx)->ToEnclosingRect()));
+  Vector<gfx::RectF> rects = element->GetClientRectsNoAdjustment();
+  for (const gfx::RectF& rect : rects) {
+    result.emplace_back(view->FrameToViewport(gfx::ToEnclosingRect(rect)));
   }
   return result;
 }

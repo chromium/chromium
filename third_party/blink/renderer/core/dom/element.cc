@@ -3168,22 +3168,36 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
 }
 
 DOMRectList* Element::getClientRects() {
+  Vector<gfx::RectF> rects = GetClientRectsNoAdjustment();
+  if (rects.empty()) {
+    return MakeGarbageCollected<DOMRectList>();
+  }
+  LayoutObject* element_layout_object = GetLayoutObject();
+  DCHECK(element_layout_object);
+  for (auto& rect : rects) {
+    GetDocument().AdjustRectForScrollAndAbsoluteZoom(rect,
+                                                     *element_layout_object);
+  }
+  return MakeGarbageCollected<DOMRectList>(rects);
+}
+
+Vector<gfx::RectF> Element::GetClientRectsNoAdjustment() {
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
   // impact is understood.
   SyncScrollAttemptHeuristic::DidAccessScrollOffset();
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
+
   Vector<gfx::QuadF> quads;
   ClientQuads(quads);
   if (quads.empty()) {
-    return MakeGarbageCollected<DOMRectList>();
+    return {};
   }
-
-  LayoutObject* element_layout_object = GetLayoutObject();
-  DCHECK(element_layout_object);
-  GetDocument().AdjustQuadsForScrollAndAbsoluteZoom(quads,
-                                                    *element_layout_object);
-  return MakeGarbageCollected<DOMRectList>(quads);
+  Vector<gfx::RectF> result;
+  for (auto& quad : quads) {
+    result.emplace_back(quad.BoundingBox());
+  }
+  return result;
 }
 
 gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdateNoAdjustment() const {
