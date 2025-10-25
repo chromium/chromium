@@ -2760,14 +2760,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // NOTE: This test is separate from IntermediateFromAia200 as a different URL
 // needs to be used to avoid having the result depend on globally cached success
 // or failure of the fetch.
-// Test is flaky on iOS crbug.com/860189
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_IntermediateFromAia404 DISABLED_IntermediateFromAia404
-#else
-#define MAYBE_IntermediateFromAia404 IntermediateFromAia404
-#endif
-TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       MAYBE_IntermediateFromAia404) {
+TEST_P(CertVerifyProcInternalWithNetFetchingTest, IntermediateFromAia404) {
   const char kHostname[] = "www.example.com";
 
   // Create a chain where the leaf has an AIA that points to test server.
@@ -2799,18 +2792,10 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
 }
-#undef MAYBE_IntermediateFromAia404
 
 // Tries verifying a certificate chain that is missing an intermediate. The
 // intermediate is available via AIA.
-// TODO(crbug.com/41399468): Failing on iOS
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_IntermediateFromAia200Der DISABLED_IntermediateFromAia200Der
-#else
-#define MAYBE_IntermediateFromAia200Der IntermediateFromAia200Der
-#endif
-TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       MAYBE_IntermediateFromAia200Der) {
+TEST_P(CertVerifyProcInternalWithNetFetchingTest, IntermediateFromAia200Der) {
   const char kHostname[] = "www.example.com";
 
   // Create a chain where the leaf has an AIA that points to test server.
@@ -2861,14 +2846,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // Tries verifying a certificate chain that is missing an intermediate. The
 // intermediate is available via AIA, however is served as a PEM file rather
 // than DER.
-// TODO(crbug.com/41399468): Failing on iOS
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_IntermediateFromAia200Pem DISABLED_IntermediateFromAia200Pem
-#else
-#define MAYBE_IntermediateFromAia200Pem IntermediateFromAia200Pem
-#endif
-TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       MAYBE_IntermediateFromAia200Pem) {
+TEST_P(CertVerifyProcInternalWithNetFetchingTest, IntermediateFromAia200Pem) {
   const char kHostname[] = "www.example.com";
 
   // Create a chain where the leaf has an AIA that points to test server.
@@ -2907,20 +2885,11 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   } else {
     EXPECT_THAT(error, IsOk());
   }
-
 }
 
 // This test is the same as IntermediateFromAia200Pem, but with a different
 // formatting on the PEM data.
-//
-// TODO(crbug.com/41399468): Failing on iOS
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_IntermediateFromAia200Pem2 DISABLED_IntermediateFromAia200Pem2
-#else
-#define MAYBE_IntermediateFromAia200Pem2 IntermediateFromAia200Pem2
-#endif
-TEST_P(CertVerifyProcInternalWithNetFetchingTest,
-       MAYBE_IntermediateFromAia200Pem2) {
+TEST_P(CertVerifyProcInternalWithNetFetchingTest, IntermediateFromAia200Pem2) {
   const char kHostname[] = "www.example.com";
 
   // Create a chain where the leaf has an AIA that points to test server.
@@ -3013,7 +2982,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   CertVerifyResult verify_result;
   int error = Verify(chain_sha1.get(), kHostname, flags, &verify_result);
 
-  if (VerifyProcTypeIsBuiltin()) {
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     // Should have built a chain through the SHA256 intermediate. This was only
     // available via AIA, and not the (SHA1) one provided directly to path
     // building.

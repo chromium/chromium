@@ -10341,6 +10341,8 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   }
 }
 
+#endif  // !BUILDFLAG(IS_IOS)
+
 // Interceptor to check that secure DNS has been disabled. Secure DNS should be
 // disabled for any network fetch triggered during certificate verification as
 // it could cause a deadlock.
@@ -10458,6 +10460,8 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
   std::unique_ptr<URLRequestContext> context_;
   raw_ptr<CertVerifierWithUpdatableProc> updatable_cert_verifier_;
 };
+
+#if !BUILDFLAG(IS_IOS)
 
 // The test EV policy OID used for generated certs.
 static const char kEVTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
@@ -11116,6 +11120,8 @@ INSTANTIATE_TEST_SUITE_P(OCSPVerify,
                          HTTPSOCSPVerifyTest,
                          testing::ValuesIn(kOCSPVerifyData));
 
+#endif  // !BUILDFLAG(IS_IOS)
+
 class HTTPSAIATest : public HTTPSCertNetFetchingTest {};
 
 TEST_F(HTTPSAIATest, AIAFetching) {
@@ -11147,6 +11153,8 @@ TEST_F(HTTPSAIATest, AIAFetching) {
   ASSERT_TRUE(r->ssl_info().unverified_cert);
   EXPECT_EQ(0u, r->ssl_info().unverified_cert->intermediate_buffers().size());
 }
+
+#if !BUILDFLAG(IS_IOS)
 
 class HTTPSHardFailTest : public HTTPSOCSPTest {
  protected:
