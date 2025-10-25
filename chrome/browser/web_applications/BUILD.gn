@@ -223,6 +223,8 @@ source_set("web_applications") {
     "manifest_update_manager.h",
     "manifest_update_utils.cc",
     "manifest_update_utils.h",
+    "model/app_installed_by.cc",
+    "model/app_installed_by.h",
     "model/web_app_comparison.cc",
     "model/web_app_comparison.h",
     "navigation_capturing_log.cc",

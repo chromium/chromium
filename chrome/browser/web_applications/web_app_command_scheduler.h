@@ -670,6 +670,7 @@ class WebAppCommandScheduler {
   void InstallAppFromUrl(const GURL& install_url,
                          const std::optional<GURL>& manifest_id,
                          base::WeakPtr<content::WebContents> web_contents,
+                         const GURL& last_committed_url,
                          WebAppInstallDialogCallback dialog_callback,
                          WebInstallFromUrlCommandCallback installed_callback,
                          const base::Location& location = FROM_HERE);

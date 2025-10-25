@@ -209,6 +209,13 @@ message PendingUpdateInfo {
   optional bool was_ignored = 7;
 }
 
+// This stores the time and requesting page URL of an attempted install of the
+// app via the Web Install API.
+message InstalledBy {
+  optional int64 install_api_call_time = 1;  // Required.
+  optional string requesting_url = 2;        // Required.
+}
+
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
@@ -507,4 +514,9 @@ message WebApp {
 
   // A list of URL patterns in which the app window should be borderless.
   repeated UrlPattern borderless_url_patterns = 77;
+
+  // A list of up to ten unique URLs of the most recent pages that attempt to
+  // install the app via the Web Install API. The order is that the front is
+  // the oldest entry and the back is the newest.
+  repeated InstalledBy installed_by = 78;
 }

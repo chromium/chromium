@@ -73,6 +73,7 @@ class WebInstallFromUrlCommand
                            const GURL& install_url,
                            const std::optional<GURL>& manifest_id,
                            base::WeakPtr<content::WebContents> web_contents,
+                           const GURL& last_committed_url,
                            WebAppInstallDialogCallback dialog_callback,
                            WebInstallFromUrlCommandCallback installed_callback);
   ~WebInstallFromUrlCommand() override;
@@ -109,6 +110,8 @@ class WebInstallFromUrlCommand
   // The WebContents that initiated the install. This is used only to show the
   // install dialog.
   base::WeakPtr<content::WebContents> web_contents_;
+  // The last committed URL of the page that initiated the install.
+  GURL last_committed_url_;
   WebAppInstallDialogCallback dialog_callback_;
   InstallErrorLogEntry install_error_log_entry_;
 

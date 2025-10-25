@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
+#include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu.h"
@@ -442,6 +443,11 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 
   if (!web_app->generated_icon_fix().has_value()) {
     web_app->SetGeneratedIconFix(web_app_info.generated_icon_fix);
+  }
+
+  if (web_app_info.installed_by.has_value()) {
+    web_app->AddInstalledByInfo(
+        AppInstalledBy(clock_->Now(), web_app_info.installed_by.value()));
   }
 
   WriteExternalConfigMapInfo(

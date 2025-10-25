@@ -749,13 +749,15 @@ void WebAppCommandScheduler::InstallAppFromUrl(
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
     base::WeakPtr<content::WebContents> web_contents,
+    const GURL& last_committed_url,
     WebAppInstallDialogCallback dialog_callback,
     WebInstallFromUrlCommandCallback installed_callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebInstallFromUrlCommand>(
           profile_.get(), install_url, manifest_id, web_contents,
-          std::move(dialog_callback), std::move(installed_callback)),
+          last_committed_url, std::move(dialog_callback),
+          std::move(installed_callback)),
       location);
 }
 
