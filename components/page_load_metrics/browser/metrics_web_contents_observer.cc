@@ -625,6 +625,11 @@ MetricsWebContentsObserver::GetDelegateForCommittedLoad() {
   return *primary_page_.get();
 }
 
+const PageLoadMetricsObserverDelegate*
+MetricsWebContentsObserver::GetDelegateForCommittedLoadOrNull() {
+  return primary_page_.get();
+}
+
 void MetricsWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInPrimaryMainFrame()) {

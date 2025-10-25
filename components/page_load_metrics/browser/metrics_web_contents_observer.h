@@ -150,6 +150,18 @@ class MetricsWebContentsObserver
   // for `MetricsLifecycleObserver`s.
   const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad();
 
+  // Returns the delegate for the committed load if one is being tracked. This
+  // method is a safer alternative to
+  // `GetDelegateForCommittedLoad()` for callers that may be operating on a
+  // WebContents where page load metrics are not being actively tracked.
+  //
+  // Unlike `GetDelegateForCommittedLoad()`, which will CHECK-fail if called at
+  // an invalid time (e.g., before a primary navigation has committed or on a
+  // page type that is not tracked), this method will return a nullptr.
+  //
+  // Callers must check the returned pointer for null before using it.
+  const PageLoadMetricsObserverDelegate* GetDelegateForCommittedLoadOrNull();
+
   // Returns the embedder interface. Public for testing.
   PageLoadMetricsEmbedderInterface* GetEmbedderInterfaceForTesting() const {
     return embedder_interface_.get();

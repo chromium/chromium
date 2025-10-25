@@ -78,6 +78,7 @@ class ObservationDelayController : public content::WebContentsObserver {
     kPageStabilityMonitorDisconnected,
     kWaitForLoadCompletion,
     kWaitForVisualStateUpdate,
+    kMaybeDelayForLcp,
     kDidTimeout,
     kDone
   };

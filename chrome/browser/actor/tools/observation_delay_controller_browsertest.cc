@@ -22,6 +22,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +32,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 
 namespace actor {
@@ -172,31 +174,15 @@ class TestObservationDelayController : public ObservationDelayController {
 
 // TODO(bokan) - Factor out into a common test harness with
 // page_stability_browsertest.cc
-class ObservationDelayControllerTest : public InProcessBrowserTest {
+class ObservationDelayControllerTestBase : public InProcessBrowserTest {
  public:
-  ObservationDelayControllerTest() {
-    // GlicActor is actually unneeded but enabled solely to set params.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kGlicActor,
-          {{features::kActorGeneralPageStabilityMode.name,
-            features::kActorGeneralPageStabilityMode.GetName(
-                features::ActorGeneralPageStabilityMode::kAllEnabled)},
-           // Effectively disable the timeouts to prevent flakes.
-           {"glic-actor-page-stability-local-timeout", "30000ms"},
-           {"glic-actor-page-stability-timeout", "30000ms"},
-           // Do not use an invoke delay
-           {"glic-actor-page-stability-invoke-callback-delay", "0ms"}}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
-        /*disabled_features=*/{features::kGlicWarming});
-  }
-  ObservationDelayControllerTest(const ObservationDelayControllerTest&) =
-      delete;
-  ObservationDelayControllerTest& operator=(
-      const ObservationDelayControllerTest&) = delete;
+  ObservationDelayControllerTestBase() = default;
+  ObservationDelayControllerTestBase(
+      const ObservationDelayControllerTestBase&) = delete;
+  ObservationDelayControllerTestBase& operator=(
+      const ObservationDelayControllerTestBase&) = delete;
 
-  ~ObservationDelayControllerTest() override = default;
+  ~ObservationDelayControllerTestBase() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -306,6 +292,33 @@ class ObservationDelayControllerTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::ControllableHttpResponse> fetch_response_;
 
   std::unique_ptr<ObservationDelayController> controller_;
+};
+
+class ObservationDelayControllerTest
+    : public ObservationDelayControllerTestBase {
+ public:
+  ObservationDelayControllerTest() {
+    // GlicActor is actually unneeded but enabled solely to set params.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlicActor,
+          {{features::kActorGeneralPageStabilityMode.name,
+            features::kActorGeneralPageStabilityMode.GetName(
+                features::ActorGeneralPageStabilityMode::kAllEnabled)},
+           // Effectively disable the timeouts to prevent flakes.
+           {features::kGlicActorPageStabilityLocalTimeout.name, "30000ms"},
+           {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
+           // Do not use an invoke delay
+           {features::kGlicActorPageStabilityInvokeCallbackDelay.name, "0ms"},
+           // Use small LCP delay.
+           {features::kActorObservationDelayLcp.name, "100ms"}}},
+         {features::kGlic, {}},
+         {features::kTabstripComboButton, {}}},
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+  ~ObservationDelayControllerTest() override = default;
+
+ private:
   ScopedFeatureList scoped_feature_list_;
 };
 
@@ -347,6 +360,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
   ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
   ASSERT_TRUE(controller.WaitForState(State::kDone));
   ASSERT_TRUE(result.Wait());
 }
@@ -374,6 +388,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   ASSERT_TRUE(controller.WaitForState(State::kWaitForLoadCompletion));
   ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
   ASSERT_TRUE(result.Wait());
   ASSERT_EQ(GetOutputText(), "TEST COMPLETE");
 }
@@ -417,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
   ASSERT_TRUE(deferred_navigation.RunToLoadEvent());
 
   ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
   ASSERT_TRUE(controller.WaitForState(State::kDone));
   ASSERT_TRUE(result.Wait());
 }
@@ -465,6 +481,90 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Ensure the controller doesn't break out of waiting for page stability.
   EXPECT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+}
+
+class ObservationDelayControllerLcpTest
+    : public ObservationDelayControllerTestBase {
+ public:
+  static constexpr int kLcpDelayInMs = 3000;
+  ObservationDelayControllerLcpTest() {
+    std::string lcp_delay = absl::StrFormat("%dms", kLcpDelayInMs);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlicActor,
+          {{features::kActorGeneralPageStabilityMode.name,
+            features::kActorGeneralPageStabilityMode.GetName(
+                features::ActorGeneralPageStabilityMode::kAllEnabled)},
+           // Effectively disable the timeouts to prevent flakes.
+           {features::kGlicActorPageStabilityLocalTimeout.name, "30000ms"},
+           {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
+           // Do not use an invoke delay
+           {features::kGlicActorPageStabilityInvokeCallbackDelay.name, "0ms"},
+           // Do not use min wait
+           {features::kGlicActorPageStabilityMinWait.name, "0ms"},
+           {features::kActorObservationDelayLcp.name, lcp_delay}}},
+         {features::kGlic, {}},
+         {features::kTabstripComboButton, {}}},
+        /*disabled_features=*/{features::kGlicWarming});
+  }
+  ~ObservationDelayControllerLcpTest() override = default;
+
+ private:
+  ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that no delay is applied when LCP is already available.
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest, NoDelayWhenLcpReady) {
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Wait for the LCP metric to be fully reported to the browser process.
+  waiter->Wait();
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  base::ElapsedTimer timer;
+  TestFuture<void> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+
+  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+  ASSERT_TRUE(result.Wait());
+
+  // Since the page had a paint, LCP is considered valid, and we should not
+  // have applied the delay.
+  EXPECT_LT(timer.Elapsed(), base::Milliseconds(kLcpDelayInMs));
+}
+
+// Tests that the LCP delay is correctly applied when a standard page is loaded
+// that has no content to paint (and thus no LCP).
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerLcpTest,
+                       DelayIsAppliedForPageWithNoContent) {
+  // Navigate to an empty html page. This is a standard navigation, so the
+  // PageLoadMetrics system will run, but no LCP will ever be recorded
+  // because there is no content.
+  const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  base::ElapsedTimer timer;
+  TestFuture<void> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+
+  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+  ASSERT_TRUE(result.Wait());
+
+  // The total time should be at least the LCP delay, because the empty page
+  // is tracked but has no contentful paint.
+  EXPECT_GE(timer.Elapsed(), base::Milliseconds(kLcpDelayInMs));
 }
 
 }  // namespace

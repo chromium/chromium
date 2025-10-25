@@ -378,6 +378,11 @@ const base::FeatureParam<base::TimeDelta> kGlicActorPageStabilityMinWait{
 const base::FeatureParam<base::TimeDelta> kActorObservationDelayTimeout{
     &kGlicActor, "actor-observation-delay-timeout", base::Seconds(10)};
 
+// The additional delay before completing a tool if LCP is not detected yet upon
+// loading.
+const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp{
+    &kGlicActor, "actor-observation-delay-lcp", base::Seconds(1)};
+
 // Controls whether to enable general wait on renderer-side page stability.
 constexpr base::FeatureParam<ActorGeneralPageStabilityMode>::Option
     kActorGeneralPageStabilityModeOptions[] = {

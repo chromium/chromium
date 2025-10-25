@@ -156,6 +156,7 @@ source_set("impl") {
     "//chrome/common",
     "//components/favicon/core",
     "//components/lookalikes/core",
+    "//components/page_load_metrics/browser",
     "//components/password_manager/core/browser/features:password_features",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -343,6 +344,7 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/glic",
+      "//components/page_load_metrics/browser:test_support",
       "//ui/base:ozone_buildflags",
     ]
   }
