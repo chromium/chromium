@@ -134,6 +134,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tab/App closed"/>
 </enum>
 
+<enum name="FetchManifestAndUpdateResult">
+  <int value="0" label="Success, updated"/>
+  <int value="1" label="Success, no update detected"/>
+  <int value="2" label="Shutdown"/>
+  <int value="3" label="App not installed"/>
+  <int value="4" label="URL loading error"/>
+  <int value="5" label="Manifest retrieval error"/>
+  <int value="6" label="Invalid manifest"/>
+  <int value="7" label="Icon download error"/>
+  <int value="8" label="Installation error"/>
+  <int value="9" label="Primary page changed"/>
+  <int value="10" label="Manifest to WebAppInstallInfo failed"/>
+</enum>
+
 <enum name="GeneratedIconFixResult">
   <int value="0" label="kAppUninstalled"/>
   <int value="1" label="kShutdown"/>

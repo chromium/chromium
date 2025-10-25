@@ -11,6 +11,8 @@
 
 namespace web_app {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FetchManifestAndUpdateResult {
   kSuccess = 0,
   kSuccessNoUpdateDetected = 1,

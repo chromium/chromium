@@ -9,8 +9,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/pref_names.h"
@@ -29,18 +31,18 @@ struct GuardrailData {
   std::optional<int> app_specific_not_accept_count;
   std::optional<int> app_specific_mute_after_dismiss_days;
   std::optional<int> app_specific_mute_after_ignore_days;
-  int global_not_accept_count;
+  std::optional<int> global_not_accept_count;
   std::optional<int> global_mute_after_dismiss_days;
   std::optional<int> global_mute_after_ignore_days;
 };
 
 struct GuardrailPrefNames {
-  std::string_view last_ignore_time_name;
-  std::string_view last_dismiss_time_name;
-  std::string_view not_accepted_count_name;
-  std::string_view all_blocked_time_name;
-  std::string_view global_pref_name;
-  std::string_view block_reason_name;
+  std::string_view last_ignore_time_name = "";
+  std::string_view last_dismiss_time_name = "";
+  std::string_view not_accepted_count_name = "";
+  std::string_view all_blocked_time_name = "";
+  std::string_view global_pref_name = "";
+  std::string_view block_reason_name = "";
 };
 
 std::optional<int> GetIntWebAppPref(const PrefService* pref_service,
@@ -71,6 +73,9 @@ class WebAppPrefGuardrails {
   // IPH bubble for apps launched via link capturing should be shown.
   static WebAppPrefGuardrails GetForNavigationCapturingIph(
       PrefService* pref_service);
+
+  static WebAppPrefGuardrails GetForDefaultAppUpdateOnStartup(
+      PrefService& pref_service);
 
   // The time values are stored as a string-flavored base::value representing
   // the int64_t number of microseconds since the Windows epoch, using
@@ -107,6 +112,8 @@ class WebAppPrefGuardrails {
   //   }
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  static base::AutoReset<base::Clock*> SetClockForTesting(base::Clock* clock);
+
   ~WebAppPrefGuardrails();
   WebAppPrefGuardrails(const WebAppPrefGuardrails& other) = delete;
   WebAppPrefGuardrails& operator=(const WebAppPrefGuardrails& other) = delete;
@@ -128,6 +135,8 @@ class WebAppPrefGuardrails {
                        const GuardrailData& guardrail_data,
                        const GuardrailPrefNames& guardrail_pref_names,
                        std::optional<int> max_days_to_store_guardrails);
+
+  bool HasGlobalPrefs() const;
 
   // If guardrails are blocked, returns a string result of why it was blocked.
   std::optional<std::string> IsAppBlocked(const webapps::AppId& app_id);
@@ -287,6 +296,24 @@ inline constexpr GuardrailPrefNames kIPHNavigationCapturingPrefNames{
     .global_pref_name = ::prefs::kWebAppsAppAgnosticIPHLinkCapturingState,
     .block_reason_name = "IPH_link_capturing_block_reason",
 };
+
+// Default App Update on Startup:
+//
+// To ensure default apps can receive timely updates (e.g. for origin
+// migrations), a check is performed on startup. This is throttled to avoid
+// excessive network usage.
+// - We use the 'mute' action to record when we successfully check for updates.
+// - The check is performed at most once every 7 days.
+// - There is no limit to the number of times this check can be performed over
+// the lifetime of the profile.
+inline constexpr GuardrailData kDefaultAppUpdateOnStartupGuardrails{
+    .app_specific_mute_after_ignore_days = 7,
+};
+
+inline constexpr GuardrailPrefNames kDefaultAppUpdateOnStartupPrefNames{
+    .last_ignore_time_name = "default_app_startup_update_last_ignore_time",
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PREF_GUARDRAILS_H_
