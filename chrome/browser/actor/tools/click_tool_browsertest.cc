@@ -406,5 +406,51 @@ INSTANTIATE_TEST_SUITE_P(
         testing::ValuesIn(kActorGeneralPageStabilityModeValues)),
     ActorClickToolBrowserTest::DescribeParams);
 
+class ActorClickToolScaledBrowserTest : public ActorToolsTest {
+ public:
+  ActorClickToolScaledBrowserTest() = default;
+  ~ActorClickToolScaledBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ActorToolsTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ActorToolsTest::SetUpCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kForceDeviceScaleFactor);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2");
+  }
+};
+
+// Ensure clicks can be sent to elements that are only partially onscreen with
+// scaling.
+IN_PROC_BROWSER_TEST_F(ActorClickToolScaledBrowserTest,
+                       ClickTool_ScaledClippedElements) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/click_with_overflow_clip.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::vector<std::string> test_cases = {
+      "offscreenButton", "overflowHiddenButton", "overflowScrollButton"};
+
+  for (auto button : test_cases) {
+    SCOPED_TRACE(testing::Message() << "WHILE TESTING: " << button);
+    std::optional<int> button_id =
+        GetDOMNodeId(*main_frame(), base::StrCat({"#", button}));
+    ASSERT_TRUE(button_id);
+
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*main_frame(), button_id.value());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    EXPECT_EQ(button, EvalJs(web_contents(), "clicked_button"));
+
+    ASSERT_TRUE(ExecJs(web_contents(), "clicked_button = ''"));
+  }
+}
+
 }  // namespace
 }  // namespace actor
