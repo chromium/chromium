@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -111,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, DISABLED_Typing) {
   InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
       extension_ime_ids);
 
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath("extensions/api_test/input_method/typing/"),
       base::FilePath("test_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));

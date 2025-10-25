@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -309,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
       extensions::ProcessManager::Get(profile())->GetBackgroundHostForExtension(
           extension_->id());
   ASSERT_TRUE(host);
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath("extensions/api_test/input_method/typing/"),
       base::FilePath("test_page.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));

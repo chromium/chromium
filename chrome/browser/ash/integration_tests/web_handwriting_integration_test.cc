@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/chromeos/crosier/annotations.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(WebHandwritingIntegrationTest, Recognition) {
       supports_ondevice_handwriting_
           ? "web_handwriting_recognition.html"
           : "web_handwriting_recognition_not_supported.html";
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath("chromeos/web_handwriting/"), base::FilePath(test_file));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 

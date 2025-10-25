@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, EndToEndTest) {
   ASSERT_TRUE(browser_wc);
 
   // Set up the test page.
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL(
           "chromeos/virtual_keyboard/default_extension/end_to_end_test.html")));
