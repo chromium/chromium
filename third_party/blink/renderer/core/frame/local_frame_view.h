@@ -1032,7 +1032,12 @@ class CORE_EXPORT LocalFrameView final
 
   void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);
 
-  bool UpdateViewportIntersectionsForSubtree(
+  // Recomputes the values returned by HasActiveIntersectionObservations() and
+  // NeedsOcclusionTracking().
+  void UpdateIntersectionObserverStatus() override;
+  bool HasActiveIntersectionObservations() const override;
+  bool NeedsOcclusionTracking() const override;
+  void UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       ComputeIntersectionsContext&) override;
   void DeliverSynchronousIntersectionObservations();
@@ -1188,6 +1193,12 @@ class CORE_EXPORT LocalFrameView final
 #endif
 
   IntersectionObservationState intersection_observation_state_;
+  // True if this FrameView or any descendant FrameView has active
+  // IntersectionObservers.
+  bool has_active_intersection_observations_ = false;
+  // True if this FrameView or any descendant FrameView has active
+  // IntersectionObservers for which observer->trackVisibility() is true.
+  bool needs_occlusion_tracking_ = false;
   gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
   // Used only if the frame is the local root.
   HeapTaskRunnerTimer<LocalFrameView> delayed_intersection_timer_;

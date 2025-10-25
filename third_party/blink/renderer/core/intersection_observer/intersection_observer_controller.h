@@ -37,8 +37,6 @@ class CORE_EXPORT ComputeIntersectionsContext {
       unsigned flags);
   void UpdateNextRunDelay(base::TimeDelta delay);
   base::TimeDelta GetAndResetNextRunDelay();
-  bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
-  void SetNeedsOcclusionTracking() { needs_occlusion_tracking_ = true; }
 
  private:
   base::TimeTicks monotonic_time_;
@@ -53,7 +51,6 @@ class CORE_EXPORT ComputeIntersectionsContext {
   std::optional<IntersectionGeometry::RootGeometry> implicit_root_geometry_;
 
   base::TimeDelta next_run_delay_ = base::TimeDelta::Max();
-  bool needs_occlusion_tracking_ = false;
 };
 
 class CORE_EXPORT IntersectionObserverController
@@ -70,11 +67,12 @@ class CORE_EXPORT IntersectionObserverController
   // (observer->GetDeliveryBehavior() == behavior).
   void DeliverNotifications(IntersectionObserver::DeliveryBehavior behavior);
 
+  void UpdateIntersectionObserverStatus();
+
   // The flags argument is composed of values from
   // IntersectionObservation::ComputeFlags. They are dirty bits that control
-  // whether an IntersectionObserver needs to do any work. The return value
-  // communicates whether there are any active observations.
-  bool ComputeIntersections(
+  // whether an IntersectionObserver needs to do any work.
+  void ComputeIntersections(
       unsigned flags,
       LocalFrameView&,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update,
@@ -85,6 +83,7 @@ class CORE_EXPORT IntersectionObserverController
   void RemoveTrackedObserver(IntersectionObserver&);
   void RemoveTrackedObservation(IntersectionObservation&);
 
+  bool HasActiveObservations() const { return has_active_observations_; }
   bool NeedsOcclusionTracking() const { return needs_occlusion_tracking_; }
 
   void Trace(Visitor*) const override;
@@ -110,9 +109,12 @@ class CORE_EXPORT IntersectionObserverController
   // IntersectionObservers for which this is the execution context of the
   // callback, and with unsent notifications.
   HeapHashSet<Member<IntersectionObserver>> pending_intersection_observers_;
+  // This is 'true' if any observation tracked by this controller is able to
+  // compute geometry (i.e., observation->CanCompute() is true).
+  bool has_active_observations_ = false;
   // This is 'true' if any tracked node is the target of an observer for
   // which observer->trackVisibility() is true.
-  bool needs_occlusion_tracking_;
+  bool needs_occlusion_tracking_ = false;
 };
 
 }  // namespace blink

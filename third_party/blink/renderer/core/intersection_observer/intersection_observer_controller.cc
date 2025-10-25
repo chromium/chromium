@@ -126,14 +126,35 @@ void IntersectionObserverController::DeliverNotifications(
   }
 }
 
-bool IntersectionObserverController::ComputeIntersections(
+void IntersectionObserverController::UpdateIntersectionObserverStatus() {
+  needs_occlusion_tracking_ = has_active_observations_ = false;
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  auto update = [&](IntersectionObserver& observer, const auto& observations) {
+    for (auto& observation : observations) {
+      needs_occlusion_tracking_ |= observer.trackVisibility();
+      has_active_observations_ |= observation->CanCompute();
+    }
+  };
+
+  for (auto& observer : tracked_explicit_root_observers_) {
+    update(*observer, observer->Observations());
+  }
+
+  for (auto& [observer, observations] : tracked_implicit_root_observations_) {
+    update(*observer, observations);
+  }
+}
+
+void IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameView& frame_view,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
-  needs_occlusion_tracking_ = false;
   if (!GetExecutionContext()) {
-    return false;
+    return;
   }
   TRACE_EVENT0("blink,devtools.timeline",
                "IntersectionObserverController::"
@@ -148,16 +169,13 @@ bool IntersectionObserverController::ComputeIntersections(
     metrics_timer.emplace(*metrics_aggregator);
   }
 
-  bool has_active_observations = false;
   auto compute_observer_intersections = [&](IntersectionObserver& observer,
                                             const auto& observations) {
-    needs_occlusion_tracking_ |= observer.trackVisibility();
     if (metrics_timer && observer.GetUkmMetricId()) {
       metrics_timer->StartInterval(observer.GetUkmMetricId().value());
     }
     int64_t count = 0;
     for (auto& observation : observations) {
-      has_active_observations |= observation->CanCompute();
       count += observation->ComputeIntersection(
           flags, accumulated_scroll_delta_since_last_update, context);
     }
@@ -232,8 +250,6 @@ bool IntersectionObserverController::ComputeIntersections(
   if (delay != base::TimeDelta::Max()) {
     frame_view.ScheduleDelayedIntersection(delay);
   }
-
-  return has_active_observations;
 }
 
 void IntersectionObserverController::AddTrackedObserver(
@@ -243,7 +259,6 @@ void IntersectionObserverController::AddTrackedObserver(
     return;
   tracked_explicit_root_observers_.insert(&observer);
   if (observer.trackVisibility()) {
-    needs_occlusion_tracking_ = true;
     if (LocalFrameView* frame_view = observer.root()->GetDocument().View()) {
       if (FrameOwner* frame_owner = frame_view->GetFrame().Owner()) {
         // Set this bit as early as possible, rather than waiting for a
@@ -277,7 +292,6 @@ void IntersectionObserverController::AddTrackedObservation(
       .insert(observer, HeapHashSet<Member<IntersectionObservation>>())
       .stored_value->value.insert(&observation);
   if (observer->trackVisibility()) {
-    needs_occlusion_tracking_ = true;
     if (LocalFrameView* frame_view =
             observation.Target()->GetDocument().View()) {
       if (FrameOwner* frame_owner = frame_view->GetFrame().Owner()) {
