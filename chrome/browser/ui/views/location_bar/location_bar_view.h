@@ -396,6 +396,9 @@ class LocationBarView
   bool ShouldHidePageActionIconsForContext(
       metrics::OmniboxEventProto::PageClassification page_context) const;
 
+  // Returns true if the AIM page action is the right-most visible page action.
+  bool IsAimLastVisiblePageAction() const;
+
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
