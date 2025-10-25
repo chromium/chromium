@@ -4316,18 +4316,32 @@ public class StripLayoutHelper
         computeIdealViewPositions();
     }
 
+    /**
+     * Returns the tab group count. Should only be called when rebuilding the tab strip, as we've
+     * previously seen {@link TabGroupModelFilter#getTabGroupCount()} be incorrect on startup. That
+     * said, other call-sites should use the aforementioned TabGroupModelFilter method if possible.
+     * TODO(crbug.com/454960178): Investigate if this is still needed.
+     */
     private int getTabGroupCount() {
-        if (mTabGroupModelFilter == null) return 0;
+        if (mModel == null || mTabGroupModelFilter == null) return 0;
 
         Set<Token> groupIds = new HashSet<>();
 
         for (int i = 0; i < mStripTabs.length; ++i) {
             final StripLayoutTab stripTab = mStripTabs[i];
-            final Tab tab = assumeNonNull(getTabById(stripTab.getTabId()));
-            if (mTabGroupModelFilter.isTabInTabGroup(tab)
-                    && !groupIds.contains(tab.getTabGroupId())) {
-                groupIds.add(tab.getTabGroupId());
-            }
+            final Tab tab = mModel.getTabByIdChecked(stripTab.getTabId());
+            if (mTabGroupModelFilter.isTabInTabGroup(tab)) groupIds.add(tab.getTabGroupId());
+        }
+
+        Token tabGroupIdToHide = mGroupIdToHideSupplier.get();
+        if (tabGroupIdToHide != null && !groupIds.contains(tabGroupIdToHide)) {
+            // Rebuilding tab strip with a group ID to hide without a matching Tab.
+            // TODO(crbug.com/443337907): When we migrate the close button flow to the new closure
+            //  flow, we should be able to assert that this should be unreachable, rather than just
+            //  clearing the invalid state. This is currently possible because of the sequence of
+            //  events we get when confirming a group deletion: we rebuild on the tab closure event,
+            //  but clear the state on the group removal event.
+            mGroupIdToHideSupplier.set(null);
         }
 
         return groupIds.size();
@@ -4367,12 +4381,18 @@ public class StripLayoutHelper
 
         // If we have tab group to hide due to running tab group delete dialog, then skip the tab
         // group when rebuilding StripViews.
-        if (mGroupIdToHideSupplier.get() != null && numGroups > 0) {
-            numGroups -= 1;
+        if (mGroupIdToHideSupplier.get() != null) {
+            if (mTabGroupModelFilter.tabGroupExists(mGroupIdToHideSupplier.get())) {
+                if (numGroups > 0) numGroups--;
+            } else {
+                assert false : "Rebuilding tab strip with a nonexistent group ID to hide.";
+                mGroupIdToHideSupplier.set(null);
+            }
         }
 
         int groupTitleIndex = 0;
         StripLayoutGroupTitle[] groupTitles = new StripLayoutGroupTitle[numGroups];
+        Set<Token> seenGroupIds = new HashSet<>();
 
         int numViews = mStripTabs.length + numGroups;
         if (numViews != mStripViews.length) {
@@ -4386,6 +4406,7 @@ public class StripLayoutHelper
             Token tabGroupId = firstTab.getTabGroupId();
             assert tabGroupId != null;
             StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(tabGroupId);
+            seenGroupIds.add(tabGroupId);
             if (!tabGroupId.equals(mGroupIdToHideSupplier.get())) {
                 if (TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, tabGroupId)) {
                     mLastSyncedGroupIdForIph = tabGroupId;
@@ -4409,6 +4430,11 @@ public class StripLayoutHelper
                             : false;
             if (nextTabInGroup && !areRelatedTabs) {
                 assumeNonNull(nextTabGroupId);
+                if (seenGroupIds.contains(nextTabGroupId)) {
+                    assert false : "Rebuilding tab strip with a non-contiguous tab group.";
+                    continue;
+                }
+                seenGroupIds.add(nextTabGroupId);
                 StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(nextTabGroupId);
                 if (!nextTabGroupId.equals(mGroupIdToHideSupplier.get())) {
                     if (TabUiUtils.shouldShowIphForSync(mTabGroupSyncService, nextTabGroupId)) {
@@ -5499,6 +5525,10 @@ public class StripLayoutHelper
 
     boolean getPendingMouseTabClosureForTesting() {
         return mPendingMouseTabClosure;
+    }
+
+    ObservableSupplierImpl<@Nullable Token> getGroupIdToHideSupplierForTesting() {
+        return mGroupIdToHideSupplier;
     }
 
     private void setAccessibilityDescription(@Nullable StripLayoutTab stripTab, @Nullable Tab tab) {

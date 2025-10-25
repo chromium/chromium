@@ -5226,6 +5226,52 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testRebuildStripViews_WithGroupIdToHideWithoutMatchingTab_ClearsInvalidState() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake that the tab group ID exists without a matching Tab.
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(true);
+
+        // Set nonexistent group ID to hide.
+        mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
+
+        // Verify the invalid state is automatically cleared.
+        assertNull(
+                "The invalid tab group ID to hide should have been cleared.",
+                mStripLayoutHelper.getGroupIdToHideSupplierForTesting().get());
+    }
+
+    @Test
+    public void testRebuildStripViews_WithNonExistentGroupIdToHide_Asserts() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Fake that there's a matching Tab for the group ID, but that the group ID doesn't exist in
+        // the model.
+        groupTabs(0, 1, TAB_GROUP_ID_1);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID_1)).thenReturn(false);
+
+        // Set nonexistent group ID to hide and verify an AssertionError is thrown.
+        try {
+            mStripLayoutHelper.getGroupIdToHideSupplierForTesting().set(TAB_GROUP_ID_1);
+            throw new Error("Expected assert to be triggered with invalid group ID to hide.");
+        } catch (AssertionError ignored) {
+        }
+    }
+
+    @Test
+    public void testRebuildStripViews_WithNonContiguousTabGroup_Asserts() {
+        initializeTest(/* tabIndex= */ 0);
+
+        // Create a non-contiguous tab group and verify an AssertionError is thrown.
+        try {
+            groupTabs(0, 1, TAB_GROUP_ID_1);
+            groupTabs(3, 4, TAB_GROUP_ID_1);
+            throw new Error("Expected assert to be triggered with a non-contiguous tab group.");
+        } catch (AssertionError ignored) {
+        }
+    }
+
+    @Test
     public void testHandleGroupTitleClick_Collapse() {
         // Initialize with 4 tabs. Group first three tabs.
         HistogramWatcher histogramWatcher =
