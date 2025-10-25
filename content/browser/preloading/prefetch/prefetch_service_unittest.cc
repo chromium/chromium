@@ -7243,7 +7243,7 @@ TEST_P(PrefetchServiceEventTest, ActualObserverCallbacks) {
           // TODO(https://crbug.com/433114485): Eligibility check is not
           // cancelled on unexpected failed completion and causes crashes. Fix
           // this.
-          EXPECT_DEATH(
+          EXPECT_DEATH_IF_SUPPORTED(
               eligibility_check_callback_future->Take().Run(eligibility), "");
         } else {
           eligibility_check_callback_future->Take().Run(eligibility);
