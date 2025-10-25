@@ -73,13 +73,13 @@ std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId() const {
   return current_key(SidePanelEntry::PanelType::kContent)->key.id();
 }
 
-int SidePanelUIBase::GetCurrentEntryDefaultContentWidth() const {
-  if (!current_key(SidePanelEntry::PanelType::kContent).has_value()) {
+int SidePanelUIBase::GetCurrentEntryDefaultContentWidth(
+    SidePanelEntry::PanelType type) const {
+  if (!current_key(type).has_value()) {
     return SidePanelEntry::kSidePanelDefaultContentWidth;
   }
 
-  const SidePanelEntry* const entry =
-      GetEntryForUniqueKey(*current_key(SidePanelEntry::PanelType::kContent));
+  const SidePanelEntry* const entry = GetEntryForUniqueKey(*current_key(type));
   CHECK(entry);
 
   return entry->GetDefaultContentWidth();

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -32,6 +33,7 @@ class SidePanel : public views::AccessiblePaneView,
   enum class HorizontalAlignment { kLeft = 0, kRight };
   explicit SidePanel(
       BrowserView* browser_view,
+      SidePanelEntry::PanelType type,
       bool has_border,
       HorizontalAlignment horizontal_alignment = HorizontalAlignment::kRight);
   SidePanel(const SidePanel&) = delete;
@@ -123,6 +125,7 @@ class SidePanel : public views::AccessiblePaneView,
 
   raw_ptr<BorderView> border_view_ = nullptr;
   const raw_ptr<BrowserView> browser_view_;
+  const SidePanelEntry::PanelType type_;
   raw_ptr<View> resize_area_ = nullptr;
   raw_ptr<views::View> header_view_ = nullptr;
 

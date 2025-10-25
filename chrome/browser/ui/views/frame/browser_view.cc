@@ -880,7 +880,8 @@ BrowserView::BrowserView(Browser* browser)
 
   // TODO(crbug.com/454362874): Support dynamic horizontal alignment.
   toolbar_height_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, /*has_border=*/false, SidePanel::HorizontalAlignment::kLeft));
+      this, SidePanelEntry::PanelType::kToolbar, /*has_border=*/false,
+      SidePanel::HorizontalAlignment::kLeft));
 
   top_container_ =
       main_container_->AddChildView(std::make_unique<TopContainerView>(this));
@@ -951,7 +952,7 @@ BrowserView::BrowserView(Browser* browser)
       prefs::kSidePanelHorizontalAlignment);
   contents_height_side_panel_ =
       main_container_->AddChildView(std::make_unique<SidePanel>(
-          this, /*has_border=*/true,
+          this, SidePanelEntry::PanelType::kContent, /*has_border=*/true,
           is_right_aligned ? SidePanel::HorizontalAlignment::kRight
                            : SidePanel::HorizontalAlignment::kLeft));
 
