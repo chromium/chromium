@@ -344,6 +344,10 @@ const chromeos::CaptionButtonModel* FrameHeader::GetCaptionButtonModel() const {
 
 void FrameHeader::SetFrameTextOverride(
     const std::u16string& frame_text_override) {
+  if (frame_text_override_ == frame_text_override) {
+    return;
+  }
+
   frame_text_override_ = frame_text_override;
   SchedulePaintForTitle();
 }
