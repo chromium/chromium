@@ -95,6 +95,9 @@ enum ViewID {
   // Lens overlay.
   VIEW_ID_LENS_OVERLAY,
 
+  // The view that hosts the immersive Reading Mode.
+  VIEW_ID_READ_ANYTHING_OVERLAY,
+
   // Glic Actor Overlay
   VIEW_ID_ACTOR_OVERLAY,
 

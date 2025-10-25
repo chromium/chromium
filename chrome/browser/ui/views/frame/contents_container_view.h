@@ -81,6 +81,9 @@ class ContentsContainerView : public views::View,
   ActorOverlayWebView* actor_overlay_web_view() {
     return actor_overlay_web_view_;
   }
+  views::View* immersive_read_anything_overlay_view() {
+    return immersive_read_anything_overlay_view_;
+  }
   glic::GlicBorderView* glic_border_view() { return glic_border_; }
   new_tab_footer::NewTabFooterWebView* new_tab_footer_view() {
     return new_tab_footer_view_;
@@ -159,6 +162,10 @@ class ContentsContainerView : public views::View,
   raw_ptr<ScrimView> devtools_scrim_view_ = nullptr;
   DevToolsDockedPlacement current_devtools_docked_placement_ =
       DevToolsDockedPlacement::kNone;
+
+  // The view that contains the Immersive Reading Mode. This view is an overlay
+  // on top of the ContentsWebView.
+  raw_ptr<views::View> immersive_read_anything_overlay_view_ = nullptr;
 
   // The view that shows a footer at the bottom of the contents
   // container on new tab pages.

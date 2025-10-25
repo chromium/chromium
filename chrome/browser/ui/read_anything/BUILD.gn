@@ -1,0 +1,19 @@
+import("//build/config/compiler/compiler.gni")
+import("//testing/test.gni")
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "immersive_read_anything_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support_ui",
+    "//testing/gtest",
+    "//ui/views",
+  ]
+}
