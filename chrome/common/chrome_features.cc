@@ -442,6 +442,17 @@ BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorInternalPopups, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the actor framework searches for an interaction point when
+// when the center of the target element is obscured.
+BASE_FEATURE(kGlicActorIterativeInteractionPointDiscovery,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// The maximum number of iterations to search for an interaction point. The
+// value 0 means unlimited.
+const base::FeatureParam<size_t>
+    kGlicActorInterationPointDiscoveryMaxIterations{
+        &kGlicActorIterativeInteractionPointDiscovery,
+        "interaction-discovery-max-iterations", 0};
+
 // Controls whether the Glic's act-on-web capability is checked for managed
 // trial clients.
 BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,

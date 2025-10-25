@@ -221,7 +221,7 @@ void ToolBase::EnsureTargetInView() {
   int32_t dom_node_id = target_->get_dom_node_id();
   WebElement node =
       GetNodeFromId(frame_.get(), dom_node_id).DynamicTo<WebElement>();
-  if (node && !InteractionPointFromWebNode(node).has_value()) {
+  if (node && node.VisibleBoundsInWidget().IsEmpty()) {
     node.ScrollIntoViewIfNeeded();
   }
 }
@@ -297,6 +297,7 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
     CHECK(target_->is_dom_node_id());
     WebWidget* widget = resolved_target.GetWidget(*this);
     CHECK(widget);
+
     // Check that the interaction point will actually hit
     // on the intended element, i.e. centre point of node is not occluded.
     const WebHitTestResult hit_test_result =

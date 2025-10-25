@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Partially obscured test page</title>
+  </head>
+  <body>
+    <!-- One element behind another element -->
+    <style>
+      .behind {
+        position: absolute;
+        width: 100%;
+        height: 40px;
+        background-color: lightgreen;
+      }
+      .overlay {
+        background-color: firebrick;
+        width: 98%;
+        left: 1%;
+        height: 25px;
+        top: 10px;
+        position: relative;
+      }
+    </style>
+    <div class="behind">
+      <input type="checkbox" class="behind" id="behind" aria-label="behind"/>
+      Text behind
+    </div>
+    <div class="overlay" id="overlay" aria-label="overlay">Text in front</div>
+  </body>
+</html>

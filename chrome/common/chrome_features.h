@@ -331,6 +331,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorInternalPopups);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicActorIterativeInteractionPointDiscovery);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<size_t>
+    kGlicActorInterationPointDiscoveryMaxIterations;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActOnWebCapabilityForManagedTrials);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
