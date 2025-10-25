@@ -590,9 +590,7 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
   // Erase the non-matching histograms. Note that `histograms` was passed by
   // value so we can efficiently remove the unwanted elements and return the
   // local instance.
-  histograms.erase(std::remove_if(histograms.begin(), histograms.end(),
-                                  histogram_name_does_not_contain_query),
-                   histograms.end());
+  std::erase_if(histograms, histogram_name_does_not_contain_query);
   return histograms;
 }
 
