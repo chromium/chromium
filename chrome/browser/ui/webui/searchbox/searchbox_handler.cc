@@ -57,6 +57,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "url/gurl.h"
 
 namespace searchbox_internal {
@@ -788,6 +789,23 @@ SearchboxHandler::~SearchboxHandler() {
 
 bool SearchboxHandler::IsRemoteBound() const {
   return page_.is_bound();
+}
+
+void SearchboxHandler::AddFileContextFromBrowser(
+    base::UnguessableToken token,
+    searchbox::mojom::SelectedFileInfoPtr file_info) {
+  if (page_ && IsRemoteBound()) {
+    page_->AddFileContext(token, std::move(file_info));
+  }
+}
+
+void SearchboxHandler::OnContextualInputStatusChanged(
+    base::UnguessableToken token,
+    composebox_query::mojom::FileUploadStatus status,
+    std::optional<composebox_query::mojom::FileUploadErrorType> error_type) {
+  if (page_ && IsRemoteBound()) {
+    page_->OnContextualInputStatusChanged(token, status, error_type);
+  }
 }
 
 void SearchboxHandler::SetPage(

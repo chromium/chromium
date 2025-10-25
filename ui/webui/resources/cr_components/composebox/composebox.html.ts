@@ -22,7 +22,7 @@ export function getHtml(this: ComposeboxElement) {
   <div id="composebox" @keydown="${this.onKeydown_}"
       @focusin=${this.handleComposeboxFocusIn_}
       @focusout=${this.handleComposeboxFocusOut_}>
-    <div id="inputContainer">
+    <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">
           <div id="aimIcon"></div>
@@ -51,7 +51,8 @@ export function getHtml(this: ComposeboxElement) {
         </div>
       </div>
       <contextual-entrypoint-and-carousel id="context" part="context-entrypoint"
-          exportparts="context-menu-entrypoint-icon, composebox-file-carousel"
+          class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}"
+          exportparts="context-menu-entrypoint-icon, composebox-file-carousel, upload-container, composebox-file-carousel"
           .tabSuggestions="${this.tabSuggestions_}"
           entrypoint-name="Composebox"
           @add-tab-context="${this.addTabContext_}"
@@ -63,7 +64,8 @@ export function getHtml(this: ComposeboxElement) {
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.showDropdown_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}"
-          realbox-layout-mode="${this.realboxLayoutMode}">
+          realbox-layout-mode="${this.realboxLayoutMode}"
+          ?carousel-on-top_="${this.carouselOnTop_}">
         <cr-composebox-dropdown
             id="matches"
             part="dropdown"

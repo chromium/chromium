@@ -88,12 +88,6 @@ class LensSearchboxController : public LensSearchboxClient {
   // Sets whether the thumbnail is shown in the side panel.
   void SetShowSidePanelSearchboxThumbnail(bool shown);
 
-  // Handles the create of a new thumbnail from a bitmap.
-  void HandleThumbnailCreatedBitmap(const SkBitmap& thumbnail);
-
-  // Handles the creation of a new thumbnail based on the user selection.
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
-
   // Handles an update to the suggest inputs. This will be called whenever
   // any part of the suggest inputs changes, such as when a new objects
   // request is sent, or when an interaction data response is received.
@@ -162,9 +156,6 @@ class LensSearchboxController : public LensSearchboxClient {
     // Whether the thumbnail should be shown in the side panel.
     bool show_side_panel_thumbnail = true;
   };
-
-  // Called on the UI thread with the processed thumbnail URI.
-  void OnThumbnailProcessed(const std::string& thumbnail_uri);
 
   // Returns the WebContents associated with the tab this instance of Lens is
   // invoked on.

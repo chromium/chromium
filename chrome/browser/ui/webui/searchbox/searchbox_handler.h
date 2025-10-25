@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class GURL;
 class OmniboxController;
@@ -63,6 +64,16 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   // Returns true if the page remote is bound and ready to receive calls.
   bool IsRemoteBound() const;
+
+  // Adds file context to the searchbox from the browser.
+  void AddFileContextFromBrowser(base::UnguessableToken token,
+                      searchbox::mojom::SelectedFileInfoPtr file_info);
+
+  // Notifies the WebUI that the contextual input status has changed.
+  void OnContextualInputStatusChanged(
+      base::UnguessableToken token,
+      composebox_query::mojom::FileUploadStatus status,
+      std::optional<composebox_query::mojom::FileUploadErrorType> error_type);
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,

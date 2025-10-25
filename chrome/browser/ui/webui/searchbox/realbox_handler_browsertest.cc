@@ -80,6 +80,10 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
       std::optional<composebox_query::mojom::FileUploadErrorType> error_type)
       override {}
   void OnTabStripChanged() override {}
+  void AddFileContext(
+      const base::UnguessableToken& token,
+      searchbox::mojom::SelectedFileInfoPtr file_info) override {}
+
   mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
   }

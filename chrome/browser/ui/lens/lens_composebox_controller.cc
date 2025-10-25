@@ -35,6 +35,18 @@ lens::LensOverlayVisualInputType LensMimeTypeToVisualInputType(
 
 namespace lens {
 
+LensComposeboxController::VisualSelectionContext::VisualSelectionContext(
+    base::UnguessableToken id,
+    searchbox::mojom::SelectedFileInfoPtr file_info)
+    : id(id), file_info(std::move(file_info)) {}
+LensComposeboxController::VisualSelectionContext::~VisualSelectionContext() =
+    default;
+LensComposeboxController::VisualSelectionContext::VisualSelectionContext(
+    VisualSelectionContext&&) = default;
+LensComposeboxController::VisualSelectionContext&
+LensComposeboxController::VisualSelectionContext::operator=(
+    VisualSelectionContext&&) = default;
+
 LensComposeboxController::LensComposeboxController(
     LensSearchController* lens_search_controller,
     Profile* profile)
@@ -56,6 +68,13 @@ void LensComposeboxController::BindComposebox(
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
+
+  // Set the visual selection context if it was already made before the
+  // composebox was bound.
+  if (vsc_image_data_.has_value()) {
+    composebox_handler_->AddFileContextFromBrowser(
+        vsc_image_data_->id, vsc_image_data_->file_info.Clone());
+  }
 
   // Record that the composebox was shown. The composebox handler is always
   // bound, so check if the composebox is actually enabled before logging as
@@ -133,6 +152,7 @@ void LensComposeboxController::CloseUI() {
   pending_query_text_.reset();
   composebox_handler_.reset();
   suggest_inputs_.Clear();
+  vsc_image_data_.reset();
 }
 
 void LensComposeboxController::OnAimMessage(
@@ -177,6 +197,35 @@ void LensComposeboxController::ResetAimHandshake() {
 
 void LensComposeboxController::ShowLensSelectionOverlay() {
   lens_search_controller_->OpenLensOverlayInCurrentSession();
+}
+
+void LensComposeboxController::AddVisualSelectionContext(
+    const std::string& image_data_url,
+    bool is_deletable) {
+  if (!lens::features::GetEnableLensButtonInSearchbox()) {
+    return;
+  }
+
+  // If there is existing visual selection context, mark it as expired. There
+  // should only be one visual selection context at a time. The UI should
+  // appropriately remove the existing thumbnail.
+  if (vsc_image_data_ && composebox_handler_) {
+    composebox_handler_->OnContextualInputStatusChanged(
+        vsc_image_data_->id,
+        composebox_query::mojom::FileUploadStatus::kUploadExpired,
+        std::nullopt);
+    vsc_image_data_.reset();
+  }
+
+  vsc_image_data_.emplace(
+      base::UnguessableToken::Create(),
+      BuildVisualSelectionFileInfo(image_data_url, is_deletable));
+  // If the composebox handler is not yet bound, the image will be added when
+  // the composebox is bound.
+  if (composebox_handler_) {
+    composebox_handler_->AddFileContextFromBrowser(vsc_image_data_->id,
+                                        vsc_image_data_->file_info.Clone());
+  }
 }
 
 lens::LensSessionMetricsLogger*
@@ -233,6 +282,19 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
   lens_image_query_data->set_visual_input_type(
       LensMimeTypeToVisualInputType(primary_content_type));
   return client_to_aim_message;
+}
+
+searchbox::mojom::SelectedFileInfoPtr
+LensComposeboxController::BuildVisualSelectionFileInfo(
+    const std::string& image_data_url,
+    bool is_deletable) {
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "Visual Selection";
+  file_info->mime_type = "image/png";
+  file_info->image_data_url = image_data_url;
+  file_info->is_deletable = is_deletable;
+  return file_info;
 }
 
 }  // namespace lens

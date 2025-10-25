@@ -278,6 +278,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/base32",

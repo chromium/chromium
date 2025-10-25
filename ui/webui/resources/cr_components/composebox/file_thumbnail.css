@@ -43,11 +43,11 @@
   align-items: center;
   border-radius: 8px;
   display: flex;
-  height: 44px;
+  height: var(--composebox-thumbnail-img-chip-size, 44px);
   justify-content: center;
   overflow: hidden;
   position: relative;
-  width: 44px;
+  width: var(--composebox-thumbnail-img-chip-size, 44px);
 }
 
 .img-overlay {

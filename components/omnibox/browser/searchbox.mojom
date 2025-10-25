@@ -105,12 +105,16 @@ struct TabInfo {
   mojo_base.mojom.TimeTicks last_active;
 };
 
-// Information about a file selected by the user in the WebUI.
+// Information about a contextual input.
 struct SelectedFileInfo {
   // Name of the file.
   string file_name;
   // Mime type of the file.
   string mime_type;
+  // The data URL of the file if it is an image.
+  string? image_data_url;
+  // Whether the file is deletable from the UI.
+  bool is_deletable;
   // Time that the file was selected at.
   mojo_base.mojom.JSTime selection_time;
 };
@@ -315,4 +319,8 @@ interface Page {
 
   // Notifies the page that the tab strip has changed.
   OnTabStripChanged();
+
+  // Adds a contextual input to the UI.
+  AddFileContext(mojo_base.mojom.UnguessableToken token,
+                 SelectedFileInfo file_info);
 };

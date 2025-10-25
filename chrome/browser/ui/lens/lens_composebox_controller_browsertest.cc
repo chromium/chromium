@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/lens/test_lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_composebox_user_action.h"
@@ -39,6 +40,36 @@
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace {
+
+class TestLensComposeboxController : public lens::LensComposeboxController {
+ public:
+  TestLensComposeboxController(LensSearchController* lens_search_controller,
+                               Profile* profile)
+      : lens::LensComposeboxController(lens_search_controller, profile) {}
+
+  void BindComposebox(
+      mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
+      mojo::PendingRemote<composebox::mojom::Page> pending_page,
+      mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>
+          pending_searchbox_handler) override {
+    // Reset the receiver if it is already bound. This is necessary because
+    // some tests re-open the overlay, which triggers a new WebUI to bind to
+    // this same controller instance.
+    if (mock_searchbox_page_.receiver_.is_bound()) {
+      mock_searchbox_page_.receiver_.reset();
+    }
+    lens::LensComposeboxController::BindComposebox(
+        std::move(pending_handler), std::move(pending_page),
+        mock_searchbox_page_.BindAndGetRemote(),
+        std::move(pending_searchbox_handler));
+  }
+
+  MockSearchboxPage& mock_searchbox_page() { return mock_searchbox_page_; }
+
+ private:
+  testing::NiceMock<MockSearchboxPage> mock_searchbox_page_;
+};
 
 using State = LensOverlayController::State;
 
@@ -114,6 +145,13 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
   CreateLensOverlaySidePanelCoordinator() override {
     return std::make_unique<lens::TestLensOverlaySidePanelCoordinator>(this);
   }
+
+  std::unique_ptr<lens::LensComposeboxController>
+  CreateLensComposeboxController() override {
+    Profile* profile = Profile::FromBrowserContext(
+        GetTabInterface()->GetContents()->GetBrowserContext());
+    return std::make_unique<TestLensComposeboxController>(this, profile);
+  }
 };
 
 ui::UserDataFactory::ScopedOverride UseFakeLensSearchController() {
@@ -135,19 +173,18 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {
-            {lens::features::kLensOverlay,
-             /*params=*/{}},
-            {lens::features::kLensSearchAimM3, /*params=*/{}},
-            {lens::features::kLensOverlayContextualSearchbox,
-             {
-                 //  Updating the viewport each query can cause flakiness
-                 //  when checking the sequence ids.
-                 {"update-viewport-each-query", "false"},
-             }},
-            {lens::features::kLensAimSuggestions,
-             {{"lens-aim-suggestions-type", "Contextual"}}},
-        },
+        {{lens::features::kLensOverlay,
+          /*params=*/{}},
+         {lens::features::kLensSearchAimM3, /*params=*/{}},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {
+              //  Updating the viewport each query can cause flakiness
+              //  when checking the sequence ids.
+              {"update-viewport-each-query", "false"},
+          }},
+         {lens::features::kLensAimSuggestions,
+          {{"lens-aim-suggestions-type", "Contextual"}}},
+         {lens::features::kLensSearchReinvocationAffordance, {}}},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
 
     InProcessBrowserTest::SetUp();
@@ -805,4 +842,65 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                 ->GetLensSuggestInputs()
                 .ByteSizeLong(),
             static_cast<size_t>(0));
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       AddVisualSelectionContext) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  auto* overlay_controller = GetLensOverlayController();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Also need to run until the query controller has send all requests to avoid
+  // flakiness.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          lens_controller->lens_overlay_query_controller());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 1 &&
+           fake_query_controller->num_page_content_update_requests_sent() ==
+               1 &&
+           fake_query_controller->num_interaction_requests_sent() == 1;
+  }));
+
+  auto* composebox_controller = GetLensComposeboxController();
+  auto* test_composebox_controller =
+      static_cast<TestLensComposeboxController*>(composebox_controller);
+  ASSERT_TRUE(test_composebox_controller);
+  MockSearchboxPage& mock_searchbox_page =
+      test_composebox_controller->mock_searchbox_page();
+  const std::string thumbnail_uri = "data:image/png;base64,sometestdata";
+  // SelectedFileInfoPtr is a move-only type, so capture it in the lambda.
+  searchbox::mojom::SelectedFileInfoPtr captured_file_info;
+  EXPECT_CALL(mock_searchbox_page, AddFileContext(testing::_, testing::_))
+      .Times(1)
+      .WillOnce([&](const base::UnguessableToken&,
+                    searchbox::mojom::SelectedFileInfoPtr info) {
+        captured_file_info = std::move(info);
+      });
+  composebox_controller->AddVisualSelectionContext(thumbnail_uri,
+                                                   /*is_deletable=*/true);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !captured_file_info.is_null(); }));
+  ASSERT_EQ(captured_file_info->file_name, "Visual Selection");
+  ASSERT_EQ(captured_file_info->mime_type, "image/png");
+  ASSERT_EQ(captured_file_info->image_data_url, thumbnail_uri);
+  ASSERT_EQ(captured_file_info->is_deletable, true);
 }

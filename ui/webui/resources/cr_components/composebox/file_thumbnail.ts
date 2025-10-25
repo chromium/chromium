@@ -16,6 +16,7 @@ export interface ComposeboxFileThumbnailElement {
   $: {
     removeImgButton: HTMLElement,
     removePdfButton: HTMLElement,
+    removeTabButton: HTMLElement,
   };
 }
 
@@ -42,11 +43,13 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     name: '',
     type: '',
     objectUrl: null,
+    dataUrl: null,
     uuid: '',
     status: FileUploadStatus.kNotUploaded,
     url: null,
     file: null,
     tabId: null,
+    isDeletable: true,
   };
 
   protected deleteFile_() {

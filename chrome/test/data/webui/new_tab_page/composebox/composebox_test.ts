@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {SelectedFileInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -23,6 +24,7 @@ enum Attributes {
 
 const ADD_FILE_CONTEXT_FN = 'addFileContext';
 const ADD_TAB_CONTEXT_FN = 'addTabContext';
+const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
 
 function generateZeroId(): string {
   // Generate 128 bit unique identifier.
@@ -599,6 +601,88 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
 
     assertTrue(event.defaultPrevented);
+  });
+
+  test('set and delete visual selection thumbnail', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Initially, carousel is not shown.
+    assertFalse(composeboxElement.hasAttribute('show-file-carousel_'));
+
+    // Set a thumbnail.
+    const thumbnailUrl = 'data:image/png;base64,sometestdata';
+    searchboxCallbackRouterRemote.addFileContext(FAKE_TOKEN_STRING, {
+      fileName: 'Visual Selection',
+      mimeType: 'image/png',
+      imageDataUrl: thumbnailUrl,
+      isDeletable: true,
+      selectionTime: new Date(),
+    } as SelectedFileInfo);
+    await microtasksFinished();
+
+    // Assert thumbnail is shown.
+    assertTrue(composeboxElement.hasAttribute('show-file-carousel_'));
+    const fileCarousel = composeboxElement.$.context.$.carousel;
+    assertTrue(!!fileCarousel);
+    await microtasksFinished();
+
+    assertEquals(fileCarousel.files.length, 1);
+    assertDeepEquals(fileCarousel.files[0]!.uuid, FAKE_TOKEN_STRING);
+    assertEquals(fileCarousel.files[0]!.dataUrl, thumbnailUrl);
+    assertTrue(fileCarousel.files[0]!.isDeletable);
+
+    // Delete the thumbnail.
+    const fileThumbnail =
+        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+    assertTrue(!!fileThumbnail);
+
+    const removeImgButton =
+        fileThumbnail.shadowRoot.querySelector<HTMLElement>('#removeImgButton');
+    assertTrue(!!removeImgButton);
+    removeImgButton.click();
+    await microtasksFinished();
+
+    // Assert thumbnail is removed.
+    assertEquals(searchboxHandler.getCallCount('deleteContext'), 1);
+    const [idArg] = searchboxHandler.getArgs('deleteContext');
+    assertEquals(idArg, FAKE_TOKEN_STRING);
+    // The carousel is removed from the DOM when there are no files, so
+    // assert its absence.
+    assertFalse(
+        !!composeboxElement.$.context.shadowRoot.querySelector('#carousel'));
+    assertFalse(composeboxElement.hasAttribute('show-file-carousel_'));
+  });
+
+  test('setVisualSelectionThumbnail not deletable', async () => {
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Set a thumbnail that is not deletable.
+    const thumbnailUrl = 'data:image/png;base64,sometestdata';
+    searchboxCallbackRouterRemote.addFileContext(FAKE_TOKEN_STRING, {
+      fileName: 'Visual Selection',
+      mimeType: 'image/png',
+      imageDataUrl: thumbnailUrl,
+      isDeletable: false,
+      selectionTime: new Date(),
+    } as SelectedFileInfo);
+    await microtasksFinished();
+
+    // Assert thumbnail is shown.
+    assertTrue(composeboxElement.hasAttribute('show-file-carousel_'));
+    const fileCarousel = composeboxElement.$.context.$.carousel;
+    assertTrue(!!fileCarousel);
+    assertEquals(fileCarousel.files.length, 1);
+    assertFalse(fileCarousel.files[0]!.isDeletable);
+
+    // Assert delete button is not present.
+    const fileThumbnail =
+        fileCarousel.shadowRoot.querySelector('cr-composebox-file-thumbnail');
+    assertTrue(!!fileThumbnail);
+    const removeButton =
+        fileThumbnail.shadowRoot.querySelector<HTMLElement>('#removeImgButton');
+    assertEquals(null, removeButton);
   });
 
   test('image upload button clicks file input', async () => {

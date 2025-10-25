@@ -17,6 +17,13 @@
   padding-inline-start: var(--context-carousel-inline-start-spacing, 50px);
 }
 
+#carousel.top {
+  margin: 0;
+  position: absolute;
+  top: 14px;
+  width: auto;
+}
+
 .context-menu-container {
   align-items: center;
   display: flex;

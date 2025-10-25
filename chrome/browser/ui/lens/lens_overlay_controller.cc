@@ -648,7 +648,7 @@ void LensOverlayController::IssueTranslateFullPageRequest(
     const std::string& source_language,
     const std::string& target_language) {
   // Remove the selection thumbnail, if it exists.
-  GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
+  lens_search_controller_->ClearVisualSelectionThumbnail();
   ClearRegionSelection();
   // Set the coachmark text.
   if (preselection_widget_) {
@@ -1197,7 +1197,7 @@ void LensOverlayController::ClearRegionSelection() {
   if (!IsOverlayShowing()) {
     return;
   }
-  GetLensSearchboxController()->SetSearchboxThumbnail("");
+  lens_search_controller_->ClearVisualSelectionThumbnail();
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
   initialization_data_->selected_region_.reset();
   initialization_data_->selected_region_bitmap_.reset();
@@ -1759,7 +1759,7 @@ void LensOverlayController::InitializeOverlayUI(
   page_->ShouldShowContextualSearchBox(!is_side_panel_open);
   // If should show CSB, and the CSB viewport thumbnail is enabled, send it now.
   if (lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail()) {
-    GetLensSearchboxController()->HandleThumbnailCreatedBitmap(
+    lens_search_controller_->HandleThumbnailCreatedBitmap(
         init_data.initial_screenshot_);
   }
 
@@ -2263,7 +2263,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
       std::make_pair(selection_start_index, selection_end_index);
 
   GetLensSearchboxController()->SetSearchboxInputText(query);
-  GetLensSearchboxController()->SetSearchboxThumbnail(std::string());
+  lens_search_controller_->ClearVisualSelectionThumbnail();
 
   lens_overlay_query_controller_->SendTextOnlyQuery(
       query_start_time, query, lens_selection_type_,

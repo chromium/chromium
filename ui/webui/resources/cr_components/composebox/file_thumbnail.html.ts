@@ -17,38 +17,38 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
         <cr-composebox-tab-favicon .url="${this.file.url.url}" .size="${24}">
         </cr-composebox-tab-favicon>
         <div class="overlay">
-          <cr-icon-button
+          ${this.file.isDeletable ? html`<cr-icon-button
               id="removeTabButton"
               class="remove-button"
               iron-icon="cr:clear"
               title="${this.file.name}"
               aria-label="${this.deleteFileButtonTitle}"
               @click="${this.deleteFile_}">
-          </cr-icon-button>
+          </cr-icon-button>`: ''}
         </div>
       </div>
       <p class="title">${this.file.name}</p>
       <div class="chip-overlay"></div>
     </div>
-  ` : this.file.objectUrl ? html`
+  ` : (this.file.objectUrl || this.file.dataUrl) ? html`
     <div id="imgChip">
-      ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
-        <img class="img-thumbnail"
-          src="${this.file.objectUrl}"
-          aria-label="${this.file.name}">
-      ` : html`
+      ${this.file.status !== FileUploadStatus.kUploadSuccessful ? html`
         <svg role="image" class="spinner" viewBox="0 0 100 100">
           <circle class="spinner-circle" cx="50" cy="50" r="40" />
         </svg>
+      ` : html`
+        <img class="img-thumbnail"
+          src="${this.file.objectUrl || this.file.dataUrl}"
+          aria-label="${this.file.name}">
       `}
-      <cr-icon-button
+      ${this.file.isDeletable ? html`<cr-icon-button
           class="img-overlay"
           id="removeImgButton"
           iron-icon="cr:clear"
           title="${this.file.name}"
           aria-label="${this.deleteFileButtonTitle}"
           @click="${this.deleteFile_}">
-      </cr-icon-button>
+      </cr-icon-button>`: ''}
     </div>` : html`
     <div id="pdfChip" class="chip">
       <div id="pdfThumbnail" class="thumbnail">
@@ -61,14 +61,14 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </svg>
         `}
         <div class="overlay">
-          <cr-icon-button
+          ${this.file.isDeletable ? html`<cr-icon-button
               id="removePdfButton"
               class="remove-button"
               iron-icon="cr:clear"
               title="${this.file.name}"
               aria-label="${this.deleteFileButtonTitle}"
               @click="${this.deleteFile_}">
-          </cr-icon-button>
+          </cr-icon-button>`: ''}
         </div>
       </div>
       <p class="title" id="pdfTitle">${this.file.name}</p>

@@ -168,6 +168,10 @@
   max-height: 254px;
 }
 
+:host([is-collapsible][expanded_][show-file-carousel_][carousel-on-top_]) #composebox {
+  min-height: calc(136px + 52px);
+}
+
 #inputContainer {
   box-sizing: border-box;
   display: flex;
@@ -645,6 +649,10 @@
   margin-top: 20px;
   position: absolute;
   transform: translate(-50%);
+}
+
+:host([expanded_][show-file-carousel_][carousel-on-top_]) #inputContainer {
+  padding-top: 52px;
 }
 
 .carousel-divider {

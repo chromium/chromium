@@ -11,9 +11,11 @@ export interface ComposeboxFile {
   uuid: UnguessableToken;
   name: string;
   objectUrl: string|null;
+  dataUrl: string|null;
   type: string;
   status: FileUploadStatus;
   url: Url|null;
   file: File|null;
   tabId: number|null;
+  isDeletable: boolean;
 }

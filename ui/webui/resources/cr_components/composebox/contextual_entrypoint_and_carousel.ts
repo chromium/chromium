@@ -121,6 +121,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         type: Boolean,
       },
       recentTabInContext_: {type: Boolean},
+      carouselOnTop_: {type: Boolean},
     };
   }
 
@@ -128,6 +129,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor realboxLayoutMode: string = '';
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
+  accessor carouselOnTop_: boolean = false;
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
@@ -223,7 +225,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
           },
         }));
       } else {
-        this.addFileContext_([file.file!], file.objectUrl !== null);
+        this.addFileContext_(
+            [file.file!], file.objectUrl !== null || file.dataUrl !== null);
       }
     }
   }
@@ -279,8 +282,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   resetContextFiles() {
-    this.files_ = new Map();
-    this.addedTabsIds_ = new Set();
+    // Only keep files that are not deletable.
+    const undeletableFiles =
+        Array.from(this.files_.values()).filter(file => !file.isDeletable);
+
+    if (undeletableFiles.length === this.files_.size) {
+      return;
+    }
+
+    this.files_ = new Map(undeletableFiles.map(file => [file.uuid, file]));
+    this.addedTabsIds_ = new Set(
+        undeletableFiles.filter(file => file.tabId).map(file => file.tabId!));
   }
 
   resetModes() {
@@ -309,6 +321,16 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       }
     }
     return false;
+  }
+
+  hasDeletableFiles() {
+    return Array.from(this.files_.values()).some(file => file.isDeletable);
+  }
+
+  onFileContextAdded(file: ComposeboxFile) {
+    const newFiles = new Map(this.files_);
+    newFiles.set(file.uuid, file);
+    this.files_ = newFiles;
   }
 
   protected onDeleteFile_(e: CustomEvent) {

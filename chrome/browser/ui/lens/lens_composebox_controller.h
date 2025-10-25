@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,12 +34,12 @@ class LensComposeboxController {
   explicit LensComposeboxController(
       LensSearchController* lens_search_controller,
       Profile* profile);
-  ~LensComposeboxController();
+  virtual ~LensComposeboxController();
 
   // This method is used to set up communication between this instance and the
   // compose box WebUI. This is called by the WebUIController when the WebUI is
   // executing javascript and has bound the handler.
-  void BindComposebox(
+  virtual void BindComposebox(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
@@ -66,6 +67,10 @@ class LensComposeboxController {
   // Shows the Lens selection overlay. A no-op if it is already open.
   void ShowLensSelectionOverlay();
 
+  // Adds the visual selection context to the compose box context carousel.
+  void AddVisualSelectionContext(const std::string& image_data_url,
+                                 bool is_deletable);
+
   // Returns the session metrics logger for the current Lens session.
   LensSessionMetricsLogger* GetSessionMetricsLogger();
 
@@ -84,10 +89,29 @@ class LensComposeboxController {
       const lens::proto::LensOverlaySuggestInputs& suggest_inputs);
 
  private:
+  // A struct to hold the visual selection context.
+  struct VisualSelectionContext {
+    VisualSelectionContext(base::UnguessableToken id,
+                           searchbox::mojom::SelectedFileInfoPtr file_info);
+    ~VisualSelectionContext();
+
+    VisualSelectionContext(VisualSelectionContext&&);
+    VisualSelectionContext& operator=(VisualSelectionContext&&);
+
+    base::UnguessableToken id;
+    searchbox::mojom::SelectedFileInfoPtr file_info;
+  };
+
   // Builds a SubmitQuery ClientToAimMessage message to send to the side panel
   // remote UI.
   lens::ClientToAimMessage BuildSubmitQueryMessage(
       const std::string& query_text);
+
+  // Creates a SelectedFileInfo struct to send to the composebox for the visual
+  // selection context.
+  searchbox::mojom::SelectedFileInfoPtr BuildVisualSelectionFileInfo(
+      const std::string& image_data_url,
+      bool is_deletable);
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;
@@ -110,6 +134,10 @@ class LensComposeboxController {
   // whenever new data is available (i.e. after an objects or interaction
   // response is received)
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
+
+  // The current visual selection context image data URI set by the overlay if
+  // any.
+  std::optional<VisualSelectionContext> vsc_image_data_;
 };
 }  // namespace lens
 

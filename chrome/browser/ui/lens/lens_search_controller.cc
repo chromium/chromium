@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
@@ -40,15 +41,36 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/sharing_message/features.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace {
+// The size of the thumbnail to send to the searchbox.
+inline constexpr float kMaxThumbnailWidth = 100.0f;
+inline constexpr float kMaxThumbnailHeight = 100.0f;
+
 void CheckInitialized(bool initialized) {
   CHECK(initialized)
       << "The LensSearchController has not been initialized. Initialize() must "
          "be called before using the LensSearchController.";
+}
+
+std::string ScaleBitmapAndEncodeToDataUri(SkBitmap bitmap) {
+  float scale = std::min(kMaxThumbnailWidth / bitmap.width(),
+                         kMaxThumbnailHeight / bitmap.height());
+  int target_height = static_cast<int>(bitmap.height() * scale);
+  int target_width = static_cast<int>(bitmap.width() * scale);
+
+  SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
+      bitmap, skia::ImageOperations::RESIZE_BEST, target_width, target_height);
+  if (scaled_bitmap.drawsNothing()) {
+    return std::string();
+  }
+
+  return skia::EncodePngAsDataUri(scaled_bitmap.pixmap());
 }
 
 }  // namespace
@@ -491,6 +513,10 @@ std::optional<std::string> LensSearchController::GetPageTitle() {
   return page_title;
 }
 
+void LensSearchController::ClearVisualSelectionThumbnail() {
+  lens_searchbox_controller_->SetSearchboxThumbnail("");
+}
+
 base::WeakPtr<LensSearchController> LensSearchController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -695,6 +721,14 @@ void LensSearchController::NotifyOverlayOpened() {
   lens_session_metrics_logger_->RecordInvocation();
 }
 
+void LensSearchController::OnThumbnailProcessed(
+    const std::string& thumbnail_uri) {
+  lens_searchbox_controller_->SetSearchboxThumbnail(thumbnail_uri);
+  lens_composebox_controller_->AddVisualSelectionContext(
+      thumbnail_uri,
+      /*is_deletable=*/false);
+}
+
 void LensSearchController::CloseLensPart2(
     lens::LensOverlayDismissalSource dismissal_source) {
   // Let the controllers know to cleanup.
@@ -803,11 +837,37 @@ void LensSearchController::HandlePageContentUploadProgress(uint64_t position,
   lens_overlay_controller_->HandlePageContentUploadProgress(position, total);
 }
 
+void LensSearchController::HandleThumbnailCreatedBitmap(
+    const SkBitmap& thumbnail) {
+  if (!lens::features::GetVisualSelectionUpdatesEnableCsbThumbnail() ||
+      thumbnail.drawsNothing()) {
+    return;
+  }
+
+  // SkBitmap is ref-counted, so a copy is cheap and safe for task posting.
+  SkBitmap thumbnail_copy = thumbnail;
+
+  // Downscale the bitmap to a size that is appropriate for the searchbox.
+  // Keeping it full resolution will cause stuttering when the UI opens. Push
+  // off the main thread to avoid blocking the overlay initialization.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ScaleBitmapAndEncodeToDataUri, std::move(thumbnail_copy)),
+      base::BindOnce(&LensSearchController::OnThumbnailProcessed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void LensSearchController::HandleThumbnailCreated(
     const std::string& thumbnail_bytes,
     const SkBitmap& region_bitmap) {
   lens_overlay_controller_->HandleRegionBitmapCreated(region_bitmap);
-  lens_searchbox_controller_->HandleThumbnailCreated(thumbnail_bytes);
+
+  std::string thumbnail_uri =
+      webui::MakeDataURIForImage(base::as_byte_span(thumbnail_bytes), "jpeg");
+  lens_searchbox_controller_->SetSearchboxThumbnail(thumbnail_uri);
+  lens_composebox_controller_->AddVisualSelectionContext(
+      thumbnail_uri,
+      /*is_deletable=*/false);
 }
 
 void LensSearchController::TabForegrounded(tabs::TabInterface* tab) {

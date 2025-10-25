@@ -70,6 +70,10 @@ class MockSearchboxPage : public searchbox::mojom::Page {
                composebox_query::mojom::FileUploadStatus,
                std::optional<composebox_query::mojom::FileUploadErrorType>));
   MOCK_METHOD(void, OnTabStripChanged, ());
+  MOCK_METHOD(void,
+              AddFileContext,
+              (const base::UnguessableToken&,
+               searchbox::mojom::SelectedFileInfoPtr));
 };
 
 class MockAutocompleteController : public AutocompleteController {

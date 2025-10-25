@@ -20,7 +20,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -138,11 +138,15 @@ export class ComposeboxElement extends I18nMixinLit
         type: String,
         reflect: true,
       },
+      carouselOnTop_: {
+        type: Boolean,
+      },
     };
   }
 
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor realboxLayoutMode: string = '';
+  accessor carouselOnTop_: boolean = false;
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
@@ -211,14 +215,18 @@ export class ComposeboxElement extends I18nMixinLit
           this.onContextualInputStatusChanged_.bind(this)),
       this.searchboxCallbackRouter_.onTabStripChanged.addListener(
           this.refreshTabSuggestions_.bind(this)),
+      this.searchboxCallbackRouter_.addFileContext.addListener(
+          this.addFileContextFromBrowser_.bind(this)),
     ];
 
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.computeSubmitEnabled_();
     });
-    this.eventTracker_.add(this.$.context, 'on-context-files-changed',
+    this.eventTracker_.add(
+        this.$.context, 'on-context-files-changed',
         (e: CustomEvent<{files: number}>) => {
           this.contextFilesSize_ = e.detail.files;
+          this.showFileCarousel_ = this.contextFilesSize_ > 0;
           this.submitEnabled_ = this.computeSubmitEnabled_();
         });
     this.$.input.focus();
@@ -394,7 +402,8 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private computeSubmitEnabled_() {
-    return this.input_.trim().length > 0 || this.contextFilesSize_ > 0;
+    return this.input_.trim().length > 0 ||
+        (this.contextFilesSize_ > 0 && this.$.context.hasDeletableFiles());
   }
 
   protected shouldShowSuggestionActivityLink_() {
@@ -439,27 +448,50 @@ export class ComposeboxElement extends I18nMixinLit
       const {token} = await this.searchboxHandler_.addFileContext(
           {
             fileName: file.name,
+            imageDataUrl: null,
             mimeType: file.type,
+            isDeletable: true,
             selectionTime: new Date(),
           },
           bigBuffer);
 
       const attachment: ComposeboxFile = {
-          uuid: token,
-          name: file.name,
-          objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
-          type: file.type,
-          status: FileUploadStatus.kNotUploaded,
-          url: null,
-          file: file,
-          tabId: null,
-        };
+        uuid: token,
+        name: file.name,
+        dataUrl: null,
+        objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
+        type: file.type,
+        status: FileUploadStatus.kNotUploaded,
+        url: null,
+        file: file,
+        tabId: null,
+        isDeletable: true,
+      };
       composeboxFiles.set(token, attachment);
       const announcer = getAnnouncerInstance();
       announcer.announce(this.i18n('composeboxFileUploadStartedText'));
     }
     e.detail.onContextAdded(composeboxFiles);
     this.$.input.focus();
+  }
+
+  protected addFileContextFromBrowser_(
+      uuid: UnguessableToken, fileInfo: SelectedFileInfo) {
+    const attachment: ComposeboxFile = {
+      uuid: uuid,
+      name: fileInfo.fileName,
+      dataUrl: fileInfo.imageDataUrl ?? null,
+      objectUrl: null,
+      type: fileInfo.imageDataUrl ? 'image' : 'pdf',
+      status: fileInfo.imageDataUrl ? FileUploadStatus.kUploadSuccessful :
+                                      FileUploadStatus.kNotUploaded,
+      url: null,
+      file: null,
+      tabId: null,
+      isDeletable: fileInfo.isDeletable,
+    };
+
+    this.$.context.onFileContextAdded(attachment);
   }
 
   protected async addTabContext_(e: CustomEvent<{
@@ -474,12 +506,14 @@ export class ComposeboxElement extends I18nMixinLit
     const attachment: ComposeboxFile = {
       uuid: token,
       name: e.detail.title,
+      dataUrl: null,
       objectUrl: null,
       type: 'tab',
       status: FileUploadStatus.kNotUploaded,
       url: e.detail.url,
       file: null,
       tabId: e.detail.id,
+      isDeletable: true,
     };
     e.detail.onContextAdded(attachment);
     this.$.input.focus();

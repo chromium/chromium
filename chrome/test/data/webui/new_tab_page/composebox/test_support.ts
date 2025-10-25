@@ -12,11 +12,13 @@ export function createComposeboxFile(
         name: `file${index}`,
         type: 'application/pdf',
         objectUrl: null,
+        dataUrl: null,
         uuid: `${index}`,
         status: FileUploadStatus.kUploadSuccessful,
         url: null,
         file: null,
         tabId: null,
+        isDeletable: true,
       },
       override);
 }

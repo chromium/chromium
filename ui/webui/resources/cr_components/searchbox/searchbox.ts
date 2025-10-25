@@ -1032,15 +1032,17 @@ export class SearchboxElement extends SearchboxElementBase {
     const composeboxFiles: ComposeboxFile[] = [];
     for (const file of e.detail.files) {
       const attachment: ComposeboxFile = {
-          uuid: 'fake-uuid',
-          name: file.name,
-          objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
-          type: file.type,
-          status: FileUploadStatus.kNotUploaded,
-          url: null,
-          file: file,
-          tabId: null,
-        };
+        uuid: 'fake-uuid',
+        name: file.name,
+        dataUrl: null,
+        objectUrl: e.detail.isImage ? URL.createObjectURL(file) : null,
+        type: file.type,
+        status: FileUploadStatus.kNotUploaded,
+        url: null,
+        file: file,
+        tabId: null,
+        isDeletable: true,
+      };
       composeboxFiles.push(attachment);
     }
     this.openComposebox_(composeboxFiles);
@@ -1053,12 +1055,14 @@ export class SearchboxElement extends SearchboxElementBase {
     const attachment: ComposeboxFile = {
       uuid: 'fake-uuid',
       name: e.detail.title,
+      dataUrl: null,
       objectUrl: null,
       type: 'tab',
       status: FileUploadStatus.kNotUploaded,
       url: e.detail.url,
       file: null,
       tabId: e.detail.id,
+      isDeletable: true,
     };
     this.openComposebox_([attachment]);
   }

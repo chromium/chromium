@@ -208,6 +208,36 @@ TEST_F(RealboxHandlerTest, GetPlaceholderConfig) {
   ASSERT_EQ(config->fade_text_animation_duration.InMilliseconds(), 250u);
 }
 
+TEST_F(RealboxHandlerTest, AddFileContext) {
+  const auto token = base::UnguessableToken::Create();
+  const std::string image_data_url = "data:image/png;base64,sometestdata";
+  const bool is_deletable = true;
+
+  // SelectedFileInfoPtr is a move-only type, so capture it in the lambda.
+  searchbox::mojom::SelectedFileInfoPtr captured_file_info;
+  EXPECT_CALL(page_, AddFileContext(token, testing::_))
+      .Times(1)
+      .WillOnce([&](const base::UnguessableToken&,
+                    searchbox::mojom::SelectedFileInfoPtr info) {
+        captured_file_info = std::move(info);
+      });
+
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "Visual Selection";
+  file_info->mime_type = "image/png";
+  file_info->image_data_url = image_data_url;
+  file_info->is_deletable = is_deletable;
+  handler_->AddFileContextFromBrowser(token, file_info.Clone());
+  page_.FlushForTesting();
+
+  ASSERT_TRUE(captured_file_info);
+  ASSERT_EQ(captured_file_info->file_name, file_info->file_name);
+  ASSERT_EQ(captured_file_info->mime_type, file_info->mime_type);
+  ASSERT_EQ(captured_file_info->image_data_url, file_info->image_data_url);
+  ASSERT_EQ(captured_file_info->is_deletable, file_info->is_deletable);
+}
+
 class LensSearchboxHandlerTest : public SearchboxHandlerTest {
  public:
   LensSearchboxHandlerTest() = default;

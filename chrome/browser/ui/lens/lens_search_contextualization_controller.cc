@@ -468,7 +468,7 @@ void LensSearchContextualizationController::UpdatePageContext(
         !lens_search_controller_->lens_overlay_controller()
              ->IsOverlayInitializing()) {
       lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
-      GetSearchboxController()->HandleThumbnailCreatedBitmap(bitmap);
+      lens_search_controller_->HandleThumbnailCreatedBitmap(bitmap);
     }
   }
   last_retrieved_most_visible_page_ = most_visible_page;
@@ -984,7 +984,7 @@ void LensSearchContextualizationController::
       pdf_current_page, GetUiScaleFactor(), base::TimeTicks::Now());
 
   // Pass the thumbnail to the searchbox controller.
-  GetSearchboxController()->HandleThumbnailCreatedBitmap(bitmap_to_send);
+  lens_search_controller_->HandleThumbnailCreatedBitmap(bitmap_to_send);
 
   state_ = State::kActive;
   TryUpdatePageContextualization(std::move(callback));

@@ -68,6 +68,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
     <cr-composebox-file-carousel
       part="cr-composebox-file-carousel"
       id="carousel"
+      class="${this.carouselOnTop_ ? 'top' : ''}"
       .files=${Array.from(this.files_.values())}
       @delete-file=${this.onDeleteFile_}>
     </cr-composebox-file-carousel> ` : ''}
@@ -82,7 +83,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   ` : ''}
   ${this.realboxLayoutMode === 'TallBottomContext' || this.realboxLayoutMode === '' ? html`
     ${this.contextMenuEnabled_ ? contextMenu : html`
-      <div id="uploadContainer" class="icon-fade">
+      <div part="upload-container" id="uploadContainer" class="icon-fade">
           <cr-icon-button
               class="upload-icon no-overlap"
               id="imageUploadButton"
