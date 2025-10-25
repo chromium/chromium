@@ -15,9 +15,42 @@ source_set("coordinator") {
 
   deps = [
     "//base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//components/sync_preferences/cross_device_pref_tracker",
     "//ios/chrome/app",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/synced_set_up/ui",
+    "//ui/base",
   ]
 
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "synced_set_up_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/synced_set_up/ui",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
 }

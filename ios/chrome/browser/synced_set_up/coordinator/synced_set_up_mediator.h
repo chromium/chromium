@@ -7,18 +7,36 @@
 
 #import <Foundation/Foundation.h>
 
+class AuthenticationService;
+class ChromeAccountManagerService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 namespace sync_preferences {
 class CrossDevicePrefTracker;
 }  // namespace sync_preferences
+
+@protocol SyncedSetUpConsumer;
 
 // Mediator responsible for querying and applying tracked prefs on a synced
 // device.
 @interface SyncedSetUpMediator : NSObject
 
-- (instancetype)initWithPrefTracker:
-    (sync_preferences::CrossDevicePrefTracker*)tracker;
+// Consumer to display user details (name, avatar) on the Synced Set Up welcome
+// screen.
+@property(nonatomic, weak) id<SyncedSetUpConsumer> consumer;
+
+- (instancetype)
+      initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
+    authenticationService:(AuthenticationService*)authenticationService
+    accountManagerService:(ChromeAccountManagerService*)accountManagerService
+          identityManager:(signin::IdentityManager*)identityManager;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 

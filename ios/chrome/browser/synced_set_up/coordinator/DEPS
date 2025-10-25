@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  # keep-sorted end
+]
