@@ -38,6 +38,27 @@ void SyntheticTrialRegistry::RemoveObserver(SyntheticTrialObserver* observer) {
 }
 
 void SyntheticTrialRegistry::RegisterExternalExperiments(
+    base::PassKey<UmaSessionStatsExternalExperimentRegistrar> pass_key,
+    const std::vector<int>& experiment_ids,
+    SyntheticTrialRegistry::OverrideMode mode) {
+  RegisterExternalExperimentsInternal(experiment_ids, mode);
+}
+
+void SyntheticTrialRegistry::RegisterExternalExperimentsForTesting(
+    const std::vector<int>& experiment_ids,
+    SyntheticTrialRegistry::OverrideMode mode) {
+  RegisterExternalExperimentsInternal(experiment_ids, mode);
+}
+
+std::vector<ActiveGroupId>
+SyntheticTrialRegistry::GetCurrentSyntheticFieldTrialsForTest() const {
+  CHECK_IS_TEST();
+  std::vector<ActiveGroupId> synthetic_trials;
+  GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(), &synthetic_trials);
+  return synthetic_trials;
+}
+
+void SyntheticTrialRegistry::RegisterExternalExperimentsInternal(
     const std::vector<int>& experiment_ids,
     SyntheticTrialRegistry::OverrideMode mode) {
   base::FieldTrialParams params;
@@ -70,8 +91,9 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     const std::string experiment_id_str = base::NumberToString(experiment_id);
     const std::string_view study_name =
         GetStudyNameForExpId(params, experiment_id_str);
-    if (study_name.empty())
+    if (study_name.empty()) {
       continue;
+    }
 
     const uint32_t trial_hash = HashName(study_name);
     // If existing ids shouldn't be overridden, skip entries whose study names
@@ -110,14 +132,6 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
   if (!trials_updated.empty() || !trials_removed.empty()) {
     NotifySyntheticTrialObservers(trials_updated, trials_removed);
   }
-}
-
-std::vector<ActiveGroupId>
-SyntheticTrialRegistry::GetCurrentSyntheticFieldTrialsForTest() const {
-  CHECK_IS_TEST();
-  std::vector<ActiveGroupId> synthetic_trials;
-  GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(), &synthetic_trials);
-  return synthetic_trials;
 }
 
 void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(
@@ -178,8 +192,9 @@ void SyntheticTrialRegistry::GetSyntheticFieldTrialsOlderThan(
   base::FieldTrial::ActiveGroups active_groups;
   for (const auto& entry : synthetic_trial_groups_) {
     if (entry.start_time() <= time ||
-        entry.annotation_mode() == SyntheticTrialAnnotationMode::kCurrentLog)
+        entry.annotation_mode() == SyntheticTrialAnnotationMode::kCurrentLog) {
       active_groups.push_back(entry.active_group());
+    }
   }
 
   GetFieldTrialActiveGroupIdsForActiveGroups(suffix, active_groups,

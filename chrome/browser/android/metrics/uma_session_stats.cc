@@ -71,6 +71,22 @@ enum class ChromeActivityCounter : int32_t {
 };
 }  // namespace
 
+// Provides access control to the RegisterExternalExperiments() API via a pass
+// key. Note: This is intentionally not exposed in the header since it should
+// only be used by JNI_UmaSessionStats_RegisterExternalExperiment().
+class UmaSessionStatsExternalExperimentRegistrar {
+ public:
+  static void RegisterExternalExperiments(
+      const std::vector<int>& experiment_ids,
+      variations::SyntheticTrialRegistry::OverrideMode override_mode) {
+    g_browser_process->metrics_service()
+        ->GetSyntheticTrialRegistry()
+        ->RegisterExternalExperiments(
+            base::PassKey<UmaSessionStatsExternalExperimentRegistrar>(),
+            experiment_ids, override_mode);
+  }
+};
+
 void UmaSessionStats::UmaResumeSession(JNIEnv* env) {
   DCHECK(g_browser_process);
   if (++active_session_count_ == 1) {
@@ -94,8 +110,9 @@ void UmaSessionStats::UmaResumeSession(JNIEnv* env) {
 
     ukm::UkmService* ukm_service =
         g_browser_process->GetMetricsServicesManager()->GetUkmService();
-    if (ukm_service)
+    if (ukm_service) {
       ukm_service->OnAppEnterForeground();
+    }
 
     AndroidSessionDurationsServiceFactory::OnAppEnterForeground(
         session_time_tracker_.session_start_time());
@@ -120,8 +137,9 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env) {
     }
     ukm::UkmService* ukm_service =
         g_browser_process->GetMetricsServicesManager()->GetUkmService();
-    if (ukm_service)
+    if (ukm_service) {
       ukm_service->OnAppEnterBackground();
+    }
 
     AndroidSessionDurationsServiceFactory::OnAppEnterBackground(duration);
 
@@ -209,8 +227,9 @@ void UmaSessionStats::EmitAndResetCounters() {
 void UmaSessionStats::SessionTimeTracker::AccumulateBackgroundSessionTime() {
   // No time spent in background since the last call to
   // |AccumulateBackgroundSessionTime()|.
-  if (background_session_start_time_.is_null())
+  if (background_session_start_time_.is_null()) {
     return;
+  }
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta duration = now - background_session_start_time_;
@@ -220,8 +239,9 @@ void UmaSessionStats::SessionTimeTracker::AccumulateBackgroundSessionTime() {
 }
 
 void UmaSessionStats::SessionTimeTracker::ReportBackgroundSessionTime() {
-  if (background_session_accumulated_time_.is_zero())
+  if (background_session_accumulated_time_.is_zero()) {
     return;
+  }
 
   // This histogram is used in analysis to determine if an uploaded log
   // represents background activity. For this reason, this histogram may be
@@ -351,9 +371,8 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
           ? variations::SyntheticTrialRegistry::kOverrideExistingIds
           : variations::SyntheticTrialRegistry::kDoNotOverrideExistingIds;
 
-  g_browser_process->metrics_service()
-      ->GetSyntheticTrialRegistry()
-      ->RegisterExternalExperiments(experiment_ids, override_mode);
+  UmaSessionStatsExternalExperimentRegistrar::RegisterExternalExperiments(
+      experiment_ids, override_mode);
 }
 
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
