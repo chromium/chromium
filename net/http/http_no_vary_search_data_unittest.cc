@@ -27,6 +27,7 @@
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
@@ -1468,6 +1469,26 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(HttpNoVarySearchEmptyPickleTest, ReadEmptyPickle) {
   base::Pickle pickle;
   EXPECT_EQ(ReadValueFromPickle<HttpNoVarySearchData>(pickle), std::nullopt);
+}
+
+TEST(HttpNoVarySearchDataTest, AbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      // Two identical objects.
+      HttpNoVarySearchData::CreateFromNoVaryParams({"a", "b"}, true),
+      HttpNoVarySearchData::CreateFromNoVaryParams({"a", "b"}, true),
+      // Order of params shouldn't matter as they are stored in a flat_set.
+      HttpNoVarySearchData::CreateFromNoVaryParams({"b", "a"}, true),
+      // Different objects.
+      HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, true),
+      HttpNoVarySearchData::CreateFromNoVaryParams({"a", "b"}, false),
+      HttpNoVarySearchData::CreateFromVaryParams({"a", "b"}, true),
+      HttpNoVarySearchData::CreateFromVaryParams({"a", "b"}, false),
+      HttpNoVarySearchData::CreateFromVaryParams({"c"}, true),
+      // Object with only vary_on_key_order set to false.
+      HttpNoVarySearchData::CreateFromNoVaryParams({}, false),
+      // Object with only vary_params set.
+      HttpNoVarySearchData::CreateFromVaryParams({"a"}, true),
+  }));
 }
 
 }  // namespace
