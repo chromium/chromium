@@ -43,8 +43,9 @@
 
 // Called when the logo is downloaded or failed to be downloaded.
 - (void)logoDownloaded:(const search_provider_logos::Logo*)logo
-        callbackReason:
-            (search_provider_logos::LogoCallbackReason)callbackReason;
+    searchEngineKeyword:(std::u16string)searchEngineKeyword
+         callbackReason:
+             (search_provider_logos::LogoCallbackReason)callbackReason;
 
 @end
 
@@ -69,9 +70,11 @@ enum ClickedLogoType {
 
 // Called when logo has been fetched.
 void OnLogoAvailable(SearchEngineLogoMediator* mediator,
+                     std::u16string search_engine_keyword,
                      search_provider_logos::LogoCallbackReason callback_reason,
                      const std::optional<search_provider_logos::Logo>& logo) {
   [mediator logoDownloaded:(logo ? &logo.value() : nullptr)
+       searchEngineKeyword:search_engine_keyword
             callbackReason:callback_reason];
 }
 
@@ -220,7 +223,13 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  _defaultSearchProvider = _templateURLService->GetDefaultSearchProvider();
+  const TemplateURL* newDefaultSearchProvider =
+      _templateURLService->GetDefaultSearchProvider();
+  if (newDefaultSearchProvider == _defaultSearchProvider.get()) {
+    // Nothing to do since it is the same default search provider.
+    return;
+  }
+  _defaultSearchProvider = newDefaultSearchProvider;
   _logoService->SetCachedLogo(nullptr);
   self.containerView.doodleAltText = nil;
   if (search::DefaultSearchProviderIsGoogle(_templateURLService)) {
@@ -273,16 +282,20 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 }
 
 - (void)fetchLogoOrDoodle {
+  if (!_defaultSearchProvider || !_logoService) {
+    return;
+  }
   const search_provider_logos::Logo logo = _logoService->GetCachedLogo();
   if (!logo.image.empty()) {
     [self updateLogo:&logo animate:NO];
   }
   search_provider_logos::LogoCallbacks callbacks;
   __weak __typeof(self) weakSelf = self;
+  std::u16string searchEngineKeyword = _defaultSearchProvider->keyword();
   callbacks.on_cached_decoded_logo_available =
-      base::BindOnce(&OnLogoAvailable, weakSelf);
+      base::BindOnce(&OnLogoAvailable, weakSelf, searchEngineKeyword);
   callbacks.on_fresh_decoded_logo_available =
-      base::BindOnce(&OnLogoAvailable, weakSelf);
+      base::BindOnce(&OnLogoAvailable, weakSelf, searchEngineKeyword);
   _logoService->GetLogo(std::move(callbacks), false);
 }
 
@@ -411,10 +424,16 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 }
 
 - (void)logoDownloaded:(const search_provider_logos::Logo*)logo
-        callbackReason:
-            (search_provider_logos::LogoCallbackReason)callbackReason {
+    searchEngineKeyword:(std::u16string)searchEngineKeyword
+         callbackReason:
+             (search_provider_logos::LogoCallbackReason)callbackReason {
   if (!_logoService) {
     // The mediator was disconnected.
+    return;
+  }
+  if (_defaultSearchProvider->keyword() != searchEngineKeyword) {
+    // Ignore the logo/doodle fetch result, if it was triggered while the
+    // defaut search engine was updated.
     return;
   }
   switch (callbackReason) {
@@ -451,7 +470,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
   // Makes sure the logo is fetched again.
-  [self searchEngineChanged];
+  [self fetchLogoOrDoodle];
 }
 
 // Called when the doodle's appearance animation completes.

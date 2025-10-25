@@ -66,7 +66,7 @@ class SearchEngineLogoMediatorTest : public PlatformTest {
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
 
-    TemplateURLService* templateURLService =
+    TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     logo_service_ = static_cast<MockGoogleLogoService*>(
         GoogleLogoServiceFactory::GetForProfile(profile_.get()));
@@ -78,11 +78,48 @@ class SearchEngineLogoMediatorTest : public PlatformTest {
     EXPECT_CALL(*logo_service_, GetLogo(_, false));
     mediator_ = [[SearchEngineLogoMediator alloc]
               initWithWebState:web_state_.get()
-            templateURLService:templateURLService
+            templateURLService:template_url_service
                    logoService:logo_service_
         URLLoadingBrowserAgent:URLLoadingBrowserAgent
         sharedURLLoaderFactory:sharedURLLoaderFactory
                   offTheRecord:offTheRecord];
+
+    std::unique_ptr<search_engines::ChoiceScreenData> choice_screen_data =
+        template_url_service->GetChoiceScreenData();
+    const TemplateURL::OwnedTemplateURLVector& search_engines =
+        choice_screen_data->search_engines();
+    for (size_t i = 0; i < search_engines.size(); ++i) {
+      const std::unique_ptr<TemplateURL>& template_url = search_engines[i];
+      if (template_url->keyword() != google_keyword_) {
+        other_search_engine_keyword_ = template_url->keyword();
+        break;
+      }
+    }
+  }
+
+  void SelectSearchEngineWithKeyword(std::u16string keyword) {
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+    TemplateURL* selected_template_url = nullptr;
+    std::unique_ptr<search_engines::ChoiceScreenData> choice_screen_data =
+        template_url_service->GetChoiceScreenData();
+    search_engines::ChoiceScreenDisplayState display_state =
+        choice_screen_data->display_state();
+    const TemplateURL::OwnedTemplateURLVector& search_engines =
+        choice_screen_data->search_engines();
+    for (size_t i = 0; i < search_engines.size(); ++i) {
+      auto& template_url = search_engines[i];
+      if (template_url->keyword() == keyword) {
+        selected_template_url = template_url.get();
+        display_state.selected_engine_index = i;
+        break;
+      }
+    }
+    CHECK(selected_template_url);
+    template_url_service->SetUserSelectedDefaultSearchProvider(
+        selected_template_url,
+        search_engines::ChoiceMadeLocation::kChoiceScreen);
+    [mediator_ searchEngineChanged];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -93,6 +130,8 @@ class SearchEngineLogoMediatorTest : public PlatformTest {
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   raw_ptr<MockGoogleLogoService> logo_service_;
   SearchEngineLogoMediator* mediator_;
+  std::u16string google_keyword_ = u"google.com";
+  std::u16string other_search_engine_keyword_;
 };
 
 // Sanity check.
@@ -125,14 +164,19 @@ TEST_F(SearchEngineLogoMediatorTest, TestTapDoodle_InvalidSearchQuery) {
 
 // Verifies that the logo fetch is not restarted when the fetch is failed.
 TEST_F(SearchEngineLogoMediatorTest, TestFetchNotRestartedWhenFailed) {
-  // Expect one call, which will be "disabled".
+  // Set to other search engine.
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(testing::AtMost(1));
+  SelectSearchEngineWithKeyword(other_search_engine_keyword_);
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(0);
+
+  // Switch to Google search engine to trigger a doodle fetch.
   search_provider_logos::LogoCallback logo_callback;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
       .WillOnce([&logo_callback](search_provider_logos::LogoCallbacks callbacks,
                                  bool for_doodle) {
         logo_callback = std::move(callbacks.on_fresh_decoded_logo_available);
       });
-  [mediator_ searchEngineChanged];
+  SelectSearchEngineWithKeyword(google_keyword_);
   std::move(logo_callback)
       .Run(search_provider_logos::LogoCallbackReason::FAILED, std::nullopt);
   // Verify that the logo fetch is not restarted.
@@ -145,6 +189,12 @@ TEST_F(SearchEngineLogoMediatorTest, TestFetchNotRestartedWhenFailed) {
 
 // Verifies that the logo fetch is restarted when the fetch is canceled.
 TEST_F(SearchEngineLogoMediatorTest, TestFetchRestartedWhenCanceled) {
+  // Set to other search engine.
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(testing::AtMost(1));
+  SelectSearchEngineWithKeyword(other_search_engine_keyword_);
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(0);
+
+  // Switch to Google search engine to trigger a doodle fetch.
   // Expect one call, which will be "canceled".
   search_provider_logos::LogoCallback logo_callback;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
@@ -152,7 +202,7 @@ TEST_F(SearchEngineLogoMediatorTest, TestFetchRestartedWhenCanceled) {
                                  bool for_doodle) {
         logo_callback = std::move(callbacks.on_fresh_decoded_logo_available);
       });
-  [mediator_ searchEngineChanged];
+  SelectSearchEngineWithKeyword(google_keyword_);
   std::move(logo_callback)
       .Run(search_provider_logos::LogoCallbackReason::CANCELED, std::nullopt);
   // Verify that the logo fetch is restarted.
@@ -166,13 +216,18 @@ TEST_F(SearchEngineLogoMediatorTest, TestFetchRestartedWhenCanceled) {
 // Tests that there is no crash if the mediator is disconnected during a logo
 // fetch.
 TEST_F(SearchEngineLogoMediatorTest, TestDisconnectMediatorWhileFetching) {
+  // Set to other search engine.
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(testing::AtMost(1));
+  SelectSearchEngineWithKeyword(other_search_engine_keyword_);
+  EXPECT_CALL(*logo_service_, GetLogo(_, false)).Times(0);
+
   search_provider_logos::LogoCallback logo_callback;
   EXPECT_CALL(*logo_service_, GetLogo(_, false))
       .WillOnce([&logo_callback](search_provider_logos::LogoCallbacks callbacks,
                                  bool for_doodle) {
         logo_callback = std::move(callbacks.on_fresh_decoded_logo_available);
       });
-  [mediator_ searchEngineChanged];
+  SelectSearchEngineWithKeyword(google_keyword_);
   // Disconnect first, and then call the callback.
   [mediator_ disconnect];
   search_provider_logos::Logo logo;
