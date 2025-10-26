@@ -1212,7 +1212,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm',
-              'version': 'xZFDKoUqpbFvDNibf-P0R52qV-aaMBAQrqo04TI76iAC',
+              'version': 'm79zvEIX85vdy3-Ey_n9WlVU4UvawwSMuNHzLthsZIcC',
           },
       ],
       'condition': 'checkout_android',
