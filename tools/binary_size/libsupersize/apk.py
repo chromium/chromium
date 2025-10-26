@@ -186,21 +186,17 @@ def CreateArscSymbols(apk_spec):
       source_path = posixpath.join(models.APK_PREFIX_PATH, filename)
       overhead = len(arsc_data)
       package_id = None
-      seen_string_pool = False
       for inner_path, chunk in arsc_file.VisitPreOrder():
         sym_source_path = (f'{source_path}/{inner_path}'
                            if inner_path else source_path)
         if isinstance(chunk, arsc_parser.ArscResTablePackage):
           package_id = chunk.id
-        elif isinstance(chunk,
-                        arsc_parser.ArscStringPool) and not seen_string_pool:
-          # Dump only the main string pool. The other ones contain type names
-          # and entry names, which are not useful as individual strings.
-          seen_string_pool = True
+        elif isinstance(chunk, arsc_parser.ArscStringPool):
           prev_count = len(raw_symbols)
-          overhead -= _CreateStringSymbols(chunk, f'{sym_source_path}/strings',
-                                           raw_symbols)
-          logging.info('Created %d ARSC string pool symbols', len(raw_symbols) - prev_count)
+          overhead -= _CreateStringSymbols(
+              chunk, f'{sym_source_path}/{chunk.symbol_name()}', raw_symbols)
+          logging.info('Created %d ARSC string pool symbols for %s',
+                       len(raw_symbols) - prev_count, chunk.symbol_name())
         elif isinstance(chunk, arsc_parser.ArscResTableTypeSpec):
           metrics[f'{models.METRICS_COUNT}/{chunk.type_str}'] = (
               chunk.entry_count)

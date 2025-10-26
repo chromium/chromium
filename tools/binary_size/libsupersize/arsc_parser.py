@@ -436,7 +436,7 @@ class ArscStringPool(ArscChunk):
     })
 
   def symbol_name(self):
-    return f'STRING_POOL: {self.role}' if self.role else 'STRING_POOL'
+    return f'STRING_POOL_{self.role}' if self.role else 'STRING_POOL'
 
   @property
   @functools.lru_cache
