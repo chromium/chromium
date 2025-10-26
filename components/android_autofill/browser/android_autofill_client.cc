@@ -95,6 +95,10 @@ autofill::VotesUploader& AndroidAutofillClient::GetVotesUploader() {
   return votes_uploader_;
 }
 
+bool AndroidAutofillClient::HasPersonalDataManager() const {
+  return false;
+}
+
 autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
   NOTREACHED();
 }

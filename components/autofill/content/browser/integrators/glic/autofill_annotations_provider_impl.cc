@@ -204,6 +204,9 @@ void AutofillAnnotationsProviderImpl::AddAutofillInformation(
   }
 
   AutofillClient& client = autofill_driver->GetAutofillClient();
+  if (!client.HasPersonalDataManager()) {
+    return;
+  }
   const PersonalDataManager& pdm = client.GetPersonalDataManager();
 
   autofill_information->clear_fillable_data();

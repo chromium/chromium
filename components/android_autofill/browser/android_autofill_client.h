@@ -92,6 +92,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
   autofill::AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   autofill::VotesUploader& GetVotesUploader() override;
+  bool HasPersonalDataManager() const final;
   autofill::PersonalDataManager& GetPersonalDataManager() final;
   autofill::ValuablesDataManager* GetValuablesDataManager() override;
   autofill::EntityDataManager* GetEntityDataManager() override;

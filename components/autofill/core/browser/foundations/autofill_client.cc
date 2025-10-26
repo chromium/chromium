@@ -66,6 +66,10 @@ const EntityDataManager* AutofillClient::GetEntityDataManager() const {
   return const_cast<AutofillClient*>(this)->GetEntityDataManager();
 }
 
+bool AutofillClient::HasPersonalDataManager() const {
+  return true;
+}
+
 const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }

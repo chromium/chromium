@@ -323,6 +323,13 @@ class AutofillClient {
   // Autofill server.
   virtual AutofillCrowdsourcingManager& GetCrowdsourcingManager() = 0;
 
+  // Returns whether the client has a PersonalDataManager.
+  //
+  // TODO(crbug.cm/455121491) This is a temporary fix to avoid crashes when
+  // AutofillAnnotationsProviderImpl::AddAutofillInformation tries to query
+  // autofillable data but deals with an AndroidAutofillClient.
+  virtual bool HasPersonalDataManager() const;
+
   // Gets the PersonalDataManager instance associated with the original Chrome
   // profile.
   // To distinguish between (non-)incognito mode when deciding to persist data,
