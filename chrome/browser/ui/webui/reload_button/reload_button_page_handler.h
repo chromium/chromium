@@ -28,11 +28,13 @@ class ReloadButtonPageHandler : public reload_button::mojom::PageHandler {
   // reload_button::mojom::PageHandler:
   void Reload(bool ignore_cache) override;
   void StopReload() override;
+  void ShowContextMenu(int32_t offset_x, int32_t offset_y) override;
 
  private:
   mojo::Receiver<reload_button::mojom::PageHandler> receiver_;
   mojo::Remote<reload_button::mojom::Page> page_;
   raw_ptr<CommandUpdater> command_updater_;
+  const raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_RELOAD_BUTTON_RELOAD_BUTTON_PAGE_HANDLER_H_

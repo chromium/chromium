@@ -10,7 +10,8 @@ export function getHtml(this: ReloadButtonAppElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button class="${this.isLoading_ ? 'icon-clear' : 'icon-refresh'}"
     title="${this.tooltip_}"
-    @click="${this.onReloadOrStopClick_}">
+    @pointerdown="${this.onReloadButtonPointerDown_}"
+    @pointerup="${this.onReloadButtonPointerUp_}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
 }

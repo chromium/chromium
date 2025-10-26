@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 
 ReloadButtonPageHandler::ReloadButtonPageHandler(
     mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver,
@@ -21,7 +23,8 @@ ReloadButtonPageHandler::ReloadButtonPageHandler(
       page_(std::move(page)),
       command_updater_(webui::GetBrowserWindowInterface(web_contents)
                            ->GetFeatures()
-                           .browser_command_controller()) {}
+                           .browser_command_controller()),
+      web_contents_(web_contents) {}
 
 ReloadButtonPageHandler::~ReloadButtonPageHandler() = default;
 
@@ -32,6 +35,15 @@ void ReloadButtonPageHandler::Reload(bool ignore_cache) {
 
 void ReloadButtonPageHandler::StopReload() {
   command_updater_->ExecuteCommand(IDC_STOP);
+}
+
+void ReloadButtonPageHandler::ShowContextMenu(int32_t offset_x,
+                                              int32_t offset_y) {
+  content::ContextMenuParams params;
+  params.x = offset_x;
+  params.y = offset_y;
+  web_contents_->GetDelegate()->HandleContextMenu(
+      *web_contents_->GetPrimaryMainFrame(), params);
 }
 
 void ReloadButtonPageHandler::SetReloadButtonState(bool is_loading,

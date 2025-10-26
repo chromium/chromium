@@ -27,6 +27,9 @@ interface PageHandler {
   // Stops the current page from reloading. If the page is not in a loading
   // state, it is a no-op.
   StopReload();
+  // Displays the context menu for the reload button with the x and y offset
+  // in pixel relative to the ReloadButtonWebView's origin.
+  ShowContextMenu(int32 offset_x, int32 offset_y);
 };
 
 // Called from C++ side of chrome://reload-button.top-chrome
