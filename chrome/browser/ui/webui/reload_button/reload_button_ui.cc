@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -18,10 +19,12 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 #include "ui/webui/webui_util.h"
 
 ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui) {
+    : TopChromeWebUIController(web_ui),
+      metrics_reporter_(std::make_unique<MetricsReporter>()) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIReloadButtonHost);
@@ -53,6 +56,11 @@ void ReloadButtonUI::BindInterface(
     mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReloadButtonUI::BindInterface(
+    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
+  metrics_reporter_->BindInterface(std::move(receiver));
 }
 
 void ReloadButtonUI::BindInterface(

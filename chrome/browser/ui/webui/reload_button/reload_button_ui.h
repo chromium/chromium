@@ -17,6 +17,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-forward.h"
+
+class MetricsReporter;
+class ReloadButtonUI;
 
 namespace ui {
 class ColorChangeHandler;
@@ -34,7 +38,8 @@ class ReloadButtonUI : public TopChromeWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver);
-
+  void BindInterface(
+      mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
@@ -48,6 +53,7 @@ class ReloadButtonUI : public TopChromeWebUIController,
       mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver)
       override;
 
+  std::unique_ptr<MetricsReporter> metrics_reporter_;
   std::unique_ptr<ReloadButtonPageHandler> page_handler_;
   // The color change handler notifies the WebUI when the color provider
   // changes.
