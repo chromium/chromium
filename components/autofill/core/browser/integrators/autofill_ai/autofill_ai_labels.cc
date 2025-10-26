@@ -168,8 +168,6 @@ void ExpandEntityLabels(AttributeType type,
 // for which labels can be added.
 // - `tried_types` contains `AttributeType`s for which we already tried adding
 //   information for in some of `labels`.
-// - If `require_disambiguating_types` is true, the function will only add
-//   `AttributeType`s that are disambiguating.
 // - If `require_disambiguating_values` is true and `entities` contain more than
 //   one `EntityInstance` for which an `AttributeType` is relevant, the function
 //   will only add that type if it differentiates at least two of those
@@ -178,7 +176,6 @@ void AddLabelsRound(base::span<const EntityInstance*> entities,
                     base::span<const AttributeType> ordered_attributes,
                     base::span<EntityLabel> labels,
                     DenseSet<AttributeType>& tried_types,
-                    bool require_disambiguating_types,
                     bool require_disambiguating_values,
                     bool only_add_to_empty_labels,
                     const std::string& app_locale) {
@@ -187,11 +184,7 @@ void AddLabelsRound(base::span<const EntityInstance*> entities,
     return;
   }
   for (AttributeType type : ordered_attributes) {
-    if (tried_types.contains(type)) {
-      // The current type was already added as label.
-      continue;
-    }
-    if (require_disambiguating_types && !type.is_disambiguation_type()) {
+    if (tried_types.contains(type) || !type.is_disambiguation_type()) {
       continue;
     }
     if (require_disambiguating_values &&
@@ -222,20 +215,17 @@ std::vector<EntityLabel> GetLabelsForEntities(
 
   if (prioritize_disambiguating_types) {
     AddLabelsRound(entities, ordered_attributes, labels, tried_types,
-                   /*require_disambiguating_types=*/true,
                    /*require_disambiguating_values=*/true,
                    /*only_add_to_empty_labels=*/false, app_locale);
   }
 
   AddLabelsRound(entities, ordered_attributes, labels, tried_types,
-                 /*require_disambiguating_types=*/false,
                  /*require_disambiguating_values=*/true,
                  // This should only be false in the first call to the function.
                  /*only_add_to_empty_labels=*/prioritize_disambiguating_types,
                  app_locale);
 
   AddLabelsRound(entities, ordered_attributes, labels, tried_types,
-                 /*require_disambiguating_types=*/false,
                  /*require_disambiguating_values=*/false,
                  /*only_add_to_empty_labels=*/true, app_locale);
 

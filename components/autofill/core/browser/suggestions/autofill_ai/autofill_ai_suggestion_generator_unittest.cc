@@ -768,8 +768,8 @@ TEST_F(
 }
 
 // Test that if the non-disambiguating attributes (here: the expiry dates) are
-// the only one distinguishing the suggestions, they still appear so that we
-// show at least one label.
+// the only one distinguishing the suggestions, a label is still shown, but that
+// would be an equal label from a disambiguating type.
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
     LabelGeneration_TwoSuggestions_PassportsWithDifferentExpiryDates_AtLeastOneLabel) {
@@ -779,8 +779,8 @@ TEST_F(
   SetForm({PASSPORT_NUMBER, PASSPORT_ISSUING_COUNTRY, NAME_FULL,
            PASSPORT_EXPIRATION_DATE});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
-              SuggestionsAre(HasLabel(u"Passport · 2018-12-29"),
-                             HasLabel(u"Passport · 2019-08-30")));
+              SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump"),
+                             HasLabel(u"Passport · Pippi Långstrump")));
 }
 
 // Test that in flight reservation suggestion generation. The main label is a
