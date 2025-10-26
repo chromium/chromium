@@ -197,8 +197,8 @@ class ModelError {
     kGenericTestError = 187,
     kAutofillValuableMetadataFailedToLoadDatabase = 188,
     kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync = 189,
-    kMaxValue =
-        kAutofillValuableMetadataTransactionCommitFailedOnIncrementalSync,
+    kAutofillValuableMetadataFailedToLoadMetadata = 190,
+    kMaxValue = kAutofillValuableMetadataFailedToLoadMetadata,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncModelError)
 

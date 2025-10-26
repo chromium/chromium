@@ -163,6 +163,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
   metadata->set_valuable_id("some_id");
   metadata->set_use_count(5);
   metadata->set_last_used_date_unix_epoch_micros(12345);
+  metadata->set_last_modified_date_unix_epoch_micros(12345);
   EXPECT_EQ(bridge()
                 .TrimAllSupportedFieldsFromRemoteSpecifics(entity_specifics)
                 .ByteSizeLong(),

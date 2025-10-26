@@ -93,6 +93,12 @@ class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
   std::optional<syncer::ModelError> ApplyMetadataChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
 
+  // Synchronously load sync metadata and pass it to the processor.
+  void LoadMetadata();
+
+  bool SyncMetadataCacheContainsSupportedFields(
+      const syncer::EntityMetadataMap& metadata_map) const;
+
   // Returns the `EntityTable` associated with the `web_data_backend_`.
   EntityTable* GetEntityTable();
 

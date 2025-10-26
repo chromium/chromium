@@ -39,7 +39,7 @@ ValuableMetadataSyncBridge::ValuableMetadataSyncBridge(
     return;
   }
 
-  // TODO(crbug.com/40253286): Implement loading initial data.
+  LoadMetadata();
 }
 
 ValuableMetadataSyncBridge::~ValuableMetadataSyncBridge() = default;
@@ -292,6 +292,54 @@ ValuableMetadataSyncBridge::ApplyMetadataChanges(
                           change_processor()->GetWeakPtr()));
   metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
   return change_processor()->GetError();
+}
+
+bool ValuableMetadataSyncBridge::SyncMetadataCacheContainsSupportedFields(
+    const syncer::EntityMetadataMap& metadata_map) const {
+  for (const auto& [_, metadata_entry] : metadata_map) {
+    // Serialize the cached specifics and parse them back to a proto. Any fields
+    // that were cached as unknown and are known in the current browser version
+    // should be parsed correctly.
+    std::string serialized_specifics;
+    metadata_entry->possibly_trimmed_base_specifics().SerializeToString(
+        &serialized_specifics);
+    sync_pb::EntitySpecifics parsed_specifics;
+    parsed_specifics.ParseFromString(serialized_specifics);
+
+    // If `parsed_specifics` contain any supported fields, they would be cleared
+    // by the trimming function.
+    if (parsed_specifics.ByteSizeLong() !=
+        TrimAllSupportedFieldsFromRemoteSpecifics(parsed_specifics)
+            .ByteSizeLong()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void ValuableMetadataSyncBridge::LoadMetadata() {
+  auto batch = std::make_unique<syncer::MetadataBatch>();
+  if (!GetSyncMetadataStore()->GetAllSyncMetadata(
+          syncer::AUTOFILL_VALUABLE_METADATA, batch.get())) {
+    change_processor()->ReportError(
+        {FROM_HERE, syncer::ModelError::Type::
+                        kAutofillValuableMetadataFailedToLoadMetadata});
+    return;
+  }
+
+  if (SyncMetadataCacheContainsSupportedFields(batch->GetAllMetadata())) {
+    // Caching entity specifics is meant to preserve fields not supported in a
+    // given browser version during commits to the server. If the cache
+    // contains supported fields, this means that the browser was updated and
+    // we should force the initial sync flow to propagate the cached data into
+    // the local model.
+    GetSyncMetadataStore()->DeleteAllSyncMetadata(
+        syncer::DataType::AUTOFILL_VALUABLE_METADATA);
+
+    batch = std::make_unique<syncer::MetadataBatch>();
+  }
+  change_processor()->ModelReadyToSync(std::move(batch));
 }
 
 EntityTable* ValuableMetadataSyncBridge::GetEntityTable() {
