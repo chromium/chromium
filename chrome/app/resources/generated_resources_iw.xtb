@@ -389,6 +389,7 @@
 <translation id="1244917379075403655">לוחצים על 'הגדרות'</translation>
 <translation id="1245331638296910488">‏הקבצים יועברו ל-OneDrive כשהם ייפתחו ב-Microsoft 365</translation>
 <translation id="1245628370644070008">שחזור הנתונים המקומיים</translation>
+<translation id="1246420197935327230">בחירת אזור</translation>
 <translation id="1246863218384630739">‏לא ניתן היה להתקין את <ph name="VM_NAME" />: כתובת ה-URL של התמונה החזירה קוד שגיאה <ph name="HTTP_ERROR" />. יש לפנות למנהל המערכת.</translation>
 <translation id="1247372569136754018">מיקרופון (פנימי)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{לאתר אחד אין הרשאה לשליחת התראות}one{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}two{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}other{ל-{NUM_SITES} אתרים אין הרשאה לשליחת התראות}}</translation>
@@ -778,6 +779,7 @@
 <translation id="152913213824448541">אנשי קשר לשיתוף בקרבת מקום</translation>
 <translation id="1529769834253316556">גובה השורה</translation>
 <translation id="1529891865407786369">מקור חשמל</translation>
+<translation id="1530376661400379364">‏‫Chrome איפס את ההגדרות האלה</translation>
 <translation id="1531275250079031713">‏הצגת תיבת הדו-שיח 'הוספת רשת Wi-Fi חדשה'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">ברור לי שההורדה הזו תזיק למחשב שלי</translation>
@@ -1077,6 +1079,7 @@
 <translation id="1709916727352927457">מחיקת מפתח הגישה</translation>
 <translation id="1709972045049031556">השיתוף נכשל</translation>
 <translation id="1712143791363119140">בתהליך</translation>
+<translation id="1714265454085143857">כרטיסיות מוצמדות</translation>
 <translation id="1714326320203665217">קובצי הרישומים של הצומת הראשי הורדו</translation>
 <translation id="1714644264617423774">ניתן להפעיל תכונות נגישות על מנת להקל את השימוש במכשיר. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" /> ולאפליקציות המותקנות בו?</translation>
@@ -1199,6 +1202,7 @@
 <translation id="1805967612549112634">אישור קוד אימות</translation>
 <translation id="1806335016774576568">מעבר לאפליקציה פתוחה אחרת</translation>
 <translation id="1807246157184219062">בהיר</translation>
+<translation id="1807542511544484064">‏ההגדרות האלה שונו מחוץ ל-Chrome. כדי להגן עליך, Chrome איפס אותן.</translation>
 <translation id="180759455458343539">הוספת תמונה</translation>
 <translation id="1808571181382454540">מעבר לדף ההגדרות</translation>
 <translation id="1808805149659872686">רשומה חדשה</translation>
@@ -2828,6 +2832,7 @@
 <translation id="2916745397441987255">חיפוש תוספים</translation>
 <translation id="2918484639460781603">המשך להגדרות</translation>
 <translation id="2918484644467055090">לא ניתן לרשום את המכשיר הזה לארגון שאליו שייך החשבון שלך מפני שהמכשיר מסומן לניהול על ידי ארגון אחר.</translation>
+<translation id="2920346489891435227">פתיחת הקישור בתצוגה הימנית</translation>
 <translation id="2920852127376356161">לא מורשים לטפל בפרוטוקולים</translation>
 <translation id="2921081876747860777">יצירת סיסמה להגנה על הנתונים המקומיים שלך.</translation>
 <translation id="2923006468155067296">ה-<ph name="DEVICE_TYPE" /> שלך יינעל עכשיו.
@@ -4605,6 +4610,7 @@
 <translation id="4133265950310064865">הגנה משופרת</translation>
 <translation id="4134838386867070505">שלב 1 מתוך 4: תיאור הבעיה</translation>
 <translation id="413534985210133938">התיקייה "<ph name="LOCAL_FOLDER" />" שמורה רק במכשיר הזה. אם הסימנייה הזו תועבר אל "<ph name="LOCAL_FOLDER" />", היא לא תהיה זמינה יותר במכשירים האחרים שלך.</translation>
+<translation id="4135370802895537423">פתיחת הקישור בתצוגה הימנית</translation>
 <translation id="4135746311382563554">‏תנאים והגבלות נוספים של Google Chrome ו-ChromeOS</translation>
 <translation id="4136203100490971508">תאורת הלילה תכבה באופן אוטומטי בשעת הזריחה</translation>
 <translation id="41365691917097717">‏בחירה להמשיך תגרום להפעלת ניפוי באגים באמצעות ADB במהלך היצירה והבדיקה של אפליקציות ל-Android. חשוב לשים לב שהפעולה הזו מאפשרת את ההתקנה של אפליקציות ל-Android שלא אומתו על ידי Google. כדי להשבית את התכונה, יש לאפס את המכשיר להגדרות המקוריות.</translation>
@@ -4690,6 +4696,7 @@
 <translation id="4209251085232852247">מושבת</translation>
 <translation id="4210048056321123003">מתבצעת הורדה של המכונה הווירטואלית</translation>
 <translation id="4210380525132844778">סיבה: הכלל <ph name="RULE" /> נמצא ברשימה '<ph name="LIST_NAME" />'.</translation>
+<translation id="4210428686880035809">פתיחת הקישור בתצוגה השמאלית</translation>
 <translation id="4211362364312260125">‏זיהוי המאפיין העיקרי של ARIA בדפי אינטרנט בנושא טכנולוגיה מסייעת</translation>
 <translation id="421182450098841253">&amp;הצגת את סרגל הסימניות</translation>
 <translation id="4211904048067111541">‏הפסקת השימוש באפליקציות ל-Android</translation>
@@ -6065,6 +6072,7 @@
 <translation id="5184662919967270437">עדכון המכשיר שלך מתבצע</translation>
 <translation id="5185386675596372454">הגרסה החדשה ביותר של "<ph name="EXTENSION_NAME" />" הושבתה מכיוון שהיא דורשת הרשאות נרחבות יותר.</translation>
 <translation id="5185500136143151980">אין חיבור לאינטרנט</translation>
+<translation id="5186362203408605578">‏אפשר להשתמש במכשיר אחר על ידי סריקת קוד ה-QR</translation>
 <translation id="5186381005592669696">התאמה אישית של שפת התצוגה לאפליקציות נתמכות</translation>
 <translation id="5186788525428341874">‏אפשר להשתמש במפתח הגישה הזה כדי להיכנס לחשבון מהר יותר בכל המכשירים שלך. הוא יישמר במנהל הסיסמאות של Google בחשבון <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;התקנת הדף כאפליקציה…</translation>
@@ -6450,6 +6458,7 @@
 <translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
 <translation id="5457113250005438886">לא חוקי</translation>
 <translation id="5457459357461771897">קריאה ומחיקה של קובצי תמונות, מוזיקה ומדיה מסוגים נוספים מהמחשב שלך</translation>
+<translation id="5457795687441958389">לא להיכנס לחשבון</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">הזנת קוד אימות שגוי יותר מדי פעמים. כדי לגשת למפתחות הגישה ולסיסמאות, עליך לשנות את קוד האימות.</translation>
 <translation id="5459470938885464873">אירעה שגיאה בייבוא האישור</translation>
@@ -7461,6 +7470,7 @@
 <translation id="6175910054050815932">קבלת קישור</translation>
 <translation id="6177412385419165772">מתבצעת הסרה…</translation>
 <translation id="6177478397823976397">לא נמצאו מכשירים. אפשר לפתוח מאמר במרכז העזרה בכרטיסייה חדשה.</translation>
+<translation id="6177779807714496775">פתיחת הקישור בתצוגה השמאלית</translation>
 <translation id="6178664161104547336">בחירת אישור</translation>
 <translation id="6178682841350631965">פרטי הכניסה שלך עודכנו</translation>
 <translation id="6179830757749383456">הדפדפן מנוהל על ידי <ph name="BROWSER_DOMAIN" />, הפרופיל מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
@@ -8602,6 +8612,7 @@
 <translation id="6973611239564315524">‏קיים עדכון זמין ל-Debian 10 ‏(Buster)</translation>
 <translation id="69739764870135975">‏אם Google הוא גם מנוע החיפוש המוגדר אצלך כברירת מחדל, יוצגו לך הצעות משופרות ורלוונטיות מבחינת הקשר.</translation>
 <translation id="697508444536771064">‏כיבוי Linux</translation>
+<translation id="6977008555972361928">האתר <ph name="WEBSITE_ORIGIN" /> רוצה לשמור מידע במכשיר הנייד שלך</translation>
 <translation id="6978121630131642226">מנועי חיפוש</translation>
 <translation id="6978717888677691380">אתרים שחסמת</translation>
 <translation id="6979041727349121225">חיסכון באנרגיה</translation>
@@ -11598,6 +11609,7 @@
 <translation id="9016827136585652292">מתג מסך הפרטיות</translation>
 <translation id="90181708067259747">תאריך התפוגה: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
+<translation id="9018677074423884999">‏מנוע החיפוש שמוגדר כברירת מחדל (DSE)</translation>
 <translation id="901876615920222131">כדי לפתוח מחדש את הקבוצה, לוחצים על הקבוצה</translation>
 <translation id="9019062154811256702">קריאה ושינוי של הגדרות מילוי אוטומטי</translation>
 <translation id="9019956081903586892">לא ניתן היה להוריד מילון לבדיקת איות</translation>
@@ -11654,6 +11666,7 @@
 <translation id="9045160989383249058">רשימת הקריאה שלך עברה לחלונית הצדדית החדשה. כאן לוחצים כדי לפתוח אותה.</translation>
 <translation id="9048745018038487540">בחירת כל הגופנים</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>
+<translation id="905137631551495997">תוספים</translation>
 <translation id="905145695813415387">התיקייה "<ph name="LOCAL_FOLDER" />" שמורה רק במכשיר הזה. אם התיקייה הזו תועבר אל "<ph name="LOCAL_FOLDER" />", היא לא תהיה זמינה יותר במכשירים האחרים שלך.</translation>
 <translation id="9052404922357793350">המשך חסימה</translation>
 <translation id="90528604757378587">פעילות ברקע ואפקטים חזותיים מסוימים, כמו גלילה חלקה, עשויים להיות מוגבלים.</translation>
@@ -11985,6 +11998,7 @@
 <translation id="984705303330760860">הוספת שפות לבדיקת האיות</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">כללי</translation>
+<translation id="987574372967138078">האתר <ph name="WEBSITE_ORIGIN" /> רוצה לקבל מידע מהמכשיר הנייד שלך</translation>
 <translation id="988320949174893488">לא יציב</translation>
 <translation id="988978206646512040">השדה של ביטוי הסיסמה לא יכול להישאר ריק</translation>
 <translation id="992032470292211616">תוספים, אפליקציות ועיצובים יכולים לפגוע במכשיר שלך. ברצונך להמשיך?</translation>

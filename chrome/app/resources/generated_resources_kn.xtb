@@ -782,6 +782,7 @@
 <translation id="152913213824448541">Nearby ಶೇರ್ ಸಂಪರ್ಕಗಳು</translation>
 <translation id="1529769834253316556">ಸಾಲಿನ ಎತ್ತರ</translation>
 <translation id="1529891865407786369">ಪವರ್ ಮೂಲ</translation>
+<translation id="1530376661400379364">Chrome ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="1531275250079031713">'ಹೊಸ ವೈ-ಫೈ ಸೇರಿಸಿ' ಡೈಲಾಗ್ ತೋರಿಸಿ</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">ಈ ಡೌನ್‌ಲೋಡ್ ನನ್ನ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಹಾನಿ ಮಾಡುತ್ತದೆ ಎಂದು ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ</translation>
@@ -1073,6 +1074,7 @@
 <translation id="1709916727352927457">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1709972045049031556">ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1712143791363119140">ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
+<translation id="1714265454085143857">ಪಿನ್ ಮಾಡಿದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1714326320203665217">ಪ್ರಮುಖ ನೋಡ್ ಟಿಪ್ಪಣಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1714644264617423774">ನಿಮ್ಮ ಸಾಧನದ ಬಳಕೆಯನ್ನು ಸುಲಭಗೊಳಿಸಲು, ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ ಫಿಚರ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> ಮತ್ತು ಅದರಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗೆ ಸಂಬಂಧಿಸಿದ ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
@@ -1195,6 +1197,7 @@
 <translation id="1805967612549112634">ಪಿನ್‌ ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1806335016774576568">ತೆರೆದಿರುವ ಬೇರೊಂದು ಆ್ಯಪ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="1807246157184219062">ತಿಳಿ</translation>
+<translation id="1807542511544484064">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು Chrome ನ ಹೊರಗಿನಿಂದ ಬದಲಾಯಿಸಲಾಗಿದೆ. ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು, Chrome ಅವುಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿದೆ.</translation>
 <translation id="180759455458343539">ಚಿತ್ರವನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1808571181382454540">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="1808805149659872686">ಹೊಸ ನಮೂದು</translation>
@@ -11591,6 +11594,7 @@
 <translation id="9016827136585652292">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಟಾಗಲ್</translation>
 <translation id="90181708067259747">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
+<translation id="9018677074423884999">ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ (DSE)</translation>
 <translation id="901876615920222131">ಗುಂಪನ್ನು ಪುನಃ ತೆರೆಯಲು, ಗುಂಪಿನ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="9019062154811256702">ಸ್ವಯಂ ಭರ್ತಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="9019956081903586892">ಕಾಗುಣಿತ ಪರೀಕ್ಷೆ ನಿಘಂಟನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -11647,6 +11651,7 @@
 <translation id="9045160989383249058">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಹೊಸ ಸೈಡ್ ಪ್ಯಾನಲ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ. ಇದನ್ನು ಇಲ್ಲಿ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9048745018038487540">ಎಲ್ಲಾ ಫಾಂಟ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="9050666287014529139">ಪಾಸ್‌ಫ್ರೇಸ್</translation>
+<translation id="905137631551495997">ವಿಸ್ತರಣೆ(ಗಳು)</translation>
 <translation id="905145695813415387">“<ph name="LOCAL_FOLDER" />” ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ. ನೀವು ಈ ಫೋಲ್ಡರ್ ಅನ್ನು “<ph name="LOCAL_FOLDER" />” ಗೆ ಸರಿಸಿದರೆ, ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ನೀವು ಅದನ್ನು ಪಡೆಯುವುದಿಲ್ಲ.</translation>
 <translation id="9052404922357793350">ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="90528604757378587">ಹಿನ್ನೆಲೆ ಚಟುವಟಿಕೆ ಮತ್ತು ಮೃದುವಾದ ಸ್ಕ್ರಾಲಿಂಗ್‌ನಂತಹ ಕೆಲವು ವಿಷುವಲ್ ಎಫೆಕ್ಟ್‌ಗಳು ಸೀಮಿತವಾಗಿರಬಹುದು.</translation>

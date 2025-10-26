@@ -594,6 +594,7 @@
 <translation id="3739899004075612870">Pridané do záložiek <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Hlasové vyhľadávanie nie je k dispozícii v tomto zariadení</translation>
 <translation id="376561056759077985">Niektoré údaje ešte nie sú uložené</translation>
+<translation id="3770620323585347665">Pomenovať okno</translation>
 <translation id="3771033907050503522">Karty inkognito</translation>
 <translation id="3771290962915251154">Toto nastavenie je deaktivované, pretože je zapnutá rodičovská kontrola</translation>
 <translation id="3771694256347217732">Zmluvné podmienky spoločnosti Google</translation>
@@ -787,6 +788,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4668279686271488041">Údaje merania reklám sa zo zariadenia pravidelne odstraňujú</translation>
 <translation id="4668347365065281350">Všetky dáta ukladané webmi vrátane súborov cookie a ďalších miestne uložených údajov</translation>
 <translation id="4673702426794876519">Okno inkognito</translation>
+<translation id="4675298276894277358">Tento web sa už nebude zobrazovať</translation>
 <translation id="4678082183394354975">Tmavý motív pre weby je v Chrome zapnutý</translation>
 <translation id="4682306524980568490">Maximálne sa dá zobraziť tento počet okien: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Synchronizovať všetko</translation>
@@ -988,6 +990,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="555671485580955310">Synchronizovať históriu a karty</translation>
 <translation id="555816257274242153">Cenu ste prestali sledovať</translation>
+<translation id="5559778750856177186">Odkaz bol odopnutý</translation>
 <translation id="5561445479436807659">Zahrajte si zábavnú hru s dinosaurom</translation>
 <translation id="5561549206367097665">Čaká sa na sieť…</translation>
 <translation id="5568069709869097550">Nedá sa prihlásiť</translation>
@@ -1660,6 +1663,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8281886186245836920">Preskočiť</translation>
 <translation id="8282297628636750033">Ak je to možné, používať tmavý motív na weboch</translation>
 <translation id="8282950411412455249">Prejsť do nastavení zabezpečenia</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Zavrieť 1 okno inkognito}few{Zavrieť # okná inkognito}many{Close # Incognito windows}other{Zavrieť # okien inkognito}}</translation>
 <translation id="831192587911042850">Týmto pridáte aktuálny web na zoznam sledovaných webov.</translation>
 <translation id="8317318757008452355">Otvorenie možností tlače</translation>
 <translation id="8320212361750431956">Nedávna aktivita</translation>

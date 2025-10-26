@@ -776,6 +776,7 @@
 <translation id="152913213824448541">'નજીકના શેર' સંપર્કો</translation>
 <translation id="1529769834253316556">લાઇનની ઊંચાઈ</translation>
 <translation id="1529891865407786369">પાવર સ્રોત</translation>
+<translation id="1530376661400379364">Chrome દ્વારા આ સેટિંગ રીસેટ કરવામાં આવ્યા છે</translation>
 <translation id="1531275250079031713">'નવું વાઇ-ફાઇ કનેક્શન ઉમેરો' સંવાદ બતાવો</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">હું સમજું છું કે આ ડાઉનલોડથી મારા કમ્પ્યુટરને નુકસાન પહોંચશે</translation>
@@ -1067,6 +1068,7 @@
 <translation id="1709916727352927457">પાસકી ડિલીટ કરો</translation>
 <translation id="1709972045049031556">શેર કરી શકતા નથી</translation>
 <translation id="1712143791363119140">ચાલુ છે</translation>
+<translation id="1714265454085143857">પિન કરેલા ટૅબ</translation>
 <translation id="1714326320203665217">નોડ ટીકાટિપ્પણીની મુખ્ય ફાઇલો ડાઉનલોડ થઈ</translation>
 <translation id="1714644264617423774">તમારા ડિવાઇસને વાપરવાનું સરળ બનાવવા માટે ઍક્સેસિબિલિટી સુવિધાઓને ચાલુ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> અને ઇન્સ્ટૉલ કરેલી તેની તમામ ઍપ માટે સાઇટનો ડેટા તેમજ પરવાનગીઓ ડિલીટ કરીએ?</translation>
@@ -1189,6 +1191,7 @@
 <translation id="1805967612549112634">પિન કન્ફર્મ કરો</translation>
 <translation id="1806335016774576568">અન્ય ખુલ્લી ઍપ પર સ્વિચ કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
+<translation id="1807542511544484064">આ સેટિંગ Chromeની બહારથી બદલવામાં આવ્યા હતા. તમારી સુરક્ષા માટે, Chrome તેને રીસેટ કરે છે.</translation>
 <translation id="180759455458343539">છબી ઉમેરો</translation>
 <translation id="1808571181382454540">સેટિંગના પેજ પર જાઓ</translation>
 <translation id="1808805149659872686">નવી એન્ટ્રી</translation>
@@ -11577,6 +11580,7 @@ USB ડિવાઇસ</translation>
 <translation id="9016827136585652292">પ્રાઇવસી સ્ક્રીન માટેની ટૉગલ કી</translation>
 <translation id="90181708067259747">સમાપ્તિ તારીખ: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">ઇન્સ્ટૉલેશન પૂર્ણ</translation>
+<translation id="9018677074423884999">ડિફૉલ્ટ શોધ એન્જિન (DSE)</translation>
 <translation id="901876615920222131">ગ્રૂપને ફરીથી ખોલવા માટે, ગ્રૂપ પર ક્લિક કરો</translation>
 <translation id="9019062154811256702">ઑટોમૅટિક ભરવાની સુવિધા સેટિંગ વાંચો અને બદલો</translation>
 <translation id="9019956081903586892">જોડણીની તપાસનો શબ્દકોશ ડાઉનલોડ ન કરી શક્યાં</translation>
@@ -11633,6 +11637,7 @@ USB ડિવાઇસ</translation>
 <translation id="9045160989383249058">તમારી વાંચન સૂચિ બાજુની નવી પૅનલ પર ખસેડવામાં આવી છે. તેને અહીં અજમાવી જુઓ.</translation>
 <translation id="9048745018038487540">બધા ફૉન્ટ પસંદ કરો</translation>
 <translation id="9050666287014529139">પાસફ્રેઝ</translation>
+<translation id="905137631551495997">એક્સ્ટેન્શન</translation>
 <translation id="905145695813415387">"<ph name="LOCAL_FOLDER" />" માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. જો તમે આ ફોલ્ડરને "<ph name="LOCAL_FOLDER" />"માં ખસેડશો, તો હવેથી આ તમને તમારા અન્ય ડિવાઇસ પર મળશે નહીં.</translation>
 <translation id="9052404922357793350">બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="90528604757378587">સ્મૂધ સ્ક્રોલિંગ જેવી બૅકગ્રાઉન્ડમાં થતી પ્રવૃત્તિ અને અમુક વિઝ્યુઅલ ઇફેક્ટ મર્યાદિત હોઈ શકે છે.</translation>

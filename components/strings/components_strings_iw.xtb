@@ -79,6 +79,7 @@
 <translation id="1132735979845538847">‫<ph name="ORIGIN" /> – כדי לצאת ממסך מלא, צריך לגרור מלמעלה וללחוץ על הכפתור "הקודם".</translation>
 <translation id="1138458427267715730">קבלת התראות כשיש הנחות באתרים באינטרנט</translation>
 <translation id="1142713751288681188">סוג הנייר</translation>
+<translation id="1142965388643537393">מידע למטיילים</translation>
 <translation id="1144136880160289237">עוד אין נושאים פעילים</translation>
 <translation id="1149617035358809955">לאמת את זהותך לצורך מילוי פרטי התשלום שלך</translation>
 <translation id="1150565364351027703">משקפי שמש</translation>
@@ -837,6 +838,7 @@
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
 <translation id="2359808026110333948">המשך</translation>
+<translation id="236000571258713023">כלי רכב</translation>
 <translation id="2361263712565360498">‏275x395 מ"מ</translation>
 <translation id="236340516568226369">תפריט מתגים לשינוי גודל</translation>
 <translation id="2365355378251437925">יש להזין <ph name="FIELD" /></translation>
@@ -2199,6 +2201,7 @@
 <translation id="4598556348158889687">ניהול אחסון</translation>
 <translation id="459914240367517409">עיצוב ופיתוח אתרי אינטרנט</translation>
 <translation id="4602465984861132303">באולינג</translation>
+<translation id="4603727370377253901">הזמנת מקומות בטיסה</translation>
 <translation id="4607608436550361748">‏הצגת טיפים לשימוש ב-Chrome</translation>
 <translation id="460848736049414407">הכתובת נחסמה על ידי האדמין</translation>
 <translation id="4610279718074907952">האתר הזה שייך לקבוצת אתרים שיש להם הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="SET_OWNER" /></translation>
@@ -2207,6 +2210,7 @@
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4622292761762557753">אעביר בכל זאת</translation>
 <translation id="4622647778991854660">ניתן להפעיל התראות במרכז ההתראות. הוא זמין דרך <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">תעודות מזהות</translation>
 <translation id="4627675673814409125">‏לא ניתן להגדיר את המדיניות הזאת ברמה של פרופיל Chrome. המערכת תתעלם מהמדיניות.</translation>
 <translation id="4628678854894591460">הצעות לחופשה</translation>
 <translation id="4628948037717959914">תמונה</translation>
