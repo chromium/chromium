@@ -191,4 +191,50 @@ INSTANTIATE_TEST_SUITE_P(
                                     CurrentView::kConversation,
                                     ActorTaskIconState::Text::kCompleteTasks)));
 
+class GlicActorTaskIconManagerWaitingOnUserTasksTest
+    : public GlicActorTaskIconManagerTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, CurrentView, ActorTaskIconState::Text>> {
+ public:
+  // testing::Test:
+  void SetUp() override {
+    GlicActorTaskIconManagerTest::SetUp();
+    TaskId task_id = actor_service()->CreateTaskForTesting();
+    actor_service()->GetTask(task_id)->SetState(
+        actor::ActorTask::State::kReflecting);
+    actor_service()->GetTask(task_id)->Interrupt();
+  }
+};
+
+TEST_P(GlicActorTaskIconManagerWaitingOnUserTasksTest, WaitingOnUserTasks) {
+  bool is_showing = std::get<0>(GetParam());
+  CurrentView current_view = std::get<1>(GetParam());
+  ActorTaskIconState::Text expected_text = std::get<2>(GetParam());
+
+  MockTaskIconStateChangeSubscriber subscriber;
+  base::CallbackListSubscription subscription =
+      manager_->RegisterTaskIconStateChange(base::BindRepeating(
+          &MockTaskIconStateChangeSubscriber::OnStateChanged,
+          base::Unretained(&subscriber)));
+
+  EXPECT_CALL(
+      subscriber,
+      OnStateChanged(is_showing, current_view,
+                     AllOf(Field(&ActorTaskIconState::is_visible, true),
+                           Field(&ActorTaskIconState::text, expected_text))));
+
+  manager()->UpdateTaskIcon(is_showing, current_view);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GlicActorTaskIconManagerWaitingOnUserTasksTest,
+    testing::Values(
+        std::make_tuple(/*is_showing=*/false,
+                        CurrentView::kConversation,
+                        ActorTaskIconState::Text::kNeedsAttention),
+        std::make_tuple(/*is_showing=*/true,
+                        CurrentView::kConversation,
+                        ActorTaskIconState::Text::kNeedsAttention)));
+
 }  // namespace tabs
