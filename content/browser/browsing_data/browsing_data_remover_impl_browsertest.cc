@@ -1054,10 +1054,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
 class BrowsingDataRemoverImplPrefetchBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
-  BrowsingDataRemoverImplPrefetchBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kPrefetchBrowsingDataRemoval);
-  }
-
   void StartPrefetch(const GURL& url, Shell* shell) {
     auto* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
@@ -1076,9 +1072,6 @@ class BrowsingDataRemoverImplPrefetchBrowserTest
   }
 
   ~BrowsingDataRemoverImplPrefetchBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,

@@ -58,8 +58,6 @@ bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context) {
              browser_context);
 }
 
-BASE_FEATURE(kPrefetchBrowsingDataRemoval, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPrefetchSchedulerProgressSyncBestEffort{
     &kPrefetchScheduler, "kPrefetchSchedulerProgressSyncBestEffort", true};

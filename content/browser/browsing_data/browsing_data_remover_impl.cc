@@ -648,8 +648,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
   // Clears the Prefetch Cache as part of Clear-Site-Data prefetchCache header
   // and Browsing Data Cache Removal.
-  if ((remove_mask & (DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_CACHE)) &&
-      base::FeatureList::IsEnabled(features::kPrefetchBrowsingDataRemoval)) {
+  if ((remove_mask & (DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_CACHE))) {
     if (auto* prefetch_service =
             BrowserContextImpl::From(browser_context_)->GetPrefetchService()) {
       auto storage_key_filter = filter_builder->BuildStorageKeyFilter();

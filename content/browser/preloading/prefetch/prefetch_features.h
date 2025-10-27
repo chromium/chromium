@@ -83,10 +83,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
 bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context);
 
-// If enabled, prefetch caches are cleared when browsing data removal. Please
-// see crbug.com/40262310 for more details.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowsingDataRemoval);
-
 // Replace current prefetch queue with a new queue and scheduler, which allows
 // prioritization, concurrent prefetches, bursting.
 //
