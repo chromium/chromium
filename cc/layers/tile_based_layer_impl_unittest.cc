@@ -66,5 +66,42 @@ TEST_F(TileBasedLayerImplTest, AppendSolidQuad_AppendsCorrectQuad) {
   EXPECT_TRUE(shared_quad_state->are_contents_opaque);
 }
 
+// Verifies that `is_backdrop_filter_mask()` returns false by default.
+TEST_F(TileBasedLayerImplTest, IsBackdropFilterMask_DefaultsToFalse) {
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  EXPECT_FALSE(layer->is_backdrop_filter_mask());
+}
+
+// Verifies that `is_backdrop_filter_mask()` reflects calls to
+// `SetIsBackdropFilterMask()`.
+TEST_F(TileBasedLayerImplTest, SetIsBackdropFilterMask_GetterReflectsSetter) {
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+
+  layer->SetIsBackdropFilterMask(true);
+  EXPECT_TRUE(layer->is_backdrop_filter_mask());
+
+  layer->SetIsBackdropFilterMask(false);
+  EXPECT_FALSE(layer->is_backdrop_filter_mask());
+}
+
+// Verifies that calling `SetIsBackdropFilterMask` with the same value multiple
+// times doesn't change the value.
+TEST_F(TileBasedLayerImplTest, SetIsBackdropFilterMask_RedundantCalls) {
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+
+  layer->SetIsBackdropFilterMask(true);
+  EXPECT_TRUE(layer->is_backdrop_filter_mask());
+  layer->SetIsBackdropFilterMask(true);
+  EXPECT_TRUE(layer->is_backdrop_filter_mask());
+
+  layer->SetIsBackdropFilterMask(false);
+  EXPECT_FALSE(layer->is_backdrop_filter_mask());
+  layer->SetIsBackdropFilterMask(false);
+  EXPECT_FALSE(layer->is_backdrop_filter_mask());
+}
+
 }  // namespace
 }  // namespace cc
