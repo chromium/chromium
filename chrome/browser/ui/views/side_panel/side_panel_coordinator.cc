@@ -62,8 +62,9 @@ void SidePanelCoordinator::Toggle(
     SidePanelUtil::SidePanelOpenTrigger open_trigger) {
   // If an entry is already showing in the sidepanel, the sidepanel
   // should be closed.
-  if (IsSidePanelEntryShowing(key) &&
-      !browser_view_->contents_height_side_panel()->IsClosing()) {
+  SidePanelEntry* entry = GetEntryForKey(key);
+  if (entry && IsSidePanelEntryShowing(key) &&
+      !GetSidePanelFor(entry->type())->IsClosing()) {
     Close();
     return;
   }
@@ -71,7 +72,6 @@ void SidePanelCoordinator::Toggle(
   // If the entry is the loading entry and is toggled,
   // it should also be closed. This handles quick double clicks
   // to close the sidepanel.
-  SidePanelEntry* entry = GetEntryForKey(key);
   if (entry && IsSidePanelShowing(entry->type()) &&
       waiter(entry->type())->loading_entry() == entry) {
     waiter(entry->type())->ResetLoadingEntryIfNecessary();
