@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="API.EffectiveStorageAccess.AllowedByStorageAccessType"
-    enum="AllowedByStorageAccessType" expires_after="2025-11-10">
+    enum="AllowedByStorageAccessType" expires_after="2026-05-10">
   <owner>selya@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <summary>
