@@ -84,7 +84,7 @@ class Responder final : public GarbageCollected<Responder>,
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     response_callback_count_++;
     // Update the response with the latest value.
-    response_ = response_ + text;
+    response_ = StrCat({response_, text});
   }
 
   void OnCompletion(

@@ -232,7 +232,8 @@ WorkletAnimation* WorkletAnimation::Create(
           animator_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The animator '" + animator_name + "' has not yet been registered.");
+        StrCat({"The animator '", animator_name,
+                "' has not yet been registered."}));
     return nullptr;
   }
 

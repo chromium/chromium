@@ -187,7 +187,7 @@ void AnimationWorkletGlobalScope::registerAnimator(
   if (animator_definitions_.Contains(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "A class with name:'" + name + "' is already registered.");
+        StrCat({"A class with name:'", name, "' is already registered."}));
     return;
   }
 

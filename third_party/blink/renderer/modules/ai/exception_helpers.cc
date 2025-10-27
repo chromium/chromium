@@ -185,7 +185,7 @@ namespace {
 // using an on-device model, e.g. errors related to servers.
 DOMException* CreateUnknown(const char* error) {
   return DOMException::Create(
-      String("An unknown error occurred: ") + error,
+      StrCat({"An unknown error occurred: ", error}),
       DOMException::GetErrorName(DOMExceptionCode::kUnknownError));
 }
 }  // namespace

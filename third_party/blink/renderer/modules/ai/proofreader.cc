@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -183,18 +183,18 @@ Vector<Correction> FindDifferences(Vector<String> a, Vector<String> b) {
         error_end_index += a[i].length();
       }
 
-      String correction_text = "";
+      StringBuilder correction_text;
       // Calculate correction_end_index in the new string by accumulating
       // all the tokens' sizes.
       for (uint32_t i = b_index; i < matching_block.start_b; ++i) {
         correction_end_index += b[i].length();
         // Concatenate tokens to find the correction text.
-        correction_text = correction_text + b[i];
+        correction_text.Append(b[i]);
       }
 
       Correction c = Correction({error_start_index, error_end_index,
                                  correction_start_index, correction_end_index,
-                                 correction_text});
+                                 correction_text.ReleaseString()});
       corrections.push_back(c);
     }
     // Increment error indexes to the next potential location of difference
