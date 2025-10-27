@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * Fields that are never null once becoming non-null. Use to avoid warnings when such fields are
  * accessed by lambdas after being assigned.
  *
- * <p>See: https://github.com/uber/NullAway/wiki/Supported-Annotations
+ * <p>See //styleguide/java/nullaway.md.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.CLASS)

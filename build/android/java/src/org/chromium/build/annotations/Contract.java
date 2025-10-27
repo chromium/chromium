@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * See: https://github.com/uber/NullAway/wiki/Supported-Annotations#contracts
+ * See //styleguide/java/nullaway.md.
  *
  * <p>Not directly using NullAway's annotations so that Cronet does not need the extra dep.
  *
