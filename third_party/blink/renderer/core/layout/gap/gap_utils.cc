@@ -12,13 +12,13 @@ namespace blink {
 // GapSegmentStateAggregator implementations
 void GapSegmentStateAggregator::ProcessItem(const GridSpan& primary_span,
                                             const GridSpan& secondary_span) {
-  // TODO(samomekarajr): Only handling spanners for now. Extend this to handle
-  // non-spanners for the `kOccupied` case.
   if (primary_span.SpanSize() >= 2) {
     for (wtf_size_t track_index = primary_span.StartLine();
          track_index < primary_span.EndLine(); ++track_index) {
       UpdateGapStateFor(track_index, secondary_span, kSpanner);
     }
+  } else {
+    UpdateGapStateFor(primary_span.StartLine(), secondary_span, kOccupied);
   }
 }
 
@@ -43,8 +43,14 @@ GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor(
       return GapSegmentState(GapSegmentState::kBlocked);
     }
 
-    // TODO(samomekarajr): Extend this to handle `kEmpty*` cases.
-    return GapSegmentState(GapSegmentState::kNone);
+    GapSegmentState mask(GapSegmentState::kNone);
+    if (current == kEmpty) {
+      mask |= GapSegmentState::kEmptyBefore;
+    }
+    if (next == kEmpty) {
+      mask |= GapSegmentState::kEmptyAfter;
+    }
+    return mask;
   };
 
   GapSegmentState current_state =
@@ -59,9 +65,7 @@ GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor(
     // The state changed between the current and candidate state. End the
     // current range and start a new one.
     if (candidate_state.status_ != current_state.status_) {
-      // TODO(samomekarajr): We are keeping track of just blocked ranges for
-      // now, this should be extended to include empty ranges too.
-      if (current_state.status_ == GapSegmentState::kBlocked) {
+      if (current_state.status_ != GapSegmentState::kNone) {
         gap.AddGapSegmentStateRange(
             GapSegmentStateRange{current_index, i, current_state});
       }
@@ -72,7 +76,7 @@ GapSegmentStateAggregator::FinalizeGapSegmentStateRangesFor(
   }
 
   // Add the final range that extends to the end of the cell array.
-  if (current_state.status_ == GapSegmentState::kBlocked) {
+  if (current_state.status_ != GapSegmentState::kNone) {
     gap.AddGapSegmentStateRange(GapSegmentStateRange{
         current_index, current_cells.size(), current_state});
   }

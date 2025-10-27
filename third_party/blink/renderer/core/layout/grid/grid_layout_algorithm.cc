@@ -1950,6 +1950,13 @@ class GapAccumulator {
     row_gutter_size_ = rows.GutterSize();
     wtf_size_t row_track_count = row_tracks.size();
 
+    // Initialize `cross_gaps_aggregator_` to track cell states along the cross
+    // axis (columns). We pass in the number of row tracks because when we
+    // aggregate column cell states, they are aggregated along the column for
+    // each row in the grid.
+    cross_gaps_aggregator_ =
+        GapSegmentStateAggregator(/*cell_count=*/row_track_count - 1);
+
     // CSS Gaps[1] defines an intersection point to exist in the center of gaps.
     // Hence, we get the midpoint for each row gap for the derivation of
     // intersection points. The first gap ends at the second track, and the last
@@ -1983,6 +1990,13 @@ class GapAccumulator {
     col_gutter_size_ = columns.GutterSize();
     wtf_size_t col_track_count = col_tracks.size();
 
+    // Initialize `main_gaps_aggregator_` to track cell states along the main
+    // axis (rows). We pass in the number of column tracks because when we
+    // aggregate row cell states, they are aggregated along the row for
+    // each column in the grid.
+    main_gaps_aggregator_ =
+        GapSegmentStateAggregator(/*cell_count=*/col_track_count - 1);
+
     // CSS Gaps defines an intersection point to exist in the center
     // of gaps. Hence, we get the midpoint for each column gap for the
     // derivation of intersection points. The first gap ends at the second
@@ -2012,9 +2026,6 @@ class GapAccumulator {
   void BuildGapGeometry(const GridLayoutData& layout_data) {
     BuildMainGaps(layout_data);
     BuildCrossGaps(layout_data);
-
-    main_gaps_aggregator_ = GapSegmentStateAggregator(cross_gaps_.size() + 1);
-    cross_gaps_aggregator_ = GapSegmentStateAggregator(main_gaps_.size() + 1);
   }
 
   // Aggregates the intervals of gaps blocked by a `grid_item`. This identifies

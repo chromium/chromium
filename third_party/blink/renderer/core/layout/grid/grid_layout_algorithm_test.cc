@@ -416,6 +416,189 @@ TEST_F(GridLayoutAlgorithmTest, GapGeomoetryWithSpanningItems) {
   EXPECT_FALSE(main_gaps[1].HasGapSegmentStateRanges());
 }
 
+TEST_F(GridLayoutAlgorithmTest, GapGeometryWithEmptyCellsAndSpanningItems) {
+  SetBodyInnerHTML(R"HTML(
+  <style>
+    #grid1 {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: 100px 100px 100px;
+      column-rule: red solid;
+      width: 320px;
+      height: 320px;
+    }
+    .item {
+      background: red;
+    }
+    .item1 {
+      grid-column: 1 / 3;
+      grid-row: 1 / 2;
+    }
+    .item3 {
+      grid-column: 3 / 4;
+      grid-row: 1 / 4;
+    }
+    </style>
+    <div id="grid1">
+      <div class="item item1"></div>
+      <div class="item item3"></div>
+      <div class="item"></div>
+    </div>
+  )HTML");
+
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  BlockNode node(GetLayoutBoxByElementId("grid1"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
+  GridLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  BuildGridGeometry(algorithm);
+  algorithm.Layout();
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+  ASSERT_NE(gap_geometry, nullptr);
+
+  // Verify basic gap geometry properties.
+  EXPECT_EQ(gap_geometry->GetContainerType(),
+            GapGeometry::ContainerType::kGrid);
+  EXPECT_EQ(gap_geometry->GetInlineGapSize(), LayoutUnit(10));
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(10));
+
+  // The rendered version of this grid looks like, empty cell marked 'E':
+  // +---+---+---+
+  // |       |   |
+  // +---+---+   +
+  // |   | E |   |
+  // +---+---+   +
+  // | E | E |   |
+  // +---+---+---+
+
+  // Main Gaps (row gaps in the MC model).
+  // Grid has 3 rows and so 2 row gaps.
+  // Row track lines: [0, 110, 220, 330]; gap midpoints: [105, 215].
+  const auto& main_gaps = gap_geometry->GetMainGaps();
+  ASSERT_EQ(main_gaps.size(), 2u);
+  EXPECT_EQ(main_gaps[0].GetGapOffset(), LayoutUnit(105));
+  EXPECT_EQ(main_gaps[1].GetGapOffset(), LayoutUnit(215));
+
+  // Test Cross Gaps (column gaps in the MC model).
+  // With 3 columns, we have 2 column gaps.
+  // Column track lines: [0, 110, 220, 320]; gap midpoints: [105, 215].
+  const auto& cross_gaps = gap_geometry->GetCrossGaps();
+  ASSERT_EQ(cross_gaps.size(), 2u);
+  EXPECT_EQ(cross_gaps[0].GetGapOffset().inline_offset,
+            LayoutUnit(105));  // gap between cols 1-2
+  EXPECT_EQ(cross_gaps[1].GetGapOffset().inline_offset,
+            LayoutUnit(215));  // gap between cols 2-3
+
+  // Test Content Start/End Edges
+  // Inline: 0 -> 320 (column track sizes + column gaps).
+  // Block: 0 -> 320 (row track sizes + row gaps).
+  EXPECT_EQ(gap_geometry->GetContentInlineStart(), LayoutUnit(0));
+  EXPECT_EQ(gap_geometry->GetContentBlockStart(), LayoutUnit(0));
+  EXPECT_EQ(gap_geometry->GetContentInlineEnd(), LayoutUnit(320));
+  EXPECT_EQ(gap_geometry->GetContentBlockEnd(), LayoutUnit(320));
+
+  // Expected column gap segment state ranges:
+  // Cross gap 0 (between cols 0-1):
+  // Row 0: item1 spans both sides → kBlocked
+  // Row 1: occupied vs empty → kEmptyAfter
+  // Row 2: empty vs empty → kEmptyBoth
+  {
+    ASSERT_TRUE(cross_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 3u);
+
+    // Row 0: blocked by item1 spanning
+    EXPECT_EQ(ranges[0].start, 0u);
+    EXPECT_EQ(ranges[0].end, 1u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kBlocked));
+
+    // Row 1: occupied before, empty after
+    EXPECT_EQ(ranges[1].start, 1u);
+    EXPECT_EQ(ranges[1].end, 2u);
+    EXPECT_FALSE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Row 2: empty on both sides
+    EXPECT_EQ(ranges[2].start, 2u);
+    EXPECT_EQ(ranges[2].end, 3u);
+    EXPECT_TRUE(ranges[2].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[2].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+  }
+
+  // Cross gap 1 (between cols 1-2):
+  // Row 0: item1 vs item3 → kNone (different items, not included)
+  // Row 1: empty vs item3 → kEmptyBefore
+  // Row 2: empty vs item3 → kEmptyBefore
+  {
+    ASSERT_TRUE(cross_gaps[1].HasGapSegmentStateRanges());
+    const auto& ranges = cross_gaps[1].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 1u);
+
+    // Rows 1-2: empty before, spanner after
+    EXPECT_EQ(ranges[0].start, 1u);
+    EXPECT_EQ(ranges[0].end, 3u);
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_FALSE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+  }
+
+  // Expected row gap segment state ranges:
+  // Main gap 0 (between rows 0-1):
+  // Column 0: item1 vs occupied → kNone (no empty states)
+  // Column 1: item1 vs empty → kEmptyAfter
+  // Column 2: item3 vs item3 → kBlocked
+  {
+    ASSERT_TRUE(main_gaps[0].HasGapSegmentStateRanges());
+    const auto& ranges = main_gaps[0].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 2u);
+
+    // Column 1: spanner before, empty after
+    EXPECT_EQ(ranges[0].start, 1u);
+    EXPECT_EQ(ranges[0].end, 2u);
+    EXPECT_FALSE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Column 2: blocked by item3 spanning
+    EXPECT_EQ(ranges[1].start, 2u);
+    EXPECT_EQ(ranges[1].end, 3u);
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+
+  // Main gap 1 (between rows 1-2):
+  // Column 0: occupied vs empty → kEmptyAfter
+  // Column 1: empty vs empty → kEmptyBoth
+  // Column 2: item3 vs item3 → kBlocked
+  {
+    ASSERT_TRUE(main_gaps[1].HasGapSegmentStateRanges());
+    const auto& ranges = main_gaps[1].GetGapSegmentStateRanges();
+    ASSERT_EQ(ranges.size(), 3u);
+
+    // Column 0: occupied before, empty after
+    EXPECT_EQ(ranges[0].start, 0u);
+    EXPECT_EQ(ranges[0].end, 1u);
+    EXPECT_FALSE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[0].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Column 1: empty on both sides
+    EXPECT_EQ(ranges[1].start, 1u);
+    EXPECT_EQ(ranges[1].end, 2u);
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyBefore));
+    EXPECT_TRUE(ranges[1].state.HasGapStatus(GapSegmentState::kEmptyAfter));
+
+    // Column 2: blocked by item3 spanning
+    EXPECT_EQ(ranges[2].start, 2u);
+    EXPECT_EQ(ranges[2].end, 3u);
+    EXPECT_TRUE(ranges[2].state.HasGapStatus(GapSegmentState::kBlocked));
+  }
+}
+
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmRanges) {
   SetBodyInnerHTML(R"HTML(
     <style>
