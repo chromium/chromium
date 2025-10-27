@@ -117,6 +117,10 @@ inline constexpr int kSqlBackendEvictionLowWaterMarkPermille = 900;
 inline constexpr base::TimeDelta kSqlBackendDeleteDoomedEntriesDelay =
     base::Minutes(10);
 
+// The prefix for histograms related to the SQL disk cache backend.
+inline constexpr std::string_view kSqlDiskCacheBackendHistogramPrefix =
+    "Net.SqlDiskCache.Backend.";
+
 }  // namespace disk_cache
 
 #endif  // NET_DISK_CACHE_SQL_SQL_BACKEND_CONSTANTS_H_

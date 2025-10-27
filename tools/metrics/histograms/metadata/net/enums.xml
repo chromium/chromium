@@ -3065,7 +3065,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="DeleteLiveEntriesBetween"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.cc:IndexMismatchLocation) -->
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store_backend_shard.cc:IndexMismatchLocation) -->
 
 <!-- LINT.IfChange(SqlDiskCacheStoreError) -->
 

@@ -1285,9 +1285,10 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
   // 2. Open the database directly via SqlPersistentStore and doom the third
   // entry.
   {
-    auto store = disk_cache::SqlPersistentStore::Create(
+    auto store = std::make_unique<SqlPersistentStore>(
         temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
         task_runners);
+
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future_init;
     store->Initialize(future_init.GetCallback());
     ASSERT_EQ(future_init.Get(), disk_cache::SqlPersistentStore::Error::kOk);

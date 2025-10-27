@@ -392,10 +392,10 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
     : Backend(cache_type),
       path_(path),
       background_task_runners_(CreateTaskRunners()),
-      store_(SqlPersistentStore::Create(path,
-                                        max_bytes > 0 ? max_bytes : 0,
-                                        GetCacheType(),
-                                        background_task_runners_)) {
+      store_(std::make_unique<SqlPersistentStore>(path,
+                                                  max_bytes > 0 ? max_bytes : 0,
+                                                  GetCacheType(),
+                                                  background_task_runners_)) {
   DVLOG(1) << "SqlBackendImpl::SqlBackendImpl " << path;
 }
 

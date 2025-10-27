@@ -57,9 +57,10 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
     // Create and initialize a store to create the DB file with schema.
-    auto store = disk_cache::SqlPersistentStore::Create(
+    auto store = std::make_unique<disk_cache::SqlPersistentStore>(
         path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
-        {background_task_runner});
+        std::vector<scoped_refptr<base::SequencedTaskRunner>>(
+            {background_task_runner}));
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
     store->Initialize(future.GetCallback());
