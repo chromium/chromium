@@ -78,10 +78,9 @@ class FirstRunIntroPixelTest
  public:
   FirstRunIntroPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
-    if (GetParam().decline_signin_cta_experiment_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(
-          switches::kProfileCreationDeclineSigninCTAExperiment);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        switches::kProfileCreationDeclineSigninCTAExperiment,
+        GetParam().decline_signin_cta_experiment_enabled);
   }
 
   void ShowUi(const std::string& name) override {
