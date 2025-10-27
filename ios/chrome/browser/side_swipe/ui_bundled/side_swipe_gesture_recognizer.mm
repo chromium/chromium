@@ -67,13 +67,7 @@ const CGFloat kDefaultMinSwipeXThreshold = 4;
   }
 }
 
-- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
-  // Revert to normal pan gesture recognizer characteristics after state began.
-  if (self.state != UIGestureRecognizerStatePossible) {
-    [super touchesMoved:touches withEvent:event];
-    return;
-  }
-
+- (void)updateGestureStateWithEvent:(UIEvent*)event {
   // Only one touch.
   if ([[event allTouches] count] > 1) {
     self.state = UIGestureRecognizerStateFailed;
@@ -135,6 +129,17 @@ const CGFloat kDefaultMinSwipeXThreshold = 4;
 
     self.state = UIGestureRecognizerStateBegan;
     return;
+  }
+}
+
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
+  if (self.state == UIGestureRecognizerStatePossible) {
+    [self updateGestureStateWithEvent:(UIEvent*)event];
+  }
+
+  // If the state was updated, call touchesMoved.
+  if (self.state != UIGestureRecognizerStatePossible) {
+    [super touchesMoved:touches withEvent:event];
   }
 }
 
