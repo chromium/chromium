@@ -150,7 +150,7 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
 
   // Pause the task and try to add a tab.
   task->Pause(/*from_actor=*/true);
-  EXPECT_TRUE(task->IsPaused());
+  EXPECT_TRUE(task->IsUnderUserControl());
 
   {
     base::RunLoop loop;
@@ -167,7 +167,7 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
 
   // Stop the task and try to add a tab.
   actor_service->StopTask(id, true);
-  EXPECT_TRUE(task->IsStopped());
+  EXPECT_TRUE(task->IsCompleted());
   {
     base::RunLoop loop;
     task->AddTab(tab_handle,

@@ -164,7 +164,7 @@ void GlicActorTaskManager::StopActorTask(actor::TaskId task_id, bool success) {
   }
 
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
-  if (!task || task->IsStopped()) {
+  if (!task || task->IsCompleted()) {
     actor_keyed_service_->GetJournal().Log(
         GURL::EmptyGURL(), task_id, "Failed to stop task",
         actor::JournalDetailsBuilder()
@@ -182,7 +182,7 @@ void GlicActorTaskManager::PauseActorTask(
     mojom::ActorTaskPauseReason pause_reason,
     tabs::TabInterface::Handle tab_handle) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
-  if (!task || task->IsStopped() || task->IsPaused()) {
+  if (!task || task->IsCompleted() || task->IsUnderUserControl()) {
     actor_keyed_service_->GetJournal().Log(
         GURL::EmptyGURL(), task_id, "Failed to pause task",
         actor::JournalDetailsBuilder()
@@ -208,7 +208,7 @@ void GlicActorTaskManager::ResumeActorTask(
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
-  if (!task || !task->IsPaused()) {
+  if (!task || !task->IsUnderUserControl()) {
     std::string error_message = task ? "Task is not paused" : "No such task";
     actor_keyed_service_->GetJournal().Log(GURL::EmptyGURL(), task_id,
                                            "Failed to resume task",

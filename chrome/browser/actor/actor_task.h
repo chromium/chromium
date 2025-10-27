@@ -36,6 +36,18 @@ class UiEventDispatcher;
 struct ActionResultWithLatencyInfo;
 
 // Represents a task that Chrome is executing on behalf of the user.
+//
+// ActorTask tracks the state of a single interaction session and takes place
+// over multiple "turns" (calls to Act()). Browser tabs that are involved in the
+// task are added to the set of "controlled" tabs.  ActorTask can be in one of
+// three high level states:
+//
+// * ActorControl: Only the actor is able to interact with controlled tabs
+// * UserControl: Only the user is able to interact with controlled tabs
+// * Completed: The task is no longer running.
+//
+// The task is created under actor control. It may be paused or resumed to move
+// between actor and user control.
 class ActorTask {
  public:
   using ActCallback =
@@ -61,9 +73,10 @@ class ActorTask {
 
   const std::string& title() const { return title_; }
 
-  // Once state leaves kCreated it should never go back. One state enters
-  // kFinished or kCancelled it should never change.
-
+  // Once `state_` leaves kCreated it should never go back. Once `state_` enters
+  // kFinished or kCancelled it should never change. These states are granular,
+  // prefer using the Is[Actor|User]Controlled and IsCompleted methods rather
+  // than querying `state_` directly.
   // LINT.IfChange(State)
   // These enum values are persisted to logs.  Do not renumber or reuse numeric
   // values.
@@ -93,26 +106,32 @@ class ActorTask {
   void Stop(bool success);
 
   // Pause() is called to indicate that either the actor or user is pausing
-  // server-driven actuation determined by the `from_actor` flag. This will
-  // cancel any ongoing actuation.
+  // actor actions, determined by the `from_actor` flag. This will cancel any
+  // in-progress action.
   void Pause(bool from_actor);
 
-  // Resume() indicates the user wants server-driven actuation to resume. The
-  // caller is responsible for sending new state to the server (e.g. APC).
+  // Resume() puts the task back into an actor-controlled state. The caller is
+  // responsible for updating the actor with the latest state of the browser.
   void Resume();
 
-  // Indicate we are waiting for user input. User interaction is still
-  // prevented.
+  // Indicate the task is blocked waiting for user input. The task remains in an
+  // actor-controlled state and user interaction is still prevented.
   void Interrupt();
 
   // Uninterrupt from waiting on user input.
   void Uninterrupt();
 
-  bool IsPaused() const;
+  // Returns true if the task hasn't completed and is under control of the user.
+  // That is, the actor cannot send actions and the user is able to interact
+  // with the task's tabs. i.e. the task is "paused".
+  bool IsUnderUserControl() const;
 
-  bool IsStopped() const;
+  // Returns true if the task hasn't completed and is under control of the
+  // actor. That is, the user is unable to interact with the task's tabs.
+  bool IsUnderActorControl() const;
 
-  bool IsActive() const;
+  // Returns true if the task has completed, either successfully or canceled.
+  bool IsCompleted() const;
 
   ExecutionEngine* GetExecutionEngine() const;
 
@@ -131,8 +150,8 @@ class ActorTask {
   // Returns true if the given tab is part of this task's tab set.
   bool HasTab(tabs::TabHandle tab) const;
 
-  // Returns true if the given tab is part of this task's tab set and is in
-  // an active (non-paused) state.
+  // Returns true if the given tab is part of this task's controlled tab set and
+  // the task is under actor control.
   bool IsActingOnTab(tabs::TabHandle tab) const;
 
   using TabHandleSet = absl::flat_hash_set<tabs::TabHandle>;
@@ -144,10 +163,10 @@ class ActorTask {
   TabHandleSet GetLastActedTabs() const;
 
  private:
-  class ActingTabState : public content::WebContentsObserver {
+  class ActorControlledTabState : public content::WebContentsObserver {
    public:
-    explicit ActingTabState(ActorTask* task);
-    ~ActingTabState() override;
+    explicit ActorControlledTabState(ActorTask* task);
+    ~ActorControlledTabState() override;
 
     void SetContents(content::WebContents* web_contents);
 
@@ -165,17 +184,17 @@ class ActorTask {
     base::CallbackListSubscription content_discarded_subscription;
   };
 
-  // Transitions a tab from an inactive state to an active state.
-  void DidTabBecomeActive(tabs::TabHandle handle);
+  // Transitions a tab/contents into a state where only the actor is responsible
+  // for interacting with the tab.
+  void DidTabEnterActorControl(tabs::TabHandle handle);
+  void DidContentsEnterActorControl(ActorControlledTabState* state,
+                                    content::WebContents* contents);
 
-  void DidContentsBecomeActive(ActingTabState* state,
-                               content::WebContents* contents);
-
-  // Transitions the tab from an active state to an inactive state.
-  void DidTabBecomeInactive(tabs::TabHandle handle);
-
-  void DidContentsBecomeInactive(ActingTabState* state,
-                                 content::WebContents* contents);
+  // Transitions the tab from being actor controlled back to user being able to
+  // interact with in.
+  void DidTabExitActorControl(tabs::TabHandle handle);
+  void DidContentsExitActorControl(ActorControlledTabState* state,
+                                   content::WebContents* contents);
 
   // Callback from TabInterface for when the WebContents change.
   void HandleDiscardContents(tabs::TabInterface* tab,
@@ -210,17 +229,18 @@ class ActorTask {
 
   // A timer for the current state.
   base::ElapsedTimer current_state_timer_;
-  // An accumulation of elapsed times for previous "active" states.
-  base::TimeDelta total_active_time_;
+  // An accumulation of elapsed times for previous "active" states. i.e. the
+  // actor is controlling the task and not waiting on a user action.
+  base::TimeDelta total_actor_controlled_active_time_;
 
   // A map from a tab's handle to state associated with that tab. The presence
-  // of a tab in this map signifies that it is part of the task.
-  absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActingTabState>>
-      acting_tabs_;
+  // of a tab in this map signifies that it is part of this task.
+  absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActorControlledTabState>>
+      controlled_tabs_;
 
   // An additional set of tabs to capture for observations at the end of an Act
   // turn. Reset at the beginning of each call to Act.
-  absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActingTabState>>
+  absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActorControlledTabState>>
       to_observe_tabs_;
 
   // Running number of actions taken in the current state.

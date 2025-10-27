@@ -109,7 +109,7 @@ const std::map<TaskId, const ActorTask*> ActorKeyedService::GetActiveTasks()
     const {
   std::map<TaskId, const ActorTask*> active_tasks;
   for (const auto& [id, task] : active_tasks_) {
-    CHECK_NE(task->IsStopped(), true);
+    CHECK_NE(task->IsCompleted(), true);
     active_tasks[id] = task.get();
   }
   return active_tasks;
