@@ -1066,7 +1066,7 @@ void ToolbarView::UpdateTypeAndSeverity(
 
   std::u16string accname_app = l10n_util::GetStringUTF16(IDS_ACCNAME_APP);
   if (type_and_severity.type ==
-      AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
+      AppMenuIconController::IconType::kUpgradeNotification) {
     accname_app = l10n_util::GetStringFUTF16(
         IDS_ACCNAME_APP_UPGRADE_RECOMMENDED, accname_app);
   }

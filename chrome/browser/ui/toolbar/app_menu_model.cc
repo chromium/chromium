@@ -1839,7 +1839,7 @@ void AppMenuModel::Build() {
 
   if (app_menu_icon_controller_ &&
       app_menu_icon_controller_->GetTypeAndSeverity().type ==
-          AppMenuIconController::IconType::UPGRADE_NOTIFICATION) {
+          AppMenuIconController::IconType::kUpgradeNotification) {
     AddSeparator(ui::SPACING_SEPARATOR);
     const auto update_icon = ui::ImageModel::FromVectorIcon(
         kBrowserToolsUpdateChromeRefreshIcon,

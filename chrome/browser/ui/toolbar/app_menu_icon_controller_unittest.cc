@@ -161,8 +161,8 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
     // ChromeOS doesn't change the icon.
     EXPECT_CALL(mock_delegate,
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                    AppMenuIconController::IconType::NONE,
-                    AppMenuIconController::Severity::NONE}))
+                    AppMenuIconController::IconType::kNone,
+                    AppMenuIconController::Severity::kNone}))
         .Times(6);
   } else {
     if (IsUnstableChannel()) {
@@ -170,8 +170,8 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
       // out at a low level for every annoyance level.
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::LOW}))
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kLow}))
           .Times(5);
     } else {
       // For stable and beta channels, the "none" type and severity should be
@@ -180,26 +180,26 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
       // the "grace" and "high" annoyance levels).
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::NONE,
-                      AppMenuIconController::Severity::NONE}));
+                      AppMenuIconController::IconType::kNone,
+                      AppMenuIconController::Severity::kNone}));
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::LOW}));
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kLow}));
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::MEDIUM}));
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kMedium}));
       EXPECT_CALL(mock_delegate,
                   UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                      AppMenuIconController::IconType::UPGRADE_NOTIFICATION,
-                      AppMenuIconController::Severity::HIGH}))
+                      AppMenuIconController::IconType::kUpgradeNotification,
+                      AppMenuIconController::Severity::kHigh}))
           .Times(2);
     }
     EXPECT_CALL(mock_delegate,
                 UpdateTypeAndSeverity(AppMenuIconController::TypeAndSeverity{
-                    AppMenuIconController::IconType::NONE,
-                    AppMenuIconController::Severity::NONE}));
+                    AppMenuIconController::IconType::kNone,
+                    AppMenuIconController::Severity::kNone}));
   }
 
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW);
@@ -230,8 +230,8 @@ TEST_P(AppMenuIconControllerTest, GlobalErrorLowSeverityShowsActionRequired) {
   error_service->AddUnownedGlobalError(&low);
 
   auto state = controller.GetTypeAndSeverity();
-  EXPECT_EQ(state.type, AppMenuIconController::IconType::GLOBAL_ERROR);
-  EXPECT_EQ(state.severity, AppMenuIconController::Severity::LOW);
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::kGlobalError);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::kLow);
 
   error_service->RemoveGlobalError(&low);
 }
@@ -246,15 +246,15 @@ TEST_P(AppMenuIconControllerTest, GlobalErrorMediumOrHighShowsError) {
   FakeMenuGlobalError medium(GlobalError::SEVERITY_MEDIUM);
   error_service->AddUnownedGlobalError(&medium);
   auto state = controller.GetTypeAndSeverity();
-  EXPECT_EQ(state.type, AppMenuIconController::IconType::GLOBAL_ERROR);
-  EXPECT_EQ(state.severity, AppMenuIconController::Severity::MEDIUM);
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::kGlobalError);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::kMedium);
   error_service->RemoveGlobalError(&medium);
 
   FakeMenuGlobalError high(GlobalError::SEVERITY_HIGH);
   error_service->AddUnownedGlobalError(&high);
   state = controller.GetTypeAndSeverity();
-  EXPECT_EQ(state.type, AppMenuIconController::IconType::GLOBAL_ERROR);
-  EXPECT_EQ(state.severity, AppMenuIconController::Severity::HIGH);
+  EXPECT_EQ(state.type, AppMenuIconController::IconType::kGlobalError);
+  EXPECT_EQ(state.severity, AppMenuIconController::Severity::kHigh);
   error_service->RemoveGlobalError(&high);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
