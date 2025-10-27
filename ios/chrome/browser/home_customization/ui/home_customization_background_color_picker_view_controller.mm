@@ -91,12 +91,13 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   // of the collection view.
   UICollectionViewSupplementaryRegistration* _footerRegistration;
 
-  // Currently selected color index in the palette.
-  NSString* _selectedColorId;
+  // Selected color id on initial load.
+  NSString* _initialSelectedColorID;
 
   // The number of times a color option is selected.
   int _colorClickCount;
 }
+
 @end
 
 @implementation HomeCustomizationBackgroundColorPickerViewController
@@ -159,6 +160,8 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_collectionView];
 
+  [self selectInitialColor];
+
   [NSLayoutConstraint activateConstraints:@[
     [_collectionView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
@@ -185,7 +188,10 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   CHECK(backgroundCollectionConfigurations.count == 1);
   _backgroundCollectionConfiguration =
       backgroundCollectionConfigurations.firstObject;
-  _selectedColorId = selectedBackgroundId;
+
+  _initialSelectedColorID = selectedBackgroundId;
+
+  [self selectInitialColor];
 }
 
 - (void)currentBackgroundConfigurationChanged:
@@ -212,18 +218,12 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   NSUInteger selectedIndex =
       [_backgroundCollectionConfiguration.configurationOrder
           indexOfObject:currentItemID];
-  if (selectedIndex == NSNotFound) {
-    _selectedColorId = nil;
-    return;
-  }
 
   [_collectionView
       selectItemAtIndexPath:[NSIndexPath indexPathForItem:selectedIndex
                                                 inSection:0]
                    animated:NO
              scrollPosition:UICollectionViewScrollPositionNone];
-
-  _selectedColorId = currentItemID;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -233,9 +233,15 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   return _backgroundCollectionConfiguration.configurationOrder.count + 1;
 }
 
+- (BOOL)collectionView:(UICollectionView*)collectionView
+    shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  // The already-selected item can't be selected again.
+  return _collectionView.indexPathsForSelectedItems.firstObject != indexPath;
+}
+
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  std::size_t index = static_cast<std::size_t>(indexPath.item);
+  NSUInteger index = static_cast<NSUInteger>(indexPath.item);
   if (index >= _backgroundCollectionConfiguration.configurationOrder.count) {
     // Show the color slider and animate the footer if the custom color cell is
     // selected.
@@ -258,17 +264,11 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   // The footer is only visible if the custom color cell is selected.
   [self footerView].hidden = YES;
+
   NSString* selectedID =
       _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
-
-  // Prevent background updates when a user clicks on an already selected cell.
-  if (_selectedColorId == selectedID) {
-    return;
-  }
-
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[selectedID];
-  _selectedColorId = backgroundConfiguration.configurationID;
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 
   if (backgroundConfiguration.backgroundStyle ==
@@ -285,20 +285,29 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   if (indexPath.item >= 0) {
     if (index < _backgroundCollectionConfiguration.configurationOrder.count) {
-      NSString* selectedID =
+      NSString* itemID =
           _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
       id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-          _backgroundCollectionConfiguration.configurations[selectedID];
-
+          _backgroundCollectionConfiguration.configurations[itemID];
       return [collectionView
           dequeueConfiguredReusableCellWithRegistration:_colorCellRegistration
                                            forIndexPath:indexPath
                                                    item:
                                                        backgroundConfiguration];
     } else {
-      id<BackgroundCustomizationConfiguration> backgroundConfiguration =
-          _backgroundCollectionConfiguration.configurations[_selectedColorId];
-
+      // Use currently selected item for custom cell.
+      NSIndexPath* selectedIndexPath =
+          _collectionView.indexPathsForSelectedItems.firstObject;
+      id<BackgroundCustomizationConfiguration> backgroundConfiguration = nil;
+      if (selectedIndexPath &&
+          static_cast<NSUInteger>(selectedIndexPath.item) >=
+              _backgroundCollectionConfiguration.configurationOrder.count) {
+        NSString* selectedColorID =
+            _backgroundCollectionConfiguration
+                .configurationOrder[selectedIndexPath.item];
+        backgroundConfiguration =
+            _backgroundCollectionConfiguration.configurations[selectedColorID];
+      }
       return [collectionView
           dequeueConfiguredReusableCellWithRegistration:
               _customColorCellRegistration
@@ -408,13 +417,6 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     cell.colorPalette = backgroundConfiguration.colorPalette;
     cell.accessibilityLabel = backgroundConfiguration.accessibilityName;
   }
-
-  if ([_selectedColorId
-          isEqualToString:backgroundConfiguration.configurationID]) {
-    [_collectionView selectItemAtIndexPath:indexPath
-                                  animated:NO
-                            scrollPosition:UICollectionViewScrollPositionNone];
-  }
 }
 
 // Cancels any unsaved changes and dismisses the menu.
@@ -434,6 +436,28 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                             saturation:1.0
                                             brightness:1.0
                                                  alpha:1.0];
+}
+
+// Selects the initial selected color once the collection view has loaded.
+- (void)selectInitialColor {
+  NSUInteger selectedIndex =
+      [_backgroundCollectionConfiguration.configurationOrder
+          indexOfObject:_initialSelectedColorID];
+  if (selectedIndex == NSNotFound) {
+    _initialSelectedColorID = nil;
+    return;
+  }
+  // Only reset `_initialSelectedColorID` if the collection view has loaded.
+  // Otherwise, leave it so the selection can be set when the collection view
+  // does load.
+  if (_collectionView) {
+    [_collectionView
+        selectItemAtIndexPath:[NSIndexPath indexPathForItem:selectedIndex
+                                                  inSection:0]
+                     animated:NO
+               scrollPosition:UICollectionViewScrollPositionNone];
+    _initialSelectedColorID = nil;
+  }
 }
 
 @end

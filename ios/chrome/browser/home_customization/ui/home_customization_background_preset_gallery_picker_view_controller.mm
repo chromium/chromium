@@ -68,9 +68,6 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   NSArray<BackgroundCollectionConfiguration*>*
       _backgroundCollectionConfigurations;
 
-  // The id of the selected background cell.
-  NSString* _selectedBackgroundId;
-
   // Timer used to periodically trigger the loading animation update.
   NSTimer* _loadingTimer;
 
@@ -84,6 +81,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   // The number of times an item from the gallery is selected.
   int _galleryClickCount;
 }
+
 @end
 
 @implementation HomeCustomizationBackgroundPresetGalleryPickerViewController
@@ -185,7 +183,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   [self stopLoadingAnimation];
 }
 
-- (NSInteger)selectedIndex {
+- (NSInteger)selectedSectionIndex {
   return _collectionView.indexPathsForSelectedItems.firstObject.section;
 }
 
@@ -214,12 +212,25 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
     }
   }
 
-  _selectedBackgroundId = selectedBackgroundId;
   _backgroundCustomizationConfigurationMap =
       backgroundCustomizationConfigurationMap;
   _backgroundCollectionConfigurations = backgroundCollectionConfigurations;
-  [_diffableDataSource applySnapshot:[self dataSnapshot]
-                animatingDifferences:NO];
+  __weak __typeof(self) weakSelf = self;
+  [_diffableDataSource
+             applySnapshot:[self dataSnapshot]
+      animatingDifferences:NO
+                completion:^() {
+                  [weakSelf selectItemWithIdentifier:selectedBackgroundId];
+                }];
+}
+
+- (void)selectItemWithIdentifier:(NSString*)itemIdentifier {
+  NSIndexPath* indexPath =
+      [_diffableDataSource indexPathForItemIdentifier:itemIdentifier];
+  [self.collectionView
+      selectItemAtIndexPath:indexPath
+                   animated:NO
+             scrollPosition:UICollectionViewScrollPositionNone];
 }
 
 - (void)currentBackgroundConfigurationChanged:
@@ -232,8 +243,6 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
       selectItemAtIndexPath:currentItemIndexPath
                    animated:NO
              scrollPosition:UICollectionViewScrollPositionNone];
-
-  _selectedBackgroundId = currentItemID;
 
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
@@ -282,20 +291,21 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
 - (BOOL)collectionView:(UICollectionView*)collectionView
     shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  return _backgroundCollectionConfigurations;
+  // Before the data has loaded (i.e. when there are skeleton loaders), prevent
+  // selection.
+  if (!_backgroundCollectionConfigurations) {
+    return false;
+  }
+
+  // The currently selected item cannot be selected again. This prevents the
+  // background when the current background is set again.
+  return _collectionView.indexPathsForSelectedItems.firstObject != indexPath;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* itemIdentifier =
       [_diffableDataSource itemIdentifierForIndexPath:indexPath];
-
-  // Prevent background updates when a user clicks on an already selected cell.
-  if (_selectedBackgroundId == itemIdentifier) {
-    return;
-  }
-
-  _selectedBackgroundId = itemIdentifier;
 
   [self.mutator applyBackgroundForConfiguration:
                     _backgroundCustomizationConfigurationMap[itemIdentifier]];
@@ -534,12 +544,6 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   [cell configureWithBackgroundOption:backgroundConfiguration
              searchEngineLogoMediator:searchEngineLogoMediator];
-
-  if ([itemIdentifier isEqualToString:_selectedBackgroundId]) {
-    [_collectionView selectItemAtIndexPath:indexPath
-                                  animated:NO
-                            scrollPosition:UICollectionViewScrollPositionNone];
-  }
 }
 
 // Dismisses the current customization menu page.

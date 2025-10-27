@@ -34,8 +34,8 @@
     id<HomeCustomizationBackgroundPickerPresentationDelegate>
         presentationDelegate;
 
-// The index of the selected item in the gallery.
-@property(nonatomic, readonly) NSInteger selectedIndex;
+// The index of the selected section in the gallery.
+@property(nonatomic, readonly) NSInteger selectedSectionIndex;
 
 @end
 
