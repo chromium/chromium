@@ -359,14 +359,11 @@ class CC_EXPORT CompositorFrameReporter {
     // `kInertialGestureScrollUpdate`s.
     struct ScrollUpdates {
       bool is_scroll_start;
-      base::raw_ref<ScrollUpdateEventMetrics> earliest_event;
       base::raw_ref<ScrollUpdateEventMetrics> latest_event;
       base::TimeTicks last_coalesced_ts;
       int32_t fling_input_count;
       int32_t normal_input_count;
       float total_predicted_delta;
-      float total_raw_delta_pixels;
-      float max_abs_inertial_raw_delta_pixels;
 
       bool operator==(const ScrollUpdates&) const = default;
     };
@@ -396,8 +393,8 @@ class CC_EXPORT CompositorFrameReporter {
     // Calculates the scroll jank reporting stages based on `events_metrics`
     // associated with a frame. This function will not modify `events_metrics`
     // in any way. If there's a `ScrollUpdates` stage in the returned list,
-    // `ScrollUpdates::earliest_event` and `ScrollUpdates::latest_event` will be
-    // references to items in `events_metrics` (possibly the same item).
+    // `ScrollUpdates::latest_event` will be a reference to an item in
+    // `events_metrics`.
     static List CalculateStages(const EventMetrics::List& events_metrics);
   };
 

@@ -42,20 +42,14 @@ inline void PrintTo(
           [&](const CompositorFrameReporter::FrameJankReportingStage::
                   ScrollUpdates& updates) {
             (*os) << "ScrollUpdates{is_scroll_start: "
-                  << updates.is_scroll_start << ", earliest_event: "
-                  << updates.earliest_event->GetTypeName() << "@"
-                  << &(*updates.earliest_event)
+                  << updates.is_scroll_start
                   << ", latest_event: " << *updates.latest_event->GetTypeName()
                   << "@" << &(*updates.latest_event)
                   << ", last_coalesced_ts: " << updates.last_coalesced_ts
                   << ", fling_input_count: " << updates.fling_input_count
                   << ", normal_input_count: " << updates.normal_input_count
                   << ", total_predicted_delta: "
-                  << updates.total_predicted_delta
-                  << ", total_raw_delta_pixels: "
-                  << updates.total_raw_delta_pixels
-                  << ", max_abs_inertial_raw_delta_pixels: "
-                  << updates.max_abs_inertial_raw_delta_pixels << "}";
+                  << updates.total_predicted_delta << "}";
           },
           [&](const CompositorFrameReporter::FrameJankReportingStage::ScrollEnd&
                   end) { (*os) << "ScrollEnd{}"; }},
@@ -1343,11 +1337,10 @@ class FrameJankReportingStageTest : public testing::Test {
       ui::EventType type,
       bool is_inertial,
       ScrollUpdateEventMetrics::ScrollUpdateType scroll_update_type,
-      float delta,
       float predicted_delta) {
     auto event = ScrollUpdateEventMetrics::CreateForTesting(
         type, ui::ScrollInputType::kTouchscreen, is_inertial,
-        scroll_update_type, delta, timestamp,
+        scroll_update_type, /* delta= */ 0.0f, timestamp,
         /* arrived_in_browser_main_timestamp= */ timestamp +
             base::Nanoseconds(1),
         &test_tick_clock_,
@@ -1358,14 +1351,12 @@ class FrameJankReportingStageTest : public testing::Test {
 
   std::unique_ptr<ScrollUpdateEventMetrics> CreateFirstGestureScrollUpdate(
       base::TimeTicks timestamp,
-      float delta,
       float predicted_delta,
       bool did_scroll) {
     auto event = CreateScrollUpdateEventMetrics(
         timestamp, ui::EventType::kGestureScrollUpdate,
         /* is_inertial= */ false,
-        ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, delta,
-        predicted_delta);
+        ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, predicted_delta);
     EXPECT_EQ(event->type(),
               EventMetrics::EventType::kFirstGestureScrollUpdate);
     event->set_did_scroll(did_scroll);
@@ -1374,13 +1365,12 @@ class FrameJankReportingStageTest : public testing::Test {
 
   std::unique_ptr<ScrollUpdateEventMetrics> CreateGestureScrollUpdate(
       base::TimeTicks timestamp,
-      float delta,
       float predicted_delta,
       bool did_scroll) {
     auto event = CreateScrollUpdateEventMetrics(
         timestamp, ui::EventType::kGestureScrollUpdate,
         /* is_inertial= */ false,
-        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, delta,
+        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         predicted_delta);
     EXPECT_EQ(event->type(), EventMetrics::EventType::kGestureScrollUpdate);
     event->set_did_scroll(did_scroll);
@@ -1389,12 +1379,11 @@ class FrameJankReportingStageTest : public testing::Test {
 
   std::unique_ptr<ScrollUpdateEventMetrics> CreateInertialGestureScrollUpdate(
       base::TimeTicks timestamp,
-      float delta,
       float predicted_delta,
       bool did_scroll) {
     auto event = CreateScrollUpdateEventMetrics(
         timestamp, ui::EventType::kGestureScrollUpdate, /* is_inertial= */ true,
-        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, delta,
+        ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         predicted_delta);
     EXPECT_EQ(event->type(),
               EventMetrics::EventType::kInertialGestureScrollUpdate);
@@ -1419,6 +1408,7 @@ class FrameJankReportingStageTest : public testing::Test {
                                  /* is_inertial= */ true);
     EXPECT_EQ(event->type(),
               EventMetrics::EventType::kInertialGestureScrollEnd);
+    event->set_caused_frame_update(false);
     return event;
   }
 
@@ -1438,29 +1428,25 @@ TEST_F(FrameJankReportingStageTest, EmptyEventMetricsList) {
 TEST_F(FrameJankReportingStageTest, FirstGestureScrollUpdateWhichDidScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateFirstGestureScrollUpdate(MillisecondsTicks(16), 4, 5, true));
+      CreateFirstGestureScrollUpdate(MillisecondsTicks(16), 5, true));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
       ElementsAre(FrameJankReportingStage{ScrollUpdates{
           .is_scroll_start = true,
-          .earliest_event = base::raw_ref(
-              static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .latest_event = base::raw_ref(
               static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .last_coalesced_ts = MillisecondsTicks(16),
           .fling_input_count = 0,
           .normal_input_count = 1,
           .total_predicted_delta = 5,
-          .total_raw_delta_pixels = 4,
-          .max_abs_inertial_raw_delta_pixels = 0,
       }}));
 }
 
 TEST_F(FrameJankReportingStageTest, FirstGestureScrollUpdateWhichDidNotScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateFirstGestureScrollUpdate(MillisecondsTicks(16), 4, 5, false));
+      CreateFirstGestureScrollUpdate(MillisecondsTicks(16), 5, false));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   // Unlike continued GSUs (regular or inertial), scroll jank should always be
   // reported for FGSUs (even if they didn't cause a scroll).
@@ -1468,45 +1454,37 @@ TEST_F(FrameJankReportingStageTest, FirstGestureScrollUpdateWhichDidNotScroll) {
       stages,
       ElementsAre(FrameJankReportingStage{ScrollUpdates{
           .is_scroll_start = true,
-          .earliest_event = base::raw_ref(
-              static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .latest_event = base::raw_ref(
               static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .last_coalesced_ts = MillisecondsTicks(16),
           .fling_input_count = 0,
           .normal_input_count = 1,
           .total_predicted_delta = 5,
-          .total_raw_delta_pixels = 4,
-          .max_abs_inertial_raw_delta_pixels = 0,
       }}));
 }
 
 TEST_F(FrameJankReportingStageTest, GestureScrollUpdateWhichDidScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateGestureScrollUpdate(MillisecondsTicks(16), 4, 5, true));
+      CreateGestureScrollUpdate(MillisecondsTicks(16), 5, true));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
       ElementsAre(FrameJankReportingStage{ScrollUpdates{
           .is_scroll_start = false,
-          .earliest_event = base::raw_ref(
-              static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .latest_event = base::raw_ref(
               static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .last_coalesced_ts = MillisecondsTicks(16),
           .fling_input_count = 0,
           .normal_input_count = 1,
           .total_predicted_delta = 5,
-          .total_raw_delta_pixels = 4,
-          .max_abs_inertial_raw_delta_pixels = 0,
       }}));
 }
 
 TEST_F(FrameJankReportingStageTest, GestureScrollUpdateWhichDidNotScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateGestureScrollUpdate(MillisecondsTicks(16), 4, 5, false));
+      CreateGestureScrollUpdate(MillisecondsTicks(16), 5, false));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(stages, IsEmpty());
 }
@@ -1514,22 +1492,18 @@ TEST_F(FrameJankReportingStageTest, GestureScrollUpdateWhichDidNotScroll) {
 TEST_F(FrameJankReportingStageTest, InertialGestureScrollUpdateWhichDidScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateInertialGestureScrollUpdate(MillisecondsTicks(16), 4, 5, true));
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(16), 5, true));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
       ElementsAre(FrameJankReportingStage{ScrollUpdates{
           .is_scroll_start = false,
-          .earliest_event = base::raw_ref(
-              static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .latest_event = base::raw_ref(
               static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
           .last_coalesced_ts = MillisecondsTicks(16),
           .fling_input_count = 1,
           .normal_input_count = 0,
           .total_predicted_delta = 5,
-          .total_raw_delta_pixels = 4,
-          .max_abs_inertial_raw_delta_pixels = 4,
       }}));
 }
 
@@ -1537,7 +1511,7 @@ TEST_F(FrameJankReportingStageTest,
        InertialGestureScrollUpdateWhichDidNotScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateInertialGestureScrollUpdate(MillisecondsTicks(16), 4, 5, false));
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(16), 5, false));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(stages, IsEmpty());
 }
@@ -1570,36 +1544,32 @@ TEST_F(FrameJankReportingStageTest, MultipleScrollUpdates) {
   // Intentionally in "random" order to make sure that the calculation doesn't
   // rely on the list being sorted (because the list isn't sorted in general).
   events_metrics.push_back(
-      CreateGestureScrollUpdate(MillisecondsTicks(4), -8'000, -8'008, true));
+      CreateGestureScrollUpdate(MillisecondsTicks(4), -8'000, true));
   events_metrics.push_back(
-      CreateGestureScrollUpdate(MillisecondsTicks(2), -32'000, -32'032, true));
-  events_metrics.push_back(CreateInertialGestureScrollUpdate(
-      MillisecondsTicks(7), -1'000, -1'001, false));
-  events_metrics.push_back(CreateFirstGestureScrollUpdate(
-      MillisecondsTicks(1), -64'000, -64'064, true));
-  events_metrics.push_back(CreateInertialGestureScrollUpdate(
-      MillisecondsTicks(5), -4'000, -4'004, true));
-  events_metrics.push_back(CreateInertialGestureScrollUpdate(
-      MillisecondsTicks(6), -2'000, -2'002, true));
+      CreateGestureScrollUpdate(MillisecondsTicks(2), -32'000, true));
   events_metrics.push_back(
-      CreateGestureScrollUpdate(MillisecondsTicks(3), -16'000, -16'016, true));
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(7), -1'000, false));
+  events_metrics.push_back(
+      CreateFirstGestureScrollUpdate(MillisecondsTicks(1), -64'000, true));
+  events_metrics.push_back(
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(5), -4'000, true));
+  events_metrics.push_back(
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(6), -2'000, true));
+  events_metrics.push_back(
+      CreateGestureScrollUpdate(MillisecondsTicks(3), -16'000, true));
 
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
       ElementsAre(FrameJankReportingStage{ScrollUpdates{
           .is_scroll_start = true,
-          .earliest_event = base::raw_ref(
-              static_cast<ScrollUpdateEventMetrics&>(*events_metrics[3])),
           .latest_event = base::raw_ref(
               // events_metrics[2] didn't scroll.
               static_cast<ScrollUpdateEventMetrics&>(*events_metrics[5])),
           .last_coalesced_ts = MillisecondsTicks(7),
           .fling_input_count = 3,
           .normal_input_count = 4,
-          .total_predicted_delta = -127'127,
-          .total_raw_delta_pixels = -127'000,
-          .max_abs_inertial_raw_delta_pixels = 4'000,
+          .total_predicted_delta = -127'000,
       }}));
 }
 
@@ -1607,10 +1577,10 @@ TEST_F(FrameJankReportingStageTest,
        ScrollEndForPreviousScrollThenScrollUpdates) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateGestureScrollUpdate(MillisecondsTicks(3), 40, 50, true));
+      CreateGestureScrollUpdate(MillisecondsTicks(3), 50, true));
   events_metrics.push_back(CreateGestureScrollEnd(MillisecondsTicks(1)));
   events_metrics.push_back(
-      CreateFirstGestureScrollUpdate(MillisecondsTicks(2), 6, 7, true));
+      CreateFirstGestureScrollUpdate(MillisecondsTicks(2), 7, true));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
@@ -1618,16 +1588,12 @@ TEST_F(FrameJankReportingStageTest,
           FrameJankReportingStage{ScrollEnd{}},
           FrameJankReportingStage{ScrollUpdates{
               .is_scroll_start = true,
-              .earliest_event = base::raw_ref(
-                  static_cast<ScrollUpdateEventMetrics&>(*events_metrics[2])),
               .latest_event = base::raw_ref(
                   static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
               .last_coalesced_ts = MillisecondsTicks(3),
               .fling_input_count = 0,
               .normal_input_count = 2,
               .total_predicted_delta = 57,
-              .total_raw_delta_pixels = 46,
-              .max_abs_inertial_raw_delta_pixels = 0,
           }}));
 }
 
@@ -1635,26 +1601,22 @@ TEST_F(FrameJankReportingStageTest,
        ScrollUpdatesThenScrollEndForCurrentScroll) {
   EventMetrics::List events_metrics;
   events_metrics.push_back(
-      CreateInertialGestureScrollUpdate(MillisecondsTicks(1), 40, 50, true));
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(1), 50, true));
   events_metrics.push_back(CreateGestureScrollEnd(MillisecondsTicks(3)));
   events_metrics.push_back(
-      CreateInertialGestureScrollUpdate(MillisecondsTicks(2), 6, 7, true));
+      CreateInertialGestureScrollUpdate(MillisecondsTicks(2), 7, true));
   auto stages = FrameJankReportingStage::CalculateStages(events_metrics);
   EXPECT_THAT(
       stages,
       ElementsAre(
           FrameJankReportingStage{ScrollUpdates{
               .is_scroll_start = false,
-              .earliest_event = base::raw_ref(
-                  static_cast<ScrollUpdateEventMetrics&>(*events_metrics[0])),
               .latest_event = base::raw_ref(
                   static_cast<ScrollUpdateEventMetrics&>(*events_metrics[2])),
               .last_coalesced_ts = MillisecondsTicks(2),
               .fling_input_count = 2,
               .normal_input_count = 0,
               .total_predicted_delta = 57,
-              .total_raw_delta_pixels = 46,
-              .max_abs_inertial_raw_delta_pixels = 40,
           }},
           FrameJankReportingStage{ScrollEnd{}}));
 }

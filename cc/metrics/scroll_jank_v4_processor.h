@@ -23,19 +23,21 @@ namespace cc {
 // for more details about the scroll jank v4 metric.
 class CC_EXPORT ScrollJankV4Processor {
  public:
-  // TODO(crbug.com/452613902): Replace all three methods with a single method
-  // that accepts `std::vector<EventMetrics>` instead.
-  void OnFramePresented(ScrollUpdateEventMetrics& earliest_event,
-                        base::TimeTicks last_input_generation_ts,
-                        base::TimeTicks presentation_ts,
-                        base::TimeDelta vsync_interval,
-                        bool has_inertial_input,
-                        float abs_total_raw_delta_pixels,
-                        float max_abs_inertial_raw_delta_pixels);
-  void OnScrollStarted();
-  void OnScrollEnded();
+  void ProcessEventsMetricsForPresentedFrame(EventMetrics::List& events_metrics,
+                                             base::TimeTicks presentation_ts,
+                                             base::TimeDelta vsync_interval);
 
  private:
+  void HandleFramePresented(ScrollUpdateEventMetrics& earliest_event,
+                            base::TimeTicks last_input_generation_ts,
+                            base::TimeTicks presentation_ts,
+                            base::TimeDelta vsync_interval,
+                            bool has_inertial_input,
+                            float abs_total_raw_delta_pixels,
+                            float max_abs_inertial_raw_delta_pixels);
+  void HandleScrollStarted();
+  void HandleScrollEnded();
+
   ScrollJankV4Decider decider_;
   ScrollJankV4HistogramEmitter histogram_emitter_;
 };

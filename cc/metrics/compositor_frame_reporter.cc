@@ -1918,6 +1918,12 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
   // v4 metric to work correctly, they need to be informed about `EventMetrics`
   // that didn't cause frame updates.
   DCHECK(!dropped_non_damaging_events_metrics_);
+
+  const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
+  // TODO(crbug.com/452613902): Revert the logic to before
+  // https://crrev.com/c/6931550 (i.e. get rid of
+  // `FrameJankReportingStage::CalculateStages()`) when the
+  // `features::kEmitPerScrollJankV1MetricAtEndOfScroll` is removed.
   FrameJankReportingStage::List stages =
       FrameJankReportingStage::CalculateStages(events_metrics_);
   for (FrameJankReportingStage& stage : stages) {
@@ -1932,9 +1938,6 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
                 if (global_trackers_.scroll_jank_dropped_frame_tracker) {
                   global_trackers_.scroll_jank_dropped_frame_tracker
                       ->OnScrollStarted();
-                }
-                if (global_trackers_.scroll_jank_v4_processor) {
-                  global_trackers_.scroll_jank_v4_processor->OnScrollStarted();
                 }
                 if (global_trackers_.scroll_jank_ukm_reporter) {
                   global_trackers_.scroll_jank_ukm_reporter
@@ -1952,8 +1955,6 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
                                 updates.normal_input_count, ctx);
                           });
 
-              const auto end_timestamp =
-                  viz_breakdown_.presentation_feedback.timestamp;
               if (global_trackers_.predictor_jank_tracker) {
                 global_trackers_.predictor_jank_tracker
                     ->ReportLatestScrollDelta(updates.total_predicted_delta,
@@ -1966,14 +1967,6 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
                         *updates.latest_event, updates.last_coalesced_ts,
                         end_timestamp, args_.interval);
               }
-              if (global_trackers_.scroll_jank_v4_processor) {
-                global_trackers_.scroll_jank_v4_processor->OnFramePresented(
-                    *updates.earliest_event, updates.last_coalesced_ts,
-                    end_timestamp, args_.interval,
-                    /* has_inertial_input= */ updates.fling_input_count > 0,
-                    std::abs(updates.total_raw_delta_pixels),
-                    updates.max_abs_inertial_raw_delta_pixels);
-              }
               if (global_trackers_.scroll_jank_ukm_reporter) {
                 global_trackers_.scroll_jank_ukm_reporter
                     ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
@@ -1984,12 +1977,14 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
                 global_trackers_.scroll_jank_dropped_frame_tracker
                     ->OnScrollEnded();
               }
-              if (global_trackers_.scroll_jank_v4_processor) {
-                global_trackers_.scroll_jank_v4_processor->OnScrollEnded();
-              }
             },
         },
         stage.stage);
+  }
+  if (global_trackers_.scroll_jank_v4_processor) {
+    global_trackers_.scroll_jank_v4_processor
+        ->ProcessEventsMetricsForPresentedFrame(events_metrics_, end_timestamp,
+                                                args_.interval);
   }
 }
 
@@ -2006,14 +2001,11 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
   bool had_latest_gesture_scroll = false;
   std::optional<base::TimeTicks> scroll_start_ts = std::nullopt;
   std::optional<base::TimeTicks> scroll_end_ts = std::nullopt;
-  float total_raw_delta_pixels = 0;
-  float max_abs_inertial_raw_delta_pixels = 0;
 
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
   // lead to having multiple scroll events.
   // TODO(crbug.com/402148798): Deprecate usage of latest_event.
-  ScrollUpdateEventMetrics* earliest_event = nullptr;
   base::TimeTicks earliest_event_generation_ts = base::TimeTicks::Max();
   ScrollUpdateEventMetrics* latest_event = nullptr;
   base::TimeTicks latest_event_generation_ts = base::TimeTicks::Min();
@@ -2044,17 +2036,10 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
                 generation_ts, "caused_frame_update", caused_frame_update);
     if (event_type == EventMetrics::EventType::kGestureScrollEnd ||
         event_type == EventMetrics::EventType::kInertialGestureScrollEnd) {
-      if (scroll_end_ts) {
-        TRACE_EVENT(
-            "input",
-            "ProcessFrameEventMetrics: Multiple scroll ends in a frame");
-      }
       scroll_end_ts = generation_ts;
       continue;
     }
     if (!caused_frame_update) {
-      // TODO(crbug.com/444183591): Handle non-damaging inputs in the scroll
-      // jank metrics.
       continue;
     }
     auto* scroll_update = event->AsScrollUpdate();
@@ -2062,12 +2047,10 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
       continue;
     }
     total_predicted_delta += scroll_update->predicted_delta();
-    total_raw_delta_pixels += scroll_update->delta();
     // Earliest is always applied, event when the scroll update failed to
     // successfully produce a scroll.
     if (!had_earliest_gesture_scroll ||
         generation_ts < earliest_event_generation_ts) {
-      earliest_event = scroll_update;
       earliest_event_generation_ts = generation_ts;
       had_earliest_gesture_scroll = true;
     }
@@ -2076,11 +2059,6 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
     // `latest_event`. Otherwise UKMs will not be emitted.
     switch (event_type) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
-        if (scroll_start_ts) {
-          TRACE_EVENT("input",
-                      "ProcessFrameEventMetrics: Multiple scroll starts in a "
-                      "single frame (unexpected)");
-        }
         scroll_start_ts = generation_ts;
         [[fallthrough]];
       case EventMetrics::EventType::kGestureScrollUpdate:
@@ -2088,9 +2066,6 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
         break;
       case EventMetrics::EventType::kInertialGestureScrollUpdate:
         fling_input_count += scroll_update->coalesced_event_count();
-        max_abs_inertial_raw_delta_pixels =
-            std::max(max_abs_inertial_raw_delta_pixels,
-                     std::abs(scroll_update->delta()));
         break;
       default:
         NOTREACHED();
@@ -2120,43 +2095,20 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
     return stages;
   }
 
-  bool is_scroll_start = scroll_start_ts.has_value();
-  if (is_scroll_start && *scroll_start_ts > earliest_event_generation_ts) {
-    TRACE_EVENT("input",
-                "ProcessFrameEventMetrics: First scroll starts after another "
-                "scroll update in a single frame (unexpected)");
-  }
-
   stages.emplace_back(ScrollUpdates{
-      .is_scroll_start = is_scroll_start,
-      .earliest_event =
-          base::raw_ref<ScrollUpdateEventMetrics>::from_ptr(earliest_event),
+      .is_scroll_start = scroll_start_ts.has_value(),
       .latest_event =
           base::raw_ref<ScrollUpdateEventMetrics>::from_ptr(latest_event),
       .last_coalesced_ts = last_coalesced_ts,
       .fling_input_count = fling_input_count,
       .normal_input_count = normal_input_count,
       .total_predicted_delta = total_predicted_delta,
-      .total_raw_delta_pixels = total_raw_delta_pixels,
-      .max_abs_inertial_raw_delta_pixels = max_abs_inertial_raw_delta_pixels,
   });
 
   // If the generation timestamp of the scroll END is greater than the
   // generation timestamp of at least one scroll UPDATE, then we assume that the
   // scroll end belongs to the CURRENT scroll (the F?U*E? ordering above).
   if (scroll_end_ts && *scroll_end_ts > earliest_event_generation_ts) {
-    if (*scroll_end_ts < last_coalesced_ts) {
-      // We deliberately treat the unexpected situation where a scroll end
-      // appears in the middle of scroll updates (`earliest_event_generation_ts`
-      // < `*scroll_end_ts` < `last_coalesced_ts`) as if the scroll end came
-      // AFTER all scroll updates here because the situation was most likely
-      // caused by scroll updates from the previous scroll being delayed, so we
-      // want to evaluate the current frame against the previous scroll (so that
-      // the frame would potentially be marked as janky).
-      TRACE_EVENT("input",
-                  "ProcessFrameEventMetrics: Scroll end between two scroll "
-                  "updates in a single frame (unexpected)");
-    }
     stages.emplace_back(ScrollEnd{});
   }
 
