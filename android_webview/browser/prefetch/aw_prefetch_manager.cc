@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/trace_event/trace_event.h"
@@ -116,6 +117,15 @@ int AwPrefetchManager::StartPrefetchRequest(
   GURL pf_url = GURL(url);
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+
+  // TODO(crbug.com/455296998): Remove this code for M145.
+  bool should_bypass_http_cache = false;
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::
+              kWebViewBypassHttpCacheForPrefetchFromHeader)) {
+    should_bypass_http_cache = GetShouldBypassHttpCacheFromHeaders(
+        additional_headers, /*remove_header=*/true);
+  }
   std::optional<net::HttpNoVarySearchData> expected_no_vary_search =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
   std::unique_ptr<content::PrefetchRequestStatusListener>
@@ -150,14 +160,15 @@ int AwPrefetchManager::StartPrefetchRequest(
             GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
             expected_no_vary_search,
             base::FeatureList::IsEnabled(
-                features::kWebViewPrefetchHighestPrefetchPriority)
+                ::features::kWebViewPrefetchHighestPrefetchPriority)
                 ? std::optional(content::PrefetchPriority::kHighest)
                 : std::nullopt,
             additional_headers, std::move(request_status_listener),
             base::Seconds(ttl_in_sec_),
             /*should_append_variations_header=*/false,
             base::FeatureList::IsEnabled(
-                kWebViewPrefetchDisableBlockUntilHeadTimeout));
+                kWebViewPrefetchDisableBlockUntilHeadTimeout),
+            should_bypass_http_cache);
 
     if (prefetch_handle) {
       return AddPrefetchHandle(std::move(prefetch_handle));

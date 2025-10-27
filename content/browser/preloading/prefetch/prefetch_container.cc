@@ -1466,6 +1466,11 @@ void PrefetchContainer::MakeResourceRequest() {
   // not be visible outside of the network context.
   resource_request->load_flags = net::LOAD_PREFETCH;
 
+  // TODO(crbug.com/455296998): Remove this code for M145.
+  if (request().should_bypass_http_cache()) {
+    resource_request->load_flags |= net::LOAD_DISABLE_CACHE;
+  }
+
   AddAwAdditionalHeaders(resource_request->headers,
                          request().additional_headers());
 

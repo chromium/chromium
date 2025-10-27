@@ -18,6 +18,8 @@ class HttpNoVarySearchData;
 
 namespace android_webview {
 
+constexpr char kDisableHttpCacheHeader[] = "X-Disable-HTTP-Cache";
+
 net::HttpRequestHeaders GetAdditionalHeadersFromPrefetchParameters(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& prefetch_params);
@@ -30,6 +32,10 @@ GetExpectedNoVarySearchFromPrefetchParameters(
 bool GetIsJavaScriptEnabledFromPrefetchParameters(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& prefetch_params);
+
+// TODO(crbug.com/455296998): Remove this code for M145.
+bool GetShouldBypassHttpCacheFromHeaders(net::HttpRequestHeaders& headers,
+                                         bool remove_header);
 
 }  // namespace android_webview
 

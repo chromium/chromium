@@ -76,6 +76,7 @@ PrefetchRequest::PrefetchRequest(
     PreloadingHoldbackStatus holdback_status_override,
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
+    bool should_bypass_http_cache,
     std::variant<PrefetchRendererInitiatorInfo, PrefetchBrowserInitiatorInfo>
         initiator_info)
     : prefetch_type_(prefetch_type),
@@ -97,6 +98,7 @@ PrefetchRequest::PrefetchRequest(
       should_append_variations_header_(should_append_variations_header),
       should_disable_block_until_head_timeout_(
           should_disable_block_until_head_timeout),
+      should_bypass_http_cache_(should_bypass_http_cache),
       initiator_info_(std::move(initiator_info)) {
   CHECK(preload_pipeline_info_);
   if (prefetch_type_.IsRendererInitiated()) {
@@ -147,6 +149,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateRendererInitiated(
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       /*should_append_variations_header=*/true,
       /*should_disable_block_until_head_timeout=*/false,
+      /*should_bypass_http_cache=*/false,
       PrefetchRendererInitiatorInfo(referring_render_frame_host,
                                     std::move(prefetch_document_manager)));
 }
@@ -181,6 +184,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
       std::move(holdback_status_override),
       /*should_append_variations_header=*/true,
       /*should_disable_block_until_head_timeout=*/false,
+      /*should_bypass_http_cache=*/false,
       PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                    /*request_status_listener=*/nullptr));
 }
@@ -202,7 +206,8 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
     base::TimeDelta ttl,
     bool should_append_variations_header,
-    bool should_disable_block_until_head_timeout) {
+    bool should_disable_block_until_head_timeout,
+    bool should_bypass_http_cache) {
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
@@ -216,6 +221,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
       std::nullopt, additional_headers, ttl,
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,
       should_append_variations_header, should_disable_block_until_head_timeout,
+      should_bypass_http_cache,
       PrefetchBrowserInitiatorInfo(embedder_histogram_suffix,
                                    std::move(request_status_listener)));
 }

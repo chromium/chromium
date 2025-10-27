@@ -580,6 +580,103 @@ public class AwPrefetchTest extends AwParameterizedTest {
         }
     }
 
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchBypassesHttpCacheWithHeader() throws Throwable {
+        final String testPath = "/cachetime";
+        final String testUrl = getUrl(testPath);
+
+        // Perform a prefetch with the cache bypass header.
+        Map<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("X-Disable-Http-Cache", "1");
+        AwPrefetchParameters prefetchParameters =
+                new AwPrefetchParameters(additionalHeaders, null, true);
+        TestAwPrefetchCallback callback = startPrefetchingAndWait(testUrl, prefetchParameters);
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(
+                "Prefetch should complete successfully.",
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertEquals(
+                "Server should have received one request from the prefetch.",
+                1,
+                mTestServer.getRequestCountForUrl(testPath));
+        final int prefetchKey = callback.getPrefetchKey();
+
+        // Cancel the prefetch to prevent it from serving since we are testing
+        // the HTTP cache.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getAwBrowserContext()
+                            .getPrefetchManager()
+                            .cancelPrefetch(prefetchKey);
+                });
+
+        // Load the same URL in a WebView.
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testContainerView.getAwContents();
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testUrl);
+
+        // Verify that the server received a second request, proving the prefetch response
+        // was not written to the HTTP cache.
+        Assert.assertEquals(
+                "Server should have received a second request from the page load.",
+                2,
+                mTestServer.getRequestCountForUrl(testPath));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testPrefetchUsesHttpCacheByDefault() throws Throwable {
+        final String testPath = "/cachetime";
+        final String testUrl = getUrl(testPath);
+
+        // Perform a standard prefetch to populate the cache with a cacheable response.
+        TestAwPrefetchCallback callback =
+                startPrefetchingAndWait(testUrl, getAwPrefetchParameters());
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        Assert.assertEquals(
+                "Prefetch should complete successfully.",
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+        Assert.assertEquals(
+                "Server should have received one request from the prefetch.",
+                1,
+                mTestServer.getRequestCountForUrl(testPath));
+        final int prefetchKey = callback.getPrefetchKey();
+
+        // Cancel the prefetch to prevent it from serving since we are testing
+        // the HTTP cache.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getAwBrowserContext()
+                            .getPrefetchManager()
+                            .cancelPrefetch(prefetchKey);
+                });
+
+        // Load the same URL in a WebView.
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testContainerView.getAwContents();
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testUrl);
+
+        // 4. Verify that the server did NOT receive a second request, proving the page load
+        // was served from the HTTP cache populated by the prefetch.
+        Assert.assertEquals(
+                "Server should NOT have received a second request.",
+                1,
+                mTestServer.getRequestCountForUrl(testPath));
+    }
+
     private String getUrl(final String relativePath) {
         return mTestServer.getURLWithHostName("a.test", relativePath);
     }

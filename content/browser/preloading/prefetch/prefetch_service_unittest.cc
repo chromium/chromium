@@ -488,7 +488,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         no_vary_search_data, PrefetchPriority::kHighest, additional_headers,
         std::move(request_status_listener), ttl,
         /*should_append_variations_header=*/true,
-        should_disable_block_until_head_timeout);
+        should_disable_block_until_head_timeout,
+        /*should_bypass_http_cache=*/false);
   }
 
   int RequestCount() { return test_url_loader_factory_.NumPending(); }

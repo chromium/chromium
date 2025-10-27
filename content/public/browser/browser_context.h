@@ -224,7 +224,8 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       base::TimeDelta ttl,
       bool should_append_variations_header,
-      bool should_disable_block_until_head_timeout);
+      bool should_disable_block_until_head_timeout,
+      bool should_bypass_http_cache);
 
   // Updates the "Accept Language" header that the prefetch service delegate
   // will use.
