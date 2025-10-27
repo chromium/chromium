@@ -385,7 +385,7 @@ def SearchForTestsByName(terms, quiet, remote_search):
     files = [
         f for f in RunCommand([
             'rg', '-l', '--multiline', '--multiline-dotall', '-t', 'cpp', '-t',
-            'java', '-t', 'objcpp', pattern
+            'java', '-t', 'objcpp', pattern, SRC_DIR
         ]).splitlines()
     ]
   else:
