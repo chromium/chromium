@@ -33,10 +33,6 @@ namespace content {
 class NavigationHandle;
 }
 
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
-
 namespace url {
 class Origin;
 }  // namespace url
@@ -80,11 +76,6 @@ class ExecutionEngine : public ToolDelegate {
   };
 
   explicit ExecutionEngine(Profile* profile);
-
-  // Old instances of ExecutionEngine assume that all actions are scoped to a
-  // single tab. This constructor supports this use case, but this is
-  // deprecated. Do not add new consumers
-  ExecutionEngine(Profile* profile, tabs::TabInterface* tab);
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
   ~ExecutionEngine() override;
