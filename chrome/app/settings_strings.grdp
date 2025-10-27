@@ -4436,7 +4436,7 @@
     This feature uses AI and is experimental
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_CONTENT" desc="One of the things to consider when using the feature.">
-    Content from this site is sent to Google and may be seen by human reviewers to improve this feature
+    Content from this site, including its URL, is sent to Google and may be seen by human reviewers to improve this feature
   </message>
   <message name="IDS_SETTINGS_PASSWORD_CHANGE_ENCRYPTION" desc="One of the things to consider when using the feature.">
     Your password is encrypted and never seen by anyone
