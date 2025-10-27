@@ -30,6 +30,13 @@ class StartCrdSessionJobDelegate {
     kClassManagement,
   };
 
+  // The audio playback mode for the CRD session.
+  enum class AudioPlayback {
+    kLocalOnly,
+    kRemoteAndLocal,
+    kRemoteOnly,
+  };
+
   // Session parameters used to start the CRD host.
   struct SessionParameters {
     SessionParameters();
@@ -43,6 +50,9 @@ class StartCrdSessionJobDelegate {
     std::string user_name = "";
     std::optional<std::string> admin_email;
     RequestOrigin request_origin = RequestOrigin::kEnterpriseAdmin;
+    // Currently, the default behavior for enterprise/remote admin sessions is
+    // that audio is not streamed to the client.
+    AudioPlayback audio_playback = AudioPlayback::kLocalOnly;
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
     bool curtain_local_user_session = false;

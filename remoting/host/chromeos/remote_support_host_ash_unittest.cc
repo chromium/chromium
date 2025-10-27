@@ -48,9 +48,10 @@ auto IsSuccessful() {
       testing::Eq(false)));
 }
 
-ChromeOsEnterpriseParams GetDefaultEnterpriseParamsWithRequestOrigin() {
+ChromeOsEnterpriseParams GetEnterpriseParams() {
   ChromeOsEnterpriseParams params;
   params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
   return params;
 }
 
@@ -278,8 +279,7 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 
   bool StoreReconnectableSessionInformation(
       mojom::SupportSessionParams params) {
-    ChromeOsEnterpriseParams enterprise_params(
-        GetDefaultEnterpriseParamsWithRequestOrigin());
+    ChromeOsEnterpriseParams enterprise_params(GetEnterpriseParams());
     enterprise_params.allow_reconnections = true;
     return StoreReconnectableSessionInformation(std::move(params),
                                                 std::move(enterprise_params));
@@ -324,8 +324,7 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
 };
 
 TEST_F(RemoteSupportHostAshTest, ShouldSendConnectMessageWhenStarting) {
-  support_host().StartSession(GetSupportSessionParams(),
-                              GetDefaultEnterpriseParamsWithRequestOrigin(),
+  support_host().StartSession(GetSupportSessionParams(), GetEnterpriseParams(),
                               base::DoNothing());
 
   EXPECT_TRUE(it2me_host().WaitForConnectCall());
@@ -333,8 +332,7 @@ TEST_F(RemoteSupportHostAshTest, ShouldSendConnectMessageWhenStarting) {
 
 TEST_F(RemoteSupportHostAshTest, ShouldInvokeConnectCallbackWhenStarted) {
   TestFuture<mojom::StartSupportSessionResponsePtr> connect_result;
-  support_host().StartSession(GetSupportSessionParams(),
-                              GetDefaultEnterpriseParamsWithRequestOrigin(),
+  support_host().StartSession(GetSupportSessionParams(), GetEnterpriseParams(),
                               connect_result.GetCallback());
 
   ASSERT_TRUE(connect_result.Wait());
@@ -345,7 +343,7 @@ TEST_F(RemoteSupportHostAshTest, ShouldPassUserNameToIt2MeHostWhenStarting) {
   mojom::SupportSessionParams params = GetSupportSessionParams();
   params.user_name = "<the-user-name>";
 
-  StartSession(params, GetDefaultEnterpriseParamsWithRequestOrigin());
+  StartSession(params, GetEnterpriseParams());
 
   EXPECT_EQ(it2me_host().user_name(), params.user_name);
 }
@@ -355,7 +353,7 @@ TEST_F(RemoteSupportHostAshTest, ValidLegacyAccessTokenFormatSucceeds) {
   mojom::SupportSessionParams params = GetSupportSessionParams();
   params.oauth_access_token = "oauth2:<the-oauth-token>";
 
-  StartSession(params, GetDefaultEnterpriseParamsWithRequestOrigin());
+  StartSession(params, GetEnterpriseParams());
 
   EXPECT_TRUE(it2me_host().WaitForConnectCall());
 }
@@ -364,8 +362,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressNotificationsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.suppress_notifications = value;
   StartSession(std::move(params));
 
@@ -375,8 +372,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassTerminateUponInputToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.terminate_upon_input = value;
   StartSession(std::move(params));
 
@@ -387,8 +383,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassCurtainLocalUserSessionToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.curtain_local_user_session = value;
   StartSession(std::move(params));
 
@@ -399,8 +394,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassShowTroubleshootingToolsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.show_troubleshooting_tools = value;
   StartSession(std::move(params));
 
@@ -411,8 +405,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowTroubleshootingToolsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_troubleshooting_tools = value;
   StartSession(std::move(params));
 
@@ -424,8 +417,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowReconnectionsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = value;
   StartSession(std::move(params));
 
@@ -436,8 +428,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowFileTransferToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_file_transfer = value;
   StartSession(std::move(params));
 
@@ -448,8 +439,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressUserDialogsToIt2MeHostWhenStarting) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.suppress_user_dialogs = value;
   StartSession(std::move(params));
 
@@ -458,8 +448,7 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoBeforeClientConnects) {
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   StartSession(std::move(params));
 
@@ -468,8 +457,7 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldStoreSessionInfoWhenClientConnectsToReconnectableSession) {
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   StartSession(std::move(params));
 
@@ -480,8 +468,7 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldNotStoreSessionInfoIfSessionIsNotReconnectable) {
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = false;
   StartSession(std::move(params));
 
@@ -533,8 +520,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressUserDialogsFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.suppress_user_dialogs = value;
 
@@ -550,8 +536,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassSuppressNotificationsFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.suppress_notifications = value;
 
@@ -567,8 +552,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassTerminateUponInputFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.terminate_upon_input = value;
 
@@ -584,8 +568,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassCurtainLocalUserSessionFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.curtain_local_user_session = value;
 
@@ -601,8 +584,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassShowTroubleshootingToolsFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.show_troubleshooting_tools = value;
 
@@ -618,8 +600,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowTroubleshootingToolsFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.allow_troubleshooting_tools = value;
 
@@ -638,8 +619,7 @@ TEST_F(RemoteSupportHostAshTest,
   // with `allow_reconnections` set to false.
   const bool value = true;
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
 
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
@@ -654,8 +634,7 @@ TEST_P(RemoteSupportHostAshTest,
        ShouldPassAllowFileTransferFieldWhenReconnectingToSession) {
   const bool value = GetParam();
 
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   params.allow_file_transfer = value;
 
@@ -669,8 +648,7 @@ TEST_P(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldUseRemoteUserAsAuthorizedHelperWhenReconnectingToSession) {
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   ASSERT_TRUE(StoreReconnectableSessionInformation(GetSupportSessionParams(),
                                                    std::move(params)));
@@ -682,8 +660,7 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldClearReconnectableInformationWhenClientDisconnectsCleanly) {
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   StartSession(std::move(params));
   SignalHostStateConnected();
@@ -695,8 +672,7 @@ TEST_F(RemoteSupportHostAshTest,
 
 TEST_F(RemoteSupportHostAshTest,
        ShouldClearReconnectableInformationWhenAnotherSessionIsStarted) {
-  ChromeOsEnterpriseParams params(
-      GetDefaultEnterpriseParamsWithRequestOrigin());
+  ChromeOsEnterpriseParams params(GetEnterpriseParams());
   params.allow_reconnections = true;
   StartSession(std::move(params));
   SignalHostStateConnected();

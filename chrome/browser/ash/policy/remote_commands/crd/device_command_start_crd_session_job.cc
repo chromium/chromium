@@ -327,6 +327,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.allow_clipboard_sync = kAllowClipboardSync;
   parameters.request_origin =
       StartCrdSessionJobDelegate::RequestOrigin::kEnterpriseAdmin;
+  // Using default for parameters.audio_playback.
   if (ShouldAutoAcceptSession(is_in_managed_environment)) {
     parameters.connection_auto_accept_timeout = kConnectionAutoAcceptTimeout;
   }

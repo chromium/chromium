@@ -17,6 +17,15 @@ enum class ChromeOsEnterpriseRequestOrigin {
   kClassManagement,
 };
 
+// Where to route audio from the local host during the CRD session, where a
+// remote client is viewing the local host's screen.
+enum class ChromeOsEnterpriseAudioPlayback {
+  kUnknown,
+  kLocalOnly,
+  kRemoteAndLocal,
+  kRemoteOnly,
+};
+
 // ChromeOS enterprise specific parameters.
 // These parameters are not exposed through the public Mojom APIs, for security
 // reasons.
@@ -51,6 +60,8 @@ struct ChromeOsEnterpriseParams {
   bool connection_dialog_required = false;
   ChromeOsEnterpriseRequestOrigin request_origin =
       ChromeOsEnterpriseRequestOrigin::kUnknown;
+  ChromeOsEnterpriseAudioPlayback audio_playback =
+      ChromeOsEnterpriseAudioPlayback::kUnknown;
 
   // Both local and remote machine configuration.
   base::TimeDelta connection_auto_accept_timeout;

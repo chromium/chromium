@@ -658,6 +658,15 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassRequestOriginToDelegate) {
             delegate().session_parameters().request_origin);
 }
 
+TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassAudioPlaybackToDelegate) {
+  LogInAsAffiliatedUser();
+  Result result = RunJobAndWaitForResult();
+
+  EXPECT_SUCCESS(result);
+  EXPECT_EQ(StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly,
+            delegate().session_parameters().audio_playback);
+}
+
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldCheckNetworkManagedStatus) {
   LogInAsKioskUser();
 

@@ -89,6 +89,18 @@ StartCrdSessionJobDelegate::RequestOrigin
 ConvertToStartCrdSessionJobDelegateRequestOrigin(
     SharedCrdSession::RequestOrigin request_origin);
 
+// Convert from `StartCrdSessionJobDelegate::AudioPlayback` to
+// `remoting::ChromeOsEnterpriseAudioPlayback`.
+remoting::ChromeOsEnterpriseAudioPlayback
+ConvertToChromeOsEnterpriseAudioPlayback(
+    StartCrdSessionJobDelegate::AudioPlayback audio_playback);
+
+// Convert from `SharedCrdSession::AudioPlayback` to
+// `StartCrdSessionJobDelegate::AudioPlayback`.
+StartCrdSessionJobDelegate::AudioPlayback
+ConvertToStartCrdSessionJobDelegateAudioPlayback(
+    SharedCrdSession::AudioPlayback audio_playback);
+
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_CRD_CRD_REMOTE_COMMAND_UTILS_H_

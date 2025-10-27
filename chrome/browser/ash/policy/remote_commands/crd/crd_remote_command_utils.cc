@@ -293,4 +293,32 @@ ConvertToStartCrdSessionJobDelegateRequestOrigin(
   NOTREACHED();
 }
 
+remoting::ChromeOsEnterpriseAudioPlayback
+ConvertToChromeOsEnterpriseAudioPlayback(
+    StartCrdSessionJobDelegate::AudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kLocalOnly;
+    case StartCrdSessionJobDelegate::AudioPlayback::kRemoteAndLocal:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kRemoteAndLocal;
+    case StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly:
+      return remoting::ChromeOsEnterpriseAudioPlayback::kRemoteOnly;
+  }
+  NOTREACHED();
+}
+
+StartCrdSessionJobDelegate::AudioPlayback
+ConvertToStartCrdSessionJobDelegateAudioPlayback(
+    SharedCrdSession::AudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case SharedCrdSession::AudioPlayback::kLocalOnly:
+      return StartCrdSessionJobDelegate::AudioPlayback::kLocalOnly;
+    case SharedCrdSession::AudioPlayback::kRemoteAndLocal:
+      return StartCrdSessionJobDelegate::AudioPlayback::kRemoteAndLocal;
+    case SharedCrdSession::AudioPlayback::kRemoteOnly:
+      return StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly;
+  }
+  NOTREACHED();
+}
+
 }  // namespace policy

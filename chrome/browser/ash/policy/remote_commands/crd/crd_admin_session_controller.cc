@@ -375,6 +375,8 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
   params.connection_dialog_required = parameters.show_confirmation_dialog;
   params.request_origin =
       ConvertToChromeOsEnterpriseRequestOrigin(parameters.request_origin);
+  params.audio_playback =
+      ConvertToChromeOsEnterpriseAudioPlayback(parameters.audio_playback);
   params.connection_auto_accept_timeout =
       parameters.connection_auto_accept_timeout.value_or(base::TimeDelta());
   params.maximum_session_duration =

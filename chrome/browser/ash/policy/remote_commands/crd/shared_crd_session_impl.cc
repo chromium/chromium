@@ -79,6 +79,9 @@ void SharedCrdSessionImpl::StartCrdHost(
   session_parameters.request_origin =
       ConvertToStartCrdSessionJobDelegateRequestOrigin(
           parameters.request_origin);
+  session_parameters.audio_playback =
+      ConvertToStartCrdSessionJobDelegateAudioPlayback(
+          parameters.audio_playback);
 
   CRD_VLOG(1) << "Starting CRD host and retrieving CRD access code";
   delegate_->StartCrdHostAndGetCode(

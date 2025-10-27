@@ -634,6 +634,25 @@ TEST_F(CrdAdminSessionControllerTest,
             remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement);
 }
 
+TEST_F(CrdAdminSessionControllerTest,
+       ShouldPassAudioPlaybackToRemotingService) {
+  InitWithNoReconnectableSession(session_controller());
+  SessionParameters parameters;
+  parameters.audio_playback =
+      StartCrdSessionJobDelegate::AudioPlayback::kRemoteOnly;
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.audio_playback,
+            remoting::ChromeOsEnterpriseAudioPlayback::kRemoteOnly);
+}
+
 TEST_P(CrdAdminSessionControllerTestWithBoolParams,
        ShouldPassCurtainLocalUserSessionToRemotingService) {
   InitWithNoReconnectableSession(session_controller());

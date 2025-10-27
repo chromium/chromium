@@ -33,6 +33,14 @@ class SharedCrdSession {
     kClassManagement,
   };
 
+  // The audio playback mode for the CRD session.
+  // This should match `StartCrdSessionJobDelegate::AudioPlayback`.
+  enum class AudioPlayback {
+    kLocalOnly,
+    kRemoteAndLocal,
+    kRemoteOnly,
+  };
+
   // Session parameters used to start the CRD host.
   // This is a subset of the parameters inside of
   // `StartCrdSessionJobDelegate::SessionParameters`.
@@ -46,6 +54,7 @@ class SharedCrdSession {
     SessionParameters& operator=(SessionParameters&&);
 
     RequestOrigin request_origin;
+    AudioPlayback audio_playback;
     std::optional<std::string> viewer_email;
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
