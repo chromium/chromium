@@ -178,6 +178,10 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   SharedContextState* shared_context_state() { return context_state_.get(); }
   const scoped_refptr<SharedImageCopyManager>& copy_manager();
 
+  static bool IsNativeBufferSupported(viz::SharedImageFormat format,
+                                      gfx::BufferUsage usage,
+                                      const gfx::GpuExtraInfo& gpu_extra_info);
+
   base::WeakPtr<SharedImageFactory> GetWeakPtr();
 
  private:
@@ -199,9 +203,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                            gfx::GpuMemoryBufferType gmb_type,
                            const gfx::Size& size,
                            const std::string& debug_label);
-  static bool IsNativeBufferSupported(viz::SharedImageFormat format,
-                                      gfx::BufferUsage usage,
-                                      const gfx::GpuExtraInfo& gpu_extra_info);
 #if BUILDFLAG(IS_WIN)
   bool IsD3DSharedImageSupported() const;
 #endif

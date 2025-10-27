@@ -49,7 +49,6 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -148,20 +147,6 @@ bool IsAcceleratedJpegDecodeSupported() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-bool WillGetGmbConfigFromGpu() {
-#if BUILDFLAG(IS_OZONE)
-  // Ozone/X11 requires gpu initialization to be done before it can determine
-  // what formats gmb can use. This limitation comes from the requirement to
-  // have GLX bindings initialized. The buffer formats will be passed through
-  // gpu extra info.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
 }
 
 void RunGetPeakGpuMemoryUsageCallbackOnMainThread(
@@ -1236,10 +1221,11 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
   // Determine whether it's possible to create an NV12 NativePixmap with
   // GPU_READ_CPU_READ_WRITE usage (the relevant usage for the clients of this
   // method).
-  auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  auto format = MultiPlaneFormat::kNV12;
   auto buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
-  if (!IsNativeBufferSupported(buffer_format, buffer_usage)) {
+  if (!gpu::SharedImageFactory::IsNativeBufferSupported(format, buffer_usage,
+                                                        gpu_extra_info_)) {
     return false;
   }
 
@@ -1251,7 +1237,8 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
                                vulkan_context_provider()
                                    ? vulkan_context_provider()->GetDeviceQueue()
                                    : nullptr,
-                               size, buffer_format, buffer_usage, size);
+                               size, SharedImageFormatToBufferFormat(format),
+                               buffer_usage, size);
   if (!pixmap.get() || pixmap->ExportHandle().planes.empty()) {
     return false;
   }
@@ -1342,34 +1329,6 @@ base::WaitableEvent* GpuServiceImpl::CreateShutdownEvent() {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   return owned_shutdown_event_.get();
-}
-
-bool GpuServiceImpl::IsNativeBufferSupported(gfx::BufferFormat format,
-                                             gfx::BufferUsage usage) {
-  // Note that we are initializing the |supported_gmb_configurations_| here to
-  // make sure gpu service have already initialized and required metadata like
-  // supported buffer configurations have already been sent from browser
-  // process to GPU process for wayland.
-  if (!supported_gmb_configurations_inited_) {
-    supported_gmb_configurations_inited_ = true;
-    if (WillGetGmbConfigFromGpu()) {
-      // Note that Chrome can be compiled with multiple OZONE platforms but
-      // actual OZONE platform is chosen at run-time. Eg: Chrome can be
-      // compiled with X11 and Wayland but Wayland can be chosen at runtime.
-      // Hence using WillGetGmbConfigFromGpu() which will determine
-      // configurations based on actual platform chosen at runtime.
-#if BUILDFLAG(IS_OZONE_X11)
-      for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
-        supported_gmb_configurations_.emplace(config);
-      }
-#endif  // BUILDFLAG(IS_OZONE_X11)
-    } else {
-      supported_gmb_configurations_ =
-          gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-    }
-  }
-  return supported_gmb_configurations_.find(gfx::BufferUsageAndFormat(
-             usage, format)) != supported_gmb_configurations_.end();
 }
 
 void GpuServiceImpl::GetDawnInfo(bool collect_metrics,

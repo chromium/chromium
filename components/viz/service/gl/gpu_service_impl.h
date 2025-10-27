@@ -402,9 +402,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   gpu::Scheduler* CreateScheduler(gpu::SyncPointManager* sync_point_manager);
   base::WaitableEvent* CreateShutdownEvent();
 
-  bool IsNativeBufferSupported(gfx::BufferFormat format,
-                               gfx::BufferUsage usage);
-
 #if BUILDFLAG(IS_WIN)
   void RequestDXGIInfoOnMainThread(RequestDXGIInfoCallback callback);
 #endif
@@ -542,9 +539,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   base::CancelableTaskTracker bind_task_tracker_;
   // Should only be accessed on the IO thread after creation.
   mojo::Receiver<mojom::GpuService> receiver_{this};
-
-  gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
-  bool supported_gmb_configurations_inited_ = false;
 
   VisibilityChangedCallback visibility_changed_callback_;
 
