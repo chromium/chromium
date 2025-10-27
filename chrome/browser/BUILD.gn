@@ -345,8 +345,6 @@ static_library("browser") {
     "component_updater/trust_token_key_commitments_component_installer.h",
     "component_updater/wasm_tts_engine_component_installer.cc",
     "component_updater/wasm_tts_engine_component_installer.h",
-    "contextmenu/context_menu_features.cc",
-    "contextmenu/context_menu_features.h",
     "custom_handlers/chrome_protocol_handler_registry_delegate.cc",
     "custom_handlers/chrome_protocol_handler_registry_delegate.h",
     "custom_handlers/protocol_handler_registry_factory.cc",
@@ -1901,6 +1899,7 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
+    "//chrome/browser/contextmenu",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:impl",
     "//chrome/browser/crash_upload_list",
@@ -3652,7 +3651,6 @@ static_library("browser") {
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
       # headers get componentized:
       # - c/b/predictors/predictors_features.h
-      # - c/b/contextmenu/context_menu_features.h
       # - c/b/browser_features.h
       "//chrome/browser/flags:flags_android_impl",
 
