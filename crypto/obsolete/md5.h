@@ -74,6 +74,10 @@ namespace extensions::image_writer {
 crypto::obsolete::Md5 MakeMd5HasherForImageWriter();
 }
 
+namespace history {
+std::string Md5AsHexForTopSites(std::string_view url_spec);
+}
+
 namespace media::test {
 crypto::obsolete::Md5 MakeMd5HasherForVideoFrameValidation();
 }
@@ -195,6 +199,9 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(crbug.com/454630854): get rid of this.
   friend std::string display::Md5AsHexForEdid(std::string_view data);
+
+  // TODO(https://crbug.com/454354275): get rid of this.
+  friend std::string history::Md5AsHexForTopSites(std::string_view url_spec);
 
   // TODO(https://crbug.com/428022614): get rid of this.
   friend Md5 media::test::MakeMd5HasherForVideoFrameValidation();

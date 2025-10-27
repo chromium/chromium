@@ -139,6 +139,7 @@ static_library("browser") {
     "//components/variations",
     "//components/version_info",
     "//components/visitedlink/core",
+    "//crypto",
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
