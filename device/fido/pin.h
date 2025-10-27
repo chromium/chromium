@@ -177,7 +177,7 @@ class SetRequest {
  private:
   const PINUVAuthProtocol protocol_;
   const KeyAgreementResponse peer_key_;
-  uint8_t pin_[kMaxBytes + 1];
+  std::array<uint8_t, kMaxBytes + 1> pin_ = {};
 };
 
 struct EmptyResponse {
@@ -201,8 +201,8 @@ class ChangeRequest {
  private:
   const PINUVAuthProtocol protocol_;
   const KeyAgreementResponse peer_key_;
-  uint8_t old_pin_hash_[16];
-  uint8_t new_pin_[kMaxBytes + 1];
+  std::array<uint8_t, 16> old_pin_hash_;
+  std::array<uint8_t, kMaxBytes + 1> new_pin_;
 };
 
 // ResetRequest resets an authenticator, which should invalidate all
@@ -248,7 +248,7 @@ class PinTokenRequest : public TokenRequest {
   AsCTAPRequestValuePair(const PinTokenRequest&);
 
  protected:
-  uint8_t pin_hash_[16];
+  std::array<uint8_t, 16> pin_hash_;
 };
 
 class PinTokenWithPermissionsRequest : public PinTokenRequest {

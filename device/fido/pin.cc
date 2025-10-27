@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -216,8 +218,8 @@ SetRequest::SetRequest(PINUVAuthProtocol protocol,
                        const KeyAgreementResponse& peer_key)
     : protocol_(protocol), peer_key_(peer_key) {
   DCHECK_EQ(ValidatePIN(pin), PINEntryError::kNoError);
-  UNSAFE_TODO(memset(pin_, 0, sizeof(pin_)));
-  UNSAFE_TODO(memcpy(pin_, pin.data(), pin.size()));
+  std::ranges::fill(pin_, 0);
+  base::span(pin_).copy_prefix_from(base::as_byte_span(pin));
 }
 
 cbor::Value::MapValue EncodeCOSEPublicKey(
@@ -242,11 +244,12 @@ ChangeRequest::ChangeRequest(PINUVAuthProtocol protocol,
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(old_pin.data()), old_pin.size(),
          digest);
-  UNSAFE_TODO(memcpy(old_pin_hash_, digest, sizeof(old_pin_hash_)));
+  base::span(old_pin_hash_)
+      .copy_from(base::span(digest).first(old_pin_hash_.size()));
 
   DCHECK_EQ(ValidatePIN(new_pin), PINEntryError::kNoError);
-  UNSAFE_TODO(memset(new_pin_, 0, sizeof(new_pin_)));
-  UNSAFE_TODO(memcpy(new_pin_, new_pin.data(), new_pin.size()));
+  new_pin_.fill(0);
+  base::span(new_pin_).copy_prefix_from(base::as_byte_span(new_pin));
 }
 
 // static
@@ -390,10 +393,11 @@ AsCTAPRequestValuePair(const ChangeRequest& request) {
 
   std::vector<uint8_t> ciphertexts_concat(encrypted_pin.size() +
                                           old_pin_hash_enc.size());
-  UNSAFE_TODO(memcpy(ciphertexts_concat.data(), encrypted_pin.data(),
-                     encrypted_pin.size()));
-  UNSAFE_TODO(memcpy(ciphertexts_concat.data() + encrypted_pin.size(),
-                     old_pin_hash_enc.data(), old_pin_hash_enc.size()));
+  {
+    auto [l, r] = base::span(ciphertexts_concat).split_at(encrypted_pin.size());
+    l.copy_from(encrypted_pin);
+    r.copy_from(old_pin_hash_enc);
+  }
 
   std::vector<uint8_t> pin_auth =
       pin_protocol.Authenticate(shared_key, ciphertexts_concat);
@@ -439,7 +443,7 @@ PinTokenRequest::PinTokenRequest(PINUVAuthProtocol protocol,
     : TokenRequest(protocol, peer_key) {
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(pin.data()), pin.size(), digest);
-  UNSAFE_TODO(memcpy(pin_hash_, digest, sizeof(pin_hash_)));
+  base::span(pin_hash_).copy_from(base::span(digest).first(pin_hash_.size()));
 }
 
 PinTokenRequest::~PinTokenRequest() = default;
@@ -535,16 +539,14 @@ AsCTAPRequestValuePair(const UvTokenRequest& request) {
 static std::vector<uint8_t> ConcatSalts(
     base::span<const uint8_t, 32> salt1,
     const std::optional<std::array<uint8_t, 32>>& salt2) {
-  const size_t salts_size =
-      salt1.size() + (salt2.has_value() ? salt2->size() : 0);
-  std::vector<uint8_t> salts(salts_size);
-
-  UNSAFE_TODO(memcpy(salts.data(), salt1.data(), salt1.size()));
-  if (salt2.has_value()) {
-    UNSAFE_TODO(
-        memcpy(salts.data() + salt1.size(), salt2->data(), salt2->size()));
+  if (!salt2) {
+    return base::ToVector(salt1);
   }
 
+  std::vector<uint8_t> salts(salt1.size() + salt2->size());
+  auto [l, r] = base::span(salts).split_at(salt1.size());
+  l.copy_from(salt1);
+  r.copy_from(*salt2);
   return salts;
 }
 
