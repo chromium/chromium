@@ -2294,7 +2294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.EstimatedClockDrift_ppm" units="ppm"
-    expires_after="2025-11-18">
+    expires_after="2026-11-18">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
