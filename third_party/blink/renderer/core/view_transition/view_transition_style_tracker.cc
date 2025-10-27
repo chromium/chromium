@@ -1774,10 +1774,6 @@ gfx::Transform ViewTransitionStyleTracker::ComputeTransformForParticipant(
     // TODO(crbug.com/394052227): Should we force compositing on the scope?
     // If we do, its paint offset will always be zero.
     transform.Translate(-gfx::Vector2dF(scope_fragment.PaintOffset()));
-
-    // Adjust for the scope element's borders and scrollbars.
-    // TODO(crbug.com/394052227): Is this correct in RTL / all writing modes?
-    transform.Translate(-scope_box->ClientLeft(), -scope_box->ClientTop());
   }
 
   if (!transform.HasPerspective()) {

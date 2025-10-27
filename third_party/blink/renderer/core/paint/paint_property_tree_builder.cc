@@ -1798,19 +1798,9 @@ FragmentPaintPropertyTreeBuilder::ParentForViewTransitionPseudoEffect() const {
     }
   }
 
-  DCHECK(!scope.IsDocumentElement());
-  auto* scope_properties =
-      scope.GetLayoutObject()->FirstFragment().PaintProperties();
-  if (!scope_properties) {
-    return context_.current_effect;
-  }
-
-  // Make the effect node for the ::view-transition pseudo-element a sibling of
-  // the ViewTransitionEffect for the scope element. The ViewTransitionEffect is
-  // guaranteed to exist (see ViewTransition::NeedsViewTransitionEffectNode).
-  auto* scope_vt_effect = scope_properties->ViewTransitionEffect();
-  CHECK(scope_vt_effect && scope_vt_effect->Parent());
-  return scope_vt_effect->Parent();
+  // The layout object for a ::view-transition pseudo is a sibling of the
+  // originating element's layout object.
+  return context_.current_effect;
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateEffect() {

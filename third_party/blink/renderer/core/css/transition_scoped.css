@@ -10,9 +10,18 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-::view-transition {
+:root::view-transition {
   position: absolute;
   inset: 0;
+}
+
+:not(:root)::view-transition {
+  position: absolute;
+  left: anchor(left);
+  top: anchor(top);
+  width: anchor-size(width);
+  height: anchor-size(height);
+  overflow: clip;
 }
 
 ::view-transition-group(*) {

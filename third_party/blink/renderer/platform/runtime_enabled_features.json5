@@ -4348,7 +4348,8 @@
     {
       // https://github.com/WICG/view-transitions/blob/main/scoped-transitions.md
       name: "ScopedViewTransitions",
-      status: "experimental"
+      depends_on: ["CSSAnchorWithTransforms", "OriginatingElementIsImplicitAnchor"],
+      status: "experimental",
     },
     {
       // https://github.com/w3c/window-management/issues/149

@@ -73,6 +73,11 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
     // LayoutView. Otherwise, this returns nullptr and we're at the end.
     return node_->GetDocument().GetLayoutView()->GetViewTransitionRoot();
   }
+
+  if (node_->IsViewTransitionPseudoElement()) {
+    return nullptr;
+  }
+
   return LayoutTreeBuilder::NextLayoutObject();
 }
 
@@ -90,6 +95,16 @@ LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
     ContainerNode* parent_element =
         LayoutTreeBuilderTraversal::LayoutParent(*node_->parentElement());
     DCHECK_EQ(parent_element->GetLayoutObject(), context_.parent);
+  }
+
+  // Box for a scoped view-transition is a sibling of its originating element's
+  // layout box.
+  if (node_->GetPseudoId() == kPseudoIdViewTransition) {
+    const Element& scope =
+        To<PseudoElement>(node_)->UltimateOriginatingElement();
+    if (!scope.IsDocumentElement()) {
+      DCHECK_EQ(scope.GetLayoutObject()->Parent(), context_.parent);
+    }
   }
 #endif  // DCHECK_IS_ON()
   return context_.parent;

@@ -363,7 +363,8 @@ bool PseudoElement::IsLayoutSiblingOfOriginatingElement(
          pseudo_id == kPseudoIdScrollButton ||
          pseudo_id == kPseudoIdScrollMarkerGroup ||
          pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
-         pseudo_id == kPseudoIdScrollMarkerGroupBefore;
+         pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
+         pseudo_id == kPseudoIdViewTransition;
 }
 
 bool PseudoElement::IsLayoutSiblingOfOriginatingElement() const {
