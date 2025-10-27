@@ -12,6 +12,7 @@
 #import "components/country_codes/country_codes.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
+#import "components/sync_preferences/features.h"
 #import "components/version_info/channel.h"
 #import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
@@ -1172,7 +1173,9 @@ BASE_FEATURE(kImportPasswordsFromSafari, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIOSSyncedSetUp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsSyncedSetUpEnabled() {
-  return base::FeatureList::IsEnabled(kIOSSyncedSetUp);
+  return base::FeatureList::IsEnabled(
+             sync_preferences::features::kEnableCrossDevicePrefTracker) &&
+         base::FeatureList::IsEnabled(kIOSSyncedSetUp);
 }
 
 BASE_FEATURE(kMultilineBrowserOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);

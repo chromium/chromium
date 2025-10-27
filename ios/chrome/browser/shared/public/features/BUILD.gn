@@ -12,6 +12,7 @@ source_set("features") {
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public",
     "//components/sync/base:features",
+    "//components/sync_preferences:features",
     "//components/version_info:channel",
     "//crypto",
     "//ios/chrome/app:background_mode_buildflags",
