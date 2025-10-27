@@ -168,8 +168,7 @@ class ActorKeyedService : public KeyedService {
   using UserConfirmationDialogCallback = base::RepeatingCallback<void(
       webui::mojom::UserConfirmationDialogResponsePtr)>;
   using RequestToShowUserConfirmationDialogSubscriberCallback =
-      base::RepeatingCallback<void(const std::optional<url::Origin>&,
-                                   const std::optional<int32_t>,
+      base::RepeatingCallback<void(const url::Origin&,
                                    UserConfirmationDialogCallback)>;
 
   base::CallbackListSubscription
@@ -180,8 +179,7 @@ class ActorKeyedService : public KeyedService {
   // for the actor to continue.
   void NotifyRequestToShowUserConfirmationDialog(
       TaskId task_id,
-      const std::optional<url::Origin>& navigation_origin,
-      const std::optional<int32_t> download_id);
+      const url::Origin& navigation_origin);
 
   void OnUserConfirmationDialogDecision(
       TaskId request_task_id,

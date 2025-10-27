@@ -84,7 +84,6 @@ struct SelectCredentialDialogResponse {
 // that also encodes what type of request is being sent.
 union UserConfirmationDialogPayload {
   url.mojom.Origin navigation_origin;
-  int32 download_id;
 };
 
 struct UserConfirmationDialogRequest {

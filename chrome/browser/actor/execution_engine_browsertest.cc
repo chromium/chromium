@@ -587,15 +587,12 @@ class ExecutionEngineOriginGatingBrowserTest
             ->AddRequestToShowUserConfirmationDialogSubscriberCallback(
                 base::BindLambdaForTesting(
                     [expected_navigation_origin, permission_granted](
-                        const std::optional<url::Origin>& got_navigation_origin,
-                        const std::optional<int32_t> got_download_id,
+                        const url::Origin& got_navigation_origin,
                         ActorKeyedService::UserConfirmationDialogCallback
                             callback) {
                       // Verify the request is what the IPC expects.
-                      EXPECT_TRUE(got_navigation_origin);
                       EXPECT_EQ(got_navigation_origin,
                                 expected_navigation_origin);
-                      EXPECT_FALSE(got_download_id);
                       // Send a mock IPC response.
                       std::move(callback).Run(
                           webui::mojom::UserConfirmationDialogResponse::New(

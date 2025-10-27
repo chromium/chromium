@@ -2250,9 +2250,6 @@ function userConfirmationDialogRequestToClient(
     navigationOrigin: request.payload.navigationOrigin ?
         originToClient(request.payload.navigationOrigin) :
         undefined,
-    downloadId: typeof request.payload.downloadId === 'number' ?
-        request.payload.downloadId :
-        undefined,
   };
 }
 

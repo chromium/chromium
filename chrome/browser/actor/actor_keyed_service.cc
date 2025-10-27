@@ -218,10 +218,9 @@ ActorKeyedService::AddRequestToShowUserConfirmationDialogSubscriberCallback(
 
 void ActorKeyedService::NotifyRequestToShowUserConfirmationDialog(
     TaskId task_id,
-    const std::optional<url::Origin>& navigation_origin,
-    const std::optional<int32_t> download_id) {
+    const url::Origin& navigation_origin) {
   request_to_show_user_confirmation_dialog_callback_list_.Notify(
-      navigation_origin, download_id,
+      navigation_origin,
       base::BindRepeating(&ActorKeyedService::OnUserConfirmationDialogDecision,
                           weak_ptr_factory_.GetWeakPtr(), task_id));
 }

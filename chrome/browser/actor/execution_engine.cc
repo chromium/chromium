@@ -346,7 +346,7 @@ void ExecutionEngine::SendUserConfirmationDialogRequest(
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
                      GetWeakPtr(), navigation_origin, std::move(callback));
   ActorKeyedService::Get(profile_)->NotifyRequestToShowUserConfirmationDialog(
-      task_->id(), navigation_origin, std::nullopt);
+      task_->id(), navigation_origin);
 }
 
 void ExecutionEngine::OnUserConfirmationDialogResponse(

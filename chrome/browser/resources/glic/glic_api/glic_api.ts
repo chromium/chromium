@@ -1891,7 +1891,11 @@ export declare interface UserConfirmationDialogRequest {
   // These fields form a union type, only 1 must be set.
   // Origin to request the actor navigate to.
   navigationOrigin?: string;
-  // ID of download the actor is asking to execute.
+  /**
+   * @deprecated Unique integer ID for identifying downloads
+   * for confirmation. We decided not to show user confirmation
+   * dialog in that case.
+   */
   downloadId?: number;
   // End of union fields.
 

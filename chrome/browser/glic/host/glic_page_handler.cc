@@ -1701,20 +1701,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void RequestToShowUserConfirmationDialog(
-      const std::optional<url::Origin>& navigation_origin,
-      const std::optional<int32_t> download_id,
+      const url::Origin& navigation_origin,
       actor::ActorKeyedService::UserConfirmationDialogCallback callback) {
     actor::webui::mojom::UserConfirmationDialogPayloadPtr payload = nullptr;
-    if (navigation_origin) {
-      payload = actor::webui::mojom::UserConfirmationDialogPayload::
-          NewNavigationOrigin(*navigation_origin);
-    } else if (download_id) {
-      payload =
-          actor::webui::mojom::UserConfirmationDialogPayload::NewDownloadId(
-              *download_id);
-    } else {
-      NOTREACHED();
-    }
+    payload =
+        actor::webui::mojom::UserConfirmationDialogPayload::NewNavigationOrigin(
+            navigation_origin);
     web_client_->RequestToShowUserConfirmationDialog(
         actor::webui::mojom::UserConfirmationDialogRequest::New(
             std::move(payload)),
