@@ -103,6 +103,7 @@ android_library("java") {
     "//url:gurl_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
+    "//url/mojom:url_mojom_scheme_host_port_java",
   ]
 
   resources_package = "org.chromium.components.webauthn"
