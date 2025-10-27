@@ -321,7 +321,7 @@ void ValuableMetadataSyncBridge::EntityInstanceChanged(
       CHECK(change.data_model());
       change_processor()->Put(
           *change.key(),
-          CreateEntityDataFromEntityInstance(*change.data_model()),
+          CreateEntityDataFromEntityMetadata(change.data_model()->metadata()),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:
