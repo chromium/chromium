@@ -293,6 +293,13 @@ bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {
   return GetChoiceScreenEligibilityConfig().has_value();
 }
 
+// static
+bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+    const country_codes::CountryId& tested_country_id) {
+  return GetSettingsForProgram(CountryIdToProgram(tested_country_id))
+      .choice_screen_eligibility_config.has_value();
+}
+
 bool RegionalCapabilitiesService::
     IsChoiceScreenCompatibleWithCurrentLocation() {
   CHECK(GetChoiceScreenEligibilityConfig().has_value())

@@ -746,7 +746,8 @@ void SearchEngineChoiceService::RecordChoiceMade(
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
     const ChoiceScreenDisplayState& display_state,
     bool is_from_cached_state) {
-  if (!regional_capabilities::IsEeaCountry(display_state.country_id)) {
+  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion(
+          display_state.country_id)) {
     // Tests or command line can force this, but we want to avoid polluting the
     // histograms with unwanted country data.
     return;

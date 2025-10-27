@@ -1108,5 +1108,45 @@ TEST_F(RegionalCapabilitiesServiceTest, IsInEeaCountry) {
   EXPECT_TRUE(service->IsInEeaCountry());
 }
 
+TEST_F(RegionalCapabilitiesServiceTest, IsInSearchEngineChoiceScreenRegion) {
+  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("DE")));
+  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("FR")));
+  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("VA")));
+  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("AX")));
+  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("YT")));
+  EXPECT_TRUE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("NC")));
+
+#if BUILDFLAG(IS_IOS)
+  {
+    base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
+    EXPECT_EQ(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+                  CountryId("JP")),
+              kPhoneFormFactors.Has(ui::GetDeviceFormFactor()));
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(switches::kTaiyaki);
+    EXPECT_FALSE(
+        RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+            CountryId("JP")));
+  }
+#else
+  EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("JP")));
+#endif  // BUILDFLAG(IS_IOS)
+
+  EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId("US")));
+  EXPECT_FALSE(RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CountryId()));
+}
+
 }  // namespace
 }  // namespace regional_capabilities
