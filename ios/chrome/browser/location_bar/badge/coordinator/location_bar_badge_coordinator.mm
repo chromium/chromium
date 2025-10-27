@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
+#import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -24,7 +25,8 @@
 
 @interface LocationBarBadgeCoordinator () <
     ContextualPanelEntrypointCommands,
-    ContextualPanelEntrypointMediatorDelegate>
+    ContextualPanelEntrypointMediatorDelegate,
+    LocationBarBadgeMediatorDelegate>
 @end
 
 @implementation LocationBarBadgeCoordinator {
@@ -51,6 +53,7 @@
   }
   _locationBarBadgeMediator = [[LocationBarBadgeMediator alloc] init];
   _locationBarBadgeMediator.consumer = _viewController;
+  _locationBarBadgeMediator.delegate = self;
   [_dispatcher startDispatchingToTarget:_locationBarBadgeMediator
                             forProtocol:@protocol(LocationBarBadgeCommands)];
 }
@@ -65,7 +68,10 @@
   _animatedFullscreenDisabler = nullptr;
 }
 
-#pragma mark ContextualPanelEntrypointMediatorDelegate
+// TODO(crbug.com/454351425): Remove pragma when Contextual Panel Entry Point is
+// integrated with LocationBarBadgeMediator.
+#pragma mark - ContextualPanelEntrypointMediatorDelegate
+#pragma mark - LocationBarBadgeMediatorDelegate
 
 - (BOOL)canShowLargeContextualPanelEntrypoint:
     (ContextualPanelEntrypointMediator*)mediator {

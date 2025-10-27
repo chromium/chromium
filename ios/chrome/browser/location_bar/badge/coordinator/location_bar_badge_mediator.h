@@ -13,16 +13,19 @@
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 
 @protocol LocationBarBadgeConsumer;
+@protocol LocationBarBadgeMediatorDelegate;
 
 // Mediator for the location bar badge.
-// TODO(crbug.com/445719031): Implement this.
 @interface LocationBarBadgeMediator
     : NSObject <BadgeViewVisibilityDelegate,
                 IncognitoBadgeViewVisibilityDelegate,
                 ReaderModeChipVisibilityDelegate,
                 LocationBarBadgeCommands>
 
+// The consumer for this mediator.
 @property(nonatomic, weak) id<LocationBarBadgeConsumer> consumer;
+// The delegate for this mediator.
+@property(nonatomic, weak) id<LocationBarBadgeMediatorDelegate> delegate;
 
 @end
 

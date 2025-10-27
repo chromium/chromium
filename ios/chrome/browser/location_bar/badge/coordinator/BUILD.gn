@@ -9,6 +9,7 @@ source_set("coordinator") {
     "location_bar_badge_coordinator_delegate.h",
     "location_bar_badge_mediator.h",
     "location_bar_badge_mediator.mm",
+    "location_bar_badge_mediator_delegate.h",
   ]
   deps = [
     "//base",

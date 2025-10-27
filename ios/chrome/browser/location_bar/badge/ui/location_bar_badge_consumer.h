@@ -8,6 +8,8 @@
 enum class LocationBarBadgeType;
 @class LocationBarBadgeConfiguration;
 
+// TODO(crbug.com/454351425): Refactor function names to not use "entrypoint".
+// Usage is for parity with ContextualPanelEntryPointConsumer.
 // Consumer for the location bar badge mediator.
 @protocol LocationBarBadgeConsumer
 
@@ -16,6 +18,15 @@ enum class LocationBarBadgeType;
 
 // Update the consumer with a new badge configuration.
 - (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config;
+
+// Notify the consumer to show the entrypoint.
+- (void)showEntrypoint;
+
+// Notify the consumer to transition back to the small entrypoint.
+- (void)transitionToSmallEntrypoint;
+
+// Notify the consumer to transition to the large entrypoint for a loud moment.
+- (void)transitionToLargeEntrypoint;
 
 @end
 
