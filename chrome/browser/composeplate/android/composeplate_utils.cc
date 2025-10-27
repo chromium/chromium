@@ -21,3 +21,13 @@ jboolean JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
       chrome::android::kAndroidComposeplateAllLocales,
       chrome::android::kAndroidComposeplate);
 }
+
+// static
+jboolean JNI_ComposeplateUtils_IsAimEntrypointLFFEligible(JNIEnv* env,
+                                                          Profile* profile) {
+  DCHECK(profile);
+  return AimEligibilityService::GenericKillSwitchFeatureCheck(
+      AimEligibilityServiceFactory::GetForProfile(profile),
+      chrome::android::kAndroidComposeplateLFFAllLocales,
+      chrome::android::kAndroidComposeplateLFF);
+}

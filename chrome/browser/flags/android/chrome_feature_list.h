@@ -35,6 +35,7 @@ BASE_DECLARE_FEATURE(kAndroidBottomToolbarV2);
 BASE_DECLARE_FEATURE(kAndroidComposeplate);
 BASE_DECLARE_FEATURE(kAndroidComposeplateAllLocales);
 BASE_DECLARE_FEATURE(kAndroidComposeplateLFF);
+BASE_DECLARE_FEATURE(kAndroidComposeplateLFFAllLocales);
 BASE_DECLARE_FEATURE(kAndroidContextMenuDuplicateTabs);
 BASE_DECLARE_FEATURE(kAndroidDataImporterService);
 BASE_DECLARE_FEATURE(kAndroidDesktopDensity);

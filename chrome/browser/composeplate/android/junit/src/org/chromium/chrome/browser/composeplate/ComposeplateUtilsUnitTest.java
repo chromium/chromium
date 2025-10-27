@@ -62,10 +62,12 @@ public class ComposeplateUtilsUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
+        when(mMockComposeplateUtilsJni.isAimEntrypointLFFEligible(eq(mProfile))).thenReturn(true);
     }
 
     @Test
-    public void testIsComposeplateEnabled() {
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE_LFF})
+    public void testIsComposeplateEnabled_LFFFlagDisabled() {
         assertTrue(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
 
         // Verifies that the function returns false on tablets.
@@ -73,12 +75,33 @@ public class ComposeplateUtilsUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE_LFF})
     public void testIsComposeplateEnabled_DisabledByServerEligibility() {
         assertTrue(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
 
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(false);
         // Verifies that the composeplate is disabled by policy.
         assertFalse(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_COMPOSEPLATE_LFF})
+    public void testIsComposeplateEnabled_LFF() {
+        assertTrue(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
+        assertTrue(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ true, mProfile));
+
+        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(false);
+        // Verifies that the composeplate is disabled by policy on all devices.
+        assertFalse(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
+        assertFalse(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ true, mProfile));
+
+        when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
+        when(mMockComposeplateUtilsJni.isAimEntrypointLFFEligible(eq(mProfile))).thenReturn(false);
+
+        // Verifies that the composeplate is disabled by policy on tablets.
+        assertFalse(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ true, mProfile));
+        // Verifies that the composeplate is still enabled by policy on phones.
+        assertTrue(ComposeplateUtils.isComposeplateEnabled(/* isTablet= */ false, mProfile));
     }
 
     @Test
