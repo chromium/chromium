@@ -18,6 +18,17 @@ def main():
   parser.add_argument('--all', required=True, action='store_true')
   args = parser.parse_args()
 
+  print("""\
+WARNING at build arg file (use "gn args <out_dir>" to edit):32:24: Build argument has no effect.
+some_var = true
+         ^---
+The variable "some_var" was set as a build argument
+but never appeared in a declare_args() block in any buildfile.
+
+To view all possible args, run "gn args --list <out_dir>"
+
+The build continued as if that argument was unspecified.
+""")
   print(f'{args.root}/third_party/sample3/BUILD.gn')
   print(f'{args.root}/third_party/sample2/BUILD.gn')
   print(f'{args.root}/third_party/pruned/BUILD.gn')
