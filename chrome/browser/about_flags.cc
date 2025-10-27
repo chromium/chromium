@@ -1642,15 +1642,18 @@ const FeatureEntry::FeatureParam kComposeboxNext[] = {
     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"},
     {"ForceToolsAndModels", "true"},
+    {"ShowRecentTabChip", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
     {"MaxNumFiles", "1"},
     {"ShowContextMenu", "true"},
     {"ShowContextMenuTabPreviews", "true"},
     {"ShowComposeboxZps", "true"},
+    {"ShowComposeboxTypedSuggest", "true"},
     {"ShowToolsAndModels", "true"},
     {"ShowCreateImageTool", "true"},
     {"ForceToolsAndModels", "true"},
+    {"ShowRecentTabChip", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
