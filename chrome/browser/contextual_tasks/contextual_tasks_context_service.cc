@@ -133,6 +133,12 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
           web_contents_embeddings.size(),
           web_contents->GetLastCommittedURL().spec()));
       for (const auto& embedding : web_contents_embeddings) {
+        if (kOnlyUseTitlesForSimilarity.Get() &&
+            embedding.passage.second !=
+                passage_embeddings::PassageType::kTitle) {
+          continue;
+        }
+
         float similarity_score = embedding.embedding.ScoreWith(query_embedding);
         AUTO_CONTEXT_LOG(base::StringPrintf(
             "Similarity with passage %s and query %s: %f",

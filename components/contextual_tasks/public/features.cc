@@ -16,6 +16,11 @@ const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
     &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
     0.85};
 
+const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
+    &kContextualTasksContext,
+    "ContextualTasksContextOnlyUseTitles",
+    false);
+
 namespace flag_descriptions {
 
 const char kContextualTasksName[] = "Contextual Tasks";

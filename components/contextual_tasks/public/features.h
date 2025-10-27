@@ -15,6 +15,8 @@ BASE_DECLARE_FEATURE(kContextualTasksContext);
 
 // The minimum score required for two embeddings to be considered similar.
 extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
+// Whether to only consider titles for similarity.
+extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
 
 namespace flag_descriptions {
 

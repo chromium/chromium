@@ -101,15 +101,21 @@ class MockPageEmbeddingsService
 
 class ContextualTasksContextServiceTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {kContextualTasksContext, passage_embeddings::kPassageEmbedder},
+  ContextualTasksContextServiceTest() { InitializeFeatureList(); }
+
+  ~ContextualTasksContextServiceTest() override {
+    scoped_feature_list_.Reset();
+  }
+
+  virtual void InitializeFeatureList() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kContextualTasksContext,
+          {{{"ContextualTasksContextOnlyUseTitles", "false"}}}},
+         {passage_embeddings::kPassageEmbedder, {}}},
         /*disabled_features=*/{});
-    InProcessBrowserTest::SetUp();
   }
 
   void TearDown() override {
-    scoped_feature_list_.Reset();
     InProcessBrowserTest::TearDown();
   }
 
@@ -176,8 +182,10 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
     return embedding;
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
   FakeEmbedderMetadataProvider embedder_metadata_provider_;
   FakeEmbedder embedder_;
 };
@@ -257,6 +265,41 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.ContextCalculationLatency", 1);
+}
+
+class ContextualTasksContextServiceTitlesOnlyTest
+    : public ContextualTasksContextServiceTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kContextualTasksContext,
+          {{{"ContextualTasksContextOnlyUseTitles", "true"}}}},
+         {passage_embeddings::kPassageEmbedder, {}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
+  NotifyEmbedderMetadata();
+
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      // Not match.
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(0.1f)},
+      // Not added - page content skipped.
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)},
+      // Added - title passage matches.
+      {std::make_pair("passage 3", passage_embeddings::PassageType::kTitle),
+       CreateFakeEmbedding(1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery("some text", future.GetCallback());
+  EXPECT_EQ(1u, future.Get().size());
 }
 
 }  // namespace contextual_tasks
