@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -26,6 +28,12 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "ui/base/base_window.h"
+
+// TODO(http://crbug.com/453008083): Stop including
+// "android/chrome_feature_list.h".
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/platform_util.h"
@@ -266,13 +274,27 @@ base::Value::List BrowserExtensionWindowController::CreateTabList(
     content::WebContents* web_contents = tab_list_->GetTab(i)->GetContents();
 
 #if BUILDFLAG(IS_ANDROID)
-    // TODO(http://crbug.com/444022301): Also CHECK(web_contents) on Android.
+    // TODO(http://crbug.com/453008083): Remove feature flags
+    // kLoadAllTabsAtStartup, kTabFreezingUsesDiscard, and kWebContentsDiscard,
+    // when all of them are enabled by default.
     //
-    // This is a temporary workaround to avoid crashes on Android, where
-    // restored tabs may have null WebContents. The workaround introduces a bug:
-    // restored tabs are visible on the tab strip, but not all of them can be
-    // seen by extensions.
-    if (web_contents == nullptr) {
+    // On Android, it was possible for tabs to have null WebContents, so we
+    // implemented a temporary workaround that ignored such tabs to avoid
+    // crashes. The workaround introduced a bug: tabs with null WebContents were
+    // visible on the tab strip, but they couldn't be seen by extensions.
+    //
+    // When feature flags kLoadAllTabsAtStartup, kTabFreezingUsesDiscard, and
+    // kWebContentsDiscard are all enabled, all tabs will create a WebContents
+    // without a renderer during initialization, which will properly fix the
+    // issue above. As of Oct 22, 2025, the feature flags weren't enabled by
+    // default, so we needed to keep the workaround.
+    bool is_non_null_web_contents_guaranteed =
+        base::FeatureList::IsEnabled(chrome::android::kLoadAllTabsAtStartup) &&
+        base::FeatureList::IsEnabled(
+            chrome::android::kTabFreezingUsesDiscard) &&
+        base::FeatureList::IsEnabled(features::kWebContentsDiscard);
+
+    if (!is_non_null_web_contents_guaranteed && web_contents == nullptr) {
       continue;
     }
 #else
