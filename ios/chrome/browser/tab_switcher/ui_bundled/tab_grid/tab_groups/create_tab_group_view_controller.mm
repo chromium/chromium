@@ -121,8 +121,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   BOOL _editMode;
   // Whether the user is syncing tabs.
   BOOL _tabSynced;
-  // Whether a new tab should be inserted into the new group.
-  BOOL _createNewTabForGroup;
   // Number of tabs in the group.
   NSInteger _tabsCount;
   // Title of the group.
@@ -149,14 +147,11 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   UIScrollView* _colorsScrollView;
 }
 
-- (instancetype)initWithEditMode:(BOOL)editMode
-                       tabSynced:(BOOL)tabSynced
-            createNewTabForGroup:(BOOL)createNewTabForGroup {
+- (instancetype)initWithEditMode:(BOOL)editMode tabSynced:(BOOL)tabSynced {
   self = [super init];
   if (self) {
     _editMode = editMode;
     _tabSynced = tabSynced;
-    _createNewTabForGroup = createNewTabForGroup;
 
     // Create the `_snapshotsView` early. Favicon and snapshot fetches begin
     // before the view loads, and `_snapshotsView` is updated incrementally as
@@ -769,7 +764,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 - (UIView*)configuredSnapshotsContainer {
   UIView* snapshotsBackground =
       [[CreateTabGroupSnapshotContainerView alloc] init];
-  snapshotsBackground.hidden = _createNewTabForGroup;
   snapshotsBackground.translatesAutoresizingMaskIntoConstraints = NO;
   snapshotsBackground.backgroundColor = [[UIColor colorNamed:kSolidWhiteColor]
       colorWithAlphaComponent:kBackgroundAlpha];

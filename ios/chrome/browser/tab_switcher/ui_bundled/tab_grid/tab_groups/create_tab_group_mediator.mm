@@ -23,9 +23,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_creation_consumer.h"
@@ -35,7 +32,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/web_state_tab_switcher_item.h"
-#import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
 @interface CreateTabGroupMediator () <WebStateListObserving>
@@ -63,8 +59,6 @@
   std::unique_ptr<
       base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObservation;
-  // Whether a new tab should be inserted into the new group.
-  BOOL _createNewTabForGroup;
 }
 
 - (instancetype)
@@ -75,9 +69,7 @@
   self = [super init];
   if (self) {
     CHECK(consumer);
-    if (!_createNewTabForGroup) {
-      CHECK(!identifiers.empty()) << "Cannot create an empty tab group.";
-    }
+    CHECK(!identifiers.empty()) << "Cannot create an empty tab group.";
     CHECK(browser);
     _identifiers = identifiers;
 
@@ -130,20 +122,6 @@
     }
   }
   return self;
-}
-
-- (instancetype)
-    initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
-                        selectedTabs:(std::set<web::WebStateID>&)identifiers
-                             browser:(Browser*)browser
-                       faviconLoader:(FaviconLoader*)faviconLoader
-                createNewTabForGroup:(BOOL)createNewTabForGroup {
-  CHECK(identifiers.empty() == createNewTabForGroup);
-  _createNewTabForGroup = createNewTabForGroup;
-  return [self initTabGroupCreationWithConsumer:consumer
-                                   selectedTabs:identifiers
-                                        browser:browser
-                                  faviconLoader:faviconLoader];
 }
 
 - (instancetype)initTabGroupEditionWithConsumer:
@@ -226,19 +204,6 @@
         base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
     WebStateList::ScopedBatchOperation lock =
         _webStateList->StartBatchOperation();
-    if (_createNewTabForGroup) {
-      CHECK(_identifiers.empty());
-      // Insert a new tab before creating the group to prevent empty groups.
-      id<ApplicationCommands> dispatcher = HandlerForProtocol(
-          _browser->GetCommandDispatcher(), ApplicationCommands);
-      OpenNewTabCommand* command = [OpenNewTabCommand command];
-      [dispatcher openURLInNewTab:command];
-
-      web::WebState* activeWebState = _webStateList->GetActiveWebState();
-      CHECK(activeWebState);
-      _identifiers.insert(activeWebState->GetUniqueIdentifier());
-      CHECK(!_identifiers.empty());
-    }
     std::set<int> tabIndexes;
     for (web::WebStateID identifier : _identifiers) {
       int index = GetWebStateIndex(_webStateList, WebStateSearchCriteria{

@@ -29,24 +29,14 @@ class WebStateID;
 
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
-// - `identifiers` the list of selected tabs ID.
+// - `identifiers` the list of selected tabs ID
 // - `browser` the browser containing the selected tabs.
 // `faviconLoader`: used to fetch favicons on Google server, can be `nullptr`.
 - (instancetype)
     initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
                              browser:(Browser*)browser
-                       faviconLoader:(FaviconLoader*)faviconLoader
-    NS_DESIGNATED_INITIALIZER;
-
-// Convenience initializer that creates a new tab for the group if
-// `createNewTabForGroup` is YES.
-- (instancetype)
-    initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
-                        selectedTabs:(std::set<web::WebStateID>&)identifiers
-                             browser:(Browser*)browser
-                       faviconLoader:(FaviconLoader*)faviconLoader
-                createNewTabForGroup:(BOOL)createNewTabForGroup;
+                       faviconLoader:(FaviconLoader*)faviconLoader;
 
 // Init the tab group creation mediator with:
 // - `consumer` the UI that will receive updates.
@@ -57,10 +47,7 @@ class WebStateID;
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
                                         browser:(Browser*)browser
-                                  faviconLoader:(FaviconLoader*)faviconLoader
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+                                  faviconLoader:(FaviconLoader*)faviconLoader;
 
 // Disconnects the mediator's dependencies.
 - (void)disconnect;

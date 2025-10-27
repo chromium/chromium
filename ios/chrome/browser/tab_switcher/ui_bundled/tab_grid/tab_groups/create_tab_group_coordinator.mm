@@ -41,8 +41,6 @@
   raw_ptr<const TabGroup> _tabGroup;
   // Transition delegate for the animation to show/hide.
   CreateTabGroupTransitionDelegate* _transitionDelegate;
-  // Whether a new tab should be inserted into the new group.
-  BOOL _createNewTabForGroup;
 }
 
 #pragma mark - Public
@@ -58,23 +56,6 @@
   if (self) {
     _identifiers = identifiers;
     _animatedDismissal = YES;
-  }
-  return self;
-}
-
-- (instancetype)
-    initTabGroupCreationWithBaseViewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser
-                                  selectedTabs:
-                                      (const std::set<web::WebStateID>&)
-                                          identifiers
-                          createNewTabForGroup:(BOOL)createNewTabForGroup {
-  CHECK(identifiers.empty())
-      << "A new tab will be insterted into the tab group.";
-  self = [super initWithBaseViewController:viewController browser:browser];
-  if (self) {
-    _animatedDismissal = YES;
-    _createNewTabForGroup = createNewTabForGroup;
   }
   return self;
 }
@@ -117,10 +98,9 @@
   BOOL tabSynced =
       syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kTabs);
-  _viewController = [[CreateTabGroupViewController alloc]
-          initWithEditMode:editMode
-                 tabSynced:tabSynced
-      createNewTabForGroup:_createNewTabForGroup];
+  _viewController =
+      [[CreateTabGroupViewController alloc] initWithEditMode:editMode
+                                                   tabSynced:tabSynced];
 
   FaviconLoader* faviconLoader = nil;
   collaboration::CollaborationService* collaborationService =
@@ -139,13 +119,6 @@
                                 browser:browser
                           faviconLoader:faviconLoader];
     _mediator.delegate = self;
-  } else if (_createNewTabForGroup) {
-    _mediator = [[CreateTabGroupMediator alloc]
-        initTabGroupCreationWithConsumer:_viewController
-                            selectedTabs:_identifiers
-                                 browser:browser
-                           faviconLoader:faviconLoader
-                    createNewTabForGroup:_createNewTabForGroup];
   } else {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
@@ -153,7 +126,6 @@
                                  browser:browser
                            faviconLoader:faviconLoader];
   }
-
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
 
