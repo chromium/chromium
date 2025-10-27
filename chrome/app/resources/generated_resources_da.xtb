@@ -109,7 +109,7 @@
 <translation id="106814709658156573">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren nederst til venstre på tastaturet. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="106855837688344862">Berøringer</translation>
 <translation id="1069104208554708737">Denne adgangsnøgle gemmes kun på denne enhed</translation>
-<translation id="1069355737714877171">Fjern eSIM-profilen ved navn <ph name="PROFILE_NAME" /></translation>
+<translation id="1069355737714877171">Fjern eSIM-kortprofilen ved navn <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Hent automatisk konto fra Android-telefon</translation>
 <translation id="1069814191880976658">Vælg en anden skærm</translation>
 <translation id="107022587824771715">Forslag til fanegrupper er ikke tilgængelige i øjeblikket. Du kan <ph name="BEGIN_LINK" />opdatere nu<ph name="END_LINK" /> eller prøve igen senere</translation>
@@ -807,7 +807,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1546031833947068368">{COUNT,plural, =1{Dit inkognitovindue åbnes ikke igen.}one{# inkognitovindue åbnes ikke igen.}other{Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> anmoder om at installere en <ph name="EXTENSION_TYPE" />, som kan:</translation>
 <translation id="1547123415014299762">Tredjepartscookies er tilladt</translation>
-<translation id="1547808936554660006">Jeg forstår, at installerede eSIM-profiler ikke fjernes ved udførelse af en powerwash</translation>
+<translation id="1547808936554660006">Jeg forstår, at installerede eSIM-kortprofiler ikke fjernes ved udførelse af en powerwash</translation>
 <translation id="1547936895218027488">Klik på ikonet for sidepanel for at åbne det</translation>
 <translation id="1549275686094429035">ARC-kompatibel</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ønsker at få adgang til <ph name="VOLUME_NAME" />. Dette kan ændre eller slette dine filer.</translation>
@@ -1573,7 +1573,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Der blev registreret en enhed</translation>
 <translation id="2059913712424898428">Tidszone</translation>
-<translation id="2060375639911876205">Fjern eSIM-profil</translation>
+<translation id="2060375639911876205">Fjern eSIM-kortprofil</translation>
 <translation id="2061366302742593739">Intet at vise</translation>
 <translation id="2061589908388230480">Hvis Chromium registrerer, at én af dine adgangskoder er blevet lækket i forbindelse med et offentligt brud på datasikkerheden, kan Google Adgangskodeadministrator tilbyde at ændre adgangskoden for dig, hvis du er logget ind. <ph name="BEGIN_LINK" />Mere om automatisk ændring af adgangskoder<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Brug internettet uden at gemme din browserhistorik ved hjælp af et inkognitovindue</translation>
@@ -2068,7 +2068,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> er skjult</translation>
 <translation id="2395616325548404795">Din <ph name="DEVICE_TYPE" /> er tilmeldt virksomhedsadministration, men den har ikke tilsendt oplysninger om aktiver og placering. Angiv disse oplysninger manuelt i administrationskonsollen for denne enhed.</translation>
 <translation id="2396783860772170191">Angiv den firecifrede pinkode (0000-9999)</translation>
-<translation id="2398546389094871088">Dine eSIM-profiler fjernes ikke, når du udfører en powerwash på din enhed. Gå til <ph name="LINK_BEGIN" />Mobilindstillinger<ph name="LINK_END" /> for at fjerne disse profiler manuelt.</translation>
+<translation id="2398546389094871088">Dine eSIM-kortprofiler fjernes ikke, når du udfører en powerwash på din enhed. Gå til <ph name="LINK_BEGIN" />Mobilindstillinger<ph name="LINK_END" /> for at fjerne disse profiler manuelt.</translation>
 <translation id="2399699884460174994">Notifikationer er slået til</translation>
 <translation id="2399939490305346086">Logindata på sikkerhedsnøglen</translation>
 <translation id="240006516586367791">Mediestyring</translation>
@@ -2313,7 +2313,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2546302722632337735">Tillad ikke, at websites bruger id'er til at afspille beskyttet indhold</translation>
 <translation id="2546991196809436099">Zoom ind for at forstørre elementer på skærmen. Brug søgetasten+Ctrl+M til at aktivere eller deaktivere luppen.</translation>
 <translation id="2548347166720081527">Tillod <ph name="PERMISSION" /></translation>
-<translation id="2548545707296594436">Nulstil eSIM-profilens cache</translation>
+<translation id="2548545707296594436">Nulstil eSIM-kortprofilens cache</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
 <translation id="2550212893339833758">Ombyttet hukommelse</translation>
 <translation id="2550596535588364872">Vil du tillade, at <ph name="EXTENSION_NAME" /> åbner <ph name="FILE_NAME" />?</translation>
@@ -2463,7 +2463,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2661315027005813059">Side i back/forward-cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">Søg hurtigere og brug mindre data med Lite-tilstand. Klik for at få flere oplysninger.</translation>
 <translation id="2662876636500006917">Chrome Webshop</translation>
-<translation id="2663253180579749458">eSIM-profilen tilføjes. Dette kan tage et par minutter.</translation>
+<translation id="2663253180579749458">eSIM-kortprofilen tilføjes. Dette kan tage et par minutter.</translation>
 <translation id="2663302507110284145">Sprog</translation>
 <translation id="2665394472441560184">Tilføj et nyt ord</translation>
 <translation id="2665647207431876759">Udløbet</translation>
@@ -2669,7 +2669,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2791952154587244007">Der opstod en fejl. Terminalapplikationen kan ikke åbnes automatisk på denne enhed.</translation>
 <translation id="2792465461386711506">Aktivér Chrome-synkronisering for at se de seneste Chrome-faner på din telefon</translation>
 <translation id="2792697226874849938">Billede af blokering</translation>
-<translation id="2794522004398861033">Opret forbindelse til Wi-Fi eller Ethernet for at konfigurere eSIM</translation>
+<translation id="2794522004398861033">Opret forbindelse til Wi-Fi eller Ethernet for at konfigurere eSIM-kort</translation>
 <translation id="2794977172822818797">Tilføj aktuelle websites</translation>
 <translation id="2795716239552913152">Websites bruger normalt din lokation til relevante formål eller oplysninger om lokale nyheder eller butikker i nærheden</translation>
 <translation id="2797712124653482791">Skjul i <ph name="DISMISS_DAYS" /> dage</translation>
@@ -2866,7 +2866,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2933632078076743449">Seneste opdatering</translation>
 <translation id="2934225044529065415">Der er ikke adgang til kameraet</translation>
 <translation id="2935225303485967257">Administrer profiler</translation>
-<translation id="2935314715123552088">Deaktiver aktiv eSIM-profil</translation>
+<translation id="2935314715123552088">Deaktiver aktiv eSIM-kortprofil</translation>
 <translation id="2935654492420446828">Tilføj en skolekonto senere</translation>
 <translation id="2936851848721175671">Sikkerhedskopiering og gendannelse</translation>
 <translation id="2938981087412273365">Har ikke tilladelse til at læse og ændre dette website</translation>
@@ -4610,7 +4610,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="413193092008917129">Rutiner for netværksdiagnostik</translation>
 <translation id="4132137475637520539">Giv alle med linket mulighed for at deltage</translation>
 <translation id="4132183752438206707">Find apps i Google Play Butik</translation>
-<translation id="4132364317545104286">Omdøb eSIM-profil</translation>
+<translation id="4132364317545104286">Omdøb eSIM-kortprofil</translation>
 <translation id="4132969033912447558">Genoptag <ph name="FILE_NAME" /></translation>
 <translation id="4133076602192971179">Åbn appen for at ændre din adgangskode</translation>
 <translation id="4134838386867070505">Trin 1 af 4: Beskriv problemet</translation>
@@ -4777,7 +4777,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4263470758446311292">Få maksimale hukommelsesbesparelser. Dine faner bliver inaktive efter en kortere periode.</translation>
 <translation id="4263824086525632">Nordlys</translation>
 <translation id="4265096510956307240">Verificer din identitet</translation>
-<translation id="4265301768135164545">Du kan også konfigurere en eSIM-profil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" /></translation>
+<translation id="4265301768135164545">Du kan også konfigurere en eSIM-kortprofil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Du kan søge efter opdateringer via Ethernet, Wi-Fi eller mobildata.</translation>
 <translation id="426652736638196239">Dette IBAN gemmes kun på denne enhed</translation>
 <translation id="4266679478228765574">Fjernelse af mapper stopper delingen, men sletter ikke filerne.</translation>
@@ -4801,7 +4801,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4278390842282768270">Tilladt</translation>
 <translation id="4278498748067682896">Du skal bruge en terminal- og signeringsopgradering, der kun tillader, at enheden køres i terminal- eller signeringstilstand. Hvis du gerne vil have, at brugere logger ind på enheden, kan du gå tilbage og tilmelde dig via Chrome Enterprise-opgraderingen.</translation>
 <translation id="4278779213160967034">Denne proces kan tage et par minutter. Downloader filer.</translation>
-<translation id="4279129444466079448">Du kan installere op til <ph name="PROFILE_LIMIT" /> eSIM-profiler på denne enhed. Hvis du vil tilføje en ny profil, skal du først fjerne en eksisterende profil.</translation>
+<translation id="4279129444466079448">Du kan installere op til <ph name="PROFILE_LIMIT" /> eSIM-kortprofiler på denne enhed. Hvis du vil tilføje en ny profil, skal du først fjerne en eksisterende profil.</translation>
 <translation id="4280325816108262082">Forbindelsen til enheden afbrydes automatisk, når enheden slukkes eller ikke er i brug</translation>
 <translation id="4281412694055934031">Websites kan anmode om at installere webapps på din enhed</translation>
 <translation id="4281789858103154731">Opret</translation>
@@ -5496,7 +5496,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4778653490315793244">Der er intet at vise endnu</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4779136857077979611">Onigiri</translation>
-<translation id="4779766576531456629">Omdøb eSIM-mobilnetværk</translation>
+<translation id="4779766576531456629">Omdøb eSIM-kortmobilnetværk</translation>
 <translation id="4779855924282373274"><ph name="URL" /> • 1 dublet</translation>
 <translation id="4780321648949301421">Gem side som...</translation>
 <translation id="4780558987886269159">Til arbejde</translation>
@@ -5774,7 +5774,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4966972803217407697">Du er i inkognitotilstand</translation>
 <translation id="4967227914555989138">Tilføj en note</translation>
 <translation id="4967360192915400530">Download skadelig fil</translation>
-<translation id="496742804571665842">Deaktiver eSIM-profiler</translation>
+<translation id="496742804571665842">Deaktiver eSIM-kortprofiler</translation>
 <translation id="4967571733817147990">Tilpas museknapper</translation>
 <translation id="4967852842111017386">Enhedsnavn for <ph name="FEATURE_NAME" /></translation>
 <translation id="4968994772848295474">Installation af webapps understøttes ikke i gæstetilstand</translation>
@@ -7210,7 +7210,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6002210667729577411">Flyt gruppe til nyt vindue</translation>
 <translation id="6002458620803359783">Foretrukne stemmer</translation>
-<translation id="6003143259071779217">Fjern eSIM-mobilnetværk</translation>
+<translation id="6003143259071779217">Fjern eSIM-kortmobilnetværk</translation>
 <translation id="6003479444341796444">Titelfeltet vises nu</translation>
 <translation id="6003582434972667631">Temaet er indstillet af din organisation</translation>
 <translation id="6005045517426700202">Murstensbygning</translation>
@@ -7530,7 +7530,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6233154960150021497">Brug stemmen som standard i stedet for tastaturet</translation>
 <translation id="6234108445915742946">Servicevilkårene for Chrome ændres den 31. marts</translation>
 <translation id="6234474535228214774">Installation afventer</translation>
-<translation id="6235208551686043831">Enhedens kamera er aktiveret. Placer QR-koden for dit eSIM foran kameraet.</translation>
+<translation id="6235208551686043831">Enhedens kamera er aktiveret. Placer QR-koden for dit eSIM-kort foran kameraet.</translation>
 <translation id="6237256594069101884">Gennemgå opdatering af webadresse</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App til notatskrivning med styluspen</translation>
@@ -7648,7 +7648,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6308937455967653460">Gem lin&amp;k som...</translation>
 <translation id="6309443618838462258">Din administrator tillader ikke denne indtastningsmetode</translation>
 <translation id="6309510305002439352">Mikrofonen er deaktiveret</translation>
-<translation id="6310141306111263820">eSIM-profilen kunne ikke installeres. Kontakt dit mobilselskab for at få hjælp.</translation>
+<translation id="6310141306111263820">eSIM-kortprofilen kunne ikke installeres. Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="6310767550430673871">{ACCOUNT_EXTENSIONS_COUNT,plural, =1{Fjern 1 udvidelse og de data, den har gemt på denne enhed}one{Fjern {ACCOUNT_EXTENSIONS_COUNT} udvidelse og de data, den har gemt på denne enhed}other{Fjern {ACCOUNT_EXTENSIONS_COUNT} udvidelser og de data, de har gemt på denne enhed}}</translation>
 <translation id="6311220991371174222">Chrome kan ikke startes, da der gik noget galt ved åbningen af din profil. Prøv at genstarte Chrome.</translation>
 <translation id="6313950457058510656">Deaktiver Automatisk netdeling</translation>
@@ -8050,7 +8050,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6606671997164410857">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Du kan få endnu mere ud af Google Assistent ved at aktivere Skærmkontekst på denne enhed.</translation>
 <translation id="6607831829715835317">F&amp;lere værktøjer</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> administreres allerede af <ph name="DOMAIN" />. Hvis du vil bruge indstillinger for børnesikring med en anden Google-konto, skal du logge ud efter konfigurationen og derefter vælge "Tilføj person" på loginskærmen.</translation>
-<translation id="6608166463665411119">Nulstil eSIM</translation>
+<translation id="6608166463665411119">Nulstil eSIM-kort</translation>
 <translation id="660846213831377756">Musetaster</translation>
 <translation id="6608773371844092260">Du kan konfigurere et fingeraftryk ved at få dit barn til at sætte fingeren på fingeraftrykssensoren til højre på denne <ph name="DEVICE_TYPE" />. Dit barns fingeraftryksdata gemmes sikkert og forlader aldrig denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6609478180749378879">Dine logindata gemmes på denne enhed, når du afslutter inkognitotilstand. Det betyder, at du kan logge ind på dette website med din enhed igen på et senere tidspunkt.</translation>
@@ -8366,7 +8366,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6815376457351236663">Åbn alligevel</translation>
 <translation id="6815787852028615386">Denne fil er vildledende og kan foretage uventede ændringer på din enhed</translation>
 <translation id="6816097980753839617">Blå-gul (tritanomali)</translation>
-<translation id="6816443526270499804">Søger efter tilgængelige eSIM-profiler</translation>
+<translation id="6816443526270499804">Søger efter tilgængelige eSIM-kortprofiler</translation>
 <translation id="6818198425579322765">Sidens sprog, som skal oversættes</translation>
 <translation id="6818547713623251698">Se din telefons billeder, mediefiler, notifikationer og apps</translation>
 <translation id="6818802132960437751">Indbygget virusbeskyttelse</translation>
@@ -8434,7 +8434,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6856348640027512653">Har ikke tilladelse til at bruge virtual reality-enheder eller -data</translation>
 <translation id="6856607887871564638">Konfigurer en arbejdsprofil for at gemme og bruge dine adgangskoder m.m. på din konto</translation>
 <translation id="6856623341093082836">Konfigurer og juster nøjagtigheden af din touchskærm</translation>
-<translation id="6857145580237920905">Fjern eSIM-profiler, inden du udfører en powerwash</translation>
+<translation id="6857145580237920905">Fjern eSIM-kortprofiler, inden du udfører en powerwash</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek.</translation>
 <translation id="6860097299815761905">Indstillinger for proxy...</translation>
 <translation id="68601584151169673">&amp;Gem og del</translation>
@@ -9046,7 +9046,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7311005168897771689">Få adgang til dine Google Drev-filer, når du er offline</translation>
 <translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
 <translation id="7312040805247765153">Appen kan ikke installeres</translation>
-<translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM. Dette kan tage et par minutter.</translation>
+<translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM-kort. Dette kan tage et par minutter.</translation>
 <translation id="7313539585802573958">Farver på tastaturets baggrundslys</translation>
 <translation id="7314865262803554456">Du får ikke besked, når optagelsen starter.</translation>
 <translation id="7314989823816739632">Romantisk</translation>
@@ -9301,7 +9301,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7475742997309661417">Skærmlæseren i ChromeOS, dvs. ChromeVox, bruges primært af personer, som er blinde eller har stærkt nedsat syn, til at læse tekst, der vises på skærmen, med en talesynthesizer eller brailleskærm. Hold begge lydstyrkeknapper nede i fem sekunder for at aktivere ChromeVox. Når ChromeVox er aktiveret, får du en hurtig gennemgang af skærmlæseren.</translation>
 <translation id="7476454130948140105">Batteriniveauet er for lavt til at opdatere (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Browseren blokerede automatisk <ph name="PERMISSION" /> og <ph name="COUNT" /> yderligere</translation>
-<translation id="7477460499687558352">Vælg en eSIM-profil, du vil downloade</translation>
+<translation id="7477460499687558352">Vælg en eSIM-kortprofil, du vil downloade</translation>
 <translation id="7477599578899108080">Højt hukommelsesforbrug: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Opret en QR-kode for denne side</translation>
 <translation id="7477793887173910789">Styr din musik, dine videoer og meget mere</translation>
@@ -9562,7 +9562,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7663719505383602579">Modtager: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Du kan bruge en tastaturgenvej</translation>
-<translation id="7663859337051362114">Tilføj eSIM-profil</translation>
+<translation id="7663859337051362114">Tilføj eSIM-kortprofil</translation>
 <translation id="76641554187607347">Der er ikke tilsluttet nogen tastatur</translation>
 <translation id="7664442418269614729">Brug dette kort på din iPhone</translation>
 <translation id="7665082356120621510">Reservér størrelse</translation>
@@ -9897,7 +9897,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7883792253546618164">Du kan afmelde dig når som helst.</translation>
 <translation id="788453346724465748">Indlæser kontooplysninger...</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{et element}one{# element}other{# elementer}}</translation>
-<translation id="7886605625338676841">eSIM</translation>
+<translation id="7886605625338676841">eSIM-kort</translation>
 <translation id="7887174313503389866">Få en rundvisning i vigtige privatlivs- og sikkerhedsindstillinger. Gå til de individuelle indstillinger for at se flere valgmuligheder.</translation>
 <translation id="7887286029584695415">Vil du give dette website tilladelse til at se og kopiere filer?</translation>
 <translation id="7887334752153342268">Dupliker</translation>
@@ -10242,7 +10242,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8101987792947961127">Powerwash er påkrævet ved næste genstart</translation>
 <translation id="8102139037507939978">Fjern personhenførbare oplysninger fra system_logs.txt.</translation>
 <translation id="810362914482827094">Søg efter adgangskoder</translation>
-<translation id="8104088837833760645">Download eSIM-profilen</translation>
+<translation id="8104088837833760645">Download eSIM-kortprofilen</translation>
 <translation id="8105050970626643057">Åbn hurtigt Gemini, når du har brug for den</translation>
 <translation id="8105273883928376822">Log ind for at fortsætte.</translation>
 <translation id="8106114112474206597">Brug "i" til at trykke på en museknap</translation>
@@ -10263,7 +10263,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8118860139461251237">Administrere dine downloads</translation>
 <translation id="8119438628456698432">Genererer logfiler...</translation>
 <translation id="811994229154425014">Tryk to gange på mellemrumstasten for at indsætte punktum</translation>
-<translation id="8120505434908124087">Installer eSIM-profil</translation>
+<translation id="8120505434908124087">Installer eSIM-kortprofil</translation>
 <translation id="8121537075864592453">Fuld skærm er deaktiveret</translation>
 <translation id="8121750884985440809">Du caster i øjeblikket din skærm</translation>
 <translation id="8122898034710982882">Telefonstyring, <ph name="FEATURE_NAME" /></translation>
@@ -10314,7 +10314,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="815491593104042026">Ups! Godkendelsen mislykkedes, fordi den var konfigureret til at bruge en webadresse, som ikke er sikker (<ph name="BLOCKED_URL" />). Kontakt din administrator.</translation>
 <translation id="8155214519979960765">Hvis du vil logge ind med en adgangsnøgle på denne enhed igen, skal du verificere din identitet. Hvis du har en anden loginmetode, f.eks. en adgangskode, kan du bruge den til at logge ind i stedet.</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{Der blev ikke fundet nogen kompromitterede adgangskoder}=1{{COUNT} kompromitteret adgangskode}one{{COUNT} kompromitteret adgangskode}other{{COUNT} kompromitterede adgangskoder}}</translation>
-<translation id="8157248655669507702">Aktivér mobildata for at installere en eSIM-profil</translation>
+<translation id="8157248655669507702">Aktivér mobildata for at installere en eSIM-kortprofil</translation>
 <translation id="8157704005178149728">Konfigurerer forældrestyring</translation>
 <translation id="8157728322324420120">Forslag til dig</translation>
 <translation id="8157849462797352650">Din enhed får de seneste opdateringer inden for sikkerhed, stabilitet og ydeevne</translation>
@@ -10829,7 +10829,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8514746246728959655">Prøv med en anden sikkerhedsnøgle</translation>
 <translation id="8514828975162859845">Popcakes</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>
-<translation id="8515580632187889788">Ved at fortsætte giver du tredjeparter tilladelse til at verificere oplysninger, der identificerer denne enhed på netværket. Hvis du ikke vil give tredjeparter adgang til enhedsoplysninger, kan du konfigurere en eSIM-profil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" />.</translation>
+<translation id="8515580632187889788">Ved at fortsætte giver du tredjeparter tilladelse til at verificere oplysninger, der identificerer denne enhed på netværket. Hvis du ikke vil give tredjeparter adgang til enhedsoplysninger, kan du konfigurere en eSIM-kortprofil <ph name="BEGIN_LINK" />manuelt<ph name="END_LINK" />.</translation>
 <translation id="8516472100141530292">Højreklik på gruppen</translation>
 <translation id="8517759303731677493">Rediger…</translation>
 <translation id="8518809011298357036">Luk øverste visning</translation>
@@ -11313,12 +11313,12 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8842594465773264717">Slet dette fingeraftryk</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8846132060409673887">Læs computerens producent og model</translation>
-<translation id="8846163936679269230">Nulstil eSIM-profiler</translation>
+<translation id="8846163936679269230">Nulstil eSIM-kortprofiler</translation>
 <translation id="8846239054091760429">Monolyd, opstart, Livetekstning m.m.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8848709220963126773">Skift mellem tilstande for Shift-tast</translation>
 <translation id="8849001918648564819">Skjult</translation>
-<translation id="8849219423513870962">Annuller fjernelse af eSIM-profilen ved navn <ph name="PROFILE_NAME" /></translation>
+<translation id="8849219423513870962">Annuller fjernelse af eSIM-kortprofilen ved navn <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> ud af <ph name="CHECKING" /></translation>
 <translation id="8850251000316748990">Se flere...</translation>
 <translation id="885246833287407341">Argumenter for API-funktion</translation>
@@ -11551,7 +11551,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9000185763019430629">Sæt fingeren på fingeraftrykssensoren til højre på din <ph name="DEVICE_TYPE" />. Dine fingeraftryksdata gemmes sikkert og forlader aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="9003031149571024583">Angiv ciffer <ph name="NUM_DIGIT" /> af 6 i pinkoden. Brug Backspace eller Delete til at fjerne det sidste ciffer.</translation>
 <translation id="9003185744423389627">Forbindelsen til Device Management Server mislykkedes <ph name="FAILURE_TIME" /> med statussen "<ph name="STATUS_TEXT" />"</translation>
-<translation id="90033698482696970">Vil du automatisk søge efter tilgængelige eSIM-profiler?</translation>
+<translation id="90033698482696970">Vil du automatisk søge efter tilgængelige eSIM-kortprofiler?</translation>
 <translation id="9003647077635673607">Tillad på alle websites</translation>
 <translation id="9005774573776346118">Log ind som <ph name="EMAIL" /> for at få adgang til dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
 <translation id="9007688236643268728">&amp;Log ind igen</translation>
