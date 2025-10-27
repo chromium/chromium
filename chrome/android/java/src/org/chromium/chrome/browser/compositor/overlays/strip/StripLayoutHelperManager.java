@@ -1128,10 +1128,6 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().shouldShowTabOutline(tab);
     }
 
-    public @MediaState int getMediaIndicatorState(StripLayoutTab tab) {
-        return getActiveStripLayoutHelper().getMediaIndicatorState(tab);
-    }
-
     /**
      * @return The touch target offset to be applied to the new tab button.
      */
@@ -1523,7 +1519,9 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onMediaStateChanged(Tab tab, int mediaState) {
+                    public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {
+                        getStripLayoutHelper(tab.isIncognito())
+                                .onMediaStateChanged(tab, mediaState);
                         mRenderHost.requestRender();
                     }
                 };

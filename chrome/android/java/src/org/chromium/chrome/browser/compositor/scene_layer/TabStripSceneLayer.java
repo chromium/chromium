@@ -253,7 +253,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             : TabUiThemeUtil.getTabKeyboardFocusDrawableRes();
             TintedCompositorButton closeButton = st.getCloseButton();
             @ColorInt int closeButtonTint = closeButton.getTint();
-            @MediaState int mediaState = layoutHelper.getMediaIndicatorState(st);
+            @MediaState int mediaState = st.getMediaState();
             boolean shouldShowMediaIndicator =
                     !(mediaState == MediaState.NONE || st.shouldHideMediaIndicator());
             @DrawableRes

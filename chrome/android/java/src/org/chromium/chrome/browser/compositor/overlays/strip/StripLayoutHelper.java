@@ -5553,7 +5553,8 @@ public class StripLayoutHelper
                         stripTab.getIsPinned(),
                         stripTab.getNotificationBubbleShown(),
                         isHidden,
-                        stripTab.getIsMultiSelected());
+                        stripTab.getIsMultiSelected(),
+                        stripTab.getMediaState());
 
         if (!stripTab.needsAccessibilityDescriptionUpdate(title, resId)) {
             // The resulting accessibility description would be the same as the current description,
@@ -5572,14 +5573,105 @@ public class StripLayoutHelper
      * @param notificationShown Whether the tab has notification shown.
      * @param isHidden Current visibility state of the Tab.
      * @param isMultiSelected Whether the tab is multi-selected.
+     * @param mediaState The {@link MediaState} state of the tab.
      */
     private @StringRes int getTabAccessibilityLabelRes(
             boolean isPinned,
             boolean notificationShown,
             boolean isHidden,
-            boolean isMultiSelected) {
+            boolean isMultiSelected,
+            @MediaState int mediaState) {
         if (notificationShown) {
             return R.string.accessibility_tabstrip_tab_notification;
+        }
+
+        final boolean selected = !isHidden;
+        if (mediaState != MediaState.NONE) {
+            if (isMultiSelected) {
+                if (isPinned) {
+                    return getMediaAccessibilityString(
+                            mediaState,
+                            mIncognito,
+                            R.string.accessibility_tabstrip_tab_multiselected_pinned_audible,
+                            R.string.accessibility_tabstrip_tab_multiselected_pinned_muted,
+                            R.string.accessibility_tabstrip_tab_multiselected_pinned_recording,
+                            R.string.accessibility_tabstrip_tab_multiselected_pinned_sharing,
+                            R.string
+                                    .accessibility_tabstrip_tab_multiselected_pinned_audible_incognito,
+                            R.string
+                                    .accessibility_tabstrip_tab_multiselected_pinned_muted_incognito,
+                            R.string
+                                    .accessibility_tabstrip_tab_multiselected_pinned_recording_incognito,
+                            R.string
+                                    .accessibility_tabstrip_tab_multiselected_pinned_sharing_incognito);
+                } else {
+                    return getMediaAccessibilityString(
+                            mediaState,
+                            mIncognito,
+                            R.string.accessibility_tabstrip_tab_multiselected_audible,
+                            R.string.accessibility_tabstrip_tab_multiselected_muted,
+                            R.string.accessibility_tabstrip_tab_multiselected_recording,
+                            R.string.accessibility_tabstrip_tab_multiselected_sharing,
+                            R.string.accessibility_tabstrip_tab_multiselected_audible_incognito,
+                            R.string.accessibility_tabstrip_tab_multiselected_muted_incognito,
+                            R.string.accessibility_tabstrip_tab_multiselected_recording_incognito,
+                            R.string.accessibility_tabstrip_tab_multiselected_sharing_incognito);
+                }
+            }
+
+            if (selected) {
+                if (isPinned) {
+                    return getMediaAccessibilityString(
+                            mediaState,
+                            mIncognito,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_audible,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_muted,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_recording,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_sharing,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_audible_incognito,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_muted_incognito,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_recording_incognito,
+                            R.string.accessibility_tabstrip_tab_selected_pinned_sharing_incognito);
+                } else {
+                    return getMediaAccessibilityString(
+                            mediaState,
+                            mIncognito,
+                            R.string.accessibility_tabstrip_tab_selected_audible,
+                            R.string.accessibility_tabstrip_tab_selected_muted,
+                            R.string.accessibility_tabstrip_tab_selected_recording,
+                            R.string.accessibility_tabstrip_tab_selected_sharing,
+                            R.string.accessibility_tabstrip_tab_selected_audible_incognito,
+                            R.string.accessibility_tabstrip_tab_selected_muted_incognito,
+                            R.string.accessibility_tabstrip_tab_selected_recording_incognito,
+                            R.string.accessibility_tabstrip_tab_selected_sharing_incognito);
+                }
+            } else { // not selected and not multiselected
+                if (isPinned) {
+                    return getMediaAccessibilityString(
+                            mediaState,
+                            mIncognito,
+                            R.string.accessibility_tabstrip_tab_pinned_audible,
+                            R.string.accessibility_tabstrip_tab_pinned_muted,
+                            R.string.accessibility_tabstrip_tab_pinned_recording,
+                            R.string.accessibility_tabstrip_tab_pinned_sharing,
+                            R.string.accessibility_tabstrip_tab_pinned_audible_incognito,
+                            R.string.accessibility_tabstrip_tab_pinned_muted_incognito,
+                            R.string.accessibility_tabstrip_tab_pinned_recording_incognito,
+                            R.string.accessibility_tabstrip_tab_pinned_sharing_incognito);
+                } else {
+                    return getMediaAccessibilityString(
+                            mediaState,
+                            mIncognito,
+                            R.string.accessibility_tabstrip_tab_audible,
+                            R.string.accessibility_tabstrip_tab_muted,
+                            R.string.accessibility_tabstrip_tab_recording,
+                            R.string.accessibility_tabstrip_tab_sharing,
+                            R.string.accessibility_tabstrip_tab_audible_incognito,
+                            R.string.accessibility_tabstrip_tab_muted_incognito,
+                            R.string.accessibility_tabstrip_tab_recording_incognito,
+                            R.string.accessibility_tabstrip_tab_sharing_incognito);
+                }
+            }
         }
 
         @StringRes
@@ -5636,6 +5728,48 @@ public class StripLayoutHelper
                 return pinnedSelected;
             } else {
                 return unpinnedSelected;
+            }
+        }
+    }
+
+    private @StringRes int getMediaAccessibilityString(
+            @MediaState int mediaState,
+            boolean isIncognito,
+            @StringRes int audible,
+            @StringRes int muted,
+            @StringRes int recording,
+            @StringRes int sharing,
+            @StringRes int audibleIncognito,
+            @StringRes int mutedIncognito,
+            @StringRes int recordingIncognito,
+            @StringRes int sharingIncognito) {
+        if (isIncognito) {
+            switch (mediaState) {
+                case MediaState.AUDIBLE:
+                    return audibleIncognito;
+                case MediaState.MUTED:
+                    return mutedIncognito;
+                case MediaState.RECORDING:
+                    return recordingIncognito;
+                case MediaState.SHARING:
+                    return sharingIncognito;
+                default:
+                    assert false : "Invalid media state: " + mediaState;
+                    return 0;
+            }
+        } else {
+            switch (mediaState) {
+                case MediaState.AUDIBLE:
+                    return audible;
+                case MediaState.MUTED:
+                    return muted;
+                case MediaState.RECORDING:
+                    return recording;
+                case MediaState.SHARING:
+                    return sharing;
+                default:
+                    assert false : "Invalid media state: " + mediaState;
+                    return 0;
             }
         }
     }
@@ -5772,10 +5906,11 @@ public class StripLayoutHelper
         return isPinned ? getNumLivePinnedTabs() : mStripTabs.length;
     }
 
-    public @MediaState int getMediaIndicatorState(StripLayoutTab stripLayoutTab) {
-        Tab tab = getTabById(stripLayoutTab.getTabId());
-        if (tab == null) return MediaState.NONE;
-        return tab.getMediaState();
+    public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {
+        StripLayoutTab stripLayoutTab = findTabById(tab.getId());
+        assumeNonNull(stripLayoutTab);
+        stripLayoutTab.setMediaState(mediaState);
+        setAccessibilityDescription(stripLayoutTab, tab);
     }
 
     private boolean isViewDraggingInProgress() {

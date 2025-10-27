@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -157,6 +158,7 @@ public class StripLayoutTab extends StripLayoutView {
     private boolean mSkipAsyncClosure;
     private float mBottomMargin;
     private float mContainerOpacity;
+    private @MediaState int mMediaState;
 
     // For avoiding unnecessary accessibility description updates.
     private @Nullable String mCachedA11yDescriptionTitle;
@@ -327,6 +329,14 @@ public class StripLayoutTab extends StripLayoutView {
     /** Gets whether this tab has been pinned */
     public boolean getIsPinned() {
         return mIsPinned;
+    }
+
+    /* package */ void setMediaState(@MediaState int mediaState) {
+        mMediaState = mediaState;
+    }
+
+    public @MediaState int getMediaState() {
+        return mMediaState;
     }
 
     /**
