@@ -133,9 +133,7 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           dip_reporting_observer,
-      std::optional<blink::NoiseToken> canvas_noise_token,
-      CrossVariantMojoReceiver<mojom::CanvasNoiseTokenUpdaterInterfaceBase>
-          canvas_noise_token_observer);
+      std::optional<blink::NoiseToken> canvas_noise_token);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

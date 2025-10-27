@@ -54,9 +54,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         dip_reporting_observer,
-    std::optional<blink::NoiseToken> canvas_noise_token,
-    mojo::PendingReceiver<blink::mojom::CanvasNoiseTokenUpdater>
-        canvas_noise_token_observer) {
+    std::optional<blink::NoiseToken> canvas_noise_token) {
   // Bound to the lifetime of the underlying blink::WebSharedWorker instance.
   new EmbeddedSharedWorkerStub(
       std::move(info), token, constructor_key, origin,
@@ -70,7 +68,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
       std::move(browser_interface_broker), ukm_source_id,
       require_cross_site_request_for_cookies,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      std::move(canvas_noise_token), std::move(canvas_noise_token_observer),
+      std::move(canvas_noise_token),
       RenderThreadImpl::current()->cors_exempt_header_list());
 }
 

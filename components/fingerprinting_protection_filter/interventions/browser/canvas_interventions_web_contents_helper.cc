@@ -12,7 +12,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/service_worker_context.h"
-#include "content/public/browser/shared_worker_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -64,11 +63,6 @@ void CanvasInterventionsWebContentsHelper::
       .GetBrowserContext()
       ->GetStoragePartition(GetWebContents().GetSiteInstance())
       ->GetServiceWorkerContext()
-      ->UpdateAllCanvasNoiseTokensFromTopLevelSite(first_party_url);
-  GetWebContents()
-      .GetBrowserContext()
-      ->GetStoragePartition(GetWebContents().GetSiteInstance())
-      ->GetSharedWorkerService()
       ->UpdateAllCanvasNoiseTokensFromTopLevelSite(first_party_url);
 }
 
