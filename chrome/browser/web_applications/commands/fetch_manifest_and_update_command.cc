@@ -62,7 +62,7 @@ void FetchManifestAndUpdateCommand::StartWithLock(
       install_url_, &lock_->shared_web_contents(),
       webapps::WebAppUrlLoader::UrlComparison::kSameOrigin,
       base::BindOnce(&FetchManifestAndUpdateCommand::OnUrlLoaded,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FetchManifestAndUpdateCommand::OnUrlLoaded(
