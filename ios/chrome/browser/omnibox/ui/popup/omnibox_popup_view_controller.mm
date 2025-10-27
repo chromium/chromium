@@ -644,7 +644,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
          didTapTrailingButtonAtIndexPath:(NSIndexPath*)indexPath {
   id<AutocompleteSuggestion> suggestion =
       [self suggestionAtIndexPath:indexPath];
-  if (suggestion != configuration.suggestion) {
+  if (suggestion != configuration.suggestion || !suggestion) {
     return;
   }
   [self.mutator tapTrailingButtonOnSuggestion:suggestion inRow:indexPath.row];
