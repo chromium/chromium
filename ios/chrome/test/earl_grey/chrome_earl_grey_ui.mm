@@ -240,7 +240,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
-  ScopedDisableTimerTracking disabler;
+  ScopedSynchronizationDisabler disabler;
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
   [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
