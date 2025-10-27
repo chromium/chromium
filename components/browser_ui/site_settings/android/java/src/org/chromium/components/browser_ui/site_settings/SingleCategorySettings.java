@@ -284,6 +284,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             } else {
                 addChosenObjects(sites);
             }
+            notifyPreferencesUpdated();
         }
 
         private Collection<Website> applyFilters(Collection<Website> sites) {
