@@ -7,10 +7,15 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/reload_button_resources.h"
@@ -23,7 +28,10 @@
 #include "ui/webui/webui_util.h"
 
 ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui),
+    // Sets `enable_chrome_send` to true to allow chrome.send() to be called in
+    // TypeScript to record non-timestamp histograms, which can't be done by
+    // MetricsReporter.
+    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true),
       metrics_reporter_(std::make_unique<MetricsReporter>()) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -37,11 +45,18 @@ ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kReloadButtonResources,
                               IDR_RELOAD_BUTTON_RELOAD_BUTTON_HTML);
+
+  // Handles chrome.send() calls that records non-timestamp histograms.
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ReloadButtonUI)
 
-ReloadButtonUI::~ReloadButtonUI() = default;
+ReloadButtonUI::~ReloadButtonUI() {
+  page_handler_.reset();
+  // Must live longer than `page_handler_`.
+  metrics_reporter_.reset();
+}
 
 ReloadButtonUIConfig::ReloadButtonUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
@@ -80,6 +95,12 @@ void ReloadButtonUI::CreatePageHandler(
     mojo::PendingRemote<reload_button::mojom::Page> page,
     mojo::PendingReceiver<reload_button::mojom::PageHandler> receiver) {
   CHECK(page);
+  auto* web_contents = web_ui()->GetWebContents();
+  auto* command_updater = webui::GetBrowserWindowInterface(web_contents)
+                              ->GetFeatures()
+                              .browser_command_controller();
+
   page_handler_ = std::make_unique<ReloadButtonPageHandler>(
-      std::move(receiver), std::move(page), web_ui()->GetWebContents());
+      std::move(receiver), std::move(page), web_contents, command_updater,
+      metrics_reporter_.get());
 }

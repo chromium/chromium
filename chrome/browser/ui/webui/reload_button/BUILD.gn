@@ -20,14 +20,12 @@ source_set("reload_button") {
     "reload_button_ui.h",
   ]
   public_deps = [
+    ":mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common:constants",
     "//content/public/browser",
   ]
-  deps = [
-    ":mojo_bindings",
-    "//chrome/browser:primitives",
-  ]
+  deps = [ "//chrome/browser:primitives" ]
 }
 
 source_set("impl") {
@@ -40,6 +38,7 @@ source_set("impl") {
     ":mojo_bindings",
     ":reload_button",
     "//chrome/app:command_ids",
+    "//chrome/browser:primitives",
     "//chrome/browser/resources/reload_button:resources_grit",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",

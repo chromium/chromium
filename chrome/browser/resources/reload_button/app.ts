@@ -14,6 +14,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
+import type {BrowserProxy} from './browser_proxy.js';
+import {MetricsRecorder} from './metrics_recorder.js';
 
 const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
     'reloadButtonTooltipReloadWithMenu';
@@ -23,11 +25,19 @@ const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
 const LONG_PRESS_TIMER_THRESHOLD_MS = 500;
 
 export class ReloadButtonAppElement extends CrLitElement {
+  private browserProxy_: BrowserProxy;
+  private metricsRecorder_: MetricsRecorder;
+
   constructor() {
     super();
-    const callbackRouter = BrowserProxyImpl.getInstance().callbackRouter;
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
+    this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
+    const callbackRouter = this.browserProxy_.callbackRouter;
     callbackRouter.setReloadButtonState.addListener(
         (isLoading: boolean, isMenuEnabled: boolean) => {
+          this.metricsRecorder_.onChangeVisibleMode(
+              MetricsRecorder.getVisibleMode(this.isLoading_),
+              MetricsRecorder.getVisibleMode(isLoading));
           this.isLoading_ = isLoading;
           this.isMenuEnabled_ = isMenuEnabled;
           this.tooltip_ = loadTimeData.getString(
@@ -65,6 +75,26 @@ export class ReloadButtonAppElement extends CrLitElement {
   private longPressTimer_: number = 0;
   private isMenuEnabled_: boolean = false;
 
+  /**
+   * Sets up event listeners and the PerformanceObserver when the element is
+   * added to the DOM.
+   */
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.metricsRecorder_.startObserving();
+  }
+
+  /**
+   * Cleans up event listeners and the PerformanceObserver when the element is
+   * removed from the DOM.
+   */
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.metricsRecorder_.stopObserving();
+  }
+
   protected onReloadButtonPointerDown_(e: MouseEvent) {
     if (e.button !== 0) {
       // The TypeScript code should only handle the left-click.
@@ -92,11 +122,15 @@ export class ReloadButtonAppElement extends CrLitElement {
   }
 
   protected onReloadButtonPointerUp_(e: MouseEvent) {
+    this.metricsRecorder_.onButtonPressedStart(e);
     if (this.isLongPressed_) {
       // If the long press is already handled, skip the rest.
       this.isLongPressed_ = false;
       return;
     }
+    this.metricsRecorder_.onChangeVisibleMode(
+        MetricsRecorder.getVisibleMode(this.isLoading_),
+        MetricsRecorder.getVisibleMode(!this.isLoading_));
 
     clearTimeout(this.longPressTimer_);
 
