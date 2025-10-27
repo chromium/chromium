@@ -330,4 +330,13 @@ bool AutofillClient::DocumentUsedWebOTP() {
   return false;
 }
 
+PasswordManagerAutofillHelperDelegate*
+AutofillClient::GetPasswordManagerAutofillHelper() {
+  return nullptr;
+}
+
+AutofillManager* AutofillClient::GetAutofillManagerForPrimaryMainFrame() {
+  return nullptr;
+}
+
 }  // namespace autofill

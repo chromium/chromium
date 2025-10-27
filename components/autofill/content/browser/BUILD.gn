@@ -53,6 +53,7 @@ static_library("browser") {
   deps = [
     ":autofill_shared_storage_proto",
     "//base:i18n",
+    "//components/autofill/core/browser/integrators/password_manager",
     "//components/credential_management:browser",
     "//components/prefs",
     "//components/profile_metrics",

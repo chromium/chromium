@@ -105,6 +105,14 @@ proto_library("amount_extraction_heuristic_regexes_proto") {
   sources = [ "payments/amount_extraction_heuristic_regexes.proto" ]
 }
 
+source_set("unique_ids") {
+  sources = [ "../common/unique_ids.h" ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+  ]
+}
+
 static_library("browser") {
   sources = [
     "autofill_ai_form_rationalization.cc",
@@ -955,6 +963,7 @@ static_library("browser") {
     ":country_data",
     ":legal_message_line",
     ":payments_sync_utils",
+    ":unique_ids",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/browser/proto:autofill_ai_proto",

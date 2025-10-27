@@ -125,6 +125,7 @@ enum class SuggestionType;
 class SingleFieldFillRouter;
 class ValuablesDataManager;
 class VotesUploader;
+class PasswordManagerAutofillHelperDelegate;
 
 namespace autofill_metrics {
 class FormInteractionsUkmLogger;
@@ -757,6 +758,13 @@ class AutofillClient {
   // exists only for the main frame because only the main frame has the
   // permission to call the WeOTP API.
   virtual bool DocumentUsedWebOTP();
+
+  // Returns the helper for Password Manager integrations.
+  virtual PasswordManagerAutofillHelperDelegate*
+  GetPasswordManagerAutofillHelper();
+
+  // Returns the AutofillManager instance for the current frame/tab.
+  virtual AutofillManager* GetAutofillManagerForPrimaryMainFrame();
 };
 
 }  // namespace autofill
