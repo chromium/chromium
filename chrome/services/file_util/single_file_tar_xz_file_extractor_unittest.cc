@@ -25,8 +25,6 @@
 // TODO(b/254591810): Add tests for SingleFileTarXzFileExtractor::ExtractChunk
 // function.
 
-namespace chrome {
-
 using ::testing::StrictMock;
 
 class SingleFileTarXzFileExtractorTest : public testing::Test {
@@ -196,5 +194,3 @@ TEST_F(SingleFileTarXzFileExtractorTest, CorruptedFile) {
   const chrome::file_util::mojom::ExtractionResult& result = future.Get();
   EXPECT_EQ(chrome::file_util::mojom::ExtractionResult::kGenericError, result);
 }
-
-}  // namespace chrome
