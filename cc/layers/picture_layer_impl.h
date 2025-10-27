@@ -56,9 +56,6 @@ class CC_EXPORT PictureLayerImpl
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
-  void AppendQuads(const AppendQuadsContext& context,
-                   viz::CompositorRenderPass* render_pass,
-                   AppendQuadsData* append_quads_data) override;
   void NotifyTileStateChanged(const Tile* tile, bool update_damage) override;
   gfx::Rect GetDamageRect() const override;
   void ResetChangeTracking() override;
@@ -389,6 +386,12 @@ class CC_EXPORT PictureLayerImpl
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.
   gfx::Rect damage_rect_;
+
+ private:
+  // TileBasedLayerImpl:
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data) override;
 };
 
 }  // namespace cc

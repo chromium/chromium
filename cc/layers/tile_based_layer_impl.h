@@ -29,6 +29,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   bool is_backdrop_filter_mask() const { return is_backdrop_filter_mask_; }
 
+  // LayerImpl overrides:
+  void AppendQuads(const AppendQuadsContext& context,
+                   viz::CompositorRenderPass* render_pass,
+                   AppendQuadsData* append_quads_data) override;
+
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id);
 
@@ -38,6 +43,14 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                        SkColor4f color);
 
  private:
+  // Called when AppendQuads() goes through a flow for which behavior is
+  // subclass-specific (i.e., not defined in TileBasedLayerImpl::AppendQuads()
+  // itself).
+  virtual void AppendQuadsSpecialization(
+      const AppendQuadsContext& context,
+      viz::CompositorRenderPass* render_pass,
+      AppendQuadsData* append_quads_data) = 0;
+
   bool is_backdrop_filter_mask_ : 1 = false;
 };
 

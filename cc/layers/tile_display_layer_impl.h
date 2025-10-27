@@ -159,9 +159,6 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
-  void AppendQuads(const AppendQuadsContext& context,
-                   viz::CompositorRenderPass* render_pass,
-                   AppendQuadsData* append_quads_data) override;
   void GetContentsResourceId(viz::ResourceId* resource_id,
                              gfx::Size* resource_size,
                              gfx::SizeF* resource_uv_size) const override;
@@ -184,6 +181,11 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
   }
 
  private:
+  // TileBasedLayerImpl:
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data) override;
+
   std::optional<SkColor4f> solid_color_;
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;

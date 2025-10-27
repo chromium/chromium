@@ -22,6 +22,14 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl {
   TestTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
       : TileBasedLayerImpl(tree_impl, id) {}
   using TileBasedLayerImpl::AppendSolidQuad;
+
+ private:
+  // TileBasedLayerImpl:
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data) override {
+    NOTREACHED();
+  }
 };
 
 class TileBasedLayerImplTest : public TestLayerTreeHostBase {};

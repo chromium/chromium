@@ -14,6 +14,12 @@ TileBasedLayerImpl::TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 TileBasedLayerImpl::~TileBasedLayerImpl() = default;
 
+void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                     viz::CompositorRenderPass* render_pass,
+                                     AppendQuadsData* append_quads_data) {
+  AppendQuadsSpecialization(context, render_pass, append_quads_data);
+}
+
 void TileBasedLayerImpl::AppendSolidQuad(viz::CompositorRenderPass* render_pass,
                                          AppendQuadsData* append_quads_data,
                                          SkColor4f color) {
