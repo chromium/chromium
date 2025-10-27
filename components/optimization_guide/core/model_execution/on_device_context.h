@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -45,8 +46,7 @@ struct OnDeviceOptions final {
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
   std::unique_ptr<SafetyChecker> safety_checker;
   TokenLimits token_limits;
-  on_device_model::Capabilities capabilities;
-  SamplingParams sampling_params;
+  SessionConfigParams session_params;
 
   // Returns true if the on-device model may be used.
   bool ShouldUse() const;
@@ -76,7 +76,7 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
       proto::OnDeviceModelServiceRequest* logged_request,
       bool ignore_context);
 
-  const OnDeviceOptions& opts() { return opts_; }
+  const OnDeviceOptions& opts() const { return opts_; }
 
   // Whether using this session is still allowed.
   // This should be checked before called any other public methods.

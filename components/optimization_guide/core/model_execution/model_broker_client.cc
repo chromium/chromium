@@ -98,13 +98,12 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
   opts.safety_checker = std::make_unique<SafetyChecker>(
       weak_ptr_factory_.GetWeakPtr(), SafetyConfig(safety_config_));
   opts.token_limits = feature_adapter_->GetTokenLimits();
-
-  opts.capabilities = config_params.capabilities;
-  if (config_params.sampling_params) {
-    opts.sampling_params = *config_params.sampling_params;
+  opts.session_params = config_params;
+  if (!opts.session_params.sampling_params) {
+    opts.session_params.sampling_params =
+        feature_adapter_->GetDefaultSamplingParams();
   }
-
-  return std::make_unique<SessionImpl>(key_, std::move(opts), config_params);
+  return std::make_unique<SessionImpl>(key_, std::move(opts));
 }
 
 void ModelClient::OnDisconnect() {

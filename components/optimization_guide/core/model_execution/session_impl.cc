@@ -48,42 +48,19 @@ using google::protobuf::RepeatedPtrField;
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-SamplingParams ResolveSamplingParams(
-    const std::optional<SessionConfigParams>& config_params,
-    const std::optional<OnDeviceOptions>& on_device_opts) {
-  if (config_params && config_params->sampling_params) {
-    return config_params->sampling_params.value();
-  }
-  if (on_device_opts) {
-    auto feature_params = on_device_opts->adapter->GetSamplingParamsConfig();
-    return SamplingParams{.top_k = feature_params.default_top_k,
-                          .temperature = feature_params.default_temperature};
-  }
-  return SamplingParams{
-      .top_k = static_cast<uint32_t>(features::GetOnDeviceModelDefaultTopK()),
-      .temperature =
-          static_cast<float>(features::GetOnDeviceModelDefaultTemperature()),
-  };
-}
-
 }  // namespace
 
-SessionImpl::SessionImpl(
-    ModelBasedCapabilityKey feature,
-    std::optional<OnDeviceOptions> on_device_opts,
-    const std::optional<SessionConfigParams>& config_params)
+SessionImpl::SessionImpl(ModelBasedCapabilityKey feature,
+                         OnDeviceOptions on_device_opts)
     : feature_(feature),
-      sampling_params_(ResolveSamplingParams(config_params, on_device_opts)),
-      capabilities_(config_params ? config_params->capabilities
-                                  : on_device_model::Capabilities()) {
-  if (on_device_opts && on_device_opts->ShouldUse()) {
+      // TODO(crbug.com/403383823): Get these from on_device_context_.
+      sampling_params_(*on_device_opts.session_params.sampling_params),
+      capabilities_(on_device_opts.session_params.capabilities) {
+  if (on_device_opts.ShouldUse()) {
     TRACE_EVENT("optimization_guide", "SessionImpl::Warmup", "target",
                 base::ToString(feature_));
-    // TODO(crbug.com/403383823): Consider removing `sampling_params_` from
-    // `SessionImpl` in favor of querying them from `on_device_context_`.
-    on_device_opts->sampling_params = sampling_params_;
     on_device_context_ =
-        std::make_unique<OnDeviceContext>(*std::move(on_device_opts), feature_);
+        std::make_unique<OnDeviceContext>(std::move(on_device_opts), feature_);
     // Prewarm the initial session to make sure the service is started.
     on_device_context_->GetOrCreateSession();
   }

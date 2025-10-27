@@ -51,9 +51,7 @@ class SessionImpl : public OnDeviceSession {
     kMaxValue = kFailedConstructingInput,
   };
 
-  SessionImpl(ModelBasedCapabilityKey feature,
-              std::optional<OnDeviceOptions> on_device_opts,
-              const std::optional<SessionConfigParams>& config_params);
+  SessionImpl(ModelBasedCapabilityKey feature, OnDeviceOptions on_device_opts);
   SessionImpl(ModelBasedCapabilityKey feature,
               const SamplingParams& sampling_params);
   ~SessionImpl() override;

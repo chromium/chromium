@@ -77,6 +77,8 @@ class OnDeviceModelFeatureAdapter final
 
   SamplingParamsConfig GetSamplingParamsConfig() const;
 
+  SamplingParams GetDefaultSamplingParams() const;
+
   const proto::Any& GetFeatureMetadata() const;
 
   const TokenLimits& GetTokenLimits() const;

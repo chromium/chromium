@@ -96,8 +96,7 @@ OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
       adapter(orig.adapter),
       safety_checker(std::make_unique<SafetyChecker>(*orig.safety_checker)),
       token_limits(orig.token_limits),
-      capabilities(orig.capabilities),
-      sampling_params(orig.sampling_params) {}
+      session_params(orig.session_params) {}
 
 bool OnDeviceOptions::ShouldUse() const {
   return model_client->ShouldUse();
@@ -105,7 +104,9 @@ bool OnDeviceOptions::ShouldUse() const {
 
 OnDeviceContext::OnDeviceContext(OnDeviceOptions opts,
                                  ModelBasedCapabilityKey feature)
-    : opts_(std::move(opts)), feature_(feature) {}
+    : opts_(std::move(opts)), feature_(feature) {
+  CHECK(opts_.session_params.sampling_params.has_value());
+}
 OnDeviceContext::~OnDeviceContext() = default;
 
 bool OnDeviceContext::SetInput(MultimodalMessageReadView request,
@@ -151,9 +152,9 @@ OnDeviceContext::GetOrCreateSession() {
     return session_;
   }
   auto params = on_device_model::mojom::SessionParams::New();
-  params->capabilities = opts_.capabilities;
-  params->top_k = opts_.sampling_params.top_k;
-  params->temperature = opts_.sampling_params.temperature;
+  params->capabilities = opts_.session_params.capabilities;
+  params->top_k = opts_.session_params.sampling_params->top_k;
+  params->temperature = opts_.session_params.sampling_params->temperature;
   opts_.model_client->StartSession(session_.BindNewPipeAndPassReceiver(),
                                    std::move(params));
   session_.reset_on_disconnect();

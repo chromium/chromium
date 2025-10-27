@@ -175,6 +175,12 @@ SamplingParamsConfig OnDeviceModelFeatureAdapter::GetSamplingParamsConfig()
   };
 }
 
+SamplingParams OnDeviceModelFeatureAdapter::GetDefaultSamplingParams() const {
+  SamplingParamsConfig feature_params = GetSamplingParamsConfig();
+  return SamplingParams{.top_k = feature_params.default_top_k,
+                        .temperature = feature_params.default_temperature};
+}
+
 const proto::Any& OnDeviceModelFeatureAdapter::GetFeatureMetadata() const {
   return config_.feature_metadata();
 }
