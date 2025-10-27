@@ -668,6 +668,10 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
               {144, ::gfx::test::CreateBitmap(
                         FakeWebContentsManager::kBasicInstallIconSize,
                         SK_ColorGREEN)}};
+          info->trusted_icon_bitmaps.any = {
+              {144, ::gfx::test::CreateBitmap(
+                        FakeWebContentsManager::kBasicInstallIconSize,
+                        SK_ColorGREEN)}};
           return info;
         },
         manifest_id, start_url, scope, install_url);
@@ -775,6 +779,9 @@ TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaFactory) {
 }
 
 TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaManifest) {
+  // TODO(crbug.com/454861476): This should be GetInstallOptionsWithManifest(),
+  // but that does not seem to work here, because the
+  // DCHECK(options.app_info_factory) fails.
   preinstalled_app_override_->apps = {GetInstallOptionsWithFactory()};
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 

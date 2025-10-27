@@ -175,14 +175,13 @@ bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
     return true;
   }
 
-  // WebAppChromeOsData::oem_installed is not included in this statement as
-  // we would like to keep WebAppManagement::kOem and
-  // WebAppChromeOsData::oem_installed separate.
-  // WebAppChromeOsData::oem_installed will be migrated to
-  // WebAppManagement::kOem eventually.
-  return web_app.IsPreinstalledApp() || web_app.IsKioskInstalledApp() ||
-         web_app.GetSources().HasAny(
-             {WebAppManagement::kOem, WebAppManagement::kApsDefault});
+  // The `!web_app.IsPolicyInstalledApp()` hack is to ensure that the "existing"
+  // manifest update process only works for policy installed apps if
+  // `kWebAppManifestPolicyAppIdentityUpdate` is enabled, for browser tests.
+  // Once predictable app updating lands, this code will be removed (since that
+  // feature flag is enabled by default anyway).
+  return !web_app.IsPolicyInstalledApp() &&
+         web_app.WasInstalledByTrustedSources();
 }
 
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,

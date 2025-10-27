@@ -112,4 +112,11 @@ WebAppFilter WebAppFilter::LaunchableFromInstallApi() {
   return filter;
 }
 
+// static
+WebAppFilter WebAppFilter::IsTrusted() {
+  WebAppFilter filter;
+  filter.is_app_trusted_ = true;
+  return filter;
+}
+
 }  // namespace web_app

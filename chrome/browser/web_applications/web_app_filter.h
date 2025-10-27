@@ -53,6 +53,10 @@ class WebAppFilter {
   // installed by the user. Used by the Web Install API.
   static WebAppFilter LaunchableFromInstallApi();
 
+  // Only consider web apps that have been installed in Chrome by trusted
+  // sources, like admin or preinstalled apps.
+  static WebAppFilter IsTrusted();
+
   WebAppFilter(const WebAppFilter&);
   WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
@@ -85,6 +89,7 @@ class WebAppFilter {
   // true. So use a separate field for the combination of the two. In the
   // future we might want to have a more generic "and" mechanism for filters.
   bool is_crafted_app_and_opens_in_dedicated_window_ = false;
+  bool is_app_trusted_ = false;
 };
 
 }  // namespace web_app

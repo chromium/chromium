@@ -1040,6 +1040,11 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
            GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
   }
 
+  if (filter.is_app_trusted_) {
+    const WebApp* app = GetAppById(app_id);
+    return (app && app->WasInstalledByTrustedSources());
+  }
+
   return false;
 }
 

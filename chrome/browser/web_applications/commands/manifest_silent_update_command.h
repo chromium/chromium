@@ -155,7 +155,7 @@ class ManifestSilentUpdateCommand
 
   // Identify whether or not the app needs to be silently updated, or if a
   // pending update needs to be stored, and starts the writes if needed.
-  void FinalizeUpdateIfSilentChangesExist(bool is_trusted_install);
+  void FinalizeUpdateIfSilentChangesExist();
 
   void UpdateFinalizedWritePendingInfo(
       std::optional<proto::PendingUpdateInfo> pending_update_info,

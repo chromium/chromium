@@ -58,6 +58,10 @@ struct WebAppInstallInfoConstructOptions {
   // Defers all icon fetching, to be done later via
   // ManifestToWebAppInstallInfoJob::FetchIcons.
   bool defer_icon_fetching = false;
+  // Ensures that all manifest icons are treated as trusted icons. Used for
+  // trusted installation/update flows like for policy and default installed
+  // apps.
+  bool use_manifest_icons_as_trusted = false;
 };
 
 // The role of this job is to take a `blink::mojom::Manifest`, parse it,

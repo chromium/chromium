@@ -1315,6 +1315,65 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, SVGIconsNoSize) {
   }
 }
 
+// Verifies that when `use_manifest_icons_as_trusted` is set, the manifest icons
+// are overwritten as trusted icons. The `ChooseLargestIconAny` test verifies
+// the default behavior.
+TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
+       ConfigureManifestIconsAsTrusted) {
+  const GURL larger_icon_url{"https://www.foo.bar/icon_larger.png"};
+  const int larger_icon_size = 128;
+  const SkBitmap larger_icon =
+      gfx::test::CreateBitmap(larger_icon_size, SK_ColorGREEN);
+  const GURL largest_icon_url{"https://www.foo.bar/icon_largest.png"};
+  const int largest_icon_size = 512;
+  const SkBitmap largest_icon =
+      gfx::test::CreateBitmap(largest_icon_size, SK_ColorBLUE);
+
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  // Set up 2 more icons, and verify that the largest icon gets loaded for
+  // purpose ANY.
+  blink::Manifest::ImageResource icon_larger;
+  icon_larger.src = larger_icon_url;
+  icon_larger.sizes = {{larger_icon_size, larger_icon_size}};
+  icon_larger.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  web_contents_manager().GetOrCreateIconState(larger_icon_url).bitmaps = {
+      larger_icon};
+
+  blink::Manifest::ImageResource icon_largest;
+  icon_largest.src = largest_icon_url;
+  icon_largest.sizes = {{largest_icon_size, largest_icon_size}};
+  icon_largest.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  web_contents_manager().GetOrCreateIconState(largest_icon_url).bitmaps = {
+      largest_icon};
+  manifest->icons = {icon_larger, icon_largest};
+
+  // Get the trusted icons from the manifest with the flag set accordingly.
+  WebAppInstallInfoConstructOptions options;
+  options.use_manifest_icons_as_trusted = true;
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest, options);
+
+  apps::IconInfo info1(larger_icon_url, larger_icon_size);
+  info1.purpose = apps::IconInfo::Purpose::kAny;
+  apps::IconInfo info2(largest_icon_url, largest_icon_size);
+  info2.purpose = apps::IconInfo::Purpose::kAny;
+
+  // Verify that the trusted icon and the manifest icon bitmaps are the same.
+  EXPECT_THAT(web_app_info->trusted_icons, ElementsAre(info1, info2));
+  EXPECT_THAT(web_app_info->manifest_icons, ElementsAre(info1, info2));
+
+  // Verify expected bitmap chosen of proper size.
+  EXPECT_FALSE(web_app_info->trusted_icon_bitmaps.any.empty());
+  EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.maskable.empty());
+
+  // Verify bitmaps populated properly for `any` icons, matching manifest icons.
+  EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[larger_icon_size],
+              gfx::test::EqualsBitmap(larger_icon));
+  EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[largest_icon_size],
+              gfx::test::EqualsBitmap(largest_icon));
+}
+
 }  // namespace
 
 }  // namespace web_app

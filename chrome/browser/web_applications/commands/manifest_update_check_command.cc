@@ -201,6 +201,8 @@ void ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo(
   WebAppInstallInfoConstructOptions construct_options;
   construct_options.fail_all_if_any_fail = true;
   construct_options.record_icon_results_on_update = true;
+  construct_options.use_manifest_icons_as_trusted =
+      lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
 
   // The `background_installation` and `install_source` fields here don't matter
   // because this is not logged anywhere.

@@ -160,6 +160,14 @@ void InstallPlaceholderJob::FinalizeInstall(
     icons_map.emplace(GURL(install_options_.override_icon_url.value()),
                       bitmaps.value());
     PopulateProductIcons(web_app_info.get(), &icons_map);
+
+    // For icon overrides, the app icon needs to be used as the trusted icon,
+    // since it's guaranteed that the icon is coming from a trusted source, as
+    // it is externally installed.
+    apps::IconInfo trusted_bitmap;
+    trusted_bitmap.url = GURL(install_options_.override_icon_url.value());
+    web_app_info->trusted_icons = {trusted_bitmap};
+    PopulateTrustedIconBitmaps(*web_app_info.get(), icons_map);
   }
 
   web_app_info->install_url = install_options_.install_url;

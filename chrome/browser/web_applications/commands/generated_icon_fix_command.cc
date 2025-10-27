@@ -123,9 +123,7 @@ void GeneratedIconFixCommand::OnIconsWritten(bool success) {
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id_);
-    SetWebAppProductIconFields(
-        *install_info_, *web_app,
-        (web_app->IsPolicyInstalledApp() || web_app->IsPreinstalledApp()));
+    SetWebAppProductIconFields(*install_info_, *web_app);
   }
   lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   Stop(GeneratedIconFixResult::kSuccess, FROM_HERE);

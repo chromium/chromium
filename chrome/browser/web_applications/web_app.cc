@@ -407,6 +407,19 @@ bool WebApp::WasInstalledByUser() const {
          sources_.Has(WebAppManagement::kIwaUserInstalled);
 }
 
+bool WebApp::WasInstalledByTrustedSources() const {
+  // WebAppChromeOsData::oem_installed is not included here as
+  // we would like to keep WebAppManagement::kOem and
+  // WebAppChromeOsData::oem_installed separate.
+  // WebAppChromeOsData::oem_installed will be migrated to
+  // WebAppManagement::kOem eventually.
+  return sources_.Has(WebAppManagement::kDefault) ||
+         sources_.Has(WebAppManagement::kPolicy) ||
+         sources_.Has(WebAppManagement::kKiosk) ||
+         sources_.Has(WebAppManagement::kOem) ||
+         sources_.Has(WebAppManagement::kApsDefault);
+}
+
 WebAppManagement::Type WebApp::GetHighestPrioritySource() const {
   // `WebAppManagementTypes` is iterated in order of priority.
   // Top priority sources are iterated first.

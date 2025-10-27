@@ -406,6 +406,8 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
   construct_options.fail_all_if_any_fail = true;
   construct_options.defer_icon_fetching = true;
   construct_options.record_icon_results_on_update = true;
+  construct_options.use_manifest_icons_as_trusted =
+      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
 
   // The `background_installation` and `install_source` fields here don't matter
   // because this is not logged anywhere.
@@ -452,16 +454,16 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
       WebAppComparison::CompareWebApps(*app, *new_install_info_);
   GetMutableDebugValue().Set("web_app_diff", web_app_comparison_.ToDict());
 
-  // Store the conditions for which a silent update of the app is allowed. This
-  // is usually possible if:
+  // Store the conditions for which a silent update of the app's identity is
+  // allowed. This is usually possible if:
   // 1. The app is a trusted one, installed via policy or default installed.
   // 2. The app has generated icons, but was sync installed and is within the
   // time frame in which it can be fixed, and there are no other changes in the
   // app.
   bool is_trusted_install =
-      (base::FeatureList::IsEnabled(
-          features::kSilentPolicyAndDefaultAppUpdating)) &&
-      (app->IsPolicyInstalledApp() || app->IsPreinstalledApp());
+      base::FeatureList::IsEnabled(
+          features::kSilentPolicyAndDefaultAppUpdating) &&
+      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
   bool can_fix_generated_icons =
       app->is_generated_icon() &&
       app->latest_install_source() == webapps::WebappInstallSource::SYNC &&
@@ -553,14 +555,13 @@ void ManifestSilentUpdateCommand::OnWebAppInfoCreatedFromManifest(
 
   std::move(barrier).Done(base::BindOnce(
       &ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist,
-      weak_factory_.GetWeakPtr(), is_trusted_install));
+      weak_factory_.GetWeakPtr()));
 
   SetStage(
       ManifestSilentUpdateCommandStage::kLoadingExistingAndNewManifestIcons);
 }
 
-void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist(
-    bool is_trusted_install) {
+void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
   CHECK_EQ(
       stage_,
       ManifestSilentUpdateCommandStage::kLoadingExistingAndNewManifestIcons);
@@ -577,13 +578,8 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist(
         existing_shortcuts_menu_icon_bitmaps_;
   }
 
-  // Update the app's identity silently first and exit early if allowed.
+  // Update app silently and exit early if allowed.
   if (silently_update_app_identity_) {
-    if (is_trusted_install) {
-      new_install_info_->trusted_icons = new_install_info_->manifest_icons;
-      new_install_info_->trusted_icon_bitmaps = new_install_info_->icon_bitmaps;
-    }
-
     app_lock_->install_finalizer().FinalizeUpdate(
         new_install_info_->Clone(),
         base::BindOnce(

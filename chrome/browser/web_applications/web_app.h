@@ -428,6 +428,7 @@ class WebApp {
   bool IsKioskInstalledApp() const;
   bool CanUserUninstallWebApp() const;
   bool WasInstalledByUser() const;
+  bool WasInstalledByTrustedSources() const;
   // Returns the highest priority source. AppService assumes that every app has
   // just one install source.
   WebAppManagement::Type GetHighestPrioritySource() const;
