@@ -37,17 +37,6 @@ using autofill::ValuablesDataManager;
 
 namespace {
 
-struct FieldMetadata {
-  // The `FormGlobalId` of the form that is associated with a `field` on the
-  // main frame.
-  FormGlobalId form_id;
-  // The section identifier assigned to a field by autofill. This is scoped
-  // to a specific form.
-  std::string section;
-  // The form types represented by a specific field.
-  DenseSet<FormType> form_types;
-};
-
 // Key for `base::SupportsUserData` aspects of `SectionMapping`.
 const void* const kSectionMappingKey = &kSectionMappingKey;
 
@@ -106,9 +95,7 @@ uint32_t SectionMapping::GetOrCreateSectionIdentifier(
   return iter->second;
 }
 
-// Returns metadata about a field identified by the `field_global_id` and the
-// `RenderFrameHost` in which the field is located.
-std::optional<FieldMetadata> GetFieldMetadata(
+const FormStructure* GetAutofillForm(
     content::RenderFrameHost& render_frame_host,
     const FieldGlobalId& field_global_id) {
   content::WebContents& web_contents =
@@ -120,41 +107,44 @@ std::optional<FieldMetadata> GetFieldMetadata(
       ContentAutofillDriver::GetForRenderFrameHost(
           web_contents.GetPrimaryMainFrame());
   if (!autofill_driver) {
-    return {};
+    return nullptr;
   }
 
   AutofillManager& autofill_manager = autofill_driver->GetAutofillManager();
+  return autofill_manager.FindCachedFormById(field_global_id);
+}
+
+}  // namespace
+
+AutofillAnnotationsProviderImpl::~AutofillAnnotationsProviderImpl() = default;
+
+std::optional<AutofillFieldMetadata>
+AutofillAnnotationsProviderImpl::GetAutofillFieldData(
+    content::RenderFrameHost& render_frame_host,
+    int32_t dom_node_id,
+    ConvertAIPageContentToProtoSession& session) {
+  // Determine `AutofillField` from Autofill.
+  FieldGlobalId field_global_id = {
+      LocalFrameToken(render_frame_host.GetFrameToken().value()),
+      FieldRendererId(dom_node_id)};
   const FormStructure* form =
-      autofill_manager.FindCachedFormById(field_global_id);
+      GetAutofillForm(render_frame_host, field_global_id);
   if (!form) {
-    return {};
+    return std::nullopt;
   }
   const AutofillField* field = form->GetFieldById(field_global_id);
   if (!field) {
-    return {};
+    return std::nullopt;
   }
 
-  return FieldMetadata{
-      .form_id = form->global_id(),
-      .section = field->section().ToString(),
-      .form_types = field->Type().GetFormTypes(),
-  };
-}
+  AutofillFieldMetadata metadata;
 
-// Writes `autofill_section_id` and `coarse_autofill_field_type` into
-// `form_control_data`.
-void UpdateFormControlData(
-    ConvertAIPageContentToProtoSession& session,
-    const FieldMetadata& field_metadata,
-    optimization_guide::proto::FormControlData* form_control_data) {
-  // Update the section.
-  form_control_data->set_autofill_section_id(
+  metadata.section_id =
       SectionMapping::GetInstance(session)->GetOrCreateSectionIdentifier(
-          field_metadata.form_id, field_metadata.section));
+          form->global_id(), field->section().ToString());
 
-  // Update the coarse field type.
-  const DenseSet<FormType>& form_types = field_metadata.form_types;
-  proto::CoarseAutofillFieldType coarse_field_type = [&] {
+  const DenseSet<FormType>& form_types = field->Type().GetFormTypes();
+  metadata.coarse_field_type = [&] {
     if (form_types.contains(FormType::kAddressForm)) {
       return proto::COARSE_AUTOFILL_FIELD_TYPE_ADDRESS;
     } else if (form_types.contains(FormType::kCreditCardForm) ||
@@ -163,65 +153,34 @@ void UpdateFormControlData(
     }
     return proto::COARSE_AUTOFILL_FIELD_TYPE_UNSUPPORTED;
   }();
-  form_control_data->add_coarse_autofill_field_type(coarse_field_type);
+
+  return metadata;
 }
 
-}  // namespace
-
-AutofillAnnotationsProviderImpl::~AutofillAnnotationsProviderImpl() = default;
-
-void AutofillAnnotationsProviderImpl::AddAutofillAnnotations(
-    content::RenderFrameHost& render_frame_host,
-    ConvertAIPageContentToProtoSession& session,
-    optimization_guide::proto::ContentAttributes* content_attributes) {
-  CHECK(content_attributes->has_form_control_data());
-  optimization_guide::proto::FormControlData* form_control_data =
-      content_attributes->mutable_form_control_data();
-
-  // Determine `AutofillField` from Autofill.
-  FieldGlobalId field_global_id = {
-      LocalFrameToken(render_frame_host.GetFrameToken().value()),
-      FieldRendererId(content_attributes->common_ancestor_dom_node_id())};
-  std::optional<FieldMetadata> field_metadata =
-      GetFieldMetadata(render_frame_host, field_global_id);
-  if (!field_metadata) {
-    return;
-  }
-
-  UpdateFormControlData(session, *field_metadata, form_control_data);
-}
-
-void AutofillAnnotationsProviderImpl::AddAutofillInformation(
-    content::RenderFrameHost& render_frame_host,
-    proto::AutofillInformation* autofill_information) {
+AutofillAvailability AutofillAnnotationsProviderImpl::GetAutofillAvailability(
+    content::RenderFrameHost& render_frame_host) {
   content::WebContents& web_contents =
       *content::WebContents::FromRenderFrameHost(&render_frame_host);
   ContentAutofillDriver* autofill_driver =
       ContentAutofillDriver::GetForRenderFrameHost(
           web_contents.GetPrimaryMainFrame());
   if (!autofill_driver) {
-    return;
+    return {};
   }
 
   AutofillClient& client = autofill_driver->GetAutofillClient();
   if (!client.HasPersonalDataManager()) {
-    return;
+    return {};
   }
   const PersonalDataManager& pdm = client.GetPersonalDataManager();
 
-  autofill_information->clear_fillable_data();
-
-  if (client.IsAutofillProfileEnabled() &&
-      !pdm.address_data_manager().GetProfiles().empty()) {
-    autofill_information->add_fillable_data(
-        proto::AutofillInformation_FillableData_ADDRESS);
-  }
-
-  if (client.IsAutofillPaymentMethodsEnabled() &&
-      !pdm.payments_data_manager().GetCreditCards().empty()) {
-    autofill_information->add_fillable_data(
-        proto::AutofillInformation_FillableData_CREDIT_CARD);
-  }
+  return AutofillAvailability{
+      .has_fillable_address = client.IsAutofillProfileEnabled() &&
+                              !pdm.address_data_manager().GetProfiles().empty(),
+      .has_fillable_credit_card =
+          client.IsAutofillPaymentMethodsEnabled() &&
+          !pdm.payments_data_manager().GetCreditCards().empty(),
+  };
 }
 
 }  // namespace optimization_guide

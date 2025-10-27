@@ -38,10 +38,10 @@ BASE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations,
 
 namespace {
 
-void AddAutofillAnnotations(
+std::optional<AutofillFieldMetadata> GetAutofillFieldData(
     content::GlobalRenderFrameHostToken source_frame_token,
     ConvertAIPageContentToProtoSession& session,
-    optimization_guide::proto::ContentAttributes* proto_attributes) {
+    const optimization_guide::proto::ContentAttributes& proto_attributes) {
   if (base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentWithAutofillAnnotations)) {
     content::RenderFrameHost* render_frame_host =
@@ -50,10 +50,13 @@ void AddAutofillAnnotations(
         content::WebContents::FromRenderFrameHost(render_frame_host);
     if (auto* autofill_annotations_provider =
             AutofillAnnotationsProvider::GetFor(web_contents)) {
-      autofill_annotations_provider->AddAutofillAnnotations(
-          *render_frame_host, session, proto_attributes);
+      return autofill_annotations_provider->GetAutofillFieldData(
+          *render_frame_host, proto_attributes.common_ancestor_dom_node_id(),
+          session);
     }
   }
+
+  return std::nullopt;
 }
 
 optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
@@ -478,6 +481,7 @@ optimization_guide::proto::RedactionDecision ConvertRedactionDecision(
 
 void ConvertFormControlData(
     const blink::mojom::AIPageContentFormControlData& mojom_form_control_data,
+    const std::optional<AutofillFieldMetadata>& autofill_metadata,
     optimization_guide::proto::FormControlData* proto_form_control_data) {
   proto_form_control_data->set_form_control_type(
       ConvertFormControlType(mojom_form_control_data.form_control_type));
@@ -507,6 +511,14 @@ void ConvertFormControlData(
   }
   proto_form_control_data->set_redaction_decision(
       ConvertRedactionDecision(mojom_form_control_data.redaction_decision));
+
+  // Incorporate any information received from Autofill.
+  if (autofill_metadata) {
+    proto_form_control_data->set_autofill_section_id(
+        autofill_metadata->section_id);
+    proto_form_control_data->add_coarse_autofill_field_type(
+        autofill_metadata->coarse_field_type);
+  }
 }
 
 void ConvertTableData(
@@ -614,9 +626,10 @@ base::expected<void, std::string> ConvertAttributes(
       return base::unexpected(
           "form_control_data present, but node isn't kFormControl");
     }
-    ConvertFormControlData(*mojom_attributes.form_control_data,
-                           proto_attributes->mutable_form_control_data());
-    AddAutofillAnnotations(source_frame_token, session, proto_attributes);
+    ConvertFormControlData(
+        *mojom_attributes.form_control_data,
+        GetAutofillFieldData(source_frame_token, session, *proto_attributes),
+        proto_attributes->mutable_form_control_data());
   } else if (mojom_attributes.table_data) {
     if (mojom_attributes.attribute_type !=
         blink::mojom::AIPageContentAttributeType::kTable) {

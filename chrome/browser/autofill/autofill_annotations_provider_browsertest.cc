@@ -10,6 +10,9 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -257,25 +260,27 @@ IN_PROC_BROWSER_TEST_F(AutofillAnnotationsProviderBrowserTest,
 // Verifies that availability of autofill data is propagated in the
 // `autofill_information` attribute in `AnnotatedPageContents`.
 IN_PROC_BROWSER_TEST_F(AutofillAnnotationsProviderBrowserTest,
-                       AddAutofillInformation) {
+                       AutofillAvailabilityInformation) {
   client()->GetPersonalDataManager().address_data_manager().AddProfile(
       AutofillProfile(AutofillProfile::RecordType::kAccount,
                       AddressCountryCode("ES")));
-
+  CreditCard card;
+  test::SetCreditCardInfo(&card, "Elvis Presley", "4111111111111111", "12",
+                          test::NextYear().c_str(), "123");
+  client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
+      card);
   LoadPage(https_server()->GetURL("/address_sections_and_creditcard.html"),
            /*num_expected_forms=*/1);
-
   ASSERT_TRUE(page_content().has_profile_information());
   ASSERT_TRUE(page_content().profile_information().has_autofill_information());
-  EXPECT_EQ(page_content()
-                .profile_information()
-                .autofill_information()
-                .fillable_data_size(),
-            1);
-  EXPECT_EQ(
-      page_content().profile_information().autofill_information().fillable_data(
-          0),
-      optimization_guide::proto::AutofillInformation_FillableData_ADDRESS);
+  const auto& autofill_info =
+      page_content().profile_information().autofill_information();
+  EXPECT_THAT(
+      autofill_info.fillable_data(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::AutofillInformation_FillableData_ADDRESS,
+          optimization_guide::proto::
+              AutofillInformation_FillableData_CREDIT_CARD));
 }
 
 }  // namespace autofill

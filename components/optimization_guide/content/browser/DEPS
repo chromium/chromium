@@ -5,6 +5,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/android",
   "+content/public/test",
+  "+content/test",
   "+mojo/public",
   "+services/metrics/public",
   "+services/service_manager/public",

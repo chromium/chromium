@@ -74,6 +74,8 @@ static_library("page_context_eligibility") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mock_autofill_annotations_provider.cc",
+    "mock_autofill_annotations_provider.h",
     "mock_media_transcript_provider.cc",
     "mock_media_transcript_provider.h",
   ]
@@ -96,6 +98,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":page_context_eligibility",
+    ":test_support",
     "//components/optimization_guide/core:test_support",
     "//content/test:test_support",
     "//testing/gmock",

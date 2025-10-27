@@ -370,9 +370,20 @@ void OnGotAIPageContentForAllFrames(
         content::WebContents::FromRenderFrameHost(render_frame_host);
     if (auto* autofill_annotations_provider =
             AutofillAnnotationsProvider::GetFor(web_contents)) {
-      autofill_annotations_provider->AddAutofillInformation(
-          *render_frame_host, page_content.proto.mutable_profile_information()
-                                  ->mutable_autofill_information());
+      AutofillAvailability autofill_availability =
+          autofill_annotations_provider->GetAutofillAvailability(
+              *render_frame_host);
+      proto::AutofillInformation* autofill_information =
+          page_content.proto.mutable_profile_information()
+              ->mutable_autofill_information();
+      if (autofill_availability.has_fillable_address) {
+        autofill_information->add_fillable_data(
+            proto::AutofillInformation_FillableData_ADDRESS);
+      }
+      if (autofill_availability.has_fillable_credit_card) {
+        autofill_information->add_fillable_data(
+            proto::AutofillInformation_FillableData_CREDIT_CARD);
+      }
     }
   }
 

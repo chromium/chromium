@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/integrators/glic/autofill_annotations_provider_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -15,7 +16,6 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -37,32 +37,6 @@ using autofill::TestContentAutofillClient;
 using autofill::TestContentAutofillDriver;
 using autofill::test::AutofillUnitTestEnvironment;
 using autofill::test::FormDescription;
-
-namespace {
-
-// Returns pointers to all `FormControlData` elements in `page_content`.
-std::vector<const optimization_guide::proto::FormControlData*>
-GetFormControlDatas(const optimization_guide::proto::AnnotatedPageContent&
-                        page_content LIFETIME_BOUND) {
-  std::vector<const optimization_guide::proto::FormControlData*>
-      form_control_datas;
-
-  optimization_guide::VisitContentNodes(
-      page_content.root_node(),
-      page_content.main_frame_data().document_identifier().serialized_token(),
-      [&](const optimization_guide::proto::ContentNode& node,
-          std::string_view document_identifier) {
-        if (node.content_attributes().attribute_type() ==
-            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL) {
-          form_control_datas.push_back(
-              &node.content_attributes().form_control_data());
-        }
-      });
-
-  return form_control_datas;
-}
-
-}  // namespace
 
 class AutofillAnnotationsProviderImplTest
     : public content::RenderViewHostImplTestHarness {
@@ -112,9 +86,9 @@ class AutofillAnnotationsProviderImplTest
   AutofillAnnotationsProviderImpl autofill_annotations_provider_;
 };
 
-// Ensures that `autofill_section_id` and `coarse_autofill_field_type` are
-// properly populated in `AnnotatedPageContext` nodes for form controls.
-TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillAnnotations) {
+// Ensure that `section_id` and `coarse_field_type` are properly returned by
+// GetAutofillFieldData.
+TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData) {
   // Register a form to the Autofill Manager.
   FormDescription form_description = {
       .fields = {
@@ -129,125 +103,99 @@ TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillAnnotations) {
       form, autofill::test::GetHeuristicTypes(form_description),
       autofill::test::GetServerTypes(form_description));
 
-  // Build an AnnotatedPageContent that contains the form.
-  std::string token = *DocumentIdentifierUserData::GetDocumentIdentifier(
-      contents()->GetPrimaryMainFrame()->GetGlobalFrameToken());
-
-  proto::AnnotatedPageContent page_content;
-
-  page_content.mutable_main_frame_data()
-      ->mutable_document_identifier()
-      ->set_serialized_token(token);
-
-  proto::ContentNode* node =
-      page_content.mutable_root_node()->add_children_nodes();
-  proto::ContentAttributes* node_attributes =
-      node->mutable_content_attributes();
-  node_attributes->set_attribute_type(proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
-  node_attributes->set_common_ancestor_dom_node_id(
-      form.fields()[0].renderer_id().GetUnsafeValue());
-  proto::FormControlData* form_control_data =
-      node_attributes->mutable_form_control_data();
-  form_control_data->set_field_name("name");
-
   ConvertAIPageContentToProtoSession session;
-  autofill_annotations_provider_.AddAutofillAnnotations(
-      *contents()->GetPrimaryMainFrame(), session, node_attributes);
+  std::optional<AutofillFieldMetadata> metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[0].renderer_id().GetUnsafeValue(), session);
 
-  std::vector<const optimization_guide::proto::FormControlData*>
-      form_control_datas = GetFormControlDatas(page_content);
-  ASSERT_EQ(form_control_datas.size(), 1u);
-  EXPECT_TRUE(form_control_datas[0]->has_autofill_section_id());
-  EXPECT_EQ(form_control_datas[0]->autofill_section_id(), 0u);
-  ASSERT_EQ(form_control_datas[0]->coarse_autofill_field_type_size(), 1);
-  EXPECT_EQ(form_control_datas[0]->coarse_autofill_field_type(0),
+  ASSERT_TRUE(metadata);
+  EXPECT_EQ(metadata->section_id, 0u);
+  EXPECT_EQ(metadata->coarse_field_type,
             optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_ADDRESS);
 }
 
-// Ensures that the `autofill_information` in `AnnotatedPageContent` shows no
-// records in case the PersonalDataManager does not show any data.
-TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillInformation_NoData) {
-  proto::AnnotatedPageContent page_content;
-  autofill_annotations_provider_.AddAutofillInformation(
-      *contents()->GetPrimaryMainFrame(),
-      page_content.mutable_profile_information()
-          ->mutable_autofill_information());
-  EXPECT_EQ(page_content.profile_information()
-                .autofill_information()
-                .fillable_data_size(),
-            0);
+// Ensures that GetAutofillAvailability returns no availability when there are
+// no addresses or credit cards.
+TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillAvailability_NoData) {
+  AutofillAvailability availability =
+      autofill_annotations_provider_.GetAutofillAvailability(
+          *contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(availability.has_fillable_address);
+  EXPECT_FALSE(availability.has_fillable_credit_card);
 }
 
-// Ensures that the `autofill_information` in `AnnotatedPageContent` reports an
-// autofillable address if it exists.
+// Ensures that GetAutofillAvailability reports an autofillable address if it
+// exists.
 TEST_F(AutofillAnnotationsProviderImplTest,
-       AddAutofillInformation_AddressProfile) {
+       GetAutofillAvailability_AddressProfile) {
   client()->GetPersonalDataManager().address_data_manager().AddProfile(
       CreateAddress());
 
-  proto::AnnotatedPageContent page_content;
-  autofill_annotations_provider_.AddAutofillInformation(
-      *contents()->GetPrimaryMainFrame(),
-      page_content.mutable_profile_information()
-          ->mutable_autofill_information());
-  EXPECT_EQ(page_content.profile_information()
-                .autofill_information()
-                .fillable_data_size(),
-            1);
+  AutofillAvailability availability =
+      autofill_annotations_provider_.GetAutofillAvailability(
+          *contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(availability.has_fillable_address);
+  EXPECT_FALSE(availability.has_fillable_credit_card);
 }
 
-// Ensures that the `autofill_information` in `AnnotatedPageContent` reports NO
-// autofillable address if it exists but autofill is disabled.
+// Ensures that GetAutofillAvailability reports NO autofillable address if it
+// exists but autofill is disabled.
 TEST_F(AutofillAnnotationsProviderImplTest,
-       AddAutofillInformation_AddressProfile_AutofillDisabled) {
+       GetAutofillAvailability_AddressProfile_AutofillDisabled) {
   client()->SetAutofillProfileEnabled(false);
 
   client()->GetPersonalDataManager().address_data_manager().AddProfile(
       CreateAddress());
-  proto::AnnotatedPageContent page_content;
-  autofill_annotations_provider_.AddAutofillInformation(
-      *contents()->GetPrimaryMainFrame(),
-      page_content.mutable_profile_information()
-          ->mutable_autofill_information());
-  EXPECT_EQ(page_content.profile_information()
-                .autofill_information()
-                .fillable_data_size(),
-            0);
+  AutofillAvailability availability =
+      autofill_annotations_provider_.GetAutofillAvailability(
+          *contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(availability.has_fillable_address);
+  EXPECT_FALSE(availability.has_fillable_credit_card);
 }
 
-// Ensures that the `autofill_information` in `AnnotatedPageContent` reports an
-// autofillable credit card if it exists.
-TEST_F(AutofillAnnotationsProviderImplTest, AddAutofillInformation_CreditCard) {
+// Ensures that GetAutofillAvailability reports an autofillable credit card if
+// it exists.
+TEST_F(AutofillAnnotationsProviderImplTest,
+       GetAutofillAvailability_CreditCard) {
   client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
       CreateCreditCard());
-  proto::AnnotatedPageContent page_content;
-  autofill_annotations_provider_.AddAutofillInformation(
-      *contents()->GetPrimaryMainFrame(),
-      page_content.mutable_profile_information()
-          ->mutable_autofill_information());
-  EXPECT_EQ(page_content.profile_information()
-                .autofill_information()
-                .fillable_data_size(),
-            1);
+  AutofillAvailability availability =
+      autofill_annotations_provider_.GetAutofillAvailability(
+          *contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(availability.has_fillable_address);
+  EXPECT_TRUE(availability.has_fillable_credit_card);
 }
 
-// Ensures that the `autofill_information` in `AnnotatedPageContent` reports NO
-// autofillable credit card if it exists but autofill is disabled.
+// Ensures that GetAutofillAvailability reports NO autofillable credit card if
+// it exists but autofill is disabled.
 TEST_F(AutofillAnnotationsProviderImplTest,
-       AddAutofillInformation_CreditCard_AutofillDisabled) {
+       GetAutofillAvailability_CreditCard_AutofillDisabled) {
   client()->SetAutofillPaymentMethodsEnabled(false);
 
   client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
       CreateCreditCard());
-  proto::AnnotatedPageContent page_content;
-  autofill_annotations_provider_.AddAutofillInformation(
-      *contents()->GetPrimaryMainFrame(),
-      page_content.mutable_profile_information()
-          ->mutable_autofill_information());
-  EXPECT_EQ(page_content.profile_information()
-                .autofill_information()
-                .fillable_data_size(),
-            0);
+  AutofillAvailability availability =
+      autofill_annotations_provider_.GetAutofillAvailability(
+          *contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(availability.has_fillable_address);
+  EXPECT_FALSE(availability.has_fillable_credit_card);
+}
+
+// Ensures that GetAutofillAvailability reports both an autofillable address and
+// credit card if they exist.
+TEST_F(AutofillAnnotationsProviderImplTest,
+       GetAutofillAvailability_AddressAndCreditCard) {
+  client()->GetPersonalDataManager().address_data_manager().AddProfile(
+      CreateAddress());
+  client()->GetPersonalDataManager().payments_data_manager().AddCreditCard(
+      CreateCreditCard());
+
+  AutofillAvailability availability =
+      autofill_annotations_provider_.GetAutofillAvailability(
+          *contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(availability.has_fillable_address);
+  EXPECT_TRUE(availability.has_fillable_credit_card);
 }
 
 }  // namespace optimization_guide

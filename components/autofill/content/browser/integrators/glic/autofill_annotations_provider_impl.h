@@ -15,13 +15,12 @@ class AutofillAnnotationsProviderImpl : public AutofillAnnotationsProvider {
   ~AutofillAnnotationsProviderImpl() override;
 
   // AutofillAnnotationsProvider:
-  void AddAutofillAnnotations(
+  std::optional<AutofillFieldMetadata> GetAutofillFieldData(
       content::RenderFrameHost& render_frame_host,
-      ConvertAIPageContentToProtoSession& session,
-      optimization_guide::proto::ContentAttributes* proto_attributes) override;
-  void AddAutofillInformation(content::RenderFrameHost& render_frame_host,
-                              optimization_guide::proto::AutofillInformation*
-                                  autofill_information) override;
+      int32_t dom_node_id,
+      ConvertAIPageContentToProtoSession& session) override;
+  AutofillAvailability GetAutofillAvailability(
+      content::RenderFrameHost& render_frame_host) override;
 };
 
 }  // namespace optimization_guide

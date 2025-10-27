@@ -6,8 +6,11 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "components/optimization_guide/content/browser/mock_autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -1548,6 +1551,78 @@ TEST_F(PageContentProtoUtilTest, VisitContentNodes) {
                       visited_mutable_nodes.push_back(&node);
                     });
   EXPECT_EQ(visited_mutable_nodes.size(), 4u);
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertFormControlDataWithAutofill) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  std::unique_ptr<content::TestBrowserContext> browser_context =
+      std::make_unique<content::TestBrowserContext>();
+  content::WebContents::CreateParams create_params(browser_context.get());
+  std::unique_ptr<content::TestWebContents> web_contents(
+      content::TestWebContents::Create(create_params));
+  web_contents->NavigateAndCommit(GURL("https://example.com"));
+  auto* rfh = web_contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh);
+  auto main_frame_token = rfh->GetGlobalFrameToken();
+
+  auto root_content = CreatePageContent();
+  auto form_control_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kFormControl);
+  form_control_node->content_attributes->form_control_data =
+      blink::mojom::AIPageContentFormControlData::New();
+  form_control_node->content_attributes->form_control_data->form_control_type =
+      blink::mojom::FormControlType::kInputText;
+  form_control_node->content_attributes->form_control_data->field_value =
+      "some value";
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(form_control_node));
+
+  AIPageContentMap page_content_map;
+  page_content_map[main_frame_token] = std::move(root_content);
+
+  auto provider =
+      std::make_unique<testing::NiceMock<MockAutofillAnnotationsProvider>>();
+  AutofillFieldMetadata metadata;
+  metadata.section_id = 12345;
+  metadata.coarse_field_type = proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD;
+  EXPECT_CALL(*provider, GetAutofillFieldData)
+      .WillOnce(testing::Return(metadata));
+  AutofillAnnotationsProvider::SetFor(web_contents.get(), std::move(provider));
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.source_origin =
+              url::Origin::Create(GURL("https://example.com"));
+          render_frame_info.url = GURL("https://example.com");
+          render_frame_info.serialized_server_token =
+              DocumentIdentifierUserData::GetOrCreateForCurrentDocument(rfh)
+                  ->serialized_token();
+          return render_frame_info;
+        }
+        return std::nullopt;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+                  blink::mojom::AIPageContentOptions::New(), main_frame_token,
+                  page_content_map, get_render_frame_info, frame_token_set,
+                  page_content)
+                  .has_value());
+
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  const auto& form_control_data_proto = page_content.proto.root_node()
+                                            .children_nodes(0)
+                                            .content_attributes()
+                                            .form_control_data();
+  EXPECT_EQ(form_control_data_proto.autofill_section_id(), 12345u);
+  ASSERT_EQ(form_control_data_proto.coarse_autofill_field_type_size(), 1);
+  EXPECT_EQ(form_control_data_proto.coarse_autofill_field_type(0),
+            proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD);
 }
 
 }  // namespace

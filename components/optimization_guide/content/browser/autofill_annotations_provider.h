@@ -19,8 +19,34 @@ class ConvertAIPageContentToProtoSession;
 
 namespace optimization_guide {
 
-// This interface enables adding Autofill information to the Annotated Page
-// Contents for a given form control.
+// Represents information derived from Autofill for a given field.
+struct AutofillFieldMetadata {
+  // The coarse type of the form that the field belongs to.
+  proto::CoarseAutofillFieldType coarse_field_type;
+
+  // An identifier of a section of a form that this field belongs to. Form
+  // controls with the same `section_id` are filled together by autofill.
+  //
+  // A single form can consist of multiple sections (e.g. billing and shipping).
+  // Two forms will have generally disjoined `section_id`s - except for
+  // flattened forms, where one virtual form is built by combining forms from
+  // multiple iframes.
+  uint32_t section_id;
+};
+
+// Represents information about what fillable data is available from Autofill.
+struct AutofillAvailability {
+  // Whether or not there is an address profile available to fill. The profile
+  // may or may not be complete.
+  bool has_fillable_address = false;
+
+  // Whether or not there is a credit card available to fill. The credit card
+  // data may or may not be complete.
+  bool has_fillable_credit_card = false;
+};
+
+// This interface enables integrating Autofill information with the Annotated
+// Page Contents for a given form control.
 class AutofillAnnotationsProvider : public base::SupportsUserData::Data {
  public:
   AutofillAnnotationsProvider() = default;
@@ -35,18 +61,24 @@ class AutofillAnnotationsProvider : public base::SupportsUserData::Data {
   static void SetFor(content::WebContents* web_contents,
                      std::unique_ptr<AutofillAnnotationsProvider> provider);
 
-  // Adds `autofill_section_id` and `coarse_autofill_field_type` to
-  // `proto_attributes` for a form control. `render_frame_host` needs to be the
-  // RFH that contains the form control.
-  virtual void AddAutofillAnnotations(
+  // Returns Autofill-derived data, if any, for the Autofill field corresponding
+  // to the form control node represented by `dom_node_id`.
+  //
+  // `render_frame_host` needs to be the RFH that contains the form control.
+  virtual std::optional<AutofillFieldMetadata> GetAutofillFieldData(
       content::RenderFrameHost& render_frame_host,
-      ConvertAIPageContentToProtoSession& session,
-      optimization_guide::proto::ContentAttributes* proto_attributes) = 0;
+      int32_t dom_node_id,
+      ConvertAIPageContentToProtoSession& session) = 0;
 
-  // Adds information about fillable data to the annotated page content.
-  virtual void AddAutofillInformation(
-      content::RenderFrameHost& render_frame_host,
-      proto::AutofillInformation* autofill_information) = 0;
+  // Returns data from Autofill as to what data is available to fill at the
+  // current time.
+  //
+  // `render_frame_host` is used to lookup the Autofill PersonalDataManager.
+  // The PersonalDataManager is a one-per-profile concept despite us passing in
+  // a `render_frame_host` here; the `render_frame_host` is just a simple way to
+  // get to the PersonalDataManager via existing APIs.
+  virtual AutofillAvailability GetAutofillAvailability(
+      content::RenderFrameHost& render_frame_host) = 0;
 
  private:
   // The key for storing the `AutofillAnnotationsProvider` in a `WebContents`.
