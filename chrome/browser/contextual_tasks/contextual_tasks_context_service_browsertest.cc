@@ -235,11 +235,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
 
   std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
       // Not match.
-      {"passage 1", CreateFakeEmbedding(0.1f)},
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(0.1f)},
       // Match - active tab is added.
-      {"passage 2", CreateFakeEmbedding(1.0f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)},
       // Match - should be skipped.
-      {"passage 3", CreateFakeEmbedding(1.0f)}};
+      {std::make_pair("passage 3",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
 

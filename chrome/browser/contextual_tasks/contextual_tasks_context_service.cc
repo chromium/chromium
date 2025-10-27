@@ -134,9 +134,9 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
           web_contents->GetLastCommittedURL().spec()));
       for (const auto& embedding : web_contents_embeddings) {
         float similarity_score = embedding.embedding.ScoreWith(query_embedding);
-        AUTO_CONTEXT_LOG(
-            base::StringPrintf("Similarity with passage %s and query %s: %f",
-                               embedding.passage, query, similarity_score));
+        AUTO_CONTEXT_LOG(base::StringPrintf(
+            "Similarity with passage %s and query %s: %f",
+            embedding.passage.first, query, similarity_score));
         if (similarity_score > kMinEmbeddingSimilarityScore.Get()) {
           AUTO_CONTEXT_LOG(
               base::StringPrintf("Adding %s to relevant set",

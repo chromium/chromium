@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
@@ -27,10 +29,11 @@ using testing::Return;
 
 namespace passage_embeddings {
 
-std::vector<std::string> GenerateCandidates(
+std::vector<std::pair<std::string, PassageType>> GenerateCandidates(
     const optimization_guide::proto::AnnotatedPageContent& page_content,
-    int passages_to_generate) {
-  return {page_content.main_frame_data().title()};
+    int page_content_passages_to_generate) {
+  return {std::make_pair(page_content.main_frame_data().title(),
+                         PassageType::kTitle)};
 }
 
 class EmbedderMock : public Embedder {
@@ -231,7 +234,8 @@ TEST_F(PageEmbeddingsServiceTest, GetEmbeddings) {
   std::vector<PassageEmbedding> embeddings =
       page_embeddings_service().GetEmbeddings(web_contents.get());
   ASSERT_EQ(1u, embeddings.size());
-  EXPECT_EQ("passage text", embeddings[0].passage);
+  EXPECT_EQ("passage text", embeddings[0].passage.first);
+  EXPECT_EQ(PassageType::kTitle, embeddings[0].passage.second);
   EXPECT_THAT(embeddings[0].embedding.GetData(), ElementsAre(1.0f));
 }
 
@@ -388,7 +392,8 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
   std::vector<PassageEmbedding> embeddings =
       page_embeddings_service().GetEmbeddings(web_contents.get());
   ASSERT_EQ(1u, embeddings.size());
-  EXPECT_EQ("passage text 2", embeddings[0].passage);
+  EXPECT_EQ("passage text 2", embeddings[0].passage.first);
+  EXPECT_EQ(PassageType::kTitle, embeddings[0].passage.second);
   EXPECT_THAT(embeddings[0].embedding.GetData(), ElementsAre(1.0f));
 }
 

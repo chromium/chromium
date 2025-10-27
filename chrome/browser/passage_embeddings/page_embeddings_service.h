@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -30,10 +31,21 @@ class PageContentExtractionService;
 
 namespace passage_embeddings {
 
+enum PassageType {
+  kPageContent,
+  kTitle,
+};
+
 // A passage from a page along with its computed embedding.
 struct PassageEmbedding {
-  std::string passage;
-  passage_embeddings::Embedding embedding;
+  PassageEmbedding();
+  PassageEmbedding(std::pair<std::string, PassageType> passage,
+                   Embedding embedding);
+  PassageEmbedding(const PassageEmbedding&);
+  ~PassageEmbedding();
+
+  std::pair<std::string, PassageType> passage;
+  Embedding embedding;
 };
 
 class PageEmbeddingsService
@@ -86,12 +98,12 @@ class PageEmbeddingsService
 
   // A callback to produce the passages for a page for which to generate
   // embeddings. This is responsible for generating chunked passages from the
-  // AnnotatedPageContent and filtering to the top passages_to_generate most
-  // useful passages.
+  // AnnotatedPageContent and filtering to the top
+  // `page_content_passages_to_generate` most useful passages.
   using EmbeddingCandidatesGenerator =
-      base::RepeatingCallback<std::vector<std::string>(
+      base::RepeatingCallback<std::vector<std::pair<std::string, PassageType>>(
           const optimization_guide::proto::AnnotatedPageContent&,
-          int passages_to_generate)>;
+          int page_content_passages_to_generate)>;
 
   PageEmbeddingsService(EmbeddingCandidatesGenerator candidates_generator,
                         page_content_annotations::PageContentExtractionService*
@@ -131,8 +143,9 @@ class PageEmbeddingsService
 
   void ComputeEmbeddings(content::WebContents* web_contents);
 
-  void OnEmbeddingsComputed(base::WeakPtr<content::WebContents> web_contents,
-                            std::vector<std::string> passages,
+  void OnEmbeddingsComputed(std::vector<PassageType> passage_types,
+                            base::WeakPtr<content::WebContents> web_contents,
+                            std::vector<std::string> passage_strings,
                             std::vector<Embedding> embeddings,
                             Embedder::TaskId task_id,
                             ComputeEmbeddingsStatus status);
