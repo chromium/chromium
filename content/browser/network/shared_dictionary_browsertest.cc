@@ -1919,6 +1919,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   GetTargetNetworkContext()->PreloadSharedDictionaryInfoForDocument(
       {GetURL("/")},
       preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
+  FlushNetworkServiceInstanceForTesting();
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
