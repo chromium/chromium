@@ -25193,6 +25193,55 @@
             ]
         }
     ],
+    "TcpSocketPoolLimitRandomization": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_256",
+                    "params": {
+                        "TcpSocketPoolLimitRandomizationBase": "0.000001",
+                        "TcpSocketPoolLimitRandomizationCapacity": "256",
+                        "TcpSocketPoolLimitRandomizationMinimum": "0.01",
+                        "TcpSocketPoolLimitRandomizationNoise": "0.2"
+                    },
+                    "enable_features": [
+                        "TcpSocketPoolLimitRandomization"
+                    ]
+                },
+                {
+                    "name": "Enabled_128",
+                    "params": {
+                        "TcpSocketPoolLimitRandomizationBase": "0.000001",
+                        "TcpSocketPoolLimitRandomizationCapacity": "128",
+                        "TcpSocketPoolLimitRandomizationMinimum": "0.01",
+                        "TcpSocketPoolLimitRandomizationNoise": "0.2"
+                    },
+                    "enable_features": [
+                        "TcpSocketPoolLimitRandomization"
+                    ]
+                },
+                {
+                    "name": "Enabled_64",
+                    "params": {
+                        "TcpSocketPoolLimitRandomizationBase": "0.000001",
+                        "TcpSocketPoolLimitRandomizationCapacity": "64",
+                        "TcpSocketPoolLimitRandomizationMinimum": "0.01",
+                        "TcpSocketPoolLimitRandomizationNoise": "0.2"
+                    },
+                    "enable_features": [
+                        "TcpSocketPoolLimitRandomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "TextInputHostMojoCapabilityControlWorkaround": [
         {
             "platforms": [

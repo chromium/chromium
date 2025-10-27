@@ -755,6 +755,33 @@ BASE_FEATURE(kRestrictAbusePortsOnLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTLSTrustAnchorIDs, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTcpSocketPoolLimitRandomization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(double,
+                   kTcpSocketPoolLimitRandomizationBase,
+                   &kTcpSocketPoolLimitRandomization,
+                   "TcpSocketPoolLimitRandomizationBase",
+                   0.0);
+
+BASE_FEATURE_PARAM(int,
+                   kTcpSocketPoolLimitRandomizationCapacity,
+                   &kTcpSocketPoolLimitRandomization,
+                   "TcpSocketPoolLimitRandomizationCapacity",
+                   0);
+
+BASE_FEATURE_PARAM(double,
+                   kTcpSocketPoolLimitRandomizationMinimum,
+                   &kTcpSocketPoolLimitRandomization,
+                   "TcpSocketPoolLimitRandomizationMinimum",
+                   0.0);
+
+BASE_FEATURE_PARAM(double,
+                   kTcpSocketPoolLimitRandomizationNoise,
+                   &kTcpSocketPoolLimitRandomization,
+                   "TcpSocketPoolLimitRandomizationNoise",
+                   0.0);
+
 BASE_FEATURE(kNetTaskScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpProxyConnectJob,
