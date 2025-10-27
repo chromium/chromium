@@ -7388,6 +7388,10 @@ IN_PROC_BROWSER_TEST_P(ResumeNavigationWithSpeculativeRFHProcessGoneTest,
   }
   EXPECT_TRUE(rfh->GetProcess()->Shutdown(0));
   crash_observer.Wait();
+  NavigationRequest* navigation_request =
+      NavigationRequest::From(navigation_manager.GetNavigationHandle());
+  EXPECT_EQ(navigation_request->GetAssociatedRFHType(),
+            NavigationRequest::AssociatedRenderFrameHostType::NONE);
 
   EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
   EXPECT_TRUE(navigation_manager.was_successful());

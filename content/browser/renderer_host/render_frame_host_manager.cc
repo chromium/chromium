@@ -2587,6 +2587,9 @@ void RenderFrameHostManager::CleanupSpeculativeRfhForRenderProcessGone() {
       frame_tree_node_->navigation_request()->set_net_error(net::ERR_ABORTED);
       frame_tree_node_->ResetNavigationRequest(
           NavigationDiscardReason::kRenderProcessGone);
+    } else {
+      frame_tree_node_->navigation_request()->SetAssociatedRFHType(
+          NavigationRequest::AssociatedRenderFrameHostType::NONE);
     }
   }
   // It's possible that we are far enough into the navigation that
