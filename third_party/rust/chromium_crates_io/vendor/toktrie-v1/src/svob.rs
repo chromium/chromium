@@ -305,7 +305,7 @@ impl SimpleVob {
         }
     }
 
-    pub fn iter(&self) -> SimpleVobIter {
+    pub fn iter(&self) -> SimpleVobIter<'_> {
         SimpleVobIter { vob: self, idx: 0 }
     }
 
