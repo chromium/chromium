@@ -62,74 +62,70 @@ enum class FlushReason {
   // clear.
   kCanvasPushFrameWhilePrinting = 11,
 
-  // Direct write access to the pixel buffer (e.g. `putImageData`)
-  // This inhibits vector printing.
-  kWritePixels = 12,
-
   // To blob was called on the canvas.
   // This inhibits vector printing.
-  kToBlob = 13,
+  kToBlob = 12,
 
   // A `VideoFrame` object was created with the canvas as an image source
   // This inhibits vector printing.
-  kCreateVideoFrame = 14,
+  kCreateVideoFrame = 13,
 
   // The canvas was used as a source image in a call to
   // `CanvasRenderingContext2D.drawImage`.
   // This inhibits vector printing.
-  kDrawImage = 15,
+  kDrawImage = 14,
 
   // The canvas is observed by a `CanvasDrawListener`. This typically means
   // that canvas contents are being streamed to a WebRTC video stream.
   // This inhibits vector printing.
-  kDrawListener = 16,
+  kDrawListener = 15,
 
   // The canvas contents were painted to its parent content layer, this
   // is the non-composited presentation code path.
   // This should never happen while printing.
-  kPaint = 17,
+  kPaint = 16,
 
   // Canvas contents were transferred to an `ImageBitmap`. This does not
   // inhibit vector printing since it effectively clears the canvas.
-  kTransfer = 18,
+  kTransfer = 17,
 
   // The canvas is being printed.
-  kPrinting = 19,
+  kPrinting = 18,
 
   // The canvas was loaded as a WebGPU external image.
   // This inhibits vector printing.
-  kWebGPUExternalImage = 20,
+  kWebGPUExternalImage = 19,
 
   // The canvas contents were copied to an SkBitmap.
   // This inhibits vector printing.
-  kCopyToSkBitmap = 21,
+  kCopyToSkBitmap = 20,
 
   // The canvas was uploaded to a WebGL texture.
   // This inhibits vector printing.
-  kWebGLTexImage = 22,
+  kWebGLTexImage = 21,
 
   // The canvas was used as a source in a call to
   // `CanvasRenderingContext2D.createPattern`.
   // This inhibits vector printing.
-  kCreatePattern = 23,
+  kCreatePattern = 22,
 
   // The canvas contents were copied to the clipboard.
   // This inhibits vector printing.
-  kClipboard = 24,
+  kClipboard = 23,
 
   // The canvas was uploade to a WebGPU texture.
   // This inhibits vector printing.
-  kWebGPUTexture = 25,
+  kWebGPUTexture = 24,
 
   // The HTMLCanvasElement.toDataURL method was called on the canvas.
-  kToDataURL = 26,
+  kToDataURL = 25,
 
   // The canvas was used as a source image in a call to
   // `CanvasRenderingContext2D.drawMesh`.
   // This inhibits vector printing.
-  kDrawMesh = 27,
+  kDrawMesh = 26,
 
-  kOther = 28,
+  kOther = 27,
 
   kMaxValue = kOther,
 };

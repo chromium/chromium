@@ -347,7 +347,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
       recorder.RestartRecording();
     }
   } else {
-    provider->FlushCanvas(FlushReason::kWritePixels);
+    provider->FlushCanvas();
 
     // Short-circuit out if an error occurred while flushing the recording.
     if (!provider->IsValid()) {
