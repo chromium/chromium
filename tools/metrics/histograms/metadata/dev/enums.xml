@@ -859,6 +859,19 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Other"/>
 </enum>
 
+<enum name="DevToolsBuiltInAiAvailability">
+  <int value="0" label="LanguageModel unavailable, has GPU"/>
+  <int value="1" label="LanguageModel downloadable, has GPU"/>
+  <int value="2" label="LanguageModel downloading, has GPU"/>
+  <int value="3" label="LanguageModel available, has GPU"/>
+  <int value="4" label="LanguageModel disabled, has GPU"/>
+  <int value="5" label="LanguageModel unavailable, no GPU"/>
+  <int value="6" label="LanguageModel downloadable, no GPU"/>
+  <int value="7" label="LanguageModel downloading, no GPU"/>
+  <int value="8" label="LanguageModel available, no GPU"/>
+  <int value="9" label="LanguageModel disabled, no GPU"/>
+</enum>
+
 <enum name="DevToolsDebuggingUserDataDirStatus">
   <int value="0" label="Not being debugged"/>
   <int value="1" label="Debugging requested with a non-default user data dir"/>
