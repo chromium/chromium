@@ -16,6 +16,7 @@ namespace page_actions {
 // For now, the order of the page actions will be based on their position in
 // the array.
 inline constexpr std::array<actions::ActionId, 17> kActionIds = {
+    kActionAiMode,
     kActionSidePanelShowLensOverlayResults,
     kActionShowTranslate,
     kActionShowMemorySaverChip,
@@ -30,10 +31,13 @@ inline constexpr std::array<actions::ActionId, 17> kActionIds = {
     kActionShowCollaborationRecentActivity,
     kActionAutofillMandatoryReauth,
     kActionFind,
-    kActionAiMode,
     kActionShowCookieControls,
     kActionShowAddressesBubbleOrPage,
 };
+
+static_assert(kActionIds[0] == kActionAiMode,
+              "kActionAiMode must be the first entry in kActionIds to ensure "
+              "it's the left-most page action");
 
 }  // namespace page_actions
 

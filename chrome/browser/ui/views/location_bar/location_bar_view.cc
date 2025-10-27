@@ -417,6 +417,19 @@ void LocationBarView::Init() {
           page_action_items, page_actions::PageActionPropertiesProvider(),
           page_action_params));
 
+  const bool aim_omnibox_entrypoint_enabled =
+      browser_ &&
+      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+  if (!page_action_container_->children().empty() &&
+      aim_omnibox_entrypoint_enabled &&
+      IsPageActionMigrated(PageActionIconType::kAiMode)) {
+    auto* first_page_action_view = static_cast<page_actions::PageActionView*>(
+        page_action_container_->children().front());
+    DCHECK(first_page_action_view->GetActionId() == kActionAiMode)
+        << "kActionAiMode must be the first child in PageActionContainerView "
+           "to ensure it's the left-most page action.";
+  }
+
   PageActionIconParams params;
   // |browser_| may be null when LocationBarView is used for non-Browser windows
   // such as PresentationReceiverWindowView, which do not support page actions.
@@ -460,17 +473,6 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
-  if (browser_ &&
-      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint)) {
-    // Position in the leading position, like the entrypoint for
-    // kLensOverlayHomework below. While both chips may be enabled, they will
-    // not appear at the same time due to different focus behavior. The
-    // visibility of this entrypoint is dependent on whether or not the user
-    // meets AIM eligibility criteria.
-    params.types_enabled.insert(params.types_enabled.begin(),
-                                PageActionIconType::kAiMode);
-  }
-
   if (browser_ && lens::features::IsOmniboxEntryPointEnabled()) {
     // The persistent compact entrypoint should be positioned directly before
     // the star icon and the prominent expanding entrypoint should be
@@ -494,6 +496,16 @@ void LocationBarView::Init() {
                                 PageActionIconType::kLensOverlayHomework);
   }
 
+  if (aim_omnibox_entrypoint_enabled) {
+    // Position in the leading position, like the entrypoint for
+    // kLensOverlayHomework above. While both chips may be enabled, they will
+    // not appear at the same time due to different focus behavior. The
+    // visibility of this entrypoint is dependent on whether or not the user
+    // meets AIM eligibility criteria.
+    params.types_enabled.insert(params.types_enabled.begin(),
+                                PageActionIconType::kAiMode);
+  }
+
   if (browser_ && tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     params.types_enabled.push_back(PageActionIconType::kCollaborationMessaging);
   }
@@ -512,6 +524,17 @@ void LocationBarView::Init() {
   page_action_icon_container_ =
       AddChildView(std::make_unique<PageActionIconContainerView>(params));
   page_action_icon_controller_ = page_action_icon_container_->controller();
+
+  if (!page_action_icon_container_->children().empty() &&
+      aim_omnibox_entrypoint_enabled &&
+      !IsPageActionMigrated(PageActionIconType::kAiMode)) {
+    auto* first_page_action_icon_view = static_cast<PageActionIconView*>(
+        page_action_icon_container_->children().front());
+    DCHECK(first_page_action_icon_view->action_id() == kActionAiMode)
+        << "kActionAiMode must be the first child in "
+           "PageActionIconContainerView to ensure it's the left-most page "
+           "action.";
+  }
 
   auto clear_all_button = views::CreateVectorImageButton(base::BindRepeating(
       static_cast<void (OmniboxView::*)(const std::u16string&)>(
