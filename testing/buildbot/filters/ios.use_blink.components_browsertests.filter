@@ -4,6 +4,7 @@
 -DistilledPageJsTest.IdentifyEmptySVGsTest
 -DistilledPageJsTest.ImageClassifierTest
 -DistilledPageJsTest.SettingsDialogTest
+-DistilledPageJsTest.WrapTablesTest
 -DistillerPageWebContentsTest.BasicDistillationWorks
 -DistillerPageWebContentsTest.DistillerContentsIgnoreRedirects
 -DistillerPageWebContentsTest.HandlesRelativeImages
