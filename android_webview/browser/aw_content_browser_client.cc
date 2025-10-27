@@ -214,8 +214,15 @@ std::string GetUserAgent() {
 
   if (base::FeatureList::IsEnabled(
           features::kWebViewReduceUAAndroidVersionDeviceModel)) {
-    return embedder_support::BuildUnifiedPlatformUAFromProductAndExtraOs(
-        product, "; wv");
+    // The user-agent reduction feature for WebView, when enabled, should
+    // produce a consistent, unified platform string to ensure predictable
+    // behavior. This hardcoded value prevents device-specific platform details
+    // (e.g., "X11; Linux" on desktop devices) from appearing in the reduced
+    // User-Agent. The "Linux; Android 10; K; wv" string matches the expected
+    // format for a reduced WebView User-Agent.
+    constexpr char kUnifiedPlatformOsInfoWebview[] = "Linux; Android 10; K; wv";
+    return embedder_support::BuildUserAgentFromOSAndProduct(
+        kUnifiedPlatformOsInfoWebview, product);
   }
 
   return embedder_support::BuildUserAgentFromProductAndExtraOSInfo(
