@@ -25,6 +25,7 @@ extension_repack_all_locales("packed_resources") {
 
 source_set("credential_provider") {
   sources = [
+    "credential_provider_view_controller+Testing.h",
     "credential_provider_view_controller.h",
     "credential_provider_view_controller.mm",
   ]
@@ -77,12 +78,14 @@ generate_localizable_strings("system_strings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "credential_provider_view_controller_unittest.mm",
     "metrics_util_unittest.mm",
     "passkey_request_details_unittest.mm",
     "passkey_util_unittest.mm",
     "passkey_welcome_screen_util_unittest.mm",
   ]
   deps = [
+    ":credential_provider",
     ":metrics_util",
     ":passkey_request_details",
     ":passkey_request_details_testing",

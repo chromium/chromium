@@ -408,7 +408,6 @@ enum class PasskeyUserVerificationStatus {
 
 - (void)reportUnknownPublicKeyCredentialForRelyingParty:(NSString*)relyingParty
                                            credentialID:(NSData*)credentialID {
-  // TODO(crbug.com/432260316): Add unit tests.
   if (!IsSignalAPIEnabled()) {
     return;
   }
@@ -489,7 +488,9 @@ enum class PasskeyUserVerificationStatus {
   }
 
   credential.hidden = credentialShouldBeHidden;
-  credential.hiddenTime = base::Time::Now().InMillisecondsSinceUnixEpoch();
+  credential.hiddenTime = credentialShouldBeHidden
+                              ? base::Time::Now().InMillisecondsSinceUnixEpoch()
+                              : 0;
   SavePasskeyCredential(credential);
 }
 
