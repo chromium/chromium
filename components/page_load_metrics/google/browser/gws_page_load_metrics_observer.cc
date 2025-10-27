@@ -29,6 +29,7 @@
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/google/browser/gws_session_state.h"
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
+#include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -144,6 +145,8 @@ const char kHistogramGWSHttpNetworkSessionQuicEnabled[] =
 // Prerender related histograms.
 const char kHistogramPrerenderHostReused[] =
     HISTOGRAM_PREFIX "Prerender.HostReused";
+const char kHistogramPrerenderPrewarmNavigationStatus[] =
+    HISTOGRAM_PREFIX "Prerender.PrewarmNavigationStatus";
 const char kHistogramGWSPrerenderNavigationToActivation[] =
     HISTOGRAM_PREFIX "Prerender.NavigationToActivation";
 const char kHistogramGWSActivationToFirstContentfulPaint[] =
@@ -343,6 +346,16 @@ GWSPageLoadMetricsObserver::OnCommit(
     RecordPreCommitHistograms();
   }
 
+  // Record the prerender prewarm navigation status for the navigation here.
+  // This is because once the navigation is activated, the `NavigationHandle`
+  // will change.
+  if (auto* prerender_prewarm_navigation_data =
+          page_load_metrics::PrerenderPrewarmNavigationData::
+              GetForNavigationHandle(*navigation_handle)) {
+    prerender_prewarm_navigation_status_ =
+        prerender_prewarm_navigation_data->GetNavigationStatus();
+  }
+
   return CONTINUE_OBSERVING;
 }
 
@@ -385,6 +398,12 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
     base::UmaHistogramCustomTimes(histogram_name, navigation_to_activation_time,
                                   base::Milliseconds(10), base::Minutes(10),
                                   100);
+  }
+
+  if (prerender_prewarm_navigation_status_.has_value()) {
+    base::UmaHistogramEnumeration(
+        internal::kHistogramPrerenderPrewarmNavigationStatus,
+        prerender_prewarm_navigation_status_.value());
   }
 }
 

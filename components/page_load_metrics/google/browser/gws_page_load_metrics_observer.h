@@ -7,6 +7,7 @@
 
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "net/http/http_connection_info.h"
 
@@ -192,6 +193,9 @@ class GWSPageLoadMetricsObserver
   NavigationSourceType source_type_ = kUnknown;
   net::HttpConnectionInfoCoarse http_connection_info_ =
       net::HttpConnectionInfoCoarse::kOTHER;
+  std::optional<page_load_metrics::PrerenderPrewarmNavigationData::
+                    PrerenderPrewarmNavigationStatus>
+      prerender_prewarm_navigation_status_;
 
   std::optional<base::TimeDelta> aft_start_time_;
   std::optional<base::TimeDelta> aft_end_time_;

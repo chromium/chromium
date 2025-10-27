@@ -1921,6 +1921,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.Prerender.PrewarmNavigationStatus"
+    enum="PrerenderPrewarmNavigationStatus" expires_after="2026-03-29">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The status of whether the DSEPrewarm feature was triggered before the
+    prerender host reuse happened. This is recorded once, when a prerendered
+    page is activated for Google search page loads.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.SessionSource{ConnectionProtocolType}"
     enum="NetworkSessionSource" expires_after="2026-03-29">
   <owner>bashi@chromium.org</owner>

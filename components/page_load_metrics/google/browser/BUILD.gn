@@ -16,6 +16,8 @@ source_set("browser") {
     "gws_session_state.h",
     "histogram_suffixes.cc",
     "histogram_suffixes.h",
+    "prerender_prewarm_navigation_data.cc",
+    "prerender_prewarm_navigation_data.h",
   ]
   configs += [
     "//build/config/compiler:wexit_time_destructors",

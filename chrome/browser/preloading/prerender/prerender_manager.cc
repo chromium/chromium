@@ -23,6 +23,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
@@ -172,6 +173,24 @@ class PrerenderManager::SearchPrerenderTask {
 
 PrerenderManager::~PrerenderManager() = default;
 
+void PrerenderManager::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  // Set the PrerenderPrewarmNavigationData for the navigation. This is used to
+  // determine if a navigation is a DSE prewarm navigation, and if the
+  // navigation happened after a DSE prewarm. Note that `prerender_host_reused`
+  // is set to false here because this is a new navigation and we are not
+  // certain if this is a prerender navigation or not yet.
+  page_load_metrics::PrerenderPrewarmNavigationData::CreateForNavigationHandle(
+      *navigation_handle,
+      /*prewarm_committed=*/search_prewarm_handle_ != nullptr,
+      /*prerender_host_reused=*/false);
+}
+
 void PrerenderManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
@@ -225,7 +244,9 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       content::PreloadPipelineInfo::Create(
           /*planned_max_preloading_type=*/content::PreloadingType::kPrerender),
       &preloading_attempt,
-      /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{},
+      /*url_match_predicate=*/{},
+      base::BindRepeating(&PrerenderManager::OnPrerenderNavigationHandle,
+                          GetWeakPtr()),
       /*allow_reuse=*/false);
 
   if (direct_url_input_prerender_handle_) {
@@ -275,7 +296,8 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
           [](const GURL& url, const std::optional<content::UrlMatchType>&) {
             return false;
           }),
-      /*prerender_navigation_handle_callback=*/{},
+      base::BindRepeating(&PrerenderManager::OnPrerenderNavigationHandle,
+                          GetWeakPtr()),
       /*allow_reuse=*/true);
 
   return search_prewarm_handle_ != nullptr;
@@ -336,7 +358,8 @@ void PrerenderManager::StartPrerenderSearchResult(
               /*planned_max_preloading_type=*/content::PreloadingType::
                   kPrerender),
           preloading_attempt.get(), std::move(url_match_predicate),
-          /*prerender_navigation_handle_callback=*/{},
+          base::BindRepeating(&PrerenderManager::OnPrerenderNavigationHandle,
+                              GetWeakPtr()),
           features::kPrerender2ReuseSearchResultHost.Get());
 
   if (prerender_handle) {
@@ -491,6 +514,17 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return PrewarmDecision::kReady;
+}
+
+void PrerenderManager::OnPrerenderNavigationHandle(
+    content::NavigationHandle& navigation_handle) {
+  auto* prerender_prewarm_navigation_data =
+      page_load_metrics::PrerenderPrewarmNavigationData::GetForNavigationHandle(
+          navigation_handle);
+  if (prerender_prewarm_navigation_data) {
+    prerender_prewarm_navigation_data->SetPrerenderHostReused(
+        navigation_handle.IsPrerenderHostReused());
+  }
 }
 
 PrerenderManager::PrerenderManager(content::WebContents* web_contents)

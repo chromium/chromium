@@ -396,6 +396,17 @@ chromium-metrics-reviews@google.com.
              link navigation."/>
 </enum>
 
+<!-- LINT.IfChange(PrerenderPrewarmNavigationStatus) -->
+
+<enum name="PrerenderPrewarmNavigationStatus">
+  <int value="0" label="Not prewarmed, prerender host not reused"/>
+  <int value="1" label="Not prewarmed, prerender host reused"/>
+  <int value="2" label="Prewarmed, prerender host not reused"/>
+  <int value="3" label="Prewarmed, prerender host reused"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PrerenderPrewarmNavigationStatus) -->
+
 <enum name="PreviewFinalStatus">
   <int value="0" label="just previewed"/>
   <int value="1" label="previewed and promoted"/>
