@@ -655,6 +655,10 @@ struct NetworkContextParams {
   // for the profile.
   array<content_settings.mojom.ContentSettingPatternSource>
       tracking_protection_content_settings;
+
+  // If true, the HTTP cache will be encrypted on disk. For now, this only
+  // switches the backend on Windows.
+  bool enable_encrypted_http_cache = false;
 };
 
 struct NetworkConditions {

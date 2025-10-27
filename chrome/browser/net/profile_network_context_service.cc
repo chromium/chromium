@@ -65,6 +65,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -161,6 +162,10 @@
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
 #include "components/server_certificate_database/server_certificate_database.pb.h"  // nogncheck
 #include "components/server_certificate_database/server_certificate_database_service.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+#include "components/enterprise/encryption/cache/utils.h"
 #endif
 
 namespace {
@@ -1549,6 +1554,12 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   network_context_params->reset_http_cache_backend =
       GetHttpCacheBackendResetParam(g_browser_process->local_state());
+
+#if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
+  // Enable encrypted HTTP cache if the enterprise policy is set.
+  network_context_params->enable_encrypted_http_cache =
+      enterprise_encryption::ShouldEncryptHttpCache(profile_->GetPrefs());
+#endif  // BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 
   network_context_params->split_auth_cache_by_network_anonymization_key =
       ShouldSplitAuthCacheByNetworkIsolationKey();

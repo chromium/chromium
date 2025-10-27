@@ -2333,6 +2333,32 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
   // If all the callbacks were invoked, we should terminate.
 }
 
+#if BUILDFLAG(IS_WIN)
+// Verifies that the simple backend is always used when encrypting the cache.
+TEST_F(NetworkContextTest, EncryptedHttpCacheForcesSimpleBackend) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->file_paths = mojom::NetworkContextFilePaths::New();
+  context_params->http_cache_enabled = true;
+
+  // Enable the encryption flag.
+  context_params->enable_encrypted_http_cache = true;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  context_params->file_paths->http_cache_directory = temp_dir.GetPath();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  disk_cache::Backend* backend = WaitForCacheBackend(*network_context);
+  ASSERT_TRUE(backend);
+
+  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
+            GetBackendType(backend));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
   const std::vector<GURL> kUrls = {
       GURL("http://www.google.com/"),

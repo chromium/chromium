@@ -2836,6 +2836,14 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             params_->file_paths->no_vary_search_directory->path();
       }
       cache_params.type = network_session_configurator::ChooseCacheType();
+#if BUILDFLAG(IS_WIN)
+      // For enterprise users, we always use simple backend when encryption is
+      // enabled.
+      if (params_->enable_encrypted_http_cache) {
+        cache_params.type =
+            net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
+      }
+#endif
       if (params_->http_cache_file_operations_factory) {
         cache_params.file_operations_factory =
             base::MakeRefCounted<MojoBackendFileOperationsFactory>(

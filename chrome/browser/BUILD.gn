@@ -2195,6 +2195,7 @@ static_library("browser") {
     "//components/enterprise/common/proto:extensions_workflow_events_proto",
     "//components/enterprise/content",
     "//components/enterprise/device_trust",
+    "//components/enterprise/encryption/cache",
     "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/enterprise/signin",
     "//components/error_page/common",

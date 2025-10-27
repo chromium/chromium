@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_cache_encryption)
+
+source_set("cache") {
+  sources = [
+    "utils.cc",
+    "utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/encryption/core:features",
+    "//components/prefs",
+  ]
+}
