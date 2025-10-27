@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/video_frame.h"
@@ -90,6 +91,12 @@ class MockEventListener : public NativeEventListener {
 class MockWebMediaStreamObserver : public WebMediaStreamObserver {
  public:
   MOCK_METHOD(void, EnabledStateChangedForWebRtcAudio, (bool));
+  base::WeakPtr<WebMediaStreamObserver> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockWebMediaStreamObserver> weak_ptr_factory_{this};
 };
 
 MediaStreamComponent* MakeMockVideoComponent() {
@@ -343,7 +350,7 @@ TEST_F(HtmlMediaElementForWebRtcAudioTest,
       MediaStream::Create(v8_scope.GetExecutionContext(), audio_tracks);
   auto* descriptor = media_stream->Descriptor();
   descriptor->SetActive(true);
-  descriptor->AddObserver(&observer);
+  descriptor->AddObserver(observer.AsWeakPtr());
 
   // let video = document.createElement('video');
   // video.srcObject = media_stream;
@@ -378,7 +385,7 @@ TEST_F(HtmlMediaElementForWebRtcAudioTest,
       MediaStream::Create(v8_scope.GetExecutionContext(), audio_tracks);
   auto* descriptor = media_stream->Descriptor();
   descriptor->SetActive(true);
-  descriptor->AddObserver(&observer);
+  descriptor->AddObserver(observer.AsWeakPtr());
 
   // let video = document.createElement('video');
   // video.srcObject = media_stream;

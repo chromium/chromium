@@ -5494,7 +5494,7 @@ using DetachToBrowserTabDragControllerTestWithOnTaskLocked =
     DetachToBrowserTabDragControllerTestWithTabbedSystemApp;
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
-                       MoveTabOnDrag) {
+                       DoesNotMoveTabOnDrag) {
   // Install and launch mock app that can be locked for OnTask.
   const webapps::AppId tabbed_app_id = InstallMockApp();
   Browser* const app_browser = LaunchWebAppBrowser(tabbed_app_id);
@@ -5513,17 +5513,17 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ("0 1 2 3", IDString(tab_strip_model));
 
-  // Drag tab in the second index to the tab in the third index to switch tab
-  // positioning.
+  // Attempt to drag tab in the second index to the tab in the third index to
+  // switch tab positioning.
   TabStrip* const tab_strip = GetTabStripForBrowser(browser());
   ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(1)));
   ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(2)));
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
 
-  // Verify tab is not detached and its position is updated.
+  // Verify tab is not detached and its position remains unchanged.
   ASSERT_EQ(1u, browser_list()->size());
-  EXPECT_EQ("0 2 1 3", IDString(tab_strip_model));
+  EXPECT_EQ("0 1 2 3", IDString(tab_strip_model));
 }
 
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
@@ -5552,6 +5552,36 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
   EXPECT_EQ(1u, browser_list()->size());
+}
+
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithOnTaskLocked,
+                       WindowDoesNotMoveOnTabDrag) {
+  // Install and launch mock app that can be locked for OnTask.
+  const webapps::AppId tabbed_app_id = InstallMockApp();
+  Browser* const app_browser = LaunchWebAppBrowser(tabbed_app_id);
+  ASSERT_EQ(2u, browser_list()->size());
+
+  // Close normal browser.
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(1u, browser_list()->size());
+  SelectFirstBrowser();
+  ASSERT_EQ(app_browser, browser());
+  EXPECT_EQ(Browser::Type::TYPE_APP, browser_list()->get(0)->type());
+
+  // Lock the app for OnTask.
+  browser()->SetLockedForOnTask(true);
+  const gfx::Rect& initial_bounds =
+      browser()->window()->GetNativeWindow()->bounds();
+
+  // Drag tab away from tab strip and verify the window bounds remain unchanged.
+  TabStrip* const tab_strip = GetTabStripForBrowser(browser());
+  ASSERT_TRUE(PressInputAtCenter(tab_strip->tab_at(0)));
+  ASSERT_TRUE(DragInputToCenter(tab_strip->tab_at(0),
+                                gfx::Vector2d(0, GetDetachY(tab_strip) + 1)));
+  ASSERT_TRUE(ReleaseInput());
+  StopAnimating(tab_strip);
+  EXPECT_EQ(1u, browser_list()->size());
+  EXPECT_EQ(browser()->window()->GetNativeWindow()->bounds(), initial_bounds);
 }
 
 INSTANTIATE_TEST_SUITE_P(

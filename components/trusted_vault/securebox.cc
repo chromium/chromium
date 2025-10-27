@@ -63,11 +63,16 @@ std::vector<uint8_t> ConcatBytes(
   return result;
 }
 
-// Creates public EC_KEY from |public_key_bytes|. |public_key_bytes| must be
-// a X9.62 formatted NIST P-256 point.
+// Creates public EC_KEY from |public_key_bytes|. Returns nullptr if
+// |public_key_bytes| does not represent a X9.62 formatted NIST P-256 point.
 bssl::UniquePtr<EC_KEY> ECPublicKeyFromBytes(
     base::span<const uint8_t> public_key_bytes,
     const crypto::OpenSSLErrStackTracer& err_tracer) {
+  if (public_key_bytes.size() != kECPointLength) {
+    // |public_key_bytes| doesn't represent a valid NIST P-256 point.
+    return nullptr;
+  }
+
   bssl::UniquePtr<EC_KEY> ec_key(
       EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
   DCHECK(ec_key);

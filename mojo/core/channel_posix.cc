@@ -17,6 +17,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -362,6 +363,9 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
                    message_view.data_num_bytes()};
       size_t num_handles_to_send =
           std::min(num_handles - handles_written, kMaxSendmsgHandles);
+      // TODO(crbug.com/439305148): Sending a large number of handles without
+      // a payload causes the message to be dropped.
+      CHECK(num_handles_to_send && (message_view.data_num_bytes() > 0));
       std::vector<base::ScopedFD> fds(num_handles_to_send);
       for (size_t i = 0; i < num_handles_to_send; ++i)
         fds[i] = handles[i + handles_written].TakeHandle().TakeFD();

@@ -1,9 +1,0 @@
-{
-  "linux-cast-arm-rel": {
-    "additional_compile_targets": [
-      "cast_shell",
-      "core_runtime_simple",
-      "core_runtime_starboard"
-    ]
-  }
-}

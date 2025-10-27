@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/win/windows_version.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 
@@ -61,7 +62,7 @@ Microsoft::WRL::ComPtr<ID3D11Device> DXGIDeviceScopedHandle::GetDevice() {
 }
 
 scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(CHROME_LUID luid) {
-  if (!InitializeMediaFoundation()) {
+  if (base::win::GetVersion() < base::win::Version::WIN8 || !InitializeMediaFoundation()) {
     DLOG(ERROR) << "MF DXGI Device Manager is not available";
     return nullptr;
   }
@@ -87,7 +88,7 @@ scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(CHROME_LUID luid) {
 scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create(
     CHROME_LUID luid,
     ID3D11Device* shared_device) {
-  if (!InitializeMediaFoundation()) {
+  if (base::win::GetVersion() < base::win::Version::WIN8 || !InitializeMediaFoundation()) {
     DLOG(ERROR) << "MF DXGI Device Manager is not available";
     return nullptr;
   }

@@ -6,33 +6,8 @@
     "dawn_ref": "refs/heads/chromium/7204",
     "is_main": false,
     "platforms": {
-        "android": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "cros": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "fuchsia": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "ios": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "mac": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
+        "cros-lts": {
+            "description": "LTS"
         }
     }
 }

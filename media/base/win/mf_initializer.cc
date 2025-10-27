@@ -122,36 +122,10 @@ class MediaFoundationSession {
     // LINT.IfChange
     for (const char* mfdll : {"MF.dll", "MFPlat.DLL"}) {
       // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
-      HRESULT hr = E_FAIL;
-      __try {
-        hr = __HrLoadAllImportsForDll(mfdll);
-        if (hr == HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND)) {
-          // __HrLoadAllImportsForDll returns this exact value (FACILITY_WIN32)
-          // if the module is not found in the calling module's list of delay
-          // imports. This may be the case in the component build or in tests,
-          // where MF.dll may be delayloaded by some module other than
-          // chrome.dll or the test binary.
-          continue;
-        }
-      } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
-                      ? EXCEPTION_EXECUTE_HANDLER
-                      : EXCEPTION_CONTINUE_SEARCH) {
-        // Resolution of all imports failed; possibly because the module failed
-        // to load or because one or more imports was not found.
-        hr = ::GetExceptionCode();
-      }
-      // FACILITY_VISUALCPP is used for the exceptions raised by
-      // __delayLoadHelper2.
-      if (FAILED(hr)) {
-        if (HRESULT_FACILITY(hr) == FACILITY_VISUALCPP ||
-            HRESULT_FACILITY(hr) == FACILITY_WIN32) {
-          // Set the last-error code so that `PLOG` emits a human-readable
-          // string for it.
-          ::SetLastError(HRESULT_CODE(hr));
-        }
+      if(!::LoadLibraryA(mfdll)) {
         PLOG(ERROR) << kMediaFoundationLoadFailedMessage
                     << "Could not resolve imports for " << mfdll;
-        return hr;
+        return 0x8007007F;
       }
     }
     return S_OK;

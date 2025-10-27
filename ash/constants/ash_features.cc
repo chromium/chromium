@@ -824,6 +824,11 @@ BASE_FEATURE(kEnableTouchscreensInDiagnosticsApp,
              "EnableTouchscreensInDiagnosticsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, touchscreen calibration will be shown in settings.
+BASE_FEATURE(kEnableTouchscreenCalibration,
+             "EnableTouchscreenCalibration",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables rollback routine which will delete client keys and certificates
 // from the software backed Chaps storage. Copies of keys and certificates will
 // will continue to exist in NSS DB.
@@ -4670,6 +4675,10 @@ bool IsTouchpadInDiagnosticsAppEnabled() {
 
 bool IsTouchscreenInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableTouchscreensInDiagnosticsApp);
+}
+
+bool IsTouchscreenCalibrationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableTouchscreenCalibration);
 }
 
 bool IsTrafficCountersEnabled() {

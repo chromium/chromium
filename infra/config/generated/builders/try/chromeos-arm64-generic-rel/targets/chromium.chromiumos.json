@@ -17,6 +17,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/test:video_decode_accelerator_tests/",
         "name": "video_decode_accelerator_tests_v4l2_vp8",
         "swarming": {
           "dimensions": {
@@ -54,6 +55,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//media/gpu/test:video_decode_accelerator_tests/",
         "name": "video_decode_accelerator_tests_v4l2_vp9",
         "swarming": {
           "dimensions": {

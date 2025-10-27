@@ -10,6 +10,7 @@
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "extensions/renderer/extension_throttle_manager.h"
 #include "extensions/renderer/extension_throttle_test_support.h"
+#include "extensions/renderer/extension_url_loader_throttle.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -396,6 +397,27 @@ TEST(ExtensionThrottleManagerTest, UseAfterNetworkChange) {
   manager.SetOnline(/*is_online=*/true);
   auto response_head = network::mojom::URLResponseHead::New();
   manager.WillProcessResponse(redirect_info.new_url, *response_head);
+}
+
+// Verify that throttles relying on a manager in the constructor can function
+// even if manager is destructed before throttles are destructed.
+TEST(ExtensionThrottleManagerTest, ThrottlesCanOutliveManager) {
+  // Create a manager that can be passed into the throttle constructor.
+  MockExtensionThrottleManager* manager = new MockExtensionThrottleManager();
+
+  // Create one or more throttles that receive the manager in the constructor.
+  auto throttle1 = ExtensionURLLoaderThrottle(manager);
+  auto throttle2 = ExtensionURLLoaderThrottle(manager);
+
+  // Delete `manager` to prove that throttle functions can run without it.
+  delete manager;
+
+  // Call a function in throttle that uses manager after manager destruction.
+  GURL gurl;
+  network::mojom::URLResponseHead* response_head = nullptr;
+  bool* defer = nullptr;
+  throttle1.WillProcessResponse(gurl, response_head, defer);
+  throttle2.WillProcessResponse(gurl, response_head, defer);
 }
 
 }  // namespace extensions

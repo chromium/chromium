@@ -325,6 +325,34 @@ SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
   return sessions::SessionTabHelper::IdForTab(tab);
 }
 
+void OnTaskSystemWebAppManagerImpl::SetParentTabsRestriction(
+    SessionID window_id,
+    ::boca::LockedNavigationOptions::NavigationType restriction_level) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
+  if (!window_tracker) {
+    return;
+  }
+  window_tracker->set_can_start_navigation_throttle(false);
+  for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+
+    // Use the visible URL if the navigation has not been committed. It is
+    // safe to do so because this is normally triggered when the app has been
+    // launched.
+    const GURL tab_url = tab->GetLastCommittedURL().is_empty()
+                             ? tab->GetVisibleURL()
+                             : tab->GetLastCommittedURL();
+    window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
+        tab, tab_url, restriction_level);
+  }
+  window_tracker->set_can_start_navigation_throttle(true);
+}
+
 void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
     SessionID window_id,
     const std::set<SessionID>& tab_ids_to_remove) {

@@ -295,7 +295,7 @@ std::optional<std::string> GetSkyVaultMigrationStartTime(Profile* profile) {
 
   const std::optional<base::Time> start_time =
       policy::local_user_files::GetMigrationStartTime(profile);
-  if (start_time->is_null()) {
+  if (!start_time.has_value()) {
     LOG(ERROR) << "Could not retrieve SkyVault Migration Start time";
     return std::nullopt;
   }

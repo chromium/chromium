@@ -84,6 +84,12 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
        GURL url,
        ::boca::LockedNavigationOptions::NavigationType restriction_level),
       (override));
+  MOCK_METHOD(
+      void,
+      SetParentTabsRestriction,
+      (SessionID window_id,
+       ::boca::LockedNavigationOptions::NavigationType restriction_level),
+      (override));
   MOCK_METHOD(void,
               RemoveTabsWithTabIds,
               (SessionID window_id,
@@ -237,6 +243,11 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
       *system_web_app_manager_ptr_,
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
       .Times(1);
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetParentTabsRestriction(
+          kWindowId, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
+      .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               LaunchSystemWebAppAsync(_, GURL(kChromeBocaAppUntrustedIndexURL)))
       .WillOnce([](base::OnceCallback<void(bool)> callback, const GURL& url) {
@@ -267,6 +278,12 @@ TEST_F(OnTaskSessionManagerTest,
   EXPECT_CALL(
       *system_web_app_manager_ptr_,
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetParentTabsRestriction(
+          kWindowId, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .Times(1)
       .InSequence(s);
   EXPECT_CALL(*active_tab_tracker_,
@@ -824,6 +841,11 @@ TEST_F(OnTaskSessionManagerTest, RestoreTabsOnAppReload) {
   EXPECT_CALL(
       *system_web_app_manager_ptr_,
       SetWindowTrackerForSystemWebAppWindow(kWindowId, kWindowObservers))
+      .Times(AtLeast(1));
+  EXPECT_CALL(
+      *system_web_app_manager_ptr_,
+      SetParentTabsRestriction(
+          kWindowId, ::boca::LockedNavigationOptions::DOMAIN_NAVIGATION))
       .Times(AtLeast(1));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               PrepareSystemWebAppWindowForOnTask(kWindowId, _))

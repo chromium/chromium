@@ -18,6 +18,14 @@ try_.defaults.set(
     pool = try_constants.DEFAULT_POOL,
     builderless = False,
     os = os.LINUX_DEFAULT,
+    # These builders test GPU configurations. These configurations have very
+    # limited hardware, due to the hardware needing specific GPUs. The pool of
+    # machines to run builds for these builders is intentionally limited to
+    # avoid concurrent builds from oversubscribing the test capacity. As a
+    # consequence, pending times are expected for these builders. These builder
+    # haven't been long poles in the CQ, and developers haven't complained about
+    # them, so there's no need to page for them.
+    alerts_enabled = False,
     check_for_flakiness = False,
     check_for_flakiness_with_resultdb = False,
     contact_team_email = "chrome-gpu-infra@google.com",
