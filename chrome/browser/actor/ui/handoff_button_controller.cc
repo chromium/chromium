@@ -239,7 +239,7 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   // If the widget doesn't exist, create it with the correct initial state.
   if (!widget_) {
     CreateAndShowButton(text, icon);
-  } else {
+  } else if (button_view_) {
     // If it already exists, update its content.
     button_view_->SetText(text);
     button_view_->SetImageModel(views::Button::STATE_NORMAL, icon);
@@ -308,8 +308,9 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
       base::BindRepeating(&HandoffButtonController::UpdateButtonHoverStatus,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  widget_->MakeCloseSynchronous(base::BindOnce(
-      &HandoffButtonController::CloseButton, weak_ptr_factory_.GetWeakPtr()));
+  widget_->MakeCloseSynchronous(
+      base::BindOnce(&HandoffButtonController::OnWidgetDestroying,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HandoffButtonController::ShouldShowButton(bool& show) {
@@ -357,12 +358,16 @@ gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
   return gfx::Rect({x, y}, preferred_size);
 }
 
-void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
+void HandoffButtonController::OnWidgetDestroying(
+    views::Widget::ClosedReason reason) {
   button_view_ = nullptr;
-  if (widget_) {
-    widget_->CloseNow();
-    widget_.reset();
-    delegate_.reset();
+  widget_.reset();
+  delegate_.reset();
+}
+
+void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
+  if (widget_ && !widget_->IsClosed()) {
+    widget_->CloseWithReason(reason);
   }
 }
 

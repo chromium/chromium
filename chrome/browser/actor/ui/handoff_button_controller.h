@@ -85,6 +85,7 @@ class HandoffButtonController {
   virtual ActorUiTabControllerInterface* GetTabController();
   virtual void UpdateBounds();
   virtual void UpdateVisibility();
+  void OnWidgetDestroying(views::Widget::ClosedReason reason);
 
   tabs::TabDialogManager* GetTabDialogManager();
 
