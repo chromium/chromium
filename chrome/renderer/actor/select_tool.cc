@@ -60,15 +60,6 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
   // the contents underneath it.
   select.Blur();
 
-  // Check if the set value is now the current value in the <select>
-  if (select.Value() != value) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kSelectUnexpectedValue,
-                   /*requires_page_stabilization=*/false,
-                   absl::StrFormat("ValueAfter [%s]", select.Value().Utf8())));
-    return;
-  }
-
   std::move(callback).Run(MakeOkResult());
 }
 
