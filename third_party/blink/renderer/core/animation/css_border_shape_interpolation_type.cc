@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_border_shape.h"
 
 namespace blink {
@@ -47,11 +48,10 @@ struct CSSBorderShapeEntry {
   GeometryBox box = GeometryBox::kBorderBox;
 };
 
-template <bool has_inner_shape>
+template <GeometryBox default_box>
 CSSBorderShapeEntry CreateEntryFromCSSValue(const CSSValue& value) {
   const CSSValue* shape_value = &value;
-  GeometryBox box =
-      has_inner_shape ? GeometryBox::kBorderBox : GeometryBox::kHalfBorderBox;
+  GeometryBox box = default_box;
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     shape_value = &pair->First();
     const auto& ident = To<CSSIdentifierValue>(pair->Second());
@@ -117,12 +117,14 @@ class InheritedBorderShapeChecker
   Member<const StyleBorderShape> inherited_;
 };
 
+template <GeometryBox default_box>
 GeometryBox GeometryBoxForNonInterpolableValue(
     const NonInterpolableValue* non_interpolable) {
   if (!non_interpolable) {
-    return GeometryBox::kBorderBox;
+    return GeometryBox::kHalfBorderBox;
   }
-  return basic_shape_interpolation_functions::GetGeometryBox(*non_interpolable);
+  return basic_shape_interpolation_functions::GetGeometryBox(*non_interpolable,
+                                                             default_box);
 }
 
 }  // namespace
@@ -197,12 +199,12 @@ InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertValue(
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
     auto entry =
-        CreateEntryFromCSSValue</*has_inner_shape=*/true>(list->First());
+        CreateEntryFromCSSValue<GeometryBox::kBorderBox>(list->First());
     entries[0] = std::move(entry);
-    entry = CreateEntryFromCSSValue</*has_inner_shape=*/true>(list->Last());
+    entry = CreateEntryFromCSSValue<GeometryBox::kPaddingBox>(list->Last());
     entries[1] = std::move(entry);
   } else {
-    auto entry = CreateEntryFromCSSValue</*has_inner_shape=*/false>(value);
+    auto entry = CreateEntryFromCSSValue<GeometryBox::kHalfBorderBox>(value);
     entries[0] = entry;
     entries[1] = entry;
   }
@@ -321,9 +323,11 @@ void CSSBorderShapeInterpolationType::ApplyStandardPropertyValue(
   }
 
   GeometryBox outer_box =
-      GeometryBoxForNonInterpolableValue(non_interpolable_list->Get(0));
+      GeometryBoxForNonInterpolableValue<GeometryBox::kBorderBox>(
+          non_interpolable_list->Get(0));
   GeometryBox inner_box =
-      GeometryBoxForNonInterpolableValue(non_interpolable_list->Get(1));
+      GeometryBoxForNonInterpolableValue<GeometryBox::kPaddingBox>(
+          non_interpolable_list->Get(1));
 
   state.StyleBuilder().SetBorderShape(MakeGarbageCollected<StyleBorderShape>(
       *outer_shape, inner_shape, outer_box, inner_box));

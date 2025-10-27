@@ -34,7 +34,9 @@ CORE_EXPORT bool ShapesAreCompatible(const NonInterpolableValue&,
 CORE_EXPORT BasicShape* CreateBasicShape(const InterpolableValue&,
                                          const NonInterpolableValue&,
                                          const CSSToLengthConversionData&);
-CORE_EXPORT GeometryBox GetGeometryBox(const NonInterpolableValue&);
+CORE_EXPORT GeometryBox
+GetGeometryBox(const NonInterpolableValue&,
+               GeometryBox default_box = GeometryBox::kBorderBox);
 CORE_EXPORT CoordBox GetCoordBox(const NonInterpolableValue&);
 
 }  // namespace basic_shape_interpolation_functions

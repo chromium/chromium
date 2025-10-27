@@ -881,9 +881,10 @@ BasicShape* basic_shape_interpolation_functions::CreateBasicShape(
 }
 
 GeometryBox basic_shape_interpolation_functions::GetGeometryBox(
-    const NonInterpolableValue& value) {
+    const NonInterpolableValue& value,
+    GeometryBox default_box) {
   return To<BasicShapeNonInterpolableValue>(value).GetGeometryBox().value_or(
-      GeometryBox::kBorderBox);
+      default_box);
 }
 
 CoordBox basic_shape_interpolation_functions::GetCoordBox(

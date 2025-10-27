@@ -2002,7 +2002,14 @@ const CSSValue* BorderShape::ParseSingleValue(
   }
 
   const CSSValue* inner = ConsumeBasicShapeAndGeometryBox(stream, context);
-  if (!inner || base::ValuesEquivalent(inner, outer)) {
+  // If the inner shape is not present or is identical to the outer shape,
+  // we can return the outer shape. Note that we need to check for value pair
+  // equality here because both outer and inner shapes can have an associated
+  // geometry box and when they are omitted, they aren't equal.
+  // E.g. circle() circle() is not the same as circle(), it's actually
+  // circle() border-box circle() padding-box.
+  if (!inner || (outer->IsValuePair() && inner->IsValuePair() &&
+                 base::ValuesEquivalent(inner, outer))) {
     return outer;
   }
 
@@ -2043,20 +2050,18 @@ const CSSValue* BorderShape::CSSValueFromComputedStyleInternal(
   }
 
   // Inner shape and coord box
-  if (border_shape.HasSeparateInnerShape()) {
+  if (!is_single_shape) {
     CSSValue* inner_shape =
         ValueForBasicShape(style, &border_shape.InnerShape());
     GeometryBox inner_box = border_shape.InnerBox();
-    if (inner_box != GeometryBox::kBorderBox) {
+    if (inner_box != GeometryBox::kPaddingBox) {
       CSSValue* inner_box_value = CSSIdentifierValue::Create(inner_box);
       inner = MakeGarbageCollected<CSSValuePair>(
           inner_shape, inner_box_value, CSSValuePair::kKeepIdenticalValues);
     } else {
       inner = inner_shape;
     }
-  }
-
-  if (!inner || base::ValuesEquivalent(inner, outer)) {
+  } else {
     return outer;
   }
 

@@ -285,14 +285,11 @@ struct BasicShapeAndCoordBox {
   GeometryBox box;
 };
 
-template <bool has_inner_shape>
+template <GeometryBox default_box>
 BasicShapeAndCoordBox BasicShapeAndCoordBoxForValue(StyleResolverState& state,
                                                     const CSSValue& value) {
   BasicShape* shape = nullptr;
-  // For single-shape border-shape, default to half-border-box as the reference
-  // box, so that strokes are centered on the shape path.
-  GeometryBox box =
-      has_inner_shape ? GeometryBox::kBorderBox : GeometryBox::kHalfBorderBox;
+  GeometryBox box = default_box;
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
     shape = BasicShapeForValue(state, pair->First());
     box = To<CSSIdentifierValue>(pair->Second()).ConvertTo<GeometryBox>();
@@ -320,17 +317,17 @@ StyleBorderShape* StyleBuilderConverter::ConvertBorderShape(
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
     auto [outer_shape, outer_box] =
-        BasicShapeAndCoordBoxForValue</*has_inner_shape=*/true>(state,
-                                                                list->First());
+        BasicShapeAndCoordBoxForValue<GeometryBox::kBorderBox>(state,
+                                                               list->First());
     auto [inner_shape, inner_box] =
-        BasicShapeAndCoordBoxForValue</*has_inner_shape=*/true>(state,
+        BasicShapeAndCoordBoxForValue<GeometryBox::kPaddingBox>(state,
                                                                 list->Last());
     return MakeGarbageCollected<StyleBorderShape>(*outer_shape, inner_shape,
                                                   outer_box, inner_box);
   }
 
   auto [outer_shape, outer_coord_box] =
-      BasicShapeAndCoordBoxForValue</*has_inner_shape=*/false>(state, value);
+      BasicShapeAndCoordBoxForValue<GeometryBox::kHalfBorderBox>(state, value);
   return MakeGarbageCollected<StyleBorderShape>(
       *outer_shape, outer_shape, outer_coord_box, outer_coord_box);
 }

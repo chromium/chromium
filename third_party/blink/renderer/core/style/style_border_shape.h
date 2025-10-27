@@ -33,7 +33,7 @@ class StyleBorderShape : public GarbageCollected<StyleBorderShape> {
   }
 
   bool HasSeparateInnerShape() const {
-    return !base::ValuesEquivalent(inner_, outer_);
+    return !base::ValuesEquivalent(inner_, outer_) || inner_box_ != outer_box_;
   }
 
   const BasicShape& OuterShape() const { return *outer_; }
