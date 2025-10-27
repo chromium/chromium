@@ -755,15 +755,13 @@ bool CanonicalizeStandardUrl(std::u16string_view spec,
 
 // Use for non-special URLs.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeNonSpecialURL(const char* spec,
-                               int spec_len,
+bool CanonicalizeNonSpecialUrl(std::string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput& output,
                                Parsed& new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeNonSpecialURL(const char16_t* spec,
-                               int spec_len,
+bool CanonicalizeNonSpecialUrl(std::u16string_view spec,
                                const Parsed& parsed,
                                CharsetConverter* query_converter,
                                CanonOutput& output,
@@ -1045,14 +1043,14 @@ bool ReplaceStandardUrl(std::string_view base,
 
 // For non-special URLs.
 COMPONENT_EXPORT(URL)
-bool ReplaceNonSpecialURL(const char* base,
+bool ReplaceNonSpecialUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char>& replacements,
                           CharsetConverter* query_converter,
                           CanonOutput& output,
                           Parsed& new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceNonSpecialURL(const char* base,
+bool ReplaceNonSpecialUrl(std::string_view base,
                           const Parsed& base_parsed,
                           const Replacements<char16_t>& replacements,
                           CharsetConverter* query_converter,

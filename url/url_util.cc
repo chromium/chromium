@@ -312,10 +312,9 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   } else {
     // Non-special scheme URLs like data:, mailto: and javascript:.
     if (!DoIsOpaqueNonSpecial(spec.data(), scheme)) {
-      success = CanonicalizeNonSpecialURL(
-          spec.data(), spec.length(),
-          ParseNonSpecialURLInternal(spec, trim_path_end), charset_converter,
-          *output, *output_parsed);
+      success = CanonicalizeNonSpecialUrl(
+          spec, ParseNonSpecialURLInternal(spec, trim_path_end),
+          charset_converter, *output, *output_parsed);
     } else {
       success = CanonicalizePathURL(spec.data(), spec.length(),
                                     ParsePathURL(spec, trim_path_end), output,
@@ -495,8 +494,8 @@ bool DoReplaceComponents(std::string_view spec,
   }
 
   if (!DoIsOpaqueNonSpecial(spec_ptr, parsed.scheme)) {
-    return ReplaceNonSpecialURL(spec_ptr, parsed, replacements,
-                                charset_converter, *output, *out_parsed);
+    return ReplaceNonSpecialUrl(spec, parsed, replacements, charset_converter,
+                                *output, *out_parsed);
   }
   return ReplacePathURL(spec_ptr, parsed, replacements, output, out_parsed);
 }

@@ -1878,9 +1878,9 @@ TEST_F(URLCanonTest, CanonicalizeNonSpecialURL) {
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeNonSpecialURL(
-        i.input.data(), i.input.size(), parsed,
-        /*query_converter=*/nullptr, output, out_parsed);
+    bool success = CanonicalizeNonSpecialUrl(i.input, parsed,
+                                             /*query_converter=*/nullptr,
+                                             output, out_parsed);
     output.Complete();
     EXPECT_EQ(success, i.expected_success);
     EXPECT_EQ(out_str, i.expected);
@@ -1910,9 +1910,9 @@ TEST_F(URLCanonTest, CanonicalizeNonSpecialURLOutputParsed) {
     Parsed out_parsed;
     std::string unused_out_str;
     StdStringCanonOutput unused_output(&unused_out_str);
-    bool success = CanonicalizeNonSpecialURL(
-        i.input.data(), i.input.size(), parsed,
-        /*query_converter=*/nullptr, unused_output, out_parsed);
+    bool success = CanonicalizeNonSpecialUrl(i.input, parsed,
+                                             /*query_converter=*/nullptr,
+                                             unused_output, out_parsed);
     ASSERT_TRUE(success);
     EXPECT_EQ(out_parsed.host, i.expected_output_parsed_host);
     EXPECT_EQ(out_parsed.Length(), i.expected_output_parsed_length);

@@ -526,7 +526,7 @@ bool DoResolveRelativeHost(std::string_view base_url,
       replacements.components().Length() +
       base_parsed.CountCharactersBefore(Parsed::USERNAME, false));
   if (!is_standard_scheme) {
-    return ReplaceNonSpecialURL(base_url.data(), base_parsed, replacements,
+    return ReplaceNonSpecialUrl(base_url, base_parsed, replacements,
                                 query_converter, *output, *out_parsed);
   }
 
