@@ -2089,6 +2089,37 @@
             ]
         }
     ],
+    "AutoRevokeSuspiciousNotification": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledLookback1d",
+                    "params": {
+                        "AutoRevokeSuspiciousNotificationEngagementScoreCutOff": "50.0",
+                        "AutoRevokeSuspiciousNotificationLookBackPeriod": "1",
+                        "AutoRevokeSuspiciousNotificationMinNotificationCount": "2"
+                    },
+                    "enable_features": [
+                        "AutoRevokeSuspiciousNotification"
+                    ]
+                },
+                {
+                    "name": "EnabledLookback7d",
+                    "params": {
+                        "AutoRevokeSuspiciousNotificationEngagementScoreCutOff": "50.0",
+                        "AutoRevokeSuspiciousNotificationLookBackPeriod": "7",
+                        "AutoRevokeSuspiciousNotificationMinNotificationCount": "4"
+                    },
+                    "enable_features": [
+                        "AutoRevokeSuspiciousNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutoSpeculationRules": [
         {
             "platforms": [
