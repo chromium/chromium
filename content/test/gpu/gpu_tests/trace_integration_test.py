@@ -15,7 +15,6 @@ import io
 import logging
 import os
 import posixpath
-import subprocess
 import sys
 import tempfile
 import time
@@ -654,26 +653,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       # At the time of writing, the downloaded binary is ~11 MB, so 5 seconds
       # should be plenty for the first job to download it.
       time.sleep(5)
-
-  @classmethod
-  def TearDownProcess(cls) -> None:
-    # There is a bug somewhere in the Windows version of trace_processor_shell
-    # that causes it to consistently leave behind orphaned processes. These
-    # prevent Swarming from cleaning up the output directory, which causes the
-    # task to fail. So, kill any processes that are still alive since we do not
-    # need them at this point.
-    # TODO(crbug.com/383999365): Remove this workaround when the bug is fixed
-    # on Perfetto's end.
-    os_name = cls.browser.platform.GetOSName()
-    if os_name and os_name.lower() == 'win':
-      logging.info('Killing orphaned trace_processor_shell processes')
-      cmd = ['taskkill', '/f', '/t', '/im', 'trace_processor_shell.exe']
-      try:
-        subprocess.run(cmd, check=True)
-      except subprocess.CalledProcessError as e:
-        logging.error(
-            'Failed to kill orphaned trace_processor_shell processes: %s', e)
-    super().TearDownProcess()
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
