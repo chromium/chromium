@@ -122,6 +122,7 @@ public class DiscountsIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/447307244")
     public void testDiscountsContextualPageActionIconShown() {
         navigateAndWaitForDiscountsContextualPageActionIcon();
     }
