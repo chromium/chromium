@@ -105,6 +105,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
     return last_make_credential_options_.get();
   }
 
+  // Returns a reference to a copy of the last get assertion or make credential
+  // hints passed to the fake.
+  std::vector<std::wstring>& last_hints() { return last_hints_; }
+
   // Sets the transport to be reported by the API for cross-platform requests.
   void set_transport(int transport) { transport_ = transport; }
 
@@ -158,6 +162,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   struct CredentialInfoList;
   struct WebAuthnAttestation;
   struct WebAuthnAssertionEx;
+  struct GetAssertionOptions;
 
   static WEBAUTHN_CREDENTIAL_ATTESTATION FakeAttestation();
 
@@ -181,6 +186,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FakeWinWebAuthnApi : public WinWebAuthnApi {
   // fake.
   std::unique_ptr<WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS>
       last_make_credential_options_;
+
+  // Owns a copy of the last get assertion or make credential hints to have been
+  // passed to the fake.
+  std::vector<std::wstring> last_hints_;
 
   // Owns the attestations returned by AuthenticatorMakeCredential().
   std::vector<std::unique_ptr<WebAuthnAttestation>> returned_attestations_;

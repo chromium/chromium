@@ -63,6 +63,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Chrome Incognito mode).
   bool is_off_the_record_context = false;
+
+  // The set of hints passed by the relying party.
+  // https://w3c.github.io/webauthn/#enum-hints.
+  std::vector<FidoTransportProtocol> hints;
 };
 
 // Object that encapsulates request parameters for AuthenticatorGetAssertion as

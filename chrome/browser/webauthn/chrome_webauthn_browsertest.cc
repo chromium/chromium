@@ -75,6 +75,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/compiler_specific.h"
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/util.h"
@@ -100,6 +101,48 @@ PublicKeyCredential.signalUnknownCredential({
   credentialId: "$1",
 }).then(c => 'webauthn: OK', e => 'error ' + e);
 )";
+
+// The hints parameter here contains nonsense values (which should be ignored)
+// and lists `security-key` and `hybrid` (more than once).
+//
+// According to the standard,
+//
+// "Hints are provided in order of decreasing preference so, if two hints are
+// contradictory, the first one controls. [...] If the same hint appears more
+// than once, its second and later appearances are ignored."
+//
+// In practice, Chromium will only consider the first recognised hint and ignore
+// the rest for the purposes of configuring the UI.
+// For cases where Chromium delegates WebAuthn to the OS (e.g. Windows), unknown
+// hints are filtered, but they are otherwise passed as received.
+static constexpr char kMakeCredentialWithHints[] = R"((() => {
+  return navigator.credentials.create({ publicKey: {
+    rp: { name: "" },
+    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
+    pubKeyCredParams: [{type: "public-key", alg: -7}],
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    hints: ["nonsense", "hybrid", "security-key", "hybrid", "nonsense"],
+    userVerification: 'discouraged',
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
+})())";
+
+#if BUILDFLAG(IS_WIN)
+
+static constexpr char kGetAssertionWithHints[] = R"((() => {
+  let cred_id = new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]);
+  return navigator.credentials.get({ publicKey: {
+    challenge: cred_id,
+    timeout: 10000,
+    hints: ["nonsense", "hybrid", "security-key", "hybrid", "nonsense"],
+    userVerification: 'discouraged',
+    allowCredentials: [{type: 'public-key', id: cred_id}],
+  }}).then(c => 'webauthn: OK',
+           e => 'error ' + e);
+})())";
+
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string GetSignalUnknownCredentialScript(
     base::span<const uint8_t> credential_id) {
@@ -356,7 +399,8 @@ class WinWebAuthnBrowserTest
   WinWebAuthnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {device::kWebAuthnHelloSignal,
-         device::kWebAuthenticationFixWindowsHelloRdp},
+         device::kWebAuthenticationFixWindowsHelloRdp,
+         device::kWebAuthenticationWindowsHints},
         /*disabled_features=*/{});
   }
 
@@ -564,6 +608,55 @@ IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinGetAssertionRdp) {
       "webauthn: OK",
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAssertionInternalCredID1234));
+}
+
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, MakeCredentialHints) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  for (int version :
+       std::vector{WEBAUTHN_API_VERSION_7, WEBAUTHN_API_VERSION_8}) {
+    SCOPED_TRACE(version);
+    win_api_.set_version(version);
+    EXPECT_EQ(
+        "webauthn: OK",
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        kMakeCredentialWithHints));
+    if (version == WEBAUTHN_API_VERSION_7) {
+      EXPECT_THAT(win_api_.last_hints(), testing::IsEmpty());
+    } else {
+      EXPECT_THAT(win_api_.last_hints(),
+                  testing::ElementsAre(
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID),
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY),
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID)));
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, GetAssertionHints) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  win_api_.InjectNonDiscoverableCredential(kCredentialID, "www.example.com");
+
+  for (int version :
+       std::vector{WEBAUTHN_API_VERSION_7, WEBAUTHN_API_VERSION_8}) {
+    SCOPED_TRACE(version);
+    win_api_.set_version(version);
+    EXPECT_EQ(
+        "webauthn: OK",
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        kGetAssertionWithHints));
+    if (version == WEBAUTHN_API_VERSION_7) {
+      EXPECT_THAT(win_api_.last_hints(), testing::IsEmpty());
+    } else {
+      EXPECT_THAT(win_api_.last_hints(),
+                  testing::ElementsAre(
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID),
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_SECURITY_KEY),
+                      testing::StrEq(WEBAUTHN_CREDENTIAL_HINT_HYBRID)));
+    }
+  }
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -896,30 +989,6 @@ class WebAuthnHintsTest : public WebAuthnBrowserTest {
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
   std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
 };
-
-// The hints parameter here contains nonsense values (which should be ignored)
-// and lists `security-key` and `hybrid` (more than once).
-//
-// According to the standard,
-//
-// "Hints are provided in order of decreasing preference so, if two hints are
-// contradictory, the first one controls. [...] If the same hint appears more
-// than once, its second and later appearances are ignored."
-//
-// In practice, Chromium will only consider the first recognised hint and ignore
-// the rest for the purposes of configuring the UI.
-static constexpr char kMakeCredentialWithHints[] = R"((() => {
-  return navigator.credentials.create({ publicKey: {
-    rp: { name: "" },
-    user: { id: new Uint8Array([0]), name: "foo", displayName: "" },
-    pubKeyCredParams: [{type: "public-key", alg: -7}],
-    challenge: new Uint8Array([0]),
-    timeout: 10000,
-    hints: ["nonsense", "hybrid", "security-key", "hybrid", "nonsense"],
-    userVerification: 'discouraged',
-  }}).then(c => 'webauthn: OK',
-           e => 'error ' + e);
-})())";
 
 IN_PROC_BROWSER_TEST_F(WebAuthnHintsTest, HintsArePassedThrough) {
   content::WebContents* web_contents =

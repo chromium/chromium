@@ -17,6 +17,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "third_party/microsoft_webauthn/src/webauthn.h"
 
@@ -86,6 +87,10 @@ std::optional<FidoTransportProtocol> FromWinTransportsMask(
 COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinTransportsMask(
     const base::flat_set<FidoTransportProtocol>& transports);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::vector<const wchar_t*> ToWinCredentialHints(
+    base::span<const FidoTransportProtocol> hints);
 
 }  // namespace device
 

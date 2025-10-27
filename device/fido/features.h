@@ -174,6 +174,11 @@ BASE_DECLARE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnOpportunisticRetrieval);
 
+// Enable support for WebAuthn hints through the Windows WebAuthn API.
+// https://w3c.github.io/webauthn/#enum-hints.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthenticationWindowsHints);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

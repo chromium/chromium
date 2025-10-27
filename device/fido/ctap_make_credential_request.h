@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
@@ -202,6 +203,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOptions {
   // Indicates if this is a passkey upgrade request, i.e. whether
   // mediation=conditional.
   bool is_passkey_upgrade_request = false;
+
+  // The set of hints passed by the relying party.
+  // https://w3c.github.io/webauthn/#enum-hints.
+  std::vector<FidoTransportProtocol> hints;
 };
 
 // Serializes MakeCredential request parameter into CBOR encoded map with

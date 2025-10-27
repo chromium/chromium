@@ -204,6 +204,12 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   last_make_credential_options_ =
       std::make_unique<WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS>(
           *options);
+  last_hints_.clear();
+  last_hints_.reserve(options->cCredentialHints);
+  for (size_t i = 0; i < options->cCredentialHints; ++i) {
+    last_hints_.push_back(options->ppwszCredentialHints[i]);
+  }
+
   if (result_override_ != S_OK) {
     return result_override_;
   }
@@ -320,6 +326,11 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
     PWEBAUTHN_ASSERTION* assertion_ptr) {
   // TODO(martinkr): support AppID extension
   DCHECK(is_available_);
+  last_hints_.clear();
+  last_hints_.reserve(options->cCredentialHints);
+  for (size_t i = 0; i < options->cCredentialHints; ++i) {
+    last_hints_.push_back(options->ppwszCredentialHints[i]);
+  }
 
   if (result_override_ != S_OK) {
     return result_override_;
@@ -400,6 +411,21 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
       break;
     case WEBAUTHN_API_VERSION_4:
       result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_3;
+      break;
+    case WEBAUTHN_API_VERSION_5:
+      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_3;
+      break;
+    case WEBAUTHN_API_VERSION_6:
+      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_4;
+      break;
+    case WEBAUTHN_API_VERSION_7:
+      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_5;
+      break;
+    case WEBAUTHN_API_VERSION_8:
+      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_5;
+      break;
+    case WEBAUTHN_API_VERSION_9:
+      result->assertion.dwVersion = WEBAUTHN_ASSERTION_VERSION_6;
       break;
     default:
       NOTREACHED() << "Unknown webauthn version " << version_;
