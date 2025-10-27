@@ -864,9 +864,9 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   }
   auto buffer_access =
       capture_buffer.handle_provider->GetHandleForInProcessAccess();
-  DCHECK(buffer_access->data()) << "Buffer has NO backing memory";
+  DCHECK(!buffer_access->data().empty()) << "Buffer has NO backing memory";
 
-  uint8_t* data_ptr = buffer_access->data();
+  uint8_t* data_ptr = buffer_access->data().data();
   memset(data_ptr, 0, buffer_access->mapped_size());
   frame_painter()->PaintFrame(timestamp_to_paint, data_ptr);
   buffer_access.reset();  // Can't outlive `capture_buffer.handle_provider'.
@@ -948,7 +948,7 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   // writable access.
   auto buffer_access =
       capture_buffer.handle_provider->GetHandleForInProcessAccess();
-  uint8_t* data_ptr = buffer_access->data();
+  uint8_t* data_ptr = buffer_access->data().data();
   memset(data_ptr, 0, buffer_access->mapped_size());
   frame_painter()->PaintFrame(timestamp_to_paint, data_ptr,
                               buffer_size.width());

@@ -421,7 +421,7 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
       buffer.handle_provider->GetHandleForInProcessAccess();
 
   // Calculate offsets and strides for the output buffer.
-  uint8_t* dst_y = output_handle->data();
+  uint8_t* dst_y = output_handle->data().data();
   int dst_stride_y = output_size.width();
   size_t dst_y_plane_size = output_size.width() * output_size.height();
   uint8_t* dst_u = dst_y + dst_y_plane_size;
@@ -431,7 +431,8 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
 
   // Check that the output fits in the buffer.
   const uint8_t* dst_end = dst_v + dst_y_plane_size / 4;
-  CHECK_LE(dst_end, output_handle->data() + output_handle->mapped_size());
+  CHECK_LE(dst_end,
+           output_handle->data().data() + output_handle->mapped_size());
 
   // Vertical flip is indicated to ConvertToI420() by negating src_height.
   int flipped_src_height = static_cast<int>(src_coded_height);

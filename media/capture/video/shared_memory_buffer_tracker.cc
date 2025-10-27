@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/notreached.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -20,16 +21,14 @@ class SharedMemoryBufferTrackerHandle : public media::VideoCaptureBufferHandle {
  public:
   explicit SharedMemoryBufferTrackerHandle(
       base::WritableSharedMemoryMapping& mapping)
-      : mapped_size_(mapping.size()),
-        data_(mapping.GetMemoryAsSpan<uint8_t>().data()) {}
+      : span_(mapping.GetMemoryAsSpan<uint8_t>()) {}
 
-  size_t mapped_size() const final { return mapped_size_; }
-  uint8_t* data() const final { return data_; }
-  const uint8_t* const_data() const final { return data_; }
+  size_t mapped_size() const final { return span_.size(); }
+  base::span<uint8_t> data() final { return span_; }
+  base::span<const uint8_t> const_data() const final { return span_; }
 
  private:
-  const size_t mapped_size_;
-  raw_ptr<uint8_t> data_;
+  base::raw_span<uint8_t> span_;
 };
 
 size_t CalculateRequiredBufferSize(

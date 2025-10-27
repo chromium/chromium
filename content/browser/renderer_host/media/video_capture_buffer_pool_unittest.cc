@@ -99,7 +99,7 @@ class VideoCaptureBufferPoolTest
     ~Buffer() { pool_->RelinquishProducerReservation(id()); }
     int id() const { return id_; }
     size_t mapped_size() { return buffer_handle_->mapped_size(); }
-    void* data() { return buffer_handle_->data(); }
+    void* data() { return buffer_handle_->data().data(); }
 
    private:
     const int id_;

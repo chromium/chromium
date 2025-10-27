@@ -66,8 +66,8 @@ std::unique_ptr<VideoCaptureJpegDecoder> ReturnNullPtrAsJpecDecoder() {
 class FakeVideoCaptureBufferHandle : public VideoCaptureBufferHandle {
  public:
   size_t mapped_size() const override { return 1024; }
-  uint8_t* data() const override { return nullptr; }
-  const uint8_t* const_data() const override { return nullptr; }
+  base::span<uint8_t> data() final { return {}; }
+  base::span<const uint8_t> const_data() const override { return {}; }
 };
 
 class FakeVideoCaptureBufferTracker : public VideoCaptureBufferTracker {

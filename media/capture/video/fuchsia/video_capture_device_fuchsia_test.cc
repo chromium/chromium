@@ -4,6 +4,7 @@
 
 #include "media/capture/video/fuchsia/video_capture_device_fuchsia.h"
 
+#include "base/containers/span.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -41,22 +42,21 @@ void ValidateReceivedFrame(const ReceivedFrame& frame,
 
   auto handle = frame.buffer.handle_provider->GetHandleForInProcessAccess();
 
-  FakeCameraStream::ValidateFrameData(handle->data(), coded_size, salt);
+  FakeCameraStream::ValidateFrameData(handle->data().data(), coded_size, salt);
 }
 
 // VideoCaptureBufferHandle implementation that references memory allocated on
 // the heap.
 class HeapBufferHandle : public VideoCaptureBufferHandle {
  public:
-  HeapBufferHandle(size_t size, uint8_t* data) : size_(size), data_(data) {}
+  HeapBufferHandle(base::span<uint8_t> span) : span_(span) {}
 
-  size_t mapped_size() const final { return size_; }
-  uint8_t* data() const final { return data_; }
-  const uint8_t* const_data() const final { return data_; }
+  size_t mapped_size() const final { return span_.size(); }
+  base::span<uint8_t> data() final { return span_; }
+  base::span<const uint8_t> const_data() const final { return span_; }
 
  private:
-  const size_t size_;
-  const raw_ptr<uint8_t> data_;
+  base::raw_span<uint8_t> span_;
 };
 
 // VideoCaptureDevice::Client::Buffer::HandleProvider implementation that
@@ -73,7 +73,7 @@ class HeapBufferHandleProvider final
 
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
       override {
-    return std::make_unique<HeapBufferHandle>(data_.size(), data_.data());
+    return std::make_unique<HeapBufferHandle>(base::span(data_));
   }
 
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {

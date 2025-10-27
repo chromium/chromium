@@ -24,11 +24,11 @@ class StubBufferHandle : public VideoCaptureBufferHandle {
   explicit StubBufferHandle(base::span<uint8_t> data) : data_(data) {}
 
   size_t mapped_size() const override { return data_.size(); }
-  uint8_t* data() const override { return data_.data(); }
-  const uint8_t* const_data() const override { return data_.data(); }
+  base::span<uint8_t> data() final { return data_; }
+  base::span<const uint8_t> const_data() const override { return data_; }
 
  private:
-  const base::raw_span<uint8_t> data_;
+  base::raw_span<uint8_t> data_;
 };
 
 class StubBufferHandleProvider

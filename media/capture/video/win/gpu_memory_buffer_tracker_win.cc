@@ -33,8 +33,8 @@ class DXGIGMBTrackerHandle : public media::VideoCaptureBufferHandle {
       : data_(data), dxgi_handle_(dxgi_handle), d3d11_device_(d3d11_device) {}
 
   size_t mapped_size() const final { return data_.size(); }
-  uint8_t* data() const final { return data_.data(); }
-  const uint8_t* const_data() const final { return data_.data(); }
+  base::span<uint8_t> data() final { return data_; }
+  base::span<const uint8_t> const_data() const final { return data_; }
 
   ~DXGIGMBTrackerHandle() override {
     gpu::CopyShMemToDXGIBuffer(data_, dxgi_handle_, d3d11_device_);

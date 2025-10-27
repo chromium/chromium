@@ -78,7 +78,8 @@ void GetI420BufferAccess(
     uint8_t** v_plane_data,
     int* y_plane_stride,
     int* uv_plane_stride) {
-  *y_plane_data = buffer.handle_provider->GetHandleForInProcessAccess()->data();
+  *y_plane_data =
+      buffer.handle_provider->GetHandleForInProcessAccess()->data().data();
   *u_plane_data = *y_plane_data + media::VideoFrame::PlaneSize(
                                       media::PIXEL_FORMAT_I420,
                                       media::VideoFrame::Plane::kY, dimensions)
@@ -832,7 +833,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     return;
   }
   auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
-  memcpy(buffer_access->data(), data,
+  memcpy(buffer_access->data().data(), data,
          std::min(static_cast<size_t>(length), buffer_access->mapped_size()));
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
