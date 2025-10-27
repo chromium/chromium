@@ -20,7 +20,7 @@ import org.chromium.url.GURL;
  * <p>TODO(dfalcantara): Hunt down more places where we don't actually need to return a Tab.
  */
 @NullMarked
-public abstract class TabCreator {
+public interface TabCreator {
 
     /**
      * Creates a new tab and posts to UI.
@@ -30,7 +30,7 @@ public abstract class TabCreator {
      * @param parent the parent tab, if present.
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent);
 
     /**
@@ -42,7 +42,7 @@ public abstract class TabCreator {
      * @param position the requested position (index in the tab model)
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             @TabLaunchType int type,
             @Nullable Tab parent,
@@ -58,7 +58,7 @@ public abstract class TabCreator {
      * @param position the requested position (index in the tab model)
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             String title,
             @TabLaunchType int type,
@@ -73,18 +73,18 @@ public abstract class TabCreator {
      * @param id The id to give the new tab.
      * @param index The index for where to place the tab.
      */
-    public abstract Tab createFrozenTab(TabState state, int id, int index);
+    Tab createFrozenTab(TabState state, int id, int index);
 
     /**
-     * Creates a new tab and loads the specified URL in it. This is a convenience method for
-     * {@link #createNewTab} with the default {@link LoadUrlParams} and no parent tab.
+     * Creates a new tab and loads the specified URL in it. This is a convenience method for {@link
+     * #createNewTab} with the default {@link LoadUrlParams} and no parent tab.
      *
      * @param url the URL to open.
-     * @param type the type of action that triggered that launch. Determines how the tab is
-     *             opened (for example, in the foreground or background).
+     * @param type the type of action that triggered that launch. Determines how the tab is opened
+     *     (for example, in the foreground or background).
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab launchUrl(String url, @TabLaunchType int type);
+    @Nullable Tab launchUrl(String url, @TabLaunchType int type);
 
     /**
      * Creates a Tab to host the given WebContents.
@@ -100,7 +100,7 @@ public abstract class TabCreator {
      *     the user in a new window).
      * @return The new Tab or null if a Tab was not created successfully.
      */
-    public abstract @Nullable Tab createTabWithWebContents(
+    @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
@@ -116,13 +116,13 @@ public abstract class TabCreator {
      *     or {@code FROM_HISTORY_NAVIGATION_BACKGROUND}.
      * @return The {@link Tab} which was created.
      */
-    public @Nullable abstract Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
+    @Nullable Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
 
     /** Creates a new tab and loads the NTP. */
-    public abstract void launchNtp(@TabLaunchType int type);
+    void launchNtp(@TabLaunchType int type);
 
     /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
-    public interface NeedsTabModel {
+    interface NeedsTabModel {
         void setTabModel(TabModel tabModel);
     }
 
@@ -130,7 +130,7 @@ public abstract class TabCreator {
      * Semi-tag interface to denote dependency and provide a setter for {@link
      * TabModelOrderController}.
      */
-    public interface NeedsTabModelOrderController {
+    interface NeedsTabModelOrderController {
         void setTabModelOrderController(TabModelOrderController tabModelOrderController);
     }
 }

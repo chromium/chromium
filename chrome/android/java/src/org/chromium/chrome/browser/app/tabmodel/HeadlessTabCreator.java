@@ -22,7 +22,7 @@ import org.chromium.url.GURL;
 
 /** This implementation always creates tabs as frozen/pending, never with web contents. */
 @NullMarked
-public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
+public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
     private final Profile mProfile;
     private TabModel mTabModel;
 

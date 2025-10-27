@@ -23,7 +23,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** MockTabCreator for use in tests. */
-public class MockTabCreator extends TabCreator {
+public class MockTabCreator implements TabCreator {
     public final SparseArray<TabState> created;
     public final CallbackHelper callback;
 

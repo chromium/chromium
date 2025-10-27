@@ -26,7 +26,7 @@ import org.chromium.url.GURL;
  * Creates tabs for the archived tab model selector during restore. This only creates frozen tabs.
  */
 @NullMarked
-public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
+public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
     private final WindowAndroid mWindow;
     private TabModel mTabModel;
 
