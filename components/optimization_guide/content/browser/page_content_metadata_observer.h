@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,7 +19,6 @@
 #include "third_party/blink/public/mojom/page/page.mojom-forward.h"
 
 namespace content {
-class NavigationHandle;
 class Page;
 class RenderFrameHost;
 class WebContents;
@@ -53,14 +51,10 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   void DispatchMetadata();
 
  private:
-  void DoDispatchMetadata();
-
   // content::WebContentsObserver:
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   void OnMetaTagsChangedForFrame(
       content::RenderFrameHost* render_frame_host,
@@ -101,9 +95,6 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   base::flat_map<content::RenderFrameHost*, FrameData> frame_data_;
 
   OnPageMetadataChangedCallback callback_;
-
-  bool dispatch_pending_ = false;
-  base::WeakPtrFactory<PageContentMetadataObserver> weak_factory_{this};
 };
 
 }  // namespace optimization_guide

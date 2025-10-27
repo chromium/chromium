@@ -316,58 +316,6 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   EXPECT_FALSE(callback_waiter_.IsReady());
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MetaTagsAreObservedInNavigatedIframe) {
-  GURL main_url = https_server()->GetURL("/iframe.html");
-  GURL iframe_url = https_server()->GetURL("/meta_tags.html");
-
-  ASSERT_TRUE(LoadPage(main_url));
-  CreateObserver();
-
-  // No meta tags on the main page or initial iframe, so no callback yet.
-  WaitForPageLoadedAndIPCs();
-  EXPECT_FALSE(callback_waiter_.IsReady());
-
-  // Now, navigate the iframe.
-  ASSERT_TRUE(content::ExecJs(
-      GetWebContents(),
-      content::JsReplace("document.querySelector('#test_iframe').src = $1",
-                         iframe_url)));
-
-  // The observer should be notified of the meta tags in the iframe. There may
-  // be multiple callbacks, so we loop until we see the metadata we expect.
-  while (true) {
-    ASSERT_TRUE(callback_waiter_.Wait());
-    bool found_iframe_metadata = false;
-    for (const auto& frame_metadata : page_metadata()->frame_metadata) {
-      if (frame_metadata->url == iframe_url &&
-          !frame_metadata->meta_tags.empty()) {
-        found_iframe_metadata = true;
-        break;
-      }
-    }
-    if (found_iframe_metadata) {
-      break;
-    }
-    callback_waiter_.Clear();
-  }
-
-  blink::mojom::PageMetadataPtr& metadata = page_metadata();
-  ASSERT_EQ(metadata->frame_metadata.size(), 2u);
-
-  bool found_iframe_metadata = false;
-  for (const auto& frame_metadata : metadata->frame_metadata) {
-    if (frame_metadata->url == iframe_url) {
-      found_iframe_metadata = true;
-      ASSERT_EQ(frame_metadata->meta_tags.size(), 1u);
-      EXPECT_EQ(frame_metadata->meta_tags[0]->name, "author");
-      EXPECT_EQ(frame_metadata->meta_tags[0]->content, "Gary");
-    }
-  }
-  EXPECT_TRUE(found_iframe_metadata);
-  observer_.reset();
-}
-
 }  // namespace
 
 }  // namespace optimization_guide
