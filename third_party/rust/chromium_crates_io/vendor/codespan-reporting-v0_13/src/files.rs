@@ -224,6 +224,7 @@ pub struct Location {
 /// assert_eq!(files::column_index(source, 2..13, 2 + 11), 3);
 /// assert_eq!(files::column_index(source, 2..13, 2 + 12), 3);
 /// ```
+#[must_use]
 pub fn column_index(source: &str, line_range: Range<usize>, byte_index: usize) -> usize {
     let end_index = core::cmp::min(byte_index, core::cmp::min(line_range.end, source.len()));
 
@@ -383,6 +384,7 @@ where
     Source: AsRef<str>,
 {
     /// Create a new files database.
+    #[must_use]
     pub fn new() -> SimpleFiles<Name, Source> {
         SimpleFiles { files: Vec::new() }
     }

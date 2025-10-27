@@ -1,6 +1,6 @@
 [package]
 name = "codespan-reporting"
-version = "0.13.0"
+version = "0.13.1"
 readme = "../README.md"
 license = "Apache-2.0"
 authors = ["Brendan Zabarauskas <bjzaba@yahoo.com.au>"]
@@ -8,6 +8,8 @@ description = "Beautiful diagnostic reporting for text-based programming languag
 homepage = "https://github.com/brendanzab/codespan"
 repository = "https://github.com/brendanzab/codespan"
 documentation = "https://docs.rs/codespan-reporting"
+categories = ["compilers", "command-line-interface"]
+keywords = ["diagnostic-reporting"]
 exclude = ["assets/**"]
 edition = "2021"
 rust-version = "1.67"
@@ -18,10 +20,10 @@ termcolor = { version = "1.0.4", optional = true }
 unicode-width = ">=0.1,<0.3"
 
 [dev-dependencies]
-pico-args = "0.5.0"
 anyhow = "1"
 insta = "1.6.3"
 peg = "0.7"
+pico-args = "0.5.0"
 rustyline = "6"
 unindent = "0.1"
 

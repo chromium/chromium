@@ -152,6 +152,7 @@ pub mod styles {
 
     impl Styles {
         /// The style used to mark a header at a given severity.
+        #[must_use]
         pub fn header(&self, severity: Severity) -> &ColorSpec {
             match severity {
                 Severity::Bug => &self.header_bug,
@@ -162,23 +163,28 @@ pub mod styles {
             }
         }
 
+        #[must_use]
         pub fn header_message(&self) -> &ColorSpec {
             &self.header_message
         }
 
+        #[must_use]
         pub fn line_number(&self) -> &ColorSpec {
             &self.line_number
         }
 
+        #[must_use]
         pub fn note_bullet(&self) -> &ColorSpec {
             &self.note_bullet
         }
 
+        #[must_use]
         pub fn source_border(&self) -> &ColorSpec {
             &self.source_border
         }
 
         /// The style used to mark a primary or secondary label at a given severity.
+        #[must_use]
         pub fn label(&self, severity: Severity, label_style: LabelStyle) -> &ColorSpec {
             match (label_style, severity) {
                 (LabelStyle::Primary, Severity::Bug) => &self.primary_label_bug,
@@ -192,6 +198,7 @@ pub mod styles {
     }
 
     impl Styles {
+        #[must_use]
         pub fn no_color() -> Styles {
             Styles {
                 header_bug: ColorSpec::new(),
@@ -308,7 +315,7 @@ pub mod styles {
 #[cfg(feature = "termcolor")]
 impl<T> super::renderer::WriteStyle for T
 where
-    T: termcolor::WriteColor,
+    T: termcolor::WriteColor + ?Sized,
 {
     fn set_header(
         &mut self,
@@ -416,6 +423,7 @@ impl Default for Chars {
 
 impl Chars {
     /// A character set that uses Unicode box drawing characters.
+    #[must_use]
     pub fn box_drawing() -> Chars {
         Chars {
             snippet_start: "┌─".into(),
@@ -446,6 +454,7 @@ impl Chars {
     /// This is useful if your terminal's font does not support box drawing
     /// characters well and results in output that looks similar to rustc's
     /// diagnostic output.
+    #[must_use]
     pub fn ascii() -> Chars {
         Chars {
             snippet_start: "-->".into(),

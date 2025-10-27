@@ -108,6 +108,84 @@ impl<W: GeneralWrite> WriteStyle for PlainWriter<W> {
     }
 }
 
+pub(crate) struct WriteStyleByRef<'a, W: ?Sized> {
+    w: &'a mut W,
+}
+
+impl<'a, W> WriteStyleByRef<'a, W>
+where
+    W: ?Sized,
+{
+    pub fn new(writer: &'a mut W) -> Self {
+        Self { w: writer }
+    }
+}
+
+#[cfg(feature = "std")]
+impl<'a, W> std::io::Write for WriteStyleByRef<'a, W>
+where
+    W: std::io::Write + ?Sized,
+{
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.w.write(buf)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.w.flush()
+    }
+}
+
+#[cfg(not(feature = "std"))]
+impl<'a, W> core::fmt::Write for WriteStyleByRef<'a, W>
+where
+    W: core::fmt::Write + ?Sized,
+{
+    fn write_str(&mut self, s: &str) -> core::fmt::Result {
+        self.w.write_str(s)
+    }
+
+    fn write_char(&mut self, c: char) -> core::fmt::Result {
+        self.w.write_char(c)
+    }
+
+    fn write_fmt(&mut self, args: core::fmt::Arguments<'_>) -> core::fmt::Result {
+        self.w.write_fmt(args)
+    }
+}
+
+impl<'a, W> WriteStyle for WriteStyleByRef<'a, W>
+where
+    W: WriteStyle + ?Sized,
+{
+    fn set_header(&mut self, severity: Severity) -> GeneralWriteResult {
+        self.w.set_header(severity)
+    }
+
+    fn set_header_message(&mut self) -> GeneralWriteResult {
+        self.w.set_header_message()
+    }
+
+    fn set_line_number(&mut self) -> GeneralWriteResult {
+        self.w.set_line_number()
+    }
+
+    fn set_note_bullet(&mut self) -> GeneralWriteResult {
+        self.w.set_note_bullet()
+    }
+
+    fn set_source_border(&mut self) -> GeneralWriteResult {
+        self.w.set_source_border()
+    }
+
+    fn set_label(&mut self, severity: Severity, label_style: LabelStyle) -> GeneralWriteResult {
+        self.w.set_label(severity, label_style)
+    }
+
+    fn reset(&mut self) -> GeneralWriteResult {
+        self.w.reset()
+    }
+}
+
 /// The 'location focus' of a source code snippet.
 pub struct Locus {
     /// The user-facing name of the file.
@@ -524,7 +602,7 @@ impl<'writer, 'config> Renderer<'writer, 'config> {
                 let current_label_style = single_labels
                     .iter()
                     .filter(|(_, range, _)| is_overlapping(range, &column_range))
-                    .map(|(label_style, _, _)| label_style.clone())
+                    .map(|(label_style, _, _)| *label_style)
                     .max_by_key(label_priority_key);
 
                 // Update writer style if necessary
@@ -847,7 +925,7 @@ impl<'writer, 'config> Renderer<'writer, 'config> {
             let column_range = metrics.byte_index..(metrics.byte_index + ch.len_utf8());
             let label_style = hanging_labels(single_labels, trailing_label)
                 .filter(|(_, range, _)| column_range.contains(&range.start))
-                .map(|(label_style, _, _)| label_style.clone())
+                .map(|(label_style, _, _)| *label_style)
                 .max_by_key(label_priority_key);
 
             let mut spaces = match label_style {
@@ -1121,6 +1199,7 @@ fn is_overlapping(range0: &Range<usize>, range1: &Range<usize>) -> bool {
 }
 
 /// For prioritizing primary labels over secondary labels when rendering carets.
+#[allow(clippy::trivially_copy_pass_by_ref)]
 fn label_priority_key(label_style: &LabelStyle) -> u8 {
     match label_style {
         LabelStyle::Secondary => 0,

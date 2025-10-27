@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.67"
 name = "codespan-reporting"
-version = "0.13.0"
+version = "0.13.1"
 authors = ["Brendan Zabarauskas <bjzaba@yahoo.com.au>"]
 build = false
 exclude = ["assets/**"]
@@ -26,6 +26,11 @@ description = "Beautiful diagnostic reporting for text-based programming languag
 homepage = "https://github.com/brendanzab/codespan"
 documentation = "https://docs.rs/codespan-reporting"
 readme = "README.md"
+keywords = ["diagnostic-reporting"]
+categories = [
+    "compilers",
+    "command-line-interface",
+]
 license = "Apache-2.0"
 repository = "https://github.com/brendanzab/codespan"
 

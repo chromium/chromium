@@ -31,7 +31,7 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "Beautiful diagnostic reporting for text-based programming languages"
   cargo_pkg_repository = "https://github.com/brendanzab/codespan"
-  cargo_pkg_version = "0.13.0"
+  cargo_pkg_version = "0.13.1"
 
   allow_unsafe = false
 
