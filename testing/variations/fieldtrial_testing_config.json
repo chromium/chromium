@@ -11127,7 +11127,7 @@
             ]
         }
     ],
-    "ForceMigrateSyncingUserToSignedIn": [
+    "ForceMigrateSyncingUserToSignedInAndroid": [
         {
             "platforms": [
                 "android"
