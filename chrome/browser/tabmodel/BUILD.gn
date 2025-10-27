@@ -9,6 +9,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.tabmodel"
 
   sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AccumulatingTabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountSupplier.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabModelSelectorHolder.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabCreationParams.java",
@@ -119,6 +120,7 @@ android_library_factory("factory_java") {
 
 robolectric_library("junit") {
   sources = [
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AccumulatingTabCreatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountSupplierUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabGroupModelFilterImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/MultiTabMetadataUnitTest.java",
