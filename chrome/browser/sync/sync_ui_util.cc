@@ -98,23 +98,59 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
           SyncStatusActionType::kNoAction};
 }
 
+int GetSyncErrorButtonStringId(syncer::SyncService::UserActionableError error,
+                               bool support_title_case) {
+  switch (error) {
+    case syncer::SyncService::UserActionableError::kNone:
+      NOTREACHED();
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      return support_title_case
+                 ? IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON_MAYBE_TITLE_CASE
+                 : IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON;
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      return support_title_case
+                 ? IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON_MAYBE_TITLE_CASE
+                 : IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON;
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
+      // "Update Chrome" is already capitalized, no need for extra title casing.
+      return IDS_SYNC_UPGRADE_CLIENT_BUTTON;
+    case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
+      return support_title_case
+                 ? IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON_MAYBE_TITLE_CASE
+                 : IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON;
+    case syncer::SyncService::UserActionableError::kUnrecoverableError:
+      // Only shown for "Sync-the-feature".
+      return support_title_case ? IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE
+                                : IDS_SYNC_RELOGIN_BUTTON;
+  }
+}
+
 SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
     Profile* profile,
     syncer::SyncService::UserActionableError error) {
+  const int button_string_id =
+      GetSyncErrorButtonStringId(error, /*support_title_case=*/false);
   switch (error) {
     case syncer::SyncService::UserActionableError::kNone:
       NOTREACHED();
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
-              IDS_SYNC_RELOGIN_BUTTON, IDS_SYNC_EMPTY_STRING,
+              button_string_id, IDS_SYNC_EMPTY_STRING,
               SyncStatusActionType::kReauthenticate};
 
     case syncer::SyncService::UserActionableError::
         kNeedsTrustedVaultKeyForPasswords:
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
               IDS_SETTINGS_ERROR_PASSWORDS_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
-              IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+              button_string_id, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case syncer::SyncService::UserActionableError::
@@ -122,13 +158,13 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
       return {
           SyncStatusMessageType::kPasswordsOnlySyncError,
           IDS_SETTINGS_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_ERROR_DESCRIPTION,
-          IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+          button_string_id, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
           SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL,
-              IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON,
+              button_string_id,
               base::FeatureList::IsEnabled(
                   syncer::kReplaceSyncPromosWithSignInPromos)
                   ? IDS_SETTINGS_PEOPLE_SIGN_OUT
@@ -141,20 +177,18 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
         kNeedsTrustedVaultKeyForEverything:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_TRUSTED_VAULT_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
-              IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+              button_string_id, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       return {SyncStatusMessageType::kSyncError,
               IDS_SETTINGS_ERROR_UPGRADE_CLIENT_USER_ERROR_DESCRIPTION,
-              IDS_SYNC_UPGRADE_CLIENT_BUTTON, IDS_SETTINGS_SIGN_OUT,
+              button_string_id, IDS_SETTINGS_SIGN_OUT,
               SyncStatusActionType::kUpgradeClient};
 
     case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
       return {SyncStatusMessageType::kSyncError,
-              IDS_SYNC_SETTINGS_NOT_CONFIRMED,
-              IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
+              IDS_SYNC_SETTINGS_NOT_CONFIRMED, button_string_id,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kConfirmSyncSettings};
 
@@ -164,11 +198,11 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
                ->IsClearPrimaryAccountAllowed()) {
         return {SyncStatusMessageType::kSyncError,
                 IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
-                IDS_SYNC_RELOGIN_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+                button_string_id, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
                 SyncStatusActionType::kReauthenticate};
       }
       return {SyncStatusMessageType::kSyncError,
-              IDS_SYNC_STATUS_UNRECOVERABLE_ERROR, IDS_SYNC_RELOGIN_BUTTON,
+              IDS_SYNC_STATUS_UNRECOVERABLE_ERROR, button_string_id,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kReauthenticate};
   }

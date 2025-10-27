@@ -64,6 +64,12 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
     const syncer::SyncService* service);
 
 // `error` must not be `kNone`.
+// If `support_title_case` is true, the string may be capitalized depending on
+// platform and language. If false, sentence casing is used.
+int GetSyncErrorButtonStringId(syncer::SyncService::UserActionableError error,
+                               bool support_title_case);
+
+// `error` must not be `kNone`.
 SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
     Profile* profile,
     syncer::SyncService::UserActionableError error);

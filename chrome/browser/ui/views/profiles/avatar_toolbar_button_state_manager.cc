@@ -1192,6 +1192,12 @@ class SyncErrorBaseStateProvider : public StateProvider,
            HasError(last_avatar_error_);
   }
 
+  std::u16string GetText() const override {
+    CHECK(GetLastAvatarSyncError().has_value());
+    return l10n_util::GetStringUTF16(GetSyncErrorButtonStringId(
+        GetLastAvatarSyncError()->avatar_error, /*support_title_case=*/true));
+  }
+
   std::optional<SkColor> GetHighlightColor(
       const ui::ColorProvider& color_provider) const override {
     return color_provider.GetColor(kColorAvatarButtonHighlightSyncPaused);
@@ -1331,11 +1337,6 @@ class UpgradeClientErrorStateProvider : public SyncErrorBaseStateProvider {
             syncer::SyncService::UserActionableError::kNeedsClientUpgrade) {}
 
   ~UpgradeClientErrorStateProvider() override = default;
-
-  // StateProvider:
-  std::u16string GetText() const override {
-    return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
-  }
 };
 
 class PassphraseErrorStateProvider : public SyncErrorBaseStateProvider {
@@ -1348,12 +1349,6 @@ class PassphraseErrorStateProvider : public SyncErrorBaseStateProvider {
             syncer::SyncService::UserActionableError::kNeedsPassphrase) {}
 
   ~PassphraseErrorStateProvider() override = default;
-
-  // StateProvider:
-  std::u16string GetText() const override {
-    return l10n_util::GetStringUTF16(
-        IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON);
-  }
 };
 
 class GenericSyncErrorStateProvider : public SyncErrorBaseStateProvider {

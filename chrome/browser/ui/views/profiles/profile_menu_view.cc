@@ -122,41 +122,23 @@ namespace {
 std::u16string GetSyncErrorButtonText(
     Profile* profile,
     syncer::SyncService::UserActionableError error) {
-  switch (error) {
-    case syncer::SyncService::UserActionableError::kUnrecoverableError:
-      if (!ChromeSigninClientFactory::GetForProfile(profile)
-               ->IsClearPrimaryAccountAllowed()) {
-        // As opposed to the corresponding error in an unmanaged account,
-        // sign-out hasn't happened here yet. The button directs to the sign-out
-        // confirmation dialog in settings.
-        return l10n_util::GetStringUTF16(
-            IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
-      }
-      [[fallthrough]];
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      // The user was signed out. Offer them to sign in again.
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON);
-    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON);
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForEverything:
-    case syncer::SyncService::UserActionableError::
-        kNeedsTrustedVaultKeyForPasswords:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything:
-    case syncer::SyncService::UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForPasswords:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON);
-    case syncer::SyncService::UserActionableError::kNeedsSettingsConfirmation:
-      return l10n_util::GetStringUTF16(
-          IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
-    case syncer::SyncService::UserActionableError::kNone:
-      NOTREACHED();
+  if (error == syncer::SyncService::UserActionableError::kUnrecoverableError &&
+      !ChromeSigninClientFactory::GetForProfile(profile)
+           ->IsClearPrimaryAccountAllowed()) {
+    // Only shown for "Sync-the-feature".
+    return l10n_util::GetStringUTF16(
+        IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON_MAYBE_TITLE_CASE);
   }
+
+  if (error == syncer::SyncService::UserActionableError::kSignInNeedsUpdate &&
+      IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSync)) {
+    // Only shown for "Sync-the-feature".
+    return l10n_util::GetStringUTF16(IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE);
+  }
+
+  return l10n_util::GetStringUTF16(
+      GetSyncErrorButtonStringId(error, /*support_title_case=*/true));
 }
 
 std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
@@ -860,8 +842,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       params.subtitle = l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PENDING_STATE_DESCRIPTION,
           base::UTF8ToUTF16(primary_account_info.email));
-      params.button_text =
-          l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
+      params.button_text = l10n_util::GetStringUTF16(GetSyncErrorButtonStringId(
+          syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
+          /*support_title_case=*/true));
       params.has_dotted_ring = true;
       break;
     case signin_util::SignedInState::kSyncPaused:
