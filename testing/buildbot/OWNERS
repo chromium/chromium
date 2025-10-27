@@ -18,8 +18,8 @@ per-file *.pyl=*
 # LINT.IfChange(chromium_tests)
 
 # For Android related reviews
-per-file chromium.android.*=zhiyuans@google.com
 per-file chromium.android.*=wnwen@chromium.org
+per-file chromium.fyi.*=wnwen@chromium.org
 
 # For Lacros skylab tests cros image roller related reviews
 per-file chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
