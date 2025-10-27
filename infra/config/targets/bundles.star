@@ -338,7 +338,6 @@ targets.bundle(
 targets.bundle(
     name = "android_ar_gtests",
     targets = [
-        "monochrome_public_test_ar_apk",
         # Name is vr_*, but actually has AR tests.
         "vr_android_unittests",
     ],
@@ -726,19 +725,10 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_monochrome_smoke_tests",
-    targets = [
-        "monochrome_public_bundle_smoke_test",
-        "monochrome_public_smoke_test",
-    ],
-)
-
-targets.bundle(
     name = "android_oreo_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_emulator_specific_network_enabled_content_browsertests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
         "chromium_gtests",
@@ -756,7 +746,6 @@ targets.bundle(
     targets = [
         "android_ar_gtests",
         "vr_android_specific_chromium_tests",
-        "android_monochrome_smoke_tests",
         "android_oreo_standard_gtests",
         "android_smoke_tests",
     ],
@@ -789,7 +778,6 @@ targets.bundle(
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_emulator_specific_network_enabled_content_browsertests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
         "chromium_gtests",
@@ -807,7 +795,6 @@ targets.bundle(
     targets = [
         "android_ar_gtests",
         "vr_android_specific_chromium_tests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "chromium_tracing_gtests",
         "android_pie_standard_gtests",
@@ -823,7 +810,6 @@ targets.bundle(
     name = "android_pie_rel_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chromium_gtests",
@@ -842,7 +828,6 @@ targets.bundle(
         # TODO(crbug.com/40142574): Deprecate this when all the test suites below
         # it are re-enabled.
         "android_pie_rel_reduced_capacity_gtests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         # "android_specific_chromium_gtests",  # Already includes gl_gtests.
         # "chromium_gtests",
@@ -6213,35 +6198,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "monochrome_public_apk_checker_isolated_script",
-    targets = [
-        "monochrome_public_apk_checker",
-    ],
-    per_test_modifications = {
-        "monochrome_public_apk_checker": targets.per_test_modification(
-            mixins = targets.mixin(
-                swarming = targets.swarming(
-                    dimensions = {
-                        "os": "Ubuntu-22.04",
-                        "cpu": "x86-64",
-                        "device_os": None,
-                        "device_os_flavor": None,
-                        "device_playstore_version": None,
-                        "device_type": None,
-                    },
-                ),
-            ),
-            remove_mixins = [
-                "chromium_nexus_5x_oreo",
-                "chromium_pixel_2_pie",
-                "marshmallow",
-                "oreo_mr1_fleet",
-            ],
-        ),
-    },
-)
-
-targets.bundle(
     name = "network_service_extra_gtests",
     targets = [
         "network_service_fyi_gtests",
@@ -6327,18 +6283,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "oreo_isolated_scripts",
-    targets = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
-)
-
-targets.bundle(
     name = "perfetto_gtests",
     targets = [
         "base_unittests",
@@ -6418,7 +6362,6 @@ targets.bundle(
         "android_isolated_scripts",
         "chromium_junit_tests_scripts",
         "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
         "telemetry_android_minidump_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts_android",
     ],
