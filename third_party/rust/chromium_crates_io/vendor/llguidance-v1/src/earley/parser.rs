@@ -132,7 +132,7 @@ impl XorShift {
     }
 
     pub fn one_in(&mut self, n: u32) -> bool {
-        self.next() % n == 0
+        self.next().is_multiple_of(n)
     }
 
     pub fn next_alt(&mut self) -> u32 {
@@ -1611,7 +1611,10 @@ impl ParserState {
 
         let curr = self.lexer_state();
 
-        let res = if byte.is_none() {
+        let res = if let Some(b) = byte {
+            self.stats.definitive_bytes += 1;
+            self.lexer_mut().advance(curr.lexer_state, b, true)
+        } else {
             let lexeme = self.lexer_mut().force_lexeme_end(curr.lexer_state);
             if lexeme.is_error() {
                 debug!(
@@ -1620,10 +1623,6 @@ impl ParserState {
                 );
             }
             lexeme
-        } else {
-            self.stats.definitive_bytes += 1;
-            self.lexer_mut()
-                .advance(curr.lexer_state, byte.unwrap(), true)
         };
 
         if res.is_error() {

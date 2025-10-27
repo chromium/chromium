@@ -674,7 +674,7 @@ impl RegexVec {
         // if lst.len() == 0 {
         //     return StateID::DEAD;
         // }
-        assert!(lst.len() % 2 == 0);
+        assert!(lst.len().is_multiple_of(2));
         let id = StateID::new(self.rx_sets.insert(&lst));
         if id.as_usize() >= self.state_descs.len() {
             let state_desc = self.compute_state_desc(id);

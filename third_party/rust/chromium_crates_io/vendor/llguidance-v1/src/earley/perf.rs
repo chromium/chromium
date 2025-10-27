@@ -140,7 +140,7 @@ pub fn num_with_commas(x: usize) -> String {
 
     for (i, c) in s.chars().enumerate() {
         // Insert a comma once we've passed 'offset' and every 3 digits after that.
-        if i != 0 && i >= offset && (i - offset) % 3 == 0 {
+        if i != 0 && i >= offset && (i - offset).is_multiple_of(3) {
             result.push(',');
         }
         result.push(c);

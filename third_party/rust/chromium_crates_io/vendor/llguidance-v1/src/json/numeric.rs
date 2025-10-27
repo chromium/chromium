@@ -19,7 +19,7 @@ impl Decimal {
         // reduce to simplest form
         let mut coef = coef;
         let mut exp = exp;
-        while exp > 0 && coef % 10 == 0 {
+        while exp > 0 && coef.is_multiple_of(10) {
             coef /= 10;
             exp -= 1;
         }

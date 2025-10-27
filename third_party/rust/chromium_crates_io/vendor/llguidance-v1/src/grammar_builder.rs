@@ -233,6 +233,9 @@ impl GrammarBuilder {
         if options.no_forcing {
             self.regex.spec.no_forcing = true;
         }
+        if options.allow_initial_skip {
+            self.regex.spec.allow_initial_skip = true;
+        }
 
         // add root node
         self.curr_start_idx = self.new_node("start");

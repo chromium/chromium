@@ -1322,7 +1322,7 @@ impl CGrammar {
                 outp.rhs_elements.push(CSymIdx::NULL);
                 outp.rhs_params.push(ParamExpr::Null);
             }
-            while outp.rhs_elements.len() % (1 << RULE_SHIFT) != 0 {
+            while !outp.rhs_elements.len().is_multiple_of(1 << RULE_SHIFT) {
                 outp.rhs_elements.push(CSymIdx::NULL);
                 outp.rhs_params.push(ParamExpr::Null);
             }
