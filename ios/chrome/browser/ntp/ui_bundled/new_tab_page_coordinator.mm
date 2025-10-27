@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
@@ -551,7 +550,7 @@
 - (void)didNavigateToNTPInWebState:(web::WebState*)webState {
   CHECK(self.started);
   self.webState = webState;
-  [self restoreNTPState];
+  [self restoreNTPScrollPosition];
   [self updateNTPIsVisible:YES];
   [self updateStartForVisibilityChange:YES];
   [self.toolbarDelegate didNavigateToNTPOnActiveWebState];
@@ -560,7 +559,7 @@
 - (void)didNavigateAwayFromNTP {
   [self cancelOmniboxEdit];
   [self dismissCustomizationMenu];
-  [self.NTPMediator saveNTPStateForWebState:self.webState];
+  [self.NTPMediator saveNTPScrollPositionForWebState:self.webState];
   [self updateNTPIsVisible:NO];
   [self updateStartForVisibilityChange:NO];
   self.webState = nullptr;
@@ -1685,10 +1684,10 @@
   [handler showSnackbarMessage:message];
 }
 
-// Restores the saved state of the NTP associated with `self.webState` if
-// necessary.
-- (void)restoreNTPState {
-  [self.NTPMediator restoreNTPStateForWebState:self.webState];
+// Restores the saved scroll position of the NTP associated with `self.webState`
+// if necessary.
+- (void)restoreNTPScrollPosition {
+  [self.NTPMediator restoreNTPScrollPositionForWebState:self.webState];
 }
 
 // Opens the Home customization menu at a specific `page`.

@@ -40,7 +40,6 @@ class HomeBackgroundCustomizationService;
 @protocol NewTabPageConsumer;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
-@class NewTabPageState;
 class PlaceholderService;
 class PrefService;
 class ProfileIOS;
@@ -115,11 +114,11 @@ class UserUploadedImageManager;
 // Cleans the mediator.
 - (void)shutdown;
 
-// Saves the current state of the NTP.
-- (void)saveNTPStateForWebState:(web::WebState*)webState;
+// Saves the current scroll position of the NTP.
+- (void)saveNTPScrollPositionForWebState:(web::WebState*)webState;
 
-// Restores the current state of the NTP.
-- (void)restoreNTPStateForWebState:(web::WebState*)webState;
+// Restores the current scroll position of the NTP.
+- (void)restoreNTPScrollPositionForWebState:(web::WebState*)webState;
 
 // Update the background of the NTP.
 - (void)updateBackground;

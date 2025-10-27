@@ -386,10 +386,11 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
       std::make_unique<ScopedBlockSwizzler>(
           [NewTabPageCoordinator class], @selector(configureNTPViewController),
           swizzle_block);
-  // Swizzle out `-restoreNTPState` to prevent NTP VC's view from being loaded.
-  std::unique_ptr<ScopedBlockSwizzler> restoreNTPStateSwizzler =
+  // Swizzle out `-restoreNTPScrollPosition` to prevent NTP VC's view from being
+  // loaded.
+  std::unique_ptr<ScopedBlockSwizzler> restoreNTPScrollPositionSwizzler =
       std::make_unique<ScopedBlockSwizzler>([NewTabPageCoordinator class],
-                                            @selector(restoreNTPState),
+                                            @selector(restoreNTPScrollPosition),
                                             swizzle_block);
   // Swizzle out the mediator's setUp method to prevent more VC loading.
   std::unique_ptr<ScopedBlockSwizzler> mediator_swizzler =

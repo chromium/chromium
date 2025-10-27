@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
@@ -407,23 +406,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   base::UmaHistogramBoolean("IOS.NTP.LandscapeMode", _wasNTPInLandscape);
 }
 
-- (void)saveNTPStateForWebState:(web::WebState*)webState {
-  NewTabPageState* NTPState = [[NewTabPageState alloc]
-      initWithScrollPosition:self.scrollPositionToSave];
-  NewTabPageTabHelper::FromWebState(webState)->SetNTPState(NTPState);
+- (void)saveNTPScrollPositionForWebState:(web::WebState*)webState {
+  NewTabPageTabHelper::FromWebState(webState)->SetNTPScrollPosition(
+      self.scrollPositionToSave);
 }
 
-- (void)restoreNTPStateForWebState:(web::WebState*)webState {
-  NewTabPageState* NTPState =
-      NewTabPageTabHelper::FromWebState(webState)->GetNTPState();
-  if (NTPState.shouldScrollToTopOfFeed) {
-    [self.consumer restoreScrollPositionToTopOfFeed];
-    // Prevent next NTP from being scrolled to the top of feed.
-    NTPState.shouldScrollToTopOfFeed = NO;
-    NewTabPageTabHelper::FromWebState(webState)->SetNTPState(NTPState);
-  } else {
-    [self.consumer restoreScrollPosition:NTPState.scrollPosition];
-  }
+- (void)restoreNTPScrollPositionForWebState:(web::WebState*)webState {
+  [self.consumer
+      restoreScrollPosition:NewTabPageTabHelper::FromWebState(webState)
+                                ->GetNTPScrollPosition()];
 }
 
 - (void)setPlaceholderService:(PlaceholderService*)placeholderService {
