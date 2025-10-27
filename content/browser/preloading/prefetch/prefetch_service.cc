@@ -915,7 +915,6 @@ void PrefetchService::OnGotServiceWorkerResult(
     std::move(params).Finish(PreloadingEligibility::kEligible);
     return;
   }
-  CHECK(prefetch_container);
   if (auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
           prefetch_container->request().attempt())) {
     const auto duration =
