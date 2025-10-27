@@ -247,6 +247,12 @@
   }
 
   if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+    // When viewing the NTP in portrait orientation, deviate from the standard
+    // steady-state behavior and apply the preferred omnibox position.
+    if (_isNTP && !IsCompactHeight(_toolbarTraitCollection)) {
+      return _preferredOmniboxPosition;
+    }
+
     return steadyState;
   }
 
