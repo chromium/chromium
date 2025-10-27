@@ -139,6 +139,13 @@ MediaQuerySet* MediaQueryParser::ParseMediaCondition(
       .ParseImpl(stream);
 }
 
+MediaQuerySet* MediaQueryParser::ParseCustomMediaDefinition(
+    CSSParserTokenStream& stream,
+    ExecutionContext* execution_context) {
+  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+  return ParseMediaQuerySet(stream, execution_context);
+}
+
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
                                    ExecutionContext* execution_context)
     : parser_type_(parser_type),

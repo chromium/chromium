@@ -1440,7 +1440,6 @@ TEST(CSSParserImplTest, UnexpectedTokenInVar_IdentFunctionDisabled) {
 
 TEST(CSSParserImplTest, CustomMediaBoolValueValid) {
   CSSParserTokenStream stream("@custom-media --true-val true;");
-  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
   TestCSSParserImpl parser;
   const StyleRuleCustomMedia* rule =
       DynamicTo<StyleRuleCustomMedia>(parser.ConsumeAtRule(stream));
@@ -1451,9 +1450,20 @@ TEST(CSSParserImplTest, CustomMediaBoolValueValid) {
   EXPECT_TRUE(rule->GetBooleanValue());
 }
 
+TEST(CSSParserImplTest, CustomMediaBoolValueValidWithoutSemicolon) {
+  CSSParserTokenStream stream("@custom-media --false-val false");
+  TestCSSParserImpl parser;
+  const StyleRuleCustomMedia* rule =
+      DynamicTo<StyleRuleCustomMedia>(parser.ConsumeAtRule(stream));
+
+  EXPECT_TRUE(rule);
+  EXPECT_TRUE(stream.AtEnd());
+  EXPECT_EQ(rule->GetName(), "--false-val");
+  EXPECT_FALSE(rule->GetBooleanValue());
+}
+
 TEST(CSSParserImplTest, CustomMediaBoolValueInvalid) {
   CSSParserTokenStream stream("@custom-media --false-val false f;");
-  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
   TestCSSParserImpl parser;
   const StyleRuleCustomMedia* rule =
       DynamicTo<StyleRuleCustomMedia>(parser.ConsumeAtRule(stream));
@@ -1463,8 +1473,7 @@ TEST(CSSParserImplTest, CustomMediaBoolValueInvalid) {
 }
 
 TEST(CSSParserImplTest, CustomMediaQueryValueValid) {
-  CSSParserTokenStream stream("@custom-media --query (min-width > 300px)");
-  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+  CSSParserTokenStream stream("@custom-media --query (min-width > 300px);");
   TestCSSParserImpl parser;
   const StyleRuleCustomMedia* rule =
       DynamicTo<StyleRuleCustomMedia>(parser.ConsumeAtRule(stream));
@@ -1475,9 +1484,20 @@ TEST(CSSParserImplTest, CustomMediaQueryValueValid) {
   EXPECT_EQ(rule->GetMediaQueryValue()->MediaText(), "(min-width > 300px)");
 }
 
+TEST(CSSParserImplTest, CustomMediaQueryValueValidWithoutSemicolon) {
+  CSSParserTokenStream stream("@custom-media --query (screen)");
+  TestCSSParserImpl parser;
+  const StyleRuleCustomMedia* rule =
+      DynamicTo<StyleRuleCustomMedia>(parser.ConsumeAtRule(stream));
+
+  EXPECT_TRUE(rule);
+  EXPECT_TRUE(stream.AtEnd());
+  EXPECT_EQ(rule->GetName(), "--query");
+  EXPECT_EQ(rule->GetMediaQueryValue()->MediaText(), "(screen)");
+}
+
 TEST(CSSParserImplTest, CustomMediaQueryValueInvalid) {
-  CSSParserTokenStream stream("@custom-media --query invalid !");
-  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
+  CSSParserTokenStream stream("@custom-media --query invalid !;");
   TestCSSParserImpl parser;
   const StyleRuleCustomMedia* rule =
       DynamicTo<StyleRuleCustomMedia>(parser.ConsumeAtRule(stream));

@@ -33,6 +33,14 @@ class CORE_EXPORT MediaQueryParser {
                                            ExecutionContext*);
   static MediaQuerySet* ParseMediaCondition(CSSParserTokenStream&,
                                             ExecutionContext*);
+  // Parses the `<media-query-list>` part of a `@custom-media` rule.
+  // https://drafts.csswg.org/mediaqueries-5/#at-ruledef-custom-media
+  //
+  // Parsing stops at the first top-level semicolon (i.e., not inside a
+  // parenthesized expression) or at the end of the stream, whichever comes
+  // first.
+  static MediaQuerySet* ParseCustomMediaDefinition(CSSParserTokenStream&,
+                                                   ExecutionContext*);
 
   // Passed to ConsumeFeature to determine which features are allowed.
   class FeatureSet {

@@ -2803,7 +2803,6 @@ std::optional<bool> GetBooleanValue(const CSSParserToken& token) {
 
 StyleRuleCustomMedia* CSSParserImpl::ConsumeCustomMediaRule(
     CSSParserTokenStream& stream) {
-  CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
   const CSSParserToken& name_token = stream.Peek();
   if (!IsValidExtensionName(name_token)) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
@@ -2815,22 +2814,22 @@ StyleRuleCustomMedia* CSSParserImpl::ConsumeCustomMediaRule(
   std::optional<bool> bool_val = GetBooleanValue(stream.Peek());
   if (bool_val.has_value()) {
     stream.ConsumeIncludingWhitespace();
-    if (!stream.AtEnd()) {
-      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
+    if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(
+            stream, CSSAtRuleID::kCSSAtRuleCustomMedia)) {
       return nullptr;
     }
     return MakeGarbageCollected<StyleRuleCustomMedia>(
         StyleRuleCustomMedia(AtomicString(name), *bool_val));
   }
 
-  MediaQuerySet* media_query_set = MediaQueryParser::ParseMediaQuerySet(
+  MediaQuerySet* media_query_set = MediaQueryParser::ParseCustomMediaDefinition(
       stream, context_->GetExecutionContext());
   if (!media_query_set) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
     return nullptr;
   }
-  if (!stream.AtEnd()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleCustomMedia);
+  if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(
+          stream, CSSAtRuleID::kCSSAtRuleCustomMedia)) {
     return nullptr;
   }
   return MakeGarbageCollected<StyleRuleCustomMedia>(
