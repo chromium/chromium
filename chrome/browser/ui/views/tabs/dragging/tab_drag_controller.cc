@@ -468,9 +468,9 @@ TabDragController::Liveness TabDragController::Init(
   // Listen for Esc key presses and mouse releases.
   ref->event_tracker_ = std::make_unique<EventTracker>(
       base::BindOnce(&TabDragController::EndDrag, base::Unretained(this),
-                     END_DRAG_COMPLETE),
+                     EndDragReason::kComplete),
       base::BindOnce(&TabDragController::EndDrag, base::Unretained(this),
-                     END_DRAG_CANCEL),
+                     EndDragReason::kCancel),
       ref->source_context_->GetWidget()->GetNativeWindow());
 
   if (source_view->width() > 0) {
@@ -560,7 +560,7 @@ void TabDragController::OnSystemDnDEnded() {
   // drag might put us in an infinite loop of being notified about the drag end,
   // requesting to cancel the drag, being notified again, and so on.
   g_tab_drag_controller->system_drag_and_drop_session_running_ = false;
-  g_tab_drag_controller->EndDrag(END_DRAG_COMPLETE);
+  g_tab_drag_controller->EndDrag(EndDragReason::kComplete);
 }
 
 // static
@@ -579,7 +579,7 @@ void TabDragController::TabWasAdded() {
   // called means a tab was added to the source window of the drag. We don't
   // need to cancel the drag in that case.
   if (current_state_ == DragState::kDraggingWindow && !is_mutating_) {
-    EndDrag(END_DRAG_COMPLETE);
+    EndDrag(EndDragReason::kComplete);
   }
 }
 
@@ -587,7 +587,7 @@ void TabDragController::OnTabWillBeRemoved(content::WebContents* contents) {
   // End the drag before we remove a tab that's being dragged, to avoid
   // complex special cases that could result.
   if (!CanRemoveTabDuringDrag(contents)) {
-    EndDrag(END_DRAG_COMPLETE);
+    EndDrag(EndDragReason::kComplete);
   }
 }
 
@@ -635,7 +635,7 @@ TabDragController::Liveness TabDragController::Drag(
     // If any of the tabs have disappeared (e.g. closed or discarded), cancel
     // the drag session. See crbug.com/1445776.
     if (GetViewsMatchingDraggedContents(source_context_).empty()) {
-      EndDrag(END_DRAG_CANCEL);
+      EndDrag(EndDragReason::kCancel);
       return Liveness::DELETED;
     }
 
@@ -688,7 +688,7 @@ void TabDragController::EndDrag(EndDragReason reason) {
 
   // Some drags need to react to the model being mutated before the model can
   // change its state.
-  if (reason == END_DRAG_MODEL_ADDED_TAB) {
+  if (reason == EndDragReason::kModelAddedTab) {
     // If a group is being dragged, we must place the
     // drag at the current position in the tabstrip or else we will be
     // re-entering into tabstrip mutation code.
@@ -709,13 +709,13 @@ void TabDragController::EndDrag(EndDragReason reason) {
   // If we're dragging a window ignore capture lost since it'll ultimately
   // trigger the move loop to end and we'll revert the drag when RunMoveLoop()
   // finishes.
-  if (reason == END_DRAG_CAPTURE_LOST &&
+  if (reason == EndDragReason::kCaptureLost &&
       current_state_ == DragState::kDraggingWindow) {
     return;
   }
 
   // We always lose capture when hiding `attached_context_`, just ignore it.
-  if (reason == END_DRAG_CAPTURE_LOST &&
+  if (reason == EndDragReason::kCaptureLost &&
       current_state_ == DragState::kDraggingUsingSystemDnD) {
     return;
   }
@@ -727,8 +727,8 @@ void TabDragController::EndDrag(EndDragReason reason) {
     GetAttachedBrowserWidget()->EndMoveLoop();
   }
 
-  EndDragImpl(reason != END_DRAG_COMPLETE && source_context_ ? CANCELED
-                                                             : NORMAL);
+  EndDragImpl(reason != EndDragReason::kComplete && source_context_ ? CANCELED
+                                                                    : NORMAL);
 }
 
 void TabDragController::SetDragLoopDoneCallbackForTesting(
@@ -1172,7 +1172,7 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
   // to end the drag session ourselves.
   if (ref && current_state_ == DragState::kDraggingUsingSystemDnD) {
     VLOG(1) << __func__ << " Ending drag";
-    EndDrag(END_DRAG_COMPLETE);
+    EndDrag(EndDragReason::kComplete);
   }
 
   if (drag_loop_done_callback) {
@@ -1672,8 +1672,8 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
     tab_strip_to_attach_to_after_exit_ = nullptr;
   } else if (current_state_ == DragState::kDraggingWindow) {
     EndDrag(result == views::Widget::MoveLoopResult::kCanceled
-                ? END_DRAG_CANCEL
-                : END_DRAG_COMPLETE);
+                ? EndDragReason::kCancel
+                : EndDragReason::kComplete);
     return Liveness::DELETED;
   }
 

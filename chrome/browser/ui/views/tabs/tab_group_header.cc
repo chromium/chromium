@@ -257,7 +257,7 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
     }
   }
 
-  tab_slot_controller_->EndDrag(END_DRAG_COMPLETE);
+  tab_slot_controller_->EndDrag(EndDragReason::kComplete);
 }
 
 void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {

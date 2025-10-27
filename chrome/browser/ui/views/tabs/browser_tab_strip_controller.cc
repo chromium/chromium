@@ -905,7 +905,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
 }
 
 void BrowserTabStripController::OnTabWillBeAdded() {
-  tabstrip_->EndDrag(EndDragReason::END_DRAG_MODEL_ADDED_TAB);
+  tabstrip_->EndDrag(EndDragReason::kModelAddedTab);
 }
 
 void BrowserTabStripController::OnTabWillBeRemoved(

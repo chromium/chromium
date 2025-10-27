@@ -609,7 +609,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
   // In some cases, ending the drag will schedule the tab for destruction; if
   // so, bail immediately, since our members are already dead and we shouldn't
   // do anything else except drop the tab where it is.
-  if (controller_->EndDrag(END_DRAG_COMPLETE)) {
+  if (controller_->EndDrag(EndDragReason::kComplete)) {
     shift_pressed_on_mouse_down_ = false;
     return;
   }
@@ -649,7 +649,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void Tab::OnMouseCaptureLost() {
-  controller_->EndDrag(END_DRAG_CAPTURE_LOST);
+  controller_->EndDrag(EndDragReason::kCaptureLost);
 }
 
 void Tab::OnMouseMoved(const ui::MouseEvent& event) {

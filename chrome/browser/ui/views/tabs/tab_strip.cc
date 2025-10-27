@@ -198,11 +198,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     if (TabDragController::IsSystemDnDSessionRunning()) {
       TabDragController::OnSystemDnDEnded();
     } else {
-      EndDrag(END_DRAG_COMPLETE);
+      EndDrag(EndDragReason::kComplete);
     }
   }
 
-  void OnMouseCaptureLost() override { EndDrag(END_DRAG_CAPTURE_LOST); }
+  void OnMouseCaptureLost() override { EndDrag(EndDragReason::kCaptureLost); }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     Liveness tabstrip_alive = Liveness::kAlive;
@@ -210,11 +210,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       case ui::EventType::kGestureScrollEnd:
       case ui::EventType::kScrollFlingStart:
       case ui::EventType::kGestureEnd:
-        EndDrag(END_DRAG_COMPLETE);
+        EndDrag(EndDragReason::kComplete);
         break;
 
       case ui::EventType::kGestureLongTap: {
-        EndDrag(END_DRAG_CANCEL);
+        EndDrag(EndDragReason::kCancel);
         break;
       }
 
@@ -224,7 +224,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
         break;
 
       case ui::EventType::kGestureTapDown:
-        EndDrag(END_DRAG_CANCEL);
+        EndDrag(EndDragReason::kCancel);
         break;
 
       default:

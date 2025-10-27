@@ -5,18 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_TYPES_H_
 // Enum passed to EndDrag().
-enum EndDragReason {
+enum class EndDragReason {
   // Complete the drag.
-  END_DRAG_COMPLETE,
+  kComplete,
 
   // Cancel/revert the drag.
-  END_DRAG_CANCEL,
+  kCancel,
 
   // The drag should end as the result of a capture lost.
-  END_DRAG_CAPTURE_LOST,
+  kCaptureLost,
 
   // The model mutated.
-  END_DRAG_MODEL_ADDED_TAB,
+  kModelAddedTab,
 };
 
 // Source of the call to CloseTab().
