@@ -6472,6 +6472,9 @@ crbug.com/1048761 external/wpt/websockets/interfaces/WebSocket/bufferedAmount/bu
 crbug.com/1048761 [ Linux ] external/wpt/websockets/interfaces/WebSocket/send/006.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Win ] external/wpt/websockets/interfaces/WebSocket/send/006.html?wpt_flags=h2 [ Failure ]
 
+# Menu* elements failures
+crbug.com/406566432 external/wpt/html/semantics/menu/tentative/menuitem-activate.html [ Pass Failure ]
+
 # These tests are very flaky and driving up shard retry rates: crbug.com/426959932
 external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ Failure Pass ]
 crbug.com/415323248 crbug.com/415292402 crbug.com/413189476 virtual/fledge-bidding-and-auction-private-aggregation/external/wpt/fledge/tentative/private-aggregation.https.window.js [ Failure Pass Timeout ]
