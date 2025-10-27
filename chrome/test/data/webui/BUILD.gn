@@ -93,6 +93,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/engagement",
       "//chrome/browser/signin:signin_promo",
+      "//chrome/browser/subscription_eligibility",
     ]
 
     if (is_chrome_branded) {

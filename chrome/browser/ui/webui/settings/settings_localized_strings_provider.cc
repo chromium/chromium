@@ -161,6 +161,12 @@
 #include "device/vr/public/cpp/features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#endif
+
 namespace settings {
 namespace {
 
@@ -729,7 +735,46 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-void AddGlicStrings(content::WebUIDataSource* html_source) {
+
+bool ShouldShowWebActuationToggle(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kGlicWebActuationSetting)) {
+    return false;
+  }
+  static const base::NoDestructor<base::flat_set<int32_t>> allowed_tiers([] {
+    std::string allowed_tiers_str =
+        features::kGlicWebActuationAllowedTiers.Get();
+    std::vector<std::string_view> tier_pieces =
+        base::SplitStringPiece(allowed_tiers_str, ",", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    std::vector<int32_t> tiers;
+    tiers.reserve(tier_pieces.size());
+    for (const auto& piece : tier_pieces) {
+      int32_t tier_id = 0;
+      if (base::StringToInt(piece, &tier_id)) {
+        tiers.push_back(tier_id);
+      }
+    }
+    return base::flat_set<int32_t>(std::move(tiers));
+  }());
+
+  if (!allowed_tiers->empty()) {
+    auto* subscription_service = subscription_eligibility::
+        SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+    if (!subscription_service) {
+      return false;
+    }
+    return allowed_tiers->contains(
+        subscription_service->GetAiSubscriptionTier());
+  }
+
+  // If no specific tiers are allowlisted, show the toggle only if the user
+  // has explicitly modified the preference before.
+  const PrefService::Preference* pref = profile->GetPrefs()->FindPreference(
+      glic::prefs::kGlicUserEnabledActuationOnWeb);
+  return pref && !pref->IsDefaultValue();
+}
+
+void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"glicPageTitle", IDS_SETTINGS_GLIC_PAGE_TITLE},
       {"glicSectionTitle", IDS_SETTINGS_GLIC_SECTION_TITLE},
@@ -865,9 +910,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showGlicDefaultTabContextSetting",
       base::FeatureList::IsEnabled(features::kGlicDefaultTabContextSetting));
-  html_source->AddBoolean(
-      "glicWebActuationFeatureEnabled",
-      base::FeatureList::IsEnabled(features::kGlicWebActuationSetting));
+  html_source->AddBoolean("glicWebActuationFeatureEnabled",
+                          ShouldShowWebActuationToggle(profile));
   html_source->AddBoolean("glicActorEnabled",
                           base::FeatureList::IsEnabled(features::kGlicActor));
 }
@@ -3939,7 +3983,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddDownloadsStrings(html_source);
   AddExtensionsStrings(html_source);
 #if BUILDFLAG(ENABLE_GLIC)
-  AddGlicStrings(html_source);
+  AddGlicStrings(html_source, profile);
 #endif
   AddPerformanceStrings(html_source);
   AddLanguagesStrings(html_source, profile);

@@ -755,6 +755,22 @@ suite('GlicSubpage', function() {
   });
 
 
+  suite('WebActuationToggleVisibleForAllowedTier', () => {
+    test('assert toggle is visible', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+    });
+  });
+
+  suite('WebActuationToggleHiddenForDisallowedTier', () => {
+    test('assert toggle is hidden', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertFalse(isVisible(webActuationToggle));
+    });
+  });
+
   suite('DataProtection_UserStatusCheckEnabled', () => {
     test('DataProtectionStringsShownForEligibleUser', () => {
       page.setPrefValue(

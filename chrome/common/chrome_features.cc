@@ -873,7 +873,10 @@ BASE_FEATURE(kActorFormFillingServiceEnableAddress,
 BASE_FEATURE(kActorFormFillingServiceEnableCreditCard,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicWebActuationSetting, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kGlicWebActuationAllowedTiers{
+    &kGlicWebActuationSetting, "allowed_tiers", ""};
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

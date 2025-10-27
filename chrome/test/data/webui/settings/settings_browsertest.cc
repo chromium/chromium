@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/preloading/preloading_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,6 +18,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/permissions/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
@@ -25,6 +27,13 @@
 #include "device/fido/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/toasts/toast_features.h"  // nogncheck
@@ -566,6 +575,11 @@ class SettingsGlicSubPageWebActuationToggleTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures({features::kGlicWebActuationSetting},
                                           /*disabled_features=*/{});
   }
+  void SetUpOnMainThread() override {
+    SettingsBrowserTest::SetUpOnMainThread();
+    GetProfile()->GetPrefs()->SetBoolean(
+        glic::prefs::kGlicUserEnabledActuationOnWeb, false);
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -575,6 +589,43 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
                        SettingsGlicSubPageWebActuationToggleEnabled) {
   RunTest("settings/glic_subpage_test.js",
           "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
+}
+
+class SettingsGlicSubPageWebActuationAllowedTierToggleTest
+    : public SettingsBrowserTest {
+ public:
+  SettingsGlicSubPageWebActuationAllowedTierToggleTest() {
+    // Set the allowed tiers to "100" and "200"
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicWebActuationSetting, {{"allowed_tiers", "100,200"}});
+  }
+
+  void SetUserTier(int32_t tier) {
+    GetProfile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
+                       ToggleVisibleForAllowedTier) {
+  SetUserTier(100);
+  RunTest(
+      "settings/glic_subpage_test.js",
+      "runMochaSuite('GlicSubpage WebActuationToggleVisibleForAllowedTier')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
+                       ToggleHiddenForDisallowedTier) {
+  SetUserTier(999);
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicUserEnabledActuationOnWeb, true);
+
+  RunTest(
+      "settings/glic_subpage_test.js",
+      "runMochaSuite('GlicSubpage WebActuationToggleHiddenForDisallowedTier')");
 }
 
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {
