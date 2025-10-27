@@ -90,7 +90,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
         "src/Source/WebCore/dom/Element.cpp",
         "src/Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp",
         "src/Source/WebKit/NetworkProcess/NetworkProcess.cpp",
-        "src/Tools/CISupport/ews-build/steps_unittest.py",
+        "src/Tools/CISupport/ews-build/factories_unittest.py",
         "src/Source/WebCore/DerivedSources.make",
         "src/Source/WebKit/WebProcess/com.apple.WebProcess.sb.in",
         "src/Source/WebKit/WebProcess/WebPage/ios/WebPageIOS.mm",
