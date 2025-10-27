@@ -54,6 +54,10 @@ namespace content {
 std::string Md5OfPixelsAsHexForWebTests(base::span<const uint8_t> pixels);
 }
 
+namespace content_suggestions_tile_saver {
+std::string Md5AsHexForFaviconUrl(std::string_view url);
+}
+
 namespace devtools {
 std::string Md5OfUrlAsHexForDevTools(std::string_view url);
 }
@@ -193,6 +197,10 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(https://crbug.com/426243026): get rid of this.
   friend class bookmarks::BookmarkCodec;
+
+  // TODO(crbug.com/454958766): get rid of this.
+  friend std::string content_suggestions_tile_saver::Md5AsHexForFaviconUrl(
+      std::string_view url);
 
   // TODO(crbug.com/454363517): get rid of this.
   friend std::string devtools::Md5OfUrlAsHexForDevTools(std::string_view url);
