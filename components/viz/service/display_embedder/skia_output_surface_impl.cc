@@ -1054,7 +1054,6 @@ void SkiaOutputSurfaceImpl::CopyOutput(
             gpu::SharedImageInfo{
                 GetSharedImageFormatFor(request->result_format()),
                 geometry.result_selection.size(), color_space,
-                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
                 CopyOutputResult::kDefaultSharedImageUsage, "CopyOutput"},
             gpu::kNullSurfaceHandle);
 
