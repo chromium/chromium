@@ -29,7 +29,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
@@ -40,6 +39,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;

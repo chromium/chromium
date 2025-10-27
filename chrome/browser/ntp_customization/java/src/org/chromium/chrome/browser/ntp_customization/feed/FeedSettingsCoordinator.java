@@ -13,11 +13,12 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;

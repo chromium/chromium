@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import static android.support.annotation.VisibleForTesting.PACKAGE_PRIVATE;
+import static androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;

@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.view.View;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;

@@ -12,10 +12,10 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
 import android.view.ContextThemeWrapper;
 import android.view.Window;
 
+import androidx.annotation.ColorInt;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 

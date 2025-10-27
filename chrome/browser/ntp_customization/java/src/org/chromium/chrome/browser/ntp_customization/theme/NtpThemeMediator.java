@@ -17,13 +17,13 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.VisibleForTesting;
 import android.util.Pair;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;

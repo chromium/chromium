@@ -20,9 +20,10 @@ import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoo
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;

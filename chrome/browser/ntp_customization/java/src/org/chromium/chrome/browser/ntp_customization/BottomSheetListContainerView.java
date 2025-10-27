@@ -5,12 +5,13 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;

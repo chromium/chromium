@@ -10,12 +10,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.support.annotation.Px;
 import android.view.TouchDelegate;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.build.annotations.NullMarked;

@@ -13,9 +13,9 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.support.annotation.VisibleForTesting;
 import android.widget.ImageView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
 

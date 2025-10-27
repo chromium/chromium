@@ -21,7 +21,7 @@ android_library("third_party_provider_java") {
     "//base:base_java",
     "//base:base_shared_preferences_java",
     "//chrome/browser/preferences:java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 

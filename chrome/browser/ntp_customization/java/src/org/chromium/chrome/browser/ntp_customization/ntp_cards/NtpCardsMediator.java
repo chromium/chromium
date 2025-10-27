@@ -12,8 +12,9 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
 import android.view.View;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.internal.Nullable;
 

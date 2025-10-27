@@ -19,10 +19,11 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
+
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
