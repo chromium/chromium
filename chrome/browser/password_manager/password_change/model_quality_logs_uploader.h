@@ -128,6 +128,7 @@ class ModelQualityLogsUploader {
 #endif
 
  private:
+  const base::Time flow_start_time_;
   optimization_guide::proto::LogAiDataRequest final_log_data_;
   raw_ptr<Profile> profile_;
   base::WeakPtrFactory<ModelQualityLogsUploader> weak_ptr_factory_{this};

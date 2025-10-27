@@ -935,3 +935,21 @@ TEST_F(ModelQualityLogsUploaderTest, RecordLogUnknownPassword) {
       "url.com", LoginPasswordType::LoginAttemptOutcome_PasswordType_UNKNOWN,
       false);
 }
+
+TEST_F(ModelQualityLogsUploaderTest, TotalFlowTimeIsRecorded) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  constexpr int64_t expected_latency_ms = 5;
+  constexpr base::TimeDelta latency = base::Milliseconds(expected_latency_ms);
+  task_environment()->FastForwardBy(latency);
+
+  logs_uploader.UploadFinalLog();
+
+  const std::vector<
+      std::unique_ptr<optimization_guide::proto::LogAiDataRequest>>& logs =
+      mqls_uploader_service()->uploaded_logs();
+  ASSERT_EQ(1u, logs.size());
+  EXPECT_EQ(
+      logs[0]->password_change_submission().quality().total_flow_time_ms(),
+      expected_latency_ms);
+}
