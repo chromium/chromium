@@ -543,20 +543,6 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('TabAccessToggleLearnMoreEnabled', () => {
-    test('tabAccessToggleLearnMoreShown', async () => {
-      const learnMoreElement =
-          page.shadowRoot!.querySelector<HTMLElement>('#tabAccessToggle')!
-              .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
-      assertTrue(!!learnMoreElement);
-      assertEquals(learnMoreElement.href, 'https://google.com/');
-
-      learnMoreElement.click();
-      await assertFeatureInteractionMetrics(
-          AiPageActions.GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
-    });
-  });
-
   suite('ClosedCaptionsToggleEnabled', () => {
     test('ClosedCaptionsToggleFeatureEnabled', () => {
       const closedCaptionsToggle =
@@ -792,8 +778,6 @@ suite('GlicSubpage', function() {
       assertEquals(
           page.i18n('glicTabAccessToggleSublabelDataProtected'),
           tabAccessToggle.subLabel);
-      assertEquals(
-          'https://example.com/data-protection', tabAccessToggle.learnMoreUrl);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
       assertEquals('https://example.com/data-protection', learnMoreLabel.href);
@@ -818,8 +802,6 @@ suite('GlicSubpage', function() {
           $<SettingsToggleButtonElement>('tabAccessToggle')!;
       assertEquals(
           page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
-      assertEquals(
-          'https://example.com/tab-access', tabAccessToggle.learnMoreUrl);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
       assertEquals('https://example.com/tab-access', learnMoreLabel.href);
@@ -846,8 +828,6 @@ suite('GlicSubpage', function() {
           $<SettingsToggleButtonElement>('tabAccessToggle')!;
       assertEquals(
           page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
-      assertEquals(
-          'https://example.com/tab-access', tabAccessToggle.learnMoreUrl);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
       assertEquals('https://example.com/tab-access', learnMoreLabel.href);

@@ -509,29 +509,6 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageLocationToggleLearnMoreTest,
           "runMochaSuite('GlicSubpage LocationToggleLearnMoreEnabled')");
 }
 
-class SettingsGlicSubageTabAccessToggleLearnMoreTest
-    : public SettingsBrowserTest {
- public:
-  SettingsGlicSubageTabAccessToggleLearnMoreTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicLearnMoreURLConfig,
-          {
-              {"glic-shortcuts-tab-access-toggle-learn-more-url",
-               "https://google.com/"},
-          }}},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubageTabAccessToggleLearnMoreTest,
-                       GlicSettingsTabAccessToggleLearnMoreEnabled) {
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage TabAccessToggleLearnMoreEnabled')");
-}
-
 class SettingsGlicSubageClosedCaptionsToggleTest : public SettingsBrowserTest {
  public:
   SettingsGlicSubageClosedCaptionsToggleTest() {
