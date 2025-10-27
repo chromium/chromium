@@ -14707,19 +14707,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SlowNetwork) {
 class V8OptimizerContentBrowserClient
     : public ContentBrowserTestContentBrowserClient {
  public:
-  explicit V8OptimizerContentBrowserClient(bool enable) : enable_(enable) {}
+  explicit V8OptimizerContentBrowserClient(bool disable) : disable_(disable) {}
   ~V8OptimizerContentBrowserClient() override = default;
 
-  bool AreV8OptimizationsEnabledForSite(
-      BrowserContext* browser_context,
-      const std::optional<base::SafeRef<content::ProcessSelectionUserData>>&
-          process_selection_user_data,
-      const GURL& site_url) override {
-    return enable_;
+  bool AreV8OptimizationsDisabledForSite(BrowserContext* browser_context,
+                                         const GURL& site_url) override {
+    return disable_;
   }
 
  public:
-  const bool enable_ = true;
+  const bool disable_ = false;
 };
 
 // Previously, prerendering a page that had the COOP crashed when the V8
@@ -14727,7 +14724,7 @@ class V8OptimizerContentBrowserClient
 // the issue. See https://crbug.com/40076091 for details.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithoutV8Optimizer) {
   // Disable the V8 optimizer.
-  V8OptimizerContentBrowserClient test_browser_client(/*enable=*/false);
+  V8OptimizerContentBrowserClient test_browser_client(/*disable=*/true);
 
   // Attempt to prerender the page that has the COOP.
   const GURL initial_url = GetUrl("/empty.html");
@@ -14751,7 +14748,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithoutV8Optimizer) {
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        PrerenderNonCOOPWithoutV8Optimizer) {
   // Disable the V8 optimizer.
-  V8OptimizerContentBrowserClient test_browser_client(/*enable=*/false);
+  V8OptimizerContentBrowserClient test_browser_client(/*disable=*/true);
 
   const GURL initial_url = GetUrl("/empty.html");
   const GURL prerendering_url = GetUrl("/empty.html?prerender");
@@ -14772,7 +14769,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 // optimizer is enabled.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCOOPWithV8Optimizer) {
   // Enable the V8 optimizer.
-  V8OptimizerContentBrowserClient test_browser_client(/*enable=*/true);
+  V8OptimizerContentBrowserClient test_browser_client(/*disable=*/false);
 
   const GURL initial_url = GetUrl("/empty.html");
   const GURL prerendering_url =

@@ -13,7 +13,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -1624,12 +1623,10 @@ bool ContentBrowserClient::IsJitDisabledForSite(BrowserContext* browser_context,
   return false;
 }
 
-bool ContentBrowserClient::AreV8OptimizationsEnabledForSite(
+bool ContentBrowserClient::AreV8OptimizationsDisabledForSite(
     BrowserContext* browser_context,
-    const std::optional<base::SafeRef<ProcessSelectionUserData>>&
-        process_selection_user_data,
     const GURL& site_url) {
-  return true;
+  return false;
 }
 
 bool ContentBrowserClient::DisallowV8FeatureFlagOverridesForSite(
