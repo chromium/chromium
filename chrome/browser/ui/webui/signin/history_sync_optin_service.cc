@@ -26,6 +26,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/core_account_id.h"
 
 HistorySyncOptinServiceDefaultDelegate::
@@ -286,24 +287,34 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
   CoreAccountId primary_account_id =
       event_details.GetCurrentState().primary_account.account_id;
 
-  auto maybe_show_error_callback = base::BindOnce(
+  auto management_accepted_callback = base::BindOnce(
       [](const syncer::UserSelectableTypeSet& required_types,
          int error_message_id, Profile* profile, bool) {
         if (!profile) {
           return;
         }
 
-        // If the required data types can be enabled, there is no need to
-        // display an error.
-        if (signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
-                SyncServiceFactory::GetForProfile(profile), required_types) ||
-            signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
+        // Don't do anything if the user is not signed in.
+        if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
                 profile)) != signin_util::SignedInState::kSignedIn) {
           return;
         }
 
-        signin_util::ShowErrorDialogWithMessage(
-            chrome::FindLastActiveWithProfile(profile), error_message_id);
+        syncer::SyncService* sync_service =
+            SyncServiceFactory::GetForProfile(profile);
+        if (!sync_service) {
+          return;
+        }
+
+        // Try to turn on history sync. Disabled types are simply skipped.
+        signin_util::EnableHistorySync(sync_service);
+
+        // If the required data types cannot be enabled, show an error.
+        if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+                sync_service, required_types)) {
+          signin_util::ShowErrorDialogWithMessage(
+              chrome::FindLastActiveWithProfile(profile), error_message_id);
+        }
       },
       required_types, error_message_id);
 
@@ -323,5 +334,5 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
 
   profile_management_disclaimer_service->EnsureManagedProfileForAccount(
       primary_account_id, access_point.value(),
-      std::move(maybe_show_error_callback));
+      std::move(management_accepted_callback));
 }
