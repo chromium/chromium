@@ -5928,6 +5928,14 @@ const CSSValue* ColumnRuleVisibilityItems::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.ColumnRuleVisibilityItems());
 }
 
+const CSSValue* RowRuleVisibilityItems::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.RowRuleVisibilityItems());
+}
+
 const blink::Color InternalVisitedColumnRuleColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style,

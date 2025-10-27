@@ -356,6 +356,7 @@ All changes to this list should go through Blink's feature review process: http:
     row-rule-color
     row-rule-outset
     row-rule-style
+    row-rule-visibility-items
     row-rule-width
     ruby-align
     ruby-overhang

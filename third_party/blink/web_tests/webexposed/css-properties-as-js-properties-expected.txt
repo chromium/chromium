@@ -424,6 +424,7 @@ rowRuleBreak
 rowRuleColor
 rowRuleOutset
 rowRuleStyle
+rowRuleVisibilityItems
 rowRuleWidth
 rubyAlign
 rubyOverhang

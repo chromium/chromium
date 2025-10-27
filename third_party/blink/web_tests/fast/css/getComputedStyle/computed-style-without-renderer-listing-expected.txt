@@ -338,6 +338,7 @@ row-rule-break: spanning-item
 row-rule-color: rgb(0, 0, 0)
 row-rule-outset: 50%
 row-rule-style: none
+row-rule-visibility-items: all
 row-rule-width: 3px
 ruby-align: space-around
 ruby-overhang: auto
