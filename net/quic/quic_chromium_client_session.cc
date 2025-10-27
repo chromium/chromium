@@ -1766,6 +1766,10 @@ void QuicChromiumClientSession::RegisterQuicConnectionClosePayload() {
           features::kQuicRegisterConnectionClosePayload)) {
     return;
   }
+  // Cannot serialize ConnectionClosePacket before handshake is confirmed.
+  if (!connection()->IsHandshakeConfirmed()) {
+    return;
+  }
   std::unique_ptr<quic::SerializedPacket> connection_close_packet =
       connection()->SerializeLargePacketNumberConnectionClosePacket(
           quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
