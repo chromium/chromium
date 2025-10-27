@@ -311,6 +311,20 @@ void ExtensionsMenuViewModel::OnHostAccessRequestsCleared(int tab_id) {
   platform_delegate_->OnAccessRequestsCleared();
 }
 
+void ExtensionsMenuViewModel::OnHostAccessRequestDismissedByUser(
+    const extensions::ExtensionId& extension_id,
+    const url::Origin& origin) {
+  // Ignore request dismissal if web contents have navigated to a different
+  // origin from where the request originated, as navigation listeners will
+  // handle menu updates.
+  if (GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin() !=
+      origin) {
+    return;
+  }
+
+  platform_delegate_->OnAccessRequestDismissedByUser(extension_id);
+}
+
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   platform_delegate_->OnActionAdded(action_id);

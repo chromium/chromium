@@ -46,6 +46,15 @@ class ExtensionsMenuViewPlatformDelegate {
   // delegate to the model, since same name causes parameter type mismatch.
   virtual void OnAccessRequestsCleared() = 0;
 
+  // Notifies the delegate that the host access requests for `extension_id` on
+  // the current site was dismissed.
+  // TODO(crbug.com/449814184): Rename to `OnHostAccessRequestDismissedByUser`
+  // after we finish migrating all PermissionsManager::Observer method from the
+  // platform delegate to the model, since same name causes parameter type
+  // mismatch.
+  virtual void OnAccessRequestDismissedByUser(
+      const extensions::ExtensionId& extension_id) = 0;
+
   // Notifies the delegate that a new toolbar action was added.
   // TODO(crbug.com/449814184): Rename to `OnToolbarActionAdded` after we
   // finish migrating all ToolbarActionsModel::Observer method from the platform

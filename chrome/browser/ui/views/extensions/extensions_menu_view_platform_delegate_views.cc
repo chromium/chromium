@@ -351,6 +351,21 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestsCleared() {
   main_page->ClearExtensionsRequestingAccess();
   main_page->MaybeShowRequestsSection();
 }
+
+void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestDismissedByUser(
+    const extensions::ExtensionId& extension_id) {
+  CHECK(current_page_);
+
+  // Site access requests only affect the main page.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page) {
+    return;
+  }
+
+  main_page->RemoveExtensionRequestingAccess(extension_id);
+  main_page->MaybeShowRequestsSection();
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
@@ -786,26 +801,6 @@ void ExtensionsMenuViewPlatformDelegateViews::
       site_permissions_page->extension_id() == extension_id) {
     site_permissions_page->UpdateShowRequestsToggle(can_show_requests);
   }
-}
-
-void ExtensionsMenuViewPlatformDelegateViews::
-    OnHostAccessRequestDismissedByUser(
-        const extensions::ExtensionId& extension_id,
-        const url::Origin& origin) {
-  DCHECK(current_page_);
-
-  // Extension can only dismiss requests from the menu's main page. if it has
-  // navigated to another site in between, do nothing (navigation listeners will
-  // handle menu updates).
-  auto* main_page = GetMainPage(current_page_.view());
-  if (!main_page ||
-      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin() !=
-          origin) {
-    return;
-  }
-
-  main_page->RemoveExtensionRequestingAccess(extension_id);
-  main_page->MaybeShowRequestsSection();
 }
 
 ExtensionsMenuMainPageView*
