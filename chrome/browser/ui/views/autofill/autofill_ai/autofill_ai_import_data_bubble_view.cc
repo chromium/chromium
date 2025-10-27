@@ -143,30 +143,14 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                        .Build());
-  if (controller_->IsSavePrompt()) {
-    std::unique_ptr<views::BoxLayoutView> subtitle_container =
-        GetSubtitleContainer();
-    if (!controller_->IsWalletableEntity()) {
-      subtitle_container->AddChildView(
-          views::Builder<views::Label>()
-              .SetText(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
-              .SetTextStyle(views::style::STYLE_BODY_4)
-              .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
-              .SetAccessibleRole(ax::mojom::Role::kDetails)
-              .SetMultiLine(true)
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-              .Build());
-    } else {
-      subtitle_container->AddChildView(GetWalletableEntitySubtitle());
-    }
-    main_content_wrapper->AddChildView(std::move(subtitle_container));
-  } else if (controller_->IsWalletableEntity()) {
-    std::unique_ptr<views::BoxLayoutView> subtitle_container =
-        GetSubtitleContainer();
+  std::unique_ptr<views::BoxLayoutView> subtitle_container =
+      GetSubtitleContainer();
+  if (controller_->IsWalletableEntity()) {
     subtitle_container->AddChildView(GetWalletableEntitySubtitle());
-    main_content_wrapper->AddChildView(std::move(subtitle_container));
+  } else {
+    subtitle_container->AddChildView(GetLocalEntitySubtitle());
   }
+  main_content_wrapper->AddChildView(std::move(subtitle_container));
 
   auto* attributes_wrapper = main_content_wrapper->AddChildView(
       views::Builder<views::BoxLayoutView>()
@@ -336,6 +320,22 @@ AutofillAiImportDataBubbleView::BuildEntityAttributeRow(
     row->SetFlexForView(child.get(), 1);
   }
   return row;
+}
+
+std::unique_ptr<views::Label>
+AutofillAiImportDataBubbleView::GetLocalEntitySubtitle() const {
+  std::u16string subtitle_text = l10n_util::GetStringUTF16(
+      controller_->IsSavePrompt()
+          ? IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE
+          : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE);
+  return views::Builder<views::Label>()
+      .SetText(std::move(subtitle_text))
+      .SetTextStyle(views::style::STYLE_BODY_4)
+      .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
+      .SetAccessibleRole(ax::mojom::Role::kDetails)
+      .SetMultiLine(true)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .Build();
 }
 
 std::unique_ptr<views::StyledLabel>
