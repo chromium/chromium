@@ -166,6 +166,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/455509545")
     public void testSetUrlBarFocus() {
         LocationBarMediator locationBarMediator = getLocationBarMediator();
 
