@@ -14248,12 +14248,12 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithAll_20251006",
+                    "name": "EnabledWithAll_20251024",
                     "params": {
                         "AdditionalDelay": "100ms",
                         "DelayMainJobWithAvailableSpdySession": "false",
                         "QuicHandshakeTimeout": "15s",
-                        "QuicMaxPacketSize": "1230"
+                        "mtu": "1230"
                     },
                     "enable_features": [
                         "AdditionalDelayMainJob",
