@@ -59,7 +59,7 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
     // Create and initialize a store to create the DB file with schema.
     auto store = disk_cache::SqlPersistentStore::Create(
         path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
-        background_task_runner);
+        {background_task_runner});
 
     base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
     store->Initialize(future.GetCallback());
@@ -79,8 +79,8 @@ class SqlPersistentStoreQueriesTest : public testing::Test {
   // using the expected indexes, which is critical for performance.
   std::string GetQueryPlan(base::cstring_view query) {
     base::CommandLine command_line(GetExecSqlShellPath());
-    command_line.AppendArgPath(
-        temp_dir_.GetPath().Append(disk_cache::kSqlBackendDatabaseFileName));
+    command_line.AppendArgPath(temp_dir_.GetPath().Append(
+        disk_cache::kSqlBackendDatabaseShard0FileName));
 
     std::string explain_query = base::StrCat({"EXPLAIN QUERY PLAN ", query});
     command_line.AppendArg(explain_query);
@@ -146,7 +146,7 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "`--SEARCH resources USING "
             "COVERING INDEX index_live_resources_last_used_bytes_usage "
             "(last_used>? AND last_used<?)"},
-           {Query::kDeleteResourcesByResIds_DeleteFromResources,
+           {Query::kDeleteResourceByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
@@ -197,12 +197,9 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kOpenNextEntry_SelectLiveResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid<?)"},
-           {Query::kRunEviction_SelectLiveResources,
+           {Query::kStartEviction_SelectLiveResources,
             "`--SCAN resources USING "
             "COVERING INDEX index_live_resources_last_used_bytes_usage"},
-           {Query::kRunEviction_DeleteFromResources,
-            "`--SEARCH resources USING "
-            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kCalculateResourceEntryCount_SelectCountFromLiveResources,
             "`--SCAN resources USING "
             "COVERING INDEX index_live_resources_last_used_bytes_usage"},

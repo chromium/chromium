@@ -46,7 +46,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using ResId = base::StrongAlias<class ResIdTag, int64_t>;
 
   // A unique identifier for a database shard.
-  // TODO(crbug.com/443171275): Sharding logic is not implemented yet.
   using ShardId = base::StrongAlias<class ResIdTag, uint8_t>;
 
   // Represents the error of SqlPersistentStore operation.
@@ -107,17 +106,25 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     bool opened = false;
   };
 
-  // Holds the position of an entry, used for iterating through entries.
-  struct NET_EXPORT_PRIVATE EntryIterator {
-    EntryIterator();
-    ~EntryIterator();
-    EntryIterator(const EntryIterator&);
-    EntryIterator& operator=(const EntryIterator&);
-    EntryIterator(EntryIterator&&);
-    EntryIterator& operator=(EntryIterator&&);
+  // Holds a resource ID and the ID of the shard it belongs to.
+  struct NET_EXPORT_PRIVATE ResIdAndShardId {
+    ResIdAndShardId(ResId res_id, ShardId shard_id);
+    ResIdAndShardId();
+    ~ResIdAndShardId();
+    ResIdAndShardId(const ResIdAndShardId&);
+    ResIdAndShardId& operator=(const ResIdAndShardId&);
+    ResIdAndShardId(ResIdAndShardId&&);
+    ResIdAndShardId& operator=(ResIdAndShardId&&);
 
+    // Initialized to the maximum value for convenience when iterating through
+    // entries.
     ResId res_id = ResId(std::numeric_limits<int64_t>::max());
+    ShardId shard_id = ShardId(0);
   };
+
+  // Holds the position of an entry, used for iterating through entries.
+  using EntryIterator =
+      base::StrongAlias<class EntryIteratorTag, ResIdAndShardId>;
 
   // Holds information about a specific cache entry, including its `key` and
   // an `iterator` which is used when iterating through entries.
@@ -157,7 +164,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       const base::FilePath& path,
       int64_t max_bytes,
       net::CacheType type,
-      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner);
+      std::vector<scoped_refptr<base::SequencedTaskRunner>>
+          background_task_runners);
 
   virtual ~SqlPersistentStore() = default;
 
@@ -216,11 +224,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Deletes all "live" (not doomed) entries whose `last_used` time falls
   // within the range [`initial_time`, `end_time`), excluding any entries whose
-  // IDs are present in `excluded_res_ids`. `callback` is invoked on completion.
-  virtual void DeleteLiveEntriesBetween(base::Time initial_time,
-                                        base::Time end_time,
-                                        base::flat_set<ResId> excluded_res_ids,
-                                        ErrorCallback callback) = 0;
+  // IDs are present in `excluded_list`. `callback` is invoked on completion.
+  virtual void DeleteLiveEntriesBetween(
+      base::Time initial_time,
+      base::Time end_time,
+      std::vector<ResIdAndShardId> excluded_list,
+      ErrorCallback callback) = 0;
 
   // Updates the `last_used` timestamp for the entry with the specified `key`.
   // `callback` is invoked with `kOk` on success, or `kNotFound` if the entry
@@ -330,7 +339,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // the least recently used entries until the total cache size is below the
   // low watermark. Entries with ResId in `excluded_res_ids` (typically active
   // entries) will not be evicted. `callback` is invoked upon completion.
-  virtual void StartEviction(base::flat_set<ResId> excluded_res_ids,
+  virtual void StartEviction(std::vector<ResIdAndShardId> excluded_list,
                              bool is_idle_time_eviction,
                              ErrorCallback callback) = 0;
 
@@ -383,6 +392,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Synchronously checks the state of a key hash against the in-memory index.
   virtual IndexState GetIndexStateForHash(
       CacheEntryKey::Hash key_hash) const = 0;
+
+  // Returns the shard ID for a given cache key hash.
+  virtual ShardId GetShardIdForHash(CacheEntryKey::Hash key_hash) const = 0;
 
   // Enables a strict corruption checking mode for testing purposes.
   virtual void EnableStrictCorruptionCheckForTesting() = 0;

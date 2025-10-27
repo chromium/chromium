@@ -786,6 +786,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // Disables synchronous writes in the WAL file of the SQL disk cache's DB.
 // This is faster but less safe.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSynchronousOff);
+// The number of shards for the SQL disk cache.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheShardCount);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.

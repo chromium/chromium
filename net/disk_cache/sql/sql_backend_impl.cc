@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -38,24 +39,31 @@ namespace {
 
 using FakeIndexFileError = SqlBackendImpl::FakeIndexFileError;
 
+size_t GetShardCount() {
+  return std::max(std::min(net::features::kSqlDiskCacheShardCount.Get(), 255),
+                  1);
+}
+
 // Checks the fake index file, creating it if it doesn't exist. Returns an
 // error code if the file is corrupted or cannot be created.
 FakeIndexFileError CheckFakeIndexFileInternal(const base::FilePath& path) {
+  const std::string expected_contents = base::StrCat(
+      {kSqlBackendFakeIndexPrefix, base::NumberToString(GetShardCount())});
   const base::FilePath file_path = path.Append(kSqlBackendFakeIndexFileName);
   const std::optional<int64_t> file_size = base::GetFileSize(file_path);
   if (file_size.has_value()) {
-    if (file_size != sizeof(kSqlBackendFakeIndexMagicNumber)) {
+    if (file_size != expected_contents.size()) {
       return FakeIndexFileError::kWrongFileSize;
     }
     base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     if (!file.IsValid()) {
       return FakeIndexFileError::kOpenFileFailed;
     }
-    uint64_t magic_number = 0;
-    if (!file.ReadAndCheck(0, base::byte_span_from_ref(magic_number))) {
+    std::vector<uint8_t> contents(expected_contents.size());
+    if (!file.ReadAndCheck(0, contents)) {
       return FakeIndexFileError::kReadFileFailed;
     }
-    if (magic_number != kSqlBackendFakeIndexMagicNumber) {
+    if (base::span(contents) != base::span(expected_contents)) {
       return FakeIndexFileError::kWrongMagicNumber;
     }
     return FakeIndexFileError::kOkExisting;
@@ -67,8 +75,7 @@ FakeIndexFileError CheckFakeIndexFileInternal(const base::FilePath& path) {
   if (!file.IsValid()) {
     return FakeIndexFileError::kCreateFileFailed;
   }
-  if (!file.WriteAndCheck(
-          0, base::byte_span_from_ref(kSqlBackendFakeIndexMagicNumber))) {
+  if (!file.WriteAndCheck(0, base::as_byte_span(expected_contents))) {
     return FakeIndexFileError::kWriteFileFailed;
   }
   return FakeIndexFileError::kOkNew;
@@ -243,6 +250,18 @@ std::optional<SqlPersistentStore::Error> GetError(
   return std::nullopt;
 }
 
+std::vector<scoped_refptr<base::SequencedTaskRunner>> CreateTaskRunners() {
+  const size_t shard_count = GetShardCount();
+  std::vector<scoped_refptr<base::SequencedTaskRunner>> runners;
+  runners.reserve(shard_count);
+  for (size_t i = 0; i < shard_count; ++i) {
+    runners.push_back(base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  }
+  return runners;
+}
+
 }  // namespace
 
 // IteratorImpl provides an implementation of Backend::Iterator for the
@@ -332,6 +351,10 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
                           const auto optional_res_id =
                               GetResId(doomed_entry.get().res_id_or_error());
                           return optional_res_id.has_value() &&
+                                 backend_->store_->GetShardIdForHash(
+                                     doomed_entry.get().cache_key().hash()) ==
+                                     backend_->store_->GetShardIdForHash(
+                                         entry_info.key.hash()) &&
                                  *optional_res_id == entry_info.info.res_id;
                         }));
 
@@ -368,13 +391,11 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
                                net::CacheType cache_type)
     : Backend(cache_type),
       path_(path),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      background_task_runners_(CreateTaskRunners()),
       store_(SqlPersistentStore::Create(path,
                                         max_bytes > 0 ? max_bytes : 0,
                                         GetCacheType(),
-                                        background_task_runner_)) {
+                                        background_task_runners_)) {
   DVLOG(1) << "SqlBackendImpl::SqlBackendImpl " << path;
 }
 
@@ -674,13 +695,14 @@ void SqlBackendImpl::HandleDoomEntriesBetweenOperation(
   // Collect Ids of active entries to exclude them from the store's
   // DeleteLiveEntriesBetween operation, as they will be handled by dooming them
   // directly within this method.
-  std::vector<SqlPersistentStore::ResId> excluded_ids_vec;
-  excluded_ids_vec.reserve(active_entries_.size());
+  std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list;
+  excluded_list.reserve(active_entries_.size());
   std::vector<SqlEntryImpl*> active_entries_to_be_doomed;
   for (auto& it : active_entries_) {
     const auto optional_res_id = GetResId(it.second->res_id_or_error());
     if (optional_res_id.has_value()) {
-      excluded_ids_vec.push_back(*optional_res_id);
+      excluded_list.emplace_back(*optional_res_id,
+                                 store_->GetShardIdForHash(it.first.hash()));
     }
     // Check if the active entry falls within the specified time range.
     const base::Time last_used_time = it.second->GetLastUsed();
@@ -688,9 +710,6 @@ void SqlBackendImpl::HandleDoomEntriesBetweenOperation(
       active_entries_to_be_doomed.push_back(&it.second.get());
     }
   }
-  std::sort(excluded_ids_vec.begin(), excluded_ids_vec.end());
-  base::flat_set<SqlPersistentStore::ResId> excluded_ids(
-      base::sorted_unique, std::move(excluded_ids_vec));
 
   auto barrier_callback = base::BarrierCallback<int>(
       active_entries_to_be_doomed.size() +  // For active entries being doomed
@@ -717,7 +736,7 @@ void SqlBackendImpl::HandleDoomEntriesBetweenOperation(
   // pending) entries within the specified time range, excluding those already
   // handled.
   store_->DeleteLiveEntriesBetween(
-      initial_time, end_time, std::move(excluded_ids),
+      initial_time, end_time, std::move(excluded_list),
       base::BindOnce(
           [](CompletionOnceCallback callback,
              SqlPersistentStore::Error result) {
@@ -1342,17 +1361,22 @@ void SqlBackendImpl::ApplyInFlightEntryModifications(
 
 int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
   exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      [](std::vector<scoped_refptr<base::SequencedTaskRunner>>
+             background_task_runners,
          CompletionOnceCallback callback,
          std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle>
              handle) {
-        background_task_runner->PostTaskAndReply(
-            // Post a no-op task to the background runner.
-            FROM_HERE, base::BindOnce([]() {}),
+        auto barrier_closure = base::BarrierClosure(
+            background_task_runners.size(),
             base::BindOnce(std::move(callback), net::OK)
                 .Then(OnceClosureWithBoundArgs(std::move(handle))));
+        for (auto& runner : background_task_runners) {
+          runner->PostTaskAndReply(
+              // Post a no-op task to the background runner.
+              FROM_HERE, base::BindOnce([]() {}), barrier_closure);
+        }
       },
-      background_task_runner_, std::move(callback)));
+      background_task_runners_, std::move(callback)));
 
   return net::ERR_IO_PENDING;
 }
@@ -1375,20 +1399,18 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
   if (!ShouldRunEviction(store_->GetEvictionUrgency(), is_idle_time_eviction)) {
     return;
   }
-  std::vector<SqlPersistentStore::ResId> excluded_ids_vec;
-  excluded_ids_vec.reserve(active_entries_.size());
+  std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list;
+  excluded_list.reserve(active_entries_.size());
   for (const auto& it : active_entries_) {
     const auto optional_res_id = GetResId(it.second->res_id_or_error());
     if (optional_res_id.has_value()) {
-      excluded_ids_vec.push_back(*optional_res_id);
+      excluded_list.emplace_back(*optional_res_id,
+                                 store_->GetShardIdForHash(it.first.hash()));
     }
   }
-  std::sort(excluded_ids_vec.begin(), excluded_ids_vec.end());
-  base::flat_set<SqlPersistentStore::ResId> excluded_ids(
-      base::sorted_unique, std::move(excluded_ids_vec));
-  store_->StartEviction(
-      std::move(excluded_ids), is_idle_time_eviction,
-      base::BindOnce([](SqlPersistentStore::Error result) {}));
+  store_->StartEviction(std::move(excluded_list), is_idle_time_eviction,
+                        base::BindOnce([](SqlPersistentStore::Error result) {
+                        }).Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {

@@ -9,9 +9,11 @@
 #include <optional>
 #include <string>
 
+#include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,8 +21,12 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,6 +37,7 @@
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/simple/simple_util.h"
+#include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/indexed_pair_set.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
@@ -86,14 +93,20 @@ class StoreStatus {
 
 // The result of a successful initialization.
 struct InitResult {
-  InitResult(int64_t max_bytes, const StoreStatus& store_status)
-      : max_bytes(max_bytes), store_status(store_status) {}
+  InitResult(std::optional<int64_t> max_bytes,
+             const StoreStatus& store_status,
+             int64_t database_size)
+      : max_bytes(max_bytes),
+        store_status(store_status),
+        database_size(database_size) {}
   ~InitResult() = default;
   InitResult(InitResult&& other) = default;
   InitResult& operator=(InitResult&& other) = default;
 
-  int64_t max_bytes = 0;
+  // max_bytes is set only on the first shard.
+  std::optional<int64_t> max_bytes;
   StoreStatus store_status;
+  int64_t database_size;
 };
 
 // A struct to hold the in-memory index and the list of doomed resource IDs.
@@ -125,17 +138,25 @@ using disk_cache_sql_queries::Query;
 using EntryInfo = SqlPersistentStore::EntryInfo;
 using Error = SqlPersistentStore::Error;
 using ResId = SqlPersistentStore::ResId;
+using ShardId = SqlPersistentStore::ShardId;
+using EvictionCandidate = EvictionCandidateAggregator::EvictionCandidate;
+using EvictionCandidateList =
+    EvictionCandidateAggregator::EvictionCandidateList;
 using EntryInfoOrError = SqlPersistentStore::EntryInfoOrError;
 using OptionalEntryInfoOrError = SqlPersistentStore::OptionalEntryInfoOrError;
+using ResIdAndShardId = SqlPersistentStore::ResIdAndShardId;
 using EntryIterator = SqlPersistentStore::EntryIterator;
 using EntryInfoWithKeyAndIterator =
     SqlPersistentStore::EntryInfoWithKeyAndIterator;
 using OptionalEntryInfoWithKeyAndIterator =
     SqlPersistentStore::OptionalEntryInfoWithKeyAndIterator;
 using IntOrError = SqlPersistentStore::IntOrError;
+using Int32Callback = SqlPersistentStore::Int32Callback;
 using InitResultOrError = base::expected<InitResult, Error>;
+using InitResultOrErrorCallback = base::OnceCallback<void(InitResultOrError)>;
 using ResIdList = std::vector<ResId>;
 using ResIdListOrError = base::expected<ResIdList, Error>;
+using ResIdListOrErrorCallback = base::OnceCallback<void(ResIdListOrError)>;
 using InMemoryIndexAndDoomedResIdsOrError =
     base::expected<InMemoryIndexAndDoomedResIds, Error>;
 using RangeResultOrError = base::expected<RangeResult, Error>;
@@ -143,6 +164,8 @@ using Int64OrError = base::expected<int64_t, Error>;
 using EvictionUrgency = SqlPersistentStore::EvictionUrgency;
 using OptionalEntryInfoWithKeyAndIteratorOrError =
     base::expected<OptionalEntryInfoWithKeyAndIterator, Error>;
+using OptionalEntryInfoWithKeyAndIteratorCallback =
+    SqlPersistentStore::OptionalEntryInfoWithKeyAndIteratorCallback;
 
 // A helper struct to bundle an operation's result with a flag indicating
 // whether an eviction check is needed. This allows the background sequence,
@@ -167,6 +190,31 @@ using ErrorAndStoreStatus = ResultAndStoreStatus<Error>;
 using EntryInfoOrErrorAndStoreStatus = ResultAndStoreStatus<EntryInfoOrError>;
 using IntOrErrorAndStoreStatus = ResultAndStoreStatus<IntOrError>;
 using ResIdListOrErrorAndStoreStatus = ResultAndStoreStatus<ResIdListOrError>;
+using ResIdListOrErrorAndStoreStatusCallback =
+    base::OnceCallback<void(ResIdListOrErrorAndStoreStatus)>;
+
+using IndexState = SqlPersistentStore::IndexState;
+using ErrorCallback = SqlPersistentStore::ErrorCallback;
+using EntryInfoOrErrorCallback = SqlPersistentStore::EntryInfoOrErrorCallback;
+using OptionalEntryInfoOrErrorCallback =
+    SqlPersistentStore::OptionalEntryInfoOrErrorCallback;
+using Int64OrErrorCallback = SqlPersistentStore::Int64OrErrorCallback;
+
+std::vector<base::flat_set<ResId>> GroupResIdPerShardId(
+    std::vector<ResIdAndShardId> excluded_list,
+    size_t size_of_shards) {
+  std::vector<std::vector<ResId>> res_id_lists(size_of_shards);
+  for (const auto& res_id_and_shard_id : excluded_list) {
+    res_id_lists[res_id_and_shard_id.shard_id.value()].emplace_back(
+        res_id_and_shard_id.res_id);
+  }
+  std::vector<base::flat_set<ResId>> res_id_sets;
+  for (size_t i = 0; i < size_of_shards; ++i) {
+    std::sort(res_id_lists[i].begin(), res_id_lists[i].end());
+    res_id_sets.emplace_back(base::sorted_unique, std::move(res_id_lists[i]));
+  }
+  return res_id_sets;
+}
 
 bool IsBlobSizeValid(int64_t blob_start,
                      int64_t blob_end,
@@ -221,7 +269,7 @@ void PopulateTraceDetails(const RangeResult& range_result,
 void PopulateTraceDetails(const EntryInfoWithKeyAndIterator& result,
                           perfetto::TracedDictionary& dict) {
   PopulateTraceDetails(result.info, dict);
-  dict.Add("iterator_res_id", result.iterator.res_id);
+  dict.Add("iterator_res_id", result.iterator.value().res_id);
   dict.Add("key", result.key.string());
 }
 void PopulateTraceDetails(
@@ -336,16 +384,10 @@ bool IsBrowserIdle() {
 // dedicated background sequence to avoid blocking the network IO thread.
 class Backend {
  public:
-  Backend(const base::FilePath& path, int64_t max_bytes, net::CacheType type)
-      : path_(path),
-        max_bytes_(
-            // If the specified max_bytes is valid, use it. Otherwise, calculate
-            // a preferred size based on available disk space.
-            max_bytes > 0
-                ? max_bytes
-                : PreferredCacheSize(
-                      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1),
-                      type)),
+  Backend(ShardId shard_id, const base::FilePath& path, net::CacheType type)
+      : shard_id_(shard_id),
+        path_(path),
+        type_(type),
         db_(sql::DatabaseOptions()
                 .set_exclusive_locking(true)
 #if BUILDFLAG(IS_WIN)
@@ -371,7 +413,8 @@ class Backend {
 
   // Initializes the database, including setting up the schema and reading
   // metadata. Returns the cache status and max size on success.
-  InitResultOrError Initialize(base::TimeTicks start_time);
+  InitResultOrError Initialize(int64_t user_max_bytes,
+                               base::TimeTicks start_time);
 
   int32_t GetEntryCount() const { return store_status_.entry_count; }
 
@@ -440,11 +483,11 @@ class Backend {
   OptionalEntryInfoWithKeyAndIterator OpenNextEntry(
       const EntryIterator& iterator,
       base::TimeTicks start_time);
-  ResIdListOrErrorAndStoreStatus RunEviction(
-      int64_t size_to_be_removed,
-      base::flat_set<ResId> excluded_res_ids,
-      bool is_idle_time_eviction,
-      base::TimeTicks start_time);
+  void StartEviction(int64_t size_to_be_removed,
+                     base::flat_set<ResId> excluded_res_ids,
+                     bool is_idle_time_eviction,
+                     scoped_refptr<EvictionCandidateAggregator> aggregator,
+                     ResIdListOrErrorAndStoreStatusCallback callback);
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndex();
   bool MaybeRunCheckpoint();
 
@@ -520,13 +563,6 @@ class Backend {
   OptionalEntryInfoWithKeyAndIteratorOrError OpenNextEntryInternal(
       const EntryIterator& iterator,
       bool& corruption_detected);
-  ResIdListOrError RunEvictionInternal(
-      int64_t size_to_be_removed,
-      const base::flat_set<ResId>& excluded_res_ids,
-      bool is_idle_time_eviction,
-      bool& corruption_detected,
-      base::TimeDelta& time_to_select_entries,
-      base::TimeDelta& time_to_delete_entries);
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndexInternal();
 
   // Trims blobs that overlap with the new write range [offset, end), and
@@ -571,9 +607,31 @@ class Backend {
   Error DeleteBlobsByResId(ResId res_id);
   // Deletes all blobs associated with a list of entry res_ids.
   Error DeleteBlobsByResIds(const std::vector<ResId>& res_ids);
+  // Deletes a single resource entry from the `resources` table by its `res_id`.
+  Error DeleteResourceByResId(ResId res_id);
   // Deletes multiple resource entries from the `resources` table by their
   // `res_id`s.
   Error DeleteResourcesByResIds(const std::vector<ResId>& res_ids);
+
+  // Selects a list of eviction candidates from the `resources` table, ordered
+  // by `last_used` time.
+  EvictionCandidateList SelectEvictionCandidates(
+      int64_t size_to_be_removed,
+      base::flat_set<ResId> excluded_res_ids,
+      bool is_idle_time_eviction);
+  // Called by the `EvictionCandidateAggregator` to evict a list of selected
+  // entries.
+  void EvictEntries(ResIdListOrErrorAndStoreStatusCallback callback,
+                    bool is_idle_time_eviction,
+                    ResIdList res_ids,
+                    int64_t bytes_usage,
+                    base::TimeTicks post_task_time);
+  // The internal implementation of `EvictEntries`. Deletes the entries from the
+  // database and updates the store status.
+  Error EvictEntriesInternal(const ResIdList& res_ids,
+                             int64_t bytes_usage,
+                             bool is_idle_time_eviction,
+                             bool& corruption_detected);
 
   // Updates the in-memory `store_status_` by `entry_count_delta` and
   // `total_size_delta`. If the update results in an overflow or a negative
@@ -606,8 +664,15 @@ class Backend {
   }
   void OnCommitCallback(int pages);
 
+  base::FilePath GetDatabaseFilePath() const {
+    return path_.AppendASCII(
+        base::StrCat({kSqlBackendDatabaseFileNamePrefix,
+                      base::NumberToString(shard_id_.value())}));
+  }
+
+  const ShardId shard_id_;
   const base::FilePath path_;
-  const int64_t max_bytes_;
+  const net::CacheType type_;
   sql::Database db_;
   sql::MetaTable meta_table_;
   std::optional<Error> db_init_status_;
@@ -617,6 +682,10 @@ class Backend {
   // The number of pages in the write-ahead log file. This is updated by
   // `OnCommitCallback` and reset to 0 after a checkpoint.
   int wal_pages_ = 0;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<Backend> weak_factory_{this};
 };
 
 Error Backend::CheckDatabaseStatus() {
@@ -634,7 +703,8 @@ Error Backend::CheckDatabaseStatus() {
   return Error::kOk;
 }
 
-InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
+InitResultOrError Backend::Initialize(int64_t user_max_bytes,
+                                      base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN0("disk_cache", "SqlBackend.Initialize");
   base::ElapsedTimer timer;
@@ -644,6 +714,19 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
   ResIdList doomed_entry_res_ids;
   db_init_status_ =
       InitializeInternal(corruption_detected, index, doomed_entry_res_ids);
+
+  std::optional<int64_t> result_max_bytes;
+  // `max_bytes` of InitResult is set only for the first shard.
+  if (shard_id_ == ShardId(0)) {
+    // If the specified max_bytes is valid, use it. Otherwise, calculate a
+    // preferred size based on available disk space.
+    result_max_bytes =
+        user_max_bytes > 0
+            ? user_max_bytes
+            : PreferredCacheSize(
+                  base::SysInfo::AmountOfFreeDiskSpace(path_).value_or(-1),
+                  type_);
+  }
   RecordTimeAndErrorResultHistogram("Initialize", posting_delay,
                                     timer.Elapsed(), *db_init_status_,
                                     corruption_detected);
@@ -654,24 +737,10 @@ InitResultOrError Backend::Initialize(base::TimeTicks start_time) {
                                           dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-
-  if (*db_init_status_ == Error::kOk) {
-    base::UmaHistogramMemoryLargeMB(
-        base::StrCat({kHistogramPrefix, "DatabaseSize"}),
-        base::GetFileSize(path_.Append(kSqlBackendDatabaseFileName))
-                .value_or(0) /
-            1024 / 1024);
-    base::UmaHistogramCounts1M(base::StrCat({kHistogramPrefix, "EntryCount"}),
-                               store_status_.entry_count);
-    base::UmaHistogramMemoryLargeMB(
-        base::StrCat({kHistogramPrefix, "TotalSize"}),
-        store_status_.total_size / 1024 / 1024);
-    base::UmaHistogramMemoryLargeMB(base::StrCat({kHistogramPrefix, "MaxSize"}),
-                                    max_bytes_ / 1024 / 1024);
-  }
-
   return *db_init_status_ == Error::kOk
-             ? InitResultOrError(InitResult(max_bytes_, store_status_))
+             ? InitResultOrError(InitResult(
+                   result_max_bytes, store_status_,
+                   base::GetFileSize(GetDatabaseFilePath()).value_or(0)))
              : base::unexpected(*db_init_status_);
 }
 
@@ -686,7 +755,7 @@ Error Backend::InitializeInternal(bool& corruption_detected,
   db_.set_error_callback(base::BindRepeating(&Backend::DatabaseErrorCallback,
                                              base::Unretained(this)));
 
-  base::FilePath db_file_path = path_.Append(kSqlBackendDatabaseFileName);
+  base::FilePath db_file_path = GetDatabaseFilePath();
   DVLOG(1) << "Backend::InitializeInternal db_file_path: " << db_file_path;
 
   base::FilePath directory = db_file_path.DirName();
@@ -1985,15 +2054,23 @@ Error Backend::DeleteBlobsByResIds(const std::vector<ResId>& res_ids) {
   return Error::kOk;
 }
 
+Error Backend::DeleteResourceByResId(ResId res_id) {
+  TRACE_EVENT0("disk_cache", "SqlBackend.DeleteResourceByResId");
+  sql::Statement delete_resource_stmt(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      GetQuery(Query::kDeleteResourceByResIds_DeleteFromResources)));
+  delete_resource_stmt.BindInt64(0, res_id.value());
+  if (!delete_resource_stmt.Run()) {
+    return Error::kFailedToExecute;
+  }
+  return Error::kOk;
+}
+
 Error Backend::DeleteResourcesByResIds(const std::vector<ResId>& res_ids) {
   TRACE_EVENT0("disk_cache", "SqlBackend.DeleteResourcesByResIds");
   for (const auto& res_id : res_ids) {
-    sql::Statement delete_resource_stmt(db_.GetCachedStatement(
-        SQL_FROM_HERE,
-        GetQuery(Query::kDeleteResourcesByResIds_DeleteFromResources)));
-    delete_resource_stmt.BindInt64(0, res_id.value());
-    if (!delete_resource_stmt.Run()) {
-      return Error::kFailedToExecute;
+    if (auto error = DeleteResourceByResId(res_id); error != Error::kOk) {
+      return error;
     }
   }
   return Error::kOk;
@@ -2262,7 +2339,7 @@ OptionalEntryInfoWithKeyAndIterator Backend::OpenNextEntry(
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.OpenNextEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
-                       dict.Add("res_id_iterator", iterator.res_id);
+                       dict.Add("res_id_iterator", iterator.value().res_id);
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
@@ -2291,11 +2368,12 @@ OptionalEntryInfoWithKeyAndIteratorOrError Backend::OpenNextEntryInternal(
 
   sql::Statement statement(db_.GetCachedStatement(
       SQL_FROM_HERE, GetQuery(Query::kOpenNextEntry_SelectLiveResources)));
-  statement.BindInt64(0, iterator.res_id.value());
+  statement.BindInt64(0, iterator.value().res_id.value());
   while (statement.Step()) {
     const ResId res_id = ResId(statement.ColumnInt64(0));
     EntryInfoWithKeyAndIterator result;
-    result.iterator.res_id = res_id;
+    result.iterator.value().res_id = res_id;
+    result.iterator.value().shard_id = shard_id_;
     auto& entry_info = result.info;
     entry_info.res_id = res_id;
     entry_info.last_used = statement.ColumnTime(1);
@@ -2319,126 +2397,134 @@ OptionalEntryInfoWithKeyAndIteratorOrError Backend::OpenNextEntryInternal(
   return std::nullopt;
 }
 
-ResIdListOrErrorAndStoreStatus Backend::RunEviction(
+void Backend::StartEviction(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
     bool is_idle_time_eviction,
-    base::TimeTicks start_time) {
-  const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.RunEviction", "data",
+    scoped_refptr<EvictionCandidateAggregator> aggregator,
+    ResIdListOrErrorAndStoreStatusCallback callback) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.StartEviction", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("size_to_be_removed", size_to_be_removed);
                        dict.Add("is_idle_time_eviction", is_idle_time_eviction);
                      });
+  auto candidates = SelectEvictionCandidates(
+      size_to_be_removed, std::move(excluded_res_ids), is_idle_time_eviction);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.StartEviction", "result",
+                   [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     dict.Add("candidates_size", candidates.size());
+                   });
+  aggregator->OnCandidate(
+      shard_id_, std::move(candidates),
+      base::BindOnce(&Backend::EvictEntries, weak_factory_.GetWeakPtr(),
+                     std::move(callback), is_idle_time_eviction));
+}
+
+EvictionCandidateList Backend::SelectEvictionCandidates(
+    int64_t size_to_be_removed,
+    base::flat_set<ResId> excluded_res_ids,
+    bool is_idle_time_eviction) {
+  if (is_idle_time_eviction && !IsBrowserIdle()) {
+    return {};
+  }
+  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
+    return {};
+  }
+
+  base::ElapsedTimer timer;
+  // Create a list of eviction candidates in this shard until the
+  // `candidates_total_size` exceeds the `size_to_be_removed`.
+  // The EvictionCandidateAggregator merges and sorts eviction candidates from
+  // each shard. It then selects candidates until their total size exceeds
+  // 'size_to_be_removed', and passes the final list to EvictEntries().
+  EvictionCandidateList candidates;
+  base::ClampedNumeric<int64_t> candidates_total_size = 0;
+  {
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE, GetQuery(Query::kStartEviction_SelectLiveResources)));
+    while (size_to_be_removed > candidates_total_size && statement.Step()) {
+      if (is_idle_time_eviction && !IsBrowserIdle()) {
+        return {};
+      }
+      const ResId res_id = ResId(statement.ColumnInt64(0));
+      const int64_t bytes_usage = statement.ColumnInt64(1);
+      const base::Time last_used = statement.ColumnTime(2);
+      if (excluded_res_ids.contains(res_id)) {
+        continue;
+      }
+      candidates_total_size += bytes_usage;
+      candidates_total_size += kSqlBackendStaticResourceSize;
+      candidates.emplace_back(res_id, shard_id_, bytes_usage, last_used);
+    }
+  }
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat(
+          {kHistogramPrefix,
+           is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime",
+           ".TimeToSelectEntries"}),
+      timer.Elapsed());
+  return candidates;
+}
+
+void Backend::EvictEntries(ResIdListOrErrorAndStoreStatusCallback callback,
+                           bool is_idle_time_eviction,
+                           ResIdList res_ids,
+                           int64_t bytes_usage,
+                           base::TimeTicks post_task_time) {
+  const base::TimeDelta posting_delay = base::TimeTicks::Now() - post_task_time;
+  // Checks that this method is called on the expected sequence when invoked via
+  // EvictionCandidateAggregator.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.EvictEntries", "data",
+                     [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("res_ids_size", res_ids.size());
+                     });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  base::TimeDelta time_to_select_entries;
-  base::TimeDelta time_to_delete_entries;
-  auto result = RunEvictionInternal(
-      size_to_be_removed, excluded_res_ids, is_idle_time_eviction,
-      corruption_detected, time_to_select_entries, time_to_delete_entries);
-  const std::string_view kMethodName =
-      is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
-  RecordTimeAndErrorResultHistogram(kMethodName, posting_delay, timer.Elapsed(),
-                                    result.error_or(Error::kOk),
-                                    corruption_detected);
-  MaybeCrashIfCorrupted(corruption_detected);
-  if (result.has_value()) {
-    base::UmaHistogramMicrosecondsTimes(
-        base::StrCat({kHistogramPrefix, kMethodName, ".TimeToSelectEntries"}),
-        time_to_select_entries);
-    base::UmaHistogramMicrosecondsTimes(
-        base::StrCat({kHistogramPrefix, kMethodName, ".TimeToDeleteEntries"}),
-        time_to_delete_entries);
-    base::UmaHistogramCounts1000(
-        base::StrCat({kHistogramPrefix, kMethodName, ".EntryCount"}),
-        result->size());
-  }
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.RunEviction", "result",
+  auto result = EvictEntriesInternal(
+      res_ids, bytes_usage, is_idle_time_eviction, corruption_detected);
+  RecordTimeAndErrorResultHistogram(
+      is_idle_time_eviction ? "EvictEntries" : "EvictEntriesOnIdleTime",
+      posting_delay, timer.Elapsed(), result, corruption_detected);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.EvictEntries", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, store_status_, dict);
                    });
-  return ResIdListOrErrorAndStoreStatus(std::move(result), store_status_);
+  std::move(callback).Run(ResIdListOrErrorAndStoreStatus(
+      result == Error::kOk ? ResIdListOrError(std::move(res_ids))
+                           : base::unexpected(result),
+      store_status_));
 }
 
-ResIdListOrError Backend::RunEvictionInternal(
-    int64_t size_to_be_removed,
-    const base::flat_set<ResId>& excluded_res_ids,
-    bool is_idle_time_eviction,
-    bool& corruption_detected,
-    base::TimeDelta& time_to_select_entries,
-    base::TimeDelta& time_to_delete_entries) {
+Error Backend::EvictEntriesInternal(const ResIdList& res_ids,
+                                    int64_t bytes_usage,
+                                    bool is_idle_time_eviction,
+                                    bool& corruption_detected) {
   if (is_idle_time_eviction && !IsBrowserIdle()) {
-    return base::unexpected(Error::kAbortedDueToBrowserActivity);
-  }
-  if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return base::unexpected(db_error);
+    return Error::kAbortedDueToBrowserActivity;
   }
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
-    return base::unexpected(Error::kFailedToExecute);
+    return Error::kFailedToExecute;
   }
 
-  base::ElapsedTimer timer_for_select_entries;
-  ResIdList res_ids_to_be_deleted;
-  int64_t entry_count_delta = 0;
-  // Use checked numerics to safely update the total cache size.
-  base::CheckedNumeric<int64_t> checked_total_size_delta = 0;
-  base::CheckedNumeric<int64_t> checked_removed_total_size = 0;
-  ResIdList deleted_enties;
-  {
-    sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE, GetQuery(Query::kRunEviction_SelectLiveResources)));
-    while (size_to_be_removed > checked_removed_total_size.ValueOrDie() &&
-           statement.Step()) {
-      if (is_idle_time_eviction && !IsBrowserIdle()) {
-        return base::unexpected(Error::kAbortedDueToBrowserActivity);
-      }
-      const ResId res_id = ResId(statement.ColumnInt64(0));
-      if (excluded_res_ids.contains(res_id)) {
-        continue;
-      }
-      res_ids_to_be_deleted.emplace_back(res_id);
-      --entry_count_delta;
-      const int64_t bytes_usage = statement.ColumnInt64(1);
-      checked_total_size_delta -= bytes_usage;
-      checked_removed_total_size += bytes_usage;
-      checked_removed_total_size += kSqlBackendStaticResourceSize;
-      if (!checked_total_size_delta.IsValid() ||
-          !checked_removed_total_size.IsValid()) {
-        corruption_detected = true;
-        return base::unexpected(Error::kInvalidData);
-      }
-    }
-  }
-  time_to_select_entries = timer_for_select_entries.Elapsed();
-
-  base::ElapsedTimer timer_for_delete_entries;
-  for (const auto& res_id_to_be_deleted : res_ids_to_be_deleted) {
+  for (const auto& res_id : res_ids) {
     if (is_idle_time_eviction && !IsBrowserIdle()) {
-      return base::unexpected(Error::kAbortedDueToBrowserActivity);
+      return Error::kAbortedDueToBrowserActivity;
     }
-    if (Error delete_result = DeleteBlobsByResId(res_id_to_be_deleted);
-        delete_result != Error::kOk) {
-      return base::unexpected(delete_result);
+    if (auto error = DeleteBlobsByResId(res_id); error != Error::kOk) {
+      return error;
     }
-    sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE, GetQuery(Query::kRunEviction_DeleteFromResources)));
-    statement.BindInt64(0, res_id_to_be_deleted.value());
-    if (!statement.Run()) {
-      return base::unexpected(Error::kFailedToExecute);
+    if (auto error = DeleteResourceByResId(res_id); error != Error::kOk) {
+      return error;
     }
   }
-  time_to_delete_entries = timer_for_delete_entries.Elapsed();
-
-  auto error = UpdateStoreStatusAndCommitTransaction(
-      transaction, entry_count_delta, checked_total_size_delta.ValueOrDie(),
-      corruption_detected);
-  return error == Error::kOk
-             ? ResIdListOrError(std::move(res_ids_to_be_deleted))
-             : base::unexpected(error);
+  return UpdateStoreStatusAndCommitTransaction(
+      transaction, -res_ids.size(), -bytes_usage, corruption_detected);
 }
 
 Error Backend::UpdateStoreStatusAndCommitTransaction(
@@ -2622,41 +2708,36 @@ void Backend::OnCommitCallback(int pages) {
   wal_pages_ = pages;
 }
 
-// `SqlPersistentStoreImpl` is the concrete implementation of the
-// `SqlPersistentStore` interface. It serves as the bridge between the caller
-// (on the main sequence = network IO thread) and the `Backend` (on the
-// background sequence). It uses `base::SequenceBound` to safely manage the
-// thread-hopping.
-class SqlPersistentStoreImpl : public SqlPersistentStore {
+// `BackendShard` manages a single shard of the cache, including its own
+// `Backend` instance and in-memory index. It forwards operations to the
+// `Backend` on a dedicated background task runner.
+class BackendShard {
  public:
-  SqlPersistentStoreImpl(
-      const base::FilePath& path,
-      int64_t max_bytes,
-      net::CacheType type,
-      const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
-      : backend_(background_task_runner, path, max_bytes, type) {}
-  ~SqlPersistentStoreImpl() override = default;
+  BackendShard(ShardId shard_id,
+               const base::FilePath& path,
+               net::CacheType type,
+               scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+      : backend_(background_task_runner, shard_id, path, type) {}
+  ~BackendShard() = default;
 
   // Kicks off the asynchronous initialization of the backend.
-  void Initialize(ErrorCallback callback) override {
+  void Initialize(int64_t user_max_bytes, InitResultOrErrorCallback callback) {
     backend_.AsyncCall(&Backend::Initialize)
-        .WithArgs(base::TimeTicks::Now())
+        .WithArgs(user_max_bytes, base::TimeTicks::Now())
         .Then(base::BindOnce(
-            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
-               ErrorCallback callback, InitResultOrError result) {
+            [](base::WeakPtr<BackendShard> weak_ptr,
+               InitResultOrErrorCallback callback, InitResultOrError result) {
               if (weak_ptr) {
                 if (result.has_value()) {
-                  weak_ptr->SetMaxSize(result->max_bytes);
                   weak_ptr->store_status_ = result->store_status;
                 }
-                std::move(callback).Run(result.has_value() ? Error::kOk
-                                                           : result.error());
+                std::move(callback).Run(std::move(result));
               }
             },
             weak_factory_.GetWeakPtr(), std::move(callback)));
   }
   void OpenOrCreateEntry(const CacheEntryKey& key,
-                         EntryInfoOrErrorCallback callback) override {
+                         EntryInfoOrErrorCallback callback) {
     backend_.AsyncCall(&Backend::OpenOrCreateEntry)
         .WithArgs(key, base::TimeTicks::Now())
         .Then(WrapEntryInfoOrErrorCallback(
@@ -2664,14 +2745,14 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
             IndexMismatchLocation::kOpenOrCreateEntry));
   }
   void OpenEntry(const CacheEntryKey& key,
-                 OptionalEntryInfoOrErrorCallback callback) override {
+                 OptionalEntryInfoOrErrorCallback callback) {
     backend_.AsyncCall(&Backend::OpenEntry)
         .WithArgs(key, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
   void CreateEntry(const CacheEntryKey& key,
                    base::Time creation_time,
-                   EntryInfoOrErrorCallback callback) override {
+                   EntryInfoOrErrorCallback callback) {
     bool run_existance_check = !index_ || index_->Contains(key.hash());
     backend_.AsyncCall(&Backend::CreateEntry)
         .WithArgs(key, creation_time, run_existance_check,
@@ -2681,11 +2762,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void DoomEntry(const CacheEntryKey& key,
                  ResId res_id,
-                 ErrorCallback callback) override {
+                 ErrorCallback callback) {
     backend_.AsyncCall(&Backend::DoomEntry)
         .WithArgs(key, res_id, base::TimeTicks::Now())
         .Then(base::BindOnce(
-            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+            [](base::WeakPtr<BackendShard> weak_ptr,
                CacheEntryKey::Hash key_hash, ResId res_id,
                ErrorCallback callback, ErrorAndStoreStatus result) {
               if (weak_ptr) {
@@ -2706,13 +2787,12 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void DeleteDoomedEntry(const CacheEntryKey& key,
                          ResId res_id,
-                         ErrorCallback callback) override {
+                         ErrorCallback callback) {
     backend_.AsyncCall(&Backend::DeleteDoomedEntry)
         .WithArgs(key, res_id, base::TimeTicks::Now())
         .Then(WrapCallbackWithStoreStatus(std::move(callback)));
   }
-  void DeleteLiveEntry(const CacheEntryKey& key,
-                       ErrorCallback callback) override {
+  void DeleteLiveEntry(const CacheEntryKey& key, ErrorCallback callback) {
     // If the entry is not in the in-memory index, we can skip the DB lookup.
     if (GetIndexStateForHash(key.hash()) == IndexState::kHashNotFound) {
       std::move(callback).Run(Error::kNotFound);
@@ -2723,12 +2803,12 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .Then(WrapErrorCallbackToRemoveFromIndex(
             std::move(callback), IndexMismatchLocation::kDeleteLiveEntry));
   }
-  void DeleteAllEntries(ErrorCallback callback) override {
+  void DeleteAllEntries(ErrorCallback callback) {
     backend_.AsyncCall(&Backend::DeleteAllEntries)
         .WithArgs(base::TimeTicks::Now())
         .Then(base::BindOnce(
-            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
-               ErrorCallback callback, ErrorAndStoreStatus result) {
+            [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
+               ErrorAndStoreStatus result) {
               if (weak_ptr) {
                 if (result.result == Error::kOk &&
                     weak_ptr->index_.has_value()) {
@@ -2744,7 +2824,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   void DeleteLiveEntriesBetween(base::Time initial_time,
                                 base::Time end_time,
                                 base::flat_set<ResId> excluded_res_ids,
-                                ErrorCallback callback) override {
+                                ErrorCallback callback) {
     backend_.AsyncCall(&Backend::DeleteLiveEntriesBetween)
         .WithArgs(initial_time, end_time, std::move(excluded_res_ids),
                   base::TimeTicks::Now())
@@ -2754,7 +2834,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
   void UpdateEntryLastUsedByKey(const CacheEntryKey& key,
                                 base::Time last_used,
-                                ErrorCallback callback) override {
+                                ErrorCallback callback) {
     // If the entry is not in the in-memory index, we can skip the DB lookup.
     if (GetIndexStateForHash(key.hash()) == IndexState::kHashNotFound) {
       std::move(callback).Run(Error::kNotFound);
@@ -2764,10 +2844,9 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .WithArgs(key, last_used, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  void UpdateEntryLastUsedByResId(const CacheEntryKey& key,
-                                  ResId res_id,
+  void UpdateEntryLastUsedByResId(ResId res_id,
                                   base::Time last_used,
-                                  ErrorCallback callback) override {
+                                  ErrorCallback callback) {
     backend_.AsyncCall(&Backend::UpdateEntryLastUsedByResId)
         .WithArgs(res_id, last_used, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
@@ -2777,7 +2856,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                                     base::Time last_used,
                                     scoped_refptr<net::IOBuffer> buffer,
                                     int64_t header_size_delta,
-                                    ErrorCallback callback) override {
+                                    ErrorCallback callback) {
     backend_.AsyncCall(&Backend::UpdateEntryHeaderAndLastUsed)
         .WithArgs(key, res_id, last_used, std::move(buffer), header_size_delta,
                   base::TimeTicks::Now())
@@ -2791,7 +2870,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                       scoped_refptr<net::IOBuffer> buffer,
                       int buf_len,
                       bool truncate,
-                      ErrorCallback callback) override {
+                      ErrorCallback callback) {
     backend_.AsyncCall(&Backend::WriteEntryData)
         .WithArgs(key, res_id, old_body_end, offset, std::move(buffer), buf_len,
                   truncate, base::TimeTicks::Now())
@@ -2804,7 +2883,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                      int buf_len,
                      int64_t body_end,
                      bool sparse_reading,
-                     IntOrErrorCallback callback) override {
+                     SqlPersistentStore::IntOrErrorCallback callback) {
     backend_.AsyncCall(&Backend::ReadEntryData)
         .WithArgs(key, res_id, offset, std::move(buffer), buf_len, body_end,
                   sparse_reading, base::TimeTicks::Now())
@@ -2814,91 +2893,49 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                               ResId res_id,
                               int64_t offset,
                               int len,
-                              RangeResultCallback callback) override {
+                              RangeResultCallback callback) {
     backend_.AsyncCall(&Backend::GetEntryAvailableRange)
         .WithArgs(res_id, offset, len, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
   void CalculateSizeOfEntriesBetween(base::Time initial_time,
                                      base::Time end_time,
-                                     Int64OrErrorCallback callback) override {
+                                     Int64OrErrorCallback callback) {
     backend_.AsyncCall(&Backend::CalculateSizeOfEntriesBetween)
         .WithArgs(initial_time, end_time, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  void OpenNextEntry(
-      const EntryIterator& iterator,
-      OptionalEntryInfoWithKeyAndIteratorCallback callback) override {
+  void OpenNextEntry(const EntryIterator& iterator,
+                     OptionalEntryInfoWithKeyAndIteratorCallback callback) {
     backend_.AsyncCall(&Backend::OpenNextEntry)
         .WithArgs(iterator, base::TimeTicks::Now())
         .Then(WrapCallback(std::move(callback)));
   }
-  EvictionUrgency GetEvictionUrgency() override {
-    if (eviction_in_progress_) {
-      return EvictionUrgency::kNotNeeded;
-    }
-    // Checks if the total size of entries exceeds the high watermark and the
-    // database is open, to determine if eviction should be initiated.
-    const int64_t current_size = store_status_.GetEstimatedDiskUsage();
-    if (current_size > high_watermark_) {
-      return EvictionUrgency::kNeeded;
-    }
-    if (current_size > idle_time_high_watermark_) {
-      return EvictionUrgency::kIdleTime;
-    }
-    return EvictionUrgency::kNotNeeded;
-  }
-  void StartEviction(base::flat_set<ResId> excluded_res_ids,
+  void StartEviction(int64_t size_to_be_removed,
+                     base::flat_set<ResId> excluded_res_ids,
                      bool is_idle_time_eviction,
-                     ErrorCallback callback) override {
-    CHECK(!eviction_in_progress_);
-    eviction_in_progress_ = true;
-    const int64_t size_to_be_removed =
-        store_status_.GetEstimatedDiskUsage() - low_watermark_;
-    if (size_to_be_removed <= 0) {
-      std::move(callback).Run(Error::kOk);
-      return;
-    }
-    backend_.AsyncCall(&Backend::RunEviction)
+                     scoped_refptr<EvictionCandidateAggregator> aggregator,
+                     ResIdListOrErrorCallback callback) {
+    ResIdListOrErrorAndStoreStatusCallback result_callback =
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&BackendShard::OnEvictionFinished,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
+    backend_.AsyncCall(&Backend::StartEviction)
         .WithArgs(size_to_be_removed, std::move(excluded_res_ids),
-                  is_idle_time_eviction, base::TimeTicks::Now())
-        .Then(base::BindOnce(
-            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
-               ErrorCallback callback, ResIdListOrErrorAndStoreStatus result) {
-              if (weak_ptr) {
-                weak_ptr->eviction_in_progress_ = false;
-                if (result.result.has_value() && weak_ptr->index_.has_value()) {
-                  for (ResId res_id : *result.result) {
-                    if (!weak_ptr->index_->Remove(res_id)) {
-                      weak_ptr->RecordIndexMismatch(
-                          IndexMismatchLocation::kStartEviction);
-                    }
-                  }
-                }
-                weak_ptr->store_status_ = result.store_status;
-                std::move(callback).Run(result.result.error_or(Error::kOk));
-              }
-            },
-            weak_factory_.GetWeakPtr(), std::move(callback)));
+                  is_idle_time_eviction, aggregator,
+                  std::move(result_callback));
   }
-  int64_t MaxFileSize() const override { return max_file_size_; }
-  int64_t MaxSize() const override { return max_size_; }
-  int32_t GetEntryCount() const override { return store_status_.entry_count; }
-  void GetEntryCountAsync(Int32Callback callback) const override {
+  int32_t GetEntryCount() const { return store_status_.entry_count; }
+  void GetEntryCountAsync(Int32Callback callback) const {
     backend_.AsyncCall(&Backend::GetEntryCount).Then(std::move(callback));
   }
-  int64_t GetSizeOfAllEntries() const override {
+  int64_t GetSizeOfAllEntries() const {
     return store_status_.GetEstimatedDiskUsage();
   }
-  bool MaybeLoadInMemoryIndex(ErrorCallback callback) override {
-    if (in_memory_load_trigered_) {
-      return false;
-    }
-    in_memory_load_trigered_ = true;
+  void LoadInMemoryIndex(ErrorCallback callback) {
     backend_.AsyncCall(&Backend::LoadInMemoryIndex)
         .Then(base::BindOnce(
-            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
-               ErrorCallback callback,
+            [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
                InMemoryIndexAndDoomedResIdsOrError result) {
               if (weak_ptr) {
                 if (result.has_value()) {
@@ -2911,10 +2948,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
               }
             },
             weak_factory_.GetWeakPtr(), std::move(callback)));
-
-    return true;
   }
-  bool MaybeRunCleanupDoomedEntries(ErrorCallback callback) override {
+  bool MaybeRunCleanupDoomedEntries(ErrorCallback callback) {
     if (to_be_deleted_res_ids_.empty()) {
       return false;
     }
@@ -2923,24 +2958,24 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .Then(WrapCallback(std::move(callback)));
     return true;
   }
-  void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) override {
+  void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) {
     backend_.AsyncCall(&Backend::MaybeRunCheckpoint).Then(std::move(callback));
   }
 
-  void EnableStrictCorruptionCheckForTesting() override {
+  void EnableStrictCorruptionCheckForTesting() {
     strict_corruption_check_enabled_ = true;
     backend_.AsyncCall(&Backend::EnableStrictCorruptionCheckForTesting);
   }
 
-  void SetSimulateDbFailureForTesting(bool fail) override {
+  void SetSimulateDbFailureForTesting(bool fail) {
     backend_.AsyncCall(&Backend::SetSimulateDbFailureForTesting).WithArgs(fail);
   }
 
-  void RazeAndPoisonForTesting() override {
+  void RazeAndPoisonForTesting() {
     backend_.AsyncCall(&Backend::RazeAndPoisonForTesting);
   }
 
-  IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const override {
+  IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const {
     if (!index_.has_value()) {
       return IndexState::kNotReady;
     }
@@ -2952,24 +2987,13 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   }
 
  private:
-  void SetMaxSize(int64_t max_bytes) {
-    max_size_ = max_bytes;
-
-    high_watermark_ =
-        max_bytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;
-    idle_time_high_watermark_ =
-        max_bytes * kSqlBackendIdleTimeEvictionHighWaterMarkPermille / 1000;
-    low_watermark_ = max_bytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;
-    max_file_size_ = CalculateMaxFileSize(max_bytes);
-  }
-
   // Wraps a callback to ensure it is only run if the `SqlPersistentStoreImpl`
   // is still alive.
   template <typename ResultType>
   base::OnceCallback<void(ResultType)> WrapCallback(
       base::OnceCallback<void(ResultType)> callback) {
     return base::BindOnce(
-        [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+        [](base::WeakPtr<BackendShard> weak_ptr,
            base::OnceCallback<void(ResultType)> callback, ResultType result) {
           if (weak_ptr) {
             // We should not run the callback when `this` was deleted.
@@ -2984,7 +3008,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   base::OnceCallback<void(ResultAndStoreStatus<ResultType>)>
   WrapCallbackWithStoreStatus(base::OnceCallback<void(ResultType)> callback) {
     return base::BindOnce(
-        [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+        [](base::WeakPtr<BackendShard> weak_ptr,
            base::OnceCallback<void(ResultType)> callback,
            ResultAndStoreStatus<ResultType> result) {
           if (weak_ptr) {
@@ -3001,7 +3025,7 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
                                const CacheEntryKey& key,
                                IndexMismatchLocation location) {
     return base::BindOnce(
-        [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+        [](base::WeakPtr<BackendShard> weak_ptr,
            EntryInfoOrErrorCallback callback, CacheEntryKey::Hash key_hash,
            IndexMismatchLocation location,
            EntryInfoOrErrorAndStoreStatus result) {
@@ -3026,8 +3050,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   WrapErrorCallbackToRemoveFromIndex(ErrorCallback callback,
                                      IndexMismatchLocation location) {
     return base::BindOnce(
-        [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
-           ErrorCallback callback, IndexMismatchLocation location,
+        [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
+           IndexMismatchLocation location,
            ResIdListOrErrorAndStoreStatus result) {
           if (weak_ptr) {
             if (result.result.has_value() && weak_ptr->index_.has_value()) {
@@ -3046,6 +3070,19 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         weak_factory_.GetWeakPtr(), std::move(callback), location);
   }
 
+  void OnEvictionFinished(ResIdListOrErrorCallback callback,
+                          ResIdListOrErrorAndStoreStatus result) {
+    if (result.result.has_value() && index_.has_value()) {
+      for (ResId res_id : *result.result) {
+        if (!index_->Remove(res_id)) {
+          RecordIndexMismatch(IndexMismatchLocation::kStartEviction);
+        }
+      }
+    }
+    store_status_ = result.store_status;
+    std::move(callback).Run(std::move(result.result));
+  }
+
   void RecordIndexMismatch(IndexMismatchLocation location) {
     base::UmaHistogramEnumeration(
         base::StrCat({kHistogramPrefix, "IndexMismatch"}), location);
@@ -3054,17 +3091,8 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
 
   base::SequenceBound<Backend> backend_;
 
-  int64_t max_size_ = 0;
-  int64_t high_watermark_ = 0;
-  int64_t idle_time_high_watermark_ = 0;
-  int64_t low_watermark_ = 0;
-  int64_t max_file_size_ = 0;
-  bool eviction_in_progress_ = false;
+  // The in-memory summary of the store's status.
   StoreStatus store_status_;
-  bool strict_corruption_check_enabled_ = false;
-
-  // Whether loading of the in-memory index has been triggered.
-  bool in_memory_load_trigered_ = false;
 
   // The in-memory index of cache entries. This is loaded asynchronously after
   // MaybeLoadInMemoryIndex() is called.
@@ -3073,6 +3101,463 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   // A list of resource IDs for entries that were doomed in a previous session
   // and are scheduled for deletion.
   ResIdList to_be_deleted_res_ids_;
+
+  bool strict_corruption_check_enabled_ = false;
+
+  base::WeakPtrFactory<BackendShard> weak_factory_{this};
+};
+
+std::vector<std::unique_ptr<BackendShard>> CreateBackendShards(
+    const base::FilePath& path,
+    net::CacheType type,
+    std::vector<scoped_refptr<base::SequencedTaskRunner>>
+        background_task_runners) {
+  const size_t num_shards = background_task_runners.size();
+  CHECK(num_shards < std::numeric_limits<ShardId::underlying_type>::max());
+  std::vector<std::unique_ptr<BackendShard>> backend_shards;
+  backend_shards.reserve(num_shards);
+  for (size_t i = 0; i < num_shards; ++i) {
+    backend_shards.emplace_back(std::make_unique<BackendShard>(
+        ShardId(i), path, type, background_task_runners[i]));
+  }
+  return backend_shards;
+}
+
+// `SqlPersistentStoreImpl` is the concrete implementation of the
+// `SqlPersistentStore` interface. It manages a collection of `BackendShard`
+// instances. Each `BackendShard` acts as a bridge to a `Backend` instance
+// running on a dedicated background task runner. `SqlPersistentStoreImpl`
+// coordinates operations across all shards.
+class SqlPersistentStoreImpl : public SqlPersistentStore {
+ public:
+  SqlPersistentStoreImpl(const base::FilePath& path,
+                         int64_t max_bytes,
+                         net::CacheType type,
+                         std::vector<scoped_refptr<base::SequencedTaskRunner>>
+                             background_task_runners)
+      : background_task_runners_(std::move(background_task_runners)),
+        backend_shards_(
+            CreateBackendShards(path, type, background_task_runners_)),
+        user_max_bytes_(max_bytes) {}
+  ~SqlPersistentStoreImpl() override = default;
+
+  void Initialize(ErrorCallback callback) override {
+    auto barrier_callback = base::BarrierCallback<InitResultOrError>(
+        GetSizeOfShards(),
+        base::BindOnce(&SqlPersistentStoreImpl::OnInitializeFinished,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->Initialize(user_max_bytes_, barrier_callback);
+    }
+  }
+  void OpenOrCreateEntry(const CacheEntryKey& key,
+                         EntryInfoOrErrorCallback callback) override {
+    GetShard(key).OpenOrCreateEntry(key, std::move(callback));
+  }
+  void OpenEntry(const CacheEntryKey& key,
+                 OptionalEntryInfoOrErrorCallback callback) override {
+    GetShard(key).OpenEntry(key, std::move(callback));
+  }
+  void CreateEntry(const CacheEntryKey& key,
+                   base::Time creation_time,
+                   EntryInfoOrErrorCallback callback) override {
+    GetShard(key).CreateEntry(key, creation_time, std::move(callback));
+  }
+  void DoomEntry(const CacheEntryKey& key,
+                 ResId res_id,
+                 ErrorCallback callback) override {
+    GetShard(key).DoomEntry(key, res_id, std::move(callback));
+  }
+  void DeleteDoomedEntry(const CacheEntryKey& key,
+                         ResId res_id,
+                         ErrorCallback callback) override {
+    GetShard(key).DeleteDoomedEntry(key, res_id, std::move(callback));
+  }
+  void DeleteLiveEntry(const CacheEntryKey& key,
+                       ErrorCallback callback) override {
+    GetShard(key).DeleteLiveEntry(key, std::move(callback));
+  }
+  void DeleteAllEntries(ErrorCallback callback) override {
+    auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->DeleteAllEntries(barrier_callback);
+    }
+  }
+  void DeleteLiveEntriesBetween(base::Time initial_time,
+                                base::Time end_time,
+                                std::vector<ResIdAndShardId> excluded_list,
+                                ErrorCallback callback) override {
+    auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
+    auto res_id_sets =
+        GroupResIdPerShardId(std::move(excluded_list), GetSizeOfShards());
+    for (size_t i = 0; i < GetSizeOfShards(); ++i) {
+      backend_shards_[i]->DeleteLiveEntriesBetween(
+          initial_time, end_time, std::move(res_id_sets[i]), barrier_callback);
+    }
+  }
+  void UpdateEntryLastUsedByKey(const CacheEntryKey& key,
+                                base::Time last_used,
+                                ErrorCallback callback) override {
+    GetShard(key).UpdateEntryLastUsedByKey(key, last_used, std::move(callback));
+  }
+  void UpdateEntryLastUsedByResId(const CacheEntryKey& key,
+                                  ResId res_id,
+                                  base::Time last_used,
+                                  ErrorCallback callback) override {
+    GetShard(key).UpdateEntryLastUsedByResId(res_id, last_used,
+                                             std::move(callback));
+  }
+  void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,
+                                    ResId res_id,
+                                    base::Time last_used,
+                                    scoped_refptr<net::IOBuffer> buffer,
+                                    int64_t header_size_delta,
+                                    ErrorCallback callback) override {
+    GetShard(key).UpdateEntryHeaderAndLastUsed(
+        key, res_id, last_used, std::move(buffer), header_size_delta,
+        std::move(callback));
+  }
+  void WriteEntryData(const CacheEntryKey& key,
+                      ResId res_id,
+                      int64_t old_body_end,
+                      int64_t offset,
+                      scoped_refptr<net::IOBuffer> buffer,
+                      int buf_len,
+                      bool truncate,
+                      ErrorCallback callback) override {
+    GetShard(key).WriteEntryData(key, res_id, old_body_end, offset,
+                                 std::move(buffer), buf_len, truncate,
+                                 std::move(callback));
+  }
+  void ReadEntryData(const CacheEntryKey& key,
+                     ResId res_id,
+                     int64_t offset,
+                     scoped_refptr<net::IOBuffer> buffer,
+                     int buf_len,
+                     int64_t body_end,
+                     bool sparse_reading,
+                     IntOrErrorCallback callback) override {
+    GetShard(key).ReadEntryData(key, res_id, offset, std::move(buffer), buf_len,
+                                body_end, sparse_reading, std::move(callback));
+  }
+  void GetEntryAvailableRange(const CacheEntryKey& key,
+                              ResId res_id,
+                              int64_t offset,
+                              int len,
+                              RangeResultCallback callback) override {
+    GetShard(key).GetEntryAvailableRange(key, res_id, offset, len,
+                                         std::move(callback));
+  }
+  void CalculateSizeOfEntriesBetween(base::Time initial_time,
+                                     base::Time end_time,
+                                     Int64OrErrorCallback callback) override {
+    auto barrier_callback = base::BarrierCallback<Int64OrError>(
+        GetSizeOfShards(),
+        base::BindOnce(
+            [](Int64OrErrorCallback callback,
+               std::vector<Int64OrError> results) {
+              int64_t total_size = 0;
+              for (const auto& result : results) {
+                if (!result.has_value()) {
+                  std::move(callback).Run(base::unexpected(result.error()));
+                  return;
+                }
+                total_size += result.value();
+              }
+              std::move(callback).Run(total_size);
+            },
+            std::move(callback)));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->CalculateSizeOfEntriesBetween(initial_time, end_time,
+                                                   barrier_callback);
+    }
+  }
+  void OpenNextEntry(
+      const EntryIterator& iterator,
+      OptionalEntryInfoWithKeyAndIteratorCallback callback) override {
+    if (iterator.value().shard_id.value() >= GetSizeOfShards()) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    backend_shards_[iterator.value().shard_id.value()]->OpenNextEntry(
+        iterator,
+        base::BindOnce(
+            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr, ShardId shard_id,
+               OptionalEntryInfoWithKeyAndIteratorCallback callback,
+               OptionalEntryInfoWithKeyAndIterator result) {
+              if (!weak_ptr) {
+                return;
+              }
+              if (result.has_value()) {
+                std::move(callback).Run(std::move(result));
+                return;
+              }
+              EntryIterator new_iterator;
+              new_iterator.value().shard_id = ShardId(shard_id.value() + 1);
+              weak_ptr->OpenNextEntry(new_iterator, std::move(callback));
+            },
+            weak_factory_.GetWeakPtr(), iterator.value().shard_id,
+            std::move(callback)));
+  }
+  EvictionUrgency GetEvictionUrgency() override {
+    if (eviction_in_progress_) {
+      return EvictionUrgency::kNotNeeded;
+    }
+    // Checks if the total size of entries exceeds the high watermark and the
+    // database is open, to determine if eviction should be initiated.
+    const int64_t current_size = GetSizeOfAllEntries();
+    if (current_size > high_watermark_) {
+      return EvictionUrgency::kNeeded;
+    }
+    if (current_size > idle_time_high_watermark_) {
+      return EvictionUrgency::kIdleTime;
+    }
+    return EvictionUrgency::kNotNeeded;
+  }
+  void StartEviction(std::vector<ResIdAndShardId> excluded_list,
+                     bool is_idle_time_eviction,
+                     ErrorCallback callback) override {
+    CHECK(!eviction_in_progress_);
+    const int64_t size_to_be_removed = GetSizeOfAllEntries() - low_watermark_;
+    if (size_to_be_removed <= 0) {
+      std::move(callback).Run(Error::kOk);
+      return;
+    }
+    eviction_in_progress_ = true;
+    auto barrier_callback = base::BarrierCallback<ResIdListOrError>(
+        GetSizeOfShards(),
+        base::BindOnce(
+            [](base::WeakPtr<SqlPersistentStoreImpl> weak_ptr,
+               bool is_idle_time_eviction, base::TimeTicks start_time,
+               ErrorCallback callback, std::vector<ResIdListOrError> results) {
+              if (weak_ptr) {
+                weak_ptr->eviction_in_progress_ = false;
+              }
+              Error error = Error::kOk;
+              size_t count = 0;
+              for (const auto& result : results) {
+                if (!result.has_value()) {
+                  error = result.error();
+                  break;
+                }
+                count += result.value().size();
+              }
+              const std::string_view kMethodName =
+                  is_idle_time_eviction ? "RunEviction"
+                                        : "RunEvictionOnIdleTime";
+              base::UmaHistogramMicrosecondsTimes(
+                  base::StrCat(
+                      {kHistogramPrefix, kMethodName,
+                       error == Error::kOk ? ".SuccessTime" : ".FailureTime"}),
+                  base::TimeTicks::Now() - start_time);
+              base::UmaHistogramEnumeration(
+                  base::StrCat({kHistogramPrefix, kMethodName, ".Result"}),
+                  error);
+              if (error == Error::kOk) {
+                base::UmaHistogramCounts1000(
+                    base::StrCat(
+                        {kHistogramPrefix, kMethodName, ".EntryCount"}),
+                    count);
+              }
+              std::move(callback).Run(error);
+            },
+            weak_factory_.GetWeakPtr(), is_idle_time_eviction,
+            base::TimeTicks::Now(), std::move(callback)));
+    auto aggregator = base::MakeRefCounted<EvictionCandidateAggregator>(
+        size_to_be_removed, background_task_runners_);
+    auto res_id_sets =
+        GroupResIdPerShardId(std::move(excluded_list), GetSizeOfShards());
+    for (size_t i = 0; i < GetSizeOfShards(); ++i) {
+      backend_shards_[i]->StartEviction(
+          size_to_be_removed, std::move(res_id_sets[i]), is_idle_time_eviction,
+          aggregator, barrier_callback);
+    }
+  }
+  int64_t MaxFileSize() const override { return max_file_size_; }
+  int64_t MaxSize() const override { return max_bytes_; }
+  int32_t GetEntryCount() const override {
+    base::ClampedNumeric<int32_t> result;
+    for (const auto& backend_shard : backend_shards_) {
+      result += backend_shard->GetEntryCount();
+    }
+    return result;
+  }
+  void GetEntryCountAsync(Int32Callback callback) const override {
+    auto barrier_callback = base::BarrierCallback<int32_t>(
+        GetSizeOfShards(),
+        base::BindOnce(
+            [](Int32Callback callback, const std::vector<int32_t>& results) {
+              int32_t total_count = 0;
+              for (const auto& result : results) {
+                total_count += result;
+              }
+              std::move(callback).Run(total_count);
+            },
+            std::move(callback)));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->GetEntryCountAsync(barrier_callback);
+    }
+  }
+  int64_t GetSizeOfAllEntries() const override {
+    base::ClampedNumeric<int64_t> result;
+    for (const auto& backend_shard : backend_shards_) {
+      result += backend_shard->GetSizeOfAllEntries();
+    }
+    return result;
+  }
+  bool MaybeLoadInMemoryIndex(ErrorCallback callback) override {
+    if (in_memory_load_trigered_) {
+      return false;
+    }
+    in_memory_load_trigered_ = true;
+    auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->LoadInMemoryIndex(barrier_callback);
+    }
+    return true;
+  }
+  bool MaybeRunCleanupDoomedEntries(ErrorCallback callback) override {
+    auto barrier_callback = CreateBarrierErrorCallback(std::move(callback));
+    size_t sync_return_count = 0;
+    for (const auto& backend_shard : backend_shards_) {
+      if (backend_shard->MaybeRunCleanupDoomedEntries(barrier_callback)) {
+        ++sync_return_count;
+      }
+    }
+    if (sync_return_count == GetSizeOfShards()) {
+      return true;
+    }
+    for (size_t i = 0; i < sync_return_count; ++i) {
+      barrier_callback.Run(Error::kOk);
+    }
+    return false;
+  }
+  void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) override {
+    auto barrier_callback = base::BarrierCallback<bool>(
+        GetSizeOfShards(), base::BindOnce(
+                               [](base::OnceCallback<void(bool)> callback,
+                                  std::vector<bool> results) {
+                                 for (auto result : results) {
+                                   if (result) {
+                                     std::move(callback).Run(true);
+                                     return;
+                                   }
+                                 }
+                                 std::move(callback).Run(false);
+                               },
+                               std::move(callback)));
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->MaybeRunCheckpoint(barrier_callback);
+    }
+  }
+  void EnableStrictCorruptionCheckForTesting() override {
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->EnableStrictCorruptionCheckForTesting();  // IN-TEST
+    }
+  }
+
+  void SetSimulateDbFailureForTesting(bool fail) override {
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->SetSimulateDbFailureForTesting(fail);  // IN-TEST
+    }
+  }
+
+  void RazeAndPoisonForTesting() override {
+    for (const auto& backend_shard : backend_shards_) {
+      backend_shard->RazeAndPoisonForTesting();  // IN-TEST
+    }
+  }
+
+  IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const override {
+    return GetShard(key_hash).GetIndexStateForHash(key_hash);
+  }
+
+  ShardId GetShardIdForHash(CacheEntryKey::Hash key_hash) const override {
+    return ShardId(key_hash.value() % GetSizeOfShards());
+  }
+
+ private:
+  void SetMaxSize(int64_t max_bytes) {
+    max_bytes_ = max_bytes;
+    high_watermark_ =
+        max_bytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;
+    idle_time_high_watermark_ =
+        max_bytes * kSqlBackendIdleTimeEvictionHighWaterMarkPermille / 1000;
+    low_watermark_ = max_bytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;
+    max_file_size_ = CalculateMaxFileSize(max_bytes);
+  }
+  base::RepeatingCallback<void(Error)> CreateBarrierErrorCallback(
+      ErrorCallback callback) {
+    return base::BarrierCallback<Error>(
+        GetSizeOfShards(),
+        base::BindOnce(
+            [](ErrorCallback callback, const std::vector<Error>& errors) {
+              // Return the first error, or kOk if all succeeded.
+              for (const auto& error : errors) {
+                if (error != Error::kOk) {
+                  std::move(callback).Run(error);
+                  return;
+                }
+              }
+              std::move(callback).Run(Error::kOk);
+            },
+            std::move(callback)));
+  }
+  size_t GetSizeOfShards() const { return background_task_runners_.size(); }
+  BackendShard& GetShard(CacheEntryKey::Hash hash) const {
+    return *backend_shards_[GetShardIdForHash(hash).value()];
+  }
+  BackendShard& GetShard(const CacheEntryKey& key) const {
+    return GetShard(key.hash());
+  }
+
+  void OnInitializeFinished(ErrorCallback callback,
+                            std::vector<InitResultOrError> results) {
+    CHECK_EQ(results.size(), GetSizeOfShards());
+    int64_t total_database_size = 0;
+    for (const auto& result : results) {
+      if (!result.has_value()) {
+        std::move(callback).Run(result.error());
+        return;
+      }
+    }
+    for (const auto& result : results) {
+      // Only the result from the shard 0 has max_bytes.
+      if (result->max_bytes.has_value()) {
+        SetMaxSize(*result->max_bytes);
+        base::UmaHistogramMemoryLargeMB(
+            base::StrCat({kHistogramPrefix, "MaxSize"}),
+            *result->max_bytes / 1024 / 1024);
+      }
+      total_database_size += result->database_size;
+    }
+    base::UmaHistogramMemoryLargeMB(
+        base::StrCat({kHistogramPrefix, "DatabaseSize"}),
+        total_database_size / 1024 / 1024);
+    base::UmaHistogramCounts1M(base::StrCat({kHistogramPrefix, "EntryCount"}),
+                               GetEntryCount());
+    base::UmaHistogramMemoryLargeMB(
+        base::StrCat({kHistogramPrefix, "TotalSize"}),
+        GetSizeOfAllEntries() / 1024 / 1024);
+    std::move(callback).Run(Error::kOk);
+  }
+
+  const std::vector<scoped_refptr<base::SequencedTaskRunner>>
+      background_task_runners_;
+  const std::vector<std::unique_ptr<BackendShard>> backend_shards_;
+
+  const int64_t user_max_bytes_;
+
+  int64_t max_bytes_ = 0;
+
+  int64_t high_watermark_ = 0;
+  int64_t idle_time_high_watermark_ = 0;
+  int64_t low_watermark_ = 0;
+  int64_t max_file_size_ = 0;
+  bool eviction_in_progress_ = false;
+
+  // Whether loading of the in-memory index has been triggered.
+  bool in_memory_load_trigered_ = false;
 
   base::WeakPtrFactory<SqlPersistentStoreImpl> weak_factory_{this};
 };
@@ -3084,9 +3569,10 @@ std::unique_ptr<SqlPersistentStore> SqlPersistentStore::Create(
     const base::FilePath& path,
     int64_t max_bytes,
     net::CacheType type,
-    const scoped_refptr<base::SequencedTaskRunner>& background_task_runner) {
-  return std::make_unique<SqlPersistentStoreImpl>(path, max_bytes, type,
-                                                  background_task_runner);
+    std::vector<scoped_refptr<base::SequencedTaskRunner>>
+        background_task_runners) {
+  return std::make_unique<SqlPersistentStoreImpl>(
+      path, max_bytes, type, std::move(background_task_runners));
 }
 
 // Default constructor and move operations for EntryInfo.
@@ -3096,15 +3582,20 @@ SqlPersistentStore::EntryInfo::EntryInfo(EntryInfo&&) = default;
 SqlPersistentStore::EntryInfo& SqlPersistentStore::EntryInfo::operator=(
     EntryInfo&&) = default;
 
-SqlPersistentStore::EntryIterator::EntryIterator() = default;
-SqlPersistentStore::EntryIterator::~EntryIterator() = default;
-SqlPersistentStore::EntryIterator::EntryIterator(const EntryIterator&) =
+SqlPersistentStore::ResIdAndShardId::ResIdAndShardId(ResId res_id,
+                                                     ShardId shard_id)
+    : res_id(res_id), shard_id(shard_id) {}
+SqlPersistentStore::ResIdAndShardId::ResIdAndShardId() = default;
+SqlPersistentStore::ResIdAndShardId::~ResIdAndShardId() = default;
+SqlPersistentStore::ResIdAndShardId::ResIdAndShardId(const ResIdAndShardId&) =
     default;
-SqlPersistentStore::EntryIterator& SqlPersistentStore::EntryIterator::operator=(
-    const EntryIterator&) = default;
-SqlPersistentStore::EntryIterator::EntryIterator(EntryIterator&&) = default;
-SqlPersistentStore::EntryIterator& SqlPersistentStore::EntryIterator::operator=(
-    EntryIterator&&) = default;
+SqlPersistentStore::ResIdAndShardId&
+SqlPersistentStore::ResIdAndShardId::operator=(const ResIdAndShardId&) =
+    default;
+SqlPersistentStore::ResIdAndShardId::ResIdAndShardId(ResIdAndShardId&&) =
+    default;
+SqlPersistentStore::ResIdAndShardId&
+SqlPersistentStore::ResIdAndShardId::operator=(ResIdAndShardId&&) = default;
 
 SqlPersistentStore::EntryInfoWithKeyAndIterator::EntryInfoWithKeyAndIterator() =
     default;

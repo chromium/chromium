@@ -668,6 +668,11 @@ BASE_FEATURE_PARAM(bool,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSynchronousOff",
                    false);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheShardCount,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheShardCount",
+                   3);
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);

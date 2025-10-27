@@ -190,8 +190,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // operation coordinator, for unit tests.
   int FlushQueueForTest(CompletionOnceCallback callback);
 
-  scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunnerForTest() {
-    return background_task_runner_;
+  std::vector<scoped_refptr<base::SequencedTaskRunner>>&
+  GetBackgroundTaskRunnersForTest() {
+    return background_task_runners_;
   }
 
   SqlPersistentStore* GetSqlStoreForTest() { return store_.get(); }
@@ -477,8 +478,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   const base::FilePath path_;
 
-  // Task runner for all background SQLite operations.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  // Task runners for background SQLite operations.
+  std::vector<scoped_refptr<base::SequencedTaskRunner>>
+      background_task_runners_;
 
   // The persistent store that manages the SQLite database.
   std::unique_ptr<SqlPersistentStore> store_;

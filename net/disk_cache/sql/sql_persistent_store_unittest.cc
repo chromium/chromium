@@ -75,14 +75,14 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Returns the full path to the SQLite database file.
   base::FilePath GetDatabaseFilePath() const {
-    return GetTempPath().Append(kSqlBackendDatabaseFileName);
+    return GetTempPath().Append(kSqlBackendDatabaseShard0FileName);
   }
 
   // Creates a SqlPersistentStore instance.
   void CreateStore(int64_t max_bytes = kDefaultMaxBytes) {
     store_ = SqlPersistentStore::Create(GetTempPath(), max_bytes,
                                         net::CacheType::DISK_CACHE,
-                                        background_task_runner_);
+                                        {background_task_runner_});
   }
 
   // Initializes the store and waits for the operation to complete.
@@ -267,10 +267,10 @@ class SqlPersistentStoreTest : public testing::Test {
   SqlPersistentStore::Error DeleteLiveEntriesBetween(
       base::Time initial_time,
       base::Time end_time,
-      base::flat_set<SqlPersistentStore::ResId> excluded_ids = {}) {
+      std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list = {}) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
     store_->DeleteLiveEntriesBetween(
-        initial_time, end_time, std::move(excluded_ids), future.GetCallback());
+        initial_time, end_time, std::move(excluded_list), future.GetCallback());
     return future.Get();
   }
 
@@ -405,10 +405,10 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Synchronous wrapper for StartEviction.
   SqlPersistentStore::Error StartEviction(
-      base::flat_set<SqlPersistentStore::ResId> excluded_res_ids,
+      std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list,
       bool is_idle_time_eviction) {
     base::test::TestFuture<SqlPersistentStore::Error> future;
-    store_->StartEviction(std::move(excluded_res_ids), is_idle_time_eviction,
+    store_->StartEviction(std::move(excluded_list), is_idle_time_eviction,
                           future.GetCallback());
     return future.Take();
   }
@@ -674,7 +674,7 @@ TEST_F(SqlPersistentStoreTest, InitFailsWithCreationDirectoryFailure) {
 
   store_ = SqlPersistentStore::Create(db_dir_path, kDefaultMaxBytes,
                                       net::CacheType::DISK_CACHE,
-                                      background_task_runner_);
+                                      {background_task_runner_});
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kFailedToCreateDirectory);
 }
 
@@ -1673,8 +1673,10 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   // kKey2 should be excluded.
   // Expected to delete: kKey1.
   // Expected to keep: kKey2, kKey3, kKey4, kKey5.
-  base::flat_set<SqlPersistentStore::ResId> excluded_ids = {res_id2};
-  ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_ids),
+  std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list = {
+      SqlPersistentStore::ResIdAndShardId(
+          res_id2, store_->GetShardIdForHash(kKey2.hash()))};
+  ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_list),
             SqlPersistentStore::Error::kOk);
   EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
             SqlPersistentStore::IndexState::kHashNotFound);
@@ -3801,10 +3803,13 @@ TEST_F(SqlPersistentStoreTest, StartEvictionExcludesGivenKeys) {
             SqlPersistentStore::EvictionUrgency::kNeeded);
 
   // Exclude the oldest entry.
-  base::flat_set<SqlPersistentStore::ResId> excluded_res_ids = {*first_res_id};
+  std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list = {
+      SqlPersistentStore::ResIdAndShardId(
+          *first_res_id,
+          store_->GetShardIdForHash(CacheEntryKey("key0").hash()))};
 
   // Start eviction.
-  ASSERT_EQ(StartEviction(std::move(excluded_res_ids),
+  ASSERT_EQ(StartEviction(std::move(excluded_list),
                           /*is_idle_time_eviction=*/false),
             SqlPersistentStore::Error::kOk);
 
@@ -3880,11 +3885,11 @@ int SqlPersistentStoreTest::GetNumberForWritesRequiredForCheckpoint(
   CHECK(temp_dir.CreateUniqueTempDir());
   store_ = SqlPersistentStore::Create(temp_dir.GetPath(), kDefaultMaxBytes,
                                       net::CacheType::DISK_CACHE,
-                                      background_task_runner_);
+                                      {background_task_runner_});
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
 
   const base::FilePath db_path =
-      temp_dir.GetPath().Append(kSqlBackendDatabaseFileName);
+      temp_dir.GetPath().Append(kSqlBackendDatabaseShard0FileName);
   const base::FilePath wal_path = sql::Database::WriteAheadLogPath(db_path);
 
   int64_t db_size = CheckedGetFileSize(db_path);
@@ -3970,7 +3975,7 @@ TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
 
   store_ = SqlPersistentStore::Create(GetTempPath(), kDefaultMaxBytes,
                                       net::CacheType::DISK_CACHE,
-                                      background_task_runner_);
+                                      {background_task_runner_});
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
   const base::FilePath db_path = GetDatabaseFilePath();
   int64_t previous_db_size = CheckedGetFileSize(db_path);

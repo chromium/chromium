@@ -163,7 +163,7 @@ inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
         "doomed=0";
 // clang-format on
 
-inline constexpr const char kDeleteResourcesByResIds_DeleteFromResources[] =
+inline constexpr const char kDeleteResourceByResIds_DeleteFromResources[] =
     "DELETE FROM resources WHERE res_id=?";
 
 inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
@@ -338,22 +338,16 @@ inline constexpr const char kOpenNextEntry_SelectLiveResources[] =
     "ORDER BY res_id DESC";
 // clang-format on
 
-inline constexpr const char kRunEviction_SelectLiveResources[] =
+inline constexpr const char kStartEviction_SelectLiveResources[] =
     // clang-format off
     "SELECT "
-        "res_id,"       // 0
-        "bytes_usage "  // 1
+        "res_id,"        // 0
+        "bytes_usage, "  // 1
+        "last_used "     // 2
     "FROM resources "
     "WHERE "
         "doomed=0 "
     "ORDER BY last_used";
-// clang-format on
-
-inline constexpr const char kRunEviction_DeleteFromResources[] =
-    // clang-format off
-    "DELETE FROM resources "
-    "WHERE "
-        "res_id=?";       // 0
 // clang-format on
 
 inline constexpr const char
@@ -393,7 +387,7 @@ enum class Query {
   kDeleteAllEntries_DeleteFromResources,
   kDeleteAllEntries_DeleteFromBlobs,
   kDeleteLiveEntriesBetween_SelectLiveResources,
-  kDeleteResourcesByResIds_DeleteFromResources,
+  kDeleteResourceByResIds_DeleteFromResources,
   kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
   kUpdateEntryLastUsedByResId_UpdateResourceLastUsed,
   kUpdateEntryHeaderAndLastUsed_UpdateResource,
@@ -408,8 +402,7 @@ enum class Query {
   kGetEntryAvailableRange_SelectOverlapping,
   kCalculateSizeOfEntriesBetween_SelectLiveResources,
   kOpenNextEntry_SelectLiveResources,
-  kRunEviction_SelectLiveResources,
-  kRunEviction_DeleteFromResources,
+  kStartEviction_SelectLiveResources,
   kCalculateResourceEntryCount_SelectCountFromLiveResources,
   kCalculateTotalSize_SelectTotalSizeFromLiveResources,
   kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources,
@@ -446,8 +439,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDeleteAllEntries_DeleteFromBlobs;
     case Query::kDeleteLiveEntriesBetween_SelectLiveResources:
       return internal::kDeleteLiveEntriesBetween_SelectLiveResources;
-    case Query::kDeleteResourcesByResIds_DeleteFromResources:
-      return internal::kDeleteResourcesByResIds_DeleteFromResources;
+    case Query::kDeleteResourceByResIds_DeleteFromResources:
+      return internal::kDeleteResourceByResIds_DeleteFromResources;
     case Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed:
       return internal::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed;
     case Query::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed:
@@ -476,10 +469,8 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kCalculateSizeOfEntriesBetween_SelectLiveResources;
     case Query::kOpenNextEntry_SelectLiveResources:
       return internal::kOpenNextEntry_SelectLiveResources;
-    case Query::kRunEviction_SelectLiveResources:
-      return internal::kRunEviction_SelectLiveResources;
-    case Query::kRunEviction_DeleteFromResources:
-      return internal::kRunEviction_DeleteFromResources;
+    case Query::kStartEviction_SelectLiveResources:
+      return internal::kStartEviction_SelectLiveResources;
     case Query::kCalculateResourceEntryCount_SelectCountFromLiveResources:
       return internal::
           kCalculateResourceEntryCount_SelectCountFromLiveResources;

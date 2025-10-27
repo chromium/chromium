@@ -406,18 +406,21 @@ void DiskCacheTestWithCache::TearDown() {
 
 void DiskCacheTestWithCache::ResetCaches() {
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner;
+  std::vector<scoped_refptr<base::SequencedTaskRunner>> background_task_runners;
   if (sql_cache_impl_) {
-    background_task_runner = sql_cache_impl_->GetBackgroundTaskRunnerForTest();
+    background_task_runners =
+        sql_cache_impl_->GetBackgroundTaskRunnersForTest();
   }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
   std::unique_ptr<disk_cache::Backend> cache = TakeCache();
   cache.reset();
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-  if (background_task_runner) {
-    base::RunLoop run_loop;
-    background_task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+  if (!background_task_runners.empty()) {
+    for (auto background_task_runner : background_task_runners) {
+      base::RunLoop run_loop;
+      background_task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
+    }
   }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 }

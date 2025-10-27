@@ -29,8 +29,12 @@ inline constexpr std::string_view kSqlBackendMetaTableKeyEntryCount =
 inline constexpr std::string_view kSqlBackendMetaTableKeyTotalSize =
     "TotalSize";
 
-inline constexpr base::FilePath::CharType kSqlBackendDatabaseFileName[] =
-    FILE_PATH_LITERAL("sqldb");
+// The file name prefix of the SQL backend database shards.
+inline constexpr std::string_view kSqlBackendDatabaseFileNamePrefix = "sqldb";
+
+// The file name of the first shard of the SQL backend database.
+inline constexpr base::FilePath::CharType kSqlBackendDatabaseShard0FileName[] =
+    FILE_PATH_LITERAL("sqldb0");
 
 // The name of the fake index file. This file is created to signal the presence
 // of the SQL backend and to prevent other backends from trying to use the same
@@ -38,10 +42,9 @@ inline constexpr base::FilePath::CharType kSqlBackendDatabaseFileName[] =
 inline constexpr base::FilePath::CharType kSqlBackendFakeIndexFileName[] =
     FILE_PATH_LITERAL("index");
 
-// The magic number for the fake index file. This is "SQLCache" in
-// little-endian.
-inline constexpr uint64_t kSqlBackendFakeIndexMagicNumber =
-    UINT64_C(0x65686361434c5153);
+// The prefix of the fake index file.
+// The full content is the prefix followed by the number of shards.
+inline constexpr std::string_view kSqlBackendFakeIndexPrefix = "SQLCache";
 
 // ----------------------------------------------------------------------------
 // Database Scheme Version history:

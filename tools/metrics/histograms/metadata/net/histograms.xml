@@ -166,6 +166,8 @@ chromium-metrics-reviews@google.com.
   <variant name="DeleteLiveEntriesBetween"/>
   <variant name="DeleteLiveEntry"/>
   <variant name="DoomEntry"/>
+  <variant name="EvictEntries"/>
+  <variant name="EvictEntriesOnIdleTime"/>
   <variant name="GetEntryAvailableRange"/>
   <variant name="Initialize"/>
   <variant name="OpenEntry"/>
@@ -7865,23 +7867,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.SqlDiskCache.Backend.{EvictionType}.{TimeType}"
+<histogram name="Net.SqlDiskCache.Backend.{EvictionType}.TimeToSelectEntries"
     units="microseconds" expires_after="2026-01-20">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Records the time taken to {TimeType} during a single eviction run in the
-    SQL-based disk cache. This is recorded after the eviction is finished. The
-    histogram is not reported on Windows machines without high resolution
-    clocks.
+    Records the time taken to select entries for deletion during a single
+    eviction run in the SQL-based disk cache. This is recorded after the
+    selection of the candidates is finished. The histogram is not reported on
+    Windows machines without high resolution clocks.
   </summary>
   <token key="EvictionType">
     <variant name="RunEviction"/>
     <variant name="RunEvictionOnIdleTime"/>
-  </token>
-  <token key="TimeType">
-    <variant name="TimeToDeleteEntries" summary="delete entries"/>
-    <variant name="TimeToSelectEntries" summary="select entries for deletion"/>
   </token>
 </histogram>
 
