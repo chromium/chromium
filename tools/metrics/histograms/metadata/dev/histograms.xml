@@ -187,6 +187,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Insights.TeaserGenerationTime" units="ms"
+    expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate a console insight teaser.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.InspectElement" units="ms" expires_after="2026-03-22">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
