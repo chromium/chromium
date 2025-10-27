@@ -309,7 +309,7 @@ finish loading. For example the test would not wait for a url containing
 
 #### @WAIT-FOR
 
-Delays a test unitl a string defined by the directive is present in the dump.
+Delays a test until a string defined by the directive is present in the dump.
 
 Occasionally you may need to write a dump tree test that makes some changes to
 the document before it runs the test. In that case you can use a special
