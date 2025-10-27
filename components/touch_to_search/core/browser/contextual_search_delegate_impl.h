@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_
-#define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_
+#ifndef COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_
+#define COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_
 
 #include <stddef.h>
 
@@ -15,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "components/contextual_search/core/browser/contextual_search_context.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/browser/contextual_search_context.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
 
 namespace content {
 class WebContents;
@@ -175,4 +175,4 @@ class ContextualSearchDelegateImpl final : public ContextualSearchDelegate {
   base::WeakPtrFactory<ContextualSearchDelegateImpl> weak_ptr_factory_{this};
 };
 
-#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_
+#endif  // COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_

@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_language_list.h"
 #include "components/translate/core/browser/translate_manager.h"

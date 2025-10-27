@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_field_trial.h"
+#include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/contextual_search/core/browser/public.h"
+#include "components/touch_to_search/core/browser/public.h"
 
 namespace {
 
@@ -52,8 +52,9 @@ std::string ContextualSearchFieldTrial::GetResolverURLPrefix() {
   if (!is_resolver_url_prefix_cached_) {
     is_resolver_url_prefix_cached_ = true;
     resolver_url_prefix_ = GetSwitch(kContextualSearchResolverUrl);
-    if (resolver_url_prefix_.empty())
+    if (resolver_url_prefix_.empty()) {
       resolver_url_prefix_ = GetParam(kContextualSearchResolverUrl);
+    }
   }
   return resolver_url_prefix_;
 }
@@ -92,10 +93,12 @@ bool ContextualSearchFieldTrial::GetBooleanParam(const std::string& name,
     std::string string_value = GetSwitch(name);
     // A switch with an empty value is true.
     bool has_switch = HasSwitch(name);
-    if (has_switch && string_value.empty())
+    if (has_switch && string_value.empty()) {
       string_value = kAnyNonEmptyValue;
-    if (!has_switch)
+    }
+    if (!has_switch) {
       string_value = GetParam(name);
+    }
     *cached_value = !string_value.empty() && string_value != kFalseValue;
   }
   return *cached_value;
@@ -109,13 +112,15 @@ int ContextualSearchFieldTrial::GetIntParamValueOrDefault(
   if (!*is_value_cached) {
     *is_value_cached = true;
     std::string param_string = GetSwitch(name);
-    if (param_string.empty())
+    if (param_string.empty()) {
       param_string = GetParam(name);
+    }
     int param_int;
-    if (!param_string.empty() && base::StringToInt(param_string, &param_int))
+    if (!param_string.empty() && base::StringToInt(param_string, &param_int)) {
       *cached_value = param_int;
-    else
+    } else {
       *cached_value = default_value;
+    }
   }
   return *cached_value;
 }
@@ -125,10 +130,11 @@ bool ContextualSearchFieldTrial::HasSwitch(const std::string& name) {
 }
 
 std::string ContextualSearchFieldTrial::GetSwitch(const std::string& name) {
-  if (!HasSwitch(name))
+  if (!HasSwitch(name)) {
     return std::string();
-  else
+  } else {
     return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(name);
+  }
 }
 
 std::string ContextualSearchFieldTrial::GetParam(const std::string& name) {

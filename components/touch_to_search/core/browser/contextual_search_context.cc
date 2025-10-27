@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_context.h"
+#include "components/touch_to_search/core/browser/contextual_search_context.h"
 
 #include "components/language_detection/core/constants.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
@@ -45,8 +45,9 @@ void ContextualSearchContext::PrepareToResolve(
 
 std::string ContextualSearchContext::DetectLanguage() const {
   std::string language = GetReliableLanguage(GetSelection());
-  if (language.empty())
+  if (language.empty()) {
     language = GetReliableLanguage(surrounding_text_);
+  }
   return language;
 }
 

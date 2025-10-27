@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
-#define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
+#ifndef COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
+#define COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
 
 #include <stddef.h>
 
@@ -11,8 +11,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/contextual_search/core/browser/contextual_search_context.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/browser/contextual_search_context.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
 
 namespace content {
 class WebContents;
@@ -47,4 +47,4 @@ class ContextualSearchDelegate {
       SearchTermResolutionCallback callback) = 0;
 };
 
-#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_
+#endif  // COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_H_

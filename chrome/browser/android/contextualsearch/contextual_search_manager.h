@@ -11,7 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate.h"
 
 class Profile;
 

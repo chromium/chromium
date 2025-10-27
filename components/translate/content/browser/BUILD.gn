@@ -16,7 +16,7 @@ static_library("browser") {
 
   public_deps = [
     "//base",
-    "//components/contextual_search/core/browser",
+    "//components/touch_to_search/core/browser",
     "//components/translate/content/common",
     "//components/translate/core/browser",
     "//components/translate/core/common",

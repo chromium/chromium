@@ -4,8 +4,8 @@
 
 // Provides public definitions.
 
-#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_PUBLIC_H_
-#define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_PUBLIC_H_
+#ifndef COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_PUBLIC_H_
+#define COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_PUBLIC_H_
 
 namespace contextual_search {
 
@@ -44,4 +44,4 @@ extern const int kContextualCardsServerDebugMixin;
 
 }  // namespace contextual_search
 
-#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_PUBLIC_H_
+#endif  // COMPONENTS_TOUCH_TO_SEARCH_CORE_BROWSER_PUBLIC_H_

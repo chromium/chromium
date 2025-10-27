@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate_impl.h"
 
 #include <stddef.h>
 
@@ -20,11 +20,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "components/contextual_search/core/browser/contextual_search_context.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
-#include "components/contextual_search/core/proto/client_discourse_context.pb.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/touch_to_search/core/browser/contextual_search_context.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/proto/client_discourse_context.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

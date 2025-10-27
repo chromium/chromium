@@ -984,12 +984,6 @@
     'content_worker': {
       'filepath': 'content/.*worker',
     },
-    'contextual_search': {
-      'filepath': 'chrome/browser/android/contextualsearch/|' \
-                  'chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/|' \
-                  'chrome/android/javatests/src/org/chromium/chrome/browser/contextualsearch/|' \
-                  'components/contextual_search/',
-    },
     'contextual_tasks': {
       'filepath': 'contextual_tasks/',
     },
@@ -2307,6 +2301,12 @@
       'filepath': 'ui/touch_selection/'\
                   '|content/public/android/java/src/org/chromium/content/browser/selection/'
     },
+    'touch_to_search': {
+      'filepath': 'chrome/browser/android/contextualsearch/|' \
+                  'chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/|' \
+                  'chrome/android/javatests/src/org/chromium/chrome/browser/contextualsearch/|' \
+                  'components/touch_to_search/',
+    },
     'tracing': {
       'filepath': 'base/debug/trace_event'\
                   '|base/trace_event/'\
@@ -2920,9 +2920,6 @@
     'content_shell': ['peter@chromium.org'],
     'content_worker': ['blink-worker-reviews@chromium.org',
                        'kinuko+watch@chromium.org'],
-    'contextual_search': ['donnd+watch@chromium.org',
-                          'twellington+watch@chromium.org',
-                          'gangwu+watch@chromium.org'],
     'contextual_tasks': ['sophiechang@chromium.org'],
     'core_timing': ['speed-metrics-dev+watchlist@chromium.org',
                     'core-timing-reviews@chromium.org'],
@@ -3393,6 +3390,9 @@
     'tools_win_chromeexts': ['robliao+watch@chromium.org'],
     'touch_selection': ['ajith.v@samsung.com',
                         'ajith.v@chromium.org'],
+    'touch_to_search': ['donnd+watch@chromium.org',
+                        'twellington+watch@chromium.org',
+                        'gangwu+watch@chromium.org'],
     'tracing': ['tracing+reviews@chromium.org',
                 'wfh+watch@chromium.org',
                 'spang+watch@chromium.org'],

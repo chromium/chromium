@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -20,11 +20,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/contextual_search/core/browser/contextual_search_field_trial.h"
-#include "components/contextual_search/core/browser/public.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
-#include "components/contextual_search/core/proto/client_discourse_context.pb.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
+#include "components/touch_to_search/core/browser/public.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/proto/client_discourse_context.pb.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -129,8 +129,9 @@ void ContextualSearchDelegateImpl::GatherAndSaveSurroundingText(
       get_text_callback = base::BindOnce(
           &ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable,
           weak_ptr_factory_.GetWeakPtr(), context, callback);
-  if (!context)
+  if (!context) {
     return;
+  }
 
   context->SetBasePageEncoding(web_contents->GetEncoding());
   int surroundingTextSize = context->CanResolve()
@@ -150,8 +151,9 @@ void ContextualSearchDelegateImpl::StartSearchTermResolutionRequest(
     content::WebContents* web_contents,
     SearchTermResolutionCallback callback) {
   DCHECK(web_contents);
-  if (!context)
+  if (!context) {
     return;
+  }
 
   DCHECK(context->CanResolve());
 
@@ -160,8 +162,9 @@ void ContextualSearchDelegateImpl::StartSearchTermResolutionRequest(
   url_loader_.reset();
 
   // Decide if the URL should be sent with the context.
-  if (context->CanSendBasePageUrl())
+  if (context->CanSendBasePageUrl()) {
     context->SetBasePageUrl(web_contents->GetLastCommittedURL());
+  }
 
   // Issue the resolve request.
   ResolveSearchTermFromContext(context, std::move(callback));
@@ -302,8 +305,9 @@ void ContextualSearchDelegateImpl::OnUrlLoadComplete(
     base::WeakPtr<ContextualSearchContext> context,
     SearchTermResolutionCallback callback,
     std::unique_ptr<std::string> response_body) {
-  if (!context)
+  if (!context) {
     return;
+  }
 
   // Network error codes are negative. See: src/net/base/net_error_list.h.
   base::UmaHistogramSparse("Search.ContextualSearch.NetError",
@@ -456,8 +460,9 @@ void ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable(
     const std::u16string& surrounding_text,
     uint32_t start_offset,
     uint32_t end_offset) {
-  if (!context)
+  if (!context) {
     return;
+  }
 
   // Sometimes the surroundings are 0, 0, '', so run the callback with empty
   // data in that case. See https://crbug.com/393100.
@@ -529,8 +534,9 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
 
   auto extract_string = [&dict](std::string_view key, std::string* out) {
     const std::string* string_pointer = dict->FindString(key);
-    if (string_pointer)
+    if (string_pointer) {
       *out = *string_pointer;
+    }
   };
 
   extract_string(kContextualSearchPreventPreload, prevent_preload);
@@ -553,8 +559,9 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
         dict->FindList(kContextualSearchMentionsKey);
     // Note that because we've deserialized the json and it's not used later, we
     // can just take the list without worrying about putting it back.
-    if (mentions_list && mentions_list->size() >= 2u)
+    if (mentions_list && mentions_list->size() >= 2u) {
       ExtractMentionsStartEnd(*mentions_list, mention_start, mention_end);
+    }
   }
 
   // If either the selected text or the resolved term is not the search term,
@@ -606,8 +613,9 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   // TODO(donnd): make sure this works with a non-integer or missing value!
   std::optional<int> maybe_coca_card_tag =
       dict->FindInt(kContextualSearchCardTag);
-  if (coca_card_tag && maybe_coca_card_tag)
+  if (coca_card_tag && maybe_coca_card_tag) {
     *coca_card_tag = *maybe_coca_card_tag;
+  }
 
   // Any Contextual Cards integration.
   // For testing purposes check if there was a diagnostic from Contextual
@@ -638,10 +646,12 @@ void ContextualSearchDelegateImpl::ExtractMentionsStartEnd(
     const base::Value::List& mentions_list,
     int* start_result,
     int* end_result) const {
-  if (mentions_list.size() >= 1 && mentions_list[0].is_int())
+  if (mentions_list.size() >= 1 && mentions_list[0].is_int()) {
     *start_result = std::max(0, mentions_list[0].GetInt());
-  if (mentions_list.size() >= 2 && mentions_list[1].is_int())
+  }
+  if (mentions_list.size() >= 2 && mentions_list[1].is_int()) {
     *end_result = std::max(0, mentions_list[1].GetInt());
+  }
 }
 
 std::u16string ContextualSearchDelegateImpl::SampleSurroundingText(

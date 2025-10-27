@@ -126,9 +126,9 @@ static_library("renderer") {
   defines = []
 
   public_deps = [
-    "//components/contextual_search:buildflags",
     "//components/fingerprinting_protection_filter/renderer",
     "//components/signin/public/base:signin_buildflags",
+    "//components/touch_to_search:buildflags",
   ]
 
   deps = [

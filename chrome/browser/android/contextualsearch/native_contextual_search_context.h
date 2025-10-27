@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_NATIVE_CONTEXTUAL_SEARCH_CONTEXT_H_
 
 #include "base/android/jni_android.h"
-#include "components/contextual_search/core/browser/contextual_search_context.h"
+#include "components/touch_to_search/core/browser/contextual_search_context.h"
 
 // A ContextualSearchContext subclass that is modifiable via JNI. This is the
 // native implementation of the Java ContextualSearchContext; Instance lifetimes
