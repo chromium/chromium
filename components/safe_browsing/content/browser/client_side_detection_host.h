@@ -21,6 +21,8 @@
 #include "base/unguessable_token.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -59,7 +61,8 @@ class ClientSideDetectionHost
     : public content::WebContentsObserver,
       public permissions::PermissionRequestManager::Observer,
       public AsyncCheckTracker::Observer,
-      public autofill::AutofillManager::Observer {
+      public autofill::AutofillManager::Observer,
+      public history::HistoryServiceObserver {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -158,6 +161,7 @@ class ClientSideDetectionHost
       std::unique_ptr<Delegate> delegate,
       IntelligentScanDelegate* intelligent_scan_delegate,
       PrefService* pref_service,
+      history::HistoryService* history_service,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
       const PrimaryAccountSignedIn& account_signed_in_callback);
@@ -202,6 +206,10 @@ class ClientSideDetectionHost
       autofill::FormGlobalId formId,
       autofill::AutofillManager::Observer::FieldTypeSource source) override;
 
+  // history::HistoryServiceObserver method:
+  void HistoryServiceBeingDeleted(
+      history::HistoryService* history_service) override;
+
   void RegisterAutofillManager();
 
  protected:
@@ -210,6 +218,7 @@ class ClientSideDetectionHost
       std::unique_ptr<Delegate> delegate,
       IntelligentScanDelegate* intelligent_scan_delegate,
       PrefService* pref_service,
+      history::HistoryService* history_service,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
       const PrimaryAccountSignedIn& account_signed_in_callback);
@@ -222,6 +231,7 @@ class ClientSideDetectionHost
   friend class ClientSideDetectionHostTestBase;
   friend class ClientSideDetectionHostNotificationTest;
   friend class ClientSideDetectionHostScamDetectionTest;
+  friend class ClientSideDetectionHostCreditCardFormTest;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
@@ -290,7 +300,9 @@ class ClientSideDetectionHost
       EventDoesNotTriggerPreclassificationChecksWhenESBDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostCreditCardFormTest,
-      CreditCardFormDoesNotStartPreclassificationOnHighSiteEngagement);
+      CreditCardFormDoesNotStartPreclassificationOnRepeatVisit);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
+                           CreditCardFormUsesCachedHistoryServiceResult);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            CreditCardFormTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
@@ -405,6 +417,9 @@ class ClientSideDetectionHost
     intelligent_scan_delegate_ = intelligent_scan_delegate;
   }
 
+  void set_history_service_for_testing(
+      history::HistoryService* history_service);
+
   // Callbacks for when preclassification is started/done.
   using PreclassificationStarted =
       base::RepeatingCallback<void(ClientSideDetectionType)>;
@@ -467,6 +482,13 @@ class ClientSideDetectionHost
   bool HasDonePreclassificationCheckOnSameURL(
       ClientSideDetectionType client_side_detection_type);
 
+  // OnCreditCardFormEvent is a callback that is called to determine
+  // whether a credit card from event should trigger a CSD ping.
+  void OnCreditCardFormEvent(
+      std::string event_name,
+      std::optional<base::TimeTicks> start_time,
+      history::VisibleVisitCountToHostResult history_result);
+
   // This pointer may be nullptr if client-side phishing detection is
   // disabled.
   base::WeakPtr<ClientSideDetectionService> csd_service_;
@@ -503,6 +525,17 @@ class ClientSideDetectionHost
 
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;
+
+  // Unowned object used for getting site history.
+  raw_ptr<history::HistoryService> history_service_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observer_{this};
+
+  // Cached result of calling HistoryService.GetVisibleVisitCountToHost
+  // for some URL.
+  std::optional<GURL> last_history_url_;
+  std::optional<history::VisibleVisitCountToHostResult> last_history_result_;
 
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
@@ -558,6 +591,8 @@ class ClientSideDetectionHost
 
   // The session ID for the current intelligent scan request.
   std::optional<base::UnguessableToken> intelligent_scan_session_id_;
+
+  base::CancelableTaskTracker task_tracker_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };

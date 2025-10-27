@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -93,7 +94,7 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
 
 // TODO: crbug.com/443098659 - Add parameters to determine the
 // appropriate CreditCardFormEvent permutation to use.
-void LogEvent(std::string_view event_name);
+void LogEvent(std::string_view event_name, SiteVisit site_visit);
 
 std::string ToString(SiteVisit site_visit);
 std::string ToString(ReferringApp referring_app);

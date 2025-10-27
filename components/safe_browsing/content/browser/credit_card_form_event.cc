@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/content/browser/credit_card_form_event.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 
@@ -22,9 +24,8 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
   return static_cast<CreditCardFormEvent>(ordinal);
 }
 
-void LogEvent(std::string_view event_name) {
+void LogEvent(std::string_view event_name, SiteVisit site_visit) {
   // Use these values until parameters are added to specify the correct values.
-  SiteVisit site_visit = kUnknownSiteVisit;
   ReferringApp referring_app = kNoReferringApp;
   FieldDetectionHeuristic heuristic = kNoDetectionHeuristic;
 

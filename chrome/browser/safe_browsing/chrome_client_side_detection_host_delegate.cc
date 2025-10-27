@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/client_side_detection_intelligent_scan_delegate_factory.h"
@@ -41,6 +42,8 @@ ChromeClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
       tab, std::make_unique<ChromeClientSideDetectionHostDelegate>(tab),
       ClientSideDetectionIntelligentScanDelegateFactory::GetForProfile(profile),
       profile->GetPrefs(),
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(),

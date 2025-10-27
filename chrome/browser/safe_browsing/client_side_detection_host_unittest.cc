@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
@@ -46,6 +47,9 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -54,6 +58,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/credit_card_form_event.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
@@ -68,7 +73,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -88,7 +92,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "url/gurl.h"
 
 using base::test::RunOnceClosure;
@@ -2148,17 +2151,42 @@ class ClientSideDetectionHostCreditCardFormTest
   ClientSideDetectionHostCreditCardFormTest()
       : ClientSideDetectionHostTestBase(false /*is_incognito*/) {}
 
- protected:
+  void SetUp() override {
+    ClientSideDetectionHostTestBase::SetUp();
+
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryServiceTest");
+    ASSERT_TRUE(base::CreateDirectory(history_dir_));
+    history_service_ = std::make_unique<history::HistoryService>();
+    if (!history_service_->Init(
+            history::TestHistoryDatabaseParamsForPath(history_dir_))) {
+      history_service_.reset();
+      ADD_FAILURE();
+    }
+
+    csd_host_->set_history_service_for_testing(history_service_.get());
+  }
+
+  void TearDown() override {
+    DCHECK(history_service_);
+
+    csd_host_->HistoryServiceBeingDeleted(history_service_.get());
+
+    base::RunLoop run_loop;
+    history_service_->SetOnBackendDestroyTask(run_loop.QuitClosure());
+    history_service_.reset();
+    run_loop.Run();
+
+    ClientSideDetectionHostTestBase::TearDown();
+  }
+
   autofill::AutofillManager* autofill_manager() {
     return autofill_manager_injector_[web_contents()->GetPrimaryMainFrame()];
   }
 
-  site_engagement::SiteEngagementService* site_engagement_service() {
-    site_engagement::SiteEngagementService* service =
-        site_engagement::SiteEngagementService::Get(profile());
-    DCHECK(service);
-    return service;
-  }
+ protected:
+  std::unique_ptr<history::HistoryService> history_service_;
 
  private:
   // All of these are needed in this order to get an AutofillManager that is
@@ -2170,6 +2198,9 @@ class ClientSideDetectionHostCreditCardFormTest
       autofill_driver_injector_;
   autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
       autofill_manager_injector_;
+
+  base::ScopedTempDir temp_dir_;
+  base::FilePath history_dir_;
 };
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
@@ -2411,22 +2442,19 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
-       CreditCardFormProceedsWithClassificationOnLowSiteEngagement) {
+       CreditCardFormProceedsWithClassificationOnNewSiteVisit) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
   // Feature enabled, 0% HC allowlist acceptance, 100% sample rate,
-  // max site engagement = LOW:
-  blink::mojom::EngagementLevel maxSiteEngagement =
-      blink::mojom::EngagementLevel::LOW;
+  // max site engagement = 1 visit (new visit)
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
           {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
           {kCsdCreditCardFormSampleRate.name, "1.0"},
-          {kCsdCreditCardFormMaxSiteEngagement.name,
-           base::NumberToString(static_cast<int>(maxSiteEngagement))},
+          {kCsdCreditCardFormMaxUserVisit.name, "1"},
       });
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -2435,18 +2463,20 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
 
-  // This should result in a reported site engagement level of LOW.
-  site_engagement_service()->ResetBaseScoreForURL(url, 1.0);
-
   NavigateAndCommit(url);
 
   // Check that histograms haven't been recorded yet.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.SiteEngagement.CreditCardForm", 0);
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
 
   csd_host_->RegisterAutofillManager();
+
+  // Record one visit in history for this URL.
+  history_service_->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
                                 nullptr);
@@ -2457,31 +2487,34 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   WaitAndCheckPreClassificationChecks();
 
   // Pre-classification should have proceeded to classification.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 1);
   histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.SiteEngagement.CreditCardForm",
-      blink::mojom::EngagementLevel::LOW, 1);
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm",
       PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 1);
 }
 
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
-       CreditCardFormDoesNotStartPreclassificationOnHighSiteEngagement) {
+       CreditCardFormDoesNotStartPreclassificationOnRepeatVisit) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
   // Feature enabled, 0% HC allowlist acceptance, 100% sample rate,
-  // max site engagement = MINIMAL:
-  blink::mojom::EngagementLevel maxSiteEngagement =
-      blink::mojom::EngagementLevel::MINIMAL;
+  // max site engagement = 2 visits
   feature_list_.InitAndEnableFeatureWithParameters(
       kClientSideDetectionCreditCardForm,
       {
           {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
           {kCsdCreditCardFormSampleRate.name, "1.0"},
-          {kCsdCreditCardFormMaxSiteEngagement.name,
-           base::NumberToString(static_cast<int>(maxSiteEngagement))},
+          {kCsdCreditCardFormMaxUserVisit.name, "2"},
       });
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
@@ -2490,16 +2523,20 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
 
-  // This should result in a reported site engagement level of LOW.
-  site_engagement_service()->ResetBaseScoreForURL(url, 1.0);
-
   NavigateAndCommit(url);
 
   // Check that histograms haven't been recorded yet.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.SiteEngagement.CreditCardForm", 0);
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
 
   csd_host_->RegisterAutofillManager();
+
+  // Record three visits in history for this URL (one more than the max).
+  for (int i = 0; i < 3; i++) {
+    history_service_->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  }
 
   TestFuture<ClientSideDetectionType> future;
   csd_host_->set_preclassification_started_callback_for_testing(
@@ -2507,15 +2544,92 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
+  base::StatisticsRecorder::HistogramWaiter event_waiter(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined");
   autofill_manager()->OnFormsSeen({form_data}, {});
+  event_waiter.Wait();
 
   // The Autofill field detection event should not have resulted in
   // triggering preclassification.
   EXPECT_FALSE(future.IsReady());
 
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 1);
   histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.SiteEngagement.CreditCardForm",
-      blink::mojom::EngagementLevel::LOW, 1);
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      credit_card_form::kRepeatSiteVisitNoReferringAppNoDetectionHeuristic, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 1);
+}
+
+TEST_F(ClientSideDetectionHostCreditCardFormTest,
+       CreditCardFormUsesCachedHistoryServiceResult) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  // Feature enabled, 0% HC allowlist acceptance, 100% sample rate,
+  // max site engagement = 1 visit
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionCreditCardForm,
+      {
+          {kCsdCreditCardFormHCAcceptanceRate.name, "0.0"},
+          {kCsdCreditCardFormSampleRate.name, "1.0"},
+          {kCsdCreditCardFormMaxUserVisit.name, "1"},
+      });
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+
+  NavigateAndCommit(url);
+
+  // Check that histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 0);
+
+  csd_host_->RegisterAutofillManager();
+
+  // Record one visit in history for this URL (one more than the max).
+  history_service_->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+
+  // Interact with the form, waiting for the event to be logged.
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  auto form_data = autofill::test::CreateTestCreditCardFormData(
+      /*is_https=*/true, /*use_month_type=*/true);
+  autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitUntilHighConfidenceAllowlistCheckDone();
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 1);
+
+  // Interact with the form a second time, waiting again for the event to be
+  // logged
+  base::StatisticsRecorder::HistogramWaiter event_waiter(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined");
+  autofill_manager()->OnFormsSeen({form_data}, {});
+  event_waiter.Wait();
+
+  // The second event should have been counted, but not a second
+  // HistoryService call.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 2);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 2);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost", 1);
 }
 
 class ClientSideDetectionHostNotificationTest

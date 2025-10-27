@@ -80,9 +80,9 @@ const base::FeatureParam<double> kCsdCreditCardFormHCAcceptanceRate{
 const base::FeatureParam<double> kCsdCreditCardFormSampleRate{
     &kClientSideDetectionCreditCardForm, "SampleRate",
     /*default_value=*/0.0};
-const base::FeatureParam<int> kCsdCreditCardFormMaxSiteEngagement{
-    &kClientSideDetectionCreditCardForm, "MaxSiteEngagement",
-    /*default_value=*/1000};
+const base::FeatureParam<int> kCsdCreditCardFormMaxUserVisit{
+    &kClientSideDetectionCreditCardForm, "MaxUserVisit",
+    /*default_value=*/1};
 
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);

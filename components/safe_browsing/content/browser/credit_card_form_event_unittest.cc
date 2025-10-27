@@ -4,9 +4,11 @@
 
 #include "components/safe_browsing/content/browser/credit_card_form_event.h"
 
+#include <optional>
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -137,16 +139,38 @@ TEST_P(GetCreditCardFormEventTest, GetExpectedEvent) {
   ASSERT_EQ(event, test_case.expected_event);
 }
 
-TEST(CreditCardFormEventTest, LogEvent) {
+struct LogEventTestCase {
+  SiteVisit site_visit;
+  CreditCardFormEvent expected_event;
+
+  static std::string GetTestName(
+      const testing::TestParamInfo<LogEventTestCase>& test_case) {
+    return ToString(test_case.param.site_visit);
+  }
+};
+
+class LogEventTest : public testing::TestWithParam<LogEventTestCase> {};
+
+constexpr LogEventTestCase log_event_test_cases[] = {
+    {kUnknownSiteVisit, kUnknownSiteVisitNoReferringAppNoDetectionHeuristic},
+    {kNewSiteVisit, kNewSiteVisitNoReferringAppNoDetectionHeuristic},
+    {kRepeatSiteVisit, kRepeatSiteVisitNoReferringAppNoDetectionHeuristic},
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LogEventTest,
+                         testing::ValuesIn(log_event_test_cases),
+                         LogEventTestCase::GetTestName);
+
+TEST_P(LogEventTest, LogExpectedHistogram) {
+  const LogEventTestCase& test_case = GetParam();
   base::HistogramTester histogram_tester;
-  CreditCardFormEvent expected_event = GetCreditCardFormEvent(
-      kUnknownSiteVisit, kNoReferringApp, kNoDetectionHeuristic);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
-  LogEvent("OnFieldTypesDetermined");
+  LogEvent("OnFieldTypesDetermined", test_case.site_visit);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
-      expected_event, 1);
+      test_case.expected_event, 1);
 }
 
 }  // namespace safe_browsing::credit_card_form

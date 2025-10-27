@@ -22,10 +22,13 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
@@ -45,7 +48,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
-#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -65,7 +67,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
-#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -718,12 +719,14 @@ std::unique_ptr<ClientSideDetectionHost> ClientSideDetectionHost::Create(
     std::unique_ptr<Delegate> delegate,
     IntelligentScanDelegate* intelligent_scan_delegate,
     PrefService* pref_service,
+    history::HistoryService* history_service,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
     const PrimaryAccountSignedIn& account_signed_in_callback) {
   return base::WrapUnique(new ClientSideDetectionHost(
       tab, std::move(delegate), intelligent_scan_delegate, pref_service,
-      std::move(token_fetcher), is_off_the_record, account_signed_in_callback));
+      history_service, std::move(token_fetcher), is_off_the_record,
+      account_signed_in_callback));
 }
 
 ClientSideDetectionHost::ClientSideDetectionHost(
@@ -731,6 +734,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
     std::unique_ptr<Delegate> delegate,
     IntelligentScanDelegate* intelligent_scan_delegate,
     PrefService* pref_service,
+    history::HistoryService* history_service,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
     const PrimaryAccountSignedIn& account_signed_in_callback)
@@ -742,6 +746,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       delegate_(std::move(delegate)),
       intelligent_scan_delegate_(intelligent_scan_delegate),
       pref_service_(pref_service),
+      history_service_(history_service),
       token_fetcher_(std::move(token_fetcher)),
       is_off_the_record_(is_off_the_record),
       account_signed_in_callback_(account_signed_in_callback),
@@ -756,6 +761,10 @@ ClientSideDetectionHost::ClientSideDetectionHost(
     ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
     ClientSideDetectionFeatureCache::FromWebContents(web_contents())
         ->AddClearCacheSubscription(csd_service_);
+  }
+
+  if (history_service_) {
+    history_service_observer_.Observe(history_service_);
   }
 
   // |ui_manager_| and |database_manager_| can
@@ -908,7 +917,7 @@ void ClientSideDetectionHost::OnAsyncSafeBrowsingCheckTrackerDestructed() {
 // ping when the form is categorized as a credit card form.
 void ClientSideDetectionHost::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
-    autofill::FormGlobalId formId,
+    autofill::FormGlobalId form_id,
     autofill::AutofillManager::Observer::FieldTypeSource source) {
   // Early exit if ESB is not enabled.
   if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
@@ -917,14 +926,57 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
 
   // If the form is not a credit card form, then do not trigger
   // pre-classification.
-  if (auto it = manager.form_structures().find(formId);
+  if (auto it = manager.form_structures().find(form_id);
       it != manager.form_structures().end() &&
       !it->second.get()->GetFormTypes().contains(
           autofill::FormType::kCreditCardForm)) {
     return;
   }
 
-  credit_card_form::LogEvent("OnFieldTypesDetermined");
+  // Site visit count is needed as part of determining whether to send
+  // a CSD ping, so look that up via HistoryService and delegate
+  // handling the result to OnCreditCardFormEvent.
+  GURL url = tab_->GetPrimaryMainFrame()->GetLastCommittedURL();
+  std::optional<history::VisibleVisitCountToHostResult> cached_history_result;
+  if (url == last_history_url_) {
+    cached_history_result = last_history_result_;
+  }
+  if (history_service_ && !cached_history_result) {
+    last_history_url_ = url;
+    history_service_->GetVisibleVisitCountToHost(
+        url,
+        base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormEvent,
+                       weak_factory_.GetWeakPtr(), "OnFieldTypesDetermined",
+                       base::TimeTicks::Now()),
+        &task_tracker_);
+  } else {
+    history::VisibleVisitCountToHostResult history_result =
+        cached_history_result.value_or(
+            history::VisibleVisitCountToHostResult{/*success=*/false});
+    OnCreditCardFormEvent("OnFieldTypesDetermined", std::nullopt,
+                          history_result);
+  }
+}
+
+void ClientSideDetectionHost::OnCreditCardFormEvent(
+    std::string event_name,
+    std::optional<base::TimeTicks> start_time,
+    history::VisibleVisitCountToHostResult history_result) {
+  last_history_result_ = history_result;
+  if (start_time.has_value()) {
+    UmaHistogramMediumTimes(
+        "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost",
+        base::TimeTicks::Now() - start_time.value());
+  }
+
+  credit_card_form::SiteVisit site_visit = credit_card_form::kUnknownSiteVisit;
+  if (history_result.success) {
+    site_visit = history_result.count >
+                         static_cast<int>(kCsdCreditCardFormMaxUserVisit.Get())
+                     ? credit_card_form::kRepeatSiteVisit
+                     : credit_card_form::kNewSiteVisit;
+  }
+  credit_card_form::LogEvent(event_name, site_visit);
 
   // Early exit if preclassification has already been done for
   // CREDIT_CARD_FORM and this URL.
@@ -933,23 +985,8 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     return;
   }
 
-  // Report metric that breaks down preclassification volume by site engagement
-  // level. This is reported before any preemptive filtering below to provide
-  // full telemetry.
-  site_engagement::SiteEngagementService* site_engagement_service =
-      site_engagement::SiteEngagementService::Get(
-          web_contents()->GetBrowserContext());
-  if (site_engagement_service) {
-    base::UmaHistogramEnumeration(
-        "SBClientPhishing.SiteEngagement.CreditCardForm",
-        site_engagement_service->GetEngagementLevel(current_url_));
-  }
-
-  // Early exit from starting preclassification if site engagement is high
-  // (user has visited this same site a lot before).
-  if (site_engagement_service &&
-      static_cast<int>(site_engagement_service->GetEngagementLevel(
-          current_url_)) > kCsdCreditCardFormMaxSiteEngagement.Get()) {
+  // Early exit if it is known that the user has visited this site before.
+  if (site_visit == credit_card_form::kRepeatSiteVisit) {
     return;
   }
 
@@ -1755,6 +1792,21 @@ void ClientSideDetectionHost::SendRequest(
                      did_match_high_confidence_allowlist);
   csd_service_->SendClientReportPhishingRequest(
       std::move(verdict), std::move(callback), access_token);
+}
+
+void ClientSideDetectionHost::set_history_service_for_testing(
+    history::HistoryService* history_service) {
+  history_service_ = history_service;
+  history_service_observer_.Reset();
+  if (history_service_) {
+    history_service_observer_.Observe(history_service_);
+  }
+}
+
+void ClientSideDetectionHost::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  history_service_ = nullptr;
+  history_service_observer_.Reset();
 }
 
 void ClientSideDetectionHost::
