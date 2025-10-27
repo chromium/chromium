@@ -2023,8 +2023,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsFailsWhenNotPinned) {
-  // TODO(bryantchandler): This segfauts on multi-instance. Fix and re-enable.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
   NavigateTabAndOpenGlicFloating();
   // Unpinning a tab that is not pinned should fail.
   const int tab_id =
@@ -2036,8 +2034,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinTabsFailsWhenNotPinned) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testUnpinAllTabs) {
-  // TODO(bryantchandler): This has a UAF on multi-instance. Fix and re-enable.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
   NavigateTabAndOpenGlicFloating();
   const int tab_id =
       GetTabId(browser()->tab_strip_model()->GetActiveWebContents());
