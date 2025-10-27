@@ -61,6 +61,7 @@ void CreateWebAppForBackgroundInstall(
     std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
+    const GURL& last_committed_url,
     WebAppInstalledCallback installed_callback);
 
 // Shows the PWA Install dialog for the active tab in the provided browser.

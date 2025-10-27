@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -51,6 +52,7 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
     base::WeakPtr<content::WebContents> web_contents,
+    const GURL& last_committed_url,
     WebAppInstallDialogCallback dialog_callback,
     WebInstallFromUrlCommandCallback installed_callback)
     : WebAppCommand<SharedWebContentsLock,
@@ -67,6 +69,7 @@ WebInstallFromUrlCommand::WebInstallFromUrlCommand(
       manifest_id_(manifest_id),
       install_url_(install_url),
       web_contents_(web_contents),
+      last_committed_url_(last_committed_url),
       dialog_callback_(std::move(dialog_callback)),
       install_error_log_entry_(/*background_installation=*/false,
                                kInstallSource) {
@@ -244,6 +247,7 @@ void WebInstallFromUrlCommand::OnInstallDialogCompleted(
 
   web_app_info_->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
+  web_app_info_->installed_by = last_committed_url_;
   WebAppInstallFinalizer::FinalizeOptions finalize_options(kInstallSource);
   finalize_options.install_state =
       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION;

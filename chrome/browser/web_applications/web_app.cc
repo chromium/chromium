@@ -889,6 +889,38 @@ void WebApp::SetStoredTrustedIconSizes(IconPurpose purpose,
   }
 }
 
+void WebApp::SetInstalledBy(InstalledByPassKey,
+                            std::deque<AppInstalledBy> installed_by) {
+  for (const AppInstalledBy& data : installed_by) {
+    CHECK(data.requesting_url().is_valid());
+  }
+  installed_by_ = std::move(installed_by);
+}
+
+constexpr int kMaxInstalledBySize = 10;
+void WebApp::AddInstalledByInfo(AppInstalledBy installed_by_info) {
+  CHECK(installed_by_info.requesting_url().is_valid());
+
+  // Check for duplicates - only compare URLs, not timestamps.
+  // Remove duplicate entry so it can be re-added with updated timestamp.
+  installed_by_.erase(
+      std::remove_if(installed_by_.begin(), installed_by_.end(),
+                     [&installed_by_info](const AppInstalledBy& info) {
+                       return info.requesting_url() ==
+                              installed_by_info.requesting_url();
+                     }),
+      installed_by_.end());
+
+  // Add the new entry.
+  installed_by_.push_back(std::move(installed_by_info));
+
+  // Enforce max 10 entries - remove oldest if exceeding capacity.
+  if (installed_by_.size() > kMaxInstalledBySize) {
+    installed_by_.pop_front();
+  }
+  CHECK(installed_by_.size() <= kMaxInstalledBySize);
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -1036,7 +1068,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.pending_update_info_,
         app.trusted_icons_,
         app.stored_trusted_icon_sizes_any_,
-        app.stored_trusted_icon_sizes_maskable_
+        app.stored_trusted_icon_sizes_maskable_,
+        app.installed_by_
         // clang-format on
     );
   };
@@ -1257,6 +1290,12 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   proto::MaybeSerialize(pending_update_info_, "pending_update_info", root);
 
   root.Set("trusted_icons", ConvertDebugValueList(trusted_icons_));
+
+  base::Value::List installed_by_list;
+  for (const auto& installed_by_data : installed_by_) {
+    installed_by_list.Append(installed_by_data.InstalledByToDebugValue());
+  }
+  root.Set("installed_by", std::move(installed_by_list));
 
   base::Value::Dict stored_trusted_icon_sizes_json;
   for (IconPurpose purpose : kIconPurposes) {

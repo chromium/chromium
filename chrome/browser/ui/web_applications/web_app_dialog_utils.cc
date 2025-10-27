@@ -285,12 +285,14 @@ void CreateWebAppForBackgroundInstall(
     std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
+    const GURL& last_committed_url,
     WebAppInstalledCallback installed_callback) {
   auto* provider = WebAppProvider::GetForWebContents(initiating_web_contents);
   CHECK(provider);
 
   provider->scheduler().InstallAppFromUrl(
       install_url, manifest_id, initiating_web_contents->GetWeakPtr(),
+      last_committed_url,
       base::BindOnce(&OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite,
                      webapps::WebappInstallSource::WEB_INSTALL,

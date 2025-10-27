@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <iosfwd>
 #include <memory>
 #include <optional>
@@ -21,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -55,6 +57,11 @@ enum class WebappInstallSource;
 namespace web_app {
 class UrlPatternWithRegexMatcher;
 class WebAppScope;
+
+class InstalledByPassKey {
+  friend std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto);
+  InstalledByPassKey() = default;
+};
 
 class WebApp {
  public:
@@ -407,6 +414,12 @@ class WebApp {
   // here.
   const SortedSizesPx& stored_trusted_icon_sizes(IconPurpose purpose) const;
 
+  // A list of up to ten most recent and unique page URLs that attempted to
+  // install this app via the Web Install API.
+  const std::deque<web_app::AppInstalledBy>& installed_by() const {
+    return installed_by_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -548,6 +561,12 @@ class WebApp {
 
   void SetStoredTrustedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
 
+  void SetInstalledBy(InstalledByPassKey,
+                      std::deque<AppInstalledBy> installed_by);
+
+  // CHECK-fails if GURL in |AppInstalledBy| is invalid.
+  void AddInstalledByInfo(AppInstalledBy installed_by_data);
+
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   // Used by the WebAppTest suite to cover only platform agnostic fields to
@@ -671,6 +690,8 @@ class WebApp {
   // enumeration.
   SortedSizesPx stored_trusted_icon_sizes_any_;
   SortedSizesPx stored_trusted_icon_sizes_maskable_;
+
+  std::deque<AppInstalledBy> installed_by_;
 
   // New fields must be added to:
   //  - |operator==|
