@@ -254,6 +254,23 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    public void testFragmentWithSupervisedAccount(boolean nightModeEnabled, int orientation)
+            throws IOException {
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_supervised_account");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountOnManagedDevice(boolean nightModeEnabled, int orientation)
             throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
