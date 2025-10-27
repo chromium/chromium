@@ -319,6 +319,14 @@ if (is_android) {
   _use_stable_package_name_for_trichrome =
       use_stable_package_name_for_trichrome && android_channel == "beta"
 
+  # Changing chrome_version_code here to prevent different output
+  # in the android_chrome_versions.txt above
+  if (_use_stable_package_name_for_trichrome) {
+    chrome_version_code = chrome_beta_version_code
+  } else if (is_desktop_android) {
+    chrome_version_code = chrome_desktop_version_code
+  }
+
   # Lookup tables for version codes.
   # For the list of configurations that exist, see:
   #     https://chromium.googlesource.com/chromium/src/+/main/docs/android_native_libraries.md#build-variants-eg_monochrome_64_32_apk
