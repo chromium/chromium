@@ -10,4 +10,8 @@ interface Translator {
   // The source/target languages are specified when the `Translator` is
   // initialized. `output` is nullopt if the translation fails.
   Translate(string input) => (string? output);
+
+  // Splits the translation source language input into sentences
+  // for chunk-by-chunk streaming of translation outputs.
+  SplitSentences(string input) => (array<string> sentences);
 };

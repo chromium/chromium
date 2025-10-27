@@ -211,6 +211,31 @@ TEST_F(TranslateKitClientTest, TranslateFailure) {
   EXPECT_EQ(translator->Translate("SIMULATE_ERROR"), std::nullopt);
 }
 
+// Tests that the SplitSentences method returns sentence chunks.
+TEST_F(TranslateKitClientTest, SplitSentences) {
+  auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
+                             {
+                                 {"0/dict.dat", "En to Ja - "},
+                             });
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator);
+  std::vector<std::string> sentences =
+      translator->SplitSentences("This is a sentence. This is another one.");
+  ASSERT_EQ(sentences.size(), 2u);
+}
+
+// Tests that the SplitSentences method handles empty input.
+TEST_F(TranslateKitClientTest, SplitSentencesEmptyInput) {
+  auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
+                             {
+                                 {"0/dict.dat", "En to Ja - "},
+                             });
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator);
+  std::vector<std::string> sentences = translator->SplitSentences("");
+  ASSERT_EQ(sentences.size(), 0u);
+}
+
 // Tests that the library is loaded successfully.
 TEST_F(TranslateKitClientTest, LoadBinary) {
   base::HistogramTester histogram_tester;

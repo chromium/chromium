@@ -49,6 +49,10 @@ class Translator : public blink::mojom::Translator {
   void TranslateStreamingCallback(mojo::RemoteSetElementId responder_id,
                                   int total_translations,
                                   const std::optional<std::string>& output);
+  // Callback for `SplitSentences` that invokes `Translate` on each sentence.
+  void SplitSentencesCallback(
+      mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+      const std::vector<std::string>& sentences);
   // Check shared prerequisites for Translate and TranslateStreaming;
   // return true if all were satisfied, false otherwise.
   bool VerifyPrerequisites(

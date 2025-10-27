@@ -34,6 +34,12 @@ class TranslateKitTranslator : public mojom::Translator {
     std::move(translate_callback).Run(translator_->Translate(input));
   }
 
+  void SplitSentences(const std::string& input,
+                      SplitSentencesCallback callback) override {
+    CHECK(translator_);
+    std::move(callback).Run(translator_->SplitSentences(input));
+  }
+
  private:
   // Owned by the TranslateKitClient managed by OnDeviceTranslationService.
   // The lifetime must be longer than this instance.

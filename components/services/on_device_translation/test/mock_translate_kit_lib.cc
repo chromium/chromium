@@ -30,6 +30,7 @@
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/to_string.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -310,6 +311,26 @@ DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslatorTranslate(
                           ->Translate(input_string);
   // Just pass the input text.
   callback(TranslateKitOutputText(output.data(), output.size()), user_data);
+  return true;
+}
+
+typedef void (*SentenceSplitCallbackFn)(TranslateKitOutputText, std::uintptr_t);
+DISABLE_CFI_DLSYM TRANSLATE_KIT_EXPORT bool TranslateKitSplitSentences(
+    TranslateKitInputText input,
+    TranslateKitLanguage source_lang,
+    SentenceSplitCallbackFn callback,
+    std::uintptr_t user_data) {
+  std::string_view input_string(input.input_text, input.input_text_size);
+  if (input_string == "SIMULATE_ERROR") {
+    return false;
+  }
+
+  std::vector<std::string_view> sentences = base::SplitStringPiece(
+      input_string, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& sentence : sentences) {
+    callback(TranslateKitOutputText(sentence.data(), sentence.size()),
+             user_data);
+  }
   return true;
 }
 

@@ -15,7 +15,6 @@
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/live_caption/translation_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -120,6 +119,27 @@ void Translator::Translate(
   }
 }
 
+void Translator::SplitSentencesCallback(
+    mojo::Remote<blink::mojom::ModelStreamingResponder> responder,
+    const std::vector<std::string>& sentences) {
+  if (sentences.empty()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
+        /*quota_error_info=*/nullptr);
+    return;
+  }
+  mojo::RemoteSetElementId responder_id =
+      responder_set_.Add(std::move(responder));
+
+  pending_translations_[responder_id] = sentences.size();
+  const int total_translations = sentences.size();
+  for (const auto& sentence : sentences) {
+    translator_remote_->Translate(
+        sentence, base::BindOnce(&Translator::TranslateStreamingCallback,
+                                 weak_ptr_factory_.GetWeakPtr(), responder_id,
+                                 total_translations));
+  }
+}
 void Translator::TranslateStreamingCallback(
     mojo::RemoteSetElementId responder_id,
     int total_translations,
@@ -183,16 +203,6 @@ void Translator::TranslateStreaming(
     return;
   }
 
-  std::vector<std::string> sentences =
-      captions::SplitSentences(input, source_lang_);
-
-  if (sentences.empty()) {
-    responder->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
-        /*quota_error_info=*/nullptr);
-    return;
-  }
-
   if (!translator_remote_.is_connected()) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure,
@@ -200,18 +210,12 @@ void Translator::TranslateStreaming(
     return;
   }
 
-  mojo::RemoteSetElementId responder_id =
-      responder_set_.Add(std::move(responder));
-
-  pending_translations_[responder_id] = sentences.size();
-
-  int total_translations = sentences.size();
-  for (const auto& sentence : sentences) {
-    translator_remote_->Translate(
-        sentence, base::BindOnce(&Translator::TranslateStreamingCallback,
-                                 weak_ptr_factory_.GetWeakPtr(), responder_id,
-                                 total_translations));
-  }
+  translator_remote_->SplitSentences(
+      input,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&Translator::SplitSentencesCallback,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(responder)),
+          std::vector<std::string>()));
 }
 
 }  // namespace on_device_translation
