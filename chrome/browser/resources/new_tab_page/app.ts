@@ -595,7 +595,6 @@ export class AppElement extends AppElementBase {
     if (!this.modulesEnabled_) {
       this.recordBrowserPromoMetrics_();
     }
-    this.pageHandler_.maybeTriggerAutomaticCustomizeChromePromo();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -769,19 +768,23 @@ export class AppElement extends AppElementBase {
     // Integration tests use this attribute to determine when lazy load has
     // completed.
     document.documentElement.setAttribute('lazy-loaded', String(true));
-    this.maybeRegisterCustomizeButtonHelpBubble_();
+    if (this.maybeRegisterCustomizeButtonHelpBubble_()) {
+      this.pageHandler_.maybeTriggerAutomaticCustomizeChromePromo();
+    }
     if (this.showWallpaperSearchButton_) {
       this.customizeButtonsHandler_.incrementWallpaperSearchButtonShownCount();
     }
   }
 
-  private maybeRegisterCustomizeButtonHelpBubble_() {
+  private maybeRegisterCustomizeButtonHelpBubble_(): boolean {
     if (!this.isFooterVisible_) {
       this.registerHelpBubble(
           CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
           ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
       this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
+      return true;
     }
+    return false;
   }
 
   protected onComposeboxInitialized_(e: CustomEvent<{

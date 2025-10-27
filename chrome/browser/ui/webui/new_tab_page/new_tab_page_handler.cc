@@ -1203,6 +1203,10 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
     return;
   }
 
+  feature_promo_helper_->MaybeShowFeaturePromo(
+      feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature,
+      web_contents_.get());
+
   CustomizeChromeAutoOpenedUserData::GetOrCreateForProfile(profile_)
       ->IncrementTimesOpened();
   profile_->GetPrefs()->SetInteger(

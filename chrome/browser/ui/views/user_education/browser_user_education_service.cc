@@ -596,6 +596,20 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered after user is updated to "
                        "the new Chrome Refresh design.")));
 
+  // kIPHDesktopCustomizeChromeAutoPromoFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature,
+          CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
+          IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_BODY,
+          IDS_IPH_CUSTOMIZE_CHROME_AUTO_OPEN_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
+          .SetInAnyContext(true)
+          .SetMetadata(143, "kbajkiewicz@google.com",
+                       "Attempts to trigger when user is on NTP to promote "
+                       "customization.")));
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
   registry.RegisterFeature(std::move(

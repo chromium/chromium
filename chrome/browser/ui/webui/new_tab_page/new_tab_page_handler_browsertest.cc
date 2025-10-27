@@ -18,12 +18,14 @@
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
@@ -109,7 +111,7 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
 
 // TODO(crbug.com/454014654): Check which tests can be ran in
 // new_tab_page_handler_unittest.cc and move them there.
-class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
+class NewTabPageHandlerWithCustomizeChromePromoBaseBrowserTest
     : public NewTabPageHandlerBaseBrowserTest {
  protected:
   bool IsCustomizeChromeEntryShowing() {
@@ -135,9 +137,20 @@ class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
       ntp_features::kNtpCustomizeChromeAutoOpen};
 };
 
+class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
+    : public InteractiveBrowserTestMixin<
+          NewTabPageHandlerWithCustomizeChromePromoBaseBrowserTest> {
+ protected:
+  void OpenNewTabPageInForegroundAndWaitForLoad() {
+    OpenNewTabPageInForeground();
+    RunTestSequence(InAnyContext(
+        WaitForShow(CustomizeButtonsHandler::kCustomizeChromeButtonElementId)));
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        OpenCustomizeChromePromoWhenFlagEnabled) {
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
@@ -159,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
       SkColorSetRGB(0x00, 0x00, 0x00),
       ui::mojom::BrowserColorVariant::kVibrant);
 
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectUniqueSample(
@@ -175,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
   profile()->GetPrefs()->SetInteger(prefs::kNtpCustomizeChromeButtonOpenCount,
                                     1);
 
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectUniqueSample(
@@ -190,11 +203,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
   for (size_t i = 0;
        i < ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get(); ++i) {
-    OpenNewTabPageInForeground();
+    OpenNewTabPageInForegroundAndWaitForLoad();
     EXPECT_TRUE(IsCustomizeChromeEntryShowing());
   }
 
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectBucketCount(
@@ -208,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        DontOpenPanelAgainWhenPanelWasExplicitlyCanceledBefore) {
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 
   // Simulate side panel closed via explicit user action. After that, no new
@@ -218,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
       .side_panel_ui()
       ->Close();
 
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
 
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
@@ -252,10 +265,10 @@ class NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest
 IN_PROC_BROWSER_TEST_F(
     NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest,
     PRE_DontOpenPanelWhenPromoAutoopenedInTheSameSession) {
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectUniqueSample(
@@ -266,10 +279,10 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest,
     DontOpenPanelWhenPromoAutoopenedInTheSameSession) {
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectBucketCount(
@@ -297,12 +310,33 @@ class NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest
 IN_PROC_BROWSER_TEST_F(
     NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest,
     DontOpenPanelWhenOnlyIPHShouldBeShown) {
-  OpenNewTabPageInForeground();
+  OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
+}
+
+class NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest
+    : public InteractiveFeaturePromoTestMixin<
+          NewTabPageHandlerWithCustomizeChromePromoBaseBrowserTest> {
+ public:
+  NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest()
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature})) {}
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest,
+                       ShouldAutoShowCustomizeChromeIPH) {
+  OpenNewTabPageInForeground();
+  RunTestSequence(
+      InAnyContext(WaitForShow(
+          CustomizeButtonsHandler::kCustomizeChromeButtonElementId)),
+      CheckPromoRequested(
+          feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature, true));
+
+  EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
