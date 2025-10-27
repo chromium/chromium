@@ -337,6 +337,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kGroupNewTabWithParent,
     &kHeadlessTabModel,
     &kHistoryPaneAndroid,
+    &kHomeModulePrefRefactor,
     &kHomepageIsNewTabPagePolicyAndroid,
     &kHubBackButton,
     &kHubSlideAnimation,
