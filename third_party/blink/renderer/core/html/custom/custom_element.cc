@@ -133,17 +133,22 @@ HTMLElement* CustomElement::CreateCustomElement(Document& document,
   // 7. Otherwise:
   return To<HTMLElement>(
       CreateUncustomizedOrUndefinedElementTemplate<kQNameIsValid>(
-          document, tag_name, flags, g_null_atom, /*registry*/ nullptr));
+          document, tag_name, flags, g_null_atom, /*registry*/ nullptr,
+          /*wait_for_registry=*/false));
 }
 
 // Step 6 of https://dom.spec.whatwg.org/#concept-create-element
+// wait_for_registry flag indicates whether we want to ignore a passed
+// in null registry and let element implicitly pick up the tree scope's
+// registry or keep it null and wait for a registry to be set later.
 template <CustomElement::CreateUUCheckLevel level>
 Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
     Document& document,
     const QualifiedName& tag_name,
     const CreateElementFlags flags,
     const AtomicString& is_value,
-    CustomElementRegistry* registry) {
+    CustomElementRegistry* registry,
+    const bool wait_for_registry) {
   if (level == kQNameIsValid) {
     DCHECK(is_value.IsNull());
     DCHECK(ShouldCreateCustomElement(tag_name)) << tag_name;
@@ -165,7 +170,8 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElementTemplate(
             !is_value.IsNull()))
     element->SetCustomElementState(CustomElementState::kUndefined);
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
-      registry) {
+      (registry || wait_for_registry)) {
+    DCHECK(!registry || !wait_for_registry);
     element->SetCustomElementRegistry(registry);
   }
 
@@ -177,9 +183,10 @@ Element* CustomElement::CreateUncustomizedOrUndefinedElement(
     const QualifiedName& tag_name,
     const CreateElementFlags flags,
     const AtomicString& is_value,
-    CustomElementRegistry* registry) {
+    CustomElementRegistry* registry,
+    const bool wait_for_registry) {
   return CreateUncustomizedOrUndefinedElementTemplate<kCheckAll>(
-      document, tag_name, flags, is_value, registry);
+      document, tag_name, flags, is_value, registry, wait_for_registry);
 }
 
 HTMLElement* CustomElement::CreateFailedElement(

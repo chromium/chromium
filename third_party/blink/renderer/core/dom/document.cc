@@ -1622,7 +1622,7 @@ Element* Document::CreateElement(const QualifiedName& q_name,
   }
 
   return CustomElement::CreateUncustomizedOrUndefinedElement(
-      *this, q_name, flags, is, registry);
+      *this, q_name, flags, is, registry, /*wait_for_registry=*/false);
 }
 
 DocumentFragment* Document::createDocumentFragment() {

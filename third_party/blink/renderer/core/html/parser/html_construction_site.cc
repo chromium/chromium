@@ -1332,8 +1332,12 @@ Element* HTMLConstructionSite::CreateElement(
       element = definition->CreateElement(document, tag_name,
                                           GetCreateElementFlags());
     } else {
+      // It is possible that we want to set the uncustomized element to null
+      // registry during fragment parsing. Set wait_for_registry flag to true
+      // to control this behavior of explicitly setting null registry.
       element = CustomElement::CreateUncustomizedOrUndefinedElement(
-          document, tag_name, GetCreateElementFlags(), is, registry);
+          document, tag_name, GetCreateElementFlags(), is, registry,
+          /*wait_for_registry=*/!registry && is_parsing_fragment_);
     }
     // Definition for the created element does not exist here and it cannot be
     // custom, precustomized, or failed.
