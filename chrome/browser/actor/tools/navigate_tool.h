@@ -34,8 +34,8 @@ class NavigateTool : public Tool, content::WebContentsObserver {
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
-      std::optional<ObservationDelayController::PageStabilityConfig>
-          page_stability_config) override;
+      ObservationDelayController::PageStabilityConfig page_stability_config)
+      override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;

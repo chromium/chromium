@@ -120,11 +120,10 @@ class NavigateToLoadDeferredPage {
 
 class TestObservationDelayController : public ObservationDelayController {
  public:
-  TestObservationDelayController(
-      RenderFrameHost& target_frame,
-      TaskId task_id,
-      AggregatedJournal& journal,
-      std::optional<PageStabilityConfig> page_stability_config)
+  TestObservationDelayController(RenderFrameHost& target_frame,
+                                 TaskId task_id,
+                                 AggregatedJournal& journal,
+                                 PageStabilityConfig page_stability_config)
       : ObservationDelayController(target_frame,
                                    task_id,
                                    journal,
@@ -302,10 +301,7 @@ class ObservationDelayControllerTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlicActor,
-          {{features::kActorGeneralPageStabilityMode.name,
-            features::kActorGeneralPageStabilityMode.GetName(
-                features::ActorGeneralPageStabilityMode::kAllEnabled)},
-           // Effectively disable the timeouts to prevent flakes.
+          {// Effectively disable the timeouts to prevent flakes.
            {features::kGlicActorPageStabilityLocalTimeout.name, "30000ms"},
            {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
            // Do not use an invoke delay
@@ -492,10 +488,7 @@ class ObservationDelayControllerLcpTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kGlicActor,
-          {{features::kActorGeneralPageStabilityMode.name,
-            features::kActorGeneralPageStabilityMode.GetName(
-                features::ActorGeneralPageStabilityMode::kAllEnabled)},
-           // Effectively disable the timeouts to prevent flakes.
+          {// Effectively disable the timeouts to prevent flakes.
            {features::kGlicActorPageStabilityLocalTimeout.name, "30000ms"},
            {features::kGlicActorPageStabilityTimeout.name, "30000ms"},
            // Do not use an invoke delay

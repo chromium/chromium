@@ -32,32 +32,16 @@ namespace actor {
 
 namespace {
 
-class ActorClickToolBrowserTest
-    : public ActorToolsTest,
-      public ::testing::WithParamInterface<
-          std::tuple<::features::ActorPaintStabilityMode,
-                     ::features::ActorGeneralPageStabilityMode>> {
+class ActorClickToolBrowserTest : public ActorToolsTest,
+                                  public ::testing::WithParamInterface<
+                                      ::features::ActorPaintStabilityMode> {
  public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    auto [paint_stability_mode, general_page_stability_mode] = info.param;
-    std::stringstream params_description;
-    params_description << DescribePaintStabilityMode(paint_stability_mode)
-                       << "_"
-                       << DescribeGeneralPageStabilityMode(
-                              general_page_stability_mode);
-    return params_description.str();
-  }
-
   ActorClickToolBrowserTest() {
-    auto [paint_stability_mode, general_page_stability_mode] = GetParam();
+    auto paint_stability_mode = GetParam();
     feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
         {{::features::kActorPaintStabilityMode.name,
           ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)},
-         {::features::kActorGeneralPageStabilityMode.name,
-          ::features::kActorGeneralPageStabilityMode.GetName(
-              general_page_stability_mode)},
          {features::kGlicActorClickDelay.name, "200ms"}});
   }
 
@@ -399,12 +383,11 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_Delay) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ActorClickToolBrowserTest,
-    testing::Combine(
-        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                        ::features::ActorPaintStabilityMode::kLogOnly,
-                        ::features::ActorPaintStabilityMode::kEnabled),
-        testing::ValuesIn(kActorGeneralPageStabilityModeValues)),
-    ActorClickToolBrowserTest::DescribeParams);
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled),
+    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
+           info) { return DescribePaintStabilityMode(info.param); });
 
 class ActorClickToolScaledBrowserTest : public ActorToolsTest {
  public:

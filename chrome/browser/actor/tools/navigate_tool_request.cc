@@ -10,7 +10,6 @@
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/actor/actor_utils.h"
 
 namespace actor {
 
@@ -51,15 +50,6 @@ std::string NavigateToolRequest::Name() const {
 
 std::optional<url::Origin> NavigateToolRequest::AssociatedOriginGrant() const {
   return url::Origin::Create(url_);
-}
-
-std::optional<ObservationDelayController::PageStabilityConfig>
-NavigateToolRequest::GetObservationPageStabilityConfig() const {
-  if (UseGeneralPageStabilityNavigationTools()) {
-    return ObservationDelayController::PageStabilityConfig();
-  } else {
-    return std::nullopt;
-  }
 }
 
 }  // namespace actor

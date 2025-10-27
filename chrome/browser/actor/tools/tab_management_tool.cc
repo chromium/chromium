@@ -106,8 +106,7 @@ std::string TabManagementTool::JournalEvent() const {
 
 std::unique_ptr<ObservationDelayController>
 TabManagementTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   if (action_ != kCreate) {
     return nullptr;
   }

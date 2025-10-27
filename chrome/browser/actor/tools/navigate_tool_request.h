@@ -30,9 +30,6 @@ class NavigateToolRequest : public TabToolRequest {
 
   std::optional<url::Origin> AssociatedOriginGrant() const override;
 
-  std::optional<ObservationDelayController::PageStabilityConfig>
-  GetObservationPageStabilityConfig() const override;
-
  private:
   GURL url_;
 };

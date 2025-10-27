@@ -15,8 +15,7 @@ namespace actor {
 
 namespace {
 
-class ActorMediaControlToolBrowserTest
-    : public ActorToolsGeneralPageStabilityTest {
+class ActorMediaControlToolBrowserTest : public ActorToolsTest {
  public:
   ActorMediaControlToolBrowserTest() = default;
   ~ActorMediaControlToolBrowserTest() override = default;
@@ -27,13 +26,7 @@ class ActorMediaControlToolBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ActorMediaControlToolBrowserTest,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
-IN_PROC_BROWSER_TEST_P(ActorMediaControlToolBrowserTest, NoMedia) {
+IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, NoMedia) {
   const GURL url = embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
@@ -45,7 +38,7 @@ IN_PROC_BROWSER_TEST_P(ActorMediaControlToolBrowserTest, NoMedia) {
   ExpectErrorResult(result, mojom::ActionResultCode::kMediaControlNoMedia);
 }
 
-IN_PROC_BROWSER_TEST_P(ActorMediaControlToolBrowserTest, PauseAndPlayMedia) {
+IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, PauseAndPlayMedia) {
   const GURL url = embedded_test_server()->GetURL("/actor/media.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
@@ -71,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(ActorMediaControlToolBrowserTest, PauseAndPlayMedia) {
             content::EvalJs(web_contents(), "event_log.join(',')"));
 }
 
-IN_PROC_BROWSER_TEST_P(ActorMediaControlToolBrowserTest, SeekMedia) {
+IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, SeekMedia) {
   const GURL url = embedded_test_server()->GetURL("/actor/media.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   ASSERT_TRUE(WaitForLoadStop(web_contents()));

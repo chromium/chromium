@@ -24,8 +24,6 @@ class AttemptLoginToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string Name() const override;
-  std::optional<ObservationDelayController::PageStabilityConfig>
-  GetObservationPageStabilityConfig() const override;
 };
 
 }  // namespace actor

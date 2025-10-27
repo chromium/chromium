@@ -35,32 +35,16 @@ namespace {
 //
 // For Glic integration coverage of these scenarios, see the interactive
 // UI tests in the chrome/browser/glic/host/ directory.
-class ActorTypeToolBrowserTest
-    : public ActorToolsTest,
-      public ::testing::WithParamInterface<
-          std::tuple<::features::ActorPaintStabilityMode,
-                     ::features::ActorGeneralPageStabilityMode>> {
+class ActorTypeToolBrowserTest : public ActorToolsTest,
+                                 public ::testing::WithParamInterface<
+                                     ::features::ActorPaintStabilityMode> {
  public:
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    auto [paint_stability_mode, general_page_stability_mode] = info.param;
-    std::stringstream params_description;
-    params_description << DescribePaintStabilityMode(paint_stability_mode)
-                       << "_"
-                       << DescribeGeneralPageStabilityMode(
-                              general_page_stability_mode);
-    return params_description.str();
-  }
-
   ActorTypeToolBrowserTest() {
-    auto [paint_stability_mode, general_page_stability_mode] = GetParam();
+    auto paint_stability_mode = GetParam();
     feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
         {{::features::kActorPaintStabilityMode.name,
-          ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)},
-         {::features::kActorGeneralPageStabilityMode.name,
-          ::features::kActorGeneralPageStabilityMode.GetName(
-              general_page_stability_mode)}});
+          ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)}});
   }
 
   ~ActorTypeToolBrowserTest() override = default;
@@ -812,15 +796,12 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest,
 class ActorTypeToolBrowserTestWithLongDelay : public ActorTypeToolBrowserTest {
  public:
   ActorTypeToolBrowserTestWithLongDelay() {
-    auto [paint_stability_mode, general_page_stability_mode] = GetParam();
+    auto paint_stability_mode = GetParam();
     feature_list_.Reset();
     feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
         {{::features::kActorPaintStabilityMode.name,
           ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)},
-         {::features::kActorGeneralPageStabilityMode.name,
-          ::features::kActorGeneralPageStabilityMode.GetName(
-              general_page_stability_mode)},
          {::features::kGlicActorKeyDownDuration.name, "10s"}});
   }
 };
@@ -899,22 +880,20 @@ IN_PROC_BROWSER_TEST_P(ActorTypeToolBrowserTest, TypeTool_FollowByEnterDelay) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     ActorTypeToolBrowserTest,
-    testing::Combine(
-        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                        ::features::ActorPaintStabilityMode::kLogOnly,
-                        ::features::ActorPaintStabilityMode::kEnabled),
-        testing::ValuesIn(kActorGeneralPageStabilityModeValues)),
-    ActorTypeToolBrowserTest::DescribeParams);
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled),
+    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
+           info) { return DescribePaintStabilityMode(info.param); });
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     ActorTypeToolBrowserTestWithLongDelay,
-    testing::Combine(
-        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                        ::features::ActorPaintStabilityMode::kLogOnly,
-                        ::features::ActorPaintStabilityMode::kEnabled),
-        testing::ValuesIn(kActorGeneralPageStabilityModeValues)),
-    ActorTypeToolBrowserTest::DescribeParams);
+    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                    ::features::ActorPaintStabilityMode::kLogOnly,
+                    ::features::ActorPaintStabilityMode::kEnabled),
+    [](const testing::TestParamInfo<::features::ActorPaintStabilityMode>&
+           info) { return DescribePaintStabilityMode(info.param); });
 
 }  // namespace
 }  // namespace actor

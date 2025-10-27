@@ -87,8 +87,7 @@ std::string MediaControlTool::JournalEvent() const {
 
 std::unique_ptr<ObservationDelayController>
 MediaControlTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   if (!tab_handle_.Get()) {
     return nullptr;
   }

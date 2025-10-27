@@ -511,10 +511,7 @@ class ActorGeneralPageStabilityTest : public ActorPageStabilityTestBase,
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{::features::kGlicActor,
-          {{features::kActorGeneralPageStabilityMode.name,
-            features::kActorGeneralPageStabilityMode.GetName(
-                features::ActorGeneralPageStabilityMode::kAllEnabled)},
-           {::features::kActorPaintStabilityMode.name,
+          {{::features::kActorPaintStabilityMode.name,
             ::features::kActorPaintStabilityMode.GetName(GetParam())},
            // Effectively disable the timeouts to prevent flakes.
            {"glic-actor-page-stability-local-timeout", "30000ms"},
@@ -842,10 +839,7 @@ class ActorPageStabilityMinWaitTest : public ActorPageStabilityTestBase,
     std::string min_wait = absl::StrFormat("%dms", kMinWaitInMs);
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
-        {{features::kActorGeneralPageStabilityMode.name,
-          features::kActorGeneralPageStabilityMode.GetName(
-              features::ActorGeneralPageStabilityMode::kAllEnabled)},
-         {::features::kActorPaintStabilityMode.name,
+        {{::features::kActorPaintStabilityMode.name,
           ::features::kActorPaintStabilityMode.GetName(GetParam())},
          {"glic-actor-page-stability-min-wait", min_wait}});
   }

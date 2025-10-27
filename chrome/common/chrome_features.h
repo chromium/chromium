@@ -291,18 +291,6 @@ extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayLcp);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicActorScrollTargetIntoView;
 
-enum ActorGeneralPageStabilityMode {
-  kDisabled,
-  // Only enabled for navigate and history tools.
-  kNavigateAndHistoryEnabled,
-  // Enabled for any tools that request it.
-  kAllEnabled,
-};
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<ActorGeneralPageStabilityMode>
-    kActorGeneralPageStabilityMode;
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorIncrementalTyping);
 COMPONENT_EXPORT(CHROME_FEATURES)

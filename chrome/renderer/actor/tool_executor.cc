@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/actor/actor_utils.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
@@ -151,14 +150,6 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       NOTREACHED();
   }
 
-  // If GeneralPageStabilityMode is kAllEnabled, the monitor is created in a
-  // separate mojo call from the browser.
-  if (!UseGeneralPageStabilityAllTools()) {
-    page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
-        *frame_, tool_->SupportsPaintStability(), invocation->task_id,
-        *journal_);
-  }
-
   if (features::kGlicActorScrollTargetIntoView.Get()) {
     tool_->EnsureTargetInView();
   }
@@ -173,19 +164,11 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
   execute_journal_entry_.reset();
   result->execution_end_time = base::TimeTicks::Now();
-  if (page_stability_monitor_ && RequiresPageStabilization(*result)) {
-    page_stability_monitor_->NotifyWhenStable(
-        tool_->ExecutionObservationDelay(),
-        base::BindOnce(&ToolExecutor::OnCompletion,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
-  } else {
-    OnCompletion(std::move(result));
-  }
+  OnCompletion(std::move(result));
 }
 
 void ToolExecutor::OnCompletion(mojom::ActionResultPtr result) {
   CHECK(completion_callback_);
-  page_stability_monitor_.reset();
 
   CHECK(tool_);
   // Release current tool so we can accept a new tool invocation.

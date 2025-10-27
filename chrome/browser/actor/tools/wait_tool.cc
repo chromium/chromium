@@ -49,8 +49,7 @@ std::string WaitTool::JournalEvent() const {
 }
 
 std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   // Wait tool shouldn't delay observation aside from its own built-in delay.
   return nullptr;
 }

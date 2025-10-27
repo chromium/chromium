@@ -326,8 +326,7 @@ std::string PageTool::JournalEvent() const {
 }
 
 std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   CHECK(has_completed_time_of_use_);
 
   RenderFrameHost* frame = GetFrame();

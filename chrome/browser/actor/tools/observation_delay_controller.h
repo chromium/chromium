@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_OBSERVATION_DELAY_CONTROLLER_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_OBSERVATION_DELAY_CONTROLLER_H_
 
-#include <optional>
 #include <ostream>
 #include <string_view>
 
@@ -47,12 +46,11 @@ class ObservationDelayController : public content::WebContentsObserver {
   };
 
   // This will create a PageStabilityMonitor in the renderer and wait for page
-  // stability if `page_stability_config` is non-null.
-  ObservationDelayController(
-      content::RenderFrameHost& target_frame,
-      TaskId task_id,
-      AggregatedJournal& journal,
-      std::optional<PageStabilityConfig> page_stability_config);
+  // stability.
+  ObservationDelayController(content::RenderFrameHost& target_frame,
+                             TaskId task_id,
+                             AggregatedJournal& journal,
+                             PageStabilityConfig page_stability_config);
   // Constructor for when we're not watching for page stability and do not have
   // a target RenderFrameHost available.
   ObservationDelayController(TaskId task_id, AggregatedJournal& journal);

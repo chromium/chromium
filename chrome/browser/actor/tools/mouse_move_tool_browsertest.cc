@@ -21,8 +21,7 @@ namespace actor {
 
 namespace {
 
-class ActorMouseMoveToolBrowserTest
-    : public ActorToolsGeneralPageStabilityTest {
+class ActorMouseMoveToolBrowserTest : public ActorToolsTest {
  public:
   ActorMouseMoveToolBrowserTest() = default;
   ~ActorMouseMoveToolBrowserTest() override = default;
@@ -34,14 +33,8 @@ class ActorMouseMoveToolBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorMouseMoveToolBrowserTest,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
 // Test the MouseMove tool fails on a non-existent content node.
-IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_NonExistentNode) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -59,7 +52,7 @@ IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
 }
 
 // Test basic movements using MouseMove tool generates the expected events.
-IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest, MouseMoveTool_Events) {
+IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest, MouseMoveTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -98,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest, MouseMoveTool_Events) {
 }
 
 // Test mouse move causes scrolling if the target is offscreen.
-IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_TargetOutsideViewport) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -126,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
 }
 
 // Ensure mouse can be moved to a coordinate onscreen.
-IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_MoveToCoordinate) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -150,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
 
 // Moving mouse to a coordinate not in the viewport should fail without
 // dispatching events.
-IN_PROC_BROWSER_TEST_P(ActorMouseMoveToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorMouseMoveToolBrowserTest,
                        MouseMoveTool_MoveToCoordinateOffScreen) {
   const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

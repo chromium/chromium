@@ -86,8 +86,7 @@ std::string NavigateTool::JournalEvent() const {
 }
 
 std::unique_ptr<ObservationDelayController> NavigateTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   return std::make_unique<ObservationDelayController>(
       *web_contents()->GetPrimaryMainFrame(), task_id(), journal(),
       page_stability_config);

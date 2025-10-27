@@ -135,8 +135,7 @@ std::string WindowManagementTool::JournalEvent() const {
 
 std::unique_ptr<ObservationDelayController>
 WindowManagementTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   return nullptr;
 }
 

@@ -25,7 +25,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
@@ -648,11 +647,6 @@ void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
     mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
     const actor::TaskId& task_id,
     bool supports_paint_stability) {
-  if (features::kActorGeneralPageStabilityMode.Get() ==
-      features::ActorGeneralPageStabilityMode::kDisabled) {
-    return;
-  }
-
   page_stability_monitor_ = std::make_unique<actor::PageStabilityMonitor>(
       *render_frame(), supports_paint_stability, task_id, *actor_journal_);
   page_stability_monitor_->Bind(std::move(monitor));

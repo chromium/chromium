@@ -99,7 +99,7 @@ class ToolController {
   };
   std::optional<ActiveState> active_state_;
 
-  std::optional<ObservationDelayController::PageStabilityConfig>
+  ObservationDelayController::PageStabilityConfig
       observation_page_stability_config_;
 
   // Set while a tool invocation is in progress, delays invocation of the

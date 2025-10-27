@@ -180,22 +180,6 @@ std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
   return std::make_unique<ExecutionEngine>(profile);
 }
 
-// static
-std::string ActorToolsGeneralPageStabilityTest::DescribeParam(
-    const testing::TestParamInfo<ParamType>& info) {
-  return DescribeGeneralPageStabilityMode(info.param);
-}
-
-ActorToolsGeneralPageStabilityTest::ActorToolsGeneralPageStabilityTest() {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      ::features::kGlicActor,
-      {{::features::kActorGeneralPageStabilityMode.name,
-        ::features::kActorGeneralPageStabilityMode.GetName(GetParam())}});
-}
-
-ActorToolsGeneralPageStabilityTest::~ActorToolsGeneralPageStabilityTest() =
-    default;
-
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
                                  std::string_view query) {
   double width =
@@ -224,18 +208,6 @@ gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
           .ExtractDouble();
 
   return gfx::RectF(x, y, width, height);
-}
-
-std::string DescribeGeneralPageStabilityMode(
-    features::ActorGeneralPageStabilityMode mode) {
-  switch (mode) {
-    case features::ActorGeneralPageStabilityMode::kDisabled:
-      return "Disabled";
-    case features::ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled:
-      return "NavigateAndHistoryEnabled";
-    case features::ActorGeneralPageStabilityMode::kAllEnabled:
-      return "AllEnabled";
-  }
 }
 
 std::string DescribePaintStabilityMode(features::ActorPaintStabilityMode mode) {

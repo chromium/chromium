@@ -101,31 +101,8 @@ class ActorToolsTest : public InProcessBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-class ActorToolsGeneralPageStabilityTest
-    : public ActorToolsTest,
-      public ::testing::WithParamInterface<
-          ::features::ActorGeneralPageStabilityMode> {
- public:
-  static std::string DescribeParam(
-      const testing::TestParamInfo<ParamType>& info);
-  ActorToolsGeneralPageStabilityTest();
-  ~ActorToolsGeneralPageStabilityTest() override;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
                                  std::string_view query);
-
-std::string DescribeGeneralPageStabilityMode(
-    features::ActorGeneralPageStabilityMode mode);
-
-inline constexpr features::ActorGeneralPageStabilityMode
-    kActorGeneralPageStabilityModeValues[] = {
-        features::ActorGeneralPageStabilityMode::kDisabled,
-        features::ActorGeneralPageStabilityMode::kAllEnabled,
-};
 
 std::string DescribePaintStabilityMode(features::ActorPaintStabilityMode mode);
 

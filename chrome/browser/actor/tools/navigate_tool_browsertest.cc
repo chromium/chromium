@@ -22,7 +22,7 @@ namespace actor {
 
 namespace {
 
-class ActorNavigateToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
+class ActorNavigateToolBrowserTest : public ActorToolsTest {
  public:
   ActorNavigateToolBrowserTest() = default;
   ~ActorNavigateToolBrowserTest() override = default;
@@ -34,14 +34,8 @@ class ActorNavigateToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorNavigateToolBrowserTest,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
 // Basic test of the NavigateTool.
-IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest, NavigateTool) {
+IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest, NavigateTool) {
   const GURL url_start =
       embedded_test_server()->GetURL("/actor/blank.html?start");
   const GURL url_target =
@@ -59,7 +53,7 @@ IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest, NavigateTool) {
 
 // Ensure that when navigating to a new document, the navigate tool delays
 // completion until the new page has fired the load event.
-IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
                        NavigateTool_DelaysUntilLoad) {
   const GURL url_first =
       embedded_test_server()->GetURL("/actor/simple_iframe.html?start");
@@ -99,7 +93,7 @@ IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
   ExpectOkResult(result);
 }
 
-IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
                        NavigateTool_TargetUrlRestriction) {
   const GURL url_start =
       embedded_https_test_server().GetURL("/actor/blank.html?start");
@@ -118,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
 
 // Test that the navigate tool correctly adds the acted on tab to the task's set
 // of tabs.
-IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorNavigateToolBrowserTest,
                        NavigateTool_RecordActingOnTask) {
   ASSERT_TRUE(actor_task().GetTabs().empty());
 

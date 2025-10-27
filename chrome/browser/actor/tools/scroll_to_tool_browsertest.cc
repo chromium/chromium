@@ -24,7 +24,7 @@ namespace actor {
 
 namespace {
 
-class ActorScrollToToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
+class ActorScrollToToolBrowserTest : public ActorToolsTest {
  public:
   ActorScrollToToolBrowserTest() = default;
   ~ActorScrollToToolBrowserTest() override = default;
@@ -36,13 +36,7 @@ class ActorScrollToToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorScrollToToolBrowserTest,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
-IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest, FailsOnInvalidNodeID) {
+IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest, FailsOnInvalidNodeID) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -58,7 +52,7 @@ IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest, FailsOnInvalidNodeID) {
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
 
-IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest, ScrollsToValidNodeID) {
+IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest, ScrollsToValidNodeID) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -81,7 +75,7 @@ IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest, ScrollsToValidNodeID) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest,
                        PositionFixed_DoesNotScroll) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -98,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest,
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
 
-IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest,
                        DisplayNone_DoesNotScroll) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

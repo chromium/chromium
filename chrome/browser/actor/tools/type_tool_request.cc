@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/common/actor/actor_utils.h"
 
 namespace actor {
 
@@ -71,16 +70,12 @@ std::unique_ptr<PageToolRequest> TypeToolRequest::Clone() const {
   return std::make_unique<TypeToolRequest>(*this);
 }
 
-std::optional<ObservationDelayController::PageStabilityConfig>
+ObservationDelayController::PageStabilityConfig
 TypeToolRequest::GetObservationPageStabilityConfig() const {
-  if (UseGeneralPageStabilityAllTools()) {
-    return ObservationDelayController::PageStabilityConfig{
-        .supports_paint_stability = true,
-        .start_delay = kPageStabilityStartDelay,
-    };
-  } else {
-    return std::nullopt;
-  }
+  return ObservationDelayController::PageStabilityConfig{
+      .supports_paint_stability = true,
+      .start_delay = kPageStabilityStartDelay,
+  };
 }
 
 }  // namespace actor

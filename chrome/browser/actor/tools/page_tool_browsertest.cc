@@ -19,7 +19,7 @@ namespace actor {
 
 namespace {
 
-class ActorPageToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
+class ActorPageToolBrowserTest : public ActorToolsTest {
  public:
   ActorPageToolBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -36,13 +36,7 @@ class ActorPageToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorPageToolBrowserTest,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
-IN_PROC_BROWSER_TEST_P(ActorPageToolBrowserTest, Timeout) {
+IN_PROC_BROWSER_TEST_F(ActorPageToolBrowserTest, Timeout) {
   const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 

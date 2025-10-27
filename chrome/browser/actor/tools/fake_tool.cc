@@ -41,8 +41,7 @@ std::string FakeTool::JournalEvent() const {
 }
 
 std::unique_ptr<ObservationDelayController> FakeTool::GetObservationDelayer(
-    std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) {
+    ObservationDelayController::PageStabilityConfig page_stability_config) {
   return nullptr;
 }
 

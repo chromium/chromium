@@ -30,7 +30,7 @@ class ClickToolRequest : public PageToolRequest {
 
   // ToolRequest
   std::string Name() const override;
-  std::optional<ObservationDelayController::PageStabilityConfig>
+  ObservationDelayController::PageStabilityConfig
   GetObservationPageStabilityConfig() const override;
 
   // PageToolRequest

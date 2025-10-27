@@ -292,20 +292,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kInvokeCallback: {
       CHECK(is_stable_callback_);
 
-      if (receiver_.is_bound()) {
-        // It's important to run the callback synchronously so a mojo reply is
-        // sent before disconnect. If done from the state machine we reset the
-        // receiver when moving to kDone. Once GeneralPageStability is enabled
-        // the mojo is the only caller so we can always invoke synchronously.
-        std::move(is_stable_callback_).Run();
-      } else {
-        // This path is only used when the monitor is called from the renderer
-        // and can be removed when GeneralPageStability is fully enabled.
-        CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
-                 features::ActorGeneralPageStabilityMode::kAllEnabled);
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, std::move(is_stable_callback_));
-      }
+      // It's important to run the callback synchronously so a mojo reply is
+      // sent before disconnect.
+      std::move(is_stable_callback_).Run();
+
       MoveToState(State::kDone);
       break;
     }
@@ -460,9 +450,6 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
 
 void PageStabilityMonitor::Bind(
     mojo::PendingReceiver<mojom::PageStabilityMonitor> receiver) {
-  CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
-           features::ActorGeneralPageStabilityMode::kDisabled);
-
   CHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
 

@@ -89,9 +89,8 @@ class ToolRequest {
   // safe to use their origins as a trust signal.
   virtual std::optional<url::Origin> AssociatedOriginGrant() const;
 
-  // Gets configuration for general page stability on observation. Returns
-  // `std::nullopt` if not enabled.
-  virtual std::optional<ObservationDelayController::PageStabilityConfig>
+  // Gets configuration for general page stability on observation.
+  virtual ObservationDelayController::PageStabilityConfig
   GetObservationPageStabilityConfig() const;
 };
 

@@ -31,8 +31,7 @@ int GetRangeValue(content::RenderFrameHost& rfh, std::string_view query) {
       .ExtractInt();
 }
 
-class ActorDragAndReleaseToolBrowserTest
-    : public ActorToolsGeneralPageStabilityTest {
+class ActorDragAndReleaseToolBrowserTest : public ActorToolsTest {
  public:
   ActorDragAndReleaseToolBrowserTest() = default;
   ~ActorDragAndReleaseToolBrowserTest() override = default;
@@ -44,14 +43,8 @@ class ActorDragAndReleaseToolBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorDragAndReleaseToolBrowserTest,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
 // Test the drag and release tool by moving the thumb on a range slider control.
-IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
                        DragAndReleaseTool_Range) {
   const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -78,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
 }
 
 // Ensure the drag tool sends the expected mouse down, move and up events.
-IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
                        DragAndReleaseTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -114,7 +107,7 @@ IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
 }
 
 // Ensure coordinates outside of the viewport are rejected.
-IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
                        DragAndReleaseTool_Offscreen) {
   const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -167,7 +160,7 @@ IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
-IN_PROC_BROWSER_TEST_P(ActorDragAndReleaseToolBrowserTest,
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
                        DragAndReleaseTool_CrossOriginSubframe) {
   const GURL url = embedded_https_test_server().GetURL(
       "/actor/positioned_iframe_no_scroll.html");

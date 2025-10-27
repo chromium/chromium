@@ -56,9 +56,9 @@ std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {
   return std::nullopt;
 }
 
-std::optional<ObservationDelayController::PageStabilityConfig>
+ObservationDelayController::PageStabilityConfig
 ToolRequest::GetObservationPageStabilityConfig() const {
-  return std::nullopt;
+  return ObservationDelayController::PageStabilityConfig();
 }
 
 TabToolRequest::TabToolRequest(const tabs::TabHandle tab_handle)

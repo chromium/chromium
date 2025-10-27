@@ -20,7 +20,7 @@ namespace actor {
 
 namespace {
 
-class ActorToolsTestScriptTool : public ActorToolsGeneralPageStabilityTest {
+class ActorToolsTestScriptTool : public ActorToolsTest {
  public:
   ActorToolsTestScriptTool() {
     features_.InitAndEnableFeature(blink::features::kWebMCP);
@@ -36,13 +36,7 @@ class ActorToolsTestScriptTool : public ActorToolsGeneralPageStabilityTest {
   base::test::ScopedFeatureList features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ActorToolsTestScriptTool,
-    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
-    ActorToolsGeneralPageStabilityTest::DescribeParam);
-
-IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Basic) {
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -62,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, Basic) {
             "This is an example sentence.");
 }
 
-IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, BadToolName) {
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
   const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -77,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, BadToolName) {
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
-IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ProvideContext) {
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/script_tool_provide_context.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -114,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ProvideContext) {
             "321cba");
 }
 
-IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool, ClearContext) {
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/script_tool_provide_context.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

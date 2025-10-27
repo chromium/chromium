@@ -4,8 +4,6 @@
 
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 
-#include <optional>
-
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -58,40 +56,32 @@ ObservationDelayController::ObservationDelayController(
     content::RenderFrameHost& target_frame,
     TaskId task_id,
     AggregatedJournal& journal,
-    std::optional<PageStabilityConfig> page_stability_config)
+    PageStabilityConfig page_stability_config)
     : content::WebContentsObserver(
           WebContents::FromRenderFrameHost(&target_frame)),
       journal_(journal),
       task_id_(task_id) {
   CHECK(web_contents());
-  const bool waits_for_page_stability = page_stability_config.has_value();
+  journal.Log(
+      GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
+      JournalDetailsBuilder().Add("May Use PageStability", true).Build());
 
-  journal.Log(GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
-              JournalDetailsBuilder()
-                  .Add("May Use PageStability", waits_for_page_stability)
-                  .Build());
+  journal.EnsureJournalBound(target_frame);
 
-  if (waits_for_page_stability) {
-    CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
-             features::ActorGeneralPageStabilityMode::kDisabled);
-    journal.EnsureJournalBound(target_frame);
+  // Note: It's important that the PageStabilityMonitor be created on the same
+  // interface as tool invocation since it relies on being created before a
+  // tool is invoked.
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  target_frame.GetRemoteAssociatedInterfaces()->GetInterface(
+      &chrome_render_frame);
 
-    // Note: It's important that the PageStabilityMonitor be created on the same
-    // interface as tool invocation since it relies on being created before a
-    // tool is invoked.
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
-        chrome_render_frame;
-    target_frame.GetRemoteAssociatedInterfaces()->GetInterface(
-        &chrome_render_frame);
-
-    chrome_render_frame->CreatePageStabilityMonitor(
-        page_stability_monitor_remote_.BindNewPipeAndPassReceiver(), task_id,
-        page_stability_config->supports_paint_stability);
-    page_stability_monitor_remote_.set_disconnect_handler(
-        base::BindOnce(&ObservationDelayController::OnMonitorDisconnected,
-                       base::Unretained(this)));
-    page_stability_start_delay_ = page_stability_config->start_delay;
-  }
+  chrome_render_frame->CreatePageStabilityMonitor(
+      page_stability_monitor_remote_.BindNewPipeAndPassReceiver(), task_id,
+      page_stability_config.supports_paint_stability);
+  page_stability_monitor_remote_.set_disconnect_handler(
+      base::BindOnce(&ObservationDelayController::OnMonitorDisconnected,
+                     base::Unretained(this)));
+  page_stability_start_delay_ = page_stability_config.start_delay;
 }
 
 ObservationDelayController::ObservationDelayController(
