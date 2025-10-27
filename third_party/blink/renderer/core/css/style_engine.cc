@@ -1159,7 +1159,8 @@ CSSStyleSheet* StyleEngine::CreateSheet(
   auto result = text_to_sheet_cache_.insert(key, nullptr);
   StyleSheetContents* contents = result.stored_value->value;
   if (result.is_new_entry || !contents ||
-      !contents->IsCacheableForStyleElement()) {
+      !contents->IsCacheableForStyleElement() ||
+      contents->BaseURL() != GetDocument().BaseURL()) {
     result.stored_value->value = nullptr;
     style_sheet =
         ParseSheet(element, text, start_position, render_blocking_behavior);
