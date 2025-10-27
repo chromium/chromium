@@ -42,6 +42,13 @@
 
   #refreshButton {
     margin-inline-end: 10px;
+    --cr-icon-button-fill-color: var(--google-grey-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #refreshButton {
+      --cr-icon-button-fill-color: var(--google-grey-300);
+    }
   }
 
   #retryButton {
