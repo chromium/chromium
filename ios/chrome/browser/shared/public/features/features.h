@@ -497,12 +497,6 @@ BASE_DECLARE_FEATURE(kIOSManageAccountStorage);
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
 
-// Feature flag to deprecate the "Discover / Follow" toggle from the header of
-// the feed. When this feature is enabled, there would not be a separate
-// following feed.
-BASE_DECLARE_FEATURE(kDeprecateFeedHeader);
-bool ShouldDeprecateFeedHeader();
-
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
 
@@ -568,10 +562,6 @@ bool IsDownloadListEnabled();
 // Feature flag to control the download list UI type.
 BASE_DECLARE_FEATURE(kDownloadList);
 
-// Feature param under `kEnableFeedBackgroundRefresh` to also enable background
-// refresh for the Following feed.
-extern const char kEnableFollowingFeedBackgroundRefresh[];
-
 // Feature param under `kEnableFeedBackgroundRefresh` to enable server driven
 // background refresh schedule.
 extern const char kEnableServerDrivenBackgroundRefreshSchedule[];
@@ -612,9 +602,6 @@ void SetFeedRefreshTimestamp(NSDate* timestamp, NSString* NSUserDefaultsKey);
 // defaults.
 bool IsFeedOverrideDefaultsEnabled();
 
-// Whether the Following feed should also be refreshed in the background.
-bool IsFollowingFeedBackgroundRefreshEnabled();
-
 // Whether the background refresh schedule should be driven by server values.
 bool IsServerDrivenBackgroundRefreshScheduleEnabled();
 
@@ -635,9 +622,6 @@ double GetBackgroundRefreshMaxAgeInSeconds();
 
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
-
-// YES when Follow UI Update is enabled.
-bool IsFollowUIUpdateEnabled();
 
 // YES when any of the content push notification variations are enabled.
 bool IsContentPushNotificationsEnabled();

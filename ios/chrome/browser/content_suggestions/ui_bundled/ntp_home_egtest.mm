@@ -203,9 +203,10 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
-    config.features_enabled.push_back(kDeprecateFeedHeader);
-    config.additional_args.push_back("--top-padding=32");
-    config.additional_args.push_back("--enlarge-logo-n-fakebox=true");
+    config.features_enabled.push_back(kNTPMIAEntrypoint);
+    config.additional_args.push_back(
+        "--kNTPMIAEntrypointParam="
+        "kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox");
   }
 
   if ([self isRunningTest:@selector(DISABLED_testCollectionShortcuts)]) {

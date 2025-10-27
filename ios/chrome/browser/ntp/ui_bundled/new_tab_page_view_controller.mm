@@ -62,13 +62,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 // The spacing for the quick actions buttons.
 const CGFloat kQuickActionSpacingTop = 3.0;
 const CGFloat kQuickActionSpacingBottom = 19.0;
-
-// Vertical spacing between modules.
-CGFloat SpaceBetweenModules() {
-  return GetDeprecateFeedHeaderParameterValueAsDouble(
-      kDeprecateFeedHeaderParameterSpaceBetweenModules,
-      /*default_value=*/14);
-}
+const CGFloat kSpaceBetweenModules = 14.0;
 
 }  // namespace
 
@@ -697,14 +691,14 @@ CGFloat SpaceBetweenModules() {
     if (viewController == self.magicStackCollectionView ||
         viewController == self.contentSuggestionsViewController ||
         viewController == self.feedHeaderViewController) {
-      heightAboveFeed += SpaceBetweenModules();
+      heightAboveFeed += kSpaceBetweenModules;
     }
 
     if (viewController == _quickActionsViewController) {
       // First, subtract off the "standard" space that was added in the
       // previous iteration of the loop because this module uses custom
       // top and bottom spacing.
-      heightAboveFeed -= SpaceBetweenModules();
+      heightAboveFeed -= kSpaceBetweenModules;
       // Then add in the custom spacing used for this module.
       heightAboveFeed += kQuickActionSpacingTop + kQuickActionSpacingBottom;
     }
@@ -1360,7 +1354,7 @@ CGFloat SpaceBetweenModules() {
           constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
                          constant:self.quickActionsVisible
                                       ? kQuickActionSpacingTop
-                                      : SpaceBetweenModules()],
+                                      : kSpaceBetweenModules],
     ];
   }
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
@@ -1616,7 +1610,7 @@ CGFloat SpaceBetweenModules() {
       UIView* viewAbove = self.viewControllersAboveFeed[index - 1].view;
 
       CGFloat spacingToUse =
-          isQuickActions ? kQuickActionSpacingBottom : SpaceBetweenModules();
+          isQuickActions ? kQuickActionSpacingBottom : kSpaceBetweenModules;
       [NSLayoutConstraint activateConstraints:@[
         [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
                                        constant:spacingToUse],

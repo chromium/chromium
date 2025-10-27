@@ -94,19 +94,6 @@ extern const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[];
 // A parameter value for the feed referrer.
 extern const char kFeedSettingDiscoverReferrerParameter[];
 
-// Parameters for the `kDeprecateFeedHeader` feature.
-//
-// A parameter to indicate whether the label should be removed from the discover
-// feed header.
-extern const char kDeprecateFeedHeaderParameterRemoveLabel[];
-// A parameter to indicate whether we should enlarge the Doodle and the fakebox.
-extern const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[];
-// Parameters controlling the padding/spacing between NTP elements.
-extern const char kDeprecateFeedHeaderParameterTopPadding[];
-extern const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[];
-extern const char kDeprecateFeedHeaderParameterSpaceBetweenModules[];
-extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
-
 // Parameter to indicate which arm of feature kFeedSwipeInProductHelp is
 // enabled.
 extern const char kFeedSwipeInProductHelpArmParam[];
@@ -127,15 +114,6 @@ bool IsWebFeedFeedbackRerouteEnabled();
 
 // Whether ghost cards are enabled on the iPad feeds.
 bool IsiPadFeedGhostCardsEnabled();
-
-// YES if the NTP and feed header elements should be re-positioned as described.
-bool ShouldEnlargeLogoAndFakebox();
-
-// If feed header should be deprecated, retrieve the value for `param_name` for
-// the `kDeprecateFeedHeader`. Otherwise, return the default value.
-double GetDeprecateFeedHeaderParameterValueAsDouble(
-    const std::string& param_name,
-    double default_value);
 
 // Returns the enabled variation of feature kFeedSwipeInProductHelp.
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation();

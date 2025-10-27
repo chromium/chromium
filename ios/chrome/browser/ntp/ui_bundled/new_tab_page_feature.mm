@@ -14,19 +14,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/device_form_factor.h"
 
-#pragma mark - Constants
-
-const char kDeprecateFeedHeaderParameterRemoveLabel[] = "remove-feed-label";
-const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
-    "enlarge-logo-n-fakebox";
-const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
-const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[] =
-    "search-field-top-margin";
-const char kDeprecateFeedHeaderParameterSpaceBetweenModules[] =
-    "space-between-modules";
-const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
-    "header-bottom-padding";
-
 #pragma mark - Feature declarations
 
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
@@ -91,35 +78,6 @@ bool IsWebFeedFeedbackRerouteEnabled() {
 
 bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
-}
-
-bool ShouldEnlargeLogoAndFakebox() {
-  if (ShouldEnlargeNTPFakeboxForMIA()) {
-    return YES;
-  }
-
-  return ShouldDeprecateFeedHeader() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             kDeprecateFeedHeader,
-             kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, false);
-}
-
-double TopPaddingToNTP() {
-  return ShouldDeprecateFeedHeader()
-             ? base::GetFieldTrialParamByFeatureAsDouble(
-                   kDeprecateFeedHeader,
-                   kDeprecateFeedHeaderParameterTopPadding, 0)
-             : 0;
-}
-
-double GetDeprecateFeedHeaderParameterValueAsDouble(
-    const std::string& param_name,
-    double default_value) {
-  if (!ShouldDeprecateFeedHeader()) {
-    return default_value;
-  }
-  return base::GetFieldTrialParamByFeatureAsDouble(kDeprecateFeedHeader,
-                                                   param_name, default_value);
 }
 
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {

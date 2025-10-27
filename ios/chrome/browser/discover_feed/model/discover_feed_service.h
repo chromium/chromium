@@ -60,10 +60,6 @@ class DiscoverFeedService : public DiscoverFeedRefresher, public KeyedService {
   void AddObserver(DiscoverFeedObserver* observer);
   void RemoveObserver(DiscoverFeedObserver* observer);
 
-  // TODO(crbug.com/448683013): Remove after downstream implementation is
-  // removed.
-  virtual void CreateFeedModel(FeedModelConfiguration* feed_model_config);
-
  protected:
   void NotifyDiscoverFeedModelRecreated();
 

@@ -410,8 +410,6 @@ BASE_FEATURE(kIOSSaveToDriveClientFolder, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSManageAccountStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeprecateFeedHeader, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableFeedBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFeedAblation, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -482,8 +480,6 @@ BASE_FEATURE(kDownloadList, base::FEATURE_DISABLED_BY_DEFAULT);
 NSString* const kEnableFeedBackgroundRefreshCapabilityForNextColdStart =
     @"EnableFeedBackgroundRefreshCapabilityForNextColdStart";
 
-const char kEnableFollowingFeedBackgroundRefresh[] =
-    "EnableFollowingFeedBackgroundRefresh";
 const char kEnableServerDrivenBackgroundRefreshSchedule[] =
     "EnableServerDrivenBackgroundRefreshSchedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
@@ -561,16 +557,6 @@ bool IsFeedOverrideDefaultsEnabled() {
       boolForKey:@"FeedOverrideDefaultsEnabled"];
 }
 
-bool IsFollowingFeedBackgroundRefreshEnabled() {
-  if (IsFeedOverrideDefaultsEnabled()) {
-    return [[NSUserDefaults standardUserDefaults]
-        boolForKey:@"FollowingFeedBackgroundRefreshEnabled"];
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedBackgroundRefresh, kEnableFollowingFeedBackgroundRefresh,
-      /*default=*/false);
-}
-
 bool IsServerDrivenBackgroundRefreshScheduleEnabled() {
   if (IsFeedOverrideDefaultsEnabled()) {
     return [[NSUserDefaults standardUserDefaults]
@@ -619,10 +605,6 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
-}
-
-bool IsFollowUIUpdateEnabled() {
-  return false;
 }
 
 bool IsContentPushNotificationsEnabled() {
@@ -747,10 +729,6 @@ bool IsSegmentationTipsManagerEnabled() {
 }
 
 BASE_FEATURE(kSpotlightNeverRetainIndex, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool ShouldDeprecateFeedHeader() {
-  return base::FeatureList::IsEnabled(kDeprecateFeedHeader);
-}
 
 BASE_FEATURE(kEnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 

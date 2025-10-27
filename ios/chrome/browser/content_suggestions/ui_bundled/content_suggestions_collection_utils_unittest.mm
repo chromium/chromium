@@ -97,9 +97,10 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhonePortrait) {
   // Action when large logo is enabled.
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams large_fakebox_params = {
-      {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
+      {kNTPMIAEntrypointParam,
+       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
       /*disabled_features=*/{});
   CGFloat heightLargeLogo = DoodleHeight(SearchEngineLogoState::kLogo,
                                          IPhonePortraitTraitCollection());
@@ -139,9 +140,10 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   // Action when large logo is enabled.
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams large_fakebox_params = {
-      {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
+      {kNTPMIAEntrypointParam,
+       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
       /*disabled_features=*/{});
   CGFloat heightLargeLogo = DoodleHeight(SearchEngineLogoState::kLogo,
                                          IPhonePortraitTraitCollection());
@@ -269,9 +271,10 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
   EXPECT_EQ(expectedHeight, FakeOmniboxHeight());
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams large_fakebox_params = {
-      {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
+      {kNTPMIAEntrypointParam,
+       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(64, FakeOmniboxHeight());
 }
@@ -281,9 +284,10 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
   EXPECT_EQ(expectedHeight, PinnedFakeOmniboxHeight());
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams large_fakebox_params = {
-      {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
+      {kNTPMIAEntrypointParam,
+       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(48, PinnedFakeOmniboxHeight());
 }
@@ -293,9 +297,10 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeighta) {
   EXPECT_EQ(expectedHeight, FakeToolbarHeight());
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams large_fakebox_params = {
-      {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
+      {kNTPMIAEntrypointParam,
+       kNTPMIAEntrypointParamOmniboxContainedEnlargedFakebox}};
   scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{kDeprecateFeedHeader, large_fakebox_params}},
+      /*enabled_features=*/{{kNTPMIAEntrypoint, large_fakebox_params}},
       /*disabled_features=*/{});
   EXPECT_EQ(62, FakeToolbarHeight());
 }
