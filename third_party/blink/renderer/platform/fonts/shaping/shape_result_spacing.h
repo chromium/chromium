@@ -49,15 +49,14 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   bool SetSpacing(const FontDescription&);
   bool SetSpacing(TextRunLayoutUnit letter_spacing,
                   TextRunLayoutUnit word_spacing);
+  // Set letter-spacing, word-spacing for PlainTextPainter.
+  void SetSpacing(const FontDescription&, bool normalize_space);
 
   // Set the expansion for the justification.
   void SetExpansion(InlineLayoutUnit expansion,
                     TextDirection,
                     bool allows_leading_expansion = false,
                     bool allows_trailing_expansion = false);
-
-  // Set letter-spacing, word-spacing, and justification.
-  void SetSpacingAndExpansion(const FontDescription&, bool normalize_space);
 
   // Compute the sum of all spacings for the specified |index|.
   // The |index| is for the string given in the constructor.

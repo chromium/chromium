@@ -397,7 +397,7 @@ void PlainTextNode::SegmentWord(wtf_size_t start_offset,
 
 void PlainTextNode::Shape(const Font& font, FrameShapeCache* cache) {
   ShapeResultSpacing spacing(text_content_);
-  spacing.SetSpacingAndExpansion(font.GetFontDescription(), normalize_space_);
+  spacing.SetSpacing(font.GetFontDescription(), normalize_space_);
   for (auto& item : item_list_) {
     FrameShapeCache::ShapeEntry* entry = nullptr;
     if (cache) {

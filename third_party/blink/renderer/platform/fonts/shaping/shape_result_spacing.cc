@@ -40,18 +40,12 @@ void ShapeResultSpacing::SetExpansion(InlineLayoutUnit expansion,
   has_spacing_ |= HasExpansion();
 }
 
-void ShapeResultSpacing::SetSpacingAndExpansion(
-    const FontDescription& font_description,
-    bool normalize_space) {
-  letter_spacing_ = TextRunLayoutUnit(font_description.LetterSpacing());
-  word_spacing_ = TextRunLayoutUnit(font_description.WordSpacing());
-  expansion_ = InlineLayoutUnit();
-  has_spacing_ = letter_spacing_ || word_spacing_;
-  if (!has_spacing_)
-    return;
-
-  normalize_space_ = normalize_space;
-  allow_tabs_ = false;
+void ShapeResultSpacing::SetSpacing(const FontDescription& font_description,
+                                    bool normalize_space) {
+  if (SetSpacing(font_description)) {
+    normalize_space_ = normalize_space;
+    allow_tabs_ = false;
+  }
 }
 
 void ShapeResultSpacing::ComputeExpansion(bool allows_leading_expansion,
