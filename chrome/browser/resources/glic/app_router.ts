@@ -27,6 +27,7 @@ export class AppRouter implements PageInterface {
   private freContainer: HTMLElement;
   private browserProxy: BrowserProxyImpl;
   private currentView: AppView|undefined;
+  private currentPanelStateKind: PanelStateKind|undefined;
 
   constructor() {
     this.glicContainer = getRequiredElement('glic-app-container');
@@ -53,6 +54,9 @@ export class AppRouter implements PageInterface {
       case AppView.GLIC:
         if (!this.glicController) {
           this.glicController = new GlicAppController(this.browserProxy);
+          if (this.currentPanelStateKind !== undefined) {
+            this.glicController.updatePageState(this.currentPanelStateKind);
+          }
           this.freAppController?.destroyWebview();
           this.freAppController = undefined;
         }
@@ -88,6 +92,7 @@ export class AppRouter implements PageInterface {
   }
 
   updatePageState(panelStateKind: PanelStateKind) {
+    this.currentPanelStateKind = panelStateKind;
     this.glicController?.updatePageState(panelStateKind);
   }
 
