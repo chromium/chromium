@@ -162,6 +162,7 @@
 <translation id="1582732959743469162">На тај начин ћете потпуно зауставити тренутно преузимање.</translation>
 <translation id="1594034544529347967">Почиње</translation>
 <translation id="1598751033135758830">Отвори у апликацији…</translation>
+<translation id="1601560923496285236">Примени</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
 <translation id="1605405588277479165">Искључено – Не препоручује се</translation>
 <translation id="1605658421715042784">Копирај слику</translation>
@@ -779,6 +780,7 @@
 <translation id="4049507953662678203">Проверите да ли сте повезани на мрежу и покушајте поново.</translation>
 <translation id="4070132839822635162">Не пријављуј ме</translation>
 <translation id="4092655288299341041">Приказује помоћ</translation>
+<translation id="4095483462103784441">Направи нову групу картица</translation>
 <translation id="4099756562043439968">Подеси подсетник</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="4111985840824673503">Означи све као прочитано</translation>
@@ -1456,6 +1458,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Опције</translation>
 <translation id="6550891580932862748">Не штити вас од опасних веб-сајтова, преузимања и додатака. То неће утицати на подешавања Безбедног прегледања у другим Google производима.</translation>
+<translation id="6556866813142980365">Понови</translation>
 <translation id="6559301491397835130">{count,plural, =1{Обележивач је сачуван у: {title}. Чува се само на овом уређају.}one{Обележивачи су сачувани у: {title}. Чувају се само на овом уређају.}few{Обележивачи су сачувани у: {title}. Чувају се само на овом уређају.}other{Обележивачи су сачувани у: {title}. Чувају се само на овом уређају.}}</translation>
 <translation id="656065428026159829">Прикажи још</translation>
 <translation id="6571070086367343653">Измена кредитне картице</translation>

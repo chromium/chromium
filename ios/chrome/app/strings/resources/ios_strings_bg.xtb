@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">Текущото изтегляне ще бъде прекратено.</translation>
 <translation id="1594034544529347967">Начало</translation>
 <translation id="1598751033135758830">Отваряне в приложението…</translation>
+<translation id="1601560923496285236">Прилагане</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адрес}other{# адреса}}</translation>
 <translation id="1605405588277479165">Изключено – не се препоръчва</translation>
 <translation id="1605658421715042784">Копиране на изображението</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
 <translation id="4070132839822635162">Без влизане в профила</translation>
 <translation id="4092655288299341041">Показване на помощна информация</translation>
+<translation id="4095483462103784441">Създаване на нова група раздели</translation>
 <translation id="4099756562043439968">Задаване на напомняне</translation>
 <translation id="4108998448622696017">Открива опасни събития, когато се случват, и ви предупреждава за тях.</translation>
 <translation id="4111985840824673503">Означаване на всичко като прочетено</translation>
@@ -1454,6 +1456,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="6550891580932862748">Няма защита срещу опасни уебсайтове, изтегляния и разширения. Настройките ви за Безопасно сърфиране в други продукти на Google няма да бъдат засегнати.</translation>
+<translation id="6556866813142980365">Възстановяване</translation>
 <translation id="6559301491397835130">{count,plural, =1{Отметката е запазена в(ъв) „{title}“. Тя е запазена само на това устройство.}other{Отметките са запазени в(ъв) „{title}“. Те са запазени само на това устройство.}}</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6571070086367343653">Редактиране на кредитната карта</translation>

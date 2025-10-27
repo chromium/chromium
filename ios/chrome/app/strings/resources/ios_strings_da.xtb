@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">Denne handling stopper den aktuelle download.</translation>
 <translation id="1594034544529347967">Starter</translation>
 <translation id="1598751033135758830">Åbn i app…</translation>
+<translation id="1601560923496285236">Anvend</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresser}}</translation>
 <translation id="1605405588277479165">Fra (anbefales ikke)</translation>
 <translation id="1605658421715042784">Kopiér billede</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="4070132839822635162">Log ikke ind</translation>
 <translation id="4092655288299341041">Vis Hjælp</translation>
+<translation id="4095483462103784441">Opret ny fanegruppe</translation>
 <translation id="4099756562043439968">Opret en påmindelse</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4111985840824673503">Markér alle som læste</translation>
@@ -1454,6 +1456,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6537746030088321027">eksempel.dk</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
 <translation id="6550891580932862748">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Dine indstillinger for Beskyttet browsing i andre Google-produkter påvirkes ikke.</translation>
+<translation id="6556866813142980365">Annuller fortrydelse</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bogmærket er gemt i "{title}". Det gemmes kun på denne enhed.}one{Bogmærket er gemt i "{title}". Det gemmes kun på denne enhed.}other{Bogmærkerne er gemt i "{title}". De gemmes kun på denne enhed.}}</translation>
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6571070086367343653">Rediger kreditkort</translation>

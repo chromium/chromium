@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ဖန်သားပြင်အပြည့်မှ ထွက်ရန် ထိပ်ဆုံးမှ ဖိဆွဲပြီး နောက်သို့ပြန်သည့် ခလုတ်ကို ထိပါ</translation>
 <translation id="1138458427267715730">ဝဘ်ပေါ်ရှိ ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="1142713751288681188">စာရွက်အမျိုးအစား</translation>
+<translation id="1142965388643537393">ခရီးသွား အချက်အလက်</translation>
 <translation id="1144136880160289237">ဖွင့်ထားသည့် အကြောင်းအရာများ သင့်တွင်မရှိသေးပါ</translation>
 <translation id="1149617035358809955">သင့်ငွေချေအချက်အလက်တွင် ဖြည့်နိုင်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="1150565364351027703">နေကာမျက်မှန်များ</translation>
@@ -838,6 +839,7 @@
 <translation id="2357481397660644965">သင့်စက်ပစ္စည်းကို <ph name="DEVICE_MANAGER" /> က စီမံခန့်ခွဲပြီး သင့်အကောင့်ကို <ph name="ACCOUNT_MANAGER" /> က စီမံခန့်ခွဲသည်။</translation>
 <translation id="2359629602545592467">များစွာ</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
+<translation id="236000571258713023">ယာဉ်များ</translation>
 <translation id="2361263712565360498">၂၇၅ x ၃၉၅ မီလီမီတာ</translation>
 <translation id="236340516568226369">အရွယ်အစားပြင်ရန် ခလုတ်မီနူး</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> ထည့်ပါ</translation>
@@ -2200,6 +2202,7 @@
 <translation id="4598556348158889687">သိုလှောင်ခန်းစီမံခန့်ခွဲမှု</translation>
 <translation id="459914240367517409">ဝဘ်ဒီဇိုင်း၊ ဝဘ်ဆိုက်ရေးခြင်း</translation>
 <translation id="4602465984861132303">ဘိုးလင်းပစ်ကစားခြင်း</translation>
+<translation id="4603727370377253901">လေယာဉ်ခရီးစဉ် ကြိုတင်မှာယူမှုများ</translation>
 <translation id="4607608436550361748">Chrome အကြံပြုချက်များ ကြည့်ရန်</translation>
 <translation id="460848736049414407">စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="4610279718074907952">ယခုဝဘ်ဆိုက်ကို <ph name="SET_OWNER" /> က သတ်မှတ်ပြီး ၎င်းသည် သင့်လုပ်ဆောင်ချက်ကိုမြင်နိုင်သည့် အုပ်စုဝင်ဖြစ်သည်</translation>
@@ -2208,6 +2211,7 @@
 <translation id="4619564267100705184">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
 <translation id="4622292761762557753">မည်သို့ပင်ဖြစ်စေ လွှဲပြောင်းရန်</translation>
 <translation id="4622647778991854660">အကြောင်းကြားချက်များကို ‘အကြောင်းကြားချက်စင်တာ’ တွင် ဖွင့်ပါ။ <ph name="LINK" /> ဖွင့်ရန်။</translation>
+<translation id="4623894491222334521">အထောက်အထား doc ဖိုင်များ</translation>
 <translation id="4627675673814409125">ဤမူဝါဒကို Chrome ပရိုဖိုင်အဆင့်မှာ မထည့်သွင်းနိုင်ဘဲ လျစ်လျူရှုထားပါမည်။</translation>
 <translation id="4628678854894591460">အပန်းဖြေရက် ကမ်းလှမ်းချက်</translation>
 <translation id="4628948037717959914">ဓာတ်ပုံ</translation>

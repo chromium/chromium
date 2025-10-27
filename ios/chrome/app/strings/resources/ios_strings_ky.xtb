@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">Ушуну менен учурдагы жүктөп алууңуз токтотулат.</translation>
 <translation id="1594034544529347967">Качан башталат</translation>
 <translation id="1598751033135758830">Колдонмодо ачуу</translation>
+<translation id="1601560923496285236">Колдонуу</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 дарек}other{# дарек}}</translation>
 <translation id="1605405588277479165">Өчүк - Сунушталбайт</translation>
 <translation id="1605658421715042784">Сүрөттү көчүрүү</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Тармакка туташып турганыңызды текшерип, кайталап көрүңүз.</translation>
 <translation id="4070132839822635162">Кирбейм</translation>
 <translation id="4092655288299341041">Жардам бөлүмүн көрсөтүү</translation>
+<translation id="4095483462103784441">Жаңы өтмөктөр тобун түзүү</translation>
 <translation id="4099756562043439968">Эстеткич коюу</translation>
 <translation id="4108998448622696017">Кооптуу нерселер орун алганда аларды аныктап, сизге кабарлап турат.</translation>
 <translation id="4111985840824673503">Баары окулган деп белгилөө</translation>
@@ -1454,6 +1456,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
 <translation id="6550891580932862748">Кооптуу вебсайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргобойт. Мунун Google'дагы башка товарлардын Коопсуз серептөө параметрлерине кедергиси тийбейт.</translation>
+<translation id="6556866813142980365">Кайталоо</translation>
 <translation id="6559301491397835130">{count,plural, =1{Кыстарма төмөнкүгө сакталды: "{title}". Ал ушул түзмөктө гана сакталат.}other{Кыстармалар төмөнкүгө сакталды: "{title}". Алар ушул түзмөктө гана сакталат.}}</translation>
 <translation id="656065428026159829">Дагы көрүү</translation>
 <translation id="6571070086367343653">Насыя картасын түзөтүү</translation>

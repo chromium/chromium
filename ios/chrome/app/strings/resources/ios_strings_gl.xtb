@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">Esta acción deterá o progreso da túa descarga actual.</translation>
 <translation id="1594034544529347967">Inicio</translation>
 <translation id="1598751033135758830">Abrir na aplicación…</translation>
+<translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="1605405588277479165">Desactivada (non se recomenda)</translation>
 <translation id="1605658421715042784">Copiar imaxe</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
 <translation id="4070132839822635162">Non iniciar sesión</translation>
 <translation id="4092655288299341041">Mostrar axuda:</translation>
+<translation id="4095483462103784441">Crear grupo de pestanas</translation>
 <translation id="4099756562043439968">Definir un recordatorio</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar todo como lido</translation>
@@ -1454,6 +1456,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opcións</translation>
 <translation id="6550891580932862748">Non te protexe contra sitios web, descargas nin extensións perigosos. A configuración de Navegación segura noutros produtos de Google non se verá afectada.</translation>
+<translation id="6556866813142980365">Refacer</translation>
 <translation id="6559301491397835130">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse os marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
 <translation id="656065428026159829">Ver máis</translation>
 <translation id="6571070086367343653">Editar tarxeta de crédito</translation>

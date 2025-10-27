@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">This will stop all progress for your current download.</translation>
 <translation id="1594034544529347967">Starts</translation>
 <translation id="1598751033135758830">Open in app…</translation>
+<translation id="1601560923496285236">Apply</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
 <translation id="1605405588277479165">Off – Not recommended</translation>
 <translation id="1605658421715042784">Copy image</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="4070132839822635162">Don't sign in</translation>
 <translation id="4092655288299341041">Show help</translation>
+<translation id="4095483462103784441">Create new tab group</translation>
 <translation id="4099756562043439968">Set a reminder</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="4111985840824673503">Mark all read</translation>
@@ -1454,6 +1456,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
+<translation id="6556866813142980365">Redo</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{Bookmarks saved to ‘{title}’. They are only saved to this device.}}</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6571070086367343653">Edit credit card</translation>

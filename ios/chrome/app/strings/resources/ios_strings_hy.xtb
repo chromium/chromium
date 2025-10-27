@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">Ընթացիկ ներբեռնումը կընդհատվի։</translation>
 <translation id="1594034544529347967">Սկիզբը՝</translation>
 <translation id="1598751033135758830">Բացել հավելվածում…</translation>
+<translation id="1601560923496285236">Կիրառել</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 հասցե}one{# հասցե}other{# հասցե}}</translation>
 <translation id="1605405588277479165">Անջատված է (խորհուրդ չի տրվում)</translation>
 <translation id="1605658421715042784">Պատճենել պատկերը</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Համոզվեք, որ կապակցված եք համացանցին և փորձեք նորից:</translation>
 <translation id="4070132839822635162">Մուտք չգործել</translation>
 <translation id="4092655288299341041">Ցույց տալ օգնության էջը</translation>
+<translation id="4095483462103784441">Ստեղծել ներդիրների նոր խումբ</translation>
 <translation id="4099756562043439968">Ստեղծել հիշեցում</translation>
 <translation id="4108998448622696017">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
 <translation id="4111985840824673503">Բոլորը նշել որպես կարդացված</translation>
@@ -1454,6 +1456,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
 <translation id="6550891580932862748">Չի պաշտպանում վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից։ Google-ի այլ պրոդուկտներում Ապահով դիտարկման կարգավորումները չեն փոխվի։</translation>
+<translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6559301491397835130">{count,plural, =1{Էջանիշը պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}one{Էջանիշը պահվեց «{title}» պանակում։ Այն պահվում է միայն այս սարքում։}other{Էջանիշները պահվեցին «{title}» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="656065428026159829">Տեսնել ավելին</translation>
 <translation id="6571070086367343653">Փոխել վարկային քարտը</translation>

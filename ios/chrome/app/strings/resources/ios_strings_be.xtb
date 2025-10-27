@@ -162,6 +162,7 @@
 <translation id="1582732959743469162">Працэс спампоўвання будзе спынены.</translation>
 <translation id="1594034544529347967">Пачатак</translation>
 <translation id="1598751033135758830">Адкрыць у праграме…</translation>
+<translation id="1601560923496285236">Ужыць</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адрас}one{# адрас}few{# адрасы}many{# адрасоў}other{# адраса}}</translation>
 <translation id="1605405588277479165">Выключана (не рэкамендуецца)</translation>
 <translation id="1605658421715042784">Капіраваць відарыс</translation>
@@ -779,6 +780,7 @@
 <translation id="4049507953662678203">Праверце, ці ёсць у вас падключэнне да сеткі, і паўтарыце спробу.</translation>
 <translation id="4070132839822635162">Не ўваходзіць</translation>
 <translation id="4092655288299341041">Паказаць даведку</translation>
+<translation id="4095483462103784441">Стварыць новую групу ўкладак</translation>
 <translation id="4099756562043439968">Задаць напамін</translation>
 <translation id="4108998448622696017">Выяўляе небяспечныя падзеі і папярэджвае пра іх.</translation>
 <translation id="4111985840824673503">Адзначыць усе як прачытаныя</translation>
@@ -1456,6 +1458,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Параметры</translation>
 <translation id="6550891580932862748">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Гэты рэжым не паўплывае на налады Бяспечнага прагляду ў іншых прадуктах Google.</translation>
+<translation id="6556866813142980365">Узнавіць</translation>
 <translation id="6559301491397835130">{count,plural, =1{Закладка захавана ў папцы "{title}" і толькі на гэтай прыладзе.}one{Закладкі захаваны ў папцы "{title}" і толькі на гэтай прыладзе.}few{Закладкі захаваны ў папцы "{title}" і толькі на гэтай прыладзе.}many{Закладкі захаваны ў папцы "{title}" і толькі на гэтай прыладзе.}other{Закладкі захаваны ў папцы "{title}" і толькі на гэтай прыладзе.}}</translation>
 <translation id="656065428026159829">Яшчэ</translation>
 <translation id="6571070086367343653">Рэдагаванне крэдытнай карткі</translation>

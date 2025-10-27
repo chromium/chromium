@@ -391,6 +391,7 @@
 <translation id="1244917379075403655">انقر على "الإعدادات".</translation>
 <translation id="1245331638296910488">‏سيتم نقل الملفات إلى OneDrive عند فتحها في Microsoft 365</translation>
 <translation id="1245628370644070008">استرداد البيانات المحلية</translation>
+<translation id="1246420197935327230">اختيار منطقة</translation>
 <translation id="1246863218384630739">‏تعذّر تثبيت <ph name="VM_NAME" />: عنوان URL للصورة عرضَ رمز الخطأ <ph name="HTTP_ERROR" />. يُرجى التواصل مع المشرف.</translation>
 <translation id="1247372569136754018">ميكروفون (داخلي)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{تم إيقاف تلقّي الإشعارات من موقع إلكتروني واحد.}zero{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقع إلكتروني.}two{تم إيقاف تلقّي الإشعارات من موقعَين إلكترونيَّين ({NUM_SITES}).}few{تم إيقاف تلقّي الإشعارات من {NUM_SITES} مواقع إلكترونية.}many{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقعًا إلكترونيًا.}other{تم إيقاف تلقّي الإشعارات من {NUM_SITES} موقع إلكتروني.}}</translation>
@@ -1561,7 +1562,6 @@
 <translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2049573977943974163">هل تريد تفعيل "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="2050339315714019657">عمودي</translation>
-<translation id="2051266530792296582">‏أنشأت خدمة "مدير كلمات المرور في Google" كلمة مرور قوية لهذا الموقع الإلكتروني.</translation>
 <translation id="2051555741181591333">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="2051669996101374349">‏استخدِم بروتوكول HTTPS كلما أمكن ذلك واحصل على تحذيرات قبل تحميل المواقع الإلكترونية غير المتوافقة معه. ولا يمكنك تغيير هذه الإعدادات لأنّ إعداد "الحماية المتقدّمة" مفعّلاً.</translation>
 <translation id="2052572566310583903">التطبيق مثبَّت على أجهزتك الأخرى.</translation>
@@ -2821,6 +2821,7 @@
 <translation id="2916745397441987255">بحث في الإضافات</translation>
 <translation id="2918484639460781603">الانتقال إلى الإعدادات</translation>
 <translation id="2918484644467055090">لا يمكن تسجيل هذا الجهاز في المؤسّسة التي ينتمي إليها حسابك لإنه ستتم إدارة الجهاز من قِبَل مؤسّسة أخرى.</translation>
+<translation id="2920346489891435227">فتح الرابط في النافذة اليمنى</translation>
 <translation id="2920852127376356161">المواقع الإلكترونية التي لا يُسمح لها بمعالجة البروتوكولات</translation>
 <translation id="2921081876747860777">يُرجى إنشاء كلمة مرور لحماية بياناتك المحلية.</translation>
 <translation id="2923006468155067296">سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> الآن.
@@ -4596,6 +4597,7 @@
 <translation id="4133265950310064865">الحماية المحسَّنة</translation>
 <translation id="4134838386867070505">الخطوة 1 من 4: وصف المشكلة</translation>
 <translation id="413534985210133938">تم حفظ "<ph name="LOCAL_FOLDER" />" على هذا الجهاز فقط. وفي حال نقل هذه الإشارة المرجعية إلى "<ph name="LOCAL_FOLDER" />"، لن يعود بإمكانك الوصول إليها على أجهزتك الأخرى.</translation>
+<translation id="4135370802895537423">فتح الرابط في النافذة اليمنى</translation>
 <translation id="4135746311382563554">‏بنود الخدمة الإضافية لكلٍ من متصفِّح Google Chrome ونظام التشغيل Chrome</translation>
 <translation id="4136203100490971508">سيتم إيقاف الإضاءة الليلية تلقائيًا عند شروق الشمس.</translation>
 <translation id="41365691917097717">‏ستؤدي المواصلة إلى تفعيل خيار "تصحيح الأخطاء عبر ADB" لإنشاء تطبيقات Android واختبارها. ويُرجى ملاحظة أن هذا الإجراء يتيح تثبيت تطبيقات Android لم تتحقَّق منها Google، ويتطلب أيضًا إعادة ضبط على الإعدادات الأصلية لإيقافه.</translation>
@@ -4681,6 +4683,7 @@
 <translation id="4209251085232852247">تم إيقاف الجهاز</translation>
 <translation id="4210048056321123003">جارٍ تنزيل الآلة الافتراضية</translation>
 <translation id="4210380525132844778">السبب: تم العثور على <ph name="RULE" /> في القائمة "<ph name="LIST_NAME" />".</translation>
+<translation id="4210428686880035809">فتح الرابط في النافذة اليسرى</translation>
 <translation id="4211362364312260125">تحديد المَعلم الرئيسي في صفحات الويب للتكنولوجيا المساعِدة</translation>
 <translation id="421182450098841253">&amp;عرض شريط الإشارات</translation>
 <translation id="4211904048067111541">‏إيقاف استخدام الحساب مع تطبيقات Android</translation>
@@ -6056,6 +6059,7 @@
 <translation id="5184662919967270437">تحديث جهازك</translation>
 <translation id="5185386675596372454">تم إيقاف أحدث إصدار من "<ph name="EXTENSION_NAME" />" لأنه يتطلب المزيد من الأذونات.</translation>
 <translation id="5185500136143151980">لا يتوفّر اتصال بالإنترنت</translation>
+<translation id="5186362203408605578">يمكنك استخدام جهاز آخر من خلال مسح رمز الاستجابة السريعة ضوئيًا</translation>
 <translation id="5186381005592669696">تخصيص لغة العرض للتطبيقات المتوافقة</translation>
 <translation id="5186788525428341874">‏يمكنك استخدام مفتاح المرور هذا لتسجيل الدخول بشكل أسرع على جميع أجهزتك. وسيتم حفظه في "مدير كلمات المرور في Google" ضمن الحساب <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;تثبيت الصفحة كتطبيق...</translation>
@@ -6441,6 +6445,7 @@
 <translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
 <translation id="5457113250005438886">غير صالحة</translation>
 <translation id="5457459357461771897">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وحذفها</translation>
+<translation id="5457795687441958389">البقاء في وضع تسجيل الخروج</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">لقد تخطّيت عدد المحاولات المسموح به لإدخال رقم التعريف الشخصي الصحيح. للوصول إلى مفاتيح المرور وكلمات المرور، عليك تغيير رقم التعريف الشخصي.</translation>
 <translation id="5459470938885464873">حدث خطأ أثناء استيراد الشهادة</translation>
@@ -7452,6 +7457,7 @@
 <translation id="6175910054050815932">الحصول على رابط</translation>
 <translation id="6177412385419165772">جارٍ الإزالة…</translation>
 <translation id="6177478397823976397">لم يتم العثور على أي أجهزة. يُرجى فتح مقالة مركز المساعدة في علامة تبويب جديدة</translation>
+<translation id="6177779807714496775">فتح الرابط في النافذة اليسرى</translation>
 <translation id="6178664161104547336">تحديد شهادة</translation>
 <translation id="6178682841350631965">تم تعديل بيانات تسجيل الدخول.</translation>
 <translation id="6179830757749383456">تتم إدارة المتصفِّح من خلال <ph name="BROWSER_DOMAIN" />، والملف الشخصي من خلال <ph name="PROFILE_DOMAIN" />.</translation>
@@ -8597,6 +8603,7 @@
 <translation id="6973611239564315524">‏تتوفّر ترقية إلى Debian 10 (Buster).</translation>
 <translation id="69739764870135975">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها</translation>
 <translation id="697508444536771064">‏إيقاف نظام التشغيل Linux</translation>
+<translation id="6977008555972361928">يريد "<ph name="WEBSITE_ORIGIN" />" حفظ معلومات على جهازك الجوّال</translation>
 <translation id="6978121630131642226">محرّكات البحث</translation>
 <translation id="6978717888677691380">المواقع الإلكترونية التي حظرتها</translation>
 <translation id="6979041727349121225">وضع "توفير الطاقة"</translation>
@@ -11981,6 +11988,7 @@
 <translation id="984705303330760860">إضافة لغات إلى ميزة التدقيق الإملائي</translation>
 <translation id="987068745968718743">‏نظام Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">عام</translation>
+<translation id="987574372967138078">يريد "<ph name="WEBSITE_ORIGIN" />" الحصول على معلومات من جهازك الجوّال</translation>
 <translation id="988320949174893488">يتقطّع من حين لآخر</translation>
 <translation id="988978206646512040">غير مسموح باستخدام عبارة مرور فارغة</translation>
 <translation id="992032470292211616">قد تضر الإضافات والتطبيقات والمظاهر بجهازك. هل تريد فعلًا المتابعة؟</translation>

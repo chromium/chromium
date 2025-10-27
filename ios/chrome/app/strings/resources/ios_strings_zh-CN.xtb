@@ -162,6 +162,7 @@
 <translation id="1582732959743469162">这会全面停止您正在执行的下载任务。</translation>
 <translation id="1594034544529347967">开始日期</translation>
 <translation id="1598751033135758830">在应用中打开…</translation>
+<translation id="1601560923496285236">应用</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="1605405588277479165">关闭 - 不推荐</translation>
 <translation id="1605658421715042784">复制图片</translation>
@@ -779,6 +780,7 @@
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="4070132839822635162">不登录</translation>
 <translation id="4092655288299341041">显示帮助</translation>
+<translation id="4095483462103784441">创建新标签页分组</translation>
 <translation id="4099756562043439968">设置提醒</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
 <translation id="4111985840824673503">全部标为已读</translation>
@@ -1456,6 +1458,7 @@
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">选项</translation>
 <translation id="6550891580932862748">不会防范危险的网站、下载内容和扩展程序。您在其他 Google 产品中的安全浏览设置不受影响。</translation>
+<translation id="6556866813142980365">重做</translation>
 <translation id="6559301491397835130">{count,plural, =1{书签已保存到“{title}”，而且只保存在此设备上。}other{这些书签已保存到“{title}”，而且只保存在此设备上。}}</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6571070086367343653">修改信用卡</translation>

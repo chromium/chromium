@@ -161,6 +161,7 @@
 <translation id="1582732959743469162">Ова ќе го запре целиот напредок на моменталното преземање.</translation>
 <translation id="1594034544529347967">Започнува</translation>
 <translation id="1598751033135758830">Отворете во апликацијата…</translation>
+<translation id="1601560923496285236">Примени</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="1605405588277479165">Исклучено - Не се препорачува</translation>
 <translation id="1605658421715042784">Копирај ја сликата</translation>
@@ -778,6 +779,7 @@
 <translation id="4049507953662678203">Проверете дали имате мрежна врска и обидете се повторно.</translation>
 <translation id="4070132839822635162">Не најавувај се</translation>
 <translation id="4092655288299341041">Прикажи помош</translation>
+<translation id="4095483462103784441">Создајте нова група картички</translation>
 <translation id="4099756562043439968">Поставете потсетник</translation>
 <translation id="4108998448622696017">Открива опасни настани и ве предупредува кога ќе се случат.</translation>
 <translation id="4111985840824673503">Означи ги сите како прочитани</translation>
@@ -1454,6 +1456,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Опции</translation>
 <translation id="6550891580932862748">Не ве штити од опасни веб-сајтови, преземања и екстензии. Ова нема да влијае на поставките за „Безбедно прелистување“ на други производи на Google.</translation>
+<translation id="6556866813142980365">Повтори</translation>
 <translation id="6559301491397835130">{count,plural, =1{Обележувачот е зачуван во „{title}“. Зачуван е само на овој уред.}one{Обележувачите се зачувани во „{title}“. Зачувани се само на овој уред.}other{Обележувачите се зачувани во „{title}“. Зачувани се само на овој уред.}}</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6571070086367343653">Измени кредитна картичка</translation>

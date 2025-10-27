@@ -162,6 +162,7 @@
 <translation id="1582732959743469162">Hatua hii itasimamisha upakuaji wako wote wa sasa.</translation>
 <translation id="1594034544529347967">Litaanza</translation>
 <translation id="1598751033135758830">Fungua katika programu…</translation>
+<translation id="1601560923496285236">Tekeleza</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{Anwani 1}other{Anwani #}}</translation>
 <translation id="1605405588277479165">Kimezimwa - Haipendekezwi</translation>
 <translation id="1605658421715042784">Nakili Picha</translation>
@@ -779,6 +780,7 @@
 <translation id="4049507953662678203">Hakikisha una muunganisho wa mtandao, kisha ujaribu tena.</translation>
 <translation id="4070132839822635162">Usiingie katika akaunti</translation>
 <translation id="4092655288299341041">Onyesha Usaidizi</translation>
+<translation id="4095483462103784441">Unda kikundi kipya cha vichupo</translation>
 <translation id="4099756562043439968">Weka Kikumbusho</translation>
 <translation id="4108998448622696017">Hutambua na kukuonya kuhusu matukio hatari yanapotendeka.</translation>
 <translation id="4111985840824673503">Weka alama kuwa umesoma zote</translation>
@@ -1456,6 +1458,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Chaguo</translation>
 <translation id="6550891580932862748">Haikulindi dhidi ya tovuti, vipakuliwa na viendelezi hatari. Mipangilio yako ya Kuvinjari Salama katika bidhaa nyingine za Google haitaathiriwa.</translation>
+<translation id="6556866813142980365">Rudia</translation>
 <translation id="6559301491397835130">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}". Inahifadhiwa katika kifaa hiki pekee.}other{Alamisho zimehifadhiwa kwenye "{title}". Zinahifadhiwa katika kifaa hiki pekee.}}</translation>
 <translation id="656065428026159829">Angalia zaidi</translation>
 <translation id="6571070086367343653">Hariri kadi ya mkopo</translation>
