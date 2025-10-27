@@ -20,9 +20,6 @@ namespace gfx {
 class COMPONENT_EXPORT(GFX) NativePixmapDmaBuf : public gfx::NativePixmap {
  public:
   NativePixmapDmaBuf(const gfx::Size& size,
-                     gfx::BufferFormat format,
-                     gfx::NativePixmapHandle handle);
-  NativePixmapDmaBuf(const gfx::Size& size,
                      viz::SharedImageFormat format,
                      gfx::NativePixmapHandle handle);
 
