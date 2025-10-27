@@ -287,15 +287,6 @@ CommandEventType HTMLButtonElement::GetCommandEventType(
     }
   }
 
-  // Just the toggle-interest command (behind the
-  // HTMLCommandActionToggleInterest flag) go below this point
-
-  if (EqualIgnoringASCIICase(action, keywords::kToggleInterest) &&
-      RuntimeEnabledFeatures::HTMLCommandActionToggleInterestEnabled(
-          execution_context)) {
-    return CommandEventType::kToggleInterest;
-  }
-
   // V2 commands go below this point
 
   if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {

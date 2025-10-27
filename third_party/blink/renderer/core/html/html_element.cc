@@ -2240,22 +2240,6 @@ const HTMLElement* NearestTargetPopoverForInvoker(
           }
         }
 
-        // Case 5. A <button> with the `commandfor` attribute pointing to an
-        // element with the `interestfor` attribute pointing to a popover.
-        if (auto* button = DynamicTo<HTMLButtonElement>(test_node)) {
-          if (auto* first_target =
-                  DynamicTo<HTMLElement>(button->commandForElement())) {
-            if (auto* second_target =
-                    DynamicTo<HTMLElement>(first_target->InterestForElement());
-                second_target && second_target->IsPopover()) {
-              CHECK(RuntimeEnabledFeatures::
-                        HTMLCommandActionToggleInterestEnabled(
-                            test_node->GetDocument().GetExecutionContext()));
-              return second_target;
-            }
-          }
-        }
-
         return nullptr;
       });
 }
@@ -2496,10 +2480,7 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
          (RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
           (command == CommandEventType::kToggleFullscreen ||
            command == CommandEventType::kRequestFullscreen ||
-           command == CommandEventType::kExitFullscreen)) ||
-         (RuntimeEnabledFeatures::HTMLCommandActionToggleInterestEnabled(
-              invoker.GetDocument().GetExecutionContext()) &&
-          command == CommandEventType::kToggleInterest);
+           command == CommandEventType::kExitFullscreen));
 }
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
@@ -2514,10 +2495,7 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
                               command == CommandEventType::kRequestFullscreen ||
                               command == CommandEventType::kExitFullscreen;
 
-  bool is_toggle_interest = command == CommandEventType::kToggleInterest;
-
-  if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action &&
-      (!is_toggle_interest || !InterestForElement())) {
+  if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action) {
     return false;
   }
 
@@ -2566,24 +2544,13 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled() &&
-      !RuntimeEnabledFeatures::HTMLCommandActionToggleInterestEnabled(
-          document.GetExecutionContext())) {
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return false;
   }
 
   LocalFrame* frame = document.GetFrame();
 
-  if (is_toggle_interest && InterestForElement()) {
-    if (GetInterestState() == InterestState::kNoInterest) {
-      ShowInterestNow();
-    } else {
-      CHECK_EQ(GetInterestState(), InterestState::kFullInterest);
-      LoseInterestNow(InterestLostCancelable::kCancelable,
-                      InterestLostPopoverBehavior::kClosePopovers);
-    }
-    return true;
-  } else if (command == CommandEventType::kToggleFullscreen) {
+  if (command == CommandEventType::kToggleFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       Fullscreen::ExitFullscreen(document);
       return true;
