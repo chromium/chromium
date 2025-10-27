@@ -83,7 +83,7 @@ extern const char kHatsSurveyTriggerComposeClose[];
 extern const char kHatsSurveyTriggerComposeNudgeClose[];
 #endif  // #if BUILDFLAG(ENABLE_COMPOSE)
 extern const char kHatsSurveyTriggerWhatsNew[];
-#else  // BUILDFLAG(IS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerQuickDelete[];
 extern const char kHatsSurveyTriggerClearBrowsingData[];
@@ -117,7 +117,8 @@ extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[];
 extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[];
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-extern const char kHatsSurveyTriggerPdfSaveToDrive[];
+extern const char kHatsSurveyConsumerTriggerPdfSaveToDrive[];
+extern const char kHatsSurveyEnterpriseTriggerPdfSaveToDrive[];
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 extern const char kHatsSurveyTriggerTesting[];

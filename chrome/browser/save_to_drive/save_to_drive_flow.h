@@ -112,6 +112,7 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   void OnUploadProgress(
       extensions::api::pdf_viewer_private::SaveToDriveProgress progress);
   void ShowHatsSurveyWithDelay();
+  std::string GetHatsSurveyTriggerId();
 
   std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher_;
   std::unique_ptr<ContentReader> content_reader_;

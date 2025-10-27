@@ -214,7 +214,10 @@ constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
     "omnibox-on-focus-utility";
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-constexpr char kHatsSurveyTriggerPdfSaveToDrive[] = "save-to-drive";
+constexpr char kHatsSurveyConsumerTriggerPdfSaveToDrive[] =
+    "save-to-drive-consumer";
+constexpr char kHatsSurveyEnterpriseTriggerPdfSaveToDrive[] =
+    "save-to-drive-enterprise";
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace {
@@ -956,8 +959,16 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   survey_configs.emplace_back(
-      &chrome_pdf::features::kPdfSaveToDrive, kHatsSurveyTriggerPdfSaveToDrive,
-      /*presupplied_trigger_id=*/"etKhHztBR0ugnJ3q1cK0TKzkyTyw",
+      &chrome_pdf::features::kPdfSaveToDriveSurvey,
+      kHatsSurveyConsumerTriggerPdfSaveToDrive,
+      chrome_pdf::features::kPdfSaveToDriveSurveyConsumerTriggerId.Get(),
+      /*product_specific_bits_data_fields=*/
+      std::vector<std::string>{"Upload status", "Multipart upload",
+                               "Resumable upload"});
+  survey_configs.emplace_back(
+      &chrome_pdf::features::kPdfSaveToDriveSurvey,
+      kHatsSurveyEnterpriseTriggerPdfSaveToDrive,
+      chrome_pdf::features::kPdfSaveToDriveSurveyEnterpriseTriggerId.Get(),
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{"Upload status", "Multipart upload",
                                "Resumable upload"});

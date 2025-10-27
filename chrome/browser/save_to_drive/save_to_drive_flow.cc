@@ -32,6 +32,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "pdf/pdf_features.h"
 
 namespace save_to_drive {
 namespace {
@@ -192,14 +193,24 @@ void SaveToDriveFlow::ShowHatsSurveyWithDelay() {
       {"Resumable upload",
        drive_uploader_ && drive_uploader_->get_drive_uploader_type() ==
                               DriveUploaderType::kResumable}};
-  hats_service_->LaunchDelayedSurvey(kHatsSurveyTriggerPdfSaveToDrive,
+  hats_service_->LaunchDelayedSurvey(GetHatsSurveyTriggerId(),
                                      kHatsSurveyTimeout.InMilliseconds(),
                                      std::move(product_specific_bits_data));
 }
 
+std::string SaveToDriveFlow::GetHatsSurveyTriggerId() {
+  if (save_to_drive_account_info_ && save_to_drive_account_info_->is_managed) {
+    return kHatsSurveyEnterpriseTriggerPdfSaveToDrive;
+  }
+  return kHatsSurveyConsumerTriggerPdfSaveToDrive;
+}
+
 void SaveToDriveFlow::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ShowHatsSurveyWithDelay();
+  if (base::FeatureList::IsEnabled(
+          chrome_pdf::features::kPdfSaveToDriveSurvey)) {
+    ShowHatsSurveyWithDelay();
+  }
   DeleteForCurrentDocument(&render_frame_host());
   // Don't do anything else here. The flow will be destroyed after this line.
 }

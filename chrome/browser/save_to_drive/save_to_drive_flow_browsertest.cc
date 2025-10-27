@@ -46,11 +46,14 @@ using testing::Return;
 namespace save_to_drive {
 namespace {
 
-AccountInfo CreateAccountInfo() {
+AccountInfo CreateAccountInfo(bool is_managed) {
   AccountInfo account_info;
   account_info.email = "test@mail.com";
   account_info.gaia = GaiaId("1234567890");
   account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
+  if (is_managed) {
+    account_info.hosted_domain = "mail.com";
+  }
   return account_info;
 }
 
@@ -103,6 +106,17 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
   ~SaveToDriveFlowBrowserTest() override = default;
 
   bool UseOopif() const override { return GetParam(); }
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        PDFExtensionTestBase::GetEnabledFeatures();
+    enabled_features.push_back(
+        {chrome_pdf::features::kPdfSaveToDriveSurvey,
+         {{"enterprise-trigger-id", "EnterpriseTriggerId"},
+          {"consumer-trigger-id", "ConsumerTriggerId"}}});
+    return enabled_features;
+  }
 
   void SetUpOnMainThread() override {
     PDFExtensionTestBase::SetUpOnMainThread();
@@ -165,31 +179,33 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
             });
   }
 
-  void TestCreateMultipartUploaderForSmallFile() {
-    SimulateAccountChooserAction(CreateAccountInfo());
+  void TestCreateMultipartUploaderForSmallFile(bool is_managed) {
+    SimulateAccountChooserAction(CreateAccountInfo(is_managed));
     EXPECT_CALL(event_dispatcher(),
                 Notify(AllOf(Field(&SaveToDriveProgress::status,
                                    SaveToDriveStatus::kInitiated),
                              Field(&SaveToDriveProgress::error_type,
                                    SaveToDriveErrorType::kNoError))));
-    EXPECT_CALL(event_dispatcher(),
-                Notify(AllOf(
-                    Field(&SaveToDriveProgress::status,
-                          SaveToDriveStatus::kAccountSelected),
-                    Field(&SaveToDriveProgress::error_type,
-                          SaveToDriveErrorType::kNoError),
-                    Field(&SaveToDriveProgress::account_email, "test@mail.com"),
-                    Field(&SaveToDriveProgress::account_is_managed, false))));
+    EXPECT_CALL(
+        event_dispatcher(),
+        Notify(AllOf(
+            Field(&SaveToDriveProgress::status,
+                  SaveToDriveStatus::kAccountSelected),
+            Field(&SaveToDriveProgress::error_type,
+                  SaveToDriveErrorType::kNoError),
+            Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+            Field(&SaveToDriveProgress::account_is_managed, is_managed))));
 
     // Since IdentityManager is not set up, the OAuth fetch will fail.
-    EXPECT_CALL(event_dispatcher(),
-                Notify(AllOf(
-                    Field(&SaveToDriveProgress::status,
-                          SaveToDriveStatus::kUploadFailed),
-                    Field(&SaveToDriveProgress::error_type,
-                          SaveToDriveErrorType::kOauthError),
-                    Field(&SaveToDriveProgress::account_email, "test@mail.com"),
-                    Field(&SaveToDriveProgress::account_is_managed, false))))
+    EXPECT_CALL(
+        event_dispatcher(),
+        Notify(
+            AllOf(Field(&SaveToDriveProgress::status,
+                        SaveToDriveStatus::kUploadFailed),
+                  Field(&SaveToDriveProgress::error_type,
+                        SaveToDriveErrorType::kOauthError),
+                  Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+                  Field(&SaveToDriveProgress::account_is_managed, is_managed))))
         .WillOnce([&]() {
           auto* drive_uploader = test_api_->drive_uploader();
           ASSERT_TRUE(drive_uploader);
@@ -225,7 +241,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
 }
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
-  AccountInfo account_info = CreateAccountInfo();
+  AccountInfo account_info = CreateAccountInfo(/*is_managed=*/false);
   account_info.hosted_domain = "example.com";
   SimulateAccountChooserAction(std::move(account_info));
   EXPECT_CALL(event_dispatcher(),
@@ -258,12 +274,12 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
                        CreatesMultipartUploaderForSmallFile) {
-  TestCreateMultipartUploaderForSmallFile();
+  TestCreateMultipartUploaderForSmallFile(/*is_managed=*/false);
 }
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
                        CreatesResumableUploaderForLargeFile) {
-  SimulateAccountChooserAction(CreateAccountInfo());
+  SimulateAccountChooserAction(CreateAccountInfo(/*is_managed=*/false));
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
                                  SaveToDriveStatus::kInitiated),
@@ -299,9 +315,20 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
 }
 
-IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ShowSurveyAfterUpload) {
-  EXPECT_CALL(*hats_service_, LaunchDelayedSurvey);
-  TestCreateMultipartUploaderForSmallFile();
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+                       ShowConsumerSurveyAfterUpload) {
+  EXPECT_CALL(
+      *hats_service_,
+      LaunchDelayedSurvey(kHatsSurveyConsumerTriggerPdfSaveToDrive, _, _, _));
+  TestCreateMultipartUploaderForSmallFile(/*is_managed=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
+                       ShowEnterpriseSurveyAfterUpload) {
+  EXPECT_CALL(
+      *hats_service_,
+      LaunchDelayedSurvey(kHatsSurveyEnterpriseTriggerPdfSaveToDrive, _, _, _));
+  TestCreateMultipartUploaderForSmallFile(/*is_managed=*/true);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveToDriveFlowBrowserTest);
