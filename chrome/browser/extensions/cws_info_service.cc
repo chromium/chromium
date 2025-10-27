@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/queue.h"
+#include "base/features.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -360,6 +361,11 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
 }
 
 void CWSInfoService::ScheduleCheck(int seconds) {
+  if (base::features::IsReducePPMsEnabled()) {
+    info_check_timer_.SetTaskRunner(
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}));
+  }
+
   info_check_timer_.Start(FROM_HERE, base::Seconds(seconds), this,
                           &CWSInfoService::CheckAndMaybeFetchInfo);
 }
