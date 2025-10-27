@@ -64,9 +64,8 @@ void ExtensionMenuItemViewTest::SetUp() {
   // create a DesktopNativeWidgetAura for Mash. We can get by without manually
   // creating it because AshTestViewsDelegate and MusClient will do the right
   // thing automatically.
-  init_params.native_widget =
-      CreateNativeWidget(NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA,
-                         &init_params, widget_.get());
+  init_params.native_widget = CreateNativeWidget(
+      NativeWidgetType::kDesktopNativeWidgetAura, &init_params, widget_.get());
 #endif
   widget_->Init(std::move(init_params));
 

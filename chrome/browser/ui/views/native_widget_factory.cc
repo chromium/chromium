@@ -25,7 +25,7 @@ views::NativeWidget* CreateNativeWidget(
   }
   views::NativeWidget* native_widget = nullptr;
   aura::Window* window = nullptr;
-  if (type == NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA ||
+  if (type == NativeWidgetType::kDesktopNativeWidgetAura ||
       (!params->parent && !params->context && !params->child)) {
     // In the desktop case, do not always set the profile window
     // property from the parent since there are windows (like the task

@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
   params.bounds = {0, 0, 200, 200};
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
   params.native_widget = CreateNativeWidget(
-      NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA, &params, widget.get());
+      NativeWidgetType::kDesktopNativeWidgetAura, &params, widget.get());
 #endif
   widget->Init(std::move(params));
   widget->Show();

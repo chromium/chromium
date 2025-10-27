@@ -49,7 +49,7 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
   // otherwise it's possible for things like menus to obscure the view.
   if (params.z_order &&
       params.z_order.value() == ui::ZOrderLevel::kSecuritySurface) {
-    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+    return NativeWidgetType::kDesktopNativeWidgetAura;
   }
 
   const bool default_desktop_bubble =
@@ -62,18 +62,18 @@ NativeWidgetType GetNativeWidgetTypeForInitParams(
 
   if (!params.child &&
       params.use_accelerated_widget_override.value_or(default_desktop_bubble)) {
-    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+    return NativeWidgetType::kDesktopNativeWidgetAura;
   }
 
   if (params.delegate && params.delegate->use_desktop_widget_override()) {
-    return NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+    return NativeWidgetType::kDesktopNativeWidgetAura;
   }
 
   return (params.parent &&
           params.type != views::Widget::InitParams::TYPE_MENU &&
           params.type != views::Widget::InitParams::TYPE_TOOLTIP)
-             ? NativeWidgetType::NATIVE_WIDGET_AURA
-             : NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+             ? NativeWidgetType::kNativeWidgetAura
+             : NativeWidgetType::kDesktopNativeWidgetAura;
 }
 
 }  // namespace

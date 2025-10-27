@@ -131,8 +131,8 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
   NativeWidgetType native_widget_type =
       (params->parent && params->child && !params->force_software_compositing &&
        params->type != views::Widget::InitParams::TYPE_TOOLTIP)
-          ? NativeWidgetType::NATIVE_WIDGET_AURA
-          : NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+          ? NativeWidgetType::kNativeWidgetAura
+          : NativeWidgetType::kDesktopNativeWidgetAura;
 
   if (params->shadow_type == views::Widget::InitParams::ShadowType::kDrop &&
       params->shadow_elevation.has_value()) {
@@ -141,7 +141,7 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     // as the native window manager has no concept of elevation based shadows.
     // TODO: This may no longer be needed if we get proper elevation-based
     // shadows on toplevel windows. See https://crbug.com/838667.
-    native_widget_type = NativeWidgetType::NATIVE_WIDGET_AURA;
+    native_widget_type = NativeWidgetType::kNativeWidgetAura;
   } else {
     // Otherwise, we can use a toplevel window (they get blended via
     // WS_EX_COMPOSITED, which allows for animation effects, and for exceeding
@@ -149,12 +149,12 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     if (params->parent &&
         params->type != views::Widget::InitParams::TYPE_CONTROL &&
         params->type != views::Widget::InitParams::TYPE_WINDOW) {
-      native_widget_type = NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+      native_widget_type = NativeWidgetType::kDesktopNativeWidgetAura;
     }
   }
 
   if (params->delegate && params->delegate->use_desktop_widget_override()) {
-    native_widget_type = NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
+    native_widget_type = NativeWidgetType::kDesktopNativeWidgetAura;
   }
 
   return ::CreateNativeWidget(native_widget_type, params, delegate);
