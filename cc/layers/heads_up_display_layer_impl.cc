@@ -284,7 +284,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     if (backing->returned_sync_token.HasData()) {
       backing->returned_sync_token = gpu::SyncToken();
     }
-    if (raster_caps.use_gpu_rasterization) {
+    if (layer_tree_impl()->use_gpu_rasterization()) {
       // If using |gpu_raster|, DrawHudContents() directly to a gpu texture
       // which is wrapped in an SkSurface.
       const auto& size = pool_resource.size();
