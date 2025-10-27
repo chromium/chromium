@@ -306,6 +306,7 @@ chrome_java_resources = [
   "java/res/drawable/btn_reload_stop.xml",
   "java/res/drawable/button_borderless_compat.xml",
   "java/res/drawable/button_compat_shape.xml",
+  "java/res/drawable/capture_24dp.xml",
   "java/res/drawable/capture_overlay_border.xml",
   "java/res/drawable/card_container_background.xml",
   "java/res/drawable/checkerboard_background.xml",

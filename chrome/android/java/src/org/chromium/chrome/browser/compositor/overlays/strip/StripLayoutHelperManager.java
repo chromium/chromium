@@ -1588,6 +1588,8 @@ public class StripLayoutHelperManager
             @Tab.MediaState int mediaState, @ColorInt int defaultTint) {
         if (mediaState == Tab.MediaState.RECORDING) {
             return mContext.getColor(R.color.tab_recording_media_color);
+        } else if (mediaState == Tab.MediaState.SHARING) {
+            return mContext.getColor(R.color.tab_sharing_media_color);
         }
         return defaultTint;
     }
