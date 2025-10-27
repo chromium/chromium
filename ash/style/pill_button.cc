@@ -296,38 +296,20 @@ void PillButton::OnSetTooltipText(const std::u16string& tooltip_text) {
   UpdateTooltipText();
 }
 
-void PillButton::SetBackgroundColor(const SkColor background_color) {
+void PillButton::SetBackgroundColor(ui::ColorVariant background_color) {
   if (MaybeUpdateColorVariant(background_color_, background_color)) {
     UpdateBackgroundColor();
   }
 }
 
-void PillButton::SetBackgroundColorId(ui::ColorId background_color_id) {
-  if (MaybeUpdateColorVariant(background_color_, background_color_id)) {
-    UpdateBackgroundColor();
-  }
-}
-
-void PillButton::SetButtonTextColor(const SkColor text_color) {
+void PillButton::SetButtonTextColor(ui::ColorVariant text_color) {
   if (MaybeUpdateColorVariant(text_color_, text_color)) {
     UpdateTextColor();
   }
 }
 
-void PillButton::SetButtonTextColorId(ui::ColorId text_color_id) {
-  if (MaybeUpdateColorVariant(text_color_, text_color_id)) {
-    UpdateTextColor();
-  }
-}
-
-void PillButton::SetIconColor(const SkColor icon_color) {
+void PillButton::SetIconColor(ui::ColorVariant icon_color) {
   if (MaybeUpdateColorVariant(icon_color_, icon_color)) {
-    UpdateIconColor();
-  }
-}
-
-void PillButton::SetIconColorId(ui::ColorId icon_color_id) {
-  if (MaybeUpdateColorVariant(icon_color_, icon_color_id)) {
     UpdateIconColor();
   }
 }

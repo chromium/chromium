@@ -1426,7 +1426,7 @@ AshNotificationView::GenerateNotificationLabelButton(
   std::unique_ptr<PillButton> actions_button = std::make_unique<PillButton>(
       std::move(callback), label, PillButton::Type::kFloatingWithoutIcon,
       /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
-  actions_button->SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+  actions_button->SetButtonTextColor(cros_tokens::kCrosSysOnSurface);
 
   return actions_button;
 }

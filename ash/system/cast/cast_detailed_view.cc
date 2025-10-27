@@ -266,9 +266,9 @@ std::unique_ptr<PillButton> CastDetailedView::CreateStopButton(
                           base::Unretained(this), route.id),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP_CASTING),
       PillButton::kDefaultWithIconLeading, &kQuickSettingsCircleStopIcon);
-  stop_button->SetBackgroundColorId(cros_tokens::kCrosSysErrorContainer);
-  stop_button->SetIconColorId(cros_tokens::kCrosSysError);
-  stop_button->SetButtonTextColorId(cros_tokens::kCrosSysError);
+  stop_button->SetBackgroundColor(cros_tokens::kCrosSysErrorContainer);
+  stop_button->SetIconColor(cros_tokens::kCrosSysError);
+  stop_button->SetButtonTextColor(cros_tokens::kCrosSysError);
   return stop_button;
 }
 
