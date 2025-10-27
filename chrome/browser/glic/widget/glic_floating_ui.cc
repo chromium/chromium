@@ -245,6 +245,7 @@ void GlicFloatingUi::Show() {
 }
 
 void GlicFloatingUi::Close() {
+  instance_metrics_->OnFloatyClosed();
   if (IsShowing()) {
     modal_dialog_host_observers_.Notify(
         &web_modal::ModalDialogHostObserver::OnHostDestroying);

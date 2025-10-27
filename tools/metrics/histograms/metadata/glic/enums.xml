@@ -405,6 +405,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="WebUI State Sign In"/>
   <int value="38" label="WebUI State Guest Error"/>
   <int value="39" label="WebUI State Disabled By Admin"/>
+  <int value="40" label="Unbind Embedder From Instance"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/glic_instance_metrics.h:GlicInstanceEvent) -->

@@ -14142,6 +14142,12 @@ should be able to be added at any place in this file.
   <description>Logged when Toggle is called on an instance.</description>
 </action>
 
+<action name="Glic.Instance.UnBind">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>Logged when a Glic instance is un bound from a tab.</description>
+</action>
+
 <action name="Glic.Instance.UninterruptActorTask">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

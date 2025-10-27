@@ -117,7 +117,9 @@ class GlicInstanceImpl : public GlicInstance,
   void Show(const ShowOptions& options) override;
   void Close(EmbedderKey key);
   // Returns true when toggle shows the instance and false when it is closed.
-  bool Toggle(ShowOptions&& options, bool prevent_close);
+  bool Toggle(ShowOptions&& options,
+              bool prevent_close,
+              glic::mojom::InvocationSource source);
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);

@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 
+#include <map>
 #include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/service/glic_ui_types.h"
+#include "components/sessions/core/session_id.h"
 
+namespace tabs {
+class TabInterface;
+}
 namespace glic {
 
 struct ShowOptions;
@@ -70,7 +76,8 @@ enum class GlicInstanceEvent {
   kWebUiStateSignIn = 37,
   kWebUiStateGuestError = 38,
   kWebUiStateDisabledByAdmin = 39,
-  kMaxValue = kWebUiStateDisabledByAdmin,
+  kUnbindEmbedder = 40,
+  kMaxValue = kUnbindEmbedder,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
@@ -102,10 +109,19 @@ class GlicInstanceMetrics {
   void OnInstanceCreatedWithoutWarming();
 
   // Called when this instance is shown in the side panel.
-  void OnShowInSidePanel();
+  void OnShowInSidePanel(tabs::TabInterface* tab);
 
   // Called when this instance is shown in a floaty.
   void OnShowInFloaty();
+
+  // Called when the floaty is hidden.
+  void OnFloatyClosed();
+
+  // Called when the side panel is closed.
+  void OnSidePanelClosed(tabs::TabInterface* tab);
+
+  // Called when an embedder is unbound from this instance.
+  void OnUnbindEmbedder(EmbedderKey key);
 
   // Called when GlicInstanceImpl::SwitchConversation is called from this
   // instance (usually via 'start new chat' or re etn chats selection).
@@ -127,11 +143,19 @@ class GlicInstanceMetrics {
   // Called when a GlicInstanceImpl is hidden.
   void OnInstanceHidden();
 
+  // Called when the activation state of the instance changes.
+  void OnActivationChanged(bool is_active);
+
+  // Called when the visibility state of the instance changes.
+  void OnVisibilityChanged(bool is_visible);
+
   // Called when Close is called on the instance.
   void OnClose();
 
   // Called when Toggle is called on the instance.
-  void OnToggle();
+  void OnToggle(glic::mojom::InvocationSource source,
+                const ShowOptions& options,
+                bool is_showing);
 
   // Called when a tab that was bound to this instance is destroyed.
   void OnBoundTabDestroyed();
@@ -195,6 +219,7 @@ class GlicInstanceMetrics {
     int tab_bound_via_daisy_chain{};
     int tab_bound{};
     int toggle{};
+    int unbind_embedder{};
     int uninterrupt_actor_task{};
     int warmed_instance_created{};
     int web_ui_state_begin_load{};
@@ -218,6 +243,17 @@ class GlicInstanceMetrics {
   void LogEvent(GlicInstanceEvent event, int& event_counter);
 
   GlicInstanceEventCounts event_counts_;
+  bool is_active_ = false;
+  bool is_visible_ = false;
+  int bound_tab_count_ = 0;
+  int max_concurrently_bound_tabs_ = 0;
+  base::TimeTicks creation_time_;
+  base::TimeTicks floaty_open_time_;
+  std::map<int, base::TimeTicks> side_panel_open_times_;
+  base::TimeTicks last_activation_change_time_;
+  base::TimeTicks last_visibility_change_time_;
+  base::TimeDelta total_active_time_;
+  base::TimeDelta total_visible_time_;
 };
 
 }  // namespace glic

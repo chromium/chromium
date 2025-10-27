@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -146,6 +147,7 @@ void GlicSidePanelUi::SidePanelStateChanged(
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
+    instance_metrics_->OnSidePanelClosed(tab_.get());
     // NOTE: `this` will be destroyed after this call.
     delegate_->WillCloseFor(tab_.get());
   }
@@ -174,7 +176,7 @@ void GlicSidePanelUi::CaptureScreenshot(
 }
 
 void GlicSidePanelUi::Show() {
-  instance_metrics_->OnShowInSidePanel();
+  instance_metrics_->OnShowInSidePanel(tab_.get());
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;

@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace glic {
 
@@ -39,15 +40,97 @@ GlicInstanceMetrics::~GlicInstanceMetrics() {
 
 void GlicInstanceMetrics::OnInstanceCreated() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
+  creation_time_ = base::TimeTicks::Now();
+  last_activation_change_time_ = creation_time_;
+  last_visibility_change_time_ = creation_time_;
   LogEvent(GlicInstanceEvent::kInstanceCreated, event_counts_.instance_created);
 }
 
 void GlicInstanceMetrics::OnInstanceDestroyed() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Destroyed"));
+
+  // Add the time spent in the final state before destruction.
+  if (is_active_) {
+    total_active_time_ += base::TimeTicks::Now() - last_activation_change_time_;
+  }
+  if (is_visible_) {
+    total_visible_time_ +=
+        base::TimeTicks::Now() - last_visibility_change_time_;
+  }
+
+  const base::TimeDelta lifetime = base::TimeTicks::Now() - creation_time_;
+  const base::TimeDelta background_time = lifetime - total_active_time_;
+  const base::TimeDelta hidden_time = lifetime - total_visible_time_;
+
+  base::UmaHistogramCustomTimes("Glic.Instance.TotalActiveDuration",
+                                total_active_time_, base::Milliseconds(1),
+                                base::Hours(24), 50);
+  base::UmaHistogramCustomTimes("Glic.Instance.TotalBackgroundDuration",
+                                background_time, base::Milliseconds(1),
+                                base::Hours(24), 50);
+  base::UmaHistogramCustomTimes("Glic.Instance.TotalVisibleDuration",
+                                total_visible_time_, base::Milliseconds(1),
+                                base::Hours(24), 50);
+  base::UmaHistogramCustomTimes("Glic.Instance.TotalHiddenDuration",
+                                hidden_time, base::Milliseconds(1),
+                                base::Hours(24), 50);
+
+  base::UmaHistogramCustomTimes("Glic.Instance.LifetimeDuration", lifetime,
+                                base::Milliseconds(1), base::Hours(24), 50);
+  base::UmaHistogramCustomTimes("Glic.Instance.LifetimeDuration.Max21Days",
+                                lifetime, base::Milliseconds(1), base::Days(21),
+                                50);
+  base::UmaHistogramCounts100("Glic.Instance.TotalTabsBoundInLifetime",
+                              event_counts_.tab_bound);
+  base::UmaHistogramCounts100("Glic.Instance.MaxConcurrentlyBoundTabs",
+                              max_concurrently_bound_tabs_);
+}
+
+void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
+  if (is_active == is_active_) {
+    return;
+  }
+
+  base::TimeDelta time_in_state =
+      base::TimeTicks::Now() - last_activation_change_time_;
+  // if is_active_ then activation changed to false.
+  if (is_active_) {
+    total_active_time_ += time_in_state;
+    base::UmaHistogramCustomTimes("Glic.Instance.UninterruptedActiveDuration",
+                                  time_in_state, base::Milliseconds(1),
+                                  base::Hours(1), 50);
+  }
+
+  is_active_ = is_active;
+  last_activation_change_time_ = base::TimeTicks::Now();
+}
+
+void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
+  if (is_visible == is_visible_) {
+    return;
+  }
+
+  base::TimeDelta time_in_state =
+      base::TimeTicks::Now() - last_visibility_change_time_;
+  // if is_visible_ then visibility changed to false.
+  if (is_visible_) {
+    OnInstanceHidden();
+    total_visible_time_ += time_in_state;
+    base::UmaHistogramCustomTimes("Glic.Instance.UninterruptedVisibleDuration",
+                                  time_in_state, base::Milliseconds(1),
+                                  base::Hours(1), 50);
+  }
+
+  is_visible_ = is_visible;
+  last_visibility_change_time_ = base::TimeTicks::Now();
 }
 
 void GlicInstanceMetrics::OnBind() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Bind"));
+  bound_tab_count_++;
+  if (bound_tab_count_ > max_concurrently_bound_tabs_) {
+    max_concurrently_bound_tabs_ = bound_tab_count_;
+  }
   LogEvent(GlicInstanceEvent::kTabBound, event_counts_.tab_bound);
 }
 
@@ -103,20 +186,71 @@ void GlicInstanceMetrics::OnSwitchToConversation(
   }
 }
 
-void GlicInstanceMetrics::OnShowInSidePanel() {
+void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+  side_panel_open_times_[tab->GetHandle().raw_value()] = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
   LogEvent(GlicInstanceEvent::kSidePanelShown, event_counts_.side_panel_shown);
 }
 
 void GlicInstanceMetrics::OnShowInFloaty() {
+  floaty_open_time_ = base::TimeTicks::Now();
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.Floaty"));
   LogEvent(GlicInstanceEvent::kFloatyShown, event_counts_.floaty_shown);
+}
+
+void GlicInstanceMetrics::OnFloatyClosed() {
+  if (floaty_open_time_.is_null()) {
+    return;
+  }
+  base::UmaHistogramCustomTimes("Glic.Instance.Floaty.OpenDuration",
+                                base::TimeTicks::Now() - floaty_open_time_,
+                                base::Milliseconds(1), base::Hours(1), 50);
+}
+
+void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+  int tab_id = tab->GetHandle().raw_value();
+  auto it = side_panel_open_times_.find(tab_id);
+  if (it == side_panel_open_times_.end()) {
+    return;
+  }
+
+  base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
+                                base::TimeTicks::Now() - it->second,
+                                base::Milliseconds(1), base::Hours(1), 50);
+  side_panel_open_times_.erase(it);
 }
 
 void GlicInstanceMetrics::OnDetach() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Detach"));
   LogEvent(GlicInstanceEvent::kDetachedToFloaty,
            event_counts_.detached_to_floaty);
+}
+
+void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
+  base::RecordAction(base::UserMetricsAction("Glic.Instance.UnBind"));
+  LogEvent(GlicInstanceEvent::kUnbindEmbedder, event_counts_.unbind_embedder);
+
+  auto* tab_ptr = std::get_if<tabs::TabInterface*>(&key);
+  if (tab_ptr) {
+    auto* tab = *tab_ptr;
+    int tab_id = tab->GetHandle().raw_value();
+    auto it = side_panel_open_times_.find(tab_id);
+    if (it != side_panel_open_times_.end()) {
+      base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
+                                    base::TimeTicks::Now() - it->second,
+                                    base::Milliseconds(1), base::Hours(1), 50);
+      side_panel_open_times_.erase(it);
+    }
+    if (bound_tab_count_ > 0) {
+      bound_tab_count_--;
+    }
+  }
 }
 
 void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source, bool success) {
@@ -152,8 +286,16 @@ void GlicInstanceMetrics::OnClose() {
   LogEvent(GlicInstanceEvent::kClose, event_counts_.close);
 }
 
-void GlicInstanceMetrics::OnToggle() {
+void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
+                                   const ShowOptions& options,
+                                   bool is_showing) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
+  if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
+    base::UmaHistogramEnumeration("Glic.Instance.Floaty.ToggleSource", source);
+  } else {
+    base::UmaHistogramEnumeration("Glic.Instance.SidePanel.ToggleSource",
+                                  source);
+  }
   LogEvent(GlicInstanceEvent::kToggle, event_counts_.toggle);
 }
 

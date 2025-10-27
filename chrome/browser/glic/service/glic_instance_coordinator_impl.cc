@@ -171,10 +171,11 @@ void GlicInstanceCoordinatorImpl::Toggle(
     mojom::InvocationSource source,
     std::optional<std::string> prompt_suggestion) {
   if (!browser) {
-    ToggleFloaty(prevent_close);
+    ToggleFloaty(prevent_close, source);
     return;
   }
-  ToggleSidePanel(browser, prevent_close);
+
+  ToggleSidePanel(browser, prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
@@ -398,20 +399,24 @@ GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
   return floaty_instance;
 }
 
-void GlicInstanceCoordinatorImpl::ToggleFloaty(bool prevent_close) {
+void GlicInstanceCoordinatorImpl::ToggleFloaty(
+    bool prevent_close,
+    glic::mojom::InvocationSource source) {
   GetOrCreateInstanceImplForFloaty()->Toggle(
-      ShowOptions::ForFloating(/*anchor_browser=*/nullptr), prevent_close);
+      ShowOptions::ForFloating(/*anchor_browser=*/nullptr), prevent_close,
+      source);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     BrowserWindowInterface* browser,
-    bool prevent_close) {
+    bool prevent_close,
+    glic::mojom::InvocationSource source) {
   auto* tab = browser->GetActiveTabInterface();
   if (!tab) {
     return;
   }
   auto* instance = GetOrCreateGlicInstanceImplForTab(tab);
-  instance->Toggle(ShowOptions::ForSidePanel(*tab), prevent_close);
+  instance->Toggle(ShowOptions::ForSidePanel(*tab), prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {

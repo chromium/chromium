@@ -105,6 +105,7 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 };
 
 void GlicInstanceImpl::NotifyStateChange() {
+  instance_metrics_.OnVisibilityChanged(IsShowing());
   state_change_callback_list_.Notify(IsShowing(),
                                      host().GetPrimaryCurrentView());
   if (coordinator_delegate_) {
@@ -237,8 +238,10 @@ void GlicInstanceImpl::Close(EmbedderKey key) {
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
-bool GlicInstanceImpl::Toggle(ShowOptions&& options, bool prevent_close) {
-  instance_metrics_.OnToggle();
+bool GlicInstanceImpl::Toggle(ShowOptions&& options,
+                              bool prevent_close,
+                              glic::mojom::InvocationSource source) {
+  instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
@@ -414,6 +417,7 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 }
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
+  instance_metrics_.OnUnbindEmbedder(key);
   MaybeDeactivateEmbedderAndCloseHostUi(key);
   if ((base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
        base::FeatureList::IsEnabled(
@@ -756,8 +760,6 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
     }
   }
 
-  // If no embedder is showing, then the instance is inactive.
-  instance_metrics_.OnInstanceHidden();
   NotifyInstanceActivationChanged(false);
 }
 
@@ -777,6 +779,7 @@ void GlicInstanceImpl::OnTabAddedToTask(
 
 void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
   is_active_ = is_active;
+  instance_metrics_.OnActivationChanged(is_active);
   if (is_active) {
     last_active_time_ = base::TimeTicks::Now();
     inactivity_timer_.Stop();

@@ -617,6 +617,149 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Floaty.OpenDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Floaty was open. Recorded each time a
+    Floaty instance is closed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.Floaty.ToggleSource" enum="GlicInvocationSource"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation that caused the floaty GlicInstance to
+    be toggled. Recorded each time the instance is toggled.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.LifetimeDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when a GlicInstance is created until it is destroyed.
+    Recorded when the GlicInstance is destroyed. This histogram has a max of 24
+    hours.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.LifetimeDuration.Max21Days" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when a GlicInstance is created until it is destroyed.
+    Recorded when the GlicInstance is destroyed. This histogram has a max of 21
+    days.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.MaxConcurrentlyBoundTabs" units="count"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the maximum number of tabs that were simultaneously bound to a
+    single GlicInstance throughout its lifetime. Recorded when the GlicInstance
+    is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.SidePanel.OpenDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Side Panel was open. Recorded each time a
+    Side Panel instance is closed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.SidePanel.ToggleSource"
+    enum="GlicInvocationSource" expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation that caused the side panel GlicInstance
+    to be toggled. Recorded each time the instance is toggled.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TotalActiveDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was active throughout its lifetime.
+    Recorded when the GlicInstance is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TotalBackgroundDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was in the background throughout its
+    lifetime. Recorded when the GlicInstance is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TotalHiddenDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was hidden throughout its lifetime.
+    Recorded when the GlicInstance is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TotalTabsBoundInLifetime" units="count"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total number of tabs that were bound to a single GlicInstance
+    throughout its lifetime. Recorded when the GlicInstance is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TotalVisibleDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the total time a GlicInstance was visible (in the foreground)
+    throughout its lifetime. Recorded when the GlicInstance is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.UninterruptedActiveDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration of a single, uninterrupted period of time that a
+    GlicInstance was active. Recorded each time an instance becomes inactive.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.UninterruptedVisibleDuration" units="ms"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration of a single, uninterrupted period of time that a
+    GlicInstance was visible. Recorded each time an instance becomes hidden.
+  </summary>
+</histogram>
+
 <histogram name="Glic.MaybeReplaceNavigation.Result" enum="Boolean"
     expires_after="2026-03-22">
   <owner>liberato@chromium.org</owner>

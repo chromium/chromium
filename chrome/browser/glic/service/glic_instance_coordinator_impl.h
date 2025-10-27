@@ -144,8 +144,10 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* CreateGlicInstance();
   void CreateWarmedInstance();
 
-  void ToggleFloaty(bool prevent_close);
-  void ToggleSidePanel(BrowserWindowInterface* browser, bool prevent_close);
+  void ToggleFloaty(bool prevent_close, glic::mojom::InvocationSource source);
+  void ToggleSidePanel(BrowserWindowInterface* browser,
+                       bool prevent_close,
+                       glic::mojom::InvocationSource source);
 
   void CloseFloaty();
 
