@@ -28,6 +28,7 @@ source_set("export_coordinator") {
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webauthn/public",

@@ -77,6 +77,7 @@
                initWithWindow:_baseNavigationController.view.window
       savedPasswordsPresenter:_savedPasswordsPresenter
                  passkeyModel:_passkeyModel];
+  _mediator.consumer = _viewController;
 
   _userEmail = IdentityManagerFactory::GetForProfile(self.profile)
                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)

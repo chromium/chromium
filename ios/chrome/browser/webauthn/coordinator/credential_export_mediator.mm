@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/webauthn/coordinator/credential_export_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/webauthn/model/credential_exporter.h"
@@ -34,6 +35,16 @@
     _passkeyModel = passkeyModel;
   }
   return self;
+}
+
+- (void)setConsumer:(id<CredentialExportConsumer>)consumer {
+  if (_consumer == consumer) {
+    return;
+  }
+
+  _consumer = consumer;
+  [_consumer
+      setAffiliatedGroups:_savedPasswordsPresenter->GetAffiliatedGroups()];
 }
 
 #pragma mark - Public

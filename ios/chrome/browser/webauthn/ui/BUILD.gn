@@ -4,12 +4,15 @@
 
 source_set("ui") {
   sources = [
+    "credential_export_consumer.h",
     "credential_export_view_controller.h",
     "credential_export_view_controller.mm",
     "credential_export_view_controller_presentation_delegate.h",
   ]
   deps = [
+    "//components/password_manager/core/browser/ui",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",

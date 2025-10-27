@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/webauthn/ui/credential_export_consumer.h"
+
 @protocol CredentialExportViewControllerPresentationDelegate;
 
-@interface CredentialExportViewController : UITableViewController
+@interface CredentialExportViewController
+    : UITableViewController <CredentialExportConsumer>
 
 // Delegate for handling dismissal of the view.
 @property(nonatomic, weak)

@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/webauthn/ui/credential_export_consumer.h"
+
 namespace password_manager {
 class SavedPasswordsPresenter;
 }  // namespace password_manager
@@ -18,6 +20,9 @@ class PasskeyModel;
 
 // Mediator for the credential exchange export flow.
 @interface CredentialExportMediator : NSObject
+
+// The consumer that receives updates about the credentials.
+@property(nonatomic, weak) id<CredentialExportConsumer> consumer;
 
 - (instancetype)initWithWindow:(UIWindow*)window
        savedPasswordsPresenter:
