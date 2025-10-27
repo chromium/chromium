@@ -1,0 +1,48 @@
+// Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
+// source: dkm.xml
+
+#ifndef TEST_RELPATH_DKM_BUILDERS_H
+#define TEST_RELPATH_DKM_BUILDERS_H
+
+#include <cstdint>
+#include <string_view>
+
+#include "components/metrics/private_metrics/dkm_entry_builder_base.h"
+
+namespace metrics::private_metrics::builders::dkm {
+
+class PrivateMetricsTestMetric final :
+  public internal::DkmEntryBuilderBase {
+ public:
+  explicit PrivateMetricsTestMetric(ukm::SourceIdObj source_id);
+  PrivateMetricsTestMetric(PrivateMetricsTestMetric&&);
+  PrivateMetricsTestMetric& operator=(PrivateMetricsTestMetric&&);
+  ~PrivateMetricsTestMetric() override;
+
+  static const char kEntryName[];
+  static constexpr uint64_t kEntryNameHash = UINT64_C(1339408383719705606);
+
+
+  static const char kHasVideoName[];
+  static constexpr uint64_t kHasVideoNameHash = UINT64_C(14168404852977906041);
+  PrivateMetricsTestMetric& SetHasVideo(int64_t value);
+
+  static const char kLatencyName[];
+  static constexpr uint64_t kLatencyNameHash = UINT64_C(2787301409000765636);
+  PrivateMetricsTestMetric& SetLatency(int64_t value);
+
+
+  static constexpr char kStudyAName[] = "StudyA";
+  static constexpr uint32_t kStudyANameHash = UINT32_C(409419813);
+
+  static constexpr char kStudyBName[] = "StudyB";
+  static constexpr uint32_t kStudyBNameHash = UINT32_C(2924977765);
+
+  static constexpr char kStudyCName[] = "StudyC";
+  static constexpr uint32_t kStudyCNameHash = UINT32_C(1382010501);
+
+};
+
+}  // namespace metrics::private_metrics::builders::dkm
+
+#endif  // TEST_RELPATH_DKM_BUILDERS_H

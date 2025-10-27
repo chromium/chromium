@@ -12,20 +12,29 @@ for those entries and metrics.
 import argparse
 import sys
 
+import dkm_model
+import dkm_builders_template
 import dwa_model
 import dwa_builders_template
 import dwa_decode_template
 
 parser = argparse.ArgumentParser(
     description='Generate Private Metrics builders')
+parser.add_argument('--input-dkm', help='Path to dkm.xml')
 parser.add_argument('--input-dwa', help='Path to dwa.xml')
 parser.add_argument('--output', help='Path to generated files.')
 
 
-def main(argv):
+def main():
   args = parser.parse_args()
 
+  relpath = 'components/metrics/private_metrics/'
   relpath_dwa = 'components/metrics/dwa/'
+
+  # DKM
+  if args.input_dkm:
+    data_dkm = read_dkm(args.input_dkm)
+    dkm_builders_template.WriteFiles(args.output, relpath, data_dkm)
 
   # DWA
   if args.input_dwa:
@@ -34,6 +43,10 @@ def main(argv):
     dwa_decode_template.WriteFiles(args.output, relpath_dwa, data_dwa)
 
   return 0
+
+
+def read_dkm(path):
+  return read_xml(path, dkm_model.DKM_XML_TYPE)
 
 
 def read_dwa(path):
@@ -46,4 +59,4 @@ def read_xml(path, xml_type):
 
 
 if '__main__' == __name__:
-  sys.exit(main(sys.argv))
+  sys.exit(main())

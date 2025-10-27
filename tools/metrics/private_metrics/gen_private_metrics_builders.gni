@@ -5,7 +5,7 @@
 # Generates build targets for a specific type of Private Metrics builders.
 #
 # Parameters:
-#   type: type of the metrics, e.g. dwa.
+#   type: type of the metrics, e.g. dwa or dkm.
 template("private_metrics_builders") {
   assert(defined(invoker.type),
          "private_metrics_builders() requires 'type' to be defined.")
@@ -16,6 +16,7 @@ template("private_metrics_builders") {
 
     # Re-generate the outputs if the codegen code changes:
     inputs = [
+      "//tools/metrics/private_metrics/dkm_builders_template.py",
       "//tools/metrics/private_metrics/dwa_builders_template.py",
       "//tools/metrics/private_metrics/dwa_decode_template.py",
       "//tools/metrics/private_metrics/private_metrics_codegen.py",
@@ -25,7 +26,12 @@ template("private_metrics_builders") {
 
     outdir = "$target_gen_dir"
 
-    if (invoker.type == "dwa") {
+    if (invoker.type == "dkm") {
+      outputs = [
+        outdir + "/dkm_builders.cc",
+        outdir + "/dkm_builders.h",
+      ]
+    } else if (invoker.type == "dwa") {
       outputs = [
         outdir + "/dwa_builders.cc",
         outdir + "/dwa_builders.h",
