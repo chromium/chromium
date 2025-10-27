@@ -1275,7 +1275,8 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
     // not triggered by a user) or a new user (Dictation was just enabled in
     // settings) and pick the language accordingly.
     const std::string locale = Dictation::DetermineDefaultSupportedLocale(
-        profile_, /*new_user=*/triggered_by_user);
+        profile_, /*new_user=*/triggered_by_user,
+        application_locale_storage_->Get());
 
     // Ensure we don't trigger nudges, downloads or notifications for the locale
     // pref upgrade. If these need to occur they will occur below.
@@ -2391,6 +2392,12 @@ bool AccessibilityManager::ToggleDictation() {
       extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 
   return dictation_active_;
+}
+
+std::string AccessibilityManager::GetDictationDefaultLocale(bool new_user) {
+  return Dictation::DetermineDefaultSupportedLocale(
+      ProfileManager::GetActiveUserProfile(), new_user,
+      application_locale_storage_->Get());
 }
 
 void AccessibilityManager::OpenSettingsSubpage(const std::string& subpage) {

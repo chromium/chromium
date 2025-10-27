@@ -405,6 +405,11 @@ class AccessibilityManager
   // Starts or stops dictation (type what you speak).
   bool ToggleDictation();
 
+  // Gets the default locale for the active profile.
+  // If this is a |new_user|, it returns the application language.
+  // Otherwise, it returns the Dictation language with default IME language.
+  std::string GetDictationDefaultLocale(bool new_user);
+
   // Sets the focus ring with the given ID based on |focus_ring|.
   void SetFocusRing(std::string focus_ring_id,
                     std::unique_ptr<AccessibilityFocusRingInfo> focus_ring);

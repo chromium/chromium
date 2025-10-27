@@ -8,7 +8,6 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "chrome/grit/generated_resources.h"
@@ -195,8 +194,7 @@ void AccessibilityControllerClient::SetA11yOverrideWindow(
 
 std::string AccessibilityControllerClient::GetDictationDefaultLocale(
     bool new_user) {
-  return ash::Dictation::DetermineDefaultSupportedLocale(
-      ProfileManager::GetActiveUserProfile(), new_user);
+  return AccessibilityManager::Get()->GetDictationDefaultLocale(new_user);
 }
 
 void AccessibilityControllerClient::SendFaceGazeDisableDialogResultToSettings(
