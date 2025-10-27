@@ -430,6 +430,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis-style
     text-grow
     text-indent
+    text-justify
     text-orientation
     text-overflow
     text-rendering

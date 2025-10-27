@@ -1619,6 +1619,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       DCHECK(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kNoAutospace;
+    case CSSPropertyID::kTextJustify:
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
+             value_id == CSSValueID::kInterWord ||
+             value_id == CSSValueID::kInterCharacter;
     case CSSPropertyID::kTextSpacingTrim:
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kTrimStart ||
@@ -1835,6 +1839,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitRtlOrdering,
     CSSPropertyID::kWebkitRubyPosition,
     CSSPropertyID::kWebkitTextCombine,
+    CSSPropertyID::kTextJustify,
     CSSPropertyID::kWebkitTextSecurity,
     CSSPropertyID::kTextWrapMode,
     CSSPropertyID::kTextWrapStyle,

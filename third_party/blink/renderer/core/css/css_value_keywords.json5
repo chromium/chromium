@@ -2058,6 +2058,12 @@
     // block-ellipsis
     "no-ellipsis",
 
+    // text-justify
+    // "auto",
+    // "none",
+    "inter-word",
+    // "inter-character",
+
     // animation-trigger
     "play",
     "pause",

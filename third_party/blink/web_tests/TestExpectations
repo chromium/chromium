@@ -1372,8 +1372,6 @@ crbug.com/248894 external/wpt/css/css-text/animations/text-indent-interpolation.
 crbug.com/248894 external/wpt/css/css-text/inheritance.html [ Failure ]
 crbug.com/248894 external/wpt/css/css-text/parsing/text-indent-computed.html [ Failure ]
 crbug.com/248894 external/wpt/css/css-text/parsing/text-indent-valid.html [ Failure ]
-crbug.com/248894 external/wpt/css/css-text/parsing/text-justify-computed.html [ Failure ]
-crbug.com/248894 external/wpt/css/css-text/parsing/text-justify-valid.html [ Failure ]
 crbug.com/248894 external/wpt/css/css-text/text-indent/text-indent-each-line-hanging.html [ Failure ]
 crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-001.html [ Failure ]
 crbug.com/248894 external/wpt/css/css-text/text-justify/text-justify-distribute-001.html [ Failure ]

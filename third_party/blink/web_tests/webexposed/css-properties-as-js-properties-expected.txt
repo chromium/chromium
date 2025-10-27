@@ -523,6 +523,7 @@ textEmphasisPosition
 textEmphasisStyle
 textGrow
 textIndent
+textJustify
 textOrientation
 textOverflow
 textRendering

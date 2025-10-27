@@ -10012,6 +10012,14 @@ void TextIndent::ApplyValue(StyleResolverState& state,
   state.StyleBuilder().SetTextIndent(length_or_percentage_value);
 }
 
+const CSSValue* TextJustify::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.TextJustify());
+}
+
 const CSSValue* TextOrientation::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

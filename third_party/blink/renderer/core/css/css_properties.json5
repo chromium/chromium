@@ -5892,6 +5892,18 @@
       affected_by_zoom: true,
     },
     {
+      name: "text-justify",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      default_value: "auto",
+      inherited: true,
+      keywords: ["auto", "none", "inter-word", "inter-character"],
+      typedom_types: ["Keyword"],
+      invalidate: ["layout"],
+      runtime_flag: "CssTextJustify",
+    },
+    {
       name: "text-overflow",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
