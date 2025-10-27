@@ -495,7 +495,18 @@ def add_simulator_runtime(runtime_dmg_path):
 def delete_simulator_runtime(runtime_id, should_wait=False):
   cmd = ['xcrun', 'simctl', 'runtime', 'delete', runtime_id]
   LOGGER.debug('Deleting runtime with command %s' % cmd)
-  subprocess.check_output(cmd)
+  try:
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    # The error message contains "Cannot stage disk image" when trying to
+    # delete a runtime that is already deleted.
+    if (b'Cannot stage disk image or bundle for delete' in e.output):
+      LOGGER.warning(
+          'Error when deleting runtime %s. It may have been already deleted. '
+          'Error: %s', runtime_id, e.output.decode('utf-8', 'ignore'))
+      return
+    else:
+      raise
 
   if should_wait:
     # runtime takes a few seconds to delete
