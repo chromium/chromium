@@ -338,9 +338,6 @@ public final class ProductionSupportedFlagList {
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                 "When enabled, merchant bound virtual cards will be offered in the keyboard "
                         + "accessory."),
-        Flag.baseFeature(
-                NetworkServiceFeatures.MASKED_DOMAIN_LIST,
-                "When enabled, the masked domain list required for IP Protection is loaded."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_SELECTIVE_IMAGE_INVERSION_DARKENING,
                 "Enables use selective image inversion to automatically darken page, it will be"
@@ -731,9 +728,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.BACK_FORWARD_CACHE_SEND_NOT_RESTORED_REASONS,
                 "Expose NotRestoredReasons via PerformanceNavigationTiming API."),
         Flag.baseFeature("SkipUnnecessaryThreadHopsForParseHeaders"),
-        Flag.commandLine(
-                AwSwitches.WEBVIEW_FPS_COMPONENT,
-                "Enables installing the first party sets component to WebViews."),
         Flag.commandLine(
                 AwSwitches.WEBVIEW_FORCE_DISABLE3PCS,
                 "Force disables 3rd party cookies for all apps."),

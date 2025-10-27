@@ -1456,18 +1456,6 @@ AwContentBrowserClient::GetAttributionReportingOsRegistrars(
   NOTREACHED();
 }
 
-network::mojom::IpProtectionProxyBypassPolicy
-AwContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
-  // The exact WebView-specific exclusion policy that is used will depend
-  // on android_webview::features::kWebViewIpProtectionExclusionCriteria
-  return network::mojom::IpProtectionProxyBypassPolicy::kExclusionList;
-}
-
-bool AwContentBrowserClient::WillProvidePublicFirstPartySets() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kWebViewFpsComponent);
-}
-
 bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,

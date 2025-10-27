@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "services/network/public/cpp/features.h"
 
 namespace android_webview::features {
 
@@ -62,16 +61,6 @@ BASE_FEATURE(kWebViewFileSystemAccess, base::FEATURE_DISABLED_BY_DEFAULT);
 // take effect if both this feature flag and the content/public
 // kIgnoreDuplicateNavs flag is enabled.
 BASE_FEATURE(kWebViewIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Feature parameter for `network::features::kMaskedDomainList` that sets the
-// exclusion criteria for defining which domains are excluded from the
-// Masked Domain List for WebView.
-//
-// Exclusion criteria can assume values from `WebviewExclusionPolicy`.
-const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
-    &network::features::kMaskedDomainList,
-    "WebViewIpProtectionExclusionCriteria",
-    /*WebviewExclusionPolicy::kNone*/ 0};
 
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,

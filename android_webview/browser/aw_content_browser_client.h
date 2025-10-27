@@ -298,9 +298,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   AttributionReportingOsRegistrars GetAttributionReportingOsRegistrars(
       content::WebContents* web_contents) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
-  network::mojom::IpProtectionProxyBypassPolicy
-  GetIpProtectionProxyBypassPolicy() override;
-  bool WillProvidePublicFirstPartySets() override;
   bool IsFullCookieAccessAllowed(
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,

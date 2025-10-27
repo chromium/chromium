@@ -72,19 +72,6 @@ const char kWebViewSelectiveImageInversionDarkening[] =
 // Enables FencedFrames. This also enables PrivacySandboxAdsAPIsOverride.
 const char kWebViewFencedFrames[] = "webview-fenced-frames";
 
-// Enables downloading TpcdMetadataComponentInstallerPolicy by the component
-// updater downloading service in nonembedded WebView.
-const char kWebViewTpcdMetadaComponent[] = "webview-tpcd-metadata-component";
-
-// Enables downloading FirstPartySetsComponentInstallerPolicy by the component
-// updater downloading service in nonembedded WebView.
-const char kWebViewFpsComponent[] = "webview-fps-component";
-
-// Enables downloading MaskedDomainListComponentInstallerPolicy by the component
-// updater downloading service in nonembedded WebView.
-const char kWebViewMaskedDomainListComponent[] =
-    "webview-masked-domain-list-component";
-
 // Force disables 3rd party cookie for all apps.
 const char kWebViewForceDisable3pcs[] = "webview-force-disable-3pcs";
 

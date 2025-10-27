@@ -23,10 +23,6 @@
 namespace android_webview {
 
 // Used to determine which sources to retrieve related websites from.
-// This enum is used to set the values for feature parameter
-// `features::kWebViewIpProtectionExclusionCriteria`.
-// Do not modify/reorder the enum without ensuring that the above mentioned
-// feature is compatible with the change.
 enum class AppDefinedDomainCriteria {
   // Return nothing.
   kNone = 0,
