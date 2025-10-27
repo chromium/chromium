@@ -1564,6 +1564,11 @@ bool PrefetchService::StartSinglePrefetch(
   return StartSinglePrefetch(std::move(prefetch_container));
 }
 
+bool PrefetchService::StartSinglePrefetchForTesting(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  return StartSinglePrefetch(std::move(prefetch_container));
+}
+
 bool PrefetchService::StartSinglePrefetch(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

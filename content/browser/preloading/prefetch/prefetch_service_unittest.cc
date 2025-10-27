@@ -7946,17 +7946,16 @@ INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
                          PrefetchServiceAddPrefetchContainerTest,
                          testing::ValuesIn(PrefetchRearchParam::Params()));
 
-TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
+TEST_P(PrefetchServiceAddPrefetchContainerTest,
+       PreserveOldIfOldIsAliveIfUsePrefetchPrerenderIntegrationEnabled) {
   blink::DocumentToken document_token;
 
   auto prefetch_container1 = CreateSpeculationRulesPrefetchContainer(
       document_token, GURL("https://example.com"), PreloadingType::kPrefetch);
-  prefetch_container1->SimulatePrefetchEligibleForTest();
-  prefetch_container1->SimulatePrefetchStartedForTest();
+  PreloadingAttempt* attempt1 = prefetch_container1->request().attempt();
 
   auto prefetch_container2 = CreateSpeculationRulesPrefetchContainer(
       document_token, GURL("https://example.com"), PreloadingType::kPrefetch);
-  PreloadingAttempt* attempt2 = prefetch_container2->request().attempt();
 
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
       prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
@@ -7964,7 +7963,28 @@ TEST_P(PrefetchServiceAddPrefetchContainerTest, ReplacesOldWithNewByDefault) {
   ASSERT_EQ(1u, prefetches.size());
   base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
 
-  ASSERT_EQ(attempt2, prefetch_container->request().attempt());
+  ASSERT_EQ(attempt1, prefetch_container->request().attempt());
+}
+
+TEST_P(PrefetchServiceAddPrefetchContainerTest, PreserveOldIfOldIsStarted) {
+  blink::DocumentToken document_token;
+
+  auto prefetch_container1 = CreateSpeculationRulesPrefetchContainer(
+      document_token, GURL("https://example.com"), PreloadingType::kPrefetch);
+  PreloadingAttempt* attempt1 = prefetch_container1->request().attempt();
+  prefetch_container1->SimulatePrefetchEligibleForTest();
+  prefetch_service().StartSinglePrefetchForTesting(prefetch_container1);
+
+  auto prefetch_container2 = CreateSpeculationRulesPrefetchContainer(
+      document_token, GURL("https://example.com"), PreloadingType::kPrefetch);
+
+  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(document_token, GURL("https://example.com")));
+  ASSERT_EQ(1u, prefetches.size());
+  base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
+
+  ASSERT_EQ(attempt1, prefetch_container->request().attempt());
 }
 
 TEST_P(PrefetchServiceAddPrefetchContainerTest,

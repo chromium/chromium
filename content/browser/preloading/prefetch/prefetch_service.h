@@ -237,6 +237,9 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   bool StartSinglePrefetch(base::PassKey<PrefetchScheduler>,
                            base::WeakPtr<PrefetchContainer> prefetch_container);
 
+  bool StartSinglePrefetchForTesting(
+      base::WeakPtr<PrefetchContainer> prefetch_container);
+
   PrefetchScheduler& GetPrefetchSchedulerForTesting() { return *scheduler_; }
 
   base::WeakPtr<PrefetchService> GetWeakPtr();
