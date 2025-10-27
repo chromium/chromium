@@ -11,8 +11,10 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -185,7 +187,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   // Notifies NetworkQualityEstimator that the headers of |request| are about to
   // be sent.
-  void NotifyStartTransaction(const URLRequest& request);
+  void NotifyStartTransaction(URLRequest& request);
 
   // Notifies NetworkQualityEstimator that the response body of |request| has
   // been received.
@@ -466,6 +468,21 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // be computed. If so, it recomputes effective connection type.
   void MaybeComputeEffectiveConnectionType();
 
+  // Notifies NetworkQualityEstimator that the headers of |request| are about to
+  // be sent. This is the internal implementation that is called either
+  // synchronously or asynchronously.
+  void NotifyStartTransactionInternal(const URLRequest& request,
+                                      const base::TimeTicks& time);
+
+  // Asynchronously calls NotifyStartTransactionInternal.
+  void NotifyStartTransactionInternalAsync(base::WeakPtr<URLRequest> request);
+
+  // If NotifyStartTransaction was called asynchronously and not called yet,
+  // this function calls NotifyStartTransactionInternal() immediately.
+  // This is to ensure that the function is completed before other notifications
+  // for the same request.
+  void WaitNotifyStartTransactionDone(const URLRequest& request);
+
   // Notifies observers of a change in effective connection type.
   void NotifyObserversOfEffectiveConnectionTypeChanged();
 
@@ -627,6 +644,12 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 #endif
 
   bool force_report_wifi_as_slow_2g_for_testing_ = false;
+
+  // A map of URLRequests for which NotifyStartTransaction has been called
+  // asynchronously, but the asynchronous task has not yet completed. The value
+  // is the time at which NotifyStartTransaction was called.
+  std::unordered_map<raw_ptr<const URLRequest>, base::TimeTicks>
+      waiting_async_notify_start_transactions_;
 
   base::WeakPtrFactory<NetworkQualityEstimator> weak_ptr_factory_{this};
 };

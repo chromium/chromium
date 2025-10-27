@@ -72,7 +72,8 @@ class NET_EXPORT_PRIVATE ThroughputAnalyzer {
   virtual ~ThroughputAnalyzer();
 
   // Notifies |this| that the headers of |request| are about to be sent.
-  void NotifyStartTransaction(const URLRequest& request);
+  void NotifyStartTransaction(const URLRequest& request,
+                              const base::TimeTicks& time);
 
   // Notifies |this| that unfiltered bytes have been read for |request|.
   void NotifyBytesRead(const URLRequest& request);

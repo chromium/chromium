@@ -139,7 +139,8 @@ void ThroughputAnalyzer::UpdateResponseContentSize(const URLRequest* request,
   response_content_sizes_[request] = response_size;
 }
 
-void ThroughputAnalyzer::NotifyStartTransaction(const URLRequest& request) {
+void ThroughputAnalyzer::NotifyStartTransaction(const URLRequest& request,
+                                                const base::TimeTicks& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UpdateResponseContentSize(&request, kDefaultContentSizeBytes);
@@ -165,7 +166,7 @@ void ThroughputAnalyzer::NotifyStartTransaction(const URLRequest& request) {
 
   EraseHangingRequests(request);
 
-  requests_[&request] = tick_clock_->NowTicks();
+  requests_[&request] = time;
   BoundRequestsSize();
   MaybeStartThroughputObservationWindow();
 }
