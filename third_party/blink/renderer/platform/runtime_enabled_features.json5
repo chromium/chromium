@@ -2606,10 +2606,6 @@
       status: "stable",
     },
     {
-      name: "FontSystemFallbackNotoCjk",
-      status: "stable",
-    },
-    {
       // crbug.com/40398871
       name: "FontVariationSettingsDescriptor",
       status: "stable",

@@ -159,7 +159,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kGurmukhiFonts[] = {"Nirmala UI", "Raavi"};
   static const char* const kHangulFonts[] = {"Noto Sans KR", "Noto Sans CJK KR",
                                              "Malgun Gothic", "Gulim"};
-  static const char* const kHangulFontsNoNoto[] = {"Malgun Gothic", "Gulim"};
+
   static const char* const kHebrewFonts[] = {"David", "Segoe UI"};
   static const char* const kImperialAramaicFonts[] = {"Segoe UI Historic"};
   static const char* const kInscriptionalPahlaviFonts[] = {"Segoe UI Historic"};
@@ -170,8 +170,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kKatakanaOrHiraganaFonts[] = {
       "Noto Sans JP", "Noto Sans CJK JP", "Meiryo",
       "Yu Gothic",    "MS PGothic",       "Microsoft YaHei"};
-  static const char* const kKatakanaOrHiraganaFontsNoNoto[] = {
-      "Meiryo", "Yu Gothic", "MS PGothic", "Microsoft YaHei"};
+
   static const char* const kKharoshthiFonts[] = {"Segoe UI Historic"};
   // Try Khmer OS before Vista fonts as it goes along better with Latin
   // and looks better/larger for the same size.
@@ -210,8 +209,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kShavianFonts[] = {"Segoe UI Historic"};
   static const char* const kSimplifiedHanFonts[] = {
       "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", "simsun"};
-  static const char* const kSimplifiedHanFontsNoNoto[] = {"Microsoft YaHei",
-                                                          "simsun"};
+
   static const char* const kSinhalaFonts[] = {"Iskoola Pota", "AksharUnicode",
                                               "Nirmala UI"};
   static const char* const kSoraSompengFonts[] = {"Nirmala UI"};
@@ -229,8 +227,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kTifinaghFonts[] = {"Ebrima"};
   static const char* const kTraditionalHanFonts[] = {
       "Noto Sans TC", "Noto Sans CJK TC", "Microsoft JhengHei", "pmingli"};
-  static const char* const kTraditionalHanFontsNoNoto[] = {"Microsoft JhengHei",
-                                                           "pmingli"};
+
   static const char* const kVaiFonts[] = {"Ebrima"};
   static const char* const kYiFonts[] = {"Microsoft Yi Baiti", "Nuosu SIL",
                                          "Code2000"};
@@ -311,19 +308,6 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_VAI, kVaiFonts},
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
-
-  if (!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())
-      [[unlikely]] {
-    const ScriptToFontFamilies no_noto[] = {
-        {USCRIPT_HANGUL, kHangulFontsNoNoto},
-        {USCRIPT_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_KATAKANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_KATAKANA_OR_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_SIMPLIFIED_HAN, kSimplifiedHanFontsNoNoto},
-        {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFontsNoNoto},
-    };
-    script_font_map.Set(no_noto);
-  }
 
   // Initialize the locale-dependent mapping from system locale.
   UScriptCode han_script = LayoutLocale::GetSystem().GetScriptForHan();
