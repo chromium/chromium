@@ -44,6 +44,7 @@ const NSInteger kCredentialExportItemType = 0;
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
                            action:@selector(didTapDone)];
+  self.navigationItem.rightBarButtonItem.enabled = NO;
 
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.editing = YES;
@@ -92,6 +93,16 @@ const NSInteger kCredentialExportItemType = 0;
   return header;
 }
 
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self updateTitleAndContinueButton];
+}
+
+- (void)tableView:(UITableView*)tableView
+    didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [self updateTitleAndContinueButton];
+}
+
 #pragma mark - Private
 
 // Sets up the diffable data source and applies the initial snapshot.
@@ -138,6 +149,23 @@ const NSInteger kCredentialExportItemType = 0;
              intoSectionWithIdentifier:kCredentialSectionIdentifier];
 
   [_dataSource applySnapshot:snapshot animatingDifferences:animated];
+}
+
+// TODO(crbug.com/454566693): Add EGTest.
+// Enables the Continue button if at least one item is selected. Sets the title
+// to the default string when selection is empty, or to the number of selected
+// items otherwise.
+- (void)updateTitleAndContinueButton {
+  NSUInteger selectedCount = self.tableView.indexPathsForSelectedRows.count;
+
+  self.navigationItem.rightBarButtonItem.enabled = (selectedCount > 0);
+
+  if (selectedCount == 0) {
+    self.title = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+  } else {
+    self.title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT, selectedCount);
+  }
 }
 
 @end

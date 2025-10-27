@@ -2612,6 +2612,11 @@
       <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS" desc="Button that the user can press to export passwords and passkeys. [iOS only]">
         Export passwords and passkeys…
       </message>
+      <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT" desc="Text displaying the number of items currently selected. [iOS Only]">
+        {count, plural,
+          =1 {1 selected}
+          other {# selected}}
+      </message>
       <message name="IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_SUBTITLE" desc="Subtitle text on the credential export selection screen, instructing the user to select accounts. [iOS only]">
         Select the accounts you want to export to another app.
       </message>
