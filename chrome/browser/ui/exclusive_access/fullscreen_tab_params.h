@@ -21,6 +21,12 @@ struct FullscreenTabParams {
   // Prefer that the status bar be shown when in fullscreen mode on devices with
   // overlay navigation bars.
   bool prefers_status_bar = false;
+
+  bool operator==(const FullscreenTabParams& rhs) const {
+    return display_id == rhs.display_id &&
+           prefers_navigation_bar == rhs.prefers_navigation_bar &&
+           prefers_status_bar == rhs.prefers_status_bar;
+  }
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_TAB_PARAMS_H_

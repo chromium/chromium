@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_CONTROLLER_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_FULLSCREEN_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -255,6 +257,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Used in testing to set the state to tab fullscreen.
   bool is_tab_fullscreen_for_testing_ = false;
+
+  // Set of parameters used to enter fullscreen
+  std::optional<FullscreenTabParams> fullscreen_parameters_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Tracks related popups that lost activation or were shown without activation

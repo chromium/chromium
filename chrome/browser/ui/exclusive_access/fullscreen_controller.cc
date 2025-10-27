@@ -229,6 +229,15 @@ void FullscreenController::EnterFullscreenModeForTab(
     // renderer doesn't know if an element in other renderer process is in
     // fullscreen.
     DCHECK(tab_fullscreen_);
+#if BUILDFLAG(IS_ANDROID)
+    // On Android it is allowed to change the fullscreen parameters options when
+    // in fullscreen.
+    DCHECK(fullscreen_parameters_.has_value());
+    if (fullscreen_parameters_.has_value() &&
+        fullscreen_tab_params != fullscreen_parameters_) {
+      EnterFullscreenModeInternal(TAB, requesting_frame, fullscreen_tab_params);
+    }
+#endif
   } else {
     ExclusiveAccessContext* exclusive_access_context =
         exclusive_access_manager()->context();
@@ -551,6 +560,7 @@ void FullscreenController::EnterFullscreenModeInternal(
     return;
   }
 #endif
+  fullscreen_parameters_ = fullscreen_tab_params;
   started_fullscreen_transition_ = true;
   toggled_into_fullscreen_ = true;
   bool entering_tab_fullscreen = option == TAB && !tab_fullscreen_;
@@ -625,6 +635,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
     fullscreen_start_time_.reset();
   }
 
+  fullscreen_parameters_.reset();
   toggled_into_fullscreen_ = false;
   started_fullscreen_transition_ = true;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
