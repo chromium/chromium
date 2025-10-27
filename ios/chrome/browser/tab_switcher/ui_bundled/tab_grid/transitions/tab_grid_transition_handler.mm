@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/grid_to_tab_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_animation_parameters.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_reduced_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_grid_transition_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/animations/tab_to_grid_animation.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_item.h"
@@ -163,22 +164,48 @@
 
 // Performs transition animation.
 - (void)performTransitionAnimationWithCompletion:(ProceduralBlock)completion {
-  TabGridAnimationParameters* animationParameters =
-      [self createAnimationParameters];
+  // The animation is ugly or crashes when the selected cell is not visible.
+  TabGridTransitionType transitionType = _transitionType;
+  if (!_tabGridTransitionLayoutProvider.isSelectedCellVisible) {
+    transitionType = TabGridTransitionType::kReducedMotion;
+  }
 
-  if (animationParameters) {
-    switch (_direction) {
-      case TabGridTransitionDirection::kFromTabGridToBrowser:
-        _animation = [[GridToTabAnimation alloc]
-            initWithAnimationParameters:animationParameters];
-        break;
+  switch (transitionType) {
+    case TabGridTransitionType::kNormal: {
+      TabGridAnimationParameters* animationParameters =
+          [self createAnimationParameters];
 
-      case TabGridTransitionDirection::kFromBrowserToTabGrid:
-        _animation = [[TabToGridAnimation alloc]
-            initWithAnimationParameters:animationParameters];
-        break;
+      switch (_direction) {
+        case TabGridTransitionDirection::kFromTabGridToBrowser: {
+          _animation = [[GridToTabAnimation alloc]
+              initWithAnimationParameters:animationParameters];
+          break;
+        }
+
+        case TabGridTransitionDirection::kFromBrowserToTabGrid: {
+          _animation = [[TabToGridAnimation alloc]
+              initWithAnimationParameters:animationParameters];
+          break;
+        }
+      }
+
+      break;
     }
 
+    case TabGridTransitionType::kReducedMotion: {
+      _animation = [[TabGridReducedAnimation alloc]
+          initWithAnimatedView:_BVCContainerViewController.view
+                beingPresented:_direction == TabGridTransitionDirection::
+                                                 kFromTabGridToBrowser];
+      break;
+    }
+
+    case TabGridTransitionType::kAnimationDisabled: {
+      break;
+    }
+  }
+
+  if (_animation) {
     [_animation animateWithCompletion:completion];
   } else if (completion) {
     completion();
@@ -228,41 +255,26 @@
           ? _BVCContainerViewController.view.frame
           : _tabGridCellItem.originalFrame;
 
-  // The animation is ugly or crashes when the selected cell is not visible.
-  TabGridTransitionType transitionType = _transitionType;
-  if (!_tabGridTransitionLayoutProvider.isSelectedCellVisible) {
-    transitionType = TabGridTransitionType::kReducedMotion;
-  }
+  CHECK(_tabGridCellItem);
 
-  switch (transitionType) {
-    case TabGridTransitionType::kNormal:
-      CHECK(_tabGridCellItem);
-
-      return [[TabGridAnimationParameters alloc]
-           initWithDestinationFrame:destinationFrame
-                        originFrame:originFrame
-                         activeGrid:_activeGrid
-                         pinnedTabs:_pinnedTabsViewController
-                   activeCellPinned:_activeCellPinned
-                       animatedView:_BVCContainerViewController.view
-                    contentSnapshot:_tabGridCellItem.snapshot
-                   topToolbarHeight:topToolbarHeight
-                bottomToolbarHeight:bottomToolbarHeight
-             topToolbarSnapshotView:
-                 [self snapshotOfViewPortionAboveRect:tabContentView
-                                           middleRect:contentAreaFrame]
-          bottomToolbarSnapshotView:
-              [self snapshotOfViewPortionBelowRect:tabContentView
-                                        middleRect:contentAreaFrame]
-              shouldScaleTopToolbar:scaleTopToolbar
-                          incognito:_incognito];
-    case TabGridTransitionType::kReducedMotion:
-      // TODO(crbug.com/414807974): Handle reduced motion.
-      return nil;
-    case TabGridTransitionType::kAnimationDisabled:
-      // TODO(crbug.com/414807974): Handle animation disabled.
-      return nil;
-  }
+  return [[TabGridAnimationParameters alloc]
+       initWithDestinationFrame:destinationFrame
+                    originFrame:originFrame
+                     activeGrid:_activeGrid
+                     pinnedTabs:_pinnedTabsViewController
+               activeCellPinned:_activeCellPinned
+                   animatedView:_BVCContainerViewController.view
+                contentSnapshot:_tabGridCellItem.snapshot
+               topToolbarHeight:topToolbarHeight
+            bottomToolbarHeight:bottomToolbarHeight
+         topToolbarSnapshotView:
+             [self snapshotOfViewPortionAboveRect:tabContentView
+                                       middleRect:contentAreaFrame]
+      bottomToolbarSnapshotView:
+          [self snapshotOfViewPortionBelowRect:tabContentView
+                                    middleRect:contentAreaFrame]
+          shouldScaleTopToolbar:scaleTopToolbar
+                      incognito:_incognito];
 }
 
 // Returns the frame for the snapshotted content of the active tab.

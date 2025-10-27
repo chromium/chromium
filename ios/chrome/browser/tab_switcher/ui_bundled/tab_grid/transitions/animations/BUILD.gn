@@ -14,6 +14,8 @@ source_set("animations") {
     "tab_grid_animation_parameters.mm",
     "tab_grid_animation_utils.h",
     "tab_grid_animation_utils.mm",
+    "tab_grid_reduced_animation.h",
+    "tab_grid_reduced_animation.mm",
     "tab_grid_transition_animation.h",
     "tab_to_grid_animation.h",
     "tab_to_grid_animation.mm",
@@ -21,6 +23,8 @@ source_set("animations") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/prototypes/diamond",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
