@@ -64,6 +64,9 @@ namespace content {
 
 namespace {
 
+constexpr char16_t kMimeTypeIntent[] = u"text/vnd.android.intent";
+constexpr char16_t kMimeTypeChromeLink[] = u"chrome/link";
+
 WebContentsViewAndroid::RenderWidgetHostViewCreateFunction
     g_create_render_widget_host_view = nullptr;
 
@@ -502,7 +505,8 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
       for (const std::u16string& mime_type : event.mime_types()) {
         if (mime_type == ui::kMimeTypePlainText16 ||
             mime_type == ui::kMimeTypeHtml16 ||
-            mime_type == ui::kMimeTypeMozillaUrl16) {
+            mime_type == ui::kMimeTypeMozillaUrl16 ||
+            mime_type == kMimeTypeIntent || mime_type == kMimeTypeChromeLink) {
           drag_metadata_.push_back(DropData::Metadata::CreateForMimeType(
               DropData::Kind::STRING, mime_type));
         } else {
