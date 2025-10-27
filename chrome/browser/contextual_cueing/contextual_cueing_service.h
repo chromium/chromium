@@ -67,6 +67,7 @@ class ContextualCueingService
   // Called when cueing nudge activity happens.
   void OnNudgeActivity(content::WebContents* web_contents,
                        base::TimeTicks document_available_time,
+                       bool is_dynamic,
                        tabs::GlicNudgeActivity activity);
 
   // Should be called when the cueing UI is shown for the tab with `url`.

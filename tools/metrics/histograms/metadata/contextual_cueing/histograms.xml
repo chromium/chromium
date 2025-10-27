@@ -23,6 +23,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ContextualCueingCueType">
+  <variant name="" summary="All cues"/>
+  <variant name=".Dynamic" summary="Cues that are contextual to the page"/>
+  <variant name=".Static" summary="Static cues"/>
+</variants>
+
 <variants name="ContextualCueingGlicSuggestionsEngagementType">
   <variant name="" summary="All requests"/>
   <variant name=".FRE" summary="When suggestions are fetched for the FRE"/>
@@ -147,14 +153,15 @@ chromium-metrics-reviews@google.com.
       variants="ContextualCueingOptimizationType"/>
 </histogram>
 
-<histogram name="ContextualCueing.NudgeInteraction"
+<histogram name="ContextualCueing.NudgeInteraction{CueType}"
     enum="ContextualCueingNudgeInteraction" expires_after="2026-03-08">
-  <owner>sophiechang@google.com</owner>
-  <owner>jeffreycohen@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     The user interaction for a Contextual Cueing Nudge. Recorded when a user is
     shown or interacts with a contextual nudge.
   </summary>
+  <token key="CueType" variants="ContextualCueingCueType"/>
 </histogram>
 
 </histograms>

@@ -22,6 +22,8 @@ struct CueingResult {
   std::string cue_label;
   // Suggested prompt associated with the cue.
   std::string prompt_suggestion;
+  // Whether the cue is contextual to page.
+  bool is_dynamic = false;
 };
 
 // Decider for contextual cueing that is scoped to `Page`.

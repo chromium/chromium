@@ -54,6 +54,7 @@ TEST_F(ContextualCueingPageDataTest, Basic) {
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("basic label", future.Get().value().cue_label);
+  EXPECT_FALSE(future.Get().value().is_dynamic);
 }
 
 TEST_F(ContextualCueingPageDataTest, EarlyDestruction) {
@@ -156,6 +157,7 @@ TEST_F(ContextualCueingPageDataTest, PdfPageCountPasses) {
 
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("pdf label", future.Get().value().cue_label);
+  EXPECT_FALSE(future.Get().value().is_dynamic);
 }
 
 TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
@@ -185,6 +187,7 @@ TEST_F(ContextualCueingPageDataTest, BasicAndPdfPageCountCondition) {
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("basic label", future.Get().value().cue_label);
+  EXPECT_FALSE(future.Get().value().is_dynamic);
 }
 
 class ContextualCueingPageDataTestDynamicCue
@@ -214,6 +217,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, Basic) {
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("dynamic label", future.Get().value().cue_label);
+  EXPECT_TRUE(future.Get().value().is_dynamic);
 }
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
@@ -229,6 +233,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, DynamicCueNotAvailable) {
                                           future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("basic label", future.Get().value().cue_label);
+  EXPECT_FALSE(future.Get().value().is_dynamic);
 }
 
 TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
@@ -247,6 +252,7 @@ TEST_F(ContextualCueingPageDataTestDynamicCue, ReturnsDefaultText) {
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ("dynamic label", future.Get().value().cue_label);
   EXPECT_EQ("prompt suggestion", future.Get().value().prompt_suggestion);
+  EXPECT_TRUE(future.Get().value().is_dynamic);
 }
 
 }  // namespace contextual_cueing

@@ -95,11 +95,13 @@ void ContextualCueingPageData::FindMatchingConfig() {
       if (kUseDynamicCues.Get() && config.has_dynamic_cue_label()) {
         std::move(cueing_decision_callback_)
             .Run(base::ok(CueingResult{config.dynamic_cue_label(),
-                                       config.default_text()}));
+                                       config.default_text(),
+                                       /*is_dynamic=*/true}));
       } else {
         std::move(cueing_decision_callback_)
-            .Run(base::ok(
-                CueingResult{config.cue_label(), /*prompt_suggestion=*/""}));
+            .Run(base::ok(CueingResult{config.cue_label(),
+                                       /*prompt_suggestion=*/"",
+                                       /*is_dynamic=*/false}));
       }
       return;
     } else if (decision == kNeedsPdfPageCount) {

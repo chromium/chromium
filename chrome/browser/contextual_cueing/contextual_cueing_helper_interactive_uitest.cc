@@ -71,7 +71,8 @@ class ContextualCueingHelperBrowserTest
            {"BackoffMultiplierBase", "0.0"},
            {"NudgeCapTime", "0h"},
            {"NudgeCapCount", "10"},
-           {"MinPageCountBetweenNudges", "0"}}},
+           {"MinPageCountBetweenNudges", "0"},
+           {"UseDynamicCues", "true"}}},
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}}},
         /*disabled_features=*/{});
@@ -384,6 +385,36 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
       contextual_cueing::NudgeInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeInteraction.Static",
+      contextual_cueing::NudgeInteraction::kShown, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
+                       TestDynamicCueShownHistogram) {
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+  auto* cueing_config = cueing_metadata.add_cueing_configurations();
+  cueing_config->set_cue_label("cue label");
+  cueing_config->set_dynamic_cue_label("dynamic cue label");
+  SetUpEnabledHints(cueing_metadata);
+
+  FakeGlicNudgeDelegate nudge_delegate;
+  SwapToFakeDelegate(nudge_delegate);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("enabled.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeInteraction",
+      contextual_cueing::NudgeInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeInteraction.Dynamic",
+      contextual_cueing::NudgeInteraction::kShown, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
@@ -404,6 +435,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
       contextual_cueing::NudgeInteraction::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.NudgeInteraction.Static",
+      contextual_cueing::NudgeInteraction::kShown, 1);
 
   base::HistogramTester histogram_tester_2;
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -414,6 +448,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingHelperBrowserTest,
   EXPECT_TRUE(nudge_delegate.last_nudge_label_.empty());
   histogram_tester_2.ExpectUniqueSample(
       "ContextualCueing.NudgeInteraction",
+      contextual_cueing::NudgeInteraction::kIgnoredTabChange, 1);
+  histogram_tester_2.ExpectUniqueSample(
+      "ContextualCueing.NudgeInteraction.Static",
       contextual_cueing::NudgeInteraction::kIgnoredTabChange, 1);
 }
 
