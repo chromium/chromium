@@ -59,6 +59,7 @@
 // Helpers --------------------------------------------------------------------
 
 namespace {
+const int kInfobarIconSize = 24;
 
 int GetElementSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -102,6 +103,9 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
   if (!image.IsEmpty()) {
     icon_ = new views::ImageView;
     icon_->SetImage(image);
+    if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+      icon_->SetImageSize(gfx::Size(kInfobarIconSize, kInfobarIconSize));
+    }
     icon_->SizeToPreferredSize();
     icon_->SetProperty(
         views::kMarginsKey,

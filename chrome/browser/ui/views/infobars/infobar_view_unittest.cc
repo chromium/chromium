@@ -161,3 +161,26 @@ TEST_F(InfoBarViewUnitTest, ConfirmInfoBarButtonPadding) {
   EXPECT_EQ(expected_padding, ok_button->GetInsets());
   widget->CloseNow();
 }
+
+TEST_F(InfoBarViewUnitTest, IconSizeForInfobarRefresh) {
+  auto delegate = std::make_unique<TestInfoBarDelegateWithIcon>();
+  auto infobar_view =
+      std::make_unique<TestInfoBarViewWithLabelAndIcon>(std::move(delegate));
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+
+  widget->SetContentsView(infobar_view.get());
+  widget->SetBounds(gfx::Rect(0, 0, 500, 50));
+  widget->Show();
+  widget->LayoutRootViewIfNecessary();
+
+  views::ImageView* icon = infobar_view->icon();
+  ASSERT_NE(nullptr, icon);
+
+  EXPECT_EQ(gfx::Size(24, 24), icon->GetPreferredSize());
+  widget->CloseNow();
+}
