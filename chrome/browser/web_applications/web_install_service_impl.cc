@@ -10,20 +10,16 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -103,21 +99,6 @@ std::optional<webapps::AppId> IsAppInstalled(
                                                                 filter);
 }
 
-void CheckInstalledByAndMaybeUpdate(const base::Time& api_call_time,
-                                    const GURL& requesting_page,
-                                    const webapps::AppId& app_id,
-                                    AppLock& lock,
-                                    base::Value::Dict& debug_value) {
-  ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
-  WebApp* app_to_update = update->UpdateApp(app_id);
-  if (!app_to_update) {
-    // App was uninstalled before we could update it.
-    return;
-  }
-  app_to_update->AddInstalledByInfo(
-      web_app::AppInstalledBy(api_call_time, requesting_page));
-}
-
 }  // namespace
 
 WebInstallServiceImpl::WebInstallServiceImpl(
@@ -126,8 +107,7 @@ WebInstallServiceImpl::WebInstallServiceImpl(
     : content::DocumentService<blink::mojom::WebInstallService>(
           render_frame_host,
           std::move(receiver)),
-      frame_routing_id_(render_frame_host.GetGlobalId()),
-      last_committed_url_(render_frame_host.GetLastCommittedURL()) {}
+      frame_routing_id_(render_frame_host.GetGlobalId()) {}
 
 WebInstallServiceImpl::~WebInstallServiceImpl() = default;
 
@@ -204,8 +184,8 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     return;
   }
 
-  GURL install_target =
-      options ? GURL(options->install_url) : last_committed_url_;
+  const GURL current_url = rfh->GetLastCommittedURL();
+  GURL install_target = options ? GURL(options->install_url) : current_url;
 
   // Do not allow installation of file:// or chrome:// urls.
   if (!install_target.SchemeIsHTTPOrHTTPS()) {
@@ -244,7 +224,7 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
   // If the given url to install matches the current url, skip
   // requesting permission since the user is still installing the current
   // document, even though it's in the background.
-  if (install_target == last_committed_url_) {
+  if (install_target == current_url) {
     OnPermissionDecided(
         std::move(callback_with_metrics),
         std::vector<content::PermissionResult>({content::PermissionResult(
@@ -545,7 +525,7 @@ void WebInstallServiceImpl::OnPermissionDecided(
 
   provider->ui_manager().TriggerInstallDialogForBackgroundInstall(
       web_contents, std::move(install_tracker), install_options_->install_url,
-      install_options_->manifest_id, last_committed_url_,
+      install_options_->manifest_id,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_with_metrics)));
@@ -605,21 +585,6 @@ void WebInstallServiceImpl::OnBackgroundAppLaunchDialogClosed(
     InstallCallbackWithMetrics callback_with_metrics,
     const GURL& manifest_id,
     bool accepted) {
-  // Update the installed_by field if the user accepted the launch.
-  if (accepted) {
-    auto* profile =
-        Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
-    auto* provider = WebAppProvider::GetForWebApps(profile);
-    CHECK(provider);
-
-    webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
-    provider->scheduler().ScheduleCallback<AppLock>(
-        "CheckInstalledByAndMaybeUpdate", AppLockDescription(app_id),
-        base::BindOnce(&CheckInstalledByAndMaybeUpdate, provider->clock().Now(),
-                       last_committed_url_, app_id),
-        /*on_complete=*/base::DoNothing());
-  }
-
   // For privacy reasons, only resolve with WebInstallServiceResult::kSuccess if
   // the user accepted.
   std::move(callback_with_metrics)

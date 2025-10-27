@@ -185,13 +185,6 @@
       "window_start_time": "2749657237"
    },
    "install_state": "1",
-   "installed_by": [ {
-      "install_api_call_time": "1970-02-07 12:05:51.959000 UTC",
-      "requesting_url": "https://example.com/installed_by1_1234/"
-   }, {
-      "install_api_call_time": "1970-02-07 12:05:51.960000 UTC",
-      "requesting_url": "https://example.com/installed_by2_1234/"
-   } ],
    "is_diy_app": true,
    "is_from_sync_and_pending_installation": true,
    "is_generated_icon": true,

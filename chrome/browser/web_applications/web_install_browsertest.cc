@@ -181,15 +181,6 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
   // Validate JS results.
   EXPECT_TRUE(ResultExists(app_web_contents));
   EXPECT_FALSE(ErrorExists(app_web_contents));
-
-  // Verify that the installed_by field is empty for current document
-  // installs.
-  const WebApp* app =
-      WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppById(
-          install_future.Get<webapps::AppId>());
-  ASSERT_TRUE(app);
-  EXPECT_THAT(app->installed_by(), testing::IsEmpty());
-
   histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                blink::mojom::WebDXFeature::kDRAFT_WebInstallAPI,
                                1);

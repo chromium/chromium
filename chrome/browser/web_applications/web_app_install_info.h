@@ -508,11 +508,6 @@ struct WebAppInstallInfo {
   // for the web app on security sensitive surfaces.
   std::vector<apps::IconInfo> trusted_icons;
 
-  // The URL of the page that requested installation via the Web Install API.
-  // Converted to AppInstalledBy during finalization. Only used for
-  // background document installs.
-  std::optional<GURL> installed_by;
-
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.
   WebAppInstallInfo(const WebAppInstallInfo& other);

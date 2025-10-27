@@ -160,7 +160,6 @@ class WebInstallServiceImpl
   // `install_url` and an optional `manifest_id`.
   blink::mojom::InstallOptionsPtr install_options_;
   const content::GlobalRenderFrameHostId frame_routing_id_;
-  GURL last_committed_url_;
   base::WeakPtrFactory<web_app::WebInstallServiceImpl> weak_ptr_factory_{this};
 };
 

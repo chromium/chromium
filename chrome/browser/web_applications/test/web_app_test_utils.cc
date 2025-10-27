@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
-#include <deque>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -48,7 +47,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
-#include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -1253,20 +1251,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   }
   if (is_iwa && random.next_bool()) {
     app->SetBorderlessUrlPatterns(CreateRandomUrlPatterns(random));
-  }
-
-  base::Time first_install_time = random.next_time();
-  if (random.next_bool()) {
-    app->AddInstalledByInfo(web_app::AppInstalledBy(
-        first_install_time,
-        params.base_url.Resolve("installed_by1_" + seed_str + "/")));
-  }
-  if (random.next_bool()) {
-    // Ensure the second timestamp is later than the first.
-    base::Time second_install_time = first_install_time + base::Milliseconds(1);
-    app->AddInstalledByInfo(web_app::AppInstalledBy(
-        second_install_time,
-        params.base_url.Resolve("installed_by2_" + seed_str + "/")));
   }
 
   return app;
