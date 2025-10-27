@@ -433,11 +433,11 @@ void SidePanel::SetHorizontalAlignment(HorizontalAlignment alignment) {
   horizontal_alignment_ = alignment;
 }
 
-SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() {
+SidePanel::HorizontalAlignment SidePanel::GetHorizontalAlignment() const {
   return horizontal_alignment_;
 }
 
-bool SidePanel::IsRightAligned() {
+bool SidePanel::IsRightAligned() const {
   return GetHorizontalAlignment() == HorizontalAlignment::kRight;
 }
 

@@ -230,8 +230,7 @@ BrowserViewLayoutImplOld::CalculateContentsContainerLayout(
                                          gfx::Rect()};
   }
 
-  SidePanel* side_panel =
-      views::AsViewClass<SidePanel>(views().contents_height_side_panel);
+  SidePanel* const side_panel = views().contents_height_side_panel;
 
   const bool side_panel_right_aligned = side_panel->IsRightAligned();
   views::View* side_panel_separator =

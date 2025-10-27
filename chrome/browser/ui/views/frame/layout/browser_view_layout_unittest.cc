@@ -230,7 +230,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         immersive_mode_controller_.get());
     delegate_ = delegate.get();
     BrowserViewLayoutViews layout_views;
-    layout_views.main_region = main_region_;
     layout_views.main_container = main_container_;
     layout_views.top_container = top_container_;
     layout_views.tab_strip_region_view = tab_strip_region_view_;

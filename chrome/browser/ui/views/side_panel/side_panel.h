@@ -48,8 +48,8 @@ class SidePanel : public views::AccessiblePaneView,
   gfx::RoundedCornersF background_radii() const { return background_radii_; }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
   void SetHorizontalAlignment(HorizontalAlignment alignment);
-  HorizontalAlignment GetHorizontalAlignment();
-  bool IsRightAligned();
+  HorizontalAlignment GetHorizontalAlignment() const;
+  bool IsRightAligned() const;
   gfx::Size GetMinimumSize() const override;
   bool IsClosing();
   void DisableAnimationsForTesting() { animations_disabled_ = true; }

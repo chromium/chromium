@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/flex_layout_types.h"
 
@@ -36,6 +37,16 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // calculations without actually applying the layout.
   struct ProposedLayout;
   ProposedLayout CalculateProposedLayout() const;
+
+  // Lay out the main container of the browser.
+  void CalculateMainContainerLayout(ProposedLayout& layout,
+                                    const BrowserLayoutParams& params,
+                                    bool needs_exclusion) const;
+
+  // Lay out the top container of the browser. Returns the bounds calculated.
+  gfx::Rect CalculateTopContainerLayout(ProposedLayout& layout,
+                                        const BrowserLayoutParams& params,
+                                        bool needs_exclusion) const;
 
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;

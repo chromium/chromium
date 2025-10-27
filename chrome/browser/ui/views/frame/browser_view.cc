@@ -5110,7 +5110,6 @@ void BrowserView::AddedToWidget() {
   // LINT.IfChange(BrowserViewLayoutViews)
   layout_views.browser_view = this;
   layout_views.window_scrim = window_scrim_view_;
-  layout_views.main_region = main_region_;
   layout_views.main_container = main_container_;
   layout_views.top_container = top_container_;
   layout_views.web_app_frame_toolbar = web_app_frame_toolbar_;
