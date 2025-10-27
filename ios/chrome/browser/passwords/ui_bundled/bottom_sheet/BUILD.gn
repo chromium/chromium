@@ -103,7 +103,7 @@ source_set("common") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
+  sources = [ "credential_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
     "//components/password_manager/core/browser/features:password_features",

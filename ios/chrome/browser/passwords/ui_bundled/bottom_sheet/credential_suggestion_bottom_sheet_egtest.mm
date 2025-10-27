@@ -185,13 +185,13 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 }  // namespace
 
-@interface PasswordSuggestionBottomSheetEGTest : ChromeTestCase
+@interface CredentialSuggestionBottomSheetEGTest : ChromeTestCase
 
 - (BOOL)useNewBlur;
 
 @end
 
-@implementation PasswordSuggestionBottomSheetEGTest
+@implementation CredentialSuggestionBottomSheetEGTest
 
 - (bool)useNewBlur {
   return NO;
@@ -238,7 +238,6 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
-
 
   if ([self isRunningTest:@selector(testUseBackupPassword)] ||
       [self isRunningTest:@selector
@@ -342,7 +341,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 #pragma mark - Tests
 
-- (void)testOpenPasswordBottomSheetUsePassword {
+- (void)testOpenCredentialBottomSheetUsePassword {
   GURL URL = [self loginPageURL];
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
@@ -378,7 +377,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 // Tests that accepting suggestions from the sheet works when the stateless
 // fill data flow feature is enabled.
-- (void)testOpenPasswordBottomSheetUsePassword_StatelessFillDataFlow {
+- (void)testOpenCredentialBottomSheetUsePassword_StatelessFillDataFlow {
   [self saveGenericPasswordAndLoadLoginPage];
 
   // Wait a bit to let things settle. Waiting on content to be loaded on the
@@ -414,7 +413,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }
 
 // Tests that the bottom sheet can be used with the new blur.
-- (void)testOpenPasswordBottomSheetUsePasswordWithNewBlur {
+- (void)testOpenCredentialBottomSheetUsePasswordWithNewBlur {
   GURL URL = [self loginPageURL];
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
@@ -455,7 +454,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:UsePasswordButton()];
 }
 
-// This test verifies that the password bottom sheet does not open when the
+// This test verifies that the credential bottom sheet does not open when the
 // webpage has enabled passkey login.
 - (void)testOpenKeyboardOnPasskey {
   // TODO(crbug.com/349804536): Test is flaky on iPad.
@@ -479,7 +478,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 // This test will allow us to know if we're using a coherent browser state to
 // open the bottom sheet in incognito mode.
-- (void)testOpenPasswordBottomSheetUsePasswordIncognito {
+- (void)testOpenCredentialBottomSheetUsePasswordIncognito {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user"
                          password:@"password"
@@ -501,7 +500,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }
 
 // Tests that showing the keyboard from the bottom sheet works.
-- (void)testOpenPasswordBottomSheetTapUseKeyboardShowKeyboard {
+- (void)testOpenCredentialBottomSheetTapUseKeyboardShowKeyboard {
   // TODO(crbug.com/349804536): Test is flaky on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.")
@@ -521,7 +520,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
-- (void)testOpenPasswordBottomSheetOpenPasswordManager {
+- (void)testOpenCredentialBottomSheetOpenPasswordManager {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
                                                   password:@"password"
@@ -564,7 +563,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testOpenPasswordBottomSheetOpenPasswordDetails {
+- (void)testOpenCredentialBottomSheetOpenPasswordDetails {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
                                                   password:@"password"
@@ -640,7 +639,8 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
 // Verifies that Password Details is not revealed when local authentication
 // fails.
-- (void)testOpenPasswordBottomSheetOpenPasswordDetailsWithFailedAuthentication {
+- (void)
+    testOpenCredentialBottomSheetOpenPasswordDetailsWithFailedAuthentication {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
                                                   password:@"password"
@@ -701,7 +701,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   CheckPasswordDetailsVisitMetricCount(0);
 }
 
-- (void)testOpenPasswordBottomSheetDeletePassword {
+- (void)testOpenCredentialBottomSheetDeletePassword {
   GURL loginURL = [self loginPageURL];
   NSURL* storeURL = net::NSURLWithGURL(loginURL);
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
@@ -760,7 +760,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
       assertWithMatcher:grey_nil()];
 }
 
-- (void)testOpenPasswordBottomSheetSelectPassword {
+- (void)testOpenCredentialBottomSheetSelectPassword {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
   [PasswordManagerAppInterface storeCredentialWithUsername:@"user"
                                                   password:@"password"
@@ -821,7 +821,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }
 
 // TODO(crbug.com/40279461): Fix flaky test & re-enable.
-- (void)DISABLED_testOpenPasswordBottomSheetExpand {
+- (void)DISABLED_testOpenCredentialBottomSheetExpand {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
   for (int i = 1; i <= 9; i++) {
     [PasswordManagerAppInterface
@@ -909,7 +909,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }
 
 // TODO(crbug.com/40279461): Fix flaky test & re-enable.
-- (void)DISABLED_testOpenPasswordBottomSheetNoUsername {
+- (void)DISABLED_testOpenCredentialBottomSheetNoUsername {
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@""
                          password:@"password"
@@ -939,10 +939,10 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
-// Tests that the Password Bottom Sheet appears when tapping on a password
+// Tests that the Credential Bottom Sheet appears when tapping on a password
 // related field and that the buttons are still visible after we chang the trait
 // collection to larger content size.
-- (void)testOpenPasswordBottomSheetUsePasswordAfterTraitCollectionChange {
+- (void)testOpenCredentialBottomSheetUsePasswordAfterTraitCollectionChange {
   [self saveGenericPasswordAndLoadLoginPage];
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
@@ -975,7 +975,7 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }
 
 // TODO(crbug.com/361518360): Unflake the test.
-- (void)DISABLED_testOpenPasswordBottomSheetWithSingleSharedPassword {
+- (void)DISABLED_testOpenCredentialBottomSheetWithSingleSharedPassword {
   NSURL* URL = net::NSURLWithGURL([self loginPageURL]);
 
   // Save 1 password that has been received via sharing and the other not.
@@ -1072,7 +1072,8 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }
 
 // TODO(crbug.com/361518360): Unflake the test.
-- (void)DISABLED_testOpenPasswordBottomSheetWithSharedPasswordsAndUseKeyboard {
+- (void)
+    DISABLED_testOpenCredentialBottomSheetWithSharedPasswordsAndUseKeyboard {
   // Save a password that has been received via sharing.
   [PasswordManagerAppInterface
       storeCredentialWithUsername:@"user1"
@@ -1132,14 +1133,14 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
                  @"IsOmniboxFocused is expected to be true.");
 
   // While the omnibox UI is being displayed, focus on the webview behind the
-  // omnibox UI so the password bottom sheet would be displayed if the omnibox
+  // omnibox UI so the credential bottom sheet would be displayed if the omnibox
   // wasn't handled correctly.
   [ChromeEarlGrey
       evaluateJavaScriptForSideEffect:
           @"document.querySelector('input[type=password]').focus()"];
 
   // Give some time to the sheet to be displayed if it was to be displayed so we
-  // can correctly assess that the password bottom sheet is indeed not
+  // can correctly assess that the credential bottom sheet is indeed not
   // displayed.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 
@@ -1191,10 +1192,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 @end
 
 // Test suite for testing the new blur approach.
-@interface PasswordSuggestionBottomSheetNewBlurEGTest : PasswordSuggestionBottomSheetEGTest
+@interface CredentialSuggestionBottomSheetNewBlurEGTest
+    : CredentialSuggestionBottomSheetEGTest
 @end
 
-@implementation PasswordSuggestionBottomSheetNewBlurEGTest
+@implementation CredentialSuggestionBottomSheetNewBlurEGTest
 
 - (BOOL)useNewBlur {
   return YES;
@@ -1203,6 +1205,5 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 // No Op test to have the test fixture visible.
 - (void)testVoid {
 }
-
 
 @end
