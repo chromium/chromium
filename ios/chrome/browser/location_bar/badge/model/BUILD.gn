@@ -4,6 +4,7 @@
 
 source_set("model") {
   sources = [
+    "badge_type.h",
     "location_bar_badge_configuration.h",
     "location_bar_badge_configuration.mm",
   ]

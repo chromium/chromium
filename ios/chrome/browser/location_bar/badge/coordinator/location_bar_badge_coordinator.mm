@@ -54,6 +54,7 @@
   _locationBarBadgeMediator = [[LocationBarBadgeMediator alloc] init];
   _locationBarBadgeMediator.consumer = _viewController;
   _locationBarBadgeMediator.delegate = self;
+  _viewController.mutator = _locationBarBadgeMediator;
   [_dispatcher startDispatchingToTarget:_locationBarBadgeMediator
                             forProtocol:@protocol(LocationBarBadgeCommands)];
 }
@@ -141,7 +142,8 @@
   _contextualPanelEntryPointMediator.delegate = self;
 
   _contextualPanelEntryPointMediator.consumer = _viewController;
-  _viewController.mutator = _contextualPanelEntryPointMediator;
+  _viewController.contextualPanelEntryPointMutator =
+      _contextualPanelEntryPointMediator;
 
   _locationBarBadgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       FullscreenController::FromBrowser(self.browser), self.viewController);

@@ -4,8 +4,8 @@
 
 source_set("ui") {
   sources = [
-    "badge_type.h",
     "location_bar_badge_consumer.h",
+    "location_bar_badge_mutator.h",
     "location_bar_badge_view_controller.h",
     "location_bar_badge_view_controller.mm",
   ]

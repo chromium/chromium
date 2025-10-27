@@ -28,6 +28,10 @@ enum class LocationBarBadgeType;
 // Notify the consumer to transition to the large entrypoint for a loud moment.
 - (void)transitionToLargeEntrypoint;
 
+// Notify the consumer to highlight the badge. When `highlight` is YES, the
+// badge animates to blue, otherwise it animates back to its default color.
+- (void)highlightBadge:(BOOL)highlight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_CONSUMER_H_

@@ -5,17 +5,21 @@
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 
 @implementation LocationBarBadgeConfiguration
 
 #pragma mark - Public
 
-- (instancetype)initWithAccessibilityLabel:(NSString*)accessibilityLabel
-                                badgeImage:(UIImage*)image {
+- (instancetype)initWithBadgeType:(LocationBarBadgeType)badgeType
+               accessibilityLabel:(NSString*)accessibilityLabel
+                       badgeImage:(UIImage*)image {
   self = [super init];
   if (self) {
-    CHECK(!self.accessibilityLabel);
-    CHECK(!self.badgeImage);
+    CHECK(badgeType != LocationBarBadgeType::kNone);
+    CHECK(accessibilityLabel);
+    CHECK(image);
+    _badgeType = badgeType;
     _accessibilityLabel = accessibilityLabel;
     _badgeImage = image;
   }

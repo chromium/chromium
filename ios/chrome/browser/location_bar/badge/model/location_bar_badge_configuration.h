@@ -7,32 +7,32 @@
 
 #import <UIKit/UIKit.h>
 
+enum class LocationBarBadgeType;
+
 // Configuration for Location Bar Badge data.
 @interface LocationBarBadgeConfiguration : NSObject
 
-// Initialize with an `accessibilityLabel` and the badge `image`.
-- (instancetype)initWithAccessibilityLabel:(NSString*)accessibilityLabel
-                                badgeImage:(UIImage*)image
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBadgeType:(LocationBarBadgeType)badgeType
+               accessibilityLabel:(NSString*)accessibilityLabel
+                       badgeImage:(UIImage*)image NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-#pragma mark - Required
+// The badge type. Associated with the feature that the configuration is being
+// sent from.
+@property(nonatomic, assign) LocationBarBadgeType badgeType;
 
-// The accessibility label string for the badge button.
-@property(nonatomic, readonly) NSString* accessibilityLabel;
+// The accessibility label string for the location bar badge button.
+@property(nonatomic, strong) NSString* accessibilityLabel;
 
 // The image of the badge.
-@property(nonatomic, readonly) UIImage* badgeImage;
+@property(nonatomic, strong) UIImage* badgeImage;
 
-#pragma mark - Optional
-
-// The accessibility hint string for the badge button. Used for additional
-// accessibility hints.
+// The accessibility hint string for the badge button.
 @property(nonatomic, strong) NSString* accessibilityHint;
 
 // The string shown with the badge. Primarily used for the text in a chip. If
-// this string isn't set, a badge will not transform into a chip.
+// this string is not set, the badge will not expand into a chip.
 @property(nonatomic, strong) NSString* badgeText;
 
 @end

@@ -13,9 +13,10 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
-#import "ios/chrome/browser/location_bar/badge/ui/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_mutator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -78,6 +79,9 @@
   // Swipe gesture recognizer for the entrypoint (allows the user to "dismiss"
   // the large chip entrypoint).
   UISwipeGestureRecognizer* _swipeRecognizer;
+
+  // Configuration for updating the badge.
+  LocationBarBadgeConfiguration* _badgeConfig;
 }
 
 #pragma mark - Public
@@ -191,6 +195,7 @@
   }
 
   _badgeIcon.image = config.badgeImage;
+  _badgeConfig = config;
 }
 
 #pragma mark - IncognitoBadgeViewVisibilityDelegate
@@ -441,7 +446,11 @@
 }
 
 - (void)dismissIPHWithoutAnimation {
-  [self.mutator dismissIPHAnimated:NO];
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+    [self.contextualPanelEntryPointMutator dismissIPHAnimated:NO];
+  } else {
+    [self.mutator dismissIPHAnimated:NO];
+  }
 }
 
 // Returns the preferred font and size given the current ContentSizeCategory.
@@ -452,11 +461,12 @@
       UIContentSizeCategoryAccessibilityLarge);
 }
 
-// Refreshes the VoiceOver bounding box and notifies the mutator that the
-// animation to transition to a small entrypoint has completed.
+// Refreshes the VoiceOver bounding box and notifies the mutator
+// that the animation to transition to a small entrypoint has completed.
 - (void)didCompleteTransitionToSmallEntrypoint {
   [self refreshVoiceOverBoundingBoxIfFocused];
-  [self.mutator didCompleteTransitionToSmallEntrypoint];
+  [self.contextualPanelEntryPointMutator
+          didCompleteTransitionToSmallEntrypoint];
 }
 
 // Sets the proper visual features depending on current infobar badges status
@@ -532,9 +542,14 @@
   _badgeTapped = YES;
   [self refreshEntrypointVisualElements];
   [self transitionToSmallEntrypoint];
-  [self.mutator entrypointTapped];
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+    [self.contextualPanelEntryPointMutator entrypointTapped];
+  } else {
+    [self.mutator entrypointTapped];
+  }
 }
 
+// Sets visibility for location bar badge in the omnibox.
 - (void)setLocationBarBadgeHidden:(BOOL)hidden {
   _locationBarBadgeShouldBeVisible = !hidden;
   self.view.hidden = hidden;
@@ -542,6 +557,16 @@
   // TODO(crbug.com/429140788): Remove after migration and BadgesContainerView
   // is obsolete.
   [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
+}
+
+// Sets center positioning for location bar label.
+- (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+    [self.contextualPanelEntryPointMutator
+        setLocationBarLabelCenteredBetweenContent:centered];
+  } else {
+    [self.mutator setLocationBarLabelCenteredBetweenContent:centered];
+  }
 }
 
 #pragma mark - ContextualPanelEntrypointConsumer
@@ -567,8 +592,9 @@
 
     LocationBarBadgeConfiguration* badgeConfig =
         [[LocationBarBadgeConfiguration alloc]
-            initWithAccessibilityLabel:accessibilityLabel
-                            badgeImage:image];
+             initWithBadgeType:LocationBarBadgeType::kContextualPanel
+            accessibilityLabel:accessibilityLabel
+                    badgeImage:image];
     badgeConfig.badgeText = base::SysUTF8ToNSString(config->entrypoint_message);
 
     if (config->accessibility_hint.size() > 0) {
@@ -659,8 +685,7 @@
   [self setContextualPanelEntrypointHidden:YES];
 
   _buttonContainer.isAccessibilityElement = !self.view.hidden;
-
-  [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
+  [self setLocationBarLabelCenteredBetweenContent:NO];
 
   [self.view layoutIfNeeded];
 
@@ -694,7 +719,7 @@
     }
 
     [strongSelf activateLargeEntrypointTrailingConstraint];
-    [strongSelf.mutator setLocationBarLabelCenteredBetweenContent:YES];
+    [strongSelf setLocationBarLabelCenteredBetweenContent:YES];
     [strongSelf.view layoutIfNeeded];
   };
 
@@ -723,7 +748,7 @@
     }
 
     [strongSelf activateSmallEntrypointTrailingConstraint];
-    [strongSelf.mutator setLocationBarLabelCenteredBetweenContent:NO];
+    [strongSelf setLocationBarLabelCenteredBetweenContent:NO];
     [strongSelf.view layoutIfNeeded];
   };
 
@@ -761,6 +786,25 @@
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:^{
                      [weakSelf styleEntrypointForColoredState:colored];
+                   }
+                   completion:nil];
+}
+
+#pragma mark - LocationBarBadgeConsumer
+
+- (void)highlightBadge:(BOOL)highlight {
+  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
+    return;
+  }
+
+  __weak LocationBarBadgeViewController* weakSelf = self;
+
+  [UIView animateWithDuration:kBadgeDisplayingAnimationTime
+                        delay:0
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
+                   animations:^{
+                     [weakSelf styleEntrypointForColoredState:highlight];
                    }
                    completion:nil];
 }
