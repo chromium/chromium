@@ -98,7 +98,8 @@ extern NSString* const
 // The leading view.
 @property(nonatomic, readonly, weak) UIView* leadingView;
 
-// The trailing view. Can be nil.
+// The trailing view. Can be nil. It is the parent view of all manual fill
+// buttons, and the close button when split view is not enabled.
 @property(nonatomic, readonly, weak) UIView* trailingView;
 
 // Sets up the view with the given `leadingView`. Navigation controls are shown
@@ -109,13 +110,14 @@ extern NSString* const
 // Sets up the view with the given `leadingView`. Navigation controls are shown
 // on the trailing side and use `delegate` for actions.
 // This initializer modifies multiple UI elements:
-// - The manual fill buttons are added, using *manualFillSymbol as their images.
+// - The manual fill buttons are added, using the supplied symbols as their
+// images.
 // - The previous and next buttons are removed.
 // - The accessory height is increased.
 // - The background color is set to grey.
 // If `closeButtonSymbol` is nil, the close button will use the default text.
-// Otherwise, it will use closeButtonSymbol as the image instead.
-// `twoBubble` indicates whether two-bubble design feature flag is enabled.
+// Otherwise, it will use `closeButtonSymbol` as the image instead.
+// `splitViewEnabled` indicates whether two-bubble feature flag is enabled.
 // `isTabletFormFactor` modifies the appearance of the manual fill button.
 - (void)setUpWithLeadingView:(UIView*)leadingView
             navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
@@ -124,7 +126,7 @@ extern NSString* const
     creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
        addressManualFillSymbol:(UIImage*)addressManualFillSymbol
              closeButtonSymbol:(UIImage*)closeButtonSymbol
-              twoBubbleEnabled:(BOOL)twoBubbleEnabled
+              splitViewEnabled:(BOOL)splitViewEnabled
             isTabletFormFactor:(BOOL)isTabletFormFactor;
 
 // Sets up the view with the given `leadingView`. Navigation controls are

@@ -427,7 +427,7 @@ UIImage* GetManualFillSymbol() {
          addressManualFillSymbol:CustomSymbolWithPointSize(
                                      kLocationSymbol, kSymbolActionPointSize)
                closeButtonSymbol:closeButtonSymbol
-                twoBubbleEnabled:IsIOSKeyboardAccessoryTwoBubbleEnabled()
+                splitViewEnabled:IsIOSKeyboardAccessoryTwoBubbleEnabled()
               isTabletFormFactor:isTabletFormFactor];
   [formInputAccessoryView setIsCompact:[self isCompact]];
 
