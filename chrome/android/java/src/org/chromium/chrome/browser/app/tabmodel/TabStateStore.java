@@ -356,6 +356,8 @@ public class TabStateStore implements TabPersistentStore {
                     mTabCreatorManager
                             .getTabCreator(/* incognito= */ false)
                             .createFrozenTab(tabState, tabId, i);
+            if (tab == null) continue;
+
             loadedTabStates[i].onTabCreationCallback.onResult(tab);
 
             // TODO(https://crbug.com/448151052): Correctly mark the selected tab as active.

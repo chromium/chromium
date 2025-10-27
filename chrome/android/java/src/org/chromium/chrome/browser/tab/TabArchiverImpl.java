@@ -335,6 +335,7 @@ public class TabArchiverImpl implements TabArchiver {
             boolean updateTimestamp,
             boolean areTabsBeingOpened) {
         ThreadUtils.assertOnUiThread();
+        int tabCount = 0;
         for (Tab tab : tabs) {
             // Update the timestamp so that the tab isn't immediately re-archived on the next pass.
             if (updateTimestamp) {
@@ -346,10 +347,12 @@ public class TabArchiverImpl implements TabArchiver {
             Tab newTab =
                     tabCreator.createFrozenTab(
                             tabState, tab.getId(), areTabsBeingOpened ? INVALID_TAB_INDEX : 0);
-            newTab.onTabRestoredFromArchivedTabModel();
+            if (newTab != null) {
+                tabCount++;
+                newTab.onTabRestoredFromArchivedTabModel();
+            }
         }
 
-        int tabCount = tabs.size();
         mArchivedTabGroupModelFilter
                 .getTabModel()
                 .getTabRemover()

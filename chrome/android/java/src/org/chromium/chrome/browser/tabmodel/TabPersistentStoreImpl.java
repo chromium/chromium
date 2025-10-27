@@ -810,11 +810,13 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     mTabCreatorManager
                             .getTabCreator(isIncognito)
                             .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
+            if (tab == null) return;
+
             if (tabState.shouldMigrate) {
                 mTabsToMigrate.add(tab);
             }
 
-            if (!isIncognito && tab != null) {
+            if (!isIncognito) {
                 RecordHistogram.recordBooleanHistogram(
                         "Tabs.TabRestoreUrlMatch", tabToRestore.url.equals(tab.getUrl().getSpec()));
             }

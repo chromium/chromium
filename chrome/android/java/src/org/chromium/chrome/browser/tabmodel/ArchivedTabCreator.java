@@ -80,7 +80,7 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         assert mTabModel != null : "Creating frozen tab before native library initialized.";
         Tab tab =
                 TabBuilder.createFromFrozenState(assumeNonNull(mTabModel.getProfile()))

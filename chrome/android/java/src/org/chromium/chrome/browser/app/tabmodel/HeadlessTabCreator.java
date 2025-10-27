@@ -70,7 +70,7 @@ public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         Tab tab =
                 TabBuilder.createFromFrozenState(mProfile)
                         .setId(id)

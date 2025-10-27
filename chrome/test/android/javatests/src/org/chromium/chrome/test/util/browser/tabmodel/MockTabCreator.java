@@ -74,7 +74,7 @@ public class MockTabCreator implements TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         MockTab tab =
                 new MockTab(
                         id,

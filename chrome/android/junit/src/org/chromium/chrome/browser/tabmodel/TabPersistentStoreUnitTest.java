@@ -416,6 +416,8 @@ public class TabPersistentStoreUnitTest {
                         mTabWindowManager,
                         mCipherFactory);
         mPersistentStore.initializeRestoreVars(false);
+        when(mNormalTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mTab);
+        when(mTab.getUrl()).thenReturn(new GURL(RESTORE_TAB_STRING_1));
 
         TabRestoreDetails regularTabRestoreDetails =
                 new TabRestoreDetails(RESTORE_TAB_ID_1, 2, false, RESTORE_TAB_STRING_1, false);

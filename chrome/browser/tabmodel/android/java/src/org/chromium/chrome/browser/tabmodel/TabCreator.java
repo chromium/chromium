@@ -72,8 +72,11 @@ public interface TabCreator {
      * @param state The tab state that the tab can be restored from.
      * @param id The id to give the new tab.
      * @param index The index for where to place the tab.
+     * @return The newly created tab or null if no tab was created. No tab may be created due to a
+     *     problem with the data, the current model, or just because this creator implementation
+     *     doesn't create tabs.
      */
-    Tab createFrozenTab(TabState state, int id, int index);
+    @Nullable Tab createFrozenTab(TabState state, int id, int index);
 
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for {@link
