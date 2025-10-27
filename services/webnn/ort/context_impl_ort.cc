@@ -34,6 +34,7 @@ scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
+    mojom::Device device_type,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     scoped_refptr<Environment> env,
@@ -47,7 +48,7 @@ scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   return base::MakeRefCounted<ContextImplOrt>(
       std::move(receiver), std::move(context_provider),
-      std::move(ep_workarounds), std::move(options),
+      std::move(ep_workarounds), std::move(options), device_type,
       std::move(write_tensor_consumer), std::move(read_tensor_producer),
       std::move(env), command_buffer_id, std::move(sequence),
       std::move(memory_tracker), std::move(owning_task_runner),
@@ -59,6 +60,7 @@ ContextImplOrt::ContextImplOrt(
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
+    mojom::Device device_type,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
     mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     scoped_refptr<Environment> env,
@@ -82,7 +84,7 @@ ContextImplOrt::ContextImplOrt(
           shared_image_manager,
           std::move(main_task_runner)),
       env_(std::move(env)),
-      session_options_(SessionOptions::Create(this->options().device, env_)) {
+      session_options_(SessionOptions::Create(device_type, env_)) {
   if (base::FeatureList::IsEnabled(kUseDeviceTensor)) {
     device_allocator_ = DeviceAllocator::Create(this->options().device,
                                                 session_options_->get(), env_);
