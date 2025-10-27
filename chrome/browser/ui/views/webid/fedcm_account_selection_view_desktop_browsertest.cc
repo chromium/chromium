@@ -180,7 +180,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
   EXPECT_FALSE(IsDialogVisible());
   EXPECT_TRUE(HasDialogContentsView());
 
+  views::test::PropertyWaiter show_tab_waiter(
+      base::BindRepeating(
+          &tabs::TabInterface::IsVisible,
+          base::Unretained(browser()->tab_strip_model()->GetTabAtIndex(0))),
+      true);
   browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_TRUE(show_tab_waiter.Wait());
+
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
 }
