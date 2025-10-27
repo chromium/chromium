@@ -5119,7 +5119,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_TASK_MANAGER_PLUGIN_VM_PREFIX" desc="A row in the task manager for a Parallels Desktop Virtual Machine. Parallels Desktop is a 3rd-party product name that should remain in English.">
         Parallels Desktop: <ph name="PLUGIN_VM_NAME">$1<ex>PvmDefault</ex></ph>
       </message>
-
+      <message name="IDS_TASK_MANAGER_OMNIBOX" desc="A row in the task manager for the WebUI Omnibox.">
+        Omnibox
+      </message>
       <message name="IDS_UTILITY_PROCESS_FILE_UTILITY_NAME" desc="The name of the utility process used for various Chrome specific file operations.">
           Chrome File Utilities
       </message>

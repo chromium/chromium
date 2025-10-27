@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/zoom/zoom_controller.h"
@@ -34,7 +35,8 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
       controller_(controller),
       include_location_bar_cutout_(include_location_bar_cutout) {
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
-      GURL(chrome::kChromeUIOmniboxPopupURL), location_bar_view->profile(), -1);
+      GURL(chrome::kChromeUIOmniboxPopupURL), location_bar_view->profile(),
+      IDS_TASK_MANAGER_OMNIBOX);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
   webui::SetBrowserWindowInterface(contents_wrapper_->web_contents(),
