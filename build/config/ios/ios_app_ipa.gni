@@ -34,7 +34,7 @@ template("ios_app_ipa") {
                            ])
     script = "//build/config/ios/package_ipa.py"
     sources = [ "$_bundle_app_path" ]
-    outputs = [ "$target_out_dir/$_bundle_app_name.ipa" ]
+    outputs = [ "$root_out_dir/$_bundle_app_name.ipa" ]
     args = rebase_path(sources, root_build_dir) +
            rebase_path(outputs, root_build_dir)
     deps = [ invoker.bundle_target ]
