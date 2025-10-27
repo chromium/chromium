@@ -1072,6 +1072,8 @@ constexpr char kSessionRestoreTurnOffFromSessionInfoBarTimesShown[] =
 
 constexpr char kSessionRestorePrefChanged[] = "session.restore_pref_changed";
 
+constexpr char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1523,6 +1525,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 10/2025.
   registry->RegisterIntegerPref(ntp_prefs::kNtpShortcutsType, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 10/2025.
+  registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
 }
 
 }  // namespace
@@ -2825,6 +2830,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 10/2025
   NewTabPageUI::MigrateDeprecatedShortcutsTypePref(profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 10/2025.
+  profile_prefs->ClearPref(kLegacySyncSessionsGUID);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

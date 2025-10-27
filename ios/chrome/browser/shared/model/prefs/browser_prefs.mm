@@ -240,6 +240,7 @@ inline constexpr char kLastInteractionTimeForGoodVisits[] =
     "LastInteractionTimeForGoodVisits";
 inline constexpr char kLongFeedVisitTimeAggregateKey[] = "LongFeedInteractionTimeDelta";
 inline constexpr char kLastUsedFeedForGoodVisitsKey[] = "LastUsedFeedForGoodVisits";
+inline constexpr char kLegacySyncSessionsGUID[] = "sync.session_sync_guid";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -1154,6 +1155,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // instead.
   registry->RegisterBooleanPref(prefs::kHomeCustomizationMostVisitedEnabled,
                                 true);
+
+  // Deprecated 10/2025.
+  registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1351,7 +1355,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kLastInteractionTimeForGoodVisits);
   prefs->ClearPref(kLongFeedVisitTimeAggregateKey);
   prefs->ClearPref(kLastUsedFeedForGoodVisitsKey);
-
+  prefs->ClearPref(kLegacySyncSessionsGUID);
 }
 
 void MigrateObsoleteUserDefault() {
