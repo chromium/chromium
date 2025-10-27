@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -397,6 +399,13 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     // response.
     // TODO(crbug.com/40214220): Do not start prerendering if this
     // request is about to expire.
+    if (prerender_url.is_empty()) {
+      SCOPED_CRASH_KEY_STRING32(
+          "bug447128953", "prefetch_origin",
+          url::Origin::Create(canonical_search_url_).GetURL().spec());
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
     prerender_manager_->StartPrerenderSearchResult(
         canonical_search_url_, prerender_url, prerender_preloading_attempt_);
   }
@@ -414,7 +423,13 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
   if (!prerender_manager_) {
     return;
   }
-
+  if (prerender_url_.is_empty()) {
+    SCOPED_CRASH_KEY_STRING32(
+        "bug447128953", "prefetch_origin",
+        url::Origin::Create(canonical_search_url_).GetURL().spec());
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   // TODO(crbug.com/40214220): Do not start prerendering if this request
   // is about to expire.
   prerender_manager_->StartPrerenderSearchResult(
