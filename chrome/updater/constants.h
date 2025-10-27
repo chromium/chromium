@@ -93,6 +93,9 @@ inline constexpr char kUpdateSwitch[] = "update";
 // Updates the apps.
 inline constexpr char kUpdateAppsSwitch[] = "update-apps";
 
+// Run as a patch worker.
+inline constexpr char kPatchWorkerSwitch[] = "patch-worker";
+
 // Run as an unzip worker.
 inline constexpr char kUnzipWorkerSwitch[] = "unzip-worker";
 

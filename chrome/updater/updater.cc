@@ -26,6 +26,7 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
 #include "chrome/updater/app/app_net_worker.h"
+#include "chrome/updater/app/app_patch_worker.h"
 #include "chrome/updater/app/app_recover.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/app_uninstall.h"
@@ -222,6 +223,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
   if (command_line->HasSwitch(kWakeAllSwitch)) {
     return MakeAppWakeAll()->Run();
+  }
+
+  if (command_line->HasSwitch(kPatchWorkerSwitch)) {
+    return MakeAppPatchWorker()->Run();
   }
 
   if (command_line->HasSwitch(kUnzipWorkerSwitch)) {
