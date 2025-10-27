@@ -18,7 +18,8 @@ constexpr webrtc::AudioProcessing::Config kDefaultApmConfig{};
 
 webrtc::AudioProcessing::Config CreateApmGetConfig(
     const AudioProcessingSettings& settings) {
-  auto [apm, added_delay] = CreateWebRtcAudioProcessingModule(settings);
+  auto [apm, added_delay] = CreateWebRtcAudioProcessingModule(
+      settings, /*residual_echo_estimator_model=*/nullptr);
   DCHECK(!!apm);
   return apm->GetConfig();
 }
@@ -52,7 +53,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_EQ(config.noise_suppression.level,
             webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
-
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest,

@@ -70,8 +70,9 @@ int GetCaptureBufferSize(bool need_webrtc_processing,
   // size was provided, use it. It can be harmful, in terms of CPU/power
   // consumption, to use smaller buffer sizes than the native size.
   // (https://crbug.com/362261).
-  if (int hardware_buffer_size = device_format.frames_per_buffer())
+  if (int hardware_buffer_size = device_format.frames_per_buffer()) {
     return hardware_buffer_size;
+  }
 
   // If the buffer size is missing from the device parameters, provide 10ms as
   // a fall-back.
@@ -204,8 +205,9 @@ class AudioProcessorCaptureFifo {
       next_audio_delay_ -=
           destination_->bus()->frames() * base::Seconds(1) / sample_rate_;
     } else {
-      if (!data_available_)
+      if (!data_available_) {
         return false;
+      }
       *audio_delay = next_audio_delay_;
       // The data was already copied to |destination_| in this case.
       data_available_ = false;
@@ -246,8 +248,10 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
       "AudioProcessor::Create({multi_channel_capture_processing=%s})",
       base::ToString(settings.multi_channel_capture_processing)));
 
+  // TODO: bugs.webrtc.org/442444736 - Supply a residual echo estimator model.
   auto [webrtc_audio_processing, added_aec_delay] =
-      media::CreateWebRtcAudioProcessingModule(settings);
+      media::CreateWebRtcAudioProcessingModule(
+          settings, /*residual_echo_estimator_model=*/nullptr);
 
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),
@@ -398,10 +402,12 @@ void AudioProcessor::OnStartDump(base::File dump_file) {
 
 void AudioProcessor::OnStopDump() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (!worker_queue_)
+  if (!worker_queue_) {
     return;
-  if (webrtc_audio_processing_)
+  }
+  if (webrtc_audio_processing_) {
     media::StopEchoCancellationDump(webrtc_audio_processing_.get());
+  }
   worker_queue_ = nullptr;
 }
 
@@ -463,8 +469,9 @@ void AudioProcessor::AnalyzePlayoutData(const AudioBus& audio_bus,
 }
 
 webrtc::AudioProcessingStats AudioProcessor::GetStats() {
-  if (!webrtc_audio_processing_)
+  if (!webrtc_audio_processing_) {
     return {};
+  }
   return webrtc_audio_processing_->GetStatistics();
 }
 

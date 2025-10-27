@@ -24,6 +24,7 @@ static_library("op_resolver") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   visibility += [
+    "//media/webrtc/*",
     "//services/on_device_model/safety/*",
     "//services/passage_embeddings/*",
   ]
