@@ -23,6 +23,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
@@ -1103,6 +1104,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   bool mappable = frame->IsMappable() || frame->HasMappableGpuBuffer();
   bool can_handle_shared_image =
+#if BUILDFLAG(IS_WIN)
+      !base::FeatureList::IsEnabled(features::kSkiaGraphite) &&
+#endif  // BUILDFLAG(IS_WIN)
       encoder_info_.DoesSupportGpuSharedImages(frame->format()) &&
       frame->HasSharedImage();
 
