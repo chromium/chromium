@@ -25,7 +25,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/tracing/public/cpp/tracing_features.h"

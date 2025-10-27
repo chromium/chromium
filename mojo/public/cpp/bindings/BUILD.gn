@@ -54,8 +54,6 @@ component("bindings_base") {
     "enum_traits.h",
     "enum_utils.h",
     "equals_traits.h",
-    "features.cc",
-    "features.h",
     "interface_data_view.h",
     "interface_id.h",
     "lib/array_internal.cc",
