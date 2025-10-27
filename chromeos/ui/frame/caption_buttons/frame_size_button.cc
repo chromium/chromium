@@ -15,6 +15,8 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "chromeos/utils/haptics_util.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -152,12 +154,14 @@ class FrameSizeButton::PieAnimationView : public views::View,
     const SkScalar start_angle = -90.f;
     const SkScalar sweep_angle = 360.f * animation_value;
 
-    SkPath path;
     const gfx::Rect bounds = GetLocalBounds();
-    path.moveTo(bounds.CenterPoint().x(), bounds.CenterPoint().y());
-    path.arcTo(gfx::RectToSkRect(bounds), start_angle, sweep_angle,
-               /*forceMoveTo=*/false);
-    path.close();
+    const SkPath path =
+        SkPathBuilder()
+            .moveTo(bounds.CenterPoint().x(), bounds.CenterPoint().y())
+            .arcTo(gfx::RectToSkRect(bounds), start_angle, sweep_angle,
+                   /*forceMoveTo=*/false)
+            .close()
+            .detach();
 
     cc::PaintFlags flags;
     flags.setColor(
