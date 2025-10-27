@@ -621,14 +621,6 @@ class CC_EXPORT GpuImageDecodeCache
                               ImageData* image_data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Implementation of UploadImageIfNecessary for each sub-case.
-  void UploadImageIfNecessary_TransferCache_SoftwareDecode(
-      const DrawImage& draw_image,
-      ImageData* image_data,
-      sk_sp<SkColorSpace> decoded_target_colorspace,
-      const std::optional<gfx::HDRMetadata>& hdr_metadata,
-      sk_sp<SkColorSpace> target_color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   // Runs pending operations that required the |context_| lock to be held, but
   // were queued up during a time when the |context_| lock was unavailable.
   // These including deleting, unlocking, and locking textures.

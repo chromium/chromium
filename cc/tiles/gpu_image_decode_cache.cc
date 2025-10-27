@@ -2226,17 +2226,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   const std::optional<gfx::HDRMetadata> hdr_metadata =
       draw_image.paint_image().GetHDRMetadata();
 
-  UploadImageIfNecessary_TransferCache_SoftwareDecode(
-      draw_image, image_data, decoded_color_space, hdr_metadata,
-      target_color_space);
-}
-
-void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
-    const DrawImage& draw_image,
-    ImageData* image_data,
-    sk_sp<SkColorSpace> decoded_color_space,
-    const std::optional<gfx::HDRMetadata>& hdr_metadata,
-    sk_sp<SkColorSpace> target_color_space) {
   std::array<ClientImageTransferCacheEntry::Image, kAuxImageCount> image;
   bool has_gainmap = false;
 
