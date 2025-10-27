@@ -122,7 +122,11 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
     }
 
     @Override
-    protected Profile getProfile() {
+    public void launchNtp(@TabLaunchType int type) {
+        TabCreatorUtil.launchNtp(this, getProfile(), type);
+    }
+
+    private Profile getProfile() {
         return assumeNonNull(mTabModel.getProfile());
     }
 }

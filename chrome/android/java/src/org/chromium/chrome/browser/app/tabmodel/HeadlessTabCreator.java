@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -108,7 +109,7 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     }
 
     @Override
-    protected Profile getProfile() {
-        return mProfile;
+    public void launchNtp(@TabLaunchType int type) {
+        TabCreatorUtil.launchNtp(this, mProfile, type);
     }
 }

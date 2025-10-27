@@ -8,7 +8,6 @@ import android.util.SparseArray;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.MockTabAttributes;
 import org.chromium.chrome.browser.tab.Tab;
@@ -113,14 +112,12 @@ public class MockTabCreator extends TabCreator {
         return null;
     }
 
+    @Override
+    public void launchNtp(@TabLaunchType int type) {}
+
     private void storeTabInfo(TabState state, int id) {
         if (created.size() == 0) idOfFirstCreatedTab = id;
         created.put(id, state);
         callback.notifyCalled();
-    }
-
-    @Override
-    protected Profile getProfile() {
-        return mSelector.getCurrentModel().getProfile();
     }
 }

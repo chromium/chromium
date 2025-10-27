@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -119,13 +118,8 @@ public abstract class TabCreator {
      */
     public @Nullable abstract Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
 
-    /** Returns the {@link Profile} associated with this TabCreator. */
-    protected abstract Profile getProfile();
-
     /** Creates a new tab and loads the NTP. */
-    public void launchNtp(@TabLaunchType int type) {
-        TabCreatorUtil.launchNtp(this, getProfile(), type);
-    }
+    public abstract void launchNtp(@TabLaunchType int type);
 
     /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
     public interface NeedsTabModel {
