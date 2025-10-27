@@ -86,6 +86,9 @@ BASE_FEATURE(kDisableNonYUVOverlaysFromExo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
+BASE_FEATURE(kExoAlwaysUseColorSpaceFromShardImage,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // A property key containing the surface that is associated with
 // window. If unset, no surface is associated with window.
 DEFINE_UI_CLASS_PROPERTY_KEY(Surface*, kSurfaceKey, nullptr)
@@ -1504,7 +1507,11 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
     if (current_resource_) {
       current_resource_has_alpha_ =
           state_.buffer->buffer()->GetFormat().HasAlpha();
-      current_resource_->color_space = state_.basic_state.color_space;
+
+      if (!base::FeatureList::IsEnabled(
+              kExoAlwaysUseColorSpaceFromShardImage)) {
+        current_resource_->color_space = state_.basic_state.color_space;
+      }
     } else {
       SkColor4f color = state_.buffer->buffer()->GetColor();
       current_resource_has_alpha_ = !color.isOpaque();
