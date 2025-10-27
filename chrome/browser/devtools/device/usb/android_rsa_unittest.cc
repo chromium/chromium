@@ -10,7 +10,7 @@
 #include <string_view>
 
 #include "base/strings/string_view_util.h"
-#include "crypto/hash.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
 #include "crypto/test_support.h"
@@ -113,7 +113,7 @@ TEST(AndroidRSATest, ValidPrehashedSignature) {
 
   // AndroidRSASign is supposed to compute a prehashed RSASSA-PKCS1-v1_5-SHA1
   // signature, so do that here, then check that the signature validates.
-  const auto hash = crypto::hash::Sha1(kTestInput);
+  const auto hash = crypto::obsolete::Sha1::HashForTesting(kTestInput);
   std::string sig =
       AndroidRSASign(privkey, std::string(base::as_string_view(hash)));
 
