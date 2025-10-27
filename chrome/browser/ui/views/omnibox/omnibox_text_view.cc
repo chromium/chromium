@@ -36,32 +36,11 @@ namespace {
 // we use OmniboxTheme for that.
 constexpr int kTextStyle = views::style::STYLE_PRIMARY;
 
-// Indicates to use CONTEXT_OMNIBOX_PRIMARY when picking a font size in legacy
-// code paths.
-constexpr int kInherit = INT_MIN;
-
 // The vertical padding to provide each RenderText in addition to the height
 // of the font. Where possible, RenderText uses this additional space to
 // vertically center the cap height of the font instead of centering the
 // entire font.
 static constexpr int kVerticalPadding = 3;
-
-struct TextStyle {
-  OmniboxPart part;
-
-  // The legacy size delta, relative to the ui::ResourceBundle BaseFont, or
-  // kInherit to use CONTEXT_OMNIBOX_PRIMARY, to match the omnibox font.
-  // Note: the actual font size may differ due to |baseline| altering the size.
-  int legacy_size_delta = kInherit;
-
-  // The size delta from the Touchable chrome spec. This is always relative to
-  // CONTEXT_OMNIBOX_PRIMARY, which defaults to 15pt under touch. Only negative
-  // deltas are supported correctly (the line height will not increase to fit).
-  int touchable_size_delta = 0;
-
-  // The baseline shift. Ignored under touch (text is always baseline-aligned).
-  gfx::BaselineStyle baseline = gfx::BaselineStyle::kNormalBaseline;
-};
 
 void ApplyTextStyleForAnswer(OmniboxResultView* result_view,
                              gfx::RenderText* render_text,
