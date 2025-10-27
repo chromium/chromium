@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabC
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tasks.tab_management.MoveTabUtils;
 import org.chromium.components.tabs.TabStripCollection;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ import java.util.Set;
 @Deprecated
 @NullMarked
 public class TabModelImpl extends TabModelJniBridge {
+    /** The name of the UKM event used for tab state changes. */
+    private static final String UKM_METRICS_TAB_STATE_CHANGED = "Tab.StateChange";
+
     /**
      * The main list of tabs. Note that when this changes, all pending closures must be committed
      * via {@link #commitAllTabClosures()} as the indices are no longer valid. Also {@link
@@ -445,6 +449,13 @@ public class TabModelImpl extends TabModelJniBridge {
 
         int availableIndex = findFirstNonPinnedTabIndex();
         if (availableIndex == mTabs.size()) return;
+
+        WebContents webContents = tab.getWebContents();
+        if (webContents != null) {
+            new UkmRecorder(webContents, UKM_METRICS_TAB_STATE_CHANGED)
+                    .addBooleanMetric("IsPinned")
+                    .record();
+        }
 
         notifyWillChangeInPinState(tab);
         tab.setIsPinned(true);

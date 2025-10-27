@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabC
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.ArrayList;
@@ -81,6 +82,9 @@ import java.util.function.Supplier;
 @JNINamespace("tabs")
 public class TabCollectionTabModelImpl extends TabModelJniBridge
         implements TabGroupModelFilterInternal {
+    /** The name of the UKM event used for tab state changes. */
+    private static final String UKM_METRICS_TAB_STATE_CHANGED = "Tab.StateChange";
+
     /**
      * Holds data for an individual tab that was part of a group merge operation that may be undone.
      */
@@ -1771,6 +1775,14 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
 
         if (isPinned) {
             recordPinTimestamp(tab);
+
+            WebContents webContents = tab.getWebContents();
+            if (webContents != null) {
+                new UkmRecorder(webContents, UKM_METRICS_TAB_STATE_CHANGED)
+                        .addBooleanMetric("IsPinned")
+                        .record();
+            }
+
         } else {
             recordPinnedDuration(tab);
         }

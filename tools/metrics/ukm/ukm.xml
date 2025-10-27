@@ -24660,6 +24660,21 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Tab.StateChange">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    A tab's state has changed. Only recorded for loaded tabs with WebContents.
+  </summary>
+  <metric name="IsPinned" enum="Boolean">
+    <summary>
+      Whether the tab is currently pinned. This is stored only for tabs which
+      are pinned, i.e. this metric will always be true.
+    </summary>
+  </metric>
+</event>
+
 <event name="TabManager.Background.FirstAlertFired">
   <owner>chrisha@chromium.org</owner>
   <owner>lpy@chromium.org</owner>
