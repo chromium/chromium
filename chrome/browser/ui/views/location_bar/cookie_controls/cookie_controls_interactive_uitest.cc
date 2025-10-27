@@ -717,8 +717,7 @@ class CookieControlsInteractiveUi3pcdTest
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override {
-    std::vector<base::test::FeatureRef> disabled_features = {
-        privacy_sandbox::kActUserBypassUx};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (!testing::get<1>(GetParam())) {
       disabled_features.push_back(
           content_settings::features::kUserBypassFeedback);
@@ -780,8 +779,7 @@ class CookieControlsInteractiveUiTrackingProtectionTest
 
  protected:
   std::vector<base::test::FeatureRef> EnabledFeatures() override {
-    return {privacy_sandbox::kActUserBypassUx,
-            privacy_sandbox::kFingerprintingProtectionUx};
+    return {privacy_sandbox::kFingerprintingProtectionUx};
   }
 
   std::vector<base::test::FeatureRef> DisabledFeatures() override { return {}; }

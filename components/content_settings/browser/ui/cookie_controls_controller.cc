@@ -266,8 +266,7 @@ void CookieControlsController::RecordActMetrics(bool enable_protections) {
 bool CookieControlsController::ShowActFeatures() {
   return is_incognito_profile_ &&
          (tracking_protection_settings_->IsIpProtectionEnabled() ||
-          tracking_protection_settings_->IsFpProtectionEnabled()) &&
-         base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx);
+          tracking_protection_settings_->IsFpProtectionEnabled());
 }
 
 CookieControlsEnforcement

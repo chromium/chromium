@@ -329,8 +329,7 @@ class CookieControlsBubbleViewTrackingProtectionUiPixelTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{privacy_sandbox::kActUserBypassUx,
-                              privacy_sandbox::kFingerprintingProtectionUx},
+        /*enabled_features=*/{privacy_sandbox::kFingerprintingProtectionUx},
         /*disabled_features=*/{});
     CookieControlsBubbleViewPixelTestBase::SetUp();
   }

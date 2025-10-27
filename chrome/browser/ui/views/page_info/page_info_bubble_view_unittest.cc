@@ -1294,9 +1294,7 @@ class PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest
  public:
   PageInfoBubbleViewPrivacyAndSiteDataSubpageTitleTest() {
     feature_list_.InitWithFeatures(
-        {privacy_sandbox::kActUserBypassUx,
-         privacy_sandbox::kFingerprintingProtectionUx},
-        {});
+        {privacy_sandbox::kFingerprintingProtectionUx}, {});
     off_the_record_ = true;
   }
 

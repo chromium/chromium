@@ -306,8 +306,7 @@ TEST_F(FPFPageActivationThrottleTest,
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   scoped_feature_list_.InitWithFeatures(
       {features::kEnableFingerprintingProtectionFilter},
-      {privacy_sandbox::kActUserBypassUx,
-       privacy_sandbox::kFingerprintingProtectionUx});
+      {privacy_sandbox::kFingerprintingProtectionUx});
 
   // Initialize a real throttle to test histograms are emitted as expected.
   mock_nav_handle_->set_url(GURL("http://cool.things.com"));
@@ -343,7 +342,6 @@ TEST_F(
   base::HistogramTester histograms;
   scoped_feature_list_.InitWithFeatures(
       {features::kEnableFingerprintingProtectionFilter,
-       privacy_sandbox::kActUserBypassUx,
        privacy_sandbox::kFingerprintingProtectionUx},
       {});
 

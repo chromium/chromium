@@ -1456,8 +1456,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     std::vector<base::test::FeatureRef>
         enabled_features = {},
-        disabled_features = {privacy_sandbox::kActUserBypassUx,
-                             privacy_sandbox::kFingerprintingProtectionUx,
+        disabled_features = {privacy_sandbox::kFingerprintingProtectionUx,
                              privacy_sandbox::kIpProtectionUx};
     if (GetParam()) {
       enabled_features.push_back(
@@ -1753,8 +1752,7 @@ class PageInfoBubbleViewBrowserTestTrackingProtectionSubpage
  public:
   PageInfoBubbleViewBrowserTestTrackingProtectionSubpage() {
     std::vector<base::test::FeatureRef>
-        enabled_features = {privacy_sandbox::kActUserBypassUx,
-                            privacy_sandbox::kFingerprintingProtectionUx},
+        enabled_features = {privacy_sandbox::kFingerprintingProtectionUx},
         disabled_features = {
 #if BUILDFLAG(ENABLE_GLIC)
             // GlicBorderView doesn't like it when the profile type is changed

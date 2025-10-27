@@ -119,8 +119,7 @@ class CookieControlsPageActionControllerTestBase : public testing::Test {
   CookieControlsPageActionControllerTestBase() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kPageActionsMigration,
-          {{features::kPageActionsMigrationCookieControls.name, "true"}}},
-         {privacy_sandbox::kActUserBypassUx, {}}},
+          {{features::kPageActionsMigrationCookieControls.name, "true"}}}},
         {});
 
     auto fake_bubble_delegate = std::make_unique<FakeBubbleDelegate>();
