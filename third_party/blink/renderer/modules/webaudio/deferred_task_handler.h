@@ -67,7 +67,8 @@ class MODULES_EXPORT DeferredTaskHandler final
     : public ThreadSafeRefCounted<DeferredTaskHandler> {
  public:
   static scoped_refptr<DeferredTaskHandler> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      uint32_t render_quantum_frames);
   ~DeferredTaskHandler();
 
   void HandleDeferredTasks();
@@ -218,7 +219,8 @@ class MODULES_EXPORT DeferredTaskHandler final
   uint32_t RenderQuantumFrames() const { return render_quantum_frames_; }
 
  private:
-  explicit DeferredTaskHandler(scoped_refptr<base::SingleThreadTaskRunner>);
+  explicit DeferredTaskHandler(scoped_refptr<base::SingleThreadTaskRunner>,
+                               uint32_t render_quantum_frames);
   void UpdateAutomaticPullNodes();
   void UpdateChangedChannelCountMode();
   void UpdateChangedChannelInterpretation();
@@ -250,7 +252,7 @@ class MODULES_EXPORT DeferredTaskHandler final
 
   // Number of frames to use when rendering the graph.  This is the frames to
   // process for each node.
-  const uint32_t render_quantum_frames_ = 128;
+  const uint32_t render_quantum_frames_;
 
   // Caches the value of the feature flag for deferred pull status update.
   const bool defer_pull_status_update_;

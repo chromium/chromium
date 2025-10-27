@@ -339,15 +339,19 @@ void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
 }
 
 DeferredTaskHandler::DeferredTaskHandler(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : defer_pull_status_update_(base::FeatureList::IsEnabled(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    uint32_t render_quantum_frames)
+    : render_quantum_frames_(render_quantum_frames),
+      defer_pull_status_update_(base::FeatureList::IsEnabled(
           features::kWebAudioDeferPullStatusUpdate)),
       task_runner_(std::move(task_runner)),
       audio_thread_(base::kInvalidThreadId) {}
 
 scoped_refptr<DeferredTaskHandler> DeferredTaskHandler::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return base::AdoptRef(new DeferredTaskHandler(std::move(task_runner)));
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    uint32_t render_quantum_frames) {
+  return base::AdoptRef(
+      new DeferredTaskHandler(std::move(task_runner), render_quantum_frames));
 }
 
 DeferredTaskHandler::~DeferredTaskHandler() = default;

@@ -135,6 +135,18 @@ float MaxAudioBufferSampleRate() {
   return 768000;
 }
 
+uint32_t GetClampedRenderQuantumFrames(uint32_t render_quantum_frames) {
+  constexpr uint32_t kMinRenderQuantumFrames = 1;
+  // 8192 was observed as an upper bound for hardware buffer sizes on desktop
+  // platforms, and is generally a "high" value for realtime audio.  Some
+  // Android devices may have very high hardware buffer sizes, and very high
+  // sample rates may also want higher buffer sizes, so this may need to be
+  // re-evaluated in the future.
+  constexpr uint32_t kMaxRenderQuantumFrames = 8192;
+  return ClampTo(render_quantum_frames, kMinRenderQuantumFrames,
+                 kMaxRenderQuantumFrames);
+}
+
 const std::string GetSinkIdForTracing(
     blink::WebAudioSinkDescriptor sink_descriptor) {
   std::string sink_id;

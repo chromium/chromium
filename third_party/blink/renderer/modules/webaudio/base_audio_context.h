@@ -330,7 +330,9 @@ class MODULES_EXPORT BaseAudioContext
  protected:
   enum class ContextType { kRealtimeContext, kOfflineContext };
 
-  explicit BaseAudioContext(LocalDOMWindow*, ContextType);
+  explicit BaseAudioContext(LocalDOMWindow*,
+                            ContextType,
+                            uint32_t render_quantum_frames);
 
   void Initialize();
   virtual void Uninitialize();

@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sink_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextlatencycategory_double.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextrendersizecategory_unsignedlong.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -1186,6 +1187,43 @@ TEST_F(AudioContextTest, SuspendingRunningContextWhileInterrupted) {
   renderer->Render(128, base::Milliseconds(0), {});
   platform()->RunUntilIdle();
   ExpectContextRunning(audio_context);
+}
+
+TEST_F(AudioContextTest, RenderSizeHint) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioConfigurableRenderQuantum", true);
+
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* context = AudioContext::Create(GetFrame().DomWindow(), options,
+                                               ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 128u);
+
+  options = AudioContextOptions::Create();
+  options->setRenderSizeHint(
+      MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
+          0u));
+  context = AudioContext::Create(GetFrame().DomWindow(), options,
+                                 ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 1u);
+
+  options = AudioContextOptions::Create();
+  options->setRenderSizeHint(
+      MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
+          8193u));
+  context = AudioContext::Create(GetFrame().DomWindow(), options,
+                                 ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 8192u);
+
+  options = AudioContextOptions::Create();
+  options->setRenderSizeHint(
+      MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
+          256u));
+  context = AudioContext::Create(GetFrame().DomWindow(), options,
+                                 ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 256u);
+
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "WebAudioConfigurableRenderQuantum", false);
 }
 
 }  // namespace blink

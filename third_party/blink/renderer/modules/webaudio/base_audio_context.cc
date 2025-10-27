@@ -135,14 +135,16 @@ void DecodeOnBackgroundThread(
 
 // Constructor for rendering to the audio hardware.
 BaseAudioContext::BaseAudioContext(LocalDOMWindow* window,
-                                   ContextType context_type)
+                                   ContextType context_type,
+                                   uint32_t render_quantum_frames)
     : ActiveScriptWrappable<BaseAudioContext>({}),
       ExecutionContextLifecycleStateObserver(window),
       InspectorHelperMixin(*AudioGraphTracer::FromWindow(*window), String()),
       destination_node_(nullptr),
       task_runner_(window->GetTaskRunner(TaskType::kInternalMedia)),
       deferred_task_handler_(DeferredTaskHandler::Create(
-          window->GetTaskRunner(TaskType::kInternalMedia))),
+          window->GetTaskRunner(TaskType::kInternalMedia),
+          render_quantum_frames)),
       periodic_wave_sine_(nullptr),
       periodic_wave_square_(nullptr),
       periodic_wave_sawtooth_(nullptr),

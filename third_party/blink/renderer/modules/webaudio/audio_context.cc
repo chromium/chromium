@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_timestamp.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextlatencycategory_double.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextrendersizecategory_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkinfo_string.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -406,9 +407,18 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   }
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
+  uint32_t render_quantum_frames = 128;
+  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
+      context_options->hasRenderSizeHint()) {
+    if (context_options->renderSizeHint()->IsUnsignedLong()) {
+      render_quantum_frames = audio_utilities::GetClampedRenderQuantumFrames(
+          context_options->renderSizeHint()->GetAsUnsignedLong());
+    }
+  }
+
   AudioContext* audio_context = MakeGarbageCollected<AudioContext>(
       window, latency_hint, sample_rate, sink_descriptor,
-      update_echo_cancellation_on_first_start);
+      update_echo_cancellation_on_first_start, render_quantum_frames);
   ++hardware_context_count;
   audio_context->UpdateStateIfNeeded();
 
@@ -448,8 +458,11 @@ AudioContext::AudioContext(LocalDOMWindow& window,
                            const WebAudioLatencyHint& latency_hint,
                            std::optional<float> sample_rate,
                            WebAudioSinkDescriptor sink_descriptor,
-                           bool update_echo_cancellation_on_first_start)
-    : BaseAudioContext(&window, ContextType::kRealtimeContext),
+                           bool update_echo_cancellation_on_first_start,
+                           uint32_t render_quantum_frames)
+    : BaseAudioContext(&window,
+                       ContextType::kRealtimeContext,
+                       render_quantum_frames),
       FrameVisibilityObserver(GetLocalFrame()),
       context_id_(context_id++),
       audio_context_manager_(&window),
