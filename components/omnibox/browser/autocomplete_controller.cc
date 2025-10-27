@@ -1406,7 +1406,8 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
   }
   if (provider_types & AutocompleteProvider::TYPE_FEATURED_SEARCH) {
     auto featured_search_provider =
-        base::MakeRefCounted<FeaturedSearchProvider>(provider_client_.get());
+        base::MakeRefCounted<FeaturedSearchProvider>(provider_client_.get(),
+                                                     config_.show_iph_matches);
     featured_search_provider_ = featured_search_provider.get();
     providers_.push_back(std::move(featured_search_provider));
   }

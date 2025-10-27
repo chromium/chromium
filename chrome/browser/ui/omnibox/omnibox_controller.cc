@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -39,6 +40,9 @@ OmniboxController::OmniboxController(
           view)) {
   AutocompleteControllerConfig autocomplete_controller_config{
       .provider_types = AutocompleteClassifier::DefaultOmniboxProviders()};
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+    autocomplete_controller_config.show_iph_matches = false;
+  }
   if (autocomplete_stop_timer_duration.has_value()) {
     autocomplete_controller_config.stop_timer_duration =
         autocomplete_stop_timer_duration.value();

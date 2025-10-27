@@ -186,11 +186,12 @@ bool IsEnterpriseSearchAggregatorTemplateURLEnabled(const TemplateURL& turl,
 }  // namespace
 
 FeaturedSearchProvider::FeaturedSearchProvider(
-    AutocompleteProviderClient* client)
+    AutocompleteProviderClient* client,
+    bool show_iph_matches)
     : AutocompleteProvider(AutocompleteProvider::TYPE_FEATURED_SEARCH),
-      client_(client) {
-  template_url_service_ = client->GetTemplateURLService();
-}
+      client_(client),
+      template_url_service_(client->GetTemplateURLService()),
+      show_iph_matches_(show_iph_matches) {}
 
 void FeaturedSearchProvider::Start(const AutocompleteInput& input,
                                    bool minimal_changes) {
@@ -206,7 +207,7 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
       keyword_turl && keyword_turl->starter_pack_id() ==
                           template_url_starter_pack_data::kHistory;
 
-  if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
+  if (show_iph_matches_) {
     if (is_history_scope) {
       if (ShouldShowHistoryEmbeddingsDisclaimerIphMatch()) {
         AddHistoryEmbeddingsDisclaimerIphMatch();
@@ -372,7 +373,7 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
                                          const GURL& iph_link_url,
                                          int relevance,
                                          bool deletable) {
-  CHECK(!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup));
+  CHECK(show_iph_matches_);
   AutocompleteMatch match(this, relevance, deletable,
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
 

@@ -103,7 +103,8 @@ class FeaturedSearchProviderTest : public testing::Test {
         .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
         .WillRepeatedly(testing::Return(true));
-    provider_ = new FeaturedSearchProvider(client_.get());
+    provider_ =
+        new FeaturedSearchProvider(client_.get(), /*show_iph_matches=*/true);
     omnibox::RegisterProfilePrefs(
         static_cast<sync_preferences::TestingPrefServiceSyncable*>(
             client_->GetPrefs())
@@ -993,7 +994,8 @@ TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
 
   // Start a new session, should see an IPH 3 more times. But not the same IPH
   // as before, since it already consumed its limit.
-  provider_ = new FeaturedSearchProvider(client_.get());
+  provider_ =
+      new FeaturedSearchProvider(client_.get(), /*show_iph_matches=*/true);
   {
     SCOPED_TRACE("");
     test(input, {IphType::kHistoryScopePromo});
