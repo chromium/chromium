@@ -212,8 +212,8 @@ export class VoiceLanguageController {
     // If there are no Google TTS locales for this language then enable the
     // first available locale for this language.
     if (!localeToEnable) {
-      localeToEnable =
-          this.getAvailableLangs().find(l => l.startsWith(availableLang));
+      localeToEnable = this.getAvailableLangs().find(
+          l => l.toLowerCase().startsWith(availableLang));
     }
 
     // Enable the locales so we can select a voice for the given language and
@@ -780,8 +780,9 @@ export class VoiceLanguageController {
     if (!voicesForLanguage.length) {
       // Stay with the current voice if no voices are available for this
       // language.
-      return this.getCurrentVoice() ?
-          this.getCurrentVoice() :
+      const currentVoice = this.getCurrentVoice();
+      return currentVoice && this.isVoiceAvailable(currentVoice) ?
+          currentVoice :
           getNaturalVoiceOrDefault(allPossibleVoices);
     }
 

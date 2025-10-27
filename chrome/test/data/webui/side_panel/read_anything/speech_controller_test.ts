@@ -403,6 +403,9 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    const voice = createSpeechSynthesisVoice({lang: 'en', name: 'Google Og'});
+    speech.setVoices([voice]);
+    voiceLanguageController.setUserPreferredVoice(voice);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
 
@@ -429,6 +432,9 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    const voice = createSpeechSynthesisVoice({lang: 'en', name: 'Google Og'});
+    speech.setVoices([voice]);
+    voiceLanguageController.setUserPreferredVoice(voice);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
 
@@ -454,6 +460,9 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    const voice = createSpeechSynthesisVoice({lang: 'en', name: 'Google Og'});
+    speech.setVoices([voice]);
+    voiceLanguageController.setUserPreferredVoice(voice);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
@@ -479,6 +488,9 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    const voice = createSpeechSynthesisVoice({lang: 'en', name: 'Google Og'});
+    speech.setVoices([voice]);
+    voiceLanguageController.setUserPreferredVoice(voice);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
@@ -506,6 +518,9 @@ suite('SpeechController', () => {
     const pageLanguage = 'es';
     setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
+    const voice = createSpeechSynthesisVoice({lang: 'en', name: 'Google Og'});
+    speech.setVoices([voice]);
+    voiceLanguageController.setUserPreferredVoice(voice);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
