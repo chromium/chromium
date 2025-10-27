@@ -98,6 +98,13 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
           matching_reused_credentials,
       bool password_field_exists);
 
+  // Starts a request to check if the current page is a potential phishing site
+  // for one time password filling.
+  virtual void MaybeStartOtpPhishingRequest(
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      OtpPhishingVerdictCallback callback);
+
   // Records a Chrome Sync event that sync password reuse was detected.
   virtual void MaybeLogPasswordReuseDetectedEvent(
       content::WebContents* web_contents) = 0;

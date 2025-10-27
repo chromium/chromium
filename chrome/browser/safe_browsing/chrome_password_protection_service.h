@@ -469,6 +469,8 @@ class ChromePasswordProtectionService
                            VerifyIsInExcludedCountry);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyAlertModeForEnterprisePasswordEntryPing);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyUserPopulationForOtpPing);
 
  private:
   friend class MockChromePasswordProtectionService;

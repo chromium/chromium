@@ -1600,7 +1600,9 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
     return false;
   }
   bool extended_reporting_enabled = IsExtendedReporting();
-  if (trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
+  if (trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
+      trigger_type ==
+          LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
     // Don't send a ping if the password protection setting is off
     if (GetPasswordProtectionWarningTriggerPref(password_type) ==
         PASSWORD_PROTECTION_OFF) {
@@ -1611,18 +1613,24 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
       return false;
     }
     // If the account type is UNKNOWN (i.e. AccountInfo fields could not be
-    // retrieved from server), pings should be gated by SBER.
-    if (password_type.account_type() == ReusedPasswordAccountType::UNKNOWN) {
+    // retrieved from server) and it's not an OTP ping, pings should be gated by
+    // SBER.
+    if (password_type.account_type() == ReusedPasswordAccountType::UNKNOWN &&
+        trigger_type !=
+            LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
       return extended_reporting_enabled;
     }
 
 // Only saved password and GAIA password reuse warnings are shown to users on
 // Android, so other types of password reuse events should be gated by Safe
-// Browsing extended reporting.
+// Browsing extended reporting. OTP pings are also not gated by Safe Browsing
+// extended reporting.
 #if BUILDFLAG(IS_ANDROID)
     if (password_type.account_type() ==
             ReusedPasswordAccountType::SAVED_PASSWORD ||
-        password_type.account_type() == ReusedPasswordAccountType::GMAIL) {
+        password_type.account_type() == ReusedPasswordAccountType::GMAIL ||
+        trigger_type ==
+            LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
       return true;
     }
 

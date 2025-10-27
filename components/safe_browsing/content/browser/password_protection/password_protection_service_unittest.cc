@@ -467,6 +467,23 @@ class PasswordProtectionServiceBaseTest
     request_->Start();
   }
 
+  void InitializeAndStartOtpRequest(bool match_allowlist,
+                                    int timeout_in_ms,
+                                    content::WebContents* web_contents) {
+    GURL target_url(kTargetUrl);
+    EXPECT_CALL(*database_manager_, CheckCsdAllowlistUrl(target_url, _))
+        .WillRepeatedly(
+            Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
+
+    request_ = new PasswordProtectionRequestContent(
+        web_contents, target_url, GURL(), GURL(),
+        web_contents->GetContentsMimeType(), "",
+        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED, false,
+        password_protection_service_.get(), timeout_in_ms);
+    request_->Start();
+  }
+
   void CacheVerdict(const GURL& url,
                     LoginReputationClientRequest::TriggerType trigger,
                     ReusedPasswordAccountType password_type,
@@ -1195,6 +1212,24 @@ TEST_P(PasswordProtectionServiceBaseTest,
   histograms_.ExpectTotalCount(kNonSyncPasswordEntryVerdictHistogram, 0);
 }
 
+TEST_P(PasswordProtectionServiceBaseTest, TestOtpRequestAndResponseSuccessful) {
+  // Set up valid response.
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+
+  InitializeAndStartOtpRequest(/*match_allowlist=*/false,
+                               /*timeout_in_ms=*/10000, web_contents.get());
+  password_protection_service_->WaitForResponse();
+
+  LoginReputationClientResponse* actual_response =
+      password_protection_service_->latest_response();
+  EXPECT_EQ(expected_response.verdict_type(), actual_response->verdict_type());
+}
+
 TEST_P(PasswordProtectionServiceBaseTest, TestTearDownWithPendingRequests) {
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestOutcomeHistogram, 0);
   GURL target_url(kTargetUrl);
@@ -1342,6 +1377,29 @@ TEST_P(PasswordProtectionServiceBaseTest,
 #endif
 }
 
+TEST_P(PasswordProtectionServiceBaseTest, VerifyOtpRequestProto) {
+  // Set up valid response.
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+
+  InitializeAndStartOtpRequest(/*match_allowlist=*/false,
+                               /*timeout_in_ms=*/10000, web_contents.get());
+  password_protection_service_->WaitForResponse();
+
+  const LoginReputationClientRequest* actual_request =
+      password_protection_service_->GetLatestRequestProto();
+  EXPECT_EQ(kTargetUrl, actual_request->page_url());
+  EXPECT_EQ(LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+            actual_request->trigger_type());
+  ASSERT_EQ(1, actual_request->frames_size());
+  EXPECT_EQ(kTargetUrl, actual_request->frames(0).url());
+  EXPECT_EQ(false, actual_request->frames(0).has_password_field());
+}
+
 TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   EXPECT_CALL(*password_protection_service_,
               GetPasswordProtectionWarningTriggerPref(_))
@@ -1362,6 +1420,11 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   reused_password_account_type.set_is_account_syncing(true);
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+      reused_password_account_type, LoginReputationClientResponse::PHISHING));
+
+  reused_password_account_type.set_is_account_syncing(true);
+  EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
 
   reused_password_account_type.set_account_type(
@@ -1464,6 +1527,28 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
 #endif
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
+}
+
+TEST_P(PasswordProtectionServiceBaseTest,
+       VerifyShouldRunOtpPhishingVerdictCallback) {
+  // Case 1: Trigger type is ONE_TIME_PASSWORD_FIELD_DETECTED and callback is
+  // set.
+  password_protection_service_->otp_phishing_verdict_callback_.emplace(
+      base::DoNothing());
+  EXPECT_TRUE(password_protection_service_->ShouldRunOtpPhishingVerdictCallback(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
+
+  // Case 2: Trigger type is not ONE_TIME_PASSWORD_FIELD_DETECTED.
+  EXPECT_FALSE(
+      password_protection_service_->ShouldRunOtpPhishingVerdictCallback(
+          LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  // Case 3: Trigger type is ONE_TIME_PASSWORD_FIELD_DETECTED but callback is
+  // not set.
+  password_protection_service_->otp_phishing_verdict_callback_.reset();
+  EXPECT_FALSE(
+      password_protection_service_->ShouldRunOtpPhishingVerdictCallback(
+          LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, VerifyContentTypeIsPopulated) {

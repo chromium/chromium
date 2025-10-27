@@ -114,6 +114,41 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
   }
 }
 
+void PasswordProtectionService::MaybeStartOtpPhishingRequest(
+    content::WebContents* web_contents,
+    const GURL& main_frame_url,
+    OtpPhishingVerdictCallback callback) {
+  otp_phishing_verdict_callback_.emplace(std::move(callback));
+
+  // OTP detection is not tied to a specific password field.
+  scoped_refptr<PasswordProtectionRequest> request(
+      new PasswordProtectionRequestContent(
+          web_contents, main_frame_url, /*password_form_action=*/GURL(),
+          /*password_form_frame_url=*/GURL(),
+          web_contents->GetContentsMimeType(), /*username=*/"",
+          PasswordType::PASSWORD_TYPE_UNKNOWN,
+          /*matching_reused_credentials=*/{},
+          LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+          /*password_field_exists=*/false, this, GetRequestTimeoutInMS()));
+
+  ReusedPasswordAccountType reused_password_account_type =
+      GetPasswordProtectionReusedPasswordAccountType(
+          PasswordType::PASSWORD_TYPE_UNKNOWN,
+          /*username=*/"");
+  if (CanSendPing(
+          LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+          main_frame_url, reused_password_account_type)) {
+    StartRequestInternal(std::move(request));
+  } else {
+    LogNoPingingReason(
+        LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+        GetPingNotSentReason(
+            LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+            main_frame_url, reused_password_account_type),
+        reused_password_account_type);
+  }
+}
+
 void PasswordProtectionService::StartRequest(
     WebContents* web_contents,
     const GURL& main_frame_url,

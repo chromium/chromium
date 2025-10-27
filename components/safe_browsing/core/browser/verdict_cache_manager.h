@@ -214,6 +214,16 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // all verdicts associated with the deleted URLs in |deleted_rows|.
   void RemoveContentSettingsOnURLsDeleted(bool all_history,
                                           const history::URLRows& deleted_rows);
+
+  // Removes expired verdicts from a sub-dictionary within the
+  // `cache_dictionary`.
+  void RemoveExpiredVerdictsFromSubDict(
+      base::Value::Dict& cache_dictionary,
+      const char* sub_dict_key,
+      std::optional<size_t>& stored_verdict_count,
+      size_t& verdicts_removed,
+      std::vector<std::string>& keys_to_remove);
+
   bool RemoveExpiredPhishGuardVerdicts(
       LoginReputationClientRequest::TriggerType trigger_type,
       base::Value::Dict& cache_dictionary);
@@ -226,6 +236,11 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   size_t GetPhishGuardVerdictCountForURL(
       const GURL& url,
+      LoginReputationClientRequest::TriggerType trigger_type);
+
+  // Given a trigger type, return a pointer to the corresponding stored verdict
+  // count.
+  std::optional<size_t>* GetStoredVerdictCountForTrigger(
       LoginReputationClientRequest::TriggerType trigger_type);
 
   // This adds a cached verdict for a URL that has artificially been marked as
@@ -274,12 +289,15 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // run.
   static void ResetHasArtificialCachedUrlForTesting();
 
-  // Number of verdict stored for this profile for password on focus pings.
+  // Number of verdicts stored for this profile for password on focus pings.
   std::optional<size_t> stored_verdict_count_password_on_focus_;
 
-  // Number of verdict stored for this profile for protected password entry
+  // Number of verdicts stored for this profile for protected password entry
   // pings.
   std::optional<size_t> stored_verdict_count_password_entry_;
+
+  // Number of verdicts stored for this profile for one time password pings.
+  std::optional<size_t> stored_verdict_count_one_time_password_;
 
   // Whether there might be any verdicts stored for this profile for real time
   // url check pings. This property is an optimization to avoid unneeded

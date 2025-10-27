@@ -225,6 +225,30 @@ TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedVerdict) {
                 password_type, &cached_verdict));
 }
 
+TEST_F(VerdictCacheManagerTest, TestCanRetrieveCachedOtpVerdict) {
+  GURL url("https://www.google.com/");
+  ReusedPasswordAccountType password_type;
+  password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
+  LoginReputationClientResponse cached_verdict;
+  cached_verdict.set_cache_expression("www.google.com/");
+  EXPECT_EQ(
+      LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+      cache_manager_->GetCachedPhishGuardVerdict(
+          url, LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+          password_type, &cached_verdict));
+
+  CachePhishGuardVerdict(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      password_type, LoginReputationClientResponse::SAFE, 60, "www.google.com/",
+      base::Time::Now());
+
+  EXPECT_EQ(
+      LoginReputationClientResponse::SAFE,
+      cache_manager_->GetCachedPhishGuardVerdict(
+          url, LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+          password_type, &cached_verdict));
+}
+
 TEST_F(VerdictCacheManagerTest, TestCacheSplitByTriggerType) {
   GURL url("https://www.google.com/");
   ReusedPasswordAccountType password_type;
@@ -343,7 +367,10 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
   ASSERT_EQ(0u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
-  // Prepare 5 verdicts. Three are for origin "http://foo.com", and the others
+  ASSERT_EQ(
+      0u, cache_manager_->GetStoredPhishGuardVerdictCount(
+              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
+  // Prepare 6 verdicts. Three are for origin "http://foo.com", and the others
   // are for "http://bar.com".
   base::Time now = base::Time::Now();
   ReusedPasswordAccountType password_type;
@@ -373,6 +400,15 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
   ASSERT_EQ(2u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 
+  password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
+  CachePhishGuardVerdict(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      password_type, LoginReputationClientResponse::PHISHING, 600, "bar.com",
+      now);
+  ASSERT_EQ(
+      1u, cache_manager_->GetStoredPhishGuardVerdictCount(
+              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
+
   // Delete a bar.com URL. Corresponding content setting keyed on
   // origin "http://bar.com" should be removed,
   history::URLRows deleted_urls;
@@ -388,6 +424,9 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
   EXPECT_EQ(1u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  EXPECT_EQ(
+      0u, cache_manager_->GetStoredPhishGuardVerdictCount(
+              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
 
   LoginReputationClientResponse actual_verdict;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -411,6 +450,9 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
   EXPECT_EQ(0u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  EXPECT_EQ(
+      0u, cache_manager_->GetStoredPhishGuardVerdictCount(
+              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
 }
 
 // TODO(crbug.com/40203584): This test is flaky on device.
@@ -456,6 +498,22 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
   ASSERT_EQ(2u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 
+  // Prepare 2 verdicts for ONE_TIME_PASSWORD_FIELD_DETECTED:
+  // (1) "otp.com/def/" valid
+  // (2) "otp.com/xyz/" expired
+  password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
+  CachePhishGuardVerdict(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      password_type, LoginReputationClientResponse::SAFE, 600, "otp.com/def/",
+      now);
+  CachePhishGuardVerdict(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      password_type, LoginReputationClientResponse::PHISHING, 0, "otp.com/xyz/",
+      now);
+  ASSERT_EQ(
+      2u, cache_manager_->GetStoredPhishGuardVerdictCount(
+              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
+
   // Prepare 2 verdicts for SAFE_BROWSING_URL_CHECK_DATA:
   // (1) "www.example.com/" expired
   // (2) "www.example.com/path" valid
@@ -496,6 +554,9 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
                     LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
   ASSERT_EQ(1u, cache_manager_->GetStoredPhishGuardVerdictCount(
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  ASSERT_EQ(
+      1u, cache_manager_->GetStoredPhishGuardVerdictCount(
+              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
   ASSERT_EQ(1u, GetStoredRealTimeUrlCheckVerdictCount());
   LoginReputationClientResponse actual_verdict;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -537,6 +598,20 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
             cache_manager_->GetCachedPhishGuardVerdict(
                 GURL("https://bar.com/xyz/index.jsp"),
                 LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+                password_type, &actual_verdict));
+
+  // Has cached ONE_TIME_PASSWORD_FIELD_DETECTED verdict for otp.com/def.
+  EXPECT_EQ(LoginReputationClientResponse::SAFE,
+            cache_manager_->GetCachedPhishGuardVerdict(
+                GURL("https://otp.com/def/index.jsp"),
+                LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+                password_type, &actual_verdict));
+
+  // No cached ONE_TIME_PASSWORD_FIELD_DETECTED verdict for otp.com/xyz.
+  EXPECT_EQ(LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+            cache_manager_->GetCachedPhishGuardVerdict(
+                GURL("https://otp.com/xyz/index.jsp"),
+                LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
                 password_type, &actual_verdict));
 
   RTLookupResponse::ThreatInfo actual_real_time_threat_info;

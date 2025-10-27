@@ -112,6 +112,10 @@ class MockPasswordProtectionService : public PasswordProtectionService {
            PasswordType,
            const std::vector<password_manager::MatchingReusedCredential>&,
            bool));
+  MOCK_METHOD3(MaybeStartOtpPhishingRequest,
+               void(content::WebContents*,
+                    const GURL&,
+                    OtpPhishingVerdictCallback));
 };
 
 }  // namespace safe_browsing

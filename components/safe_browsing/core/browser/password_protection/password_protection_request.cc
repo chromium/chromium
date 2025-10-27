@@ -99,7 +99,9 @@ PasswordProtectionRequest::PasswordProtectionRequest(
   DCHECK(this->ui_task_runner()->RunsTasksInCurrentSequence());
 
   DCHECK(trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
-         trigger_type_ == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
+         trigger_type_ == LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
+         trigger_type_ ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED);
   DCHECK(trigger_type_ != LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
          password_type_ != PasswordType::SAVED_PASSWORD ||
          !matching_reused_credentials_.empty());
@@ -233,6 +235,10 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   switch (trigger_type_) {
+    case LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED: {
+      // No additional fields need to be set.
+      break;
+    }
     case LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE: {
       LoginReputationClientRequest::Frame::Form* password_form;
       if (password_form_frame_url_ == main_frame_url_) {
@@ -441,6 +447,9 @@ void PasswordProtectionRequest::Finish(
                                                              username_);
     if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
       LogPasswordOnFocusRequestOutcome(outcome);
+    } else if (trigger_type_ ==
+               LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
+      // TODO(crbug.com/415273169): Log metrics.
     } else {
       LogPasswordEntryRequestOutcome(outcome, password_account_type);
 

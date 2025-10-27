@@ -190,10 +190,15 @@ void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
                         RequestOutcome reason,
                         ReusedPasswordAccountType password_account_type) {
   DCHECK(trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE ||
-         trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT);
+         trigger_type == LoginReputationClientRequest::PASSWORD_REUSE_EVENT ||
+         trigger_type ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED);
 
   if (trigger_type == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
     UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, reason);
+  } else if (trigger_type ==
+             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
+    // TODO(crbug.com/415273169): Add metrics.
   } else {
     LogPasswordEntryRequestOutcome(reason, password_account_type);
   }
@@ -270,6 +275,9 @@ void LogPasswordProtectionVerdict(
             verdict_type,
             (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       }
+      break;
+    case LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED:
+      // TODO(crbug.com/415273169): Add metrics.
       break;
     default:
       NOTREACHED();

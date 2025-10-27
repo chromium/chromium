@@ -331,6 +331,21 @@ TEST_F(ChromePasswordProtectionServiceTest,
   EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
 }
 
+// OTP pinging is disabled on iOS because OTP integration on iOS is not yet
+// supported.
+TEST_F(ChromePasswordProtectionServiceTest, VerifyUserPopulationForOtpPing) {
+  LoginReputationClientRequest::TriggerType trigger_type =
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED;
+  ReusedPasswordAccountType reused_password_type;
+  reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
+
+  service_->SetIsIncognito(false);
+  EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
+
+  service_->SetIsIncognito(true);
+  EXPECT_FALSE(service_->IsPingingEnabled(trigger_type, reused_password_type));
+}
+
 // Sync password entry pinging is not yet enabled for iOS.
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyUserPopulationForSyncPasswordEntryPing) {

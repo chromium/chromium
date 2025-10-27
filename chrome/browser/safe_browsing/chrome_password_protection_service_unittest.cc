@@ -548,22 +548,26 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // Password field on focus pinging is enabled on !incognito && (SBER ||
   // enhanced protection).
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
       reused_password_type));
 
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
       reused_password_type));
 
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
       reused_password_type));
 
-  service_->ConfigService(true /*incognito*/, true /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
       reused_password_type));
@@ -575,22 +579,26 @@ TEST_F(ChromePasswordProtectionServiceTest,
   reused_password_type.set_account_type(
       ReusedPasswordAccountType::SAVED_PASSWORD);
 
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(true /*incognito*/, true /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
@@ -601,24 +609,28 @@ TEST_F(ChromePasswordProtectionServiceTest,
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PHISHING_REUSE);
 
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
@@ -633,17 +645,20 @@ TEST_F(ChromePasswordProtectionServiceTest,
   reused_password_type.set_is_account_syncing(true);
 
   // Sync password entry pinging is enabled by default.
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
 
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
@@ -651,7 +666,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // Even if sync password entry pinging is disabled by policy,
   // |IsPingingEnabled(..)| should still default to true if the
   // the password reuse type is syncing Gmail account.
-  service_->ConfigService(true /*incognito*/, true /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   service_->SetIsNoHostedDomainFound(true);
   EXPECT_TRUE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
@@ -659,7 +675,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                     PASSWORD_PROTECTION_OFF);
-  service_->ConfigService(false /*incognito*/, false /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_type));
@@ -689,6 +706,33 @@ TEST_F(ChromePasswordProtectionServiceTest,
                           /*is_extended_reporting=*/true);
   EXPECT_FALSE(service_->IsPingingEnabled(
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      reused_password_type));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, VerifyUserPopulationForOtpPing) {
+  ReusedPasswordAccountType reused_password_type;
+  service_->ConfigService(false /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
+  EXPECT_TRUE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      reused_password_type));
+
+  service_->ConfigService(false /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
+  EXPECT_TRUE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      reused_password_type));
+
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
+  EXPECT_TRUE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+      reused_password_type));
+
+  service_->ConfigService(true /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
+  EXPECT_TRUE(service_->IsPingingEnabled(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
       reused_password_type));
 }
 
@@ -1349,7 +1393,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
   // If user is in incognito mode, no event should be sent.
   EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   service_->OnGaiaPasswordChanged("foo@example.com", false);
   base::RunLoop().RunUntilIdle();
 
@@ -1517,7 +1562,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
 #endif
   // If user is in incognito mode, no event should be sent.
-  service_->ConfigService(true /*incognito*/, false /*SBER*/);
+  service_->ConfigService(true /*is_incognito=*/,
+                          false /*is_extended_reporting=*/);
   EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::ENTERPRISE_PASSWORD,
@@ -1716,7 +1762,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifySendsPingForAboutBlank) {
   ReusedPasswordAccountType reused_password_type;
   reused_password_type.set_account_type(
       ReusedPasswordAccountType::SAVED_PASSWORD);
-  service_->ConfigService(false /*incognito*/, true /*SBER*/);
+  service_->ConfigService(false /*is_incognito=*/,
+                          true /*is_extended_reporting=*/);
   EXPECT_TRUE(
       service_->CanSendPing(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                             GURL("about:blank"), reused_password_type));
@@ -1726,7 +1773,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   {
     // SBER disabled.
     ReusedPasswordAccountType reused_password_type;
-    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    service_->ConfigService(false /*is_incognito=*/,
+                            false /*is_extended_reporting=*/);
     EXPECT_EQ(RequestOutcome::DISABLED_DUE_TO_USER_POPULATION,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
@@ -1740,7 +1788,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   {
     // In Incognito.
     ReusedPasswordAccountType reused_password_type;
-    service_->ConfigService(true /*incognito*/, true /*SBER*/);
+    service_->ConfigService(true /*is_incognito=*/,
+                            true /*is_extended_reporting=*/);
     EXPECT_EQ(RequestOutcome::DISABLED_DUE_TO_INCOGNITO,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
@@ -1749,7 +1798,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   {
     // Turned off by admin.
     ReusedPasswordAccountType reused_password_type;
-    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    service_->ConfigService(false /*is_incognito=*/,
+                            false /*is_extended_reporting=*/);
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PASSWORD_PROTECTION_OFF);
@@ -1767,7 +1817,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   {
     // Allowlisted by policy.
     ReusedPasswordAccountType reused_password_type;
-    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    service_->ConfigService(false /*is_incognito=*/,
+                            false /*is_extended_reporting=*/);
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PHISHING_REUSE);
@@ -1784,7 +1835,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   {
     // Password alert mode.
     ReusedPasswordAccountType reused_password_type;
-    service_->ConfigService(false /*incognito*/, false /*SBER*/);
+    service_->ConfigService(false /*is_incognito=*/,
+                            false /*is_extended_reporting=*/);
     reused_password_type.set_account_type(ReusedPasswordAccountType::UNKNOWN);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PASSWORD_REUSE);
@@ -1798,7 +1850,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   {
     // Internal URL
     ReusedPasswordAccountType reused_password_type;
-    service_->ConfigService(false /*incognito*/, true /*SBER*/);
+    service_->ConfigService(false /*is_incognito=*/,
+                            true /*is_extended_reporting=*/);
     EXPECT_EQ(RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
