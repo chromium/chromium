@@ -243,17 +243,19 @@ public class MiniOriginBarController implements Observer {
         boolean finishedShowing = newMiniOriginState == MiniOriginState.SHOWING;
         mMiniOriginBarState = newMiniOriginState;
 
-        if (finishedShowing) {
-            setMinimizationProgress(1.0f);
+        if (!isChangingVisibility) {
+            if (finishedShowing) setMinimizationProgress(1.0f);
+            return;
         }
-
-        if (!isChangingVisibility) return;
 
         if (isMiniOriginBarVisibleForState(newMiniOriginState)) {
             // Cache the location bar's layout params now, since we are about to mutate them.
             mDefaultLocationBarLayoutParams =
                     (FrameLayout.LayoutParams) mLocationBar.getContainerView().getLayoutParams();
             showMiniOriginBar();
+            if (finishedShowing) {
+                setMinimizationProgress(1.0f);
+            }
         } else {
             hideMiniOriginBar();
         }

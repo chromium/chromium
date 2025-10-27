@@ -1064,12 +1064,22 @@ class ManualFillingMediator
     }
 
     private @Px int getBarHeightWithoutShadow() {
-        return mActivity
-                .getResources()
-                .getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+            return mActivity
+                    .getResources()
+                    .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
+        }
+        return mActivity.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_height);
     }
 
     private @Px int getHeaderHeight() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+            return mActivity
+                    .getResources()
+                    .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow_redesign);
+        }
         return mActivity
                 .getResources()
                 .getDimensionPixelSize(R.dimen.keyboard_accessory_height_with_shadow);

@@ -123,7 +123,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({
     ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_SUPPRESS_ACCESSORY_ON_EMPTY,
-    ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP
+    ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,
+    ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN
 })
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
@@ -1700,6 +1701,8 @@ public class ManualFillingControllerTest {
         when(mLastMockWebContents.getWidth()).thenReturn(widthDp);
         // Return the correct keyboard_accessory_height for the current density:
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_suggestion_height))
+                .thenReturn((int) (density * 48));
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
                 .thenReturn((int) (density * 48));
     }
 

@@ -969,7 +969,8 @@ public class ToolbarPositionControllerTest {
         verify(mControlContainerView).setTranslationY(baseTranslation);
 
         final int chinHeight = 36;
-        int keybpardAccessoryHeight = 100;
+        int keyboardAccessoryHeight = 100;
+        mKeyboardAccessoryHeightSupplier.set(keyboardAccessoryHeight);
         mBottomControlsStacker.addLayer(
                 new BottomControlsLayer() {
                     @Override
@@ -993,16 +994,11 @@ public class ToolbarPositionControllerTest {
                     }
                 });
         mBottomControlsStacker.requestLayerUpdate(false);
-        mKeyboardAccessoryHeightSupplier.set(keybpardAccessoryHeight);
-        verify(mControlContainerView)
-                .setTranslationY(baseTranslation - keybpardAccessoryHeight + chinHeight);
-        assertEquals(
-                baseTranslation - keybpardAccessoryHeight + chinHeight,
-                mBottomToolbarOffsetSupplier.get().intValue());
+        toolbarLayer.onBrowserControlsOffsetUpdate(baseTranslation);
+        verify(mControlContainerView).setTranslationY(baseTranslation + chinHeight);
+        assertEquals(baseTranslation + chinHeight, mBottomToolbarOffsetSupplier.get().intValue());
 
         mKeyboardAccessoryHeightSupplier.set(0);
-        verify(mControlContainerView, times(2)).setTranslationY(baseTranslation);
-
         mControlContainerTranslationSupplier.set(10);
         verify(mControlContainerView).setTranslationY(baseTranslation + 10);
         assertEquals(baseTranslation + 10, mBottomToolbarOffsetSupplier.get().intValue());
@@ -1010,6 +1006,18 @@ public class ToolbarPositionControllerTest {
         mControlContainerTranslationSupplier.set(20);
         verify(mControlContainerView).setTranslationY(baseTranslation + 20);
         assertEquals(baseTranslation + 20, mBottomToolbarOffsetSupplier.get().intValue());
+    }
+
+    @Test
+    public void testKeyboardAccessoryHeight() {
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
+        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
+        assertControlsAtBottom();
+        int keyboardAccessoryHeight = 100;
+        mKeyboardAccessoryHeightSupplier.set(keyboardAccessoryHeight);
+
+        assertEquals(100, mControlContainerLayoutParams.bottomMargin);
     }
 
     @Test
