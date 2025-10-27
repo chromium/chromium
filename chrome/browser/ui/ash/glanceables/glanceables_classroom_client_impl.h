@@ -19,12 +19,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_course_work_item.h"
 #include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 
-class Profile;
+class PolicyBlocklistService;
+class PrefService;
 
 namespace base {
 class Clock;
@@ -58,7 +60,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
       const GlanceablesClassroomCourseWorkItem* rhs)>;
 
   GlanceablesClassroomClientImpl(
-      Profile* profile,
+      PrefService* pref_service,
+      apps::AppServiceProxy* app_service_proxy,
+      PolicyBlocklistService* policy_blocklist_service,
       base::Clock* clock,
       const CreateRequestSenderCallback& create_request_sender_callback);
   GlanceablesClassroomClientImpl(const GlanceablesClassroomClientImpl&) =
@@ -391,8 +395,9 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
-  // The profile for which this instance was created.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   // Clock to be used to retrieve current time - expected to be default clock in
   // production.

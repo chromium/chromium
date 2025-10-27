@@ -11,9 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
@@ -71,10 +68,20 @@ constexpr net::NetworkTrafficAnnotationTag kCalendarTrafficAnnotation =
 
 }  // namespace
 
-CalendarKeyedService::CalendarKeyedService(Profile* profile,
-                                           const AccountId& account_id)
-    : profile_(profile), account_id_(account_id), calendar_client_(profile) {
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
+CalendarKeyedService::CalendarKeyedService(
+    const AccountId& account_id,
+    PrefService* pref_service,
+    apps::AppServiceProxy* app_service_proxy,
+    PolicyBlocklistService* policy_blocklist_service,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : account_id_(account_id),
+      calendar_client_(pref_service,
+                       app_service_proxy,
+                       policy_blocklist_service,
+                       this),
+      identity_manager_(identity_manager),
+      url_loader_factory_(std::move(url_loader_factory)) {
   // Instance check for tests.
   if (Shell::HasInstance()) {
     Shell::Get()->calendar_controller()->RegisterClientForUser(
@@ -90,7 +97,6 @@ CalendarKeyedService::~CalendarKeyedService() {
 void CalendarKeyedService::Initialize() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  url_loader_factory_ = profile_->GetURLLoaderFactory();
   sender_ = std::make_unique<RequestSender>(
       std::make_unique<google_apis::AuthService>(
           identity_manager_,

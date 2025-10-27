@@ -15,12 +15,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/tasks/tasks_api_requests.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/models/list_model.h"
 
-class Profile;
+class PolicyBlocklistService;
+class PrefService;
 
 namespace base {
 class Time;
@@ -50,7 +52,9 @@ class TasksClientImpl : public TasksClient {
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   TasksClientImpl(
-      Profile* profile,
+      PrefService* pref_service,
+      apps::AppServiceProxy* app_service_proxy,
+      PolicyBlocklistService* policy_blocklist_service,
       const CreateRequestSenderCallback& create_request_sender_callback,
       net::NetworkTrafficAnnotationTag traffic_annotation_tag);
   TasksClientImpl(const TasksClientImpl&) = delete;
@@ -249,8 +253,9 @@ class TasksClientImpl : public TasksClient {
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();
 
-  // The profile for which this instance was created.
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.

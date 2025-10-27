@@ -10,16 +10,23 @@
 #include "ash/calendar/calendar_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "google_apis/calendar/calendar_api_requests.h"
 
-class Profile;
+class PolicyBlocklistService;
+class PrefService;
 
 namespace ash {
+
+class CalendarKeyedService;
 
 // Implementation of the calendar browser client, one per multiprofile user.
 class CalendarClientImpl : public CalendarClient {
  public:
-  explicit CalendarClientImpl(Profile* profile);
+  CalendarClientImpl(PrefService* pref_service,
+                     apps::AppServiceProxy* app_service_proxy,
+                     PolicyBlocklistService* policy_blocklist_service,
+                     CalendarKeyedService* calendar_keyed_service);
   CalendarClientImpl(const CalendarClientImpl& other) = delete;
   CalendarClientImpl& operator=(const CalendarClientImpl& other) = delete;
   ~CalendarClientImpl() override;
@@ -40,7 +47,10 @@ class CalendarClientImpl : public CalendarClient {
       const std::string& calendar_color_id) override;
 
  private:
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<apps::AppServiceProxy> app_service_proxy_;
+  const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
+  const raw_ptr<CalendarKeyedService> calendar_keyed_service_;
 };
 
 }  // namespace ash

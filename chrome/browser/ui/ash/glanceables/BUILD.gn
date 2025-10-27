@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//google_apis",
