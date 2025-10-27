@@ -4,26 +4,34 @@
 
 #include "services/network/device_bound_session_manager.h"
 
+#include "base/barrier_callback.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_helpers.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "services/network/cookie_manager.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 
 namespace network {
 
 // static
 std::unique_ptr<DeviceBoundSessionManager> DeviceBoundSessionManager::Create(
-    net::device_bound_sessions::SessionService* service) {
+    net::device_bound_sessions::SessionService* service,
+    CookieManager* cookie_manager) {
   if (!service) {
     return nullptr;
   }
 
-  return base::WrapUnique(new DeviceBoundSessionManager(service));
+  return base::WrapUnique(
+      new DeviceBoundSessionManager(service, cookie_manager));
 }
 
 DeviceBoundSessionManager::DeviceBoundSessionManager(
-    net::device_bound_sessions::SessionService* service)
-    : service_(service) {}
+    net::device_bound_sessions::SessionService* service,
+    CookieManager* cookie_manager)
+    : service_(service), cookie_manager_(cookie_manager) {}
 
 DeviceBoundSessionManager::~DeviceBoundSessionManager() = default;
 
@@ -106,6 +114,59 @@ void DeviceBoundSessionManager::AddObserver(
                               OnDeviceBoundSessionAccessed,
                           base::Unretained(registration->remote.get())));
   observer_registrations_.push_back(std::move(registration));
+}
+
+void DeviceBoundSessionManager::CreateBoundSession(
+    net::device_bound_sessions::SessionParams params,
+    const std::vector<uint8_t>& wrapped_key,
+    const std::vector<net::CanonicalCookie>& cookies_to_set,
+    const net::CookieOptions& cookie_options,
+    CreateBoundSessionCallback callback) {
+  GURL fetcher_url = params.fetcher_url;
+  service_->AddSession(
+      net::SchemefulSite(fetcher_url), std::move(params), wrapped_key,
+      base::BindOnce(&DeviceBoundSessionManager::OnCreateBoundSessionAdded,
+                     weak_factory_.GetWeakPtr(), cookies_to_set, fetcher_url,
+                     cookie_options, std::move(callback)));
+}
+
+void DeviceBoundSessionManager::OnCreateBoundSessionAdded(
+    const std::vector<net::CanonicalCookie>& cookies_to_set,
+    const GURL& fetcher_url,
+    const net::CookieOptions& cookie_options,
+    CreateBoundSessionCallback callback,
+    bool session_success) {
+  if (!session_success) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (cookies_to_set.empty()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  auto final_callback = base::BindOnce(
+      [](CreateBoundSessionCallback callback,
+         std::vector<net::CookieAccessResult> results) {
+        bool all_successful = true;
+        for (const auto& result : results) {
+          if (!result.status.IsInclude()) {
+            all_successful = false;
+            break;
+          }
+        }
+        std::move(callback).Run(all_successful);
+      },
+      std::move(callback));
+
+  auto barrier_callback = base::BarrierCallback<net::CookieAccessResult>(
+      cookies_to_set.size(), std::move(final_callback));
+
+  for (const auto& cookie : cookies_to_set) {
+    cookie_manager_->SetCanonicalCookie(cookie, fetcher_url, cookie_options,
+                                        barrier_callback);
+  }
 }
 
 void DeviceBoundSessionManager::RemoveObserver(

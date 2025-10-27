@@ -4,14 +4,25 @@
 
 #include "services/network/device_bound_session_manager.h"
 
+#include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/unexportable_keys/unexportable_key_service_impl.h"
+#include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "net/base/schemeful_site.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_options.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
-#include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/session_service_impl.h"
 #include "net/device_bound_sessions/test_support.h"
+#include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/cookie_manager.h"
+#include "services/network/session_cleanup_cookie_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +37,7 @@ using net::device_bound_sessions::Session;
 using net::device_bound_sessions::SessionAccess;
 using net::device_bound_sessions::SessionKey;
 using net::device_bound_sessions::SessionParams;
-using net::device_bound_sessions::SessionService;
+using net::device_bound_sessions::SessionServiceImpl;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 
@@ -73,18 +84,52 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
  public:
   DeviceBoundSessionManagerTest()
       : context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        service_(SessionService::Create(context_.get())),
-        manager_(DeviceBoundSessionManager::Create(service_.get())) {}
+        unexportable_key_service_(task_manager_),
+        service_(std::make_unique<SessionServiceImpl>(unexportable_key_service_,
+                                                      context_.get(),
+                                                      /*store=*/nullptr)),
+        cookie_manager_(std::make_unique<CookieManager>(
+            context_.get(),
+            nullptr,
+            base::MakeRefCounted<SessionCleanupCookieStore>(
+                base::MakeRefCounted<net::SQLitePersistentCookieStore>(
+                    base::FilePath(),
+                    base::SingleThreadTaskRunner::GetCurrentDefault(),
+                    base::SingleThreadTaskRunner::GetCurrentDefault(),
+                    false,
+                    nullptr,
+                    false)),
+            nullptr,
+            nullptr)),
+        manager_(DeviceBoundSessionManager::Create(service_.get(),
+                                                   cookie_manager_.get())) {
+  }
 
   DeviceBoundSessionManager& manager() { return *manager_; }
+  CookieManager& cookie_manager() { return *cookie_manager_; }
+  SessionServiceImpl& service() { return *service_; }
 
-  SessionService& service() { return *service_; }
+  std::vector<uint8_t> GetWrappedKey() {
+    base::test::TestFuture<
+        unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>>
+        generate_key_future;
+    auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+    unexportable_key_service_.GenerateSigningKeySlowlyAsync(
+        supported_algorithm,
+        unexportable_keys::BackgroundTaskPriority::kBestEffort,
+        generate_key_future.GetCallback());
+    return *unexportable_key_service_.GetWrappedKey(*generate_key_future.Get());
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   std::unique_ptr<net::URLRequestContext> context_;
-  std::unique_ptr<SessionService> service_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_{
+      crypto::UnexportableKeyProvider::Config()};
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+  std::unique_ptr<SessionServiceImpl> service_;
+  std::unique_ptr<CookieManager> cookie_manager_;
   std::unique_ptr<DeviceBoundSessionManager> manager_;
 };
 
@@ -117,6 +162,146 @@ TEST_F(DeviceBoundSessionManagerTest, ObserverNotifiesChangeOnlyOnSite) {
                                 SessionKey(site, Session::Id("SessionId"))}));
 
   EXPECT_THAT(off_site_observer.notifications(), IsEmpty());
+}
+
+TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession) {
+  GURL url("https://example.com/path");
+  std::string session_id = "session123";
+
+  std::vector<SessionParams::Scope::Specification> specifications;
+  specifications.emplace_back(
+      SessionParams::Scope::Specification::Type::kInclude, "sub.example.com",
+      "/path");
+  SessionParams::Scope scope;
+  scope.include_site = true;
+  scope.specifications = std::move(specifications);
+  scope.origin = url::Origin::Create(url).Serialize();
+
+  SessionParams params(
+      session_id, url, "https://example.com/refresh", std::move(scope),
+      {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
+      unexportable_keys::UnexportableKeyId(), {"example.com"});
+
+  net::CookieInclusionStatus status;
+  auto cookie = net::CanonicalCookie::Create(
+      url, "test_cookie=value", base::Time::Now(), std::nullopt,
+      std::nullopt /* cookie_partition_key */, net::CookieSourceType::kHTTP,
+      &status);
+  ASSERT_TRUE(cookie);
+  std::vector<net::CanonicalCookie> cookies_to_set;
+  cookies_to_set.push_back(*cookie);
+
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+  // Permit it to set a SameSite cookie if it wants to.
+  cookie_options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  base::test::TestFuture<bool> create_future;
+  manager().CreateBoundSession(std::move(params), GetWrappedKey(),
+                               cookies_to_set, cookie_options,
+                               create_future.GetCallback());
+  EXPECT_TRUE(create_future.Get());
+
+  base::test::TestFuture<const std::vector<SessionKey>&> sessions_future;
+  service().GetAllSessionsAsync(sessions_future.GetCallback());
+  const std::vector<SessionKey>& sessions = sessions_future.Get();
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_EQ(sessions[0].site, net::SchemefulSite(url));
+  EXPECT_EQ(sessions[0].id.value(), session_id);
+
+  base::test::TestFuture<const net::CookieAccessResultList&,
+                         const net::CookieAccessResultList&>
+      cookies_future;
+  cookie_manager().GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
+                                 net::CookiePartitionKeyCollection(),
+                                 cookies_future.GetCallback());
+  const auto& cookies = cookies_future.Get<0>();
+  ASSERT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].cookie.Name(), "test_cookie");
+  EXPECT_EQ(cookies[0].cookie.Value(), "value");
+}
+
+TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidSessionParams) {
+  // `include_site` on a subdomain is forbidden
+  GURL url("https://subdomain.example.com/path");
+  std::string session_id = "session123";
+
+  std::vector<SessionParams::Scope::Specification> specifications;
+  specifications.emplace_back(
+      SessionParams::Scope::Specification::Type::kInclude, "sub.example.com",
+      "/path");
+  SessionParams::Scope scope;
+  scope.include_site = true;
+  scope.specifications = std::move(specifications);
+  scope.origin = url::Origin::Create(url).Serialize();
+
+  SessionParams params(
+      session_id, url, "https://example.com/refresh", std::move(scope),
+      {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
+      unexportable_keys::UnexportableKeyId(), {"example.com"});
+
+  net::CookieInclusionStatus status;
+  auto cookie = net::CanonicalCookie::Create(
+      url, "test_cookie=value", base::Time::Now(), std::nullopt,
+      std::nullopt /* cookie_partition_key */, net::CookieSourceType::kHTTP,
+      &status);
+  ASSERT_TRUE(cookie);
+  std::vector<net::CanonicalCookie> cookies_to_set;
+  cookies_to_set.push_back(*cookie);
+
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+  // Permit it to set a SameSite cookie if it wants to.
+  cookie_options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  base::test::TestFuture<bool> create_future;
+  manager().CreateBoundSession(
+      std::move(params), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
+      cookies_to_set, cookie_options, create_future.GetCallback());
+  EXPECT_FALSE(create_future.Get());
+}
+
+TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidCookie) {
+  GURL url("https://example.com/path");
+  std::string session_id = "session123";
+
+  std::vector<SessionParams::Scope::Specification> specifications;
+  specifications.emplace_back(
+      SessionParams::Scope::Specification::Type::kInclude, "sub.example.com",
+      "/path");
+  SessionParams::Scope scope;
+  scope.include_site = true;
+  scope.specifications = std::move(specifications);
+  scope.origin = url::Origin::Create(url).Serialize();
+
+  SessionParams params(
+      session_id, url, "https://example.com/refresh", std::move(scope),
+      {SessionParams::Credential{"test_cookie", "SameSite=Strict"}},
+      unexportable_keys::UnexportableKeyId(), {"example.com"});
+
+  net::CookieInclusionStatus status;
+  auto cookie = net::CanonicalCookie::Create(
+      GURL("https://not-example.com"),
+      "test_cookie=value; Domain=not-example.com", base::Time::Now(),
+      std::nullopt, std::nullopt /* cookie_partition_key */,
+      net::CookieSourceType::kHTTP, &status);
+  ASSERT_TRUE(cookie);
+  std::vector<net::CanonicalCookie> cookies_to_set;
+  cookies_to_set.push_back(*cookie);
+
+  net::CookieOptions cookie_options;
+  cookie_options.set_include_httponly();
+  // Permit it to set a SameSite cookie if it wants to.
+  cookie_options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+
+  base::test::TestFuture<bool> create_future;
+  manager().CreateBoundSession(
+      std::move(params), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
+      cookies_to_set, cookie_options, create_future.GetCallback());
+  EXPECT_FALSE(create_future.Get());
 }
 
 }  // namespace

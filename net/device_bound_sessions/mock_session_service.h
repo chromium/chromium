@@ -80,6 +80,13 @@ class SessionServiceMock : public SessionService {
               GetSession,
               (const SessionKey& session_key),
               (const override));
+  MOCK_METHOD(void,
+              AddSession,
+              (const SchemefulSite& site,
+               SessionParams params,
+               base::span<const uint8_t> wrapped_key,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 };
 
 }  // namespace net::device_bound_sessions

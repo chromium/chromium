@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
+import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
@@ -127,6 +128,19 @@ interface DeviceBoundSessionManager {
   // Add an observer for accesses to sessions including `url`.
   AddObserver(url.mojom.Url url,
               pending_remote<DeviceBoundSessionAccessObserver> observer);
+
+  // Create a session with the given `params`, and set each cookie in
+  // `cookies_to_set`. This combined functionality allows callers to
+  // prevent sessions from applying to stale cookies and to ensure that
+  // sessions always apply to the new cookies. Returns whether the session was
+  // created and cookies set.
+  //
+  // TODO(crbug.com/439821296): Add a better error type so callers can
+  // distinguish various reasons they may have failed.
+  CreateBoundSession(DeviceBoundSessionParams params,
+                     array<uint8> wrapped_key,
+                     array<CanonicalCookie> cookies_to_set,
+                     CookieOptions cookie_options) => (bool success);
 };
 
 // Observer that is notified on use of a device bound session.

@@ -831,7 +831,8 @@ NetworkContext::NetworkContext(
   }
 
   device_bound_session_manager_ = DeviceBoundSessionManager::Create(
-      url_request_context_->device_bound_session_service());
+      url_request_context_->device_bound_session_service(),
+      cookie_manager_.get());
 }
 
 NetworkContext::NetworkContext(

@@ -102,6 +102,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) override;
   const Session* GetSession(const SessionKey& session_key) const override;
+  void AddSession(const SchemefulSite& site,
+                  SessionParams params,
+                  base::span<const uint8_t> wrapped_key,
+                  base::OnceCallback<void(bool)> callback) override;
 
   // The `SessionService` implementation has a const-qualified accessor
   // for sessions. This overload allows for non-const access as well.
@@ -219,6 +223,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // `registration_params`, if allowed.
   base::expected<Session*, SessionError> GetFederatedProviderSessionIfValid(
       const RegistrationFetcherParam& registration_params);
+
+  void OnAddSessionKeyRestored(
+      const SchemefulSite& site,
+      SessionParams params,
+      base::OnceCallback<void(bool)> callback,
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+          key_or_error);
 
   // Whether we are waiting on the initial load of saved sessions to complete.
   bool pending_initialization_ = false;

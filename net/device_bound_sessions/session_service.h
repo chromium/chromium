@@ -170,6 +170,15 @@ class NET_EXPORT SessionService {
   // Get a session by key, or `nullptr` if no such session exists.
   virtual const Session* GetSession(const SessionKey& session_key) const = 0;
 
+  // Adds a session to the service for the site `site` and with session
+  // config from `params`. `params.key_id` is ignored in favor of
+  // importing `wrapped_key`. Calls `callback` when complete with a
+  // boolean indicating whether session addition was successful.
+  virtual void AddSession(const SchemefulSite& site,
+                          SessionParams params,
+                          base::span<const uint8_t> wrapped_key,
+                          base::OnceCallback<void(bool)> callback) = 0;
+
  protected:
   SessionService() = default;
 };

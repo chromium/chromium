@@ -19,11 +19,14 @@ struct SessionKey;
 
 namespace network {
 
+class CookieManager;
+
 class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
     : public mojom::DeviceBoundSessionManager {
  public:
   static std::unique_ptr<DeviceBoundSessionManager> Create(
-      net::device_bound_sessions::SessionService* service);
+      net::device_bound_sessions::SessionService* service,
+      CookieManager* cookie_manager);
 
   ~DeviceBoundSessionManager() override;
 
@@ -44,6 +47,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
       const GURL& url,
       mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
           observer) override;
+  void CreateBoundSession(
+      net::device_bound_sessions::SessionParams params,
+      const std::vector<uint8_t>& wrapped_key,
+      const std::vector<net::CanonicalCookie>& cookies_to_set,
+      const net::CookieOptions& cookie_options,
+      CreateBoundSessionCallback callback) override;
 
  private:
   // State associated with a DeviceBoundSessionAccessObserver.
@@ -59,14 +68,27 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
   };
 
   explicit DeviceBoundSessionManager(
-      net::device_bound_sessions::SessionService* service);
+      net::device_bound_sessions::SessionService* service,
+      CookieManager* cookie_manager);
 
   // Remove an observer by its registration.
   void RemoveObserver(ObserverRegistration* registration);
 
+  void OnCreateBoundSessionAdded(
+      const std::vector<net::CanonicalCookie>& cookies_to_set,
+      const GURL& fetcher_url,
+      const net::CookieOptions& cookie_options,
+      CreateBoundSessionCallback callback,
+      bool session_success);
+
   raw_ptr<net::device_bound_sessions::SessionService> service_;
+  // `raw_ptr` is safe because both `this` and `cookie_manager_` are
+  // owned by the `NetworkContext`.
+  raw_ptr<CookieManager> cookie_manager_;
   mojo::ReceiverSet<network::mojom::DeviceBoundSessionManager> receivers_;
   std::vector<std::unique_ptr<ObserverRegistration>> observer_registrations_;
+
+  base::WeakPtrFactory<DeviceBoundSessionManager> weak_factory_{this};
 };
 
 }  // namespace network
