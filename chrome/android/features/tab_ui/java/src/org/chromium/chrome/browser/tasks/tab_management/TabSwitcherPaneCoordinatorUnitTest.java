@@ -32,7 +32,6 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -563,7 +562,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         // Verify that the container is a LinearLayout.
         ViewGroup container = (ViewGroup) mContainerView.getChildAt(0);
-        assertTrue(container instanceof LinearLayout);
+        assertTrue(container instanceof FrameLayout);
         // Verify the children of the LinearLayout.
         assertEquals(2, container.getChildCount());
         FrameLayout pinnedTabsContainer = container.findViewById(R.id.pinned_tabs_container);
@@ -581,7 +580,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         // Verify that the container is a LinearLayout with the original TabListRecyclerView.
         ViewGroup container = (ViewGroup) mContainerView.getChildAt(0);
-        assertTrue(container instanceof LinearLayout);
+        assertTrue(container instanceof FrameLayout);
         FrameLayout pinnedTabsContainer = container.findViewById(R.id.pinned_tabs_container);
         FrameLayout tabListContainer = container.findViewById(R.id.tab_list_container);
         assertEquals(0, pinnedTabsContainer.getChildCount());

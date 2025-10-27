@@ -55,6 +55,9 @@ public class TabSwitcherPaneMediator
                 PriceWelcomeMessageReviewActionProvider,
                 TabSwitcherCustomViewManager.Delegate,
                 BackPressHandler {
+
+    private static final int PINNED_TABS_SHOW_SEARCH_BOX_DURATION = 10;
+    private static final int PINNED_TABS_HIDE_SEARCH_BOX_DURATION = 100;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
@@ -396,6 +399,7 @@ public class TabSwitcherPaneMediator
         }
     }
 
+    /** Translates the pinned strip to make space for the search box. */
     void maybeTranslatePinnedStrip(
             Activity activity,
             ObservableSupplierImpl<Boolean> hubSearchBoxVisibilitySupplier,
@@ -415,12 +419,29 @@ public class TabSwitcherPaneMediator
                 shouldShow
                         ? activity.getResources().getDimensionPixelSize(R.dimen.hub_search_box_gap)
                         : 0;
-        float elevation = shouldShow ? 1f : 0f;
-        pinnedTabsContainer.setTranslationY(translationHeight);
-        pinnedTabsContainer.setElevation(elevation);
-        hubSearchBoxVisibilitySupplier.set(shouldShow);
+        int duration =
+                shouldShow
+                        ? PINNED_TABS_SHOW_SEARCH_BOX_DURATION
+                        : PINNED_TABS_HIDE_SEARCH_BOX_DURATION;
+        pinnedTabsContainer
+                .animate()
+                .withStartAction(
+                        () -> {
+                            if (!shouldShow) hubSearchBoxVisibilitySupplier.set(false);
+                        })
+                .setDuration(duration)
+                .translationY(translationHeight)
+                .withEndAction(
+                        () -> {
+                            if (shouldShow) hubSearchBoxVisibilitySupplier.set(true);
+                        });
     }
 
+    /**
+     * Adds or removes the search box space.
+     *
+     * @param isTabletOrLandscape Whether the device is a tablet or landscape.
+     */
     void setSearchBoxSpace(boolean isTabletOrLandscape) {
         mContainerViewModel.set(TabListContainerProperties.SEARCH_BOX_PADDING, isTabletOrLandscape);
     }

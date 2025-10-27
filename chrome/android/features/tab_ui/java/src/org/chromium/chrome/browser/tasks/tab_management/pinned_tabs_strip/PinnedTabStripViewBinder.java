@@ -34,7 +34,7 @@ class PinnedTabStripViewBinder {
                 view.animate()
                         .alpha(0.0f)
                         .translationY(-view.getHeight())
-                        .withEndAction(() -> view.setVisibility(View.GONE));
+                        .withEndAction(() -> view.setVisibility(View.INVISIBLE));
             } else if (shouldBeVisible) {
                 // Already visible, just ensure it's in the right state.
                 view.animate().alpha(1.0f).translationY(0).withEndAction(null);

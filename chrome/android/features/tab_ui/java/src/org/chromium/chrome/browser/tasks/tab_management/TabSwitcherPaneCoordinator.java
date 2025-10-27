@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -411,10 +410,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
-            // Create a `LinearLayout` to hold both the pinned tab strip and the regular tab
+            // Create a `FrameLayout` to hold both the pinned tab strip and the regular tab
             // list.
-            LinearLayout layout =
-                    (LinearLayout)
+            FrameLayout layout =
+                    (FrameLayout)
                             LayoutInflater.from(mActivity)
                                     .inflate(
                                             R.layout.tab_switcher_pane_layout,
