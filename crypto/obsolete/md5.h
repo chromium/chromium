@@ -90,6 +90,10 @@ namespace policy {
 crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId();
 }
 
+namespace reading_list {
+std::string Md5AsHexForOfflineUrlUtils(std::string_view url);
+}
+
 namespace remoting {
 std::string GetHostHash();
 }
@@ -201,6 +205,10 @@ class CRYPTO_EXPORT Md5 {
   // TODO(crbug.com/454931298): get rid of this.
   friend std::string performance_manager::Md5AsHexForDatabaseKey(
       std::string_view input);
+
+  // TODO(https://crbug.com/454946840): get rid of this.
+  friend std::string reading_list::Md5AsHexForOfflineUrlUtils(
+      std::string_view url);
 
   // TODO(https://crbug.com/425990763): get rid of this.
   friend std::string trusted_vault::MD5StringForTrustedVault(
