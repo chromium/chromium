@@ -24,6 +24,12 @@
       <message name="IDR_ACTOR_TASK_COMPLETE_NUDGE_LABEL" desc="[Placeholder Description]" translateable="false">
         Task complete
       </message>
+      <message name="IDR_ACTOR_TASK_LIST_BUBBLE_CHECK_TASK_SUBTITLE" desc="[Placeholder Description]" translateable="false">
+        Needs your attention
+      </message>
+      <message name="IDR_ACTOR_TASK_LIST_BUBBLE_TASK_COMPLETE_SUBTITLE" desc="[Placeholder Description]" translateable="false">
+        Task complete
+      </message>
       <message name="IDS_TAKE_OVER_TASK_LABEL" desc="[Placeholder Description]" translateable="false">
         Take over task
       </message>
