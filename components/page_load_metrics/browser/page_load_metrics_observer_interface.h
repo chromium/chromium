@@ -418,6 +418,10 @@ class PageLoadMetricsObserverInterface {
   virtual void OnFirstImagePaintInPage(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnFirstContentfulPaintInPage(
       const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnMonotonicFirstPaintInPage(
+      const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnMonotonicFirstContentfulPaintInPage(
+      const mojom::PageLoadTiming& timing) = 0;
 
   // These are called once every time when the page is restored from the
   // back-forward cache. |index| indicates |index|-th restore.

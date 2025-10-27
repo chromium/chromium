@@ -116,6 +116,10 @@ class AssertPageLoadMetricsObserver final
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnMonotonicFirstPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnMonotonicFirstContentfulPaintInPage(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstPaintAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;

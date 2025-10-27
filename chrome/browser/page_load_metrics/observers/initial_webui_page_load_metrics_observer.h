@@ -32,15 +32,16 @@ class InitialWebUIPageLoadMetricsObserver
 
   // page_load_metrics::PageLoadMetricsObserver:
   const char* GetObserverName() const override;
-  void OnFirstPaintInPage(
+  void OnMonotonicFirstPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnFirstContentfulPaintInPage(
+  void OnMonotonicFirstContentfulPaintInPage(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override;
+  ObservePolicy ShouldObserveScheme(const GURL& url) const override;
 
  private:
   // Returns the service for the current profile.

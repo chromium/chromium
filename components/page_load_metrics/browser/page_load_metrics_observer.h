@@ -180,6 +180,10 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnFirstImagePaintInPage(const mojom::PageLoadTiming& timing) override {}
   void OnFirstContentfulPaintInPage(
       const mojom::PageLoadTiming& timing) override {}
+  void OnMonotonicFirstPaintInPage(
+      const mojom::PageLoadTiming& timing) override {}
+  void OnMonotonicFirstContentfulPaintInPage(
+      const mojom::PageLoadTiming& timing) override {}
   void OnFirstPaintAfterBackForwardCacheRestoreInPage(
       const mojom::BackForwardCacheTiming& timing,
       size_t index) override {}

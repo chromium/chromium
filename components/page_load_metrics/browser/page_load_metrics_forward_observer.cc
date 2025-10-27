@@ -253,6 +253,12 @@ void PageLoadMetricsForwardObserver::OnFirstImagePaintInPage(
 void PageLoadMetricsForwardObserver::OnFirstContentfulPaintInPage(
     const mojom::PageLoadTiming& timing) {}
 
+void PageLoadMetricsForwardObserver::OnMonotonicFirstPaintInPage(
+    const mojom::PageLoadTiming& timing) {}
+
+void PageLoadMetricsForwardObserver::OnMonotonicFirstContentfulPaintInPage(
+    const mojom::PageLoadTiming& timing) {}
+
 void PageLoadMetricsForwardObserver::
     OnFirstPaintAfterBackForwardCacheRestoreInPage(
         const mojom::BackForwardCacheTiming& timing,

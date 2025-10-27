@@ -335,6 +335,24 @@ void AssertPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   CHECK(timing.paint_timing->first_contentful_paint.has_value());
 }
 
+void AssertPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  CHECK(committed_);
+  if (IsPrerendered()) {
+    CHECK(activated_);
+  }
+  CHECK(timing.paint_timing->first_paint.has_value());
+}
+
+void AssertPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  CHECK(committed_);
+  if (IsPrerendered()) {
+    CHECK(activated_);
+  }
+  CHECK(timing.paint_timing->first_contentful_paint.has_value());
+}
+
 void AssertPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   CHECK(committed_);

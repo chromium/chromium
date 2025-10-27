@@ -91,6 +91,16 @@ bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
 
 namespace {
 
+bool HasMonotonicFirstPaint(const mojom::PageLoadTiming& timing) {
+  return timing.monotonic_paint_timing &&
+         timing.monotonic_paint_timing->first_paint;
+}
+
+bool HasMonotonicFirstContentfulPaint(const mojom::PageLoadTiming& timing) {
+  return timing.monotonic_paint_timing &&
+         timing.monotonic_paint_timing->first_contentful_paint;
+}
+
 void DispatchEventsAfterBackForwardCacheRestore(
     PageLoadMetricsObserverInterface* observer,
     const std::vector<mojo::StructPtr<mojom::BackForwardCacheTiming>>&
@@ -174,6 +184,10 @@ void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
       !last_timing.paint_timing->first_contentful_paint) {
     observer->OnFirstContentfulPaintInPage(new_timing);
   }
+  if (HasMonotonicFirstPaint(new_timing) &&
+      !HasMonotonicFirstPaint(last_timing)) {
+    observer->OnMonotonicFirstPaintInPage(new_timing);
+  }
   if (new_timing.paint_timing->first_meaningful_paint &&
       !last_timing.paint_timing->first_meaningful_paint) {
     observer->OnFirstMeaningfulPaintInMainFrameDocument(new_timing);
@@ -185,6 +199,10 @@ void DispatchObserverTimingCallbacks(PageLoadMetricsObserverInterface* observer,
   if (new_timing.parse_timing->parse_stop &&
       !last_timing.parse_timing->parse_stop) {
     observer->OnParseStop(new_timing);
+  }
+  if (HasMonotonicFirstContentfulPaint(new_timing) &&
+      !HasMonotonicFirstContentfulPaint(last_timing)) {
+    observer->OnMonotonicFirstContentfulPaintInPage(new_timing);
   }
   if (new_timing.domain_lookup_timing->domain_lookup_start &&
       !last_timing.domain_lookup_timing->domain_lookup_start) {

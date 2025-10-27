@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -21,7 +22,7 @@ const char* InitialWebUIPageLoadMetricsObserver::GetObserverName() const {
   return "InitialWebUIPageLoadMetricsObserver";
 }
 
-void InitialWebUIPageLoadMetricsObserver::OnFirstPaintInPage(
+void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!timing.monotonic_paint_timing ||
       !timing.monotonic_paint_timing->first_paint) {
@@ -31,7 +32,7 @@ void InitialWebUIPageLoadMetricsObserver::OnFirstPaintInPage(
   service()->OnFirstPaint(timing.monotonic_paint_timing->first_paint.value());
 }
 
-void InitialWebUIPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
+void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!timing.monotonic_paint_timing ||
       !timing.monotonic_paint_timing->first_contentful_paint) {
@@ -66,4 +67,13 @@ WaapUIMetricsService* InitialWebUIPageLoadMetricsObserver::service() const {
   auto* service = WaapUIMetricsService::Get(profile);
   CHECK(service);
   return service;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+InitialWebUIPageLoadMetricsObserver::ShouldObserveScheme(
+    const GURL& url) const {
+  if (IsForInitialWebUI(url)) {
+    return CONTINUE_OBSERVING;
+  }
+  return STOP_OBSERVING;
 }

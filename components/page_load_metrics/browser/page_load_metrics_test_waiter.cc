@@ -608,6 +608,15 @@ PageLoadMetricsTestWaiter::GetMatchedBits(
   if (timing.interactive_timing->first_scroll_delay)
     matched_bits.Set(TimingField::kFirstScrollDelay);
 
+  if (timing.monotonic_paint_timing &&
+      timing.monotonic_paint_timing->first_paint) {
+    matched_bits.Set(TimingField::kMonotonicFirstPaint);
+  }
+  if (timing.monotonic_paint_timing &&
+      timing.monotonic_paint_timing->first_contentful_paint) {
+    matched_bits.Set(TimingField::kMonotonicFirstContentfulPaint);
+  }
+
   if (soft_navigation_count_updated_) {
     soft_navigation_count_updated_ = false;
     matched_bits.Set(TimingField::kSoftNavigationCountUpdated);

@@ -42,6 +42,8 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 11,
     kFirstScrollDelay = 1 << 12,
     kSoftNavigationCountUpdated = 1 << 13,
+    kMonotonicFirstPaint = 1 << 14,
+    kMonotonicFirstContentfulPaint = 1 << 15,
   };
 
   // Identify which frame the layout shift happens.
