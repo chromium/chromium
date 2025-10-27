@@ -1227,8 +1227,8 @@
     <message name="IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON" desc="Decline button of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
       No thanks
     </message>
-    <message name="IDS_HISTORY_SYNC_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in (e.g. sharing/joining tab groups), but sync is disabled.">
-      Your organization turned off saving history and tabs in your Google Account
+    <message name="IDS_TABS_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in (e.g. sharing/joining tab groups), but sync is disabled.">
+      Your organization turned off saving tabs in your Google Account
     </message>
     <!-- Avatar Button Promos Desktop -->
     <if expr="not use_titlecase">

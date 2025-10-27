@@ -192,7 +192,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
   switch (access_point.value()) {
     case signin_metrics::AccessPoint::kRecentTabs:
       required_types = {syncer::UserSelectableType::kTabs};
-      error_message_id = IDS_HISTORY_SYNC_DISABLED_ERROR_DESCRIPTION;
+      error_message_id = IDS_TABS_DISABLED_ERROR_DESCRIPTION;
       break;
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kCollaborationShareTabGroup:
