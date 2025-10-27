@@ -3,6 +3,13 @@
 // found in the LICENSE file.
 package org.chromium.components.browser_ui.widget.chips;
 
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -12,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -84,6 +92,59 @@ public final class ChipViewTest {
 
     @Test
     @SmallTest
+    public void setMaxWidthWithPrimaryText() {
+        mChipView.getPrimaryTextView().setText("Primary text");
+        assertThat(mChipView.getPrimaryTextView().getEllipsize(), nullValue());
+        measureChip(mChipView);
+
+        final int fullTextWidth = mChipView.getPrimaryTextView().getMeasuredWidth();
+        mChipView.setMaxWidth((int) (0.8 * mChipView.getMeasuredWidth()));
+        measureChip(mChipView);
+
+        // Make sure that the primary text width is reduced.
+        assertThat(mChipView.getPrimaryTextView().getMeasuredWidth(), lessThan(fullTextWidth));
+        assertThat(mChipView.getPrimaryTextView().getEllipsize(), is(TextUtils.TruncateAt.END));
+
+        mChipView.setMaxWidth(Integer.MAX_VALUE);
+        measureChip(mChipView);
+        // Make sure that both the allowed text width and the truncation method are reset.
+        assertThat(mChipView.getPrimaryTextView().getMeasuredWidth(), is(fullTextWidth));
+        assertThat(mChipView.getPrimaryTextView().getEllipsize(), nullValue());
+    }
+
+    @Test
+    @SmallTest
+    public void setMaxWidthWithSecondaryText() {
+        mChipView.getPrimaryTextView().setText("Primary text");
+        mChipView.getSecondaryTextView().setText("SecondaryText");
+        assertThat(mChipView.getPrimaryTextView().getEllipsize(), nullValue());
+        assertThat(mChipView.getSecondaryTextView().getEllipsize(), nullValue());
+        measureChip(mChipView);
+
+        final int fullPrimaryTextWidth = mChipView.getPrimaryTextView().getMeasuredWidth();
+        final int fullSecondaryTextWidth = mChipView.getSecondaryTextView().getMeasuredWidth();
+        mChipView.setMaxWidth((int) (0.8 * mChipView.getMeasuredWidth()));
+        measureChip(mChipView);
+
+        // Make sure that the primary text width is reduced and the secondary text view is left
+        // intact.
+        assertThat(
+                mChipView.getPrimaryTextView().getMeasuredWidth(), lessThan(fullPrimaryTextWidth));
+        assertThat(mChipView.getPrimaryTextView().getEllipsize(), is(TextUtils.TruncateAt.END));
+        assertThat(mChipView.getSecondaryTextView().getMeasuredWidth(), is(fullSecondaryTextWidth));
+        assertThat(mChipView.getSecondaryTextView().getEllipsize(), nullValue());
+
+        mChipView.setMaxWidth(Integer.MAX_VALUE);
+        measureChip(mChipView);
+        // Make sure that both the allowed text width and the truncation method are reset.
+        assertThat(mChipView.getPrimaryTextView().getMeasuredWidth(), is(fullPrimaryTextWidth));
+        assertThat(mChipView.getPrimaryTextView().getEllipsize(), nullValue());
+        assertThat(mChipView.getSecondaryTextView().getMeasuredWidth(), is(fullSecondaryTextWidth));
+        assertThat(mChipView.getSecondaryTextView().getEllipsize(), nullValue());
+    }
+
+    @Test
+    @SmallTest
     public void setTwoLineChip() {
         ChipView twoLineChip =
                 (ChipView)
@@ -107,6 +168,45 @@ public final class ChipViewTest {
         assertEquals(
                 LayoutParams.WRAP_CONTENT,
                 twoLineChip.getSecondaryTextView().getLayoutParams().width);
+    }
+
+    @Test
+    @SmallTest
+    public void setMaxWidthWithTwoLineChip() {
+        ChipView twoLineChip =
+                (ChipView)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.two_line_chip_view_test_item, null);
+        twoLineChip.getPrimaryTextView().setText("Primary text");
+        twoLineChip.getSecondaryTextView().setText("SecondaryText");
+        assertThat(twoLineChip.getPrimaryTextView().getEllipsize(), nullValue());
+        assertThat(twoLineChip.getSecondaryTextView().getEllipsize(), nullValue());
+        measureChip(twoLineChip);
+
+        final int fullPrimaryTextWidth = twoLineChip.getPrimaryTextView().getMeasuredWidth();
+        final int fullSecondaryTextWidth = twoLineChip.getSecondaryTextView().getMeasuredWidth();
+        twoLineChip.setMaxWidth((int) (0.8 * twoLineChip.getMeasuredWidth()));
+        measureChip(twoLineChip);
+
+        // Make sure that both the primary and secondary text width is reduced.
+        assertThat(
+                twoLineChip.getPrimaryTextView().getMeasuredWidth(),
+                lessThan(fullPrimaryTextWidth));
+        assertThat(twoLineChip.getPrimaryTextView().getEllipsize(), is(TextUtils.TruncateAt.END));
+        assertThat(
+                twoLineChip.getSecondaryTextView().getMeasuredWidth(),
+                lessThan(fullSecondaryTextWidth));
+        assertThat(twoLineChip.getSecondaryTextView().getEllipsize(), is(TextUtils.TruncateAt.END));
+
+        twoLineChip.setMaxWidth(Integer.MAX_VALUE);
+        measureChip(twoLineChip);
+        // Make sure that both the allowed text width and the truncation method are reset.
+        assertThat(twoLineChip.getPrimaryTextView().getMeasuredWidth(), is(fullPrimaryTextWidth));
+        assertThat(twoLineChip.getPrimaryTextView().getEllipsize(), nullValue());
+        assertThat(
+                twoLineChip.getSecondaryTextView().getMeasuredWidth(), is(fullSecondaryTextWidth));
+        assertThat(twoLineChip.getSecondaryTextView().getEllipsize(), nullValue());
     }
 
     @Test
@@ -188,5 +288,9 @@ public final class ChipViewTest {
 
         mChipView.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
         assertEquals(View.VISIBLE, startIcon.getVisibility());
+    }
+
+    private void measureChip(ChipView chip) {
+        chip.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
     }
 }

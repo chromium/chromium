@@ -235,14 +235,10 @@ class KeyboardAccessoryViewBinder {
                         chipView.getContext().getResources().getDisplayMetrics().widthPixels;
                 chipView.setMaxWidth((int) (windowWidth * 0.85));
             } else {
-                // For other data types, there is no limit on width.
+                // When chips are recycled, the constraint on primary text width (that is applied on
+                // long credit card suggestions) can persist. Reset such constraints.
                 chipView.setMaxWidth(Integer.MAX_VALUE);
             }
-
-            // When chips are recycled, the constraint on primary text width (that is applied on
-            // long credit card suggestions) can persist. Reset such constraints.
-            chipView.getPrimaryTextView().setMaxWidth(Integer.MAX_VALUE);
-            chipView.getPrimaryTextView().setEllipsize(null);
 
             chipView.getPrimaryTextView().setText(item.getSuggestion().getLabel());
             chipView.getSecondaryTextView().setText(item.getSuggestion().getSublabel());

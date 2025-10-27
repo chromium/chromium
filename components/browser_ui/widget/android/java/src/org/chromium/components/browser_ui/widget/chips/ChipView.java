@@ -555,6 +555,14 @@ public class ChipView extends LinearLayout {
      * @param maxWidth of the chip in px.
      */
     public void setMaxWidth(@Px int maxWidth) {
+        // Remove any existing width constraints. The new maximum width will take effect after the
+        // next view measurement.
+        mPrimaryText.setMaxWidth(Integer.MAX_VALUE);
+        mPrimaryText.setEllipsize(null);
+        if (isTwoLineChip() && mSecondaryText != null) {
+            mSecondaryText.setMaxWidth(Integer.MAX_VALUE);
+            mSecondaryText.setEllipsize(null);
+        }
         mMaxWidth = maxWidth;
     }
 
