@@ -66,7 +66,6 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         dip_reporting_observer,
-    std::optional<blink::NoiseToken> canvas_noise_token,
     const std::vector<std::string>& cors_exempt_header_list)
     : receiver_(this, std::move(receiver)) {
   DCHECK(main_script_load_params);
@@ -140,8 +139,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       ToWebPolicyContainer(std::move(policy_container)),
       std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
       require_cross_site_request_for_cookies,
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      std::move(canvas_noise_token));
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
 
   // If the host drops its connection, then self-destruct.
   receiver_.set_disconnect_handler(base::BindOnce(

@@ -253,9 +253,6 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       blink::mojom::BucketHost::GetDirectoryCallback callback) override;
   storage::BucketClientInfo GetBucketClientInfo() const override;
 
-  // Helper to get or create a new canvas noise token for this worker.
-  std::optional<blink::NoiseToken> GetOrCreateCanvasNoiseToken();
-
  private:
   friend class SharedWorkerHostTest;
 
