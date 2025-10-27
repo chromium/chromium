@@ -2237,9 +2237,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.PolicyFetchResult"
-    enum="EnrollmentNudgePolicyFetchResult" expires_after="2025-11-09">
+    enum="EnrollmentNudgePolicyFetchResult" expires_after="2026-11-09">
   <owner>andreydav@google.com</owner>
-  <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Recorded when we fetch the value of enrollment nudge policy. Tracks the
@@ -2248,13 +2247,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentNudge.UserAction"
-    enum="EnrollmentNudgeUserAction" expires_after="2025-09-07">
+    enum="EnrollmentNudgeUserAction" expires_after="2026-11-09">
   <owner>andreydav@google.com</owner>
-  <owner>rodmartin@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Tracks user actions on the enrollment nudge pop-up on the Gaia screen.
     Recorded when user clicks on one of the buttons there.
+
+    Warning: this histogram was expired from 2025-09-07 to 2025-12-16; data may
+    be missing.
   </summary>
 </histogram>
 
