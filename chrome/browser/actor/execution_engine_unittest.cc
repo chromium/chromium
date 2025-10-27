@@ -70,6 +70,8 @@ constexpr char kActorClickToolDurationSuccessHistogram[] =
     "Actor.Tools.ExecutionDuration.Click";
 constexpr char kActorFakeToolDurationHistogram[] =
     "Actor.Tools.ExecutionDuration.FakeTool";
+constexpr char kActorTaskInterruptionCompletedHistogram[] =
+    "Actor.Task.Interruptions.Completed";
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
@@ -551,6 +553,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
       "Actor.Task.StateTransition.Duration.Reflecting", reflecting_duration, 2);
   histograms_.ExpectBucketCount(
       "Actor.Task.StateTransition.ActionCount.Reflecting_Finished", 0, 1);
+  histograms_.ExpectBucketCount(kActorTaskInterruptionCompletedHistogram, 2, 1);
 }
 
 TEST_F(ExecutionEngineTest, LatencyInfoAndActionDurationHistogram) {
@@ -626,6 +629,7 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
+  histograms_.ExpectBucketCount(kActorTaskInterruptionCompletedHistogram, 1, 1);
 }
 
 }  // namespace

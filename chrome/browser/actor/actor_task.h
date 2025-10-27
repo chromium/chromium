@@ -227,6 +227,8 @@ class ActorTask {
   size_t actions_in_current_state_ = 0;
   // Running number of actions this task has taken.
   size_t total_number_of_actions_ = 0;
+  // Number of interruptions
+  size_t total_number_of_interruptions_ = 0;
 
   // Delegate for task-related events.
   base::WeakPtr<ActorTaskDelegate> delegate_;

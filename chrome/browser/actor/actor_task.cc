@@ -41,6 +41,12 @@ bool IsStateActive(ActorTask::State state) {
           state == ActorTask::State::kWaitingOnUser);
 }
 
+bool IsInterruptedState(ActorTask::State state) {
+  return (state == ActorTask::State::kWaitingOnUser ||
+          state == ActorTask::State::kPausedByActor ||
+          state == ActorTask::State::kPausedByUser);
+}
+
 void SetFocusState(content::WebContents* contents,
                    std::optional<bool> focus_state) {
   if (content::RenderWidgetHostView* view =
@@ -164,6 +170,9 @@ void ActorTask::SetState(State new_state) {
     }
     ResetToObserveTabsSet();
   }
+  if (IsInterruptedState(new_state)) {
+    ++total_number_of_interruptions_;
+  }
   ui_event_dispatcher_->OnActorTaskSyncChange(
       ui::UiEventDispatcher::ChangeTaskState{
           .task_id = id_, .old_state = old_state, .new_state = new_state});
@@ -176,11 +185,15 @@ void ActorTask::SetState(State new_state) {
                                  total_number_of_actions_);
     base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
                                    total_active_time_);
+    base::UmaHistogramCounts1000("Actor.Task.Interruptions.Completed",
+                                 total_number_of_interruptions_);
   } else if (state_ == kCancelled) {
     base::UmaHistogramCounts1000("Actor.Task.Count.Cancelled",
                                  total_number_of_actions_);
     base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
                                    total_active_time_);
+    base::UmaHistogramCounts1000("Actor.Task.Interruptions.Cancelled",
+                                 total_number_of_interruptions_);
   }
 }
 
