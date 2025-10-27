@@ -27,8 +27,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
-// TODO(crbug.com/447646545): Add test coverage for persist tab context
-
 namespace {
 
 // Prefix used for filenames of persisted page context files.
