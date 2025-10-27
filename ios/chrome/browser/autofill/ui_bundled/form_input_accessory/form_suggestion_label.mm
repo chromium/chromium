@@ -334,8 +334,22 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 @implementation FormSuggestionLabel {
   // Client of this view.
   __weak id<FormSuggestionLabelDelegate> _delegate;
+
+  // The suggestion presented by this view.
   FormSuggestion* _suggestion;
+
+  // The index of the suggestion presented by this view.
   NSUInteger _suggestionIndex;
+
+  // The total number of suggestion labels in the FormSuggestionView parent.
+  NSUInteger _numberOfSuggestions;
+
+  // The maximum width constraint for this view.
+  // (applies to address and credit card suggestions only).
+  NSLayoutConstraint* _widthConstraint;
+
+  // The accessory trailing view of the FormSuggestionView parent view.
+  UIView* _accessoryTrailingView;
 }
 
 #pragma mark - Public
@@ -349,6 +363,8 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
   if (self) {
     _suggestion = suggestion;
     _suggestionIndex = index;
+    _numberOfSuggestions = numberOfSuggestions;
+    _accessoryTrailingView = accessoryTrailingView;
     _delegate = delegate;
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
@@ -452,11 +468,11 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
     // On phones, set a maximum width to save space on the keyboard accessory.
     if (!isTablet) {
-      CGFloat maximumWidth = [self maximumWidth:accessoryTrailingView
-                                suggestionCount:numberOfSuggestions];
+      CGFloat maximumWidth = [self maximumWidth];
       if (maximumWidth < CGFLOAT_MAX) {
-        [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth]
-            .active = YES;
+        _widthConstraint =
+            [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth];
+        _widthConstraint.active = YES;
       }
     }
   }
@@ -484,6 +500,9 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     self.layer.shadowColor =
         [UIColor colorNamed:kBackgroundShadowColor].CGColor;
     self.layer.masksToBounds = NO;
+  }
+  if (_widthConstraint) {
+    _widthConstraint.constant = [self maximumWidth];
   }
 }
 
@@ -569,8 +588,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Computes the suggestion label's maximum width.
 // Returns CGFLOAT_MAX if there's no maximum width.
-- (CGFloat)maximumWidth:(UIView*)accessoryTrailingView
-        suggestionCount:(NSUInteger)suggestionCount {
+- (CGFloat)maximumWidth {
   CGFloat maxWidth = CGFLOAT_MAX;
   // Using the screen width because the `window` member is nil at the moment of
   // setting up the label's width anchor.
@@ -581,12 +599,12 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     case SuggestionType::kVirtualCreditCardEntry: {
       // Max width is just enough to show half of the credit card icon on the
       // 2nd suggestion, in portrait mode.
-      CGFloat staticButtonsWidth = accessoryTrailingView.frame.size.width;
+      CGFloat staticButtonsWidth = _accessoryTrailingView.frame.size.width;
       maxWidth = (portraitScreenWidth - staticButtonsWidth) -
                  kHalfCreditCardIconOffset;
     } break;
     case SuggestionType::kAddressEntry:
-      if (suggestionCount > 1) {
+      if (_numberOfSuggestions > 1) {
         // Max width is half width, in portrait mode.
         maxWidth = portraitScreenWidth * 0.5;
       }
