@@ -216,16 +216,30 @@ const CGFloat kFeatureRowIconSize = 20;
   ChromeIOSTranslateClient* translateClient =
       ChromeIOSTranslateClient::FromWebState(_webState);
 
-  if (!IsTranslateActive(translateClient)) {
+  if (!IsTranslateActive(translateClient) ||
+      !translateClient->GetTranslateManager()) {
     return nil;
   }
 
-  std::string sourceCode = GetSourceLanguageCode(translateClient);
-  std::string targetCode = GetTargetLanguageCode(translateClient);
+  translate::TranslateManager* manager = translateClient->GetTranslateManager();
+  translate::LanguageState* languageState = manager->GetLanguageState();
 
-  // TODO(crbug.com/447143165): Convert language codes to display names.
-  return [NSString
-      stringWithFormat:@"%s to %s", sourceCode.c_str(), targetCode.c_str()];
+  std::string sourceCode = languageState->source_language();
+  std::string targetCode = languageState->current_language();
+
+  std::string appLocale =
+      translate::TranslateDownloadManager::GetInstance()->application_locale();
+
+  // Convert language codes to display names.
+  std::u16string sourceName16 =
+      l10n_util::GetDisplayNameForLocale(sourceCode, appLocale, true);
+  std::u16string targetName16 =
+      l10n_util::GetDisplayNameForLocale(targetCode, appLocale, true);
+
+  NSString* sourceName = base::SysUTF16ToNSString(sourceName16);
+  NSString* targetName = base::SysUTF16ToNSString(targetName16);
+
+  return [NSString stringWithFormat:@"%@ to %@", sourceName, targetName];
 }
 
 - (NSInteger)blockedPopupCount {
