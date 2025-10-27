@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.CredentialInfo;
-import org.chromium.blink.mojom.CredentialType;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
@@ -54,9 +53,6 @@ import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCre
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.mojo_base.mojom.String16;
-import org.chromium.url.mojom.SchemeHostPort;
-import org.chromium.url.mojom.Url;
 
 import java.nio.ByteBuffer;
 
@@ -462,24 +458,15 @@ public class CredManHelper {
 
                         if (!TYPE_PASSKEY.equals(type)) {
                             if (options.mediation == Mediation.IMMEDIATE) {
-                                CredentialInfo passwordCredential = new CredentialInfo();
-                                passwordCredential.type = CredentialType.PASSWORD;
-                                String16 name =
-                                        WebauthnBrowserBridge.stringToMojoString16(
-                                                data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"));
-                                passwordCredential.name = name;
-                                passwordCredential.id = name;
-                                passwordCredential.password =
-                                        WebauthnBrowserBridge.stringToMojoString16(
-                                                data.getString(
-                                                        CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
-                                // Icon and Federation are unused but required for the mojom
-                                // serialization.
-                                passwordCredential.icon = new Url();
-                                passwordCredential.icon.url = "";
-                                passwordCredential.federation = new SchemeHostPort();
-                                passwordCredential.federation.scheme = "";
-                                passwordCredential.federation.host = "";
+                                CredentialInfo passwordCredential =
+                                        WebauthnBrowserBridge.buildPasswordCredentialInfo(
+                                                WebauthnBrowserBridge.stringToMojoString16(
+                                                        data.getString(
+                                                                CRED_MAN_PREFIX + "BUNDLE_KEY_ID")),
+                                                WebauthnBrowserBridge.stringToMojoString16(
+                                                        data.getString(
+                                                                CRED_MAN_PREFIX
+                                                                        + "BUNDLE_KEY_PASSWORD")));
                                 assumeNonNull(getCallback);
                                 getCallback.onCredentialResponse(
                                         /* assertionResponse= */ null, passwordCredential);

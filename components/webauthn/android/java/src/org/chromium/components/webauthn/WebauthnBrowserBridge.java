@@ -17,6 +17,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo_base.mojom.String16;
+import org.chromium.url.mojom.SchemeHostPort;
+import org.chromium.url.mojom.Url;
 
 import java.util.List;
 
@@ -207,6 +209,23 @@ public class WebauthnBrowserBridge {
         return mojoString;
     }
 
+    public static CredentialInfo buildPasswordCredentialInfo(
+            @Nullable String16 name, @Nullable String16 password) {
+        CredentialInfo passwordCredential = new CredentialInfo();
+        passwordCredential.type = CredentialType.PASSWORD;
+        passwordCredential.name = name;
+        passwordCredential.id = name;
+        passwordCredential.password = password;
+        // Icon and Federation are unused but required for the mojom
+        // serialization.
+        passwordCredential.icon = new Url();
+        passwordCredential.icon.url = "";
+        passwordCredential.federation = new SchemeHostPort();
+        passwordCredential.federation.scheme = "";
+        passwordCredential.federation.host = "";
+        return passwordCredential;
+    }
+
     @CalledByNative
     private static @Nullable String getWebauthnCredentialDetailsUserName(
             WebauthnCredentialDetails cred) {
@@ -234,13 +253,9 @@ public class WebauthnBrowserBridge {
     @CalledByNative
     private static SelectedCredential createSelectedPasswordCredential(
             String username, String password) {
-        CredentialInfo passwordCredential = new CredentialInfo();
-        passwordCredential.type = CredentialType.PASSWORD;
-        String16 name = stringToMojoString16(username);
-        passwordCredential.name = name;
-        passwordCredential.id = name;
-        passwordCredential.password = stringToMojoString16(password);
-        return new SelectedCredential(passwordCredential);
+        return new SelectedCredential(
+                buildPasswordCredentialInfo(
+                        stringToMojoString16(username), stringToMojoString16(password)));
     }
 
     @CalledByNative
