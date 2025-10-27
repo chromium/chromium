@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_FIRST_USER_ACTION_RECORDER_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_FIRST_USER_ACTION_RECORDER_H_
 
+#include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -18,17 +20,33 @@
 // histogram for tablets.
 
 // The histogram to plot background duration before 'new task' actions.
-extern const char* kFirstUserActionNewTaskHistogramName[];
+inline constexpr std::array<std::string_view, 2>
+    kFirstUserActionNewTaskHistogramName = {
+        "FirstUserAction.BackgroundTimeNewTaskHandset",
+        "FirstUserAction.BackgroundTimeNewTaskTablet",
+};
 
 // The histogram to plot background duration before 'continuation' actions.
-extern const char* kFirstUserActionContinuationHistogramName[];
+inline constexpr std::array<std::string_view, 2>
+    kFirstUserActionContinuationHistogramName = {
+        "FirstUserAction.BackgroundTimeContinuationHandset",
+        "FirstUserAction.BackgroundTimeContinuationTablet",
+};
 
 // The histogram to plot background duration before 'expiration' actions.
-extern const char* kFirstUserActionExpirationHistogramName[];
+inline constexpr std::array<std::string_view, 2>
+    kFirstUserActionExpirationHistogramName = {
+        "FirstUserAction.BackgroundTimeExpirationHandset",
+        "FirstUserAction.BackgroundTimeExpirationTablet",
+};
 
 // The name of the histogram to plot the type of first user action (see
 // `FirstUserActionType`).
-extern const char* kFirstUserActionTypeHistogramName[];
+inline constexpr std::array<std::string_view, 2>
+    kFirstUserActionTypeHistogramName = {
+        "FirstUserAction.HandsetUserActionType",
+        "FirstUserAction.TabletUserActionType",
+};
 
 // Since it logs user actions while it exists, it should only be instantiated
 // while metrics recording is enabled.
@@ -73,11 +91,6 @@ class FirstUserActionRecorder {
   // action should be ignored.
   bool ShouldProcessAction(const std::string& action_name,
                            base::TimeTicks action_time);
-
-  // Returns true if the given array contains the given string.
-  bool ArrayContainsString(const char* to_search[],
-                           const size_t to_search_size,
-                           const char* to_find);
 
   // True if running on a tablet.
   const DeviceFamilyIndex device_family_;
