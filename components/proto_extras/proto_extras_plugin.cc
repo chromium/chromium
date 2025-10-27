@@ -484,10 +484,14 @@ $function_declarations$
 
     // Determine the #includes for the implementation file.
     base::flat_set<std::string> impl_system_includes;
-    base::flat_set<std::string> impl_user_includes = {
-        proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
-            .AsUTF8Unsafe(),
-    };
+    bool needs_pb_h = generator_options.generate_to_value_serialization ||
+                      generator_options.generate_equality;
+    base::flat_set<std::string> impl_user_includes;
+    if (needs_pb_h) {
+      impl_user_includes.insert(
+          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
+              .AsUTF8Unsafe());
+    }
     if (generator_options.generate_stream_operator) {
       impl_system_includes.insert("<ostream>");
       impl_user_includes.insert(
@@ -504,8 +508,6 @@ $function_declarations$
     for (int i = 0; i < file->dependency_count(); i++) {
       base::FilePath dependency_proto_file_path =
           base::FilePath::FromASCII(file->dependency(i)->name());
-      bool needs_pb_h = generator_options.generate_to_value_serialization ||
-                        generator_options.generate_equality;
       if (needs_pb_h) {
         impl_user_includes.insert(
             dependency_proto_file_path
