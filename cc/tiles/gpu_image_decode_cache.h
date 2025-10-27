@@ -622,10 +622,6 @@ class CC_EXPORT GpuImageDecodeCache
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Implementation of UploadImageIfNecessary for each sub-case.
-  void UploadImageIfNecessary_TransferCache_HardwareDecode(
-      const DrawImage& draw_image,
-      ImageData* image_data,
-      sk_sp<SkColorSpace> color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UploadImageIfNecessary_TransferCache_SoftwareDecode(
       const DrawImage& draw_image,
       ImageData* image_data,
