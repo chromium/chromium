@@ -3456,8 +3456,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
      <message name ="IDS_INCOGNITO_REAUTH_PROMO_TITLE" desc="The title of the incognito re-auth promo card.">
        Lock Incognito tabs when you leave Chrome
      </message>
+     <message name ="IDS_INCOGNITO_WINDOW_REAUTH_PROMO_TITLE" desc="The title of the incognito re-auth promo card when there is a dedicated window for Incognito tabs.">
+       Lock Incognito windows when you leave Chrome
+     </message>
      <message name ="IDS_INCOGNITO_REAUTH_PROMO_DESCRIPTION" desc="The description of the incognito re-auth promo card.">
        Use screen lock to see open Incognito tabs
+     </message>
+     <message name ="IDS_INCOGNITO_WINDOW_REAUTH_PROMO_DESCRIPTION" desc="The description of the incognito re-auth promo card when there is a dedicated window for Incognito tabs.">
+       Use screen lock to see open Incognito windows
      </message>
      <message name ="IDS_INCOGNITO_REAUTH_LOCK_ACTION_TEXT" desc="The label of the button which upon click would turn on the corresponding Chrome level Incognito lock setting after a re-authentication.">
        Turn on Incognito lock

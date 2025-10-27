@@ -13,6 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
@@ -33,8 +34,14 @@ public class IncognitoReauthPromoViewModel {
             Context context,
             ServiceDismissActionProvider<@MessageType Integer> msgServiceDismissActionProvider,
             IncognitoReauthPromoMessageService.IncognitoReauthMessageData data) {
-        String titleText = context.getString(R.string.incognito_reauth_promo_title);
-        String descriptionText = context.getString(R.string.incognito_reauth_promo_description);
+        String titleText =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? context.getString(R.string.incognito_window_reauth_promo_title)
+                        : context.getString(R.string.incognito_reauth_promo_title);
+        String descriptionText =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? context.getString(R.string.incognito_window_reauth_promo_description)
+                        : context.getString(R.string.incognito_reauth_promo_description);
         String actionText = context.getString(R.string.incognito_reauth_lock_action_text);
         String dismissActionText = context.getString(R.string.no_thanks);
 
