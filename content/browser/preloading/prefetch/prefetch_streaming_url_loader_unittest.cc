@@ -731,7 +731,9 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   // `on_complete` and `on_head_received_loop` should be notified via
   // `final_response_reader`.
   auto final_response_reader = base::MakeRefCounted<PrefetchResponseReader>(
-      on_head_received_loop.QuitClosure(),
+      base::BindOnce([](base::RunLoop* on_head_received_loop,
+                        bool is_success) { on_head_received_loop->Quit(); },
+                     &on_head_received_loop),
       base::BindOnce(
           [](OnPrefetchCompleteTestFuture* on_complete, bool is_success,
              const network::URLLoaderCompletionStatus& completion_status) {

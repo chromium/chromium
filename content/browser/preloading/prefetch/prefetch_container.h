@@ -230,9 +230,21 @@ class CONTENT_EXPORT PrefetchContainer {
     // prefetching state and servability.
     //
     // - `kStarted`: Prefetch is started.
-    // - `kDeterminedHead`: `PrefetchContainer::OnDeterminedHead()` is called.
+    // - `kDeterminedHead` or `kFailedDeterminedHead`:
+    //   `PrefetchContainer::OnDeterminedHead()` is called.
     //   `Observer::OnDeterminedHead()` is called after transitioning to this
-    //   state.
+    //   state. They will eventually transition to `kCompleted` or `kFailed`,
+    //   respectively (except for the cases where no state transitions occur,
+    //   which should be fixed by https://crbug.com/400761083).
+    //   TODO(https://crbug.com/400761083): Probably we should make these
+    //   `PrefetchContainer::LoadState`s directly correspond to
+    //   `PrefetchResponseReader::LoadState`s. One scenario where currently
+    //   these two `LoadState`s temporarily mismatch is: when
+    //   `PrefetchResponseReader::LoadState` transitions directly from
+    //   `kStarted` to `kFailed`, `PrefetchContainer::LoadState` transitions to
+    //   `kFailedDeterminedHead` and then immediately to `kFailed`, in order to
+    //   align `PrefetchContainer::LoadState` and
+    //   `PrefetchContainer::Observer` calls. Revisit this later.
     // - [Final state] `kCompleted` or `kFailed`:
     //   `PrefetchContainer::OnPrefetchComplete()` is called, and its
     //   `PrefetchResponseReader::LoadState` is `kCompleted` or `kFailed`,
@@ -253,6 +265,7 @@ class CONTENT_EXPORT PrefetchContainer {
     // `kServable` even if `request().attempt()` has a failure).
     kStarted,
     kDeterminedHead,
+    kFailedDeterminedHead,
     kCompleted,
     kFailed,
 
@@ -376,7 +389,7 @@ class CONTENT_EXPORT PrefetchContainer {
   //
   // This method must be called at most once in the lifecycle of
   // `PrefetchContainer`.
-  void OnDeterminedHead();
+  void OnDeterminedHead(bool is_successful_determined_head);
   // Unblocks waiting `PrefetchMatchResolver`.
   //
   // This method can be called multiple times.

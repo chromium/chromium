@@ -101,7 +101,8 @@ CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
       on_complete);
 
   auto on_head_received_callback = base::BindOnce(
-      [](NotReachedTagForTestsOr<base::RunLoop*> on_head_received) {
+      [](NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
+         bool is_successful_determined_head) {
         if (std::holds_alternative<NotReachedTagForTests>(on_head_received)) {
           NOTREACHED();
         }

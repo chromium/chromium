@@ -1267,7 +1267,7 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
 
   AddRedirectHop(prefetch_container.get(), GURL("https://redirect1.com"));
   AddRedirectHop(prefetch_container.get(), GURL("https://redirect2.com"));
-  prefetch_container->OnDeterminedHead();
+  prefetch_container->OnDeterminedHead(/*is_successful_determined_head=*/true);
   prefetch_container->OnPrefetchComplete(/*is_success=*/true,
                                          network::URLLoaderCompletionStatus());
 

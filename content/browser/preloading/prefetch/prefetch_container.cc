@@ -541,6 +541,7 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
   switch (GetLoadState()) {
     case LoadState::kStarted:
     case LoadState::kDeterminedHead:
+    case LoadState::kFailedDeterminedHead:
     case LoadState::kCompleted:
     case LoadState::kFailed:
       SetTriggeringOutcomeAndFailureReasonFromStatus(prefetch_status);
@@ -635,12 +636,19 @@ void PrefetchContainer::SetLoadState(LoadState new_load_state) {
       break;
 
     case LoadState::kDeterminedHead:
+    case LoadState::kFailedDeterminedHead:
       CHECK_EQ(load_state_, LoadState::kStarted);
       break;
 
     case LoadState::kCompleted:
-    case LoadState::kFailed:
+      // `kFailedDeterminedHead` never transitions to successful `kCompleted`.
       CHECK_EQ(load_state_, LoadState::kDeterminedHead);
+      break;
+
+    case LoadState::kFailed:
+      // Failures can happen after successful `kDeterminedHead`.
+      CHECK(load_state_ == LoadState::kDeterminedHead ||
+            load_state_ == LoadState::kFailedDeterminedHead);
       break;
   }
   DVLOG(1) << (*this) << " LoadState " << load_state_ << " -> "
@@ -895,7 +903,7 @@ void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   streaming_loader_.reset();
 }
 
-void PrefetchContainer::OnDeterminedHead() {
+void PrefetchContainer::OnDeterminedHead(bool is_successful_determined_head) {
   if (base::FeatureList::IsEnabled(features::kPrefetchGracefulNotification) &&
       is_in_dtor_) {
     // This can be called due to the loader cancellation during the
@@ -904,7 +912,9 @@ void PrefetchContainer::OnDeterminedHead() {
     return;
   }
 
-  SetLoadState(LoadState::kDeterminedHead);
+  SetLoadState(is_successful_determined_head
+                   ? LoadState::kDeterminedHead
+                   : LoadState::kFailedDeterminedHead);
 
   if (GetNonRedirectHead()) {
     prefetch_container_metrics_.time_header_determined_successfully =
@@ -1102,6 +1112,7 @@ PrefetchServableState PrefetchContainer::GetServableState(
       case LoadState::kFailedIneligible:
       case LoadState::kStarted:
       case LoadState::kDeterminedHead:
+      case LoadState::kFailedDeterminedHead:
       case LoadState::kCompleted:
       case LoadState::kFailed:
       case LoadState::kFailedHeldback:
@@ -1594,6 +1605,8 @@ std::ostream& operator<<(std::ostream& ostream,
       return ostream << "Started";
     case PrefetchContainer::LoadState::kDeterminedHead:
       return ostream << "DeterminedHead";
+    case PrefetchContainer::LoadState::kFailedDeterminedHead:
+      return ostream << "FailedDeterminedHead";
     case PrefetchContainer::LoadState::kCompleted:
       return ostream << "Completed";
     case PrefetchContainer::LoadState::kFailed:

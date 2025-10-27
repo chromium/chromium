@@ -7169,6 +7169,7 @@ class RecordingPrefetchContainerObserver final
       case PrefetchContainer::LoadState::kFailedHeldback:
         NOTREACHED();
       case PrefetchContainer::LoadState::kDeterminedHead:
+      case PrefetchContainer::LoadState::kFailedDeterminedHead:
       case PrefetchContainer::LoadState::kCompleted:
       case PrefetchContainer::LoadState::kFailed:
         break;

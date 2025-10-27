@@ -100,7 +100,7 @@ bool PrefetchResponseReader::MatchesCookieIndices(
 }
 
 PrefetchResponseReader::PrefetchResponseReader(
-    base::OnceClosure on_determined_head_callback,
+    OnPrefetchDeterminedHeadCallback on_determined_head_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback)
     : on_determined_head_callback_(std::move(on_determined_head_callback)),
       on_prefetch_response_completed_callback_(
@@ -686,10 +686,16 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
       break;
 
     case LoadState::kResponseReceived:
+      CHECK(on_determined_head_callback_);
+      std::move(on_determined_head_callback_)
+          .Run(/*is_successful_determined_head=*/true);
+      break;
+
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailedRedirect:
       CHECK(on_determined_head_callback_);
-      std::move(on_determined_head_callback_).Run();
+      std::move(on_determined_head_callback_)
+          .Run(/*is_successful_determined_head=*/false);
       break;
 
     case LoadState::kFailed:
@@ -697,7 +703,8 @@ void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
         // Directly transitioning to `kFailed`, so
         // `on_determined_head_callback_` hasn't been notified yet.
         CHECK(on_determined_head_callback_);
-        std::move(on_determined_head_callback_).Run();
+        std::move(on_determined_head_callback_)
+            .Run(/*is_successful_determined_head=*/false);
       } else {
         // Otherwise, `on_determined_head_callback_` should have already been
         // notified.

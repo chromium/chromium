@@ -597,6 +597,7 @@ bool PrefetchService::IsPrefetchStale(
     case PrefetchContainer::LoadState::kEligible:
     case PrefetchContainer::LoadState::kStarted:
     case PrefetchContainer::LoadState::kDeterminedHead:
+    case PrefetchContainer::LoadState::kFailedDeterminedHead:
     case PrefetchContainer::LoadState::kCompleted:
     case PrefetchContainer::LoadState::kFailed:
       break;
