@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -130,9 +131,11 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     })
     public void sentimentSurveyAcceptSurvey() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.getActivity().getTabCreator(false).launchNtp();
-                });
+                () ->
+                        TabCreatorUtil.launchNtp(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(/* incognito= */ false)));
         waitForSurveyMessageToShow();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -155,9 +158,11 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @RequiresRestart("State from previous test may prevent survey from surfacing")
     public void sentimentSurveyDismissSurvey() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.getActivity().getTabCreator(false).launchNtp();
-                });
+                () ->
+                        TabCreatorUtil.launchNtp(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(/* incognito= */ false)));
         waitForSurveyMessageToShow();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(mSurveyMessage, DismissReason.GESTURE));

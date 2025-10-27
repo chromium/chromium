@@ -26,6 +26,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -60,15 +62,16 @@ public class NewTabPageCreationTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE)
     public void testCreateNTPInNewTab() {
+        @TabLaunchType int expectedType = TabLaunchType.FROM_CHROME_UI;
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("NewTabPage.OpenedInNewTab", 2 /* FROM_CHROME_UI */)
+                        .expectIntRecord("NewTabPage.OpenedInNewTab", expectedType)
                         .build();
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.getActivity().getCurrentTabCreator().launchNtp();
-                });
+                () ->
+                        TabCreatorUtil.launchNtp(
+                                mActivityTestRule.getActivity().getCurrentTabCreator()));
 
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
 

@@ -123,12 +123,7 @@ public abstract class TabCreator {
     protected abstract Profile getProfile();
 
     /** Creates a new tab and loads the NTP. */
-    public final void launchNtp() {
-        launchNtp(TabLaunchType.FROM_CHROME_UI);
-    }
-
-    /** Creates a new tab and loads the NTP. */
-    public final void launchNtp(@TabLaunchType int type) {
+    public void launchNtp(@TabLaunchType int type) {
         TabCreatorUtil.launchNtp(this, getProfile(), type);
     }
 

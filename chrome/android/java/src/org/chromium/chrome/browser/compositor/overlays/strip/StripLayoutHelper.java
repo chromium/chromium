@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
@@ -3138,7 +3139,7 @@ public class StripLayoutHelper
         // 2. Reset state
         if (mNewTabButton.onUpOrCancel() && mModel != null) {
             if (!mModel.isIncognito()) mModel.commitAllTabClosures();
-            if (mTabCreator != null) mTabCreator.launchNtp();
+            if (mTabCreator != null) TabCreatorUtil.launchNtp(mTabCreator);
         }
         mIsStripScrollInProgress = false;
         resetDelayedReorderState();
@@ -3488,7 +3489,7 @@ public class StripLayoutHelper
 
         RecordUserAction.record("MobileToolbarNewTab");
         if (!mModel.isIncognito()) mModel.commitAllTabClosures();
-        mTabCreator.launchNtp();
+        TabCreatorUtil.launchNtp(mTabCreator);
     }
 
     /**
@@ -4047,7 +4048,7 @@ public class StripLayoutHelper
                 if (nextIndex != TabModel.INVALID_TAB_INDEX && mModel != null) {
                     TabModelUtils.setIndex(mModel, nextIndex);
                 } else if (mTabCreator != null) {
-                    mTabCreator.launchNtp();
+                    TabCreatorUtil.launchNtp(mTabCreator);
                 }
             }
         }

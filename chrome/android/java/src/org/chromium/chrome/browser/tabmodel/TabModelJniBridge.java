@@ -446,7 +446,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 return;
             }
         }
-        getTabCreator(false).launchNtp();
+        TabCreatorUtil.launchNtp(getTabCreator(/* isIncognito= */ false));
     }
 
     /** Returns whether or not a sync session is currently being restored. */

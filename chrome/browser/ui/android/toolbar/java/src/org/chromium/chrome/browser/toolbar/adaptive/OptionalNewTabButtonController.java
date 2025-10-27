@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
@@ -146,7 +147,7 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
 
         boolean isIncognito = activeTabSupplier.get().isIncognito();
         RecordUserAction.record("MobileTopToolbarOptionalButtonNewTab");
-        tabCreatorManager.getTabCreator(isIncognito).launchNtp();
+        TabCreatorUtil.launchNtp(tabCreatorManager.getTabCreator(isIncognito));
 
         Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {

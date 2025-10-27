@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -1025,7 +1026,7 @@ public class TabGridDialogMediator
 
             if (tabsInGroup.isEmpty()) {
                 TabModel tabModel = filter.getTabModel();
-                tabModel.getTabCreator().launchNtp();
+                TabCreatorUtil.launchNtp(tabModel.getTabCreator());
                 return;
             }
 

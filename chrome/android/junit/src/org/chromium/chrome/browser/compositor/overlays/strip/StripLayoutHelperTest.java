@@ -5525,7 +5525,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify: Ntp opened since there is no expanded tab on strip.
-        verify(mTabCreator).launchNtp();
+        verify(mTabCreator).launchNtp(anyInt());
     }
 
     @Test
