@@ -888,17 +888,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kRestrictAbusePortsOnLocalhost);
 // trust.
 NET_EXPORT BASE_DECLARE_FEATURE(kTLSTrustAnchorIDs);
 
-// Whether or not this client is participating in the socket pool size
-// per-top-level-site experiment, and if so how big their pools should be.
-// See crbug.com/415691664 for more details.
-NET_EXPORT BASE_DECLARE_FEATURE(kSocketPoolSizePerTopLevelSiteTrial);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kSocketPoolSizePerTopLevelSiteTrialNormalProfileLimit);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kSocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit);
-
 // These parameters control whether the Network Service Task Scheduler is used
 // for specific classes.
 NET_EXPORT BASE_DECLARE_FEATURE(kNetTaskScheduler);

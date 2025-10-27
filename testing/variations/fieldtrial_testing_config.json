@@ -24169,29 +24169,6 @@
             ]
         }
     ],
-    "SocketPoolSizePerTopLevelSiteTrial": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SocketPoolSizePerTopLevelSiteTrialNormalProfileLimit": "513",
-                        "SocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit": "513"
-                    },
-                    "enable_features": [
-                        "SocketPoolSizePerTopLevelSiteTrial"
-                    ]
-                }
-            ]
-        }
-    ],
     "SoftNavigationDetectionAdvancedPaintAttribution": [
         {
             "platforms": [

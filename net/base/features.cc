@@ -755,21 +755,6 @@ BASE_FEATURE(kRestrictAbusePortsOnLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTLSTrustAnchorIDs, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSocketPoolSizePerTopLevelSiteTrial,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(int,
-                   kSocketPoolSizePerTopLevelSiteTrialNormalProfileLimit,
-                   &kSocketPoolSizePerTopLevelSiteTrial,
-                   "SocketPoolSizePerTopLevelSiteTrialNormalProfileLimit",
-                   256);
-
-BASE_FEATURE_PARAM(int,
-                   kSocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit,
-                   &kSocketPoolSizePerTopLevelSiteTrial,
-                   "SocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit",
-                   256);
-
 BASE_FEATURE(kNetTaskScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpProxyConnectJob,
