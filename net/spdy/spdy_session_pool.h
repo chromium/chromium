@@ -25,6 +25,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_server.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_source.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -189,6 +190,7 @@ class NET_EXPORT SpdySessionPool
       const NetLogWithSource& net_log,
       const MultiplexedSessionCreationInitiator session_creation_initiator,
       base::WeakPtr<SpdySession>* session,
+      std::optional<ConnectionManagementConfig> connection_management_config,
       SpdySessionInitiator spdy_session_initiator =
           SpdySessionInitiator::kUnknown);
 
@@ -356,6 +358,11 @@ class NET_EXPORT SpdySessionPool
   std::set<std::string> GetDnsAliasesForSessionKey(
       const SpdySessionKey& key) const;
 
+  // Adds the connection management config to
+  // the given session key.
+  void AddConnectionManagementConfig(const SpdySessionKey& key,
+                                     ConnectionManagementConfig& observer);
+
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
@@ -426,7 +433,8 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       NetLog* net_log,
       const MultiplexedSessionCreationInitiator session_creation_initiator,
-      SpdySessionInitiator spdy_session_initiator);
+      SpdySessionInitiator spdy_session_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config);
   // Adds a new session previously created with CreateSession to the pool.
   // |source_net_log| is the NetLog for the object that created the session.
   base::expected<base::WeakPtr<SpdySession>, int> InsertSession(
@@ -534,6 +542,9 @@ class NET_EXPORT SpdySessionPool
   // If set, sessions will be marked as going away upon relevant network changes
   // (instead of being closed).
   const bool go_away_on_ip_change_;
+
+  std::map<SpdySessionKey, std::unique_ptr<ConnectionChangeNotifier>>
+      connection_change_notifier_map_;
 
   SpdySessionRequestMap spdy_session_request_map_;
 

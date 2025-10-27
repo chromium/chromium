@@ -767,6 +767,12 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       }
     }
     if (existing_spdy_session_) {
+      // If we have a session, and we have a connection management config, add
+      // it to the session pool.
+      if (management_config_.has_value()) {
+        session_->spdy_session_pool()->AddConnectionManagementConfig(
+            spdy_session_key_, management_config_.value());
+      }
       // Stop watching for SpdySessions.
       spdy_session_request_.reset();
 
@@ -932,6 +938,22 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   // No need to continue waiting for a session, once a connection is
   // established.
   spdy_session_request_.reset();
+
+  if (!using_quic_ && management_config_.has_value()) {
+    // If `DoInitConnection` has completed successfully, we should have a
+    // session in the pool. Note that we cannot rely on `result`, since we would
+    // always get `OK` for preconnects in this situation.
+    if (session_->spdy_session_pool()->FindAvailableSession(
+            spdy_session_key_, enable_ip_based_pooling_for_h2_, is_websocket_,
+            net_log_)) {
+      session_->spdy_session_pool()->AddConnectionManagementConfig(
+          spdy_session_key_, management_config_.value());
+    } else if (management_config_->connection_change_observer) {
+      // If we do not have a session, then we should notify the
+      // ConnectionChangeObserver that the connection establishment has failed.
+      management_config_->connection_change_observer->OnConnectionFailed();
+    }
+  }
 
   if ((job_type_ == PRECONNECT) || (job_type_ == PRECONNECT_DNS_ALPN_H3)) {
     if (using_quic_) {
@@ -1148,6 +1170,12 @@ int HttpStreamFactory::Job::DoCreateStream() {
             /* is_websocket = */ false, net_log_);
   }
   if (existing_spdy_session_) {
+    // If we have a session, and we have a connection management config, add
+    // it to the session pool.
+    if (management_config_.has_value()) {
+      session_->spdy_session_pool()->AddConnectionManagementConfig(
+          spdy_session_key_, management_config_.value());
+    }
     // We picked up an existing session, so we don't need our socket.
     if (connection_->socket()) {
       connection_->socket()->Disconnect();
@@ -1175,7 +1203,8 @@ int HttpStreamFactory::Job::DoCreateStream() {
   int rv =
       session_->spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
           spdy_session_key_, std::move(connection_), net_log_, initiator,
-          &spdy_session, SpdySessionInitiator::kHttpStreamFactoryJob);
+          &spdy_session, management_config_,
+          SpdySessionInitiator::kHttpStreamFactoryJob);
 
   if (rv != OK) {
     return rv;

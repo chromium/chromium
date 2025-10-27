@@ -154,13 +154,14 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const NetLogWithSource& net_log,
     const MultiplexedSessionCreationInitiator session_creation_initiator,
     base::WeakPtr<SpdySession>* session,
+    std::optional<ConnectionManagementConfig> connection_management_config,
     SpdySessionInitiator spdy_session_initiator) {
   TRACE_EVENT0(NetTracingCategory(),
                "SpdySessionPool::CreateAvailableSessionFromSocketHandle");
 
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, net_log.net_log(), session_creation_initiator,
-                    spdy_session_initiator);
+                    spdy_session_initiator, connection_management_config);
   std::set<std::string> dns_aliases =
       stream_socket_handle->socket()->GetDnsAliases();
 
@@ -189,7 +190,7 @@ SpdySessionPool::CreateAvailableSessionFromSocket(
 
   std::unique_ptr<SpdySession> new_session = CreateSession(
       key, net_log.net_log(), MultiplexedSessionCreationInitiator::kUnknown,
-      spdy_session_initiator);
+      spdy_session_initiator, std::nullopt);
   std::set<std::string> dns_aliases = socket_stream->GetDnsAliases();
 
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
@@ -719,7 +720,8 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
     const SpdySessionKey& key,
     NetLog* net_log,
     const MultiplexedSessionCreationInitiator session_creation_initiator,
-    SpdySessionInitiator spdy_session_initiator) {
+    SpdySessionInitiator spdy_session_initiator,
+    std::optional<ConnectionManagementConfig> connection_management_config) {
   UMA_HISTOGRAM_ENUMERATION("Net.SpdySessionGet", IMPORTED_FROM_SOCKET,
                             SPDY_SESSION_GET_MAX);
 
@@ -735,6 +737,12 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
     it->second->RemovePooledAlias(key);
     UnmapKey(key);
     RemoveAliases(key);
+  }
+
+  // We only want to use the connection management config for the session if the
+  // feature is enabled.
+  if (connection_management_config.has_value()) {
+    AddConnectionManagementConfig(key, connection_management_config.value());
   }
 
   return std::make_unique<SpdySession>(
@@ -920,6 +928,26 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
   }
 
   return nullptr;
+}
+
+void SpdySessionPool::AddConnectionManagementConfig(
+    const SpdySessionKey& key,
+    ConnectionManagementConfig& connection_management_config) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kConnectionKeepAliveForHttp2)) {
+    return;
+  }
+
+  // We only want to use the connection management config for the session if the
+  // feature is enabled.
+  if (connection_management_config.connection_change_observer) {
+    if (!base::Contains(connection_change_notifier_map_, key)) {
+      connection_change_notifier_map_[key] =
+          std::make_unique<ConnectionChangeNotifier>();
+    }
+    connection_change_notifier_map_[key]->AddObserver(
+        connection_management_config.connection_change_observer);
+  }
 }
 
 }  // namespace net

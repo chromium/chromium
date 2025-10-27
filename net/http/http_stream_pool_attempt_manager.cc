@@ -767,7 +767,7 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
             spdy_session_key(), std::move(handle), net_log(),
             MultiplexedSessionCreationInitiator::kUnknown, &spdy_session,
-            SpdySessionInitiator::kHttpStreamPoolAttemptManager);
+            std::nullopt, SpdySessionInitiator::kHttpStreamPoolAttemptManager);
     if (create_result != OK) {
       HandleTcpBasedAttemptFailure(std::move(tcp_based_attempt), create_result);
       return;

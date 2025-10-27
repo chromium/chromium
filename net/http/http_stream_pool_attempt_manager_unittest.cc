@@ -576,7 +576,8 @@ class HttpStreamPoolAttemptManagerTest : public TestWithTaskEnvironment {
     base::WeakPtr<SpdySession> spdy_session;
     int rv = spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
         group.spdy_session_key(), std::move(handle), NetLogWithSource(),
-        MultiplexedSessionCreationInitiator::kUnknown, &spdy_session);
+        MultiplexedSessionCreationInitiator::kUnknown, &spdy_session,
+        std::nullopt);
     CHECK_EQ(rv, OK);
     // See the comment of CreateFakeSpdySession() in spdy_test_util_common.cc.
     spdy_session->SetTimeToBufferSmallWindowUpdates(base::TimeDelta::Max());
