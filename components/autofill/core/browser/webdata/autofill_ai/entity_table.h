@@ -118,6 +118,10 @@ class EntityTable : public WebDatabaseTable {
   // Returns true if removing the entity metadata succeeded.
   bool RemoveEntityMetadata(const EntityInstance::EntityId& guid);
 
+  // Returns the entity metadata for the given `guid`.
+  std::optional<EntityInstance::EntityMetadata> GetEntityMetadata(
+      const EntityInstance::EntityId& guid) const;
+
   // Returns the valid entity instances; ignores invalid instances.
   //
   // An instance is valid only if all the following is true:

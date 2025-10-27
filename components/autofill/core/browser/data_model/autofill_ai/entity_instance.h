@@ -315,6 +315,12 @@ class EntityInstance final {
   // Returns the metadata for this instance.
   const EntityMetadata& metadata() const { return entity_metadata_; }
 
+  // Sets the metadata for this instance.
+  void set_metadata(EntityMetadata metadata) {
+    CHECK_EQ(guid_, metadata.guid);
+    entity_metadata_ = std::move(metadata);
+  }
+
   // Returns true if the attributes of this entity instance cannot be edited by
   // the user.
   AreAttributesReadOnly are_attributes_read_only() const {

@@ -387,5 +387,26 @@ TEST_F(EntityTableTest, GetSyncedMetadata_Mixed) {
                   testing::Pair(server_dl.guid(), server_dl.metadata())));
 }
 
+// Tests that GetEntityMetadata() returns the correct metadata for an existing
+// entity.
+TEST_F(EntityTableTest, GetEntityMetadata_ExistingEntity) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+
+  std::optional<EntityInstance::EntityMetadata> metadata =
+      table().GetEntityMetadata(pp.guid());
+  ASSERT_TRUE(metadata.has_value());
+  EXPECT_EQ(*metadata, pp.metadata());
+}
+
+// Tests that GetEntityMetadata() returns nullopt for a non-existent entity.
+TEST_F(EntityTableTest, GetEntityMetadata_NonExistentEntity) {
+  EntityInstance::EntityId non_existent_guid(
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
+  std::optional<EntityInstance::EntityMetadata> metadata =
+      table().GetEntityMetadata(non_existent_guid);
+  EXPECT_EQ(metadata, std::nullopt);
+}
+
 }  // namespace
 }  // namespace autofill

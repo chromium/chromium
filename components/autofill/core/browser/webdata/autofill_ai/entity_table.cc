@@ -493,6 +493,34 @@ bool EntityTable::EntityInstanceExists(
          s.Succeeded();
 }
 
+std::optional<EntityInstance::EntityMetadata> EntityTable::GetEntityMetadata(
+    const EntityInstance::EntityId& guid) const {
+  sql::Statement s;
+  SelectBuilder(db(), s, entities_metadata::kTableName,
+                {entities_metadata::kEntityGuid, entities_metadata::kUseCount,
+                 entities_metadata::kUseDate, entities_metadata::kDateModified},
+                "WHERE entity_guid = ?");
+  s.BindString(0, *guid);
+
+  if (!s.Step()) {
+    return std::nullopt;
+  }
+
+  EntityInstance::EntityId entity_guid(s.ColumnString(0));
+  size_t use_count = s.ColumnInt64(1);
+  base::Time use_date = s.ColumnTime(2);
+  base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
+
+  if (!s.Succeeded()) {
+    return std::nullopt;
+  }
+
+  return EntityInstance::EntityMetadata{.guid = entity_guid,
+                                        .date_modified = date_modified,
+                                        .use_count = use_count,
+                                        .use_date = use_date};
+}
+
 std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
 EntityTable::GetSyncedMetadata() const {
   std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>

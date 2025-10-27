@@ -117,6 +117,27 @@ ValuableDatabaseOperationResult HandleDeleteRequest(
   return ValuableDatabaseOperationResult::kNoChange;
 }
 
+// Creates an `EntityInstance` from `specifics` and loads its metadata from
+// `entity_table` if it exists. Server entities do not come with metadata
+// attached. Therefore, we update the entity's metadata with the client's
+// existing metadata. This prevents the client from removing entity-related
+// metadata when replacing an old entity instance with a new one during
+// `EntityTable::AddOrUpdateEntityInstance`.
+std::optional<EntityInstance> CreateEntityInstanceFromSpecificsAndLoadMetadata(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    const EntityTable& entity_table) {
+  if (std::optional<EntityInstance> entity =
+          CreateEntityInstanceFromSpecifics(specifics)) {
+    if (std::optional<EntityInstance::EntityMetadata> metadata =
+            entity_table.GetEntityMetadata(entity->guid())) {
+      entity->set_metadata(std::move(*metadata));
+    }
+    return entity;
+  }
+
+  return std::nullopt;
+}
+
 }  // namespace
 
 ValuableSyncBridge::ValuableSyncBridge(
@@ -231,7 +252,8 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
           case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
           case sync_pb::AutofillValuableSpecifics::kFlightReservation:
             if (std::optional<EntityInstance> entity =
-                    CreateEntityInstanceFromSpecifics(specifics)) {
+                    CreateEntityInstanceFromSpecificsAndLoadMetadata(
+                        specifics, *GetEntityTable())) {
               if (!GetEntityTable()->AddOrUpdateEntityInstance(*entity)) {
                 db_operation_result =
                     ValuableDatabaseOperationResult::kDatabaseError;
@@ -521,7 +543,8 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
           case sync_pb::AutofillValuableSpecifics::kFlightReservation:
           case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
             if (std::optional<EntityInstance> entity =
-                    CreateEntityInstanceFromSpecifics(autofill_valuable)) {
+                    CreateEntityInstanceFromSpecificsAndLoadMetadata(
+                        autofill_valuable, *GetEntityTable())) {
               entities.push_back(std::move(*entity));
             }
             break;

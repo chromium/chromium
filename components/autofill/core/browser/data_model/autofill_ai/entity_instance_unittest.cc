@@ -426,5 +426,29 @@ TEST(AutofillEntityInstanceTest, FormatFlightDepartureDate) {
   EXPECT_EQ(GetInfo(attribute, FLIGHT_RESERVATION_DEPARTURE_DATE), u"Jan 1");
 }
 
+// Tests that the metadata of an entity instance can be updated correctly.
+TEST(AutofillEntityInstanceTest, SetMetadata) {
+  EntityInstance entity = test::GetPassportEntityInstance();
+  EntityInstance::EntityId original_guid = entity.guid();
+  // Create new metadata with different values but the same GUID.
+  const EntityInstance::EntityMetadata new_metadata{
+      .guid = entity.guid(),
+      .date_modified = base::Time::Now() + base::Days(1),
+      .use_count = entity.use_count() + 1,
+      .use_date = base::Time::Now() + base::Days(2)};
+  entity.set_metadata(new_metadata);
+  EXPECT_EQ(entity.metadata(), new_metadata);
+}
+
+// Tests that calling `set_metadata` with a different GUID causes a CHECK
+// failure.
+TEST(AutofillEntityInstanceTest, SetMetadata_DifferentGuid_CheckFails) {
+  EntityInstance entity = test::GetPassportEntityInstance();
+  EntityInstance::EntityMetadata new_metadata = entity.metadata();
+  new_metadata.guid = EntityInstance::EntityId(base::Uuid::GenerateRandomV4());
+
+  EXPECT_DEATH_IF_SUPPORTED(entity.set_metadata(new_metadata), "");
+}
+
 }  // namespace
 }  // namespace autofill

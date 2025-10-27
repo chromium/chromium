@@ -488,6 +488,38 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_SameValuablesData) {
               UnorderedElementsAre(card1, card2));
 }
 
+// Tests that local metadata of server entities is preserved during a full sync.
+TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_PreservesLocalMetadata) {
+  // 1. Setup an initial server entity and simulate local usage, which updates
+  // the metadata.
+  EntityInstance server_vehicle = GetServerVehicleEntityInstance(
+      {.model = u"Model T", .guid = "00000000-0000-4000-8000-300000000000"});
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  server_vehicle.RecordEntityUsed(base::Time::Now());
+  AddEntities({server_vehicle});
+
+  const EntityInstance::EntityMetadata local_metadata =
+      *entity_table_.GetEntityMetadata(server_vehicle.guid());
+
+  // 2. Prepare new data from sync. It has the same GUID but different
+  // attributes and default metadata.
+  EntityInstance synced_vehicle = GetServerVehicleEntityInstance(
+      {.model = u"Model S", .guid = "00000000-0000-4000-8000-300000000000"});
+
+  // 3. Trigger the sync.
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_TRUE(SyncEntityInstances({synced_vehicle}));
+
+  // 4. Verify the result.
+  std::vector<EntityInstance> entities_in_db = GetAllEntityInstancesFromTable();
+  ASSERT_THAT(entities_in_db, testing::SizeIs(1));
+  // Metadata should be the preserved local metadata.
+  EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
+}
+
 // Tests that `SetEntities()` does nothing when the profile db migration feature
 // flag is disabled.
 TEST_F(ValuableSyncBridgeTest, SetEntities_ProfileDbMigrationFeatureDisabled) {
@@ -765,6 +797,44 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
   // remain.
   EXPECT_THAT(GetAllEntityInstancesFromTable(),
               UnorderedElementsAre(remote2_updated, local_entity));
+}
+
+// Tests that local metadata of server entities is preserved during incremental
+// updates.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_PreservesLocalMetadata) {
+  // 1. Setup an entity and simulate local usage, which updates the metadata.
+  EntityInstance local_vehicle = GetServerVehicleEntityInstance(
+      {.model = u"Model T", .guid = "00000000-0000-4000-8000-300000000000"});
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  local_vehicle.RecordEntityUsed(base::Time::Now());
+  AddEntities({local_vehicle});
+
+  const EntityInstance::EntityMetadata local_metadata =
+      *entity_table_.GetEntityMetadata(local_vehicle.guid());
+
+  // 2. Prepare an incremental update from sync.
+  const EntityInstance remote1_updated = GetServerVehicleEntityInstance(
+      {.model = u"Model S", .guid = "00000000-0000-4000-8000-300000000000"});
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      remote1_updated.guid().value(),
+      EntityInstanceToEntityData(remote1_updated)));
+
+  // 3. Apply the change.
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // 4. Verify the result.
+  std::vector<EntityInstance> entities_in_db = GetAllEntityInstancesFromTable();
+  ASSERT_THAT(entities_in_db, testing::SizeIs(1));
+  // Metadata should be the preserved local metadata.
+  EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
 }
 
 }  // namespace autofill
