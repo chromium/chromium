@@ -23,6 +23,8 @@ class Transport {
   enum class TransportError {
     // Socket was closed by the server.
     kSocketClosed,
+    // Request could not be serialized.
+    kSerializationError,
     // Response could not be parsed.
     kDeserializationError,
     // An error occurred on the client. Socket is now closed.

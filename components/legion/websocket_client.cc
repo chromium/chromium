@@ -9,17 +9,13 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "components/legion/session_deserializer.h"
 #include "net/http/http_request_headers.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
-#include "third_party/oak/chromium/proto/session/session.to_value.h"
 
 namespace legion {
 namespace {
@@ -72,10 +68,17 @@ void WebSocketClient::Send(const oak::session::v1::SessionRequest& request,
                            ResponseCallback callback) {
   DCHECK(!response_callback_);
   response_callback_ = std::move(callback);
-  base::Value value = oak::session::v1::Serialize(request);
-  std::string json;
-  base::JSONWriter::Write(value, &json);
-  Send(Request(json.begin(), json.end()));
+
+  std::string binary_proto;
+  if (!request.SerializeToString(&binary_proto)) {
+    LOG(ERROR) << "Failed to serialize proto request into a string. Check all "
+                  "required fields are set";
+    std::move(response_callback_)
+        .Run(base::unexpected(TransportError::kSerializationError));
+    return;
+  }
+
+  Send(Request(binary_proto.begin(), binary_proto.end()));
 }
 
 void WebSocketClient::Send(Request request) {
@@ -105,22 +108,20 @@ void WebSocketClient::OnResponse(
     return;
   }
 
-  if (response.has_value()) {
-    auto value = base::JSONReader::Read(
-        std::string(response->begin(), response->end()), base::JSON_PARSE_RFC);
-    if (value) {
-      oak::session::v1::SessionResponse session_response;
-      if (DeserializeSessionResponse(*value, &session_response)) {
-        std::move(response_callback_)
-            .Run(base::ok(std::move(session_response)));
-        return;
-      }
-    }
+  if (!response.has_value()) {
+    std::move(response_callback_).Run(base::unexpected(response.error()));
+    return;
+  }
+
+  std::string response_str = std::string(response->begin(), response->end());
+  oak::session::v1::SessionResponse session_response;
+  if (!session_response.ParseFromString(response_str)) {
     std::move(response_callback_)
         .Run(base::unexpected(TransportError::kDeserializationError));
     return;
   }
-  std::move(response_callback_).Run(base::unexpected(response.error()));
+
+  std::move(response_callback_).Run(base::ok(std::move(session_response)));
 }
 
 void WebSocketClient::Connect() {
@@ -135,7 +136,10 @@ void WebSocketClient::Connect() {
   state_ = State::kConnecting;
 
   std::vector<std::string> requested_protocols;
-  std::vector<network::mojom::HttpHeaderPtr> additional_headers;
+
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers{};
+  additional_headers.push_back(network::mojom::HttpHeader::New(
+      "X-WebChannel-Content-Type", "application/x-protobuf"));
 
   network_context_factory_.Run()->CreateWebSocket(
       service_url_, requested_protocols, net::SiteForCookies(),
