@@ -1,6 +1,7 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
 #include "build/build_config.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -80,9 +82,9 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
 
 // Tests download navigation.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
-  const GURL url =
-      ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
-                                base::FilePath().AppendASCII("a_zip_file.zip"));
+  const GURL url = chrome_test_utils::GetTestUrl(
+      base::FilePath().AppendASCII("downloads"),
+      base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), url);
 
   // Breadcrumbs should have been logged for starting and finishing the

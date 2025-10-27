@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -687,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ReloadPages) {
   // timeouts with RenderDocument enabled and revert this test to being
   // navigated to about:blank.
   ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL main_url = ui_test_utils::GetTestUrl(
+  const GURL main_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("empty.html")));
   EXPECT_TRUE(NavigateToURL(web_contents, main_url));
 

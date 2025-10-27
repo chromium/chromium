@@ -117,8 +117,8 @@ GURL CreateFilesystemURL(content::RenderFrameHost* rfh) {
 
 GURL CreateFileURL(const base::FilePath::CharType file_name[] =
                        FILE_PATH_LITERAL("title1.html")) {
-  GURL file_url =
-      ui_test_utils::GetTestUrl(base::FilePath(), base::FilePath(file_name));
+  GURL file_url = chrome_test_utils::GetTestUrl(base::FilePath(),
+                                                base::FilePath(file_name));
   EXPECT_EQ(url::kFileScheme, file_url.GetScheme());
 
   return file_url;

@@ -34,6 +34,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -182,7 +183,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
   }
 
   GURL GetTestUrl() {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(FILE_PATH_LITERAL("title2.html")));
   }
@@ -485,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, HistoryPersists) {
 
 // Invalid URLs should not go in history.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, InvalidURLNoHistory) {
-  GURL non_existant = ui_test_utils::GetTestUrl(
+  GURL non_existant = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("History"),
       base::FilePath().AppendASCII("non_existant_file.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_existant));
@@ -537,11 +538,11 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, NavigateMultiTimes) {
 // Verify history with multiple windows and tabs.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, MultiTabsWindowsHistory) {
   GURL url1 = GetTestUrl();
-  GURL url2  = ui_test_utils::GetTestUrl(
+  GURL url2 = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  GURL url3  = ui_test_utils::GetTestUrl(
+  GURL url3 = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title3.html")));
-  GURL url4  = ui_test_utils::GetTestUrl(
+  GURL url4 = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
@@ -564,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, MultiTabsWindowsHistory) {
 
 // Downloaded URLs should not show up in history.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, DownloadNoHistory) {
-  GURL download_url = ui_test_utils::GetTestUrl(
+  GURL download_url = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("downloads"),
       base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), download_url);
@@ -640,12 +641,12 @@ void NavigateFrameToURL(content::RenderFrameHost* rfh, const GURL& url) {
 
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, Subframe) {
   // Initial subframe requests should not show up in history.
-  GURL main_page = ui_test_utils::GetTestUrl(
+  GURL main_page = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("History"),
       base::FilePath().AppendASCII("page_with_iframe.html"));
-  GURL initial_subframe =
-      ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
-                                base::FilePath().AppendASCII("target.html"));
+  GURL initial_subframe = chrome_test_utils::GetTestUrl(
+      base::FilePath().AppendASCII("History"),
+      base::FilePath().AppendASCII("target.html"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_page));
   content::RenderFrameHost* frame = ChildFrameAt(browser()
@@ -658,9 +659,9 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, Subframe) {
   ASSERT_FALSE(HistoryContainsURL(initial_subframe));
 
   // User-initiated subframe navigations should show up in history.
-  GURL manual_subframe =
-      ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
-                                base::FilePath().AppendASCII("landing.html"));
+  GURL manual_subframe = chrome_test_utils::GetTestUrl(
+      base::FilePath().AppendASCII("History"),
+      base::FilePath().AppendASCII("landing.html"));
   NavigateFrameToURL(frame, manual_subframe);
   ASSERT_TRUE(HistoryContainsURL(manual_subframe));
 
@@ -677,17 +678,17 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, Subframe) {
   EXPECT_TRUE(ExecJs(frame, script));
   observer.Wait();
   GURL auto_subframe =
-      ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
-                                base::FilePath().AppendASCII("form.html"));
+      chrome_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
+                                    base::FilePath().AppendASCII("form.html"));
   ASSERT_FALSE(HistoryContainsURL(auto_subframe));
 }
 
 // HTTP meta-refresh redirects should only have an entry for the landing page.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, RedirectHistory) {
-  GURL redirector = ui_test_utils::GetTestUrl(
+  GURL redirector = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("History"),
       base::FilePath().AppendASCII("redirector.html"));
-  GURL landing_url = ui_test_utils::GetTestUrl(
+  GURL landing_url = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("History"),
       base::FilePath().AppendASCII("landing.html"));
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -722,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, CrossSiteRedirectHistory) {
 // Verify that navigation brings current page to top of history list.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, NavigateBringPageToTop) {
   GURL url1 = GetTestUrl();
-  GURL url2  = ui_test_utils::GetTestUrl(
+  GURL url2 = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title3.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
@@ -737,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, NavigateBringPageToTop) {
 // Verify that reloading a page brings it to top of history list.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReloadBringPageToTop) {
   GURL url1 = GetTestUrl();
-  GURL url2  = ui_test_utils::GetTestUrl(
+  GURL url2 = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title3.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
@@ -764,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, ReloadBringPageToTop) {
 // Verify that back/forward brings current page to top of history list.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BackForwardBringPageToTop) {
   GURL url1 = GetTestUrl();
-  GURL url2  = ui_test_utils::GetTestUrl(
+  GURL url2 = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title3.html")));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
@@ -877,10 +878,10 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, BeforeUnloadCommitDuringPending) {
 
 // Verify that submitting form adds target page to history list.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, SubmitFormAddsTargetPage) {
-  GURL form = ui_test_utils::GetTestUrl(
-      base::FilePath().AppendASCII("History"),
-      base::FilePath().AppendASCII("form.html"));
-  GURL target = ui_test_utils::GetTestUrl(
+  GURL form =
+      chrome_test_utils::GetTestUrl(base::FilePath().AppendASCII("History"),
+                                    base::FilePath().AppendASCII("form.html"));
+  GURL target = chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("History"),
       base::FilePath().AppendASCII("target.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), form));

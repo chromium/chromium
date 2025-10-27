@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -990,9 +991,9 @@ IN_PROC_BROWSER_TEST_F(
       extension->id(), active_web_contents()->GetBrowserContext()));
 
   // Gather the test URLs.
-  GURL page_url = ui_test_utils::GetTestUrl(
+  GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  GURL same_dir_resource = ui_test_utils::GetTestUrl(
+  GURL same_dir_resource = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title2.html")));
   ASSERT_EQ(url::kFileScheme, page_url.GetScheme());
   ASSERT_EQ(url::kFileScheme, same_dir_resource.GetScheme());
