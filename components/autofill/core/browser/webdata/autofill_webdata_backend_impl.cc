@@ -523,17 +523,19 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
-    EntityInstance::EntityId guid,
+    EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   EntityTable* table = EntityTable::FromWebDatabase(db);
-  if (!table->RemoveEntityInstance(guid)) {
+  if (!table->RemoveEntityInstance(entity.guid())) {
     ReportResult(Result::kRemoveEntityInstance_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
+  EntityInstance::EntityId guid = entity.guid();
+  // Notify observers.
   EntityInstanceChange change(EntityInstanceChange::REMOVE, std::move(guid),
-                              std::nullopt);
+                              std::move(entity));
   for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
        db_observer_list_) {
     db_observer.EntityInstanceChanged(change);

@@ -111,8 +111,13 @@ void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
 }
 
 void EntityDataManager::RemoveEntityInstance(EntityInstance::EntityId guid) {
+  base::optional_ref<const EntityInstance> entity_instance =
+      GetEntityInstance(guid);
+  if (!entity_instance) {
+    return;
+  }
   webdata_service_->RemoveEntityInstance(
-      std::move(guid),
+      *entity_instance,
       base::BindOnce(
           [](base::WeakPtr<EntityDataManager> self, EntityInstanceChange eic) {
             if (!self) {

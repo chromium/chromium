@@ -696,12 +696,13 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
 
 using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
 
-// Tests that `EntityInstanceChanged()` crashes on REMOVE change.
-TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_Remove) {
+// Tests that `EntityInstanceChanged()` ignores a local entity REMOVE
+// change.
+TEST_F(ValuableSyncBridgeDeathTest, EntityInstanceChanged_RemoveLocal) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+  const EntityInstance vehicle = test::GetVehicleEntityInstance();
   bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::REMOVE, vehicle.guid(), std::nullopt));
+      EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
 }
 
 class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {
