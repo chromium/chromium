@@ -1,0 +1,118 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.h"
+
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/content_extraction/frame_metadata_observer_registry.mojom.h"
+
+PaidContentPageLoadMetricsObserver::PaidContentPageLoadMetricsObserver() =
+    default;
+
+PaidContentPageLoadMetricsObserver::~PaidContentPageLoadMetricsObserver() =
+    default;
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PaidContentPageLoadMetricsObserver::OnStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url,
+    bool started_in_foreground) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return STOP_OBSERVING;
+  }
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PaidContentPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return STOP_OBSERVING;
+  }
+
+  // The PaidContentMetadataObserver only sends when there is paid content,
+  // so we initialize to false.
+  has_paid_content_ = false;
+
+  navigation_handle->GetRenderFrameHost()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&registry_);
+  registry_->AddPaidContentMetadataObserver(
+      receiver_.BindNewPipeAndPassRemote());
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&PaidContentPageLoadMetricsObserver::
+                         OnPaidContentMetadataObserverDisconnect,
+                     base::Unretained(this)));
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PaidContentPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This observer is not interested in fenced frames.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PaidContentPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This observer is not interested in prerendering.
+  return STOP_OBSERVING;
+}
+
+void PaidContentPageLoadMetricsObserver::OnPaidContentMetadataChanged(
+    bool has_paid_content) {
+  has_paid_content_ = has_paid_content;
+}
+
+void PaidContentPageLoadMetricsObserver::
+    OnPaidContentMetadataObserverDisconnect() {
+  receiver_.reset();
+}
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PaidContentState {
+  kUnknown = 0,
+  kHasPaidContent = 1,
+  kNoPaidContentFound = 2,
+};
+
+void RecordPaidContentPageLoad(
+    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate,
+    std::optional<bool> has_paid_content) {
+  ukm::builders::PaidContentPageLoad builder(delegate.GetPageUkmSourceId());
+  // TODO(gklassen): Add UMA.
+  // TODO(gklassen): Consider adding support for isAccessibleForFree=true as new
+  // enum value.
+  PaidContentState value = PaidContentState::kUnknown;
+  if (has_paid_content.has_value()) {
+    value = has_paid_content.value() ? PaidContentState::kHasPaidContent
+                                     : PaidContentState::kNoPaidContentFound;
+  }
+  builder.SetHasPaidContent(static_cast<int64_t>(value));
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+}  // namespace
+
+void PaidContentPageLoadMetricsObserver::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  RecordPaidContentPageLoad(GetDelegate(), has_paid_content_);
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PaidContentPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  RecordPaidContentPageLoad(GetDelegate(), has_paid_content_);
+  return CONTINUE_OBSERVING;
+}

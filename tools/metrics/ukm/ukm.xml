@@ -18953,6 +18953,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PaidContentPageLoad" singular="True">
+  <owner>gklassen@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <summary>
+    Records the paid content state of the page. This event is only recorded for
+    pages that have paid content metadata.
+  </summary>
+  <metric name="HasPaidContent" enum="PaidContentState">
+    <summary>
+      The paid content state of the page.
+    </summary>
+  </metric>
+</event>
+
 <event name="PaintPreviewCapture" singular="True">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
