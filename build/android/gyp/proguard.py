@@ -400,6 +400,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
+      cmd += ['--map-diagnostics:CheckEnumUnboxedDiagnostic', 'error', 'none']
     # Triggered by rules from deps we cannot control.
     cmd += [('--map-diagnostics:EmptyMemberRulesToDefaultInitRuleConversion'
              'Diagnostic'), 'warning', 'none']
