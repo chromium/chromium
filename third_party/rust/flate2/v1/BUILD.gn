@@ -44,7 +44,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "flate2"
   cargo_pkg_description = "DEFLATE compression and decompression exposed as Read/BufRead/Write streams. Supports miniz_oxide and multiple zlib implementations. Supports zlib, gzip, and raw deflate streams."
   cargo_pkg_repository = "https://github.com/rust-lang/flate2-rs"
-  cargo_pkg_version = "1.1.4"
+  cargo_pkg_version = "1.1.5"
 
   allow_unsafe = true
 
