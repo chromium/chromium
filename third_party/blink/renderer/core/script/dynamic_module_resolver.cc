@@ -211,7 +211,12 @@ void DynamicModuleResolver::ResolveDynamically(
     const ModuleRequest& module_request,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver<IDLAny>* promise_resolver) {
-  DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext())
+  // CSS Module Scripts can be imported declaratively, so this DCHECK doesn't
+  // apply in that context.
+  const ModuleType module_type =
+      modulator_->ModuleTypeFromRequest(module_request);
+  DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext() ||
+         (module_type == ModuleType::kCSS))
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
 
@@ -247,7 +252,6 @@ void DynamicModuleResolver::ResolveDynamically(
   KURL url = modulator_->ResolveModuleSpecifier(
       module_request.specifier, base_url, /*failure_reason=*/nullptr);
 
-  ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 
   // <spec label="fetch-an-import()-module-script-graph" step="2">If url is
   // failure, then asynchronously complete this algorithm with null, and abort

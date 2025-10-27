@@ -6965,6 +6965,7 @@ bool Element::AttachDeclarativeShadowRoot(
     SlotAssignmentMode slot_assignment,
     bool serializable,
     bool clonable,
+    const AtomicString& adopted_stylesheets,
     const AtomicString& reference_target,
     const bool waiting_for_scoped_registry) {
   // 12. Run attach a shadow root with shadow host equal to declarative shadow
@@ -6997,12 +6998,17 @@ bool Element::AttachDeclarativeShadowRoot(
   ShadowRoot& shadow_root = AttachShadowRootInternal(
       mode, focus_delegation, slot_assignment, registry, serializable, clonable,
       reference_target);
-  // 13.1. Set declarative shadow host element's shadow host's "is declarative
+  // 10.8.5. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
-  // 13.NEW. Set declarative shadow host element's shadow host's "available
+  // 10.8.7. Set declarative shadow host element's shadow host's "available
   // to element internals" to true.
   shadow_root.SetAvailableToElementInternals(true);
+  // 10.8.NEW. Process shadowrootadoptedstylesheets attribute.
+  if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled()) {
+    shadow_root.ProcessAdoptedStylesheetAttribute(
+        adopted_stylesheets);
+  }
   return true;
 }
 

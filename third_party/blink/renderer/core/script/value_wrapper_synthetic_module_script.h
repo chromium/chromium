@@ -55,6 +55,10 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
                                     v8::Local<v8::Value> value,
                                     const TextPosition& start_position);
 
+  v8::Local<v8::Value> GetExport(v8::Isolate* isolate) const {
+    return export_value_.Get(isolate);
+  }
+
   // <specdef
   // href="https://webidl.spec.whatwg.org/#synthetic-module-record">
   // An abstract operation that will be performed upon evaluation of the module,

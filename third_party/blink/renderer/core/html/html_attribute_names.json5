@@ -338,6 +338,7 @@
     "selected",
     "selectedcontentelement",
     "shadowroot",
+    "shadowrootadoptedstylesheets",
     "shadowrootmode",
     "shadowrootclonable",
     "shadowrootdelegatesfocus",

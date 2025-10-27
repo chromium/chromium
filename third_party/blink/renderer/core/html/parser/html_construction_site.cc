@@ -1003,7 +1003,12 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             : nullptr;
     const auto& reference_target =
         reference_target_attr ? reference_target_attr->Value() : g_null_atom;
-
+    const auto* adopted_stylesheets_attr =
+        template_stack_item->GetAttributeItem(
+            html_names::kShadowrootadoptedstylesheetsAttr);
+    const auto& adopted_stylesheets = adopted_stylesheets_attr
+                                          ? adopted_stylesheets_attr->Value()
+                                          : g_null_atom;
     bool waiting_for_scoped_registry =
         RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
         template_stack_item->GetAttributeItem(
@@ -1011,8 +1016,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
 
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,
-        slot_assignment_mode, serializable, clonable, reference_target,
-        waiting_for_scoped_registry);
+        slot_assignment_mode, serializable, clonable, adopted_stylesheets,
+        reference_target, waiting_for_scoped_registry);
     // If the shadow root attachment fails, e.g. if the host element isn't a
     // valid shadow host, then we leave should_attach_template true, so that
     // a "normal" template element gets attached to the DOM tree.

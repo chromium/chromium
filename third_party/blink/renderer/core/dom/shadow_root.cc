@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_slot_assignment_mode.h"
@@ -46,10 +48,16 @@
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
+#include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
+#include "third_party/blink/renderer/core/script/modulator.h"
+#include "third_party/blink/renderer/core/script/module_script.h"
+#include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -302,6 +310,69 @@ V8SlotAssignmentMode ShadowRoot::slotAssignment() const {
   return V8SlotAssignmentMode(IsManualSlotting()
                                   ? V8SlotAssignmentMode::Enum::kManual
                                   : V8SlotAssignmentMode::Enum::kNamed);
+}
+
+CSSStyleSheet* ShadowRoot::GetFetchedStyleSheetFromModuleMap(
+    const AtomicString& specifier) {
+  CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+
+  LocalDOMWindow* window = GetDocument().domWindow();
+  Modulator* modulator =
+      Modulator::From(ToScriptStateForMainWorld(window->GetFrame()));
+  v8::Isolate* isolate = modulator->GetScriptState()->GetIsolate();
+  CHECK(isolate);
+
+  // Several operations below require a HandleScope.
+  v8::HandleScope handle_scope(isolate);
+
+  // Resolve the specifier to ensure import maps are accounted for.
+  const KURL resolved_url = modulator->ResolveModuleSpecifier(
+      specifier, window->BaseURL(), /*failure_reason=*/nullptr);
+  if (resolved_url.IsValid()) {
+    // TODO(crbug.com/448174611) - should RequestContextType and
+    // RequestDestination be script or style?
+    ModuleScriptFetchRequest module_request(
+        resolved_url, ModuleType::kCSS,
+        mojom::blink::RequestContextType::SCRIPT,
+        network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
+        Referrer::ClientReferrerString(), TextPosition::MinimumPosition(),
+        ModuleImportPhase::kEvaluation);
+    modulator->FetchSingle(module_request, window->Fetcher(),
+                           ModuleGraphLevel::kTopLevelModuleFetch,
+                           ModuleScriptCustomFetchType::kNone, nullptr);
+
+    // We can fetch and immediately (synchronously) get a result, since the
+    // current design doesn't support initiating a fetch. This means a dataURI
+    // will always be available (due to the fetch above), and so will external
+    // files that have already been added to the module map.
+    const ModuleScript* module_script =
+        modulator->GetFetchedModuleScript(resolved_url, ModuleType::kCSS);
+    if (module_script) {
+      CSSStyleSheet* sheet = V8CSSStyleSheet::ToWrappable(
+          isolate,
+          static_cast<const ValueWrapperSyntheticModuleScript*>(module_script)
+              ->GetExport(isolate));
+      // There shouldn't be a module script without an associated CSSStyleSheet.
+      CHECK(sheet);
+      return sheet;
+    }
+  }
+  return nullptr;
+}
+
+void ShadowRoot::ProcessAdoptedStylesheetAttribute(
+    AtomicString value) {
+  CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+  if (value.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/448174611) - support a space-separated list of
+  // specifiers to allow importing multiple stylesheets.
+  if (CSSStyleSheet* sheet = GetFetchedStyleSheetFromModuleMap(value)) {
+    HeapVector<Member<CSSStyleSheet>> adopted_sheets{*sheet};
+    AppendAdoptedStyleSheets(adopted_sheets);
+  }
 }
 
 void ShadowRoot::SetNeedsAssignmentRecalc() {

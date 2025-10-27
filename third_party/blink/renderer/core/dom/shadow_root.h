@@ -91,6 +91,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   bool clonable() const { return clonable_; }
   void setClonable(bool clonable) { clonable_ = clonable; }
 
+  void ProcessAdoptedStylesheetAttribute(AtomicString value);
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -187,6 +189,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
 
  private:
   friend class ReferenceTargetIdObserver;
+
+  CSSStyleSheet* GetFetchedStyleSheetFromModuleMap(
+      const AtomicString& specifier);
 
   void ChildrenChanged(const ChildrenChange&) override;
 

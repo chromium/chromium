@@ -986,6 +986,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    SlotAssignmentMode,
                                    bool serializable,
                                    bool clonable,
+                                   const AtomicString& adopted_stylesheets,
                                    const AtomicString& reference_target,
                                    const bool waiting_for_scoped_registry);
 
