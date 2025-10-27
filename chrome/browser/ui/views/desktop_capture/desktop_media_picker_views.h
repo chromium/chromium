@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
+#include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_pane_view.h"
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
@@ -184,6 +185,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void OnPermissionUpdate(bool has_permission);
   void RecordPermissionInteractionUma() const;
   void OnTriggerAudioPermissionCheck();
+  void OnAudioPermissionUpdate();
 #endif
 
   const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
@@ -224,6 +226,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
       screen_capture_permission_checker_;
   std::optional<bool> initial_permission_state_;
   bool permission_pane_was_shown_ = false;
+  std::unique_ptr<AudioCapturePermissionChecker>
+      audio_capture_permission_checker_;
 #endif
 
   // For recording dialog-duration UMA histograms.

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "audio_capture_permission_checker_mac.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -76,10 +77,6 @@
 
 BASE_FEATURE(kDesktopMediaPickerMultiLineTitle,
              base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kDesktopMediaPickerCheckAudioPermissions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
@@ -476,6 +473,10 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       ScreenCapturePermissionChecker::MaybeCreate(
           base::BindRepeating(&DesktopMediaPickerDialogView::OnPermissionUpdate,
                               weak_factory_.GetWeakPtr()));
+  audio_capture_permission_checker_ =
+      AudioCapturePermissionChecker::MaybeCreate(base::BindRepeating(
+          &DesktopMediaPickerDialogView::OnAudioPermissionUpdate,
+          weak_factory_.GetWeakPtr()));
 #endif
 
   SetModalType(params.modality);
@@ -862,7 +863,7 @@ std::unique_ptr<views::View> DesktopMediaPickerDialogView::SetupPane(
 
   base::RepeatingCallback<void(void)> trigger_audio_permission_check;
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kDesktopMediaPickerCheckAudioPermissions) &&
+  if (audio_capture_permission_checker_ &&
       (type == DesktopMediaList::Type::kScreen ||
        type == DesktopMediaList::Type::kWindow)) {
     trigger_audio_permission_check = base::BindRepeating(
@@ -1272,9 +1273,25 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
 }
 
 void DesktopMediaPickerDialogView::OnTriggerAudioPermissionCheck() {
-  // TODO(crbug.com/447521447): Add code to check audio permission status and
-  // update UI depending on outcome.
+  const int index = GetSelectedTabIndex();
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), categories_.size());
+  if (!categories_[index].pane) {
+    return;
+  }
+
+  // TODO(crbug.com/447521447): Update UI depending on permission status.
+  if (categories_[index].pane->IsAudioSharingApprovedByUser() &&
+      audio_capture_permission_checker_->GetState() ==
+          AudioCapturePermissionChecker::State::kUnknown) {
+    audio_capture_permission_checker_->RunCheck();
+  }
 }
+
+void DesktopMediaPickerDialogView::OnAudioPermissionUpdate() {
+  // TODO(crbug.com/447521447): Update UI depending on permission status.
+}
+
 #endif
 
 BEGIN_METADATA(DesktopMediaPickerDialogView)
