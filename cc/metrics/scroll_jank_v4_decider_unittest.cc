@@ -1091,6 +1091,24 @@ TEST_F(ScrollJankV4DeciderTest, MissedVsyncDuringSlowFling) {
   EXPECT_THAT(result5, kHasNoMissedVsyncs);
 }
 
+/*
+Tests that the decider doesn't crash when `last_input_generation_ts` <
+`first_input_generation_ts`. Regression test for https://crbug.com/454900155.
+*/
+TEST_F(ScrollJankV4DeciderTest,
+       HandlesIncorrectInputGenerationTimestampOrderingGracefully) {
+  std::optional<ScrollJankV4Result> result =
+      decider_.DecideJankForPresentedFrame(
+          /* first_input_generation_ts= */ MillisSinceEpoch(200),
+          /* last_input_generation_ts= */ MillisSinceEpoch(100),
+          /* presentation_ts= */ MillisSinceEpoch(300),
+          /* vsync_interval= */ kVsyncInterval,
+          /* has_inertial_input= */ true,
+          /* abs_total_raw_delta_pixels= */ 0.5f,
+          /* max_abs_inertial_raw_delta_pixels= */ 0.5f);
+  EXPECT_EQ(result, std::nullopt);
+}
+
 struct ScrollJankV4DeciderRunningConsistencyTestCase {
   std::string test_name;
   base::TimeTicks input_ts;

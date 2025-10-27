@@ -25,10 +25,10 @@ ScrollJankV4Decider::DecideJankForPresentedFrame(
     bool has_inertial_input,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels) {
-  CHECK_LE(first_input_generation_ts, last_input_generation_ts);
   CHECK(has_inertial_input || max_abs_inertial_raw_delta_pixels == 0);
 
-  if (presentation_ts <= last_input_generation_ts) {
+  if ((last_input_generation_ts < first_input_generation_ts) ||
+      (presentation_ts <= last_input_generation_ts)) {
     // TODO(crbug.com/40913586): Investigate when these edge cases can be
     // triggered in field and web tests. We have already seen this triggered in
     // field, and some web tests where an event with null(0) timestamp gets
