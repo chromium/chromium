@@ -282,7 +282,9 @@ void WaylandToplevelWindow::Restore() {
     return;
   }
 
-  SetWindowState(PlatformWindowState::kNormal, display::kInvalidDisplayId);
+  SetWindowState(previously_maximized_ ? PlatformWindowState::kMaximized
+                                       : PlatformWindowState::kNormal,
+                 display::kInvalidDisplayId);
 }
 
 void WaylandToplevelWindow::ShowWindowControlsMenu(const gfx::Point& point) {
