@@ -957,6 +957,24 @@ TEST(RuleSetTest, ScopePseudoBucketing_Implicit) {
   EXPECT_EQ(1u, rule_set.UniversalRules().size());
 }
 
+// https://issues.chromium.org/issues/454830626
+TEST(RuleSetTest, ScopePseudoBucketing_NestedScopePseudo) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(R"CSS(
+    @scope (.a) {
+      @scope(:scope) {
+        :scope {
+          color: green;
+        }
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  EXPECT_EQ(0u, rule_set.UniversalRules().size());
+  EXPECT_EQ(1u, rule_set.ClassRules(AtomicString("a")).size());
+}
+
 TEST(RuleSetTest, ScopePseudoBucketing_NestedDeclarations) {
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;

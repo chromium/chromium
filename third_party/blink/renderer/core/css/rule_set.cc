@@ -448,8 +448,8 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
               style_scope ? style_scope->From() : nullptr;
           if (selector_list &&
               CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
-            bool should_continue =
-                ExtractBucketingValues(selector_list, style_scope, values);
+            bool should_continue = ExtractBucketingValues(
+                selector_list, style_scope->Parent(), values);
             CHECK(should_continue);
           }
           break;
