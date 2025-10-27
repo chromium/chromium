@@ -1351,12 +1351,6 @@ void ClientTagBasedDataTypeProcessor::ExpireAllEntries(
   CHECK(metadata_changes);
   CHECK(entity_tracker_);
 
-  // Bridges must support incremental updates to be able to write data and this
-  // code path is only used for bridges that *don't* support incremental updates
-  // (hence it's not expected here to have any unsynced data). See
-  // crbug.com/40668179 for details.
-  CHECK_EQ(entity_tracker_->GetUnsyncedDataCount(), 0u);
-
   std::vector<std::string> storage_key_to_be_deleted;
   for (const ProcessorEntity* entity :
        entity_tracker_->GetAllEntitiesIncludingTombstones()) {
