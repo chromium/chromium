@@ -1203,6 +1203,15 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
     return;
   }
 
+  // Variation where we do not open the Side Panel automatically; instead we
+  // show a tutorial.
+  if (ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get() == 0) {
+    feature_promo_helper_->MaybeShowFeaturePromo(
+        feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
+        web_contents_.get());
+    return;
+  }
+
   feature_promo_helper_->MaybeShowFeaturePromo(
       feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature,
       web_contents_.get());
@@ -1247,6 +1256,16 @@ NewTabPageHandler::CanShowCustomizeChromePromo() {
           prefs::kNtpCustomizeChromeButtonOpenCount) > 0) {
     return NTPCustomizeChromePromoEligibility::kCustomizeChromeOpenedByUser;
   }
+
+  // If no max auto open count is set, then we are showing a different variation
+  // of the promo (not involving auto opening of the Side Panel), for which the
+  // user is considered eligible at this point.
+  if (ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get() == 0) {
+    return NTPCustomizeChromePromoEligibility::kCanShowPromo;
+  }
+
+  CHECK_GT(ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get(), 0);
+  CHECK_GT(ntp_features::kNtpCustomizeChromeAutoShownSessionMaxCount.Get(), 0);
 
   if (profile_->GetPrefs()->GetInteger(
           prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount) >=

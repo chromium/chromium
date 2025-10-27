@@ -293,12 +293,17 @@ IN_PROC_BROWSER_TEST_F(
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
 }
 
-class NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest
-    : public NewTabPageHandlerWithCustomizeChromePromoBrowserTest {
+class NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest
+    : public InteractiveFeaturePromoTestMixin<
+          NewTabPageHandlerWithCustomizeChromePromoBaseBrowserTest> {
  protected:
-  NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest() {
+  NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest()
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::
+                 kIPHDesktopCustomizeChromeExperimentFeature})) {
     scoped_feature_list_iph_only_.InitAndEnableFeatureWithParameters(
         ntp_features::kNtpCustomizeChromeAutoOpen,
+        // These params enables the tutorial variation.
         {{"max_customize_chrome_auto_shown_count", "0"},
          {"max_customize_chrome_auto_shown_session_count", "0"}});
   }
@@ -307,12 +312,21 @@ class NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_iph_only_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    NewTabPageHandlerWithCustomizeChromePromoIPHOnlyBrowserTest,
-    DontOpenPanelWhenOnlyIPHShouldBeShown) {
-  OpenNewTabPageInForegroundAndWaitForLoad();
+IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest,
+                       DontOpenPanelWhenTutorialShouldBeShown) {
+  OpenNewTabPageInForeground();
+
+  RunTestSequence(
+      InAnyContext(WaitForShow(
+          CustomizeButtonsHandler::kCustomizeChromeButtonElementId)),
+      CheckPromoRequested(
+          feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
+          true));
   EXPECT_FALSE(IsCustomizeChromeEntryShowing());
 
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.CustomizeChromePromoEligibility",
+      NTPCustomizeChromePromoEligibility::kCanShowPromo, 1);
   histogram_tester_.ExpectUniqueSample(
       "SidePanel.OpenTrigger",
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);

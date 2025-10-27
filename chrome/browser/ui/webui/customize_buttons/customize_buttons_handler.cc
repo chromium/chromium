@@ -139,7 +139,8 @@ void CustomizeButtonsHandler::SetCustomizeChromeSidePanelVisible(
   feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, contents);
   feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, contents);
+      feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
+      contents);
 }
 
 void CustomizeButtonsHandler::IncrementCustomizeChromeButtonOpenCount() {

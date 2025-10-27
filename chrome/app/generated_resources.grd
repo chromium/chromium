@@ -10846,7 +10846,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Customize Chrome to give your browser a new look
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in customize chrome tutorial">
-        Click to customize Chrome
+        Click "Customize Chrome"
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_CHANGE_THEME" desc="The description of the 'change theme' step in customize chrome tutorial">
         Click “Change theme” to explore themes inspired by artists, nature and more
@@ -10855,13 +10855,13 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Select a collection
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_APPLY_THEME" desc="The description of the 'apply theme' step in customize chrome tutorial">
-        Choose an image to apply the theme instantly
+        Select an image to apply the theme instantly
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_CLICK_BACK_ARROW" desc="The description of the 'click back arrow' step in customize chrome tutorial">
         Click the back arrow to explore other options
       </message>
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_SUCCESS_BODY" desc="The description of the body text in the 'success' step in customize chrome tutorial">
-        You can now give your browser a new look at any time.
+        You can now give your browser a new look at any time from the Customize Chrome menu
       </message>
 
       <!-- Password Manager Tutorial Strings -->

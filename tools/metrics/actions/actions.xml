@@ -289,10 +289,10 @@ should be able to be added at any place in this file.
   <variant name="_DefaultBrowserPromoSettingCard"
       summary="For Default browser promo in Chrome settings."/>
   <variant name="_DefaultSiteView" summary="For DefaultSiteView feature."/>
-  <variant name="_DesktopCustomizeChrome"
-      summary="For Customize Chrome feature."/>
   <variant name="_DesktopCustomizeChromeAutoOpen"
       summary="For Customize Chrome Auto Open feature."/>
+  <variant name="_DesktopCustomizeChromeExperiment"
+      summary="For Customize Chrome feature."/>
   <variant name="_DesktopCustomizeChromeRefresh"
       summary="For Customize Chrome refresh feature."/>
   <variant name="_DesktopPwaInstall" summary="For desktop PWA install icon."/>

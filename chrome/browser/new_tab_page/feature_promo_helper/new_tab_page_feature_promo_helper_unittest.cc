@@ -39,7 +39,7 @@ class NewTabPageFeaturePromoHelperTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
 
     iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDesktopCustomizeChromeFeature});
+        {feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature});
 
     AddTab(browser(), GURL("chrome://newtab"));
     tab_ = browser()->tab_strip_model()->GetActiveWebContents();
@@ -79,11 +79,12 @@ TEST_F(NewTabPageFeaturePromoHelperTest, RecordFeatureUsage_CustomizeChrome) {
   EXPECT_CALL(
       *user_education(),
       NotifyFeaturePromoFeatureUsed(
-          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature),
           testing::_))
       .Times(1);
   helper()->RecordPromoFeatureUsageAndClosePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab());
+      feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature, tab());
 }
 #endif  // !BUILDFLAG(CHROME_FOR_TESTING)
 
@@ -92,11 +93,11 @@ TEST_F(NewTabPageFeaturePromoHelperTest,
   EXPECT_CALL(
       *user_education(),
       MaybeShowFeaturePromo(user_education::test::MatchFeaturePromoParams(
-          feature_engagement::kIPHDesktopCustomizeChromeFeature)))
+          feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature)))
       .Times(1);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(true);
   helper()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab());
+      feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature, tab());
 }
 
 TEST_F(NewTabPageFeaturePromoHelperTest,
@@ -104,5 +105,5 @@ TEST_F(NewTabPageFeaturePromoHelperTest,
   EXPECT_CALL(*user_education(), MaybeShowFeaturePromo).Times(0);
   helper()->SetDefaultSearchProviderIsGoogleForTesting(false);
   helper()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab());
+      feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature, tab());
 }

@@ -251,7 +251,6 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
   const base::Feature* const kExistingPromosWithoutMetadata[] = {
       &feature_engagement::kIPHComposeMSBBSettingsFeature,
       &feature_engagement::kIPHDesktopSharedHighlightingFeature,
-      &feature_engagement::kIPHDesktopCustomizeChromeFeature,
       &feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
       &feature_engagement::kIPHGMCCastStartStopFeature,
       &feature_engagement::kIPHGMCLocalMediaCastingFeature,

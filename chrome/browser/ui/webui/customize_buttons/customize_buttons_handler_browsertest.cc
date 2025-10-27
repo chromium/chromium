@@ -165,7 +165,8 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
   EXPECT_CALL(
       *GetMockFeaturePromoHelper(),
       RecordPromoFeatureUsageAndClosePromo(
-          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature),
           web_contents))
       .Times(2);
   EXPECT_CALL(
@@ -289,7 +290,8 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
   EXPECT_CALL(
       *GetMockFeaturePromoHelper(),
       RecordPromoFeatureUsageAndClosePromo(
-          testing::Ref(feature_engagement::kIPHDesktopCustomizeChromeFeature),
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature),
           web_contents))
       .Times(1);
   EXPECT_CALL(
