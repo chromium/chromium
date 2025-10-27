@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/css/style_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -39,6 +41,7 @@
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
+#include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -263,30 +266,41 @@ void StyleElement::AddImportMapEntry(Element& element, const String& text) {
 
   // Create an Import Map JSON string in the following format:
   // "imports": {
-  //   "<specifier attribute value>": "data:text/css,<URL-percent-encoded CSS
-  //   content>"
+  //   "<specifier attribute value>": "<generated URL>"
   // }
-  // TODO(crbug.com/448174611) - consider encoding in base64 to decrease
-  // string size in memory (at the expense of decoding on the CPU).
+  //
+  // ...where <generated URL> can be either a Blob or a dataURI, depending on
+  // whether features::kDeclarativeCSSModulesUseDataURI is set.
+  // TODO(crbug.com/448174611) - finalize which approach to use with the WHATWG
+  // and remove the other option.
   // TODO(crbug.com/448174611) - add links to each step from the spec once the
   // PR is merged.
   // TODO(crbug.com/364917757) - Use PendingImportMap here to reduce code (if
   // the dependency on the <script> element can be removed from
   // PendingImportMap).
-  const String data_uri_string =
-      "data:text/css," + EncodeWithURLEscapeSequences(text);
-  CHECK(KURL(data_uri_string).IsValid());
+  String url;
+  ExecutionContext* context = element.GetExecutionContext();
+  if (base::FeatureList::IsEnabled(
+          features::kDeclarativeCSSModulesUseDataURI)) {
+    // TODO(crbug.com/448174611) - consider encoding in base64 to decrease
+    // string size in memory (at the expense of decoding on the CPU).
+    url = "data:text/css," + EncodeWithURLEscapeSequences(text);
+  } else {
+    auto* blob = Blob::Create(text.Span8(), "text/css");
+    CHECK(blob);
+    url = DOMURL::CreatePublicURL(context, blob);
+  }
+  CHECK(KURL(url).IsValid());
 
   // The inner JSON object needs to be on the heap because
   // JSONObject::SetObject only accepts a unique_ptr.
   auto import_map_inner_json = std::make_unique<JSONObject>();
   import_map_inner_json->SetString(
-      element.getAttribute(html_names::kSpecifierAttr), data_uri_string);
+      element.getAttribute(html_names::kSpecifierAttr), url);
 
   JSONObject import_map_outer_json;
   import_map_outer_json.SetObject("imports", std::move(import_map_inner_json));
 
-  ExecutionContext* context = element.GetExecutionContext();
   std::optional<ImportMapError> error_to_rethrow;
 
   // Even though ImportMap is garbage collected (and thus managed by Oilpan), we

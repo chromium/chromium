@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -172,7 +174,10 @@ TEST(StyleElementTest, CSSModule) {
   // added.
 }
 
-TEST(StyleElementTest, CSSModuleImportMap) {
+TEST(StyleElementTest, CSSModuleImportMapDataURI) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kDeclarativeCSSModulesUseDataURI};
+
   test::TaskEnvironment task_environment;
   auto dummy_page_holder =
       std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
@@ -185,8 +190,8 @@ TEST(StyleElementTest, CSSModuleImportMap) {
       Modulator::From(ToScriptStateForMainWorld(document.GetFrame()));
   const ImportMap* import_map = modulator->GetImportMapForTest();
 
-  // Verify that the internal structure of the document's Import Map contains an
-  // entry for the URL-encoded contents of the <style> tag.
+  // Verify that the internal structure of the document's Import Map contains
+  // an entry for the URL-encoded contents of the <style> tag.
   EXPECT_EQ(
       import_map->ToStringForTesting(),
       "{\"imports\":{\"foo\":\"data:text/"
