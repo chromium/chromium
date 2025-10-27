@@ -1579,7 +1579,8 @@ jint AwContents::StartPrerendering(
           url, content::PreloadingTriggerType::kEmbedder, "WebView",
           std::move(additional_headers), std::move(no_vary_search_hint),
           page_transition,
-          /*should_warm_up_compositor=*/false,
+          base::FeatureList::IsEnabled(
+              features::kPrerender2WarmUpCompositorForWebView),
           /*should_prepare_paint_tree=*/false,
           content::PreloadingHoldbackStatus::kUnspecified,
           content::PreloadPipelineInfo::Create(

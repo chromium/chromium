@@ -316,4 +316,9 @@ BASE_FEATURE(kWebViewBypassProvisionalCookieManager,
 BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, requests the compositor warm-up (crbug.com/41496019) for the
+// prerender trigger.
+BASE_FEATURE(kPrerender2WarmUpCompositorForWebView,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features
