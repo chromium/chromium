@@ -60,6 +60,7 @@
 #import "components/policy/core/common/policy_statistics_collector.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/privacy_sandbox/tracking_protection_prefs.h"
 #import "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #import "components/regional_capabilities/regional_capabilities_prefs.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -1160,6 +1161,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 10/2025.
   registry->RegisterStringPref(kLegacySyncSessionsGUID, std::string());
+  registry->RegisterBooleanPref(prefs::kFingerprintingProtectionEnabled, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1358,6 +1360,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kLongFeedVisitTimeAggregateKey);
   prefs->ClearPref(kLastUsedFeedForGoodVisitsKey);
   prefs->ClearPref(kLegacySyncSessionsGUID);
+  prefs->ClearPref(prefs::kFingerprintingProtectionEnabled);
 }
 
 void MigrateObsoleteUserDefault() {
