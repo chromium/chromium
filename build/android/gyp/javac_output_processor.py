@@ -8,6 +8,7 @@
 import functools
 import os
 import pathlib
+import posixpath
 import re
 import shlex
 import sys
@@ -123,9 +124,15 @@ class JavacOutputProcessor:
         if short_class_name in self._missing_classes_short:
           continue
         path = m.group('path')
-        package_name = _extract_package_name(path)
-        if not package_name:
-          continue
+        if os.path.exists(path):
+          package_name = _extract_package_name(path)
+          if not package_name:
+            continue
+        else:
+          # This can happen for .srcjars in turbine.py (which directly supports
+          # .srcjar files).
+          # E.g.: "org/chromium/network/mojom/ParsedHeaders.java"
+          package_name = posixpath.dirname(path).replace('/', '.')
         full_class_name = f'{package_name}.{short_class_name}'
 
       if full_class_name not in self._missing_classes_full:
