@@ -47,14 +47,6 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
 
-namespace {
-
-/// Animation duration of location bar height change in edit state. Used when
-/// the omnibox is multiline.
-constexpr CGFloat kLocationBarHeightChangeAnimationDuration = 0.3f;
-
-}  // namespace
-
 @interface ToolbarCoordinator () <GuidedTourCommands,
                                   LocationBarCoordinatorHeightDelegate,
                                   PrimaryToolbarViewControllerDelegate,
@@ -663,15 +655,7 @@ constexpr CGFloat kLocationBarHeightChangeAnimationDuration = 0.3f;
   [self.secondaryToolbarCoordinator setLocationBarHeight:height];
 
   [self.toolbarHeightDelegate toolbarsHeightChanged];
-
-  if (animated) {
-    [UIView
-        animateWithDuration:kLocationBarHeightChangeAnimationDuration
-                 animations:^{
-                   [self.primaryToolbarViewController.view layoutIfNeeded];
-                   [self.secondaryToolbarViewController.view layoutIfNeeded];
-                 }];
-  }
+  [self.toolbarHeightDelegate layoutToolbarHeightChangeWithAnimation:animated];
 }
 
 #pragma mark - ToolbarCommands

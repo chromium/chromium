@@ -124,6 +124,9 @@ enum HeaderBehaviour {
 // dynamic island visible.
 const CGFloat kTopDynamicIslandInset = 24;
 
+// The animation duration of focusing/defocusing the multiline omnibox.
+const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
+
 }  // namespace
 
 #pragma mark - HeaderDefinition helper
@@ -2799,6 +2802,21 @@ const CGFloat kTopDynamicIslandInset = 24;
                                            .constant];
   }
   [self updateForFullscreenProgress:self.footerFullscreenProgress];
+}
+
+- (void)layoutToolbarHeightChangeWithAnimation:(BOOL)animated {
+  if (!self.viewLoaded) {
+    return;
+  }
+
+  if (animated) {
+    [UIView animateWithDuration:kMultilineOmniboxAnimationDuration
+                     animations:^{
+                       [self.view layoutIfNeeded];
+                     }];
+  } else {
+    [self.view layoutIfNeeded];
+  }
 }
 
 - (void)secondaryToolbarMovedAboveKeyboard {
