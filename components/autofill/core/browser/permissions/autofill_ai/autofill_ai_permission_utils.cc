@@ -169,9 +169,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
       return sync_service &&
              sync_service->GetUserSettings()->GetSelectedTypes().Has(
                  syncer::UserSelectableType::kPayments) &&
-             sync_service->GetActiveDataTypes().Has(
-                 syncer::AUTOFILL_VALUABLE) &&
-             sync_service->IsSyncFeatureEnabled();
+             sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_VALUABLE);
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kServerClassificationModel:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
