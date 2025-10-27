@@ -70,9 +70,10 @@ class InitialWebUIPageLoadMetricsObserverBrowserTest
 };
 
 // Test that InitialWebUIPageLoadMetricsObserverBrowserTest record histograms
-// only once across multiple navigations.
+// only once across multiple navigations. Disabled due to flakiness.
+// TODO(crbug.com/455508156): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
-                       RecordOnlyOnceForInitialWebUI) {
+                       DISABLED_RecordOnlyOnceForInitialWebUI) {
   // TODO(crbug.com/448794588): Should check initial histogram here, but test
   // doesn't support waiting for the webcontents embededed in topchrome UI.
 
