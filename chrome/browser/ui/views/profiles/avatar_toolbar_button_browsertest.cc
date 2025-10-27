@@ -1583,8 +1583,8 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   SimulatePassphraseError();
   // The history sync opt-in entry point should be replaced by the passphrase
   // error message.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON));
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
   ClearPassphraseError();
   // After clearing the passphrase error, the history sync opt-in entry point
   // should NOT be shown.
@@ -1605,7 +1605,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // The history sync opt-in entry point should be replaced by the passphrase
   // error message.
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_UPGRADE_CLIENT_BUTTON));
+            l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON));
   ClearUpgradeClientError();
   // After clearing the passphrase error, the history sync opt-in entry point
   // should NOT be shown.
@@ -1668,8 +1668,8 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   avatar->ClearActiveStateForTesting();
   // No history sync opt-in entry point should be shown if the error is shown
   // before the greeting times out.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON));
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
   ClearPassphraseError();
   // After clearing the passphrase error, the history sync opt-in entry point
   // should NOT be shown.
@@ -2775,8 +2775,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulatePassphraseError();
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON));
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
 }
 
 // TODO(crbug.com/359995696): Flaky on Windows.
@@ -2791,8 +2791,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EnableSyncWithImageAndClearGreeting(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulatePassphraseError();
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON));
+  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
 }
 
 // TODO(crbug.com/359995696): Flaky on Windows.
@@ -2808,7 +2808,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulateUpgradeClientError();
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_UPGRADE_CLIENT_BUTTON));
+            l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

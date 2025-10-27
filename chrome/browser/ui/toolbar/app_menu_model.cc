@@ -629,47 +629,26 @@ bool ProfileSubMenuModel::BuildSyncSection() {
     const syncer::SyncService::UserActionableError error =
         service->GetUserActionableError();
     if (error != syncer::SyncService::UserActionableError::kNone) {
-      int command_id = 0;
-      const gfx::VectorIcon* icon = nullptr;
-      int button_string_id =
-          GetSyncErrorButtonStringId(error, /*support_title_case=*/true);
-      switch (error) {
-        case syncer::SyncService::UserActionableError::kNone:
-          NOTREACHED();
-        case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-          command_id = IDC_SHOW_SIGNIN_WHEN_PAUSED;
-          if (identity_manager->HasPrimaryAccount(
-                  signin::ConsentLevel::kSync)) {
-            button_string_id = IDS_SYNC_RELOGIN_BUTTON_MAYBE_TITLE_CASE;
-            icon = &vector_icons::kSyncOffChromeRefreshIcon;
-          } else {
-            // Merge this case with the others below once ConsentLevel::kSync is
-            // gone.
-            icon = &vector_icons::kAccountCircleOffChromeRefreshIcon;
-          }
-          break;
-        case syncer::SyncService::UserActionableError::
-            kNeedsTrustedVaultKeyForPasswords:
-        case syncer::SyncService::UserActionableError::
-            kTrustedVaultRecoverabilityDegradedForPasswords:
-        case syncer::SyncService::UserActionableError::
-            kTrustedVaultRecoverabilityDegradedForEverything:
-        case syncer::SyncService::UserActionableError::
-            kNeedsTrustedVaultKeyForEverything:
-          command_id = IDC_SHOW_SIGNIN_WHEN_PAUSED;
-          icon = &vector_icons::kAccountCircleOffChromeRefreshIcon;
-          break;
-        case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-        case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
-        case syncer::SyncService::UserActionableError::
-            kNeedsSettingsConfirmation:
-        case syncer::SyncService::UserActionableError::kUnrecoverableError:
-          command_id = IDC_SHOW_SYNC_SETTINGS;
-          icon = &vector_icons::kErrorOutlineIcon;
-          break;
+      if (error ==
+          syncer::SyncService::UserActionableError::kSignInNeedsUpdate) {
+        if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+          // If sync is paused the menu item will be specific to the paused
+          // error.
+          AddItemWithStringIdAndVectorIcon(
+              this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILE_ROW_SIGN_IN_AGAIN,
+              vector_icons::kSyncOffChromeRefreshIcon);
+        } else {
+          AddItemWithStringIdAndVectorIcon(
+              this, IDC_SHOW_SIGNIN_WHEN_PAUSED,
+              IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
+              vector_icons::kAccountCircleOffChromeRefreshIcon);
+        }
+      } else {
+        // All remaining errors will have the same menu item.
+        AddItemWithStringIdAndVectorIcon(
+            this, IDC_SHOW_SYNC_SETTINGS, IDS_PROFILE_ROW_SYNC_ERROR_MESSAGE,
+            vector_icons::kSyncProblemChromeRefreshIcon);
       }
-      AddItemWithStringIdAndVectorIcon(this, command_id, button_string_id,
-                                       *icon);
       return true;
     }
   }
