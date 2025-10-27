@@ -21,6 +21,10 @@ ci.defaults.set(
     builder_group = "chromium.chromiumos",
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,
+        # TODO(crbug.com/451296512): VM has become unstable after kernel update,
+        # leading to frequent invalid shards. Retry them while the VM image is
+        # improved.
+        retry_invalid_shards = True,
     ),
     pool = ci_constants.DEFAULT_POOL,
     cores = 8,
