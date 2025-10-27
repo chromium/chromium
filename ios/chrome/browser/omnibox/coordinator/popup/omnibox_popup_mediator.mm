@@ -245,6 +245,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)tapTrailingButtonOnSuggestion:(id<AutocompleteSuggestion>)suggestion
                                 inRow:(NSUInteger)row {
+  if (!suggestion) {
+    return;
+  }
+
   if ([suggestion isKindOfClass:[AutocompleteMatchFormatter class]]) {
     AutocompleteMatchFormatter* autocompleteMatchFormatter =
         (AutocompleteMatchFormatter*)suggestion;
