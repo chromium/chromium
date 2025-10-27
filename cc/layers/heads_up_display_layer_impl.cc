@@ -254,7 +254,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
       auto* sii = raster_context_provider->SharedImageInterface();
 
       pool_resource.InstallGpuBacking(sii, raster_caps.tile_overlay_candidate,
-                                      raster_caps.use_gpu_rasterization,
                                       "HeadsUpDisplayLayer");
       pool_resource.backing()->returned_sync_token =
           pool_resource.backing()->shared_image()->creation_sync_token();

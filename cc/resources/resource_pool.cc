@@ -105,7 +105,6 @@ bool ResourcePool::Backing::CreateSharedImage(
 void ResourcePool::InUsePoolResource::InstallGpuBacking(
     gpu::SharedImageInterface* sii,
     bool is_overlay_candidate,
-    bool use_gpu_rasterization,
     std::string_view debug_label) const {
   auto backing =
       std::make_unique<ResourcePool::Backing>(size(), format(), color_space());
