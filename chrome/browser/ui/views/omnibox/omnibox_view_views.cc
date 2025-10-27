@@ -255,7 +255,7 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
       popup_window_mode_(popup_window_mode),
       saved_selection_for_focus_change_(gfx::Range::InvalidRange()),
       location_bar_view_(location_bar_view),
-      latency_histogram_state_(NOT_ACTIVE),
+      latency_histogram_state_(LatencyHistogramState::kNotActive),
       friendly_suggestion_text_prefix_length_(0) {
   SetID(VIEW_ID_OMNIBOX);
   SetProperty(views::kElementIdentifierKey, kOmniboxElementId);
@@ -640,12 +640,12 @@ gfx::Size OmniboxViewViews::GetMinimumSize() const {
 }
 
 void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
-  if (latency_histogram_state_ == CHAR_TYPED) {
+  if (latency_histogram_state_ == LatencyHistogramState::kCharTyped) {
     DCHECK(!insert_char_time_.is_null());
     const auto now = base::TimeTicks::Now();
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency.ToPaint",
                         now - insert_char_time_);
-    latency_histogram_state_ = ON_PAINT_CALLED;
+    latency_histogram_state_ = LatencyHistogramState::kOnPaintCalled;
     GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](base::TimeTicks insert_timestamp,
@@ -1104,7 +1104,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   // If everything is selected, the user likely does not intend to edit the URL.
   // But if the Home key is pressed, the user probably does want to interact
   // with the beginning of the URL - in which case we unelide.
-  if (IsSelectAll() && gesture != UnelisionGesture::HOME_KEY_PRESSED) {
+  if (IsSelectAll() && gesture != UnelisionGesture::kHomeKeyPressed) {
     return false;
   }
 
@@ -1139,7 +1139,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
     model()->ClassifyString(original_selected_text, &match, nullptr);
     const bool selection_classifes_as_search =
         AutocompleteMatch::IsSearchType(match.type);
-    if (!selection.is_empty() && gesture == UnelisionGesture::MOUSE_RELEASE &&
+    if (!selection.is_empty() && gesture == UnelisionGesture::kMouseRelease &&
         !selection_classifes_as_search) {
       // For user selections that look like a URL instead of a Search:
       // If we are uneliding at the end of a drag-select (on mouse release),
@@ -1195,7 +1195,7 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   // keystroke, tap gesture, and caret placement. Ignore selection changes while
   // the mouse is down, as we generally defer handling that until mouse release.
   if (state_changes.selection_differs && !is_mouse_pressed_ &&
-      UnapplySteadyStateElisions(UnelisionGesture::OTHER)) {
+      UnapplySteadyStateElisions(UnelisionGesture::kOther)) {
     something_changed = true;
     state_changes.text_differs = true;
   }
@@ -1392,7 +1392,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   }
 
   if (!select_all_on_mouse_release_) {
-    if (UnapplySteadyStateElisions(UnelisionGesture::OTHER)) {
+    if (UnapplySteadyStateElisions(UnelisionGesture::kOther)) {
       // This ensures that when the user makes a double-click partial select, we
       // perform the unelision at the same time as we make the partial
       // selection, which is on mousedown.
@@ -1489,7 +1489,7 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
 
   // Make an unelision check on mouse release. This handles the drag selection
   // case, in which we defer uneliding until mouse release.
-  if (UnapplySteadyStateElisions(UnelisionGesture::MOUSE_RELEASE)) {
+  if (UnapplySteadyStateElisions(UnelisionGesture::kMouseRelease)) {
     TextChanged();
   }
 }
@@ -1787,8 +1787,8 @@ void OmniboxViewViews::DoInsertChar(char16_t ch) {
   // If |insert_char_time_| is not null, there's a pending insert char operation
   // that hasn't been painted yet. Keep the earlier time.
   if (insert_char_time_.is_null()) {
-    DCHECK_EQ(latency_histogram_state_, NOT_ACTIVE);
-    latency_histogram_state_ = CHAR_TYPED;
+    DCHECK_EQ(latency_histogram_state_, LatencyHistogramState::kNotActive);
+    latency_histogram_state_ = LatencyHistogramState::kCharTyped;
     insert_char_time_ = base::TimeTicks::Now();
   }
   Textfield::DoInsertChar(ch);
@@ -2049,7 +2049,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
     case ui::VKEY_HOME:
       // The Home key indicates that the user wants to move the cursor to the
       // beginning of the full URL, so it should always trigger an unelide.
-      if (UnapplySteadyStateElisions(UnelisionGesture::HOME_KEY_PRESSED)) {
+      if (UnapplySteadyStateElisions(UnelisionGesture::kHomeKeyPressed)) {
         if (shift) {
           // After uneliding, we need to move the end of the selection range
           // to the beginning of the full unelided URL.
@@ -2288,16 +2288,17 @@ bool OmniboxViewViews::IsCommandIdChecked(int id) const {
 }
 
 void OmniboxViewViews::OnCompositingDidCommit(ui::Compositor* compositor) {
-  if (latency_histogram_state_ == ON_PAINT_CALLED) {
+  if (latency_histogram_state_ == LatencyHistogramState::kOnPaintCalled) {
     // Advance the state machine.
-    latency_histogram_state_ = COMPOSITING_COMMIT;
-  } else if (latency_histogram_state_ == COMPOSITING_COMMIT) {
+    latency_histogram_state_ = LatencyHistogramState::kCompositingCommit;
+  } else if (latency_histogram_state_ ==
+             LatencyHistogramState::kCompositingCommit) {
     // If we get two commits in a row (without compositing end in-between), it
     // means compositing wasn't done for the previous commit, which can happen
     // due to occlusion. In such a case, reset the state to inactive and don't
     // log the metric.
     insert_char_time_ = base::TimeTicks();
-    latency_histogram_state_ = NOT_ACTIVE;
+    latency_histogram_state_ = LatencyHistogramState::kNotActive;
   }
 }
 
@@ -2305,8 +2306,8 @@ void OmniboxViewViews::OnCompositingStarted(ui::Compositor* compositor,
                                             base::TimeTicks start_time) {
   // Track the commit to completion. This state is necessary to ensure the ended
   // event we get is the one we're waiting for (and not for a previous paint).
-  if (latency_histogram_state_ == COMPOSITING_COMMIT) {
-    latency_histogram_state_ = COMPOSITING_STARTED;
+  if (latency_histogram_state_ == LatencyHistogramState::kCompositingCommit) {
+    latency_histogram_state_ = LatencyHistogramState::kCompositingStarted;
   }
 }
 
@@ -2314,12 +2315,12 @@ void OmniboxViewViews::OnDidPresentCompositorFrame(
     ui::Compositor* compositor,
     uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
-  if (latency_histogram_state_ == COMPOSITING_STARTED) {
+  if (latency_histogram_state_ == LatencyHistogramState::kCompositingStarted) {
     DCHECK(!insert_char_time_.is_null());
     UMA_HISTOGRAM_TIMES("Omnibox.CharTypedToRepaintLatency",
                         base::TimeTicks::Now() - insert_char_time_);
     insert_char_time_ = base::TimeTicks();
-    latency_histogram_state_ = NOT_ACTIVE;
+    latency_histogram_state_ = LatencyHistogramState::kNotActive;
   }
 }
 

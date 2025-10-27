@@ -188,9 +188,9 @@ class OmniboxViewViews
                            ButtonVisibilityTogglesWithPref_OmniboxFocused);
 
   enum class UnelisionGesture {
-    HOME_KEY_PRESSED,
-    MOUSE_RELEASE,
-    OTHER,
+    kHomeKeyPressed,
+    kMouseRelease,
+    kOther,
   };
 
   // Update the field with |text| and set the selection. |ranges| should not be
@@ -417,12 +417,12 @@ class OmniboxViewViews
 
   // The state machine for logging the Omnibox.CharTypedToRepaintLatency
   // histogram.
-  enum {
-    NOT_ACTIVE,           // Not currently tracking a char typed event.
-    CHAR_TYPED,           // Character was typed.
-    ON_PAINT_CALLED,      // Character was typed and OnPaint() called.
-    COMPOSITING_COMMIT,   // Compositing was committed after OnPaint().
-    COMPOSITING_STARTED,  // Compositing was started.
+  enum class LatencyHistogramState {
+    kNotActive,           // Not currently tracking a char typed event.
+    kCharTyped,           // Character was typed.
+    kOnPaintCalled,       // Character was typed and OnPaint() called.
+    kCompositingCommit,   // Compositing was committed after OnPaint().
+    kCompositingStarted,  // Compositing was started.
   } latency_histogram_state_;
 
   // The currently selected match, if any, with additional labelling text
