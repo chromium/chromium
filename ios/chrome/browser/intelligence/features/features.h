@@ -189,4 +189,8 @@ bool IsGeminiLatencyImprovementEnabled();
 BASE_DECLARE_FEATURE(kGeminiOnboardingCards);
 bool IsGeminiOnboardingCardsEnabled();
 
+// Feature flag to use the new refactored version of the page context extractor.
+// Acts as a killswitch where the feature is enabled by default.
+BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

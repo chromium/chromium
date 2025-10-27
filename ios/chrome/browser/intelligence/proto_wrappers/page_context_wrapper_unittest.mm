@@ -16,8 +16,10 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/values_test_util.h"
+#import "base/time/time.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
@@ -95,8 +97,15 @@ class FakeWebStateForFailureTest : public web::FakeWebState {
 }
 @end
 
+struct PrintToStringParamName {
+  std::string operator()(const testing::TestParamInfo<bool>& info) const {
+    return info.param ? "WithFeatureEnabled" : "WithFeatureDisabled";
+  }
+};
+
 // Test fixture to test the PageContextWrapper.
-class PageContextWrapperTest : public PlatformTest {
+class PageContextWrapperTest : public PlatformTest,
+                               public testing::WithParamInterface<bool> {
  protected:
   PageContextWrapperTest()
       : PageContextWrapperTest(
@@ -109,6 +118,16 @@ class PageContextWrapperTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
+
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    enabled_features.push_back(kPageContextAnchorTags);
+    if (IsRefactored()) {
+      enabled_features.push_back(kPageContextExtractorRefactored);
+    } else {
+      disabled_features.push_back(kPageContextExtractorRefactored);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestProfileIOS::Builder builder;
@@ -135,7 +154,7 @@ class PageContextWrapperTest : public PlatformTest {
     snapshot_tab_helper->SetDelegate(snapshot_delegate_);
 
     GetWebClient()->SetJavaScriptFeatures(
-        {web::FindInPageJavaScriptFeature::GetInstance()});
+        {web::FindInPageJavaScriptFeature::GetInstance(), extractor_feature()});
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, kIframe1Path,
@@ -163,10 +182,25 @@ class PageContextWrapperTest : public PlatformTest {
         ->SetWebFramesManager(std::move(fake_frames_manager));
   }
 
+  // Calls a script on the webview of the web_state() in the right ContentWorld.
+  id CallJavascript(const std::string_view script) {
+    if (IsRefactored()) {
+      return web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+          web_state(), base::SysUTF8ToNSString(script), extractor_feature());
+    } else {
+      return web::test::ExecuteJavaScript(base::SysUTF8ToNSString(script),
+                                          web_state());
+    }
+  }
+
   web::FakeWebClient* GetWebClient() {
     return static_cast<web::FakeWebClient*>(web_client_.Get());
   }
+  bool IsRefactored() { return GetParam(); }
   web::WebState* web_state() { return web_state_.get(); }
+  PageContextExtractorJavaScriptFeature* extractor_feature() {
+    return PageContextExtractorJavaScriptFeature::GetInstance();
+  }
 
   // Getters for fake env.
   web::FakeBrowserState* fake_browser_state() {
@@ -198,7 +232,7 @@ class PageContextWrapperTest : public PlatformTest {
 
 // Tests that the page context is correctly populated with the page URL, title,
 // inner text, and annotated page content (including iframes).
-TEST_F(PageContextWrapperTest, PopulatePageContext) {
+TEST_P(PageContextWrapperTest, PopulatePageContext) {
   const std::string main_html =
       base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
                     "text</p><iframe "
@@ -334,7 +368,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContext) {
 
 // Tests that the completion callback is called even when no async fields are
 // requested.
-TEST_F(PageContextWrapperTest, PopulatePageContext_NoFieldsRequested) {
+TEST_P(PageContextWrapperTest, PopulatePageContext_NoFieldsRequested) {
   const std::string main_html =
       "<html><head><title>No "
       "Fields</title></head><body><p>Hello</p></body></html>";
@@ -374,7 +408,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_NoFieldsRequested) {
 
 // Tests that the page context is correctly populated with the page content as a
 // PDF.
-TEST_F(PageContextWrapperTest, PopulatePageContextWithPDFVerification) {
+TEST_P(PageContextWrapperTest, PopulatePageContextWithPDFVerification) {
   const std::string main_html = "<html><body><p>Hello PDF</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
@@ -418,7 +452,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContextWithPDFVerification) {
 
 // Tests that the page context is correctly populated with a snapshot of the
 // page.
-TEST_F(PageContextWrapperTest, PopulatePageContextWithSnapshotVerification) {
+TEST_P(PageContextWrapperTest, PopulatePageContextWithSnapshotVerification) {
   const std::string main_html =
       "<html><body><p>Hello Snapshot</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
@@ -464,7 +498,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContextWithSnapshotVerification) {
 // Tests that the page context can take a snapshot of the page with specified
 // text highlighted. Verifies that highlighting was applied in both the
 // DOM and in the snapshot.
-TEST_F(PageContextWrapperTest, PopulatePageContextWithTextHighlighting) {
+TEST_P(PageContextWrapperTest, PopulatePageContextWithTextHighlighting) {
   const std::string main_html =
       "<html><body><p>Hello Highlight</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
@@ -487,8 +521,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContextWithTextHighlighting) {
       });
       observer.observe(document.body, { childList: true, subtree: true });
   )";
-  web::test::ExecuteJavaScript(base::SysUTF8ToNSString(kMutationObserverScript),
-                               web_state());
+  CallJavascript(kMutationObserverScript);
 
   base::RunLoop run_loop;
   std::unique_ptr<optimization_guide::proto::PageContext> page_context;
@@ -522,15 +555,13 @@ TEST_F(PageContextWrapperTest, PopulatePageContextWithTextHighlighting) {
   // most reliable and less flaky way for verifying that highlighting was
   // triggered.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
-    id result = web::test::ExecuteJavaScript(@"window.__highlight_detected",
-                                             web_state());
+    id result = CallJavascript("window.__highlight_detected");
     return [result boolValue];
   }));
 }
 
 // Tests that anchor tags are correctly extracted when the feature is enabled.
-TEST_F(PageContextWrapperTest, PopulatePageContextWithAnchors) {
-  feature_list_.InitAndEnableFeature(kPageContextAnchorTags);
+TEST_P(PageContextWrapperTest, PopulatePageContextWithAnchors) {
   const std::string main_html =
       "<html><body><a href=\"http://foo.com\">foo</a></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
@@ -587,7 +618,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContextWithAnchors) {
 }
 
 // Tests that the wrapper correctly handles a failure in one of the async tasks.
-TEST_F(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
+TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
   const std::string main_html = "<html><body><p>Hello</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
@@ -620,20 +651,20 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
             PageContextWrapperError::kScreenshotError);
 }
 
-// Tests that the wrapper correctly handles a force detach.
-TEST_F(PageContextWrapperTest, PopulatePageContext_ForceDetach) {
+// Tests that the wrapper correctly handles a force detach signal from the
+// JavaScript feature.
+TEST_P(PageContextWrapperTest, PopulatePageContext_ForceDetach) {
   const std::string main_html = "<html><body><p>Hello</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
 
-  // Inject JS to force detach.
+  // Set up the feature to return a script that forces detachment.
   const char kForceDetachScript[] = R"(
       if (!window.__gCrWeb) { window.__gCrWeb = {}; }
       if (!window.__gCrWeb.pageContext) { window.__gCrWeb.pageContext = {}; }
       window.__gCrWeb.pageContext.shouldDetach = true;
   )";
-  web::test::ExecuteJavaScript(base::SysUTF8ToNSString(kForceDetachScript),
-                               web_state());
+  CallJavascript(kForceDetachScript);
 
   base::RunLoop run_loop;
   PageContextWrapperCallbackResponse captured_response;
@@ -652,7 +683,6 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_ForceDetach) {
 
   wrapper.shouldGetAnnotatedPageContent = YES;
   [wrapper populatePageContextFieldsAsync];
-
   run_loop.Run();
 
   // Verify that the callback was called with a force detach error.
@@ -662,8 +692,9 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_ForceDetach) {
 }
 
 // Tests that the wrapper correctly times out if the async operations take too
-// long.
-TEST_F(PageContextWrapperTest, TimeoutVerification) {
+// long. Keep the extraction busy by using an infinite while loop as the should
+// detach script.
+TEST_P(PageContextWrapperTest, TimeoutVerification) {
   const std::string main_html = "<html><body><p>Hello</p></body></html>";
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
@@ -674,8 +705,7 @@ TEST_F(PageContextWrapperTest, TimeoutVerification) {
       if (!window.__gCrWeb.pageContext) { window.__gCrWeb.pageContext = {}; }
       window.__gCrWeb.pageContext.shouldTimeout = true;
   )";
-  web::test::ExecuteJavaScript(base::SysUTF8ToNSString(kTimeoutScript),
-                               web_state());
+  CallJavascript(kTimeoutScript);
 
   base::RunLoop run_loop;
   PageContextWrapperCallbackResponse captured_response;
@@ -691,6 +721,7 @@ TEST_F(PageContextWrapperTest, TimeoutVerification) {
                                run_loop->Quit();
                              },
                              &run_loop, &captured_response)];
+
   wrapper.shouldGetInnerText = YES;
   [wrapper populatePageContextFieldsAsyncWithTimeout:base::Milliseconds(5)];
 
@@ -704,7 +735,7 @@ TEST_F(PageContextWrapperTest, TimeoutVerification) {
 }
 
 // Tests that the wrapper correctly handles a failure in PDF generation.
-TEST_F(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
+TEST_P(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
   base::RunLoop run_loop;
   PageContextWrapperCallbackResponse captured_response;
 
@@ -730,7 +761,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
 }
 
 // Tests that the wrapper correctly handles a failure in APC generation.
-TEST_F(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
+TEST_P(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
   base::RunLoop run_loop;
   PageContextWrapperCallbackResponse captured_response;
 
@@ -756,7 +787,7 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
 }
 
 // Tests that the wrapper correctly handles a failure in inner text generation.
-TEST_F(PageContextWrapperTest, PopulatePageContext_InnerTextGenerationFailure) {
+TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextGenerationFailure) {
   base::RunLoop run_loop;
   PageContextWrapperCallbackResponse captured_response;
 
@@ -781,3 +812,8 @@ TEST_F(PageContextWrapperTest, PopulatePageContext_InnerTextGenerationFailure) {
   EXPECT_EQ(captured_response.error(),
             PageContextWrapperError::kInnerTextError);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PageContextWrapperTest,
+                         testing::Bool(),
+                         PrintToStringParamName());

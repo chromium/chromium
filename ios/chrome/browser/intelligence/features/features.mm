@@ -241,3 +241,5 @@ BASE_FEATURE(kGeminiOnboardingCards, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiOnboardingCardsEnabled() {
   return base::FeatureList::IsEnabled(kGeminiOnboardingCards);
 }
+
+BASE_FEATURE(kPageContextExtractorRefactored, base::FEATURE_ENABLED_BY_DEFAULT);

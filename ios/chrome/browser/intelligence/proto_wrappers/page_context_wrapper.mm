@@ -28,6 +28,7 @@
 #import "components/optimization_guide/core/page_content_proto_serializer.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_metrics.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
@@ -81,8 +82,6 @@ constexpr const char kLinkTextDictKey[] = "linkText";
 // duplicate text from frames, but only for the current run. Early returns if
 // the PageContext should be detached, or the frame is not the top-most
 // same-origin frame.
-// TODO(crbug.com/423681226): Write this in TypeScript and create a JS Feature
-// for it.
 constexpr const char16_t* kInnerTextTreeJavaScript = uR"DELIM(
 (() => {
     // Checks whether the PageContext should be detached.
@@ -473,61 +472,125 @@ result.links = linksArray;
         barrier.Run();
       }));
 
-  // Callback to aggregate values from the JS execution.
-  auto callback = [](PageContextWrapper* weakWrapper,
-                     base::RepeatingClosure barrier, BOOL isMainFrame,
-                     const url::Origin& securityOrigin,
-                     const base::Value* value, NSError* error) {
-    [weakWrapper aggregateJavaScriptValue:value
-                                withError:error
-                              isMainFrame:isMainFrame
-                           securityOrigin:securityOrigin];
-    barrier.Run();
-  };
+  std::string nonce = base::Token::CreateRandom().ToString();
+  bool includeAnchors = IsPageContextAnchorTagsEnabled();
 
-  // Construct the JavaScript script to be executed on each Web Frame with a
-  // random token as nonce to differentiate between runs/executions.
-  base::Token nonce = base::Token::CreateRandom();
-  std::u16string nonceString = base::UTF8ToUTF16(nonce.ToString());
-  std::u16string maybeAnchorTagsJavaScript =
-      IsPageContextAnchorTagsEnabled() ? kAnchorTagsJavaScript : u"";
-  std::u16string script = base::ReplaceStringPlaceholders(
-      kInnerTextTreeJavaScript,
-      base::span<const std::u16string>(
-          {ios::provider::GetPageContextShouldDetachScript(),
-           maybeAnchorTagsJavaScript, nonceString}),
-      nullptr);
+  if (base::FeatureList::IsEnabled(kPageContextExtractorRefactored)) {
+    // Use the new way for extracting context.
 
-  // If the page is not protected, execute the JavaScript on the main WebFrame
-  // first and pass in the callback (which executes the barrier when run).
-  if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
-    _forceDetachPageContext = YES;
-    annotatedPageContentBarrier.Run();
-  } else {
-    mainFrame->ExecuteJavaScript(
-        script,
-        base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
-                       /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin()));
-  }
+    // Callback to aggregate values from the JS execution.
+    auto callback = [](PageContextWrapper* weakWrapper,
+                       base::RepeatingClosure barrier, BOOL isMainFrame,
+                       const url::Origin& securityOrigin,
+                       const base::Value* value) {
+      // TODO(crbug.com/454261374): Remove `withError` from args once we cleanup
+      // the old code.
+      // Can't provide an error object since the javascript feature doesn't
+      // support that.
+      [weakWrapper aggregateJavaScriptValue:value
+                                  withError:nil
+                                isMainFrame:isMainFrame
+                             securityOrigin:securityOrigin];
+      barrier.Run();
+    };
 
-  // Execute the JavaScript on each other WebFrame and pass in the callback
-  // (which executes the barrier when run).
-  for (web::WebFrame* webFrame : webFrames) {
-    if (ios::provider::IsProtectedUrl(webFrame->GetUrl().spec())) {
+    PageContextExtractorJavaScriptFeature* extractor_feature =
+        PageContextExtractorJavaScriptFeature::GetInstance();
+
+    // Use a timeout for the JS call larger than the wrapper's timer timeout
+    // since this is the preferred way of timing out the dispatched jobs (which
+    // will return a PageContextWrapperError::kTimeout error instead of empty
+    // results).
+    base::TimeDelta js_timeout = _timeoutTimer.GetCurrentDelay() * 2;
+
+    if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
       _forceDetachPageContext = YES;
-    }
-
-    // Skip if it's the main frame since it was already processed above, or if
-    // Page Context should already be force detached.
-    if (!webFrame || webFrame->IsMainFrame() || _forceDetachPageContext) {
       annotatedPageContentBarrier.Run();
-      continue;
+    } else {
+      extractor_feature->ExtractPageContext(
+          mainFrame, includeAnchors, nonce, js_timeout,
+          base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
+                         /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin()));
     }
 
-    webFrame->ExecuteJavaScript(
-        script,
-        base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
-                       /*isMainFrame=*/NO, webFrame->GetSecurityOrigin()));
+    // Execute the JavaScript on each other WebFrame and pass in the callback
+    // (which executes the barrier when run).
+    for (web::WebFrame* webFrame : webFrames) {
+      if (ios::provider::IsProtectedUrl(webFrame->GetUrl().spec())) {
+        _forceDetachPageContext = YES;
+      }
+
+      // Skip if it's the main frame since it was already processed above, or if
+      // Page Context should already be force detached.
+      if (!webFrame || webFrame->IsMainFrame() || _forceDetachPageContext) {
+        annotatedPageContentBarrier.Run();
+        continue;
+      }
+
+      extractor_feature->ExtractPageContext(
+          webFrame, includeAnchors, nonce, js_timeout,
+          base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
+                         /*isMainFrame=*/NO, webFrame->GetSecurityOrigin()));
+    }
+  } else {
+    // Use the legacy way for extracting context.
+
+    // Callback to aggregate values from the JS execution.
+    auto callback = [](PageContextWrapper* weakWrapper,
+                       base::RepeatingClosure barrier, BOOL isMainFrame,
+                       const url::Origin& securityOrigin,
+                       const base::Value* value, NSError* error) {
+      [weakWrapper aggregateJavaScriptValue:value
+                                  withError:error
+                                isMainFrame:isMainFrame
+                             securityOrigin:securityOrigin];
+      barrier.Run();
+    };
+
+    // Construct the JavaScript script to be executed on each Web Frame with a
+    // random token as nonce to differentiate between runs/executions.
+    std::u16string maybeAnchorTagsJavaScript =
+        IsPageContextAnchorTagsEnabled() ? kAnchorTagsJavaScript : u"";
+    std::u16string script = base::ReplaceStringPlaceholders(
+        kInnerTextTreeJavaScript,
+        base::span<const std::u16string>(
+            {ios::provider::GetPageContextShouldDetachScript(),
+             maybeAnchorTagsJavaScript, base::UTF8ToUTF16(nonce)}),
+        nullptr);
+
+    // TODO(crbug.com/452568673): Refactor the force detach logic.
+
+    // If the page is not protected, execute the JavaScript on the main WebFrame
+    // first and pass in the callback (which executes the barrier when run).
+    if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
+      _forceDetachPageContext = YES;
+      annotatedPageContentBarrier.Run();
+    } else {
+      mainFrame->ExecuteJavaScript(
+          script,
+          base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
+                         /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin()));
+    }
+
+    // Execute the JavaScript on each other WebFrame and pass in the callback
+    // (which executes the barrier when run).
+    for (web::WebFrame* webFrame : webFrames) {
+      if (ios::provider::IsProtectedUrl(webFrame->GetUrl().spec())) {
+        _forceDetachPageContext = YES;
+      }
+
+      // Skip if it's the main frame since it was already processed above, or if
+      // Page Context should already be force detached.
+      if (!webFrame || webFrame->IsMainFrame() || _forceDetachPageContext) {
+        annotatedPageContentBarrier.Run();
+        continue;
+      }
+
+      webFrame->ExecuteJavaScript(
+          script,
+          base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
+                         /*isMainFrame=*/NO, webFrame->GetSecurityOrigin()));
+    }
   }
 }
 

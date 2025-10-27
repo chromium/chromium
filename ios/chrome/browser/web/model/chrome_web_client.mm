@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -142,23 +143,23 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
   switch (static_cast<SafeBrowsingErrorCode>(error_code)) {
     case SafeBrowsingErrorCode::kUnsafeResource: {
       page = SafeBrowsingBlockingPage::Create(*resource);
-        ProfileIOS* profile =
-            ProfileIOS::FromBrowserState(web_state->GetBrowserState());
-        PrefService* prefs = profile->GetPrefs();
-        enterprise_connectors::ReportingEventRouter* router =
-            enterprise_connectors::IOSReportingEventRouterFactory::
-                GetForProfile(profile);
-        if (router) {
-          google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
-              referrer_chain;
-          router->OnSecurityInterstitialShown(
-              resource->url,
-              safe_browsing::GetThreatTypeStringForInterstitial(
-                  resource->threat_type),
-              /*net_error_code=*/0,
-              prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
-              referrer_chain);
-        }
+      ProfileIOS* profile =
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+      PrefService* prefs = profile->GetPrefs();
+      enterprise_connectors::ReportingEventRouter* router =
+          enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+              profile);
+      if (router) {
+        google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+            referrer_chain;
+        router->OnSecurityInterstitialShown(
+            resource->url,
+            safe_browsing::GetThreatTypeStringForInterstitial(
+                resource->threat_type),
+            /*net_error_code=*/0,
+            prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
+            referrer_chain);
+      }
       break;
     }
     case SafeBrowsingErrorCode::kEnterpriseBlock:
@@ -443,6 +444,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(translate::TranslateJavaScriptFeature::GetInstance());
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   features.push_back(ChooseFileJavaScriptFeature::GetInstance());
+  features.push_back(PageContextExtractorJavaScriptFeature::GetInstance());
 
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());

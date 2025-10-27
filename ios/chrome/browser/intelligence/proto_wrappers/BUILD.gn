@@ -2,6 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+optimize_ts("page_context_extractor_js") {
+  visibility = [ ":page_context_extractor_feature" ]
+  sources = [ "resources/page_context_extractor.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+source_set("page_context_extractor_feature") {
+  sources = [
+    "page_context_extractor_java_script_feature.h",
+    "page_context_extractor_java_script_feature.mm",
+  ]
+  deps = [
+    ":page_context_extractor_js",
+    "//base",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
 source_set("proto_wrappers") {
   sources = [
     "page_context_wrapper.h",
@@ -11,6 +32,7 @@ source_set("proto_wrappers") {
   ]
 
   deps = [
+    ":page_context_extractor_feature",
     ":page_context_metrics",
     "//base",
     "//components/optimization_guide:optimization_guide_buildflags",
@@ -53,11 +75,13 @@ source_set("utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "page_context_extractor_java_script_feature_unittest.mm",
     "page_context_utils_unittest.mm",
     "page_context_wrapper_unittest.mm",
   ]
   deps = [
     ":metrics_constants",
+    ":page_context_extractor_feature",
     ":proto_wrappers",
     ":utils",
     "//base/test:test_support",
