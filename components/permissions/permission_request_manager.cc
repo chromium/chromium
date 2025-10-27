@@ -54,6 +54,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -203,6 +204,11 @@ void PermissionRequestManager::AddRequest(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDenyPermissionPrompts)) {
+    request->PermissionDenied();
+    return;
+  }
+
+  if (display::Screen::Get()->IsHeadless()) {
     request->PermissionDenied();
     return;
   }
