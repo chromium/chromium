@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
 
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
@@ -16,10 +17,12 @@ namespace chrome {
 BrowserTabMenuModelDelegate::BrowserTabMenuModelDelegate(
     SessionID session_id,
     const Profile* profile,
-    const web_app::AppBrowserController* app_controller)
+    const web_app::AppBrowserController* app_controller,
+    tab_groups::TabGroupSyncService* tgss)
     : session_id_(session_id),
       profile_(profile),
-      app_controller_(app_controller) {}
+      app_controller_(app_controller),
+      tab_group_sync_service_(tgss) {}
 
 BrowserTabMenuModelDelegate::~BrowserTabMenuModelDelegate() = default;
 
@@ -46,6 +49,11 @@ BrowserTabMenuModelDelegate::GetOtherBrowserWindows(bool is_app) {
         return true;  // continue iterating
       });
   return browsers;
+}
+
+tab_groups::TabGroupSyncService*
+BrowserTabMenuModelDelegate::GetTabGroupSyncService() {
+  return tab_group_sync_service_;
 }
 
 }  // namespace chrome

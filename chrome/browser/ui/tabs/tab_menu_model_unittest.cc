@@ -29,6 +29,9 @@ class TabMenuModelTestDelegate : public TabMenuModelDelegate {
       bool is_app) override {
     return {};
   }
+  tab_groups::TabGroupSyncService* GetTabGroupSyncService() override {
+    return nullptr;
+  }
 };
 
 class TabMenuModelTest : public MenuModelTest, public ::testing::Test {

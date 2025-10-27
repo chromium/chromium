@@ -16,11 +16,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -102,6 +105,10 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
     }
   }
 
+  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+    AppendMenuItemInfosFromSavedTabGroups(menu_item_infos);
+  }
+
   Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }
 
@@ -144,18 +151,119 @@ ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
     // TODO(dljames): Add unit tests for all of tab_group.h
     const std::u16string displayed_title =
         group_title.empty() ? GetContentString(*tab_group) : group_title;
-    const int color_id =
-        GetTabGroupContextMenuColorId(tab_group->visual_data()->color());
-    const ui::ColorProvider& color_provider =
-        model()->GetWebContentsAt(GetContextIndex())->GetColorProvider();
-    ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-        kTabGroupIcon, color_provider.GetColor(color_id), kIconSize);
 
-    menu_item_infos.emplace_back(displayed_title, image_model);
+    menu_item_infos.emplace_back(
+        CreateMenuItemInfo(displayed_title, tab_group->visual_data()->color()));
     menu_item_infos.back().may_have_mnemonics = false;
   }
 
   return menu_item_infos;
+}
+
+// static
+std::vector<base::Uuid> ExistingTabGroupSubMenuModel::GetClosedSavedTabGroups(
+    TabMenuModelDelegate* tab_menu_model_delegate) {
+  if (!tab_menu_model_delegate) {
+    return {};
+  }
+
+  tab_groups::TabGroupSyncService* tgss =
+      tab_menu_model_delegate->GetTabGroupSyncService();
+
+  if (!tgss) {
+    return {};
+  }
+
+  std::vector<base::Uuid> saved_tab_groups;
+
+  for (const tab_groups::SavedTabGroup& group : tgss->GetAllGroups()) {
+    if (group.saved_tabs().empty()) {
+      continue;
+    }
+
+    // Having a local group ID implies it is open.
+    if (group.local_group_id()) {
+      continue;
+    }
+
+    saved_tab_groups.push_back(group.saved_guid());
+  }
+
+  return saved_tab_groups;
+}
+
+ExistingTabGroupSubMenuModel::MenuItemInfo
+ExistingTabGroupSubMenuModel::CreateMenuItemInfo(
+    const std::u16string& displayed_title,
+    const tab_groups::TabGroupColorId& color_id) {
+  const int context_menu_color_id = GetTabGroupContextMenuColorId(color_id);
+  const ui::ColorProvider& color_provider =
+      model()->GetWebContentsAt(GetContextIndex())->GetColorProvider();
+  ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
+      kTabGroupIcon, color_provider.GetColor(context_menu_color_id), kIconSize);
+
+  return {displayed_title, image_model};
+}
+
+void ExistingTabGroupSubMenuModel::AppendMenuItemInfosFromSavedTabGroups(
+    std::vector<MenuItemInfo>& existing_menu_item_infos) {
+  std::vector<base::Uuid> saved_tab_groups =
+      GetClosedSavedTabGroups(tab_menu_model_delegate_);
+
+  if (saved_tab_groups.empty()) {
+    return;
+  }
+
+  CHECK(tab_menu_model_delegate_);
+  tab_groups::TabGroupSyncService* tgss =
+      tab_menu_model_delegate_->GetTabGroupSyncService();
+  CHECK(tgss);
+
+  int menu_item_info_count_old = existing_menu_item_infos.size();
+
+  // Keep track of whether we added a separator for the closed groups.
+  // The first closed saved tab group has a separator before it, unless
+  // there are no open groups.
+  bool separated_first_closed_group = false;
+
+  // Create the corresponding MenuItemInfos and add them
+  // to the end of the list.
+  for (const base::Uuid& saved_guid : saved_tab_groups) {
+    std::optional<tab_groups::SavedTabGroup> group_opt =
+        tgss->GetGroup(saved_guid);
+    CHECK(group_opt.has_value());
+    const tab_groups::SavedTabGroup& group = *group_opt;
+
+    std::u16string displayed_title = group.title();
+
+    if (displayed_title.empty()) {
+      displayed_title =
+          tab_groups::TabGroupMenuUtils::GetMenuTextForGroup(group);
+    }
+
+    existing_menu_item_infos.emplace_back(
+        CreateMenuItemInfo(displayed_title, group.color()));
+
+    size_t index = target_index_to_group_mapping_.size();
+    existing_menu_item_infos[index].target_index = index;
+    existing_menu_item_infos.back().may_have_mnemonics = false;
+
+    if (!separated_first_closed_group) {
+      if (menu_item_info_count_old > 0) {
+        existing_menu_item_infos.back().has_separator_before = true;
+      }
+      separated_first_closed_group = true;
+    }
+
+    target_index_to_group_mapping_.emplace(index, saved_guid);
+  }
+
+  CHECK(target_index_to_group_mapping_.size() ==
+        menu_item_info_count_old + saved_tab_groups.size());
+
+  if (existing_menu_item_infos.size() > 0) {
+    existing_menu_item_infos.front().has_separator_before = true;
+  }
 }
 
 // static
@@ -193,7 +301,17 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
     }
   }
 
+  // Look if there are any saved tab groups that are not open.
+  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+    return GetClosedSavedTabGroups(tab_menu_model_delegate).size() > 0;
+  }
+
   return false;
+}
+
+void ExistingTabGroupSubMenuModel::ExecuteExistingCommandForTesting(
+    size_t target_index) {
+  ExecuteExistingCommand(target_index);
 }
 
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
@@ -211,10 +329,82 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
 
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
-  tab_groups::TabGroupId group =
+  tab_groups::EitherGroupID group_v =
       target_index_to_group_mapping_.at(target_index);
 
+  if (std::holds_alternative<base::Uuid>(group_v)) {
+    const base::Uuid& group_id = get<base::Uuid>(group_v);
+    AddSelectedTabsToSavedGroup(group_id);
+  } else if (std::holds_alternative<tab_groups::LocalTabGroupID>(group_v)) {
+    tab_groups::TabGroupId group = get<tab_groups::TabGroupId>(group_v);
+    AddSelectedTabsToOpenGroup(group);
+  } else {
+    NOTREACHED();
+  }
+}
+
+// static
+bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
+    TabStripModel* model,
+    int context_index,
+    tab_groups::TabGroupId group) {
+  if (!model->IsTabSelected(context_index)) {
+    if (group != model->GetTabGroupForTab(context_index)) {
+      return true;
+    }
+  } else {
+    for (int index : model->selection_model().selected_indices()) {
+      if (group != model->GetTabGroupForTab(index)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+std::vector<int> ExistingTabGroupSubMenuModel::GetSelectedIndices() {
+  if (!model()->IsTabSelected(GetContextIndex())) {
+    // If the context index is not selected, set it as the selected index.
+    return {GetContextIndex()};
+  } else {
+    // Use the currently selected indices.
+    const ui::ListSelectionModel::SelectedIndices selection_indices =
+        model()->selection_model().selected_indices();
+    return std::vector<int>(selection_indices.begin(), selection_indices.end());
+  }
+}
+
+void ExistingTabGroupSubMenuModel::AddSelectedTabsToSavedGroup(
+    const base::Uuid& group_id) {
+  if (!tab_menu_model_delegate_) {
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tgss =
+      tab_menu_model_delegate_->GetTabGroupSyncService();
+
+  if (!tgss) {
+    return;
+  }
+
+  std::optional<tab_groups::SavedTabGroup> group_opt = tgss->GetGroup(group_id);
+
+  CHECK(group_opt.has_value());
+
+  std::vector<int> selected_indices = GetSelectedIndices();
+  for (int selected_index : selected_indices) {
+    tabs::TabInterface* tab = model()->GetTabAtIndex(selected_index);
+    CHECK(tab);
+    tgss->AddUrl(group_opt->saved_guid(),
+                 tab->GetTabFeatures()->tab_ui_helper()->GetTitle(),
+                 tab->GetContents()->GetLastCommittedURL());
+  }
+}
+
+void ExistingTabGroupSubMenuModel::AddSelectedTabsToOpenGroup(
+    const tab_groups::TabGroupId& group) {
   // If the group exists in this model, move the tab into it.
+  TabGroupModel* group_model = model()->group_model();
   if (group_model->ContainsTabGroup(group)) {
     model()->ExecuteAddToExistingGroupCommand(GetContextIndex(), group);
     return;
@@ -239,17 +429,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
     return;
   }
 
-  std::vector<int> selected_indices;
-  if (!model()->IsTabSelected(GetContextIndex())) {
-    // If the context index is not selected, set it as the selected index.
-    selected_indices = {GetContextIndex()};
-  } else {
-    // Use the currently selected indices as the selected_indices we will move.
-    const ui::ListSelectionModel::SelectedIndices selection_indices =
-        model()->selection_model().selected_indices();
-    selected_indices =
-        std::vector<int>(selection_indices.begin(), selection_indices.end());
-  }
+  std::vector<int> selected_indices = GetSelectedIndices();
   // Collect the selected tab indices from the source model into a list.
   std::vector<tabs::TabInterface*> tabs;
   std::transform(selected_indices.begin(), selected_indices.end(),
@@ -286,28 +466,4 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   }
 
   found_model->ExecuteAddToExistingGroupCommand(selected_indices.back(), group);
-}
-
-// static
-bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
-    TabStripModel* model,
-    int context_index,
-    tab_groups::TabGroupId group) {
-  if (!model->IsTabSelected(context_index)) {
-    if (group != model->GetTabGroupForTab(context_index)) {
-      return true;
-    }
-  } else {
-    for (int index : model->selection_model().selected_indices()) {
-      if (group != model->GetTabGroupForTab(index)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-void ExistingTabGroupSubMenuModel::ExecuteExistingCommandForTesting(
-    size_t target_index) {
-  ExecuteExistingCommand(target_index);
 }

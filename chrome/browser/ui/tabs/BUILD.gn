@@ -248,8 +248,10 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/toasts",
       "//components/commerce/core/product_specifications",
+      "//components/saved_tab_groups/public",
       "//components/tab_groups",
     ]
 
@@ -694,6 +696,7 @@ if (!is_android) {
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
       "//chrome/browser/ui/thumbnails",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:prevent_close_test_support",
@@ -711,6 +714,7 @@ if (!is_android) {
       "//components/policy/core/common",
       "//components/policy/core/common:test_support",
       "//components/saved_tab_groups/public:features",
+      "//components/saved_tab_groups/test_support",
       "//components/tab_groups",
       "//components/webapps/common",
       "//content/public/browser",

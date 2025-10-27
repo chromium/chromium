@@ -313,7 +313,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_menu_model_delegate_ =
       std::make_unique<chrome::BrowserTabMenuModelDelegate>(
-          browser->GetSessionID(), profile, app_browser_controller_.get());
+          browser->GetSessionID(), profile, app_browser_controller_.get(),
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
 
   tab_group_deletion_dialog_controller_ =
       std::make_unique<tab_groups::DeletionDialogController>(browser, profile,
