@@ -47,7 +47,6 @@
 #include "gpu/config/gpu_lists_version.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_util.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_commit_hash.h"
 #include "third_party/angle/src/common/angle_version_info.h"
@@ -313,47 +312,6 @@ base::Value::List CompositorInfo() {
   compositor_info.Append(display::BuildGpuInfoEntry(
       "Partial Raster", IsPartialRasterEnabled() ? "Enabled" : "Disabled"));
   return compositor_info;
-}
-
-base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
-  base::Value::List gpu_memory_buffer_info;
-
-  gpu::GpuMemoryBufferConfigurationSet native_config;
-#if BUILDFLAG(IS_OZONE_X11)
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .fetch_buffer_formats_for_gmb_on_gpu) {
-    for (const auto& config : gpu_extra_info.gpu_memory_buffer_support_x11) {
-      native_config.emplace(config);
-    }
-  }
-#endif  // BUILDFLAG(IS_OZONE_X11)
-  if (native_config.empty()) {
-    native_config =
-        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-  }
-  for (size_t format = 0;
-       format < static_cast<size_t>(gfx::BufferFormat::LAST) + 1; format++) {
-    std::string native_usage_support;
-    for (size_t usage = 0;
-         usage < static_cast<size_t>(gfx::BufferUsage::LAST) + 1; usage++) {
-      gfx::BufferUsageAndFormat element{static_cast<gfx::BufferUsage>(usage),
-                                        static_cast<gfx::BufferFormat>(format)};
-      if (base::Contains(native_config, element)) {
-        native_usage_support = base::StringPrintf(
-            "%s%s %s", native_usage_support.c_str(),
-            native_usage_support.empty() ? "" : ",",
-            gfx::BufferUsageToString(static_cast<gfx::BufferUsage>(usage)));
-      }
-    }
-    if (native_usage_support.empty())
-      native_usage_support = base::StringPrintf("Software only");
-
-    gpu_memory_buffer_info.Append(display::BuildGpuInfoEntry(
-        gfx::BufferFormatToString(static_cast<gfx::BufferFormat>(format)),
-        native_usage_support));
-  }
-  return gpu_memory_buffer_info;
 }
 
 base::Value::List GetDisplayInfo() {
@@ -867,7 +825,6 @@ base::Value::Dict GpuMessageHandler::GetGpuInfoDict() {
     }
   }
   gpu_info_val.Set("compositorInfo", CompositorInfo());
-  gpu_info_val.Set("gpuMemoryBufferInfo", GpuMemoryBufferInfo(gpu_extra_info));
   gpu_info_val.Set("displayInfo", GetDisplayInfo());
   gpu_info_val.Set("videoAcceleratorsInfo", GetVideoAcceleratorsInfo());
   gpu_info_val.Set("ANGLEFeatures", GetANGLEFeatures());
