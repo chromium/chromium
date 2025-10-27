@@ -15,6 +15,10 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr size_t kMaxNumberOfCCTPrefetches = 50;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 ChromePrefetchManager::~ChromePrefetchManager() = default;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -64,9 +68,10 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
                   kPrefetch),
           preloading_attempt->GetWeakPtr(), holdback_status_override,
           /*ttl=*/std::nullopt);
-  // TODO(crbug.com/40288091): Clean up staled handles. Please see
-  // crrev.com/c/5534282/comment/cea1fdce_ada24c2b/ for more discussions,
   if (prefetch_handle) {
+    if (all_prefetches_.size() >= kMaxNumberOfCCTPrefetches) {
+      all_prefetches_.pop_front();
+    }
     all_prefetches_.push_back(std::move(prefetch_handle));
   }
 }
