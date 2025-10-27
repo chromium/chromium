@@ -845,4 +845,8 @@ jboolean PersonalDataManagerAndroid::IsCardEligibleForBenefits(
   return false;
 }
 
+jboolean PersonalDataManagerAndroid::ShouldShowBnplSettings(JNIEnv* env) {
+  return payments_data_manager().ShouldShowBnplSettings();
+}
+
 }  // namespace autofill
