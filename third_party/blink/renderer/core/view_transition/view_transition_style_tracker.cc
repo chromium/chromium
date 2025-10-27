@@ -2192,6 +2192,25 @@ void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {
       .NotifyViewTransitionPseudoTreeChanged();
 }
 
+void ViewTransitionStyleTracker::
+    InvalidateBackdropFilterCompositingProperties() {
+  for (auto& entry : element_data_map_) {
+    if (!entry.value->target_element ||
+        entry.value->target_element->IsDocumentElement() ||
+        entry.value->target_element->ComputedStyleRef()
+            .BackdropFilter()
+            .IsEmpty()) {
+      continue;
+    }
+    auto* object = entry.value->target_element->GetLayoutObject();
+    if (!object) {
+      continue;
+    }
+
+    object->SetNeedsPaintPropertyUpdate();
+  }
+}
+
 CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   if (ua_style_sheet_)
     return *ua_style_sheet_;

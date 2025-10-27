@@ -314,6 +314,12 @@ bool ViewTransition::AdvanceTo(State state) {
       << "from " << StateToString(state_) << " to " << StateToString(state);
   DCHECK(CanAdvanceTo(state)) << "Current state " << static_cast<int>(state_)
                               << " new state " << static_cast<int>(state);
+
+  if (state == State::kCapturing || state_ == State::kCapturing) {
+    DCHECK(style_tracker_);
+    style_tracker_->InvalidateBackdropFilterCompositingProperties();
+  }
+
   bool was_initial = state_ == State::kInitial;
   state_ = state;
   if (!was_initial && IsTerminalState(state_)) {

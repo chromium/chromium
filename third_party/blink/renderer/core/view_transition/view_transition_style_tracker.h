@@ -242,6 +242,8 @@ class ViewTransitionStyleTracker
   Vector<AtomicString> ComputeContainedGroupNames(
       const AtomicString& container_name) const;
 
+  void InvalidateBackdropFilterCompositingProperties();
+
  private:
   class ImageWrapperPseudoElement;
 

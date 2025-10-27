@@ -5459,6 +5459,10 @@
       status: "stable",
     },
     {
+      name: "ViewTransitionHoistBackdropFilterEffect",
+      status: "stable",
+    },
+    {
       name: "ViewTransitionLongCallbackTimeoutForTesting",
       status: "test",
     },

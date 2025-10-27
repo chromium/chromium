@@ -69,6 +69,9 @@ std::unordered_set<uint64_t> ProcessStack(std::ostringstream& str,
       if (pass->view_transition_element_resource_id.IsValid()) {
         str << " " << pass->view_transition_element_resource_id.ToString();
       }
+      if (!pass->backdrop_filters.IsEmpty()) {
+        str << " w/backdrop_filters";
+      }
     }
     str << "\n";
   };

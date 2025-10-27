@@ -293,6 +293,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   void IncrementWaitUntilPromises();
   void DecrementWaitUntilPromises();
 
+  bool IsCapturing() const { return state_ == State::kCapturing; }
+
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;
