@@ -185,16 +185,6 @@ Policy DerivePolicyForSecureContext(AddressSpace ip_address_space,
     return Policy::kAllow;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrivateNetworkAccessRespectPreflightResults)) {
-    return Policy::kPreflightBlock;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kPrivateNetworkAccessSendPreflights)) {
-    return Policy::kPreflightWarn;
-  }
-
   return Policy::kAllow;
 }
 

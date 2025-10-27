@@ -698,8 +698,6 @@ BASE_FEATURE(kPrivacySandboxAdsAPIsOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 // depend on the state of other Private Network Access feature flags:
 //
 //  - `kBlockInsecurePrivateNetworkRequests`
-//  - `kPrivateNetworkAccessSendPreflights`
-//  - `kPrivateNetworkAccessRespectPreflightResults`
 //
 BASE_FEATURE(kPrivateNetworkAccessForWorkers, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -719,8 +717,6 @@ BASE_FEATURE(kPrivateNetworkAccessForWorkersWarningOnly,
 // The exact checks run are the same as for document subresources, and depend on
 // the state of other Private Network Access feature flags:
 //  - `kBlockInsecurePrivateNetworkRequests`
-//  - `kPrivateNetworkAccessSendPreflights`
-//  - `kPrivateNetworkAccessRespectPreflightResults`
 BASE_FEATURE(kPrivateNetworkAccessForNavigations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -732,17 +728,6 @@ BASE_FEATURE(kPrivateNetworkAccessForNavigations,
 // preflight requests for navigations are not required to succeed. If
 // one fails, a warning is simply displayed in DevTools.
 BASE_FEATURE(kPrivateNetworkAccessForNavigationsWarningOnly,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Requires that CORS preflight requests succeed before sending private network
-// requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
-// See: https://wicg.github.io/private-network-access/#cors-preflight
-BASE_FEATURE(kPrivateNetworkAccessRespectPreflightResults,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables sending CORS preflight requests ahead of private network requests.
-// See: https://wicg.github.io/private-network-access/#cors-preflight
-BASE_FEATURE(kPrivateNetworkAccessSendPreflights,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, ProcessSelectionDeferringConditions will be run. This allows
