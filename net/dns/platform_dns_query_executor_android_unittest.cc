@@ -6,6 +6,8 @@
 
 #include <android/multinetwork.h>
 
+#include <memory>
+#include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +15,7 @@
 #include "base/run_loop.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,29 +30,31 @@ TEST_F(PlatformDnsQueryExecutorAndroidTest, FailOnNonExistentDomain) {
         "www.this-domain-definitely-does-not-exists-123abc.com",
         handles::kInvalidNetworkHandle);
 
-    AddressList addr_list;
+    PlatformDnsQueryExecutorAndroid::Results results;
     int os_error = -1;
     int net_error = -1;
 
     base::RunLoop run_loop;
 
-    PlatformDnsQueryExecutorAndroid::ResultCallback callback = base::BindOnce(
-        [](base::OnceClosure quit_closure, AddressList* out_addr_list,
-           int* out_os_error, int* out_net_error, const AddressList& addresses,
-           int os_error, int net_error) {
-          *out_addr_list = addresses;
+    PlatformDnsQueryExecutorAndroid::ResultsCallback callback = base::BindOnce(
+        [](base::OnceClosure quit_closure,
+           PlatformDnsQueryExecutorAndroid::Results* out_results,
+           int* out_os_error, int* out_net_error,
+           PlatformDnsQueryExecutorAndroid::Results results, int os_error,
+           int net_error) {
+          *out_results = std::move(results);
           *out_os_error = os_error;
           *out_net_error = net_error;
 
           std::move(quit_closure).Run();
         },
-        run_loop.QuitClosure(), &addr_list, &os_error, &net_error);
+        run_loop.QuitClosure(), &results, &os_error, &net_error);
 
     executor.Start(std::move(callback));
 
     run_loop.Run();
 
-    EXPECT_TRUE(addr_list.empty());
+    EXPECT_TRUE(results.empty());
     // TODO(https://crbug.com/451982546): Mock `android_res_nquery/result` to
     // control the return values, and then re-enable this check.
     // EXPECT_EQ(os_error, 0);

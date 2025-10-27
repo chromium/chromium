@@ -11,6 +11,8 @@
 #include <sys/socket.h>
 
 #include <array>
+#include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,13 +26,15 @@
 #include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/task/current_thread.h"
-#include "net/base/address_list.h"
+#include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_handle.h"
 #include "net/dns/dns_names_util.h"
+#include "net/dns/host_resolver_internal_result.h"
+#include "net/dns/public/dns_query_type.h"
 
 namespace net {
 
@@ -89,16 +93,16 @@ PlatformDnsQueryExecutorAndroid::~PlatformDnsQueryExecutorAndroid() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void PlatformDnsQueryExecutorAndroid::Start(ResultCallback result_callback) {
+void PlatformDnsQueryExecutorAndroid::Start(ResultsCallback results_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(result_callback);
-  CHECK(!result_callback_);
-  result_callback_ = std::move(result_callback);
+  CHECK(results_callback);
+  CHECK(!results_callback_);
+  results_callback_ = std::move(results_callback);
 
   int fd = android_res_nquery(MapNetworkHandle(target_network_),
                               hostname_.c_str(), ns_c_in, ns_t_a, 0);
   if (fd < 0) {
-    OnLookupComplete(net::AddressList(), /*os_error=*/-fd,
+    OnLookupComplete(Results(), /*os_error=*/-fd,
                      /*net_error=*/MapSystemError(-fd));
     return;
   }
@@ -106,7 +110,7 @@ void PlatformDnsQueryExecutorAndroid::Start(ResultCallback result_callback) {
   if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           fd, /*persistent=*/false, base::MessagePumpForIO::WATCH_READ,
           &read_fd_watcher_, this)) {
-    OnLookupComplete(net::AddressList(), /*os_error=*/0,
+    OnLookupComplete(Results(), /*os_error=*/0,
                      /*net_error=*/ERR_NAME_NOT_RESOLVED);
     return;
   }
@@ -127,7 +131,7 @@ void PlatformDnsQueryExecutorAndroid::ReadResponse(int fd) {
       android_res_nresult(fd, &rcode, answer_buf.data(), answer_buf.size());
 
   if (rv < 0) {
-    OnLookupComplete(net::AddressList(), /*os_error=*/-rv,
+    OnLookupComplete(Results(), /*os_error=*/-rv,
                      /*net_error=*/MapSystemError(-rv));
     return;
   }
@@ -135,43 +139,50 @@ void PlatformDnsQueryExecutorAndroid::ReadResponse(int fd) {
   if (rcode != ns_r_noerror) {
     // TODO(https://crbug.com/451557941): Map `rcode` to `net_error`. See the
     // library's mapping.
-    OnLookupComplete(net::AddressList(), /*os_error=*/0,
+    OnLookupComplete(Results(), /*os_error=*/0,
                      /*net_error=*/ERR_NAME_NOT_RESOLVED);
     return;
   }
 
-  AddressList addr_list;
+  Results results;
   for (const auto& answer : ExtractIpAddressAnswers(
            base::span(answer_buf).first(static_cast<size_t>(rv)), AF_INET)) {
     const auto ip_address = IPAddress::FromIPLiteral(answer);
     CHECK(ip_address.has_value())
         << "android_res_nresult returned invalid IP address.";
-    addr_list.push_back(IPEndPoint(*ip_address, 0));
+
+    results.insert(std::make_unique<HostResolverInternalDataResult>(
+        hostname_, DnsQueryType::A,
+        /*expiration=*/base::TimeTicks(),
+        /*timed_expiration=*/base::Time(),
+        HostResolverInternalResult::Source::kDns,
+        /*endpoints=*/std::vector<IPEndPoint>{IPEndPoint(*ip_address, 0)},
+        /*strings=*/std::vector<std::string>(),
+        /*hosts=*/std::vector<HostPortPair>()));
   }
-  OnLookupComplete(addr_list, /*os_error=*/0, /*net_error=*/OK);
+  OnLookupComplete(std::move(results), /*os_error=*/0, /*net_error=*/OK);
 }
 
-void PlatformDnsQueryExecutorAndroid::OnLookupComplete(
-    const AddressList& addr_list,
-    int os_error,
-    int net_error) {
+void PlatformDnsQueryExecutorAndroid::OnLookupComplete(Results results,
+                                                       int os_error,
+                                                       int net_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActive());
 
   // If results are empty, we should return an error.
-  if (net_error == OK && addr_list.empty()) {
+  if (net_error == OK && results.empty()) {
     net_error = ERR_NAME_NOT_RESOLVED;
   }
 
   // This class mimics the `HostResolverSystemTask` API, and this logic is
   // copied from there. `net_error` is part of the API because it's returned to
-  // the user in the `result_callback_`.
+  // the user in the `results_callback_`.
   if (net_error != OK && NetworkChangeNotifier::IsOffline()) {
     net_error = ERR_INTERNET_DISCONNECTED;
   }
 
-  std::move(result_callback_).Run(addr_list, os_error, net_error);
-  // Running `result_callback_` can delete `this`.
+  std::move(results_callback_).Run(std::move(results), os_error, net_error);
+  // Running `results_callback_` can delete `this`.
 }
 
 void PlatformDnsQueryExecutorAndroid::OnFileCanWriteWithoutBlocking(int fd) {
