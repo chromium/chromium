@@ -130,12 +130,13 @@ WPR_ARCHIVE_NAME_ANNOTATION = 'WPRArchiveDirectory$ArchiveName'
 WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION = 'WPRRecordReplayTest'
 
 _DEVICE_GOLD_DIR = 'skia_gold'
-# A map of Android product models to SDK ints.
+# A map of Android product models to SDK ints. The keys can be found via `adb
+# shell getprop ro.product.model`.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x86 emulator.
     'Android SDK built for x86': [29],
     # Android x64 emulator.
-    'Android SDK built for x64': [35],
+    'sdk_gphone64_x86_64': [35],
 }
 
 _BATCH_SUFFIX = '_batch'
