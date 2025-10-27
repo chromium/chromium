@@ -305,8 +305,16 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                                  "username_field", "password_field", submit);
 }
 
+// TODO(https://crbug.com/455605090): Very flaky on
+// linux-blink-web-tests-force-accessibility-rel builder.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DeleteCredentialsUpdateDropdown \
+  DISABLED_DeleteCredentialsUpdateDropdown
+#else
+#define MAYBE_DeleteCredentialsUpdateDropdown DeleteCredentialsUpdateDropdown
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
-                       DeleteCredentialsUpdateDropdown) {
+                       MAYBE_DeleteCredentialsUpdateDropdown) {
   password_manager::PasswordStoreInterface* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
