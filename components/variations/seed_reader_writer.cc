@@ -479,12 +479,12 @@ LoadSeedResult SeedReaderWriter::ReadSeedDataOnStartup(
   // On startup, the seed data should always be kept in memory.
   CHECK(!seed_purgeable_from_memory_)
       << "Seed data should not be purgeable from memory on startup.";
-  SeedInfo stored_seed_info = GetSeedInfo();
   if (ShouldUseSeedFile()) {
     return ProcessStoredSeedData(
-        SeedStorageFormat::kRaw, stored_seed_data_.value_or(""),
-        stored_seed_info.signature, seed_data, base64_seed_signature);
+        SeedStorageFormat::kRaw, stored_seed_info_.data(),
+        stored_seed_info_.signature(), seed_data, base64_seed_signature);
   } else {
+    SeedInfo stored_seed_info = GetSeedInfo();
     return ProcessStoredSeedData(
         SeedStorageFormat::kCompressedAndBase64Encoded,
         /*stored_seed_data=*/local_state_->GetString(fields_prefs_->seed),
@@ -510,7 +510,7 @@ void SeedReaderWriter::StoreRawSeedForTesting(std::string seed_data) {
     seed_writer_->WriteNow(seed_data);
     // Clear the stored seed data in memory so that it is read from the seed
     // file.
-    stored_seed_data_ = std::nullopt;
+    stored_seed_info_.clear_data();
   } else {
     local_state_->SetString(fields_prefs_->seed, std::move(seed_data));
   }
@@ -534,7 +534,7 @@ void SeedReaderWriter::StoreBase64EncodedSeedAndSignatureForTesting(
 bool SeedReaderWriter::IsIdenticalToSafeSeedSentinel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
-    return stored_seed_data_.value_or("") == kIdenticalToSafeSeedSentinel;
+    return stored_seed_info_.data() == kIdenticalToSafeSeedSentinel;
   } else {
     return local_state_->GetString(fields_prefs_->seed) ==
            kIdenticalToSafeSeedSentinel;
@@ -547,7 +547,7 @@ void SeedReaderWriter::AllowToPurgeSeedDataFromMemory() {
       << "AllowToPurgeSeedDataFromMemory() should only be called once.";
   seed_purgeable_from_memory_ = true;
   if (ShouldClearSeedDataFromMemory()) {
-    stored_seed_data_ = std::nullopt;
+    stored_seed_info_.clear_data();
   }
 }
 
@@ -592,25 +592,22 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
                                         weak_ptr_factory_.GetWeakPtr()));
   seed_writer_->RegisterOnNextWriteCallbacks(base::OnceClosure(),
                                              std::move(call_clear_seed_cb));
-
-  StoredSeedInfo stored_seed_info = stored_seed_info_;
   // TODO(crbug.com/370539202): Potentially use std::move instead of copy if we
   // are able to move seed data out of memory before the write completes.
-  stored_seed_info.set_data(stored_seed_data_.value_or(""));
-  return base::BindOnce(&DoSerialize, std::move(stored_seed_info));
+  return base::BindOnce(&DoSerialize, stored_seed_info_);
 }
 
 bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return seed_purgeable_from_memory_ && !HasPendingWrite() &&
-         stored_seed_data_.has_value() && !stored_seed_data_->empty() &&
-         *stored_seed_data_ != kIdenticalToSafeSeedSentinel;
+         stored_seed_info_.has_data() && !stored_seed_info_.data().empty() &&
+         stored_seed_info_.data() != kIdenticalToSafeSeedSentinel;
 }
 
 void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldClearSeedDataFromMemory()) {
-    stored_seed_data_ = std::nullopt;
+    stored_seed_info_.clear_data();
   }
 }
 
@@ -621,7 +618,7 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   // the background serialization and can be changed multiple times before a
   // scheduled write completes, in which case the background serializer will use
   // the set values at the last call of this function.
-  stored_seed_data_ = seed_info.seed_data;
+  stored_seed_info_.set_data(seed_info.seed_data);
   stored_seed_info_.set_signature(seed_info.signature);
   stored_seed_info_.set_milestone(seed_info.milestone);
   stored_seed_info_.set_seed_date(TimeToProtoTime(seed_info.seed_date));
@@ -659,11 +656,14 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
 
 void SeedReaderWriter::ScheduleSeedFileClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Set `seed_info_.data`, this will be used later by the background
+  // Set `stored_seed_info_`, this will be used later by the background
   // serialization and can be changed multiple times before a scheduled write
   // completes, in which case the background serializer will use the
-  // `seed_info_.data` set at the last call of this function.
-  stored_seed_data_ = "";
+  // `stored_seed_info_` set at the last call of this function.
+
+  // Set seed data to an empty string so we keep it in memory and don't read it
+  // from disk.
+  stored_seed_info_.set_data("");
   stored_seed_info_.clear_signature();
   stored_seed_info_.clear_milestone();
   stored_seed_info_.clear_seed_date();
@@ -699,11 +699,7 @@ void SeedReaderWriter::ReadSeedFile() {
       base::StrCat({"Variations.SeedFileReadResult.", histogram_suffix_}),
       read_seed_info_result.error_or(LoadSeedResult::kSuccess));
   if (read_seed_info_result.has_value()) {
-    // The lifetime of the seed data is different, since it can be removed from
-    // memory at any time after AllowToPurgeSeedDataFromMemory() is called.
     stored_seed_info_ = std::move(read_seed_info_result.value());
-    stored_seed_data_ = stored_seed_info_.data();
-    stored_seed_info_.clear_data();
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kSeedFile;
   } else if (read_seed_info_result.error() !=
@@ -715,7 +711,10 @@ void SeedReaderWriter::ReadSeedFile() {
     // fallback, so we just initialize the seed data to empty. Note:
     // base::ReadFileToString() doesn't provide info about why the read failed,
     // but this is most probable due to the file not existing.
-    stored_seed_data_ = "";
+
+    // Set seed data to an empty string so we keep it in memory and don't read
+    // it from disk.
+    stored_seed_info_.set_data("");
   } else if (ReadOldSeedFile()) {
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kOldSeedFile;
@@ -786,11 +785,12 @@ bool SeedReaderWriter::ReadOldSeedFile() {
                             local_state_->GetString(fields_prefs_->signature),
                             &raw_seed_data, /*signature=*/nullptr);
   if (result == LoadSeedResult::kSuccess) {
-    stored_seed_data_ = std::move(raw_seed_data);
+    stored_seed_info_.set_data(std::move(raw_seed_data));
   } else {
-    stored_seed_data_ = "";
+    // Set seed data to an empty string so we keep it in memory and don't read
+    // it from disk.
+    stored_seed_info_.set_data("");
   }
-  stored_seed_info_.clear_data();
   stored_seed_info_.set_signature(
       local_state_->GetString(fields_prefs_->signature));
   stored_seed_info_.set_milestone(
@@ -905,15 +905,15 @@ void SeedReaderWriter::GetSeedDataFromLocalState(
 void SeedReaderWriter::GetSeedDataFromSeedFile(
     ReadSeedDataCallback done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stored_seed_data_.has_value()) {
+  if (stored_seed_info_.has_data()) {
     // If the seed data is stored in memory, we can just run the callback
     // with the stored data. This will copy the data, but can be run on the
     // main thread.
     std::move(done_callback)
-        .Run(ReadSeedDataResult{.result = stored_seed_data_.value().empty()
+        .Run(ReadSeedDataResult{.result = stored_seed_info_.data().empty()
                                               ? LoadSeedResult::kEmpty
                                               : LoadSeedResult::kSuccess,
-                                .seed_data = stored_seed_data_.value(),
+                                .seed_data = stored_seed_info_.data(),
                                 .signature = stored_seed_info_.signature()});
     return;
   }

@@ -230,7 +230,10 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void AllowToPurgeSeedDataFromMemory();
 
   std::optional<std::string> stored_seed_data_for_testing() const {
-    return stored_seed_data_;
+    if (!stored_seed_info_.has_data()) {
+      return std::nullopt;
+    }
+    return stored_seed_info_.data();
   }
 
   // Compresses the contents using the same function as SeedReaderWriter for
@@ -383,13 +386,17 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Stored seed info. Used to store a seed applied during field trial
   // setup or a seed fetched from a variations server. Also stores other
   // seed-related info.
+  // Note: because the seed data may be purged from memory, it is necessary to
+  // check if the seed data is present before using it (e.g. using
+  // `has_data()`). If the seed data is empty or kIdenticalToSafeSeedSentinel,
+  // it will be kept in memory even if `seed_purgeable_from_memory_` is true to
+  // avoid reading it from disk. Check `stored_seed_info_.has_data()` to see if
+  // the seed data is present in memory.
+  // - `stored_seed_info_.has_data()` is true if the seed data is present in
+  // memory.
+  // - `stored_seed_info_.data().empty()` is true if no seed is available (e.g.
+  // has been cleared or not yet fetched).
   StoredSeedInfo stored_seed_info_;
-
-  // The raw seed data stored in memory. It will be set to std::nullopt if the
-  // seed data is not stored in memory. In contrast, empty string means the seed
-  // data is empty, so it doesn't need to be read from disk.
-  // TODO(crbug.com/452912040): move field to `stored_seed_info_`.
-  std::optional<std::string> stored_seed_data_;
 
   // Whether to keep the seed data in memory. This is used to avoid storing the
   // seed data in memory when it is not needed. It will be set to true when
