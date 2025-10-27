@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -65,8 +64,8 @@ class ArcScreenCaptureSession : public display::DisplayObserver,
       uint32_t stride,
       SetOutputBufferDeprecatedCallback callback) override;
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
-                       const viz::SharedImageFormat& format,
-                       uint64_t format_modifier,
+                       gfx::BufferFormat buffer_format,
+                       uint64_t buffer_format_modifier,
                        uint32_t stride,
                        SetOutputBufferCallback callback) override;
 

@@ -181,9 +181,8 @@ void ArcScreenCaptureSession::SetOutputBufferDeprecated(
   // Defined locally to avoid having to add a dependency on drm_fourcc.h
   constexpr uint64_t DRM_FORMAT_MOD_LINEAR = 0;
 
-  SetOutputBuffer(std::move(graphics_buffer),
-                  viz::SinglePlaneFormat::kRGBX_8888, DRM_FORMAT_MOD_LINEAR,
-                  stride,
+  SetOutputBuffer(std::move(graphics_buffer), gfx::BufferFormat::RGBX_8888,
+                  DRM_FORMAT_MOD_LINEAR, stride,
                   base::BindOnce(
                       [](base::OnceCallback<void()> callback) {
                         std::move(callback).Run();
@@ -193,8 +192,8 @@ void ArcScreenCaptureSession::SetOutputBufferDeprecated(
 
 void ArcScreenCaptureSession::SetOutputBuffer(
     mojo::ScopedHandle graphics_buffer,
-    const viz::SharedImageFormat& format,
-    uint64_t format_modifier,
+    gfx::BufferFormat buffer_format,
+    uint64_t buffer_format_modifier,
     uint32_t stride,
     SetOutputBufferCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -211,7 +210,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
   }
 
   gfx::NativePixmapHandle native_pixmap_handle;
-  native_pixmap_handle.modifier = format_modifier;
+  native_pixmap_handle.modifier = buffer_format_modifier;
   base::ScopedPlatformFile platform_file;
   MojoResult mojo_result =
       mojo::UnwrapPlatformFile(std::move(graphics_buffer), &platform_file);
@@ -224,8 +223,10 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
 
+  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(buffer_format);
+
   auto client_shared_image = sii->CreateSharedImage(
-      {format, size_, gfx::ColorSpace(),
+      {si_format, size_, gfx::ColorSpace(),
        // NOTE: This SI will be used as the destination of a copy of the desktop
        // texture via the raster interface. Hence, it needs RASTER_WRITE usage.
        // Note that as the browser process raster interface uses
