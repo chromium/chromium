@@ -393,26 +393,21 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      */
     private void removeContainmentForFragment(Fragment f) {
         PreferenceFragmentCompat fragment = resolveFragmentForContainment(f);
-        if (!isContainmentEnabled() || fragment == null) {
+        if (!isContainmentEnabled() || !(fragment instanceof MainSettings)) {
             return;
         }
 
-        if (fragment instanceof MainSettings) {
-            ContainmentItemDecoration itemDecoration = mItemDecorations.get(fragment);
-            if (itemDecoration != null) {
-                fragment.getListView().removeItemDecoration(itemDecoration);
-                mItemDecorations.remove(fragment);
-                // Force a full redraw of the recycler view items.
-                if (fragment.getListView().getAdapter() != null) {
-                    // `invalidate()` is insufficient to remove the containment background because
-                    // it doesn't trigger a re-evaluation of `RecyclerView.ItemDecoration`s, which
-                    // applies the containment styling. A full redraw of items is needed.
-                    fragment.getListView()
-                            .getAdapter()
-                            .notifyItemRangeChanged(
-                                    0, fragment.getListView().getAdapter().getItemCount());
-                }
-            }
+        ContainmentItemDecoration itemDecoration = mItemDecorations.get(fragment);
+        if (itemDecoration != null) {
+            fragment.getListView().removeItemDecoration(itemDecoration);
+            mItemDecorations.remove(fragment);
+
+            fragment.requireContext()
+                    .getTheme()
+                    .applyStyle(R.style.ThemeOverlay_Chromium_Settings_MainPanel, true);
+
+            // Force a re-inflation of all views to ensure they pick up the new theme.
+            reInflateViews(fragment);
         }
     }
 
@@ -442,9 +437,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         // For MainSettings, skip containment if multi-column layout is visible.
         if (shouldSkipContainmentForMainSettings(fragment)) {
+            fragment.requireContext()
+                    .getTheme()
+                    .applyStyle(R.style.ThemeOverlay_Chromium_Settings_MainPanel, true);
             return;
         }
 
+        fragment.requireContext()
+                .getTheme()
+                .applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
         // Posting this runnable ensures the RecyclerView has completed its layout pass before
         // updating backgrounds.
         fragment.getListView()
@@ -464,7 +465,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                                             SettingsUtils.getVisiblePreferences(
                                                     fragment.getPreferenceScreen())));
                             fragment.getListView().invalidateItemDecorations();
+
+                            // Force a re-inflation of all views to ensure they pick up the new
+                            // theme.
+                            reInflateViews(fragment);
                         });
+    }
+
+    private void reInflateViews(PreferenceFragmentCompat fragment) {
+        var adapter = fragment.getListView().getAdapter();
+        fragment.getListView().setAdapter(null);
+        fragment.getListView().setAdapter(adapter);
     }
 
     @Override
