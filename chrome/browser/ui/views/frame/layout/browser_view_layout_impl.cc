@@ -13,9 +13,11 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -170,6 +172,54 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
       host, [this](views::View* view, bool visible) {
         SetViewVisibility(view, visible);
       });
+
+  MaybeLayOutTopContainerOverlay();
+}
+
+void BrowserViewLayoutImpl::MaybeLayOutTopContainerOverlay() {
+  if (!views().top_container ||
+      views().top_container->parent() == views().main_container) {
+    return;
+  }
+
+  // In slide/immersive mode, animating the top container is handled by someone
+  // else, but there are adjustments that are needed to be made.
+  ProposedLayout top_container_layout;
+
+  // There are probably cases where these require some translation, but for
+  // now, just use them as-is. Also determine which platforms require
+  // exclusions and which do not.
+  const auto params = delegate().GetBrowserLayoutParams();
+
+  // The computation for the top container components does not change.
+  gfx::Rect top_container_bounds =
+      CalculateTopContainerLayout(top_container_layout, params, true);
+
+  // In certain circumstances, the bounds require adjustment.
+  if (delegate().IsTopControlsSlideBehaviorEnabled() &&
+      delegate().GetTopControlsSlideBehaviorShownRatio() == 0.0) {
+    // In slide mode, if the top container is hidden completely, it is placed
+    // outside the window bounds.
+    top_container_bounds.set_y(-top_container_bounds.height());
+  } else if (auto* const controller = delegate().GetImmersiveModeController();
+             controller && controller->IsEnabled()) {
+    // If the immersive mode controller is animating the top container overlay,
+    // it may be partly offscreen. The controller knows where the container
+    // needs to be.
+    top_container_bounds.set_y(
+        delegate().GetImmersiveModeController()->GetTopContainerVerticalOffset(
+            top_container_bounds.size()));
+  }
+
+  // Position the top container in its parent, whatever that is.
+  views().top_container->SetBoundsRect(top_container_bounds);
+
+  // Apply the child layouts for the top container.
+  std::move(top_container_layout)
+      .ApplyLayout(views().top_container,
+                   [this](views::View* view, bool visible) {
+                     SetViewVisibility(view, visible);
+                   });
 }
 
 gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
@@ -300,6 +350,21 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
     y = top_container_layout.bounds.bottom();
   }
 
+  // Lay out infobar container.
+  if (IsParentedTo(views().infobar_container, views().main_container)) {
+    const gfx::Rect infobar_bounds = gfx::Rect(
+        params.visual_client_area.x(),
+        // Infobar needs to get down out of the way of immersive mode elements
+        // in some cases.
+        y + delegate().GetImmersiveModeController()->GetExtraInfobarOffset(),
+        params.visual_client_area.width(),
+        // This returns zero for empty infobar.
+        views().infobar_container->GetPreferredSize().height());
+    layout.AddChild(views().infobar_container, infobar_bounds,
+                    !infobar_bounds.IsEmpty());
+    y = infobar_bounds.bottom();
+  }
+
   // Lay out contents-height side panel.
   views::Span horizontal_space(params.visual_client_area.x(),
                                params.visual_client_area.width());
@@ -389,8 +454,24 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
     bool needs_exclusion) const {
   int y = params.visual_client_area.y();
 
-  // Lay out toolbar. If tabstrip is absent, this will go in the top exclusion
-  // area.
+  // If the tabstrip is in the top container (which can happen in immersive
+  // mode), ensure it is laid out here.
+  if (IsParentedToAndVisible(views().tab_strip_region_view,
+                             views().top_container)) {
+    const gfx::Rect tabstrip_bounds =
+        needs_exclusion
+            ? GetBoundsWithExclusion(params, views().tab_strip_region_view)
+            : gfx::Rect(
+                  params.visual_client_area.x(), y,
+                  params.visual_client_area.width(),
+                  views().tab_strip_region_view->GetPreferredSize().height());
+    y = tabstrip_bounds.bottom();
+    needs_exclusion = false;
+    layout.AddChild(views().tab_strip_region_view, tabstrip_bounds);
+  }
+
+  // Lay out toolbar. If tabstrip is completely absent (or vertical), this can
+  // go in the top exclusion area.
   CHECK(IsParentedToAndVisible(views().toolbar, views().top_container))
       << "Top container was in the browser but missing toolbar.";
   const gfx::Rect toolbar_bounds =
@@ -418,17 +499,6 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
       // the separator.
       layout.AddChild(views().top_container_separator, gfx::Rect(), false);
     }
-  }
-
-  // Lay out infobar container.
-  if (IsParentedTo(views().infobar_container, views().top_container)) {
-    const gfx::Rect infobar_bounds = gfx::Rect(
-        params.visual_client_area.x(), y, params.visual_client_area.width(),
-        // This returns zero for empty infobar.
-        views().infobar_container->GetPreferredSize().height());
-    layout.AddChild(views().infobar_container, infobar_bounds,
-                    !infobar_bounds.IsEmpty());
-    y = infobar_bounds.bottom();
   }
 
   // These are the bounds for the top container.
