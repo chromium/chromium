@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace password_manager {
@@ -25,6 +25,7 @@ class ActorLoginGetCredentialsHelper;
 // intrinsically tied to a specific browser tab.
 class ActorLoginDelegateImpl
     : public ActorLoginDelegate,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<ActorLoginDelegateImpl> {
  public:
   using PasswordDriverSupplierForPrimaryMainFrame =
@@ -56,12 +57,15 @@ class ActorLoginDelegateImpl
   friend class content::WebContentsUserData<ActorLoginDelegateImpl>;
 
   // Private constructor for `WebContentsUserData`.
-  // This is the constructor that `WebContentsUserData::FromWebContents` will
-  // call when no instance exists and it needs to create one.
+  // This is the constructor that `WebContentsUserData::CreateForWebContents`
+  // will call when no instance exists and it needs to create one.
   ActorLoginDelegateImpl(
       content::WebContents* web_contents,
       ::password_manager::PasswordManagerClient* client,
       PasswordDriverSupplierForPrimaryMainFrame driver_supplier);
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
 
   // Private helper methods for handling task completion. They should be
   // invoked asynchronously.
@@ -90,6 +94,7 @@ class ActorLoginDelegateImpl
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
+
 }  // namespace actor_login
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DELEGATE_IMPL_H_

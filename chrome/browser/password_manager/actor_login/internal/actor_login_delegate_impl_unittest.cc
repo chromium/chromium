@@ -373,4 +373,26 @@ TEST_F(ActorLoginDelegateImplTest,
   ASSERT_TRUE(future.Get().has_value());
 }
 
+TEST_F(ActorLoginDelegateImplTest, WebContentsDestroyedDuringAttemptLogin) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
+
+  SetUpActorCredentialFillerDeps();
+  EXPECT_CALL(mock_form_cache_, GetFormManagers()).Times(1);
+
+  base::test::TestFuture<LoginStatusResultOrError> future;
+  delegate_->AttemptLogin(credential, false, future.GetCallback());
+
+  delegate_ = nullptr;
+  // This should invoke `WebContentsDestroyed`.
+  tab_strip_model_.reset();
+  task_environment()->RunUntilIdle();
+  // The callback should never be invoked because the
+  // delegate was destroyed.
+  EXPECT_FALSE(future.IsReady());
+}
+
 }  // namespace actor_login
