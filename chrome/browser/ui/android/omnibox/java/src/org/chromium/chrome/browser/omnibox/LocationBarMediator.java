@@ -283,8 +283,8 @@ class LocationBarMediator
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
-        mAutocompleteRequestTypeSupplier.addObserver(
-                mCallbackController.makeCancelable((v) -> updateButtonVisibility()));
+        mAutocompleteRequestTypeSupplier.addSyncObserver(
+                mCallbackController.makeCancelable(this::onAutocompleteRequestTypeChanged));
         mPageZoomIndicatorCoordinator = pageZoomIndicatorCoordinator;
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(this::updateZoomButtonVisibility);
@@ -1529,6 +1529,11 @@ class LocationBarMediator
         return !mUrlHasFocus && mIsLocationBarFocusedFromNtpScroll;
     }
 
+    private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
+        updateButtonVisibility();
+        onSearchBoxHintTextChanged();
+    }
+
     private boolean isLensOnOmniboxEnabled() {
         if (sLastCachedIsLensOnOmniboxEnabled == null) {
             sLastCachedIsLensOnOmniboxEnabled =
@@ -2064,8 +2069,10 @@ class LocationBarMediator
     }
 
     @Override
-    public void onSearchBoxHintTextChanged(String newHintText) {
-        mUrlCoordinator.setUrlBarHintText(newHintText);
+    public void onSearchBoxHintTextChanged() {
+        mUrlCoordinator.setUrlBarHintText(
+                assertNonNull(mSearchEngineUtils)
+                        .getOmniboxHintText(mAutocompleteRequestTypeSupplier.get()));
     }
 
     /* package */ ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumer() {

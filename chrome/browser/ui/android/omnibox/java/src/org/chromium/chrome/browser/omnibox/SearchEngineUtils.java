@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -37,6 +36,7 @@ import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -71,7 +71,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private @Nullable Boolean mNeedToCheckForSearchEnginePromo;
     private boolean mDoesDefaultSearchEngineHaveLogo;
     private @Nullable StatusIconResource mFavicon;
-    private String mSearchBoxHintText;
+    private @Nullable String mSearchEngineName;
 
     /**
      * AndroidSearchEngineLogoEvents defined in tools/metrics/histograms/enums.xml. These values are
@@ -106,7 +106,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
          *
          * @param newHintText the new hint text to apply
          */
-        void onSearchBoxHintTextChanged(String newHintText);
+        void onSearchBoxHintTextChanged();
     }
 
     @FunctionalInterface
@@ -133,8 +133,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
 
         // Apply safe fallback values.
-        setSearchBoxHintText(
-                OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint));
+        setSearchBoxHintText(null);
         resetFavicon();
 
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -190,20 +189,14 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         if (templateUrl == null) {
             recordEvent(Events.FETCH_FAILED_NULL_URL);
-            setSearchBoxHintText(
-                    OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint));
+            setSearchBoxHintText(null);
             return;
         }
 
         if (!TextUtils.isEmpty(templateUrl.getShortName())) {
-            setSearchBoxHintText(
-                    OmniboxResourceProvider.getString(
-                            mContext,
-                            R.string.omnibox_empty_hint_with_dse_name,
-                            templateUrl.getShortName()));
+            setSearchBoxHintText(templateUrl.getShortName());
         } else {
-            setSearchBoxHintText(
-                    OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint));
+            setSearchBoxHintText(null);
         }
 
         if (mDefaultSearchEngineMetadata == null
@@ -220,7 +213,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     /** Add observer to be notified whenever the Omnibox hint text changes. */
     public void addSearchBoxHintTextObserver(SearchBoxHintTextObserver observer) {
         mSearchBoxHintTextObservers.addObserver(observer);
-        observer.onSearchBoxHintTextChanged(mSearchBoxHintText);
+        observer.onSearchBoxHintTextChanged();
     }
 
     /** Remove previously registered Omnibox hint text observer. */
@@ -229,15 +222,36 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     }
 
     @Initializer
-    private void setSearchBoxHintText(String newHint) {
+    private void setSearchBoxHintText(@Nullable String engineName) {
         // mSearchBoxHintText may be null when this method is invoked from constructor.
         // This may generate a warning that this field is null. This is fine.
-        if (TextUtils.equals(assumeNonNull(mSearchBoxHintText), newHint)) return;
-
-        mSearchBoxHintText = newHint;
+        if (Objects.equals(engineName, mSearchEngineName)) return;
+        mSearchEngineName = engineName;
         for (var observer : mSearchBoxHintTextObservers) {
-            observer.onSearchBoxHintTextChanged(newHint);
+            observer.onSearchBoxHintTextChanged();
         }
+    }
+
+    /**
+     * Returns the Omnibox Hint Text appropriate for specific AutocompleteRequestType.
+     *
+     * @param type the type of the AutocompleteRequestType to get the hint text for
+     * @return Hint text appropriate for the specific AutocompleteRequestType.
+     */
+    public String getOmniboxHintText(@AutocompleteRequestType int type) {
+        if (TextUtils.isEmpty(mSearchEngineName)) {
+            return OmniboxResourceProvider.getString(mContext, R.string.omnibox_empty_hint);
+        }
+
+        @StringRes
+        int res =
+                switch (type) {
+                    case AutocompleteRequestType.AI_MODE ->
+                            R.string.omnibox_empty_hint_with_dse_name_for_ai_mode;
+                    default -> R.string.omnibox_empty_hint_with_dse_name;
+                };
+
+        return OmniboxResourceProvider.getString(mContext, res, mSearchEngineName);
     }
 
     /** Add observer to be notified whenever the Search Enigne Icon changes. */

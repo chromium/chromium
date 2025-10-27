@@ -70,6 +70,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -165,7 +166,7 @@ public class NewTabPageLayout extends LinearLayout
     private @Nullable Boolean mPreviousVoiceSearchButtonVisible;
     private @Nullable Boolean mPreviousLensButtonVisible;
     private @Nullable ImageView mDseIconView;
-    private @Nullable SearchEngineUtils mSearchEngineUtils;
+    private SearchEngineUtils mSearchEngineUtils;
     private SearchEngineUtils.@Nullable SearchEngineIconObserver mSearchEngineIconObserver;
     private final int mNtpSearchBoxTransitionStartOffset;
     private final int mNtpSearchBoxTopMarginWithoutLogo;
@@ -257,6 +258,7 @@ public class NewTabPageLayout extends LinearLayout
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mIsComposeplateEnabled = ComposeplateUtils.isComposeplateEnabled(mIsTablet, profile);
+        mSearchEngineUtils = SearchEngineUtils.getForProfile(mProfile);
         mIsComposeplateV2Enabled =
                 mIsComposeplateEnabled
                         && ChromeFeatureList.sAndroidComposeplateV2Enabled.getValue();
@@ -321,7 +323,7 @@ public class NewTabPageLayout extends LinearLayout
         }
 
         // Initialize Searchbox observers
-        SearchEngineUtils.getForProfile(mProfile).addSearchBoxHintTextObserver(this);
+        mSearchEngineUtils.addSearchBoxHintTextObserver(this);
 
         manager.addDestructionObserver(NewTabPageLayout.this::onDestroy);
         mInitialized = true;
@@ -401,7 +403,6 @@ public class NewTabPageLayout extends LinearLayout
             // Registers to receive DSE's icon.
             assert mSearchEngineIconObserver == null;
             mSearchEngineIconObserver = newIcon -> onSearchEngineIconChanged(newIcon);
-            mSearchEngineUtils = SearchEngineUtils.getForProfile(mProfile);
             mSearchEngineUtils.addIconObserver(mSearchEngineIconObserver);
         }
         ImageViewCompat.setImageTintList(mDseIconView, null);
@@ -1340,8 +1341,9 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     @Override
-    public void onSearchBoxHintTextChanged(@Nullable String newHint) {
-        mSearchBoxCoordinator.setSearchBoxHintText(newHint);
+    public void onSearchBoxHintTextChanged() {
+        mSearchBoxCoordinator.setSearchBoxHintText(
+                mSearchEngineUtils.getOmniboxHintText(AutocompleteRequestType.SEARCH));
     }
 
     /**

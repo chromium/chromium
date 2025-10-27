@@ -154,6 +154,20 @@
     <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
       Search <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> or type URL
     </message>
+    <if expr="is_android or enable_vr">
+      <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME_FOR_AI_MODE" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
+        Ask <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> anything
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_GALLERY" desc="The text displayed in the omnibox attachments popup. When clicked - opens image gallery." formatter_data="android_java">
+        Gallery
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_FILES" desc="The text displayed in the omnibox attachments popup. When clicked - opens file picker." formatter_data="android_java">
+        Files
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_TABS" desc="The text displayed in the omnibox attachments popup. When clicked - opens tabs picker." formatter_data="android_java">
+        Tabs
+      </message>
+    </if>
   </if>
   <if expr="is_android">
     <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">
