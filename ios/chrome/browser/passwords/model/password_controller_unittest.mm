@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 
 #import <Foundation/Foundation.h>
 
+#import <array>
 #import <memory>
 #import <set>
 #import <utility>
@@ -1240,30 +1236,31 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
 
   const std::string base_url = BaseUrl();
 
-  const TestPasswordFormData kTestData[] = {{/*form_name=*/"f1",
-                                             /*form_renderer_id=*/1,
-                                             /*username_element=*/"u1",
-                                             /*username_renderer_id=*/2,
-                                             /*password_element=*/"p1",
-                                             /*password_renderer_id=*/3,
-                                             /*user_value=*/"abc",
-                                             /*password_value=*/"def",
-                                             /*on_key_up=*/YES,
-                                             /*on_change=*/YES},
-                                            {/*form_name=*/"f2",
-                                             /*form_renderer_id=*/4,
-                                             /*username_element=*/"u2",
-                                             /*username_renderer_id=*/5,
-                                             /*password_element=*/"p2",
-                                             /*password_renderer_id=*/6,
-                                             /*user_value=*/"abc",
-                                             /*password_value=*/"def",
-                                             /*on_key_up=*/YES,
-                                             /*on_change=*/YES}};
+  const auto kTestData =
+      std::to_array<TestPasswordFormData>({{/*form_name=*/"f1",
+                                            /*form_renderer_id=*/1,
+                                            /*username_element=*/"u1",
+                                            /*username_renderer_id=*/2,
+                                            /*password_element=*/"p1",
+                                            /*password_renderer_id=*/3,
+                                            /*user_value=*/"abc",
+                                            /*password_value=*/"def",
+                                            /*on_key_up=*/YES,
+                                            /*on_change=*/YES},
+                                           {/*form_name=*/"f2",
+                                            /*form_renderer_id=*/4,
+                                            /*username_element=*/"u2",
+                                            /*username_renderer_id=*/5,
+                                            /*password_element=*/"p2",
+                                            /*password_renderer_id=*/6,
+                                            /*user_value=*/"abc",
+                                            /*password_value=*/"def",
+                                            /*on_key_up=*/YES,
+                                            /*on_change=*/YES}});
 
   // Check that the right password form is filled on suggesion selection.
-  for (size_t form_i = 0; form_i < std::size(kTestData); ++form_i) {
-    FillFormAndValidate(kTestData[form_i], /*should_succeed=*/true,
+  for (const TestPasswordFormData& test_data : kTestData) {
+    FillFormAndValidate(test_data, /*should_succeed=*/true,
                         GetWebFrame(/*is_main_frame=*/true));
   }
 }
@@ -1421,25 +1418,25 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
 TEST_F(PasswordControllerTest, TouchendAsSubmissionIndicator) {
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-  const char* kHtml[] = {
-      "<html><body>"
-      "<form name='login_form' id='login_form'>"
-      "  <input type='text' name='username'>"
-      "  <input type='password' name='password'>"
-      "  <button id='submit_button' value='Submit'>"
-      "</form>"
-      "</body></html>",
-      "<html><body>"
-      "<form name='login_form' id='login_form'>"
-      "  <input type='text' name='username'>"
-      "  <input type='password' name='password'>"
-      "  <button id='back' value='Back'>"
-      "  <button id='submit_button' type='submit' value='Submit'>"
-      "</form>"
-      "</body></html>"};
+  const auto kHtml = std::to_array<std::string_view>(
+      {"<html><body>"
+       "<form name='login_form' id='login_form'>"
+       "  <input type='text' name='username'>"
+       "  <input type='password' name='password'>"
+       "  <button id='submit_button' value='Submit'>"
+       "</form>"
+       "</body></html>",
+       "<html><body>"
+       "<form name='login_form' id='login_form'>"
+       "  <input type='text' name='username'>"
+       "  <input type='password' name='password'>"
+       "  <button id='back' value='Back'>"
+       "  <button id='submit_button' type='submit' value='Submit'>"
+       "</form>"
+       "</body></html>"});
 
-  for (size_t i = 0; i < std::size(kHtml); ++i) {
-    LoadHtml(SysUTF8ToNSString(kHtml[i]));
+  for (const std::string_view html : kHtml) {
+    LoadHtml(SysUTF8ToNSString(html));
     WaitForFormManagersCreation();
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
