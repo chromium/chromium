@@ -47,6 +47,13 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
 
+namespace {
+
+/// The padding necessary for the edit state compact bottom omnibox.
+constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
+
+}  // namespace
+
 @interface ToolbarCoordinator () <GuidedTourCommands,
                                   LocationBarCoordinatorHeightDelegate,
                                   PrimaryToolbarViewControllerDelegate,
@@ -290,9 +297,8 @@
 
   // Hide the toolbar when displaying content suggestions without the tab
   // strip, without the focused omnibox, only when in split toolbar mode.
-  BOOL hideToolbar = isNTP && !isOffTheRecord &&
-                     ![self isOmniboxFirstResponder] &&
-                     ![self showingOmniboxPopup] && !canShowTabStrip &&
+  BOOL hideToolbar = isNTP && !isOffTheRecord && ![self inEditState] &&
+                     !canShowTabStrip &&
                      IsSplitToolbarMode(self.traitEnvironment);
 
   self.primaryToolbarViewController.view.hidden = hideToolbar;
@@ -372,6 +378,10 @@
   return [self.locationBarCoordinator showingOmniboxPopup];
 }
 
+- (BOOL)inEditState {
+  return [self isOmniboxFirstResponder] || [self showingOmniboxPopup];
+}
+
 - (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset {
   [self.toolbarMediator setBottomOmniboxOffsetForPopup:bottomOffset];
 }
@@ -437,6 +447,12 @@
         self.traitEnvironment.traitCollection.preferredContentSizeCategory);
   }
   return height;
+}
+
+- (CGFloat)locationBarCompactDisplayHeight {
+  return self.locationBarCoordinator.locationBarViewController.view.frame.size
+             .height +
+         kLocationBarCompactBottomPadding;
 }
 
 #pragma mark - FakeboxFocuser
@@ -767,8 +783,7 @@
 - (void)updateToolbarsLayout {
   [self.toolbarMediator
       toolbarTraitCollectionChangedTo:self.traitEnvironment.traitCollection];
-  BOOL omniboxFocused =
-      self.isOmniboxFirstResponder || self.showingOmniboxPopup;
+  BOOL omniboxFocused = [self inEditState];
   [self.orchestrator
       transitionToStateOmniboxFocused:omniboxFocused
                       toolbarExpanded:omniboxFocused &&

@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_broadcasting_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -1319,6 +1320,16 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
 // The height of the secondary toolbar with the bottom safe area inset included.
 // Returns 0 if the toolbar should be hidden.
 - (CGFloat)secondaryToolbarHeightWithInset {
+  if (omnibox::ForceBottomOmniboxInEditState() ||
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+    if ([self.toolbarCoordinator inEditState]) {
+      CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
+      CGFloat locationBarDisplayHeight =
+          self.toolbarCoordinator.locationBarCompactDisplayHeight;
+      return safeAreaBottom + locationBarDisplayHeight;
+    }
+  }
+
   CGFloat height = self.toolbarCoordinator.expandedSecondaryToolbarHeight;
   if (!height) {
     return 0.0;
@@ -2014,6 +2025,20 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   self.visibilityState = BrowserViewVisibilityState::kVisible;
   self.toolbarCoordinator.secondaryToolbarViewController.view
       .accessibilityElementsHidden = NO;
+
+  // It's safe to revert the secondary toolbar to the initial size only if the
+  // user fully exited edit state.
+  if (omnibox::ForceBottomOmniboxInEditState() ||
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+    if (![self.toolbarCoordinator inEditState]) {
+      [self
+          adjustSecondaryToolbarForKeyboardHeight:0
+                                      isCollapsed:NO
+                                         duration:0.1
+                                            curve:
+                                                UIViewAnimationCurveEaseInOut];
+    }
+  }
 }
 
 #pragma mark - FullscreenUIElement methods
@@ -2854,6 +2879,11 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   if (alreadyInPosition) {
     [self.toolbarCoordinator setBottomOmniboxOffsetForPopup:offsetRequired];
     return;
+  }
+
+  if (omnibox::ForceBottomOmniboxInEditState() ||
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+    [self updateToolbarState];
   }
 
   // The shift converts an animation curve to animation options.
