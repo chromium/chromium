@@ -32,6 +32,8 @@ void LogLocalEntitiesDeduplicationMetrics(
         local_entities_considered_for_deduplication_per_type,
     const base::flat_map<EntityType, size_t>& local_entities_dedupled_per_type);
 
+void LogStoredEntitiesCount(base::span<const EntityInstance> entities);
+
 std::string_view EntityTypeToMetricsString(EntityType type);
 
 std::string_view EntityRecordTypeToMetricsString(

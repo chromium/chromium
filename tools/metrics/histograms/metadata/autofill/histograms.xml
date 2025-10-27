@@ -56,18 +56,19 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Autofill.Ai.EntityType">
   <variant name=".DriversLicense"
-      summary="Emitted for driver's license forms only."/>
+      summary="Emitted for driver's license forms or entities only."/>
   <variant name=".FlightReservation"
-      summary="Emitted for flight reservation forms only."/>
+      summary="Emitted for flight reservation forms or entities only."/>
   <variant name=".KnownTravelerNumber"
-      summary="Emitted for Known Traveler Number forms only."/>
+      summary="Emitted for Known Traveler Number forms or entities only."/>
   <variant name=".NationalIdCard"
-      summary="Emitted for national id card forms only."/>
-  <variant name=".Passport" summary="Emitted for passport forms only."/>
+      summary="Emitted for national id card forms or entities only."/>
+  <variant name=".Passport"
+      summary="Emitted for passport forms or entities only."/>
   <variant name=".RedressNumber"
-      summary="Emitted for redress number forms only."/>
+      summary="Emitted for redress number forms or entities only."/>
   <variant name=".Vehicle"
-      summary="Emitted for vehicle information forms only."/>
+      summary="Emitted for vehicle information forms or entities only."/>
 </variants>
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.cc:EntityTypeToMetricsString) -->
@@ -1587,6 +1588,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
   <token key="PromptType" variants="Autofill.Ai.PromptTypes"/>
   <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+</histogram>
+
+<histogram name="Autofill.Ai.StoredEntitiesCount{EntityType}{RecordType}"
+    enum="Boolean" expires_after="2026-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of entities stored by the user. Emitted on startup after
+    the initial loading of data.
+
+    {EntityType}
+
+    {RecordType}
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType"/>
+  <token key="RecordType" variants="Autofill.Ai.EntityRecordType">
+    <variant name="" summary="Emitted for all entity record types."/>
+  </token>
 </histogram>
 
 <histogram

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 
+#include <algorithm>
+
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -27,6 +29,31 @@ void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event) {
   base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Funnel", event);
   // TODO(crbug.com/408380915): Remove after M141.
   base::UmaHistogramEnumeration("Autofill.Ai.OptInFunnel", event);
+}
+
+void LogStoredEntitiesCount(base::span<const EntityInstance> entities) {
+  static constexpr std::string_view kHistogramPrefix =
+      "Autofill.Ai.StoredEntitiesCount";
+  std::map<EntityType, std::vector<const EntityInstance*>> entities_by_type;
+  for (const EntityInstance& entity : entities) {
+    entities_by_type[entity.type()].push_back(&entity);
+  }
+
+  for (EntityType entity_type : DenseSet<EntityType>::all()) {
+    for (EntityInstance::RecordType record_type :
+         DenseSet<EntityInstance::RecordType>::all()) {
+      base::UmaHistogramCounts1000(
+          base::StrCat({kHistogramPrefix, ".",
+                        EntityTypeToMetricsString(entity_type), ".",
+                        EntityRecordTypeToMetricsString(record_type)}),
+          std::ranges::count(entities_by_type[entity_type], record_type,
+                             &EntityInstance::record_type));
+    }
+    base::UmaHistogramCounts1000(
+        base::StrCat(
+            {kHistogramPrefix, ".", EntityTypeToMetricsString(entity_type)}),
+        entities_by_type[entity_type].size());
+  }
 }
 
 // LINT.IfChange(EntityTypeToMetricsString)

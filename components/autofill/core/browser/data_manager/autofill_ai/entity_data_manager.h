@@ -127,6 +127,10 @@ class EntityDataManager : public KeyedService,
   base::optional_ref<EntityInstance> GetMutableEntityInstance(
       const EntityInstance::EntityId& guid);
 
+  // Boolean that allows the EntityDataManager to differentiate between initial
+  // data loads and data updates.
+  bool entity_data_loaded_ = false;
+
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.
   const scoped_refptr<AutofillWebDataService> webdata_service_;

@@ -110,6 +110,47 @@ TEST_F(EntityDataManagerTest, InitialPopulation) {
               UnorderedElementsAre(pp, dl, fr));
 }
 
+// Tests that the constructor of EntityDataManager queries the database.
+TEST_F(EntityDataManagerTest, StorageMetrics) {
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance vehicle = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      passport, base::DoNothing());
+  helper().autofill_webdata_service()->AddOrUpdateEntityInstance(
+      vehicle, base::DoNothing());
+  helper().WaitUntilIdle();
+
+  base::HistogramTester histogram_tester;
+  EntityDataManager entity_data_manager(client().GetPrefs(),
+                                        /*identity_manager=*/nullptr,
+                                        &sync_service(),
+                                        helper().autofill_webdata_service(),
+                                        /*history_service=*/nullptr,
+                                        /*strike_database=*/nullptr);
+  helper().WaitUntilIdle();
+  EXPECT_THAT(entity_data_manager.GetEntityInstances(),
+              UnorderedElementsAre(passport, vehicle));
+
+  // Metrics should correctly reflect that the user has one local passport and
+  // one Wallet vehicle stored.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.StoredEntitiesCount.Passport", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.StoredEntitiesCount.Passport.Local", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.StoredEntitiesCount.Passport.ServerWallet", 0, 1);
+
+  histogram_tester.ExpectUniqueSample("Autofill.Ai.StoredEntitiesCount.Vehicle",
+                                      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.StoredEntitiesCount.Vehicle.Local", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.StoredEntitiesCount.Vehicle.ServerWallet", 1, 1);
+}
+
 // Tests the emission of opt-in metrics that are emitted on EDM creation, i.e.
 // on profile startup.
 // TODO(crbug.com/445879337): Fix Linux MSan Test failure and re-enable the
