@@ -22,6 +22,7 @@ import android.widget.TextView.OnEditorActionListener;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -126,6 +127,8 @@ public class PassphraseCreationDialogFragment extends DialogFragment
     }
 
     private void tryToSubmitPassphrase() {
+        RecordUserAction.record("Sync_SaveNewPassphraseClicked");
+
         String passphrase = mEnterPassphrase.getText().toString();
         String confirmPassphrase = mConfirmPassphrase.getText().toString();
 
