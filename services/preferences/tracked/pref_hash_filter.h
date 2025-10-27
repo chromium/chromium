@@ -182,6 +182,12 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   void MaybeRecordTrackedPreferenceResetCount(
       const base::Value::Dict& pref_store_contents);
 
+  // Applies resets found during any validation pass to the live PrefService.
+  // This is posted as a task to run after PrefService initialization is
+  // complete.
+  void UpdateTrackedPreferencesResetListInPrefStore(
+      const base::Value::Dict& pref_store_contents_at_load);
+
   // Callback to be invoked only once (and subsequently reset) on the next
   // FilterOnLoad event. It will be allowed to modify the |prefs| handed to
   // FilterOnLoad before handing them back to this PrefHashFilter.

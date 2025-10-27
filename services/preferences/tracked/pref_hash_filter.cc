@@ -165,6 +165,8 @@ void PrefHashFilter::RegisterProfilePrefs(
   registry->RegisterStringPref(
       user_prefs::kPreferenceResetTime,
       base::NumberToString(base::Time().ToInternalValue()));
+  // TODO(crbug.com/454827188): Use delegate to handle event messaging instead
+  // of using this pref, kTrackedPreferencesReset.
   registry->RegisterListPref(user_prefs::kTrackedPreferencesReset);
   // Register the preference to trigger a flush to disk.
   // It's a string preference to store a timestamp.
@@ -368,12 +370,22 @@ void PrefHashFilter::FinalizeFilterOnLoad(
     // No deferred task will be posted, so validation is complete.
     // Log metrics now.
     MaybeRecordTrackedPreferenceResetCount(pref_store_contents);
+
     // If the feature is disabled, and we have a test callback, run it now
     // as no deferred task will be posted.
     if (on_deferred_revalidation_complete_for_testing_) {
       std::move(on_deferred_revalidation_complete_for_testing_).Run();
     }
   }
+
+  // The PrefService initialization is asynchronous. Post a task to
+  // patch the live PrefService with the resets found in the
+  // sync pass.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore,
+          weak_ptr_factory_.GetWeakPtr(), pref_store_contents.Clone()));
 
   // Immediately call the callback with the original pref_store_contents to
   // allow startup to proceed without waiting for the encryptor.
@@ -446,6 +458,13 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
     }
   }
 
+  // If any preferences were reset, the `kTrackedPreferencesReset` list in
+  // `pref_store_contents_at_load` has been updated. Propagate this change to
+  // the live PrefService to ensure it's persisted.
+  if (pref_to_write == user_prefs::kPreferenceResetTime) {
+    UpdateTrackedPreferencesResetListInPrefStore(pref_store_contents_at_load);
+  }
+
   // This is the final validation pass. Log metrics if we haven't already.
   MaybeRecordTrackedPreferenceResetCount(pref_store_contents_at_load);
 
@@ -458,6 +477,27 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
 
 base::WeakPtr<InterceptablePrefFilter> PrefHashFilter::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PrefHashFilter::UpdateTrackedPreferencesResetListInPrefStore(
+    const base::Value::Dict& pref_store_contents_at_load) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This task should only run after PrefService is created.
+  if (!pref_service_) {
+    // This path is hit by ProfilePrefStoreManagerTest, which reads the
+    // store before a PrefService is associated with the filter.
+    CHECK_IS_TEST();
+    return;
+  }
+
+  const base::Value::List* reset_list = pref_store_contents_at_load.FindList(
+      user_prefs::kTrackedPreferencesReset);
+  if (reset_list) {
+    pref_service_->SetList(user_prefs::kTrackedPreferencesReset,
+                           reset_list->Clone());
+  } else {
+    pref_service_->ClearPref(user_prefs::kTrackedPreferencesReset);
+  }
 }
 
 // static

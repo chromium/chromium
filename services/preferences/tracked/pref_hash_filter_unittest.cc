@@ -686,7 +686,16 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         mock_validation_delegate_record_(new MockValidationDelegateRecord),
         mock_validation_delegate_(mock_validation_delegate_record_),
         validation_delegate_receiver_(&mock_validation_delegate_),
-        reset_recorded_(false) {}
+        reset_recorded_(false) {
+    // Register prefs that are accessed by tasks posted from
+    // FinalizeFilterOnLoad (like UpdateTrackedPreferencesResetListInPrefStore
+    // and DeferredEncryptorRevalidation).
+    pref_service_.registry()->RegisterStringPref(
+        user_prefs::kPreferenceResetTime, "0");
+    pref_service_.registry()->RegisterListPref(
+        user_prefs::kTrackedPreferencesReset);
+    pref_service_.registry()->RegisterStringPref(kScheduleToFlushToDisk, "0");
+  }
 
   PrefHashFilterTest(const PrefHashFilterTest&) = delete;
   PrefHashFilterTest& operator=(const PrefHashFilterTest&) = delete;
@@ -696,6 +705,7 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
     // tests.
     InitializeSyncOSCrypt();
     Reset();
+    pref_hash_filter_->SetPrefService(&pref_service_);
   }
 
   // Resets to the default state (feature off).
@@ -817,6 +827,7 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
   base::Value::Dict pref_store_contents_;
   scoped_refptr<MockValidationDelegateRecord> mock_validation_delegate_record_;
   std::unique_ptr<PrefHashFilter> pref_hash_filter_;
+  TestingPrefServiceSimple pref_service_;
 
  private:
   void OnResetOnLoad() override {
@@ -1767,6 +1778,8 @@ TEST_P(PrefHashFilterEncryptedTest, PostsDeferredTaskOnlyWhenFeatureEnabled) {
   // Also register the reset pref as a matter of good practice.
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
 
   bool callback_ran = false;
   auto set_callback = [&](base::RunLoop& run_loop) {
@@ -1817,6 +1830,10 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueChanged) {
   mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
@@ -1851,6 +1868,10 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
   mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
@@ -1898,6 +1919,8 @@ TEST_P(PrefHashFilterEncryptedTest,
                                                      "0");
   mock_pref_service_->registry()->RegisterStringPref(
       user_prefs::kPreferenceResetTime, "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   // 1. Set up the initial state with a good and a bad key.
@@ -1971,6 +1994,10 @@ TEST_P(PrefHashFilterEncryptedTest, MetricLoggedOnceOnDeferredPath) {
   mock_pref_service_ = std::make_unique<MockPrefService>();
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
@@ -2015,6 +2042,10 @@ TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
   mock_pref_service_->registry()->RegisterDictionaryPref(kSplitPref);
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   base::Value::Dict tampered_dict;
@@ -2058,6 +2089,106 @@ TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
       pref_store_contents_.FindDict(kSplitPref);
   ASSERT_TRUE(dict_after_async_pass);
   EXPECT_TRUE(dict_after_async_pass->empty());
+}
+
+TEST_P(PrefHashFilterEncryptedTest,
+       DeferredResetOverwritesExistingResetListInPrefService) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  mock_pref_service_->SetString(kAtomicPref, "value_at_load");
+
+  // Pre populate the live PrefService's reset list with a stale value.
+  base::Value::List existing_resets;
+  existing_resets.Append("existing.stale.pref");
+  mock_pref_service_->SetList(user_prefs::kTrackedPreferencesReset,
+                              std::move(existing_resets));
+
+  // The pref_store_contents_at_load won't have the stale pref, as it's
+  // only in the live service.
+  pref_store_contents_.Set(user_prefs::kTrackedPreferencesReset,
+                           base::Value::List());
+
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  ASSERT_EQ(
+      1u,
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset).size());
+
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::CHANGED_ENCRYPTED);
+
+  base::RunLoop revalidation_run_loop;
+  bool callback_ran = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &callback_ran,
+      revalidation_run_loop.QuitClosure()));
+  revalidation_run_loop.Run();
+
+  ASSERT_TRUE(callback_ran);
+  EXPECT_TRUE(mock_pref_service_->GetString(kAtomicPref).empty());
+
+  const base::Value::List& final_list =
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset);
+  ASSERT_EQ(1u, final_list.size());
+  EXPECT_EQ(kAtomicPref, final_list[0].GetString());
+}
+
+TEST_P(PrefHashFilterEncryptedTest,
+       SyncResetIsPatchedToLivePrefServiceWhenFlagOff) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(false /* enable_encrypted_hashing_feature */,
+            test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
+
+  // The live pref list should be empty before we start.
+  ASSERT_TRUE(mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset)
+                  .empty());
+
+  DoFilterOnLoad(true /* expected_altered */);
+
+  // The live PrefService list should be populated by the
+  // UpdateTrackedPreferencesResetListInPrefStore task.
+  const base::Value::List& final_list =
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset);
+  ASSERT_EQ(1u, final_list.size());
+  EXPECT_EQ(kAtomicPref, final_list[0].GetString());
 }
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
                          PrefHashFilterEncryptedTest,
