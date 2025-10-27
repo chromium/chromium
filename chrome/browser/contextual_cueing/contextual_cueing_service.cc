@@ -145,8 +145,6 @@ ContextualCueingService::ContextualCueingService(
       pref_service_(pref_service),
       template_url_service_(template_url_service),
       mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
-  CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
-        IsZeroStateSuggestionsEnabled());
   if (optimization_guide_keyed_service_ && IsZeroStateSuggestionsEnabled()) {
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
         {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});

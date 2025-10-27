@@ -89,7 +89,7 @@ ContextualCueingHelper::ContextualCueingHelper(
       content::WebContentsUserData<ContextualCueingHelper>(*web_contents),
       optimization_guide_keyed_service_(ogks),
       contextual_cueing_service_(ccs) {
-  if (base::FeatureList::IsEnabled(kContextualCueing)) {
+  if (IsContextualCueingEnabled()) {
     // LINT.IfChange(OptType)
     optimization_guide_keyed_service_->RegisterOptimizationTypes(
         {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
@@ -100,7 +100,7 @@ ContextualCueingHelper::ContextualCueingHelper(
 ContextualCueingHelper::~ContextualCueingHelper() = default;
 
 tabs::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
-  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+  if (!IsContextualCueingEnabled()) {
     return nullptr;
   }
 
@@ -153,7 +153,7 @@ void ContextualCueingHelper::DidFinishNavigation(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+  if (!IsContextualCueingEnabled()) {
     return;
   }
 
@@ -195,7 +195,7 @@ void ContextualCueingHelper::DidFinishNavigation(
 }
 
 void ContextualCueingHelper::PrimaryMainDocumentElementAvailable() {
-  if (!base::FeatureList::IsEnabled(kContextualCueing)) {
+  if (!IsContextualCueingEnabled()) {
     return;
   }
 

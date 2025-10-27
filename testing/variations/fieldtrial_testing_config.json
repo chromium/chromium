@@ -11479,23 +11479,6 @@
             ]
         }
     ],
-    "GlicContextualCueingDogfood": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextualCueing"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicDefaultTabContextSetting": [
         {
             "platforms": [

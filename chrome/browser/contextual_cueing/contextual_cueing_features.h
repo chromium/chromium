@@ -13,6 +13,14 @@ namespace contextual_cueing {
 BASE_DECLARE_FEATURE(kContextualCueing);
 BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
 
+// Whether contextual cueing is enabled.
+//
+// It is expected for downstream to use this function rather than calling
+// `base::FeatureList::IsEnabled` directly. Note that this function explicitly
+// ignores country/locale if the feature is overridden by Finch or command-line
+// override.
+bool IsContextualCueingEnabled();
+
 // Whether zero state suggestions are enabled.
 //
 // It is expected for downstream to use this function rather than calling
