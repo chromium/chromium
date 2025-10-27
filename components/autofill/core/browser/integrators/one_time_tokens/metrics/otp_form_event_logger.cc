@@ -32,6 +32,8 @@ void OtpFormEventLogger::OnDidShowSuggestions(
 void OtpFormEventLogger::OnDidFillOtpSuggestion(const FormStructure& form,
                                                 const AutofillField& field) {
   has_logged_form_filling_suggestion_filled_ = true;
+  client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
+      driver().GetPageUkmSourceId(), form, field, /*record_type=*/std::nullopt);
 }
 
 void OtpFormEventLogger::RecordParseForm() {

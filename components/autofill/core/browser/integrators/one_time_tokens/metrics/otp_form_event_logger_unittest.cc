@@ -21,9 +21,11 @@ namespace autofill {
 namespace {
 
 using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
+using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using test::CreateTestFormField;
 using test::VerifySingleSubmissionKeyMetricExpectations;
 using ::testing::_;
+using ::testing::Each;
 using ::testing::Return;
 
 class MockSmsOtpBackend : public one_time_tokens::SmsOtpBackend {
@@ -175,6 +177,26 @@ class OtpFormEventLoggerIntegrationTest
         autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
         testing::ElementsAre(form.main_frame_origin().GetURL()));
   }
+
+  void VerifyUkmSuggestionFilledLogged(const FormData& form) {
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(),
+                                       UkmSuggestionFilledType::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{UkmSuggestionFilledType::kIsForCreditCardName, false},
+              {UkmSuggestionFilledType::kFormSignatureName,
+               autofill_metrics::Collapse(CalculateFormSignature(form))
+                   .value()},
+              {UkmSuggestionFilledType::kFieldSignatureName,
+               autofill_metrics::Collapse(
+                   CalculateFieldSignatureForField(form.fields().front()))
+                   .value()},
+              {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName,
+               0}}}));
+    EXPECT_THAT(autofill_metrics::GetEventUrls(
+                    test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+                Each(form.main_frame_origin().GetURL()));
+  }
 };
 
 TEST_F(OtpFormEventLoggerIntegrationTest, Readiness) {
@@ -214,6 +236,9 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
       {.readiness = true, .assistance = false});
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/1);
+  EXPECT_THAT(autofill_metrics::GetUkmEvents(
+                  test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+              autofill_metrics::UkmEventsAre({}));
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
@@ -243,6 +268,9 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
       {.readiness = false, .assistance = false});
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/0);
+  EXPECT_THAT(autofill_metrics::GetUkmEvents(
+                  test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+              autofill_metrics::UkmEventsAre({}));
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
@@ -283,6 +311,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
                                                .correctness = true});
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/1);
+  VerifyUkmSuggestionFilledLogged(otp_form);
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
@@ -320,6 +349,9 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
       {.readiness = true, .acceptance = false, .assistance = false});
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/1);
+  EXPECT_THAT(autofill_metrics::GetUkmEvents(
+                  test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
+              autofill_metrics::UkmEventsAre({}));
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
@@ -363,6 +395,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
                                                .correctness = false});
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/1);
+  VerifyUkmSuggestionFilledLogged(otp_form);
 }
 
 }  // namespace
