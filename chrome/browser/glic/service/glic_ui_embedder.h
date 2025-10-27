@@ -58,6 +58,7 @@ class GlicUiEmbedder {
 
   // Focus embedder's webcontents.
   virtual void Focus() = 0;
+  virtual bool HasFocus() = 0;
 
   // Returns the view, if there is one.
   virtual base::WeakPtr<views::View> GetView() = 0;

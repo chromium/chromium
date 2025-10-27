@@ -85,6 +85,8 @@ class GlicSidePanelUi : public GlicUiEmbedder,
  private:
   void OnBrowserWindowActivated(BrowserWindowInterface* bwi);
   void OnBrowserWindowDeactivated(BrowserWindowInterface* bwi);
+  // Focuses on embedder's webcontens.
+  void SetFocusDelayed();
 
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
   base::CallbackListSubscription panel_visibility_subscription_;

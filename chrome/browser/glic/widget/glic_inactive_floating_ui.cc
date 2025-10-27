@@ -68,4 +68,10 @@ std::unique_ptr<GlicUiEmbedder> GlicInactiveFloatingUi::CreateInactiveEmbedder()
 void GlicInactiveFloatingUi::Focus() {
   NOTIMPLEMENTED();
 }
+
+bool GlicInactiveFloatingUi::HasFocus() {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 }  // namespace glic

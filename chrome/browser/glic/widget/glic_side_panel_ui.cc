@@ -137,6 +137,16 @@ bool GlicSidePanelUi::IsShowing() const {
 }
 
 void GlicSidePanelUi::Focus() {
+  // When daisy chaining focus request is lost when opening a new tab.
+  // Wait a little for things to settle.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&GlicSidePanelUi::SetFocusDelayed,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(50));
+}
+
+void GlicSidePanelUi::SetFocusDelayed() {
   if (auto* web_contents = delegate_->host().webui_contents()) {
     web_contents->Focus();
   }

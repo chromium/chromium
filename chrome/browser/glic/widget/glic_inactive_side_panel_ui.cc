@@ -143,4 +143,8 @@ GlicSidePanelCoordinator* GlicInactiveSidePanelUi::GetGlicSidePanelCoordinator()
   return tab_->GetTabFeatures()->glic_side_panel_coordinator();
 }
 
+bool GlicInactiveSidePanelUi::HasFocus() {
+  return false;
+}
+
 }  // namespace glic

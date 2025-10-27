@@ -318,8 +318,10 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
     return nullptr;
   }
 
+  auto* active_embedder = GetActiveEmbedder();
+  bool hasFocus = active_embedder && active_embedder->HasFocus();
   auto show_options = ShowOptions::ForSidePanel(*created_tab);
-  show_options.focus_on_show = created_tab->IsActivated();
+  show_options.focus_on_show = created_tab->IsActivated() || hasFocus;
   Show(show_options);
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
                                  /*success=*/true);
