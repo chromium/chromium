@@ -1420,9 +1420,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(all_downloads[0]->GetId(), static_cast<uint32_t>(*item_id));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test the |id| parameter for search().
-// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_SearchId) {
   DownloadManager::DownloadVector items;
   CreateTwoDownloads(&items);
@@ -1442,7 +1440,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_SearchId) {
 }
 
 // Test specifying both the |id| and |filename| parameters for search().
-// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchIdAndFilename) {
   DownloadManager::DownloadVector items;
@@ -1456,7 +1453,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(0UL, result->GetList().size());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test a single |orderBy| parameter for search().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
@@ -1540,9 +1536,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_EQ(1UL, result->GetList().size());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test the |state| option for search().
-// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchState) {
   DownloadManager::DownloadVector items;
@@ -1560,7 +1554,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // Test the |limit| option for search().
-// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchLimit) {
   DownloadManager::DownloadVector items;
@@ -1573,7 +1566,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(result->is_list());
   ASSERT_EQ(1UL, result->GetList().size());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test invalid search parameters.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
