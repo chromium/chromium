@@ -46,6 +46,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
@@ -136,8 +137,9 @@ AutocompleteControllerAndroid::AutocompleteControllerAndroid(
           reinterpret_cast<intptr_t>(this))},
       autocomplete_controller_{std::make_unique<AutocompleteController>(
           std::move(client),
-          AutocompleteClassifier::DefaultOmniboxProviders(
-              is_low_memory_device))} {
+          AutocompleteControllerConfig{
+              .provider_types = AutocompleteClassifier::DefaultOmniboxProviders(
+                  is_low_memory_device)})} {
   autocomplete_controller_->AddObserver(this);
 
   AutocompleteControllerEmitter* emitter =

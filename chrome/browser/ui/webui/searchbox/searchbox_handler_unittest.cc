@@ -414,8 +414,7 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
     SearchboxHandlerTest::SetUp();
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>(),
-        kAutocompleteDefaultStopTimerDuration);
+        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

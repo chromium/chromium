@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
@@ -23,7 +24,9 @@ std::unique_ptr<KeyedService> BuildAutocompleteClassifier(ProfileIOS* profile) {
   return std::make_unique<AutocompleteClassifier>(
       std::make_unique<AutocompleteController>(
           std::make_unique<AutocompleteProviderClientImpl>(profile),
-          AutocompleteClassifier::DefaultOmniboxProviders()),
+          AutocompleteControllerConfig{
+              .provider_types =
+                  AutocompleteClassifier::DefaultOmniboxProviders()}),
       std::make_unique<AutocompleteSchemeClassifierImpl>());
 }
 

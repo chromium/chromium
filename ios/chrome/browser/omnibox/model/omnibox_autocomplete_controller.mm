@@ -15,6 +15,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_controller_config.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -77,7 +78,9 @@ using base::UserMetricsAction;
 
     _autocompleteController = std::make_unique<AutocompleteController>(
         _omniboxClient->CreateAutocompleteProviderClient(),
-        AutocompleteClassifier::DefaultOmniboxProviders());
+        AutocompleteControllerConfig{
+            .provider_types =
+                AutocompleteClassifier::DefaultOmniboxProviders()});
 
     _autocompleteControllerObserverBridge =
         std::make_unique<AutocompleteControllerObserverBridge>(self);
@@ -345,9 +348,9 @@ using base::UserMetricsAction;
     return;
   }
 
-    [self openSelection:OmniboxPopupSelection(row)
-              timestamp:matchSelectionTimestamp
-            disposition:disposition];
+  [self openSelection:OmniboxPopupSelection(row)
+            timestamp:matchSelectionTimestamp
+          disposition:disposition];
 }
 
 - (void)selectMatchForAppending:(const AutocompleteMatch&)match {

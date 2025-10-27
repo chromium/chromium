@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -279,8 +280,9 @@ std::unique_ptr<AutocompleteController> OmniboxPageHandler::CreateController(
   }
 
   auto controller = std::make_unique<AutocompleteController>(
-      std::make_unique<ChromeAutocompleteProviderClient>(profile_), providers,
-      false, ml_disabled);
+      std::make_unique<ChromeAutocompleteProviderClient>(profile_),
+      AutocompleteControllerConfig{.provider_types = providers,
+                                   .disable_ml = ml_disabled});
   // We will observe our internal AutocompleteController directly, so there's
   // no reason to hook it up to the profile-keyed AutocompleteControllerEmitter.
   controller->AddObserver(this);

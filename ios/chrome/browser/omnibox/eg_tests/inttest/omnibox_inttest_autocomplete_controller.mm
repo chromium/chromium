@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_autocomplete_controller.h"
 
 #import "components/omnibox/browser/autocomplete_classifier.h"
+#import "components/omnibox/browser/autocomplete_controller_config.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/fake_autocomplete_provider.h"
@@ -14,7 +15,9 @@
 OmniboxInttestAutocompleteController::OmniboxInttestAutocompleteController()
     : AutocompleteController(
           std::make_unique<FakeAutocompleteProviderClient>(),
-          AutocompleteClassifier::DefaultOmniboxProviders()) {
+          AutocompleteControllerConfig{
+              .provider_types =
+                  AutocompleteClassifier::DefaultOmniboxProviders()}) {
   provider_ = new FakeAutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN);
   suggestions_builder_ = std::make_unique<FakeSuggestionsBuilder>();
 }

@@ -158,6 +158,7 @@ static_library("browser") {
     "autocomplete_classifier.h",
     "autocomplete_controller.cc",
     "autocomplete_controller.h",
+    "autocomplete_controller_config.h",
     "autocomplete_controller_emitter.cc",
     "autocomplete_controller_emitter.h",
     "autocomplete_controller_metrics.cc",

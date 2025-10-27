@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -585,7 +586,8 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
 void AutocompleteProviderTest::ResetControllerWithType(int type) {
   EXPECT_FALSE(client_owned_);
   controller_ = std::make_unique<AutocompleteController>(
-      base::WrapUnique(client_.get()), type);
+      base::WrapUnique(client_.get()),
+      AutocompleteControllerConfig{.provider_types = type});
   client_owned_ = true;
 }
 

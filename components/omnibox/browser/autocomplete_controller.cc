@@ -549,25 +549,21 @@ int AutocompleteController::ApplyPiecewiseScoringTransform(
 
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
-    int provider_types,
-    bool is_cros_launcher,
-    bool disable_ml)
+    const AutocompleteControllerConfig& config)
     : provider_client_(std::move(provider_client)),
-      stop_timer_duration_(kAutocompleteDefaultStopTimerDuration),
-      is_cros_launcher_(is_cros_launcher),
-      disable_ml_(disable_ml),
       template_url_service_(provider_client_->GetTemplateURLService()),
       triggered_feature_service_(
           provider_client_->GetOmniboxTriggeredFeatureService()),
       steady_state_omnibox_position_(
-          metrics::OmniboxEventProto::UNKNOWN_POSITION) {
-  provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
+          metrics::OmniboxEventProto::UNKNOWN_POSITION),
+      config_(config) {
+  config_.provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
 
   // Providers run in the order they're added. Async providers should run first
   // so their async requests can be kicked off before waiting a few milliseconds
   // for the other sync providers to complete.
-  InitializeAsyncProviders(provider_types);
-  InitializeSyncProviders(provider_types);
+  InitializeAsyncProviders(config_.provider_types);
+  InitializeSyncProviders(config_.provider_types);
 
   // Ideally, we'd check `IsApplicationLocaleSupportedByJourneys()` when
   // constructing `provider_types`. But that's usually constructed in
@@ -581,7 +577,8 @@ AutocompleteController::AutocompleteController(
   // TODO(manukh): Move this to `InitializeAsyncProviders()`.
 #if !BUILDFLAG(IS_IOS)
   // HistoryClusters is not enabled on iOS.
-  if (provider_types & AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER &&
+  if (config_.provider_types &
+          AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER &&
       history_clusters::IsApplicationLocaleSupportedByJourneys(
           provider_client_->GetApplicationLocale()) &&
       search_provider_ && history_url_provider_ && history_quick_provider_) {
@@ -609,19 +606,6 @@ AutocompleteController::AutocompleteController(
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "AutocompleteController",
       base::SingleThreadTaskRunner::GetCurrentDefault());
-}
-
-AutocompleteController::AutocompleteController(
-    std::unique_ptr<AutocompleteProviderClient> provider_client,
-    int provider_types,
-    base::TimeDelta stop_timer_duration,
-    bool is_cros_launcher,
-    bool disable_ml)
-    : AutocompleteController(std::move(provider_client),
-                             provider_types,
-                             is_cros_launcher,
-                             disable_ml) {
-  stop_timer_duration_ = stop_timer_duration;
 }
 
 AutocompleteController::~AutocompleteController() {
@@ -1230,7 +1214,7 @@ bool AutocompleteController::ShouldRunProvider(
              !should_run_search_aggregator_provider;
 
     case AutocompleteProvider::TYPE_OPEN_TAB:
-      return is_cros_launcher_;
+      return config_.unscoped_open_tab_suggestions;
 #if !BUILDFLAG(IS_IOS)
     case AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS:
       return history_embeddings::GetFeatureParameters().omnibox_unscoped;
@@ -1633,7 +1617,7 @@ void AutocompleteController::MlRerank(OldResult& old_result) {
   if (!provider_client_->GetAutocompleteScoringModelService()) {
     return;
   }
-  if (disable_ml_) {
+  if (config_.disable_ml) {
     return;
   }
 
@@ -2279,7 +2263,7 @@ void AutocompleteController::StartExpireTimer() {
 
 void AutocompleteController::StartStopTimer() {
   stop_timer_.Start(
-      FROM_HERE, stop_timer_duration_,
+      FROM_HERE, config_.stop_timer_duration,
       base::BindOnce(&AutocompleteController::OnStopTimerTriggered,
                      base::Unretained(this)));
 }
@@ -2319,7 +2303,7 @@ bool AutocompleteController::OnMemoryDump(
 
 void AutocompleteController::SetStartStopTimerDurationForTesting(
     base::TimeDelta duration) {
-  stop_timer_duration_ = duration;
+  config_.stop_timer_duration = duration;
 }
 
 size_t AutocompleteController::InjectAdHocMatch(AutocompleteMatch match) {

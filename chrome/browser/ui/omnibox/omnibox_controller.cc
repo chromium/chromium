@@ -5,15 +5,18 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -29,15 +32,21 @@
 OmniboxController::OmniboxController(
     OmniboxView* view,
     std::unique_ptr<OmniboxClient> client,
-    base::TimeDelta autocomplete_stop_timer_duration)
+    std::optional<base::TimeDelta> autocomplete_stop_timer_duration)
     : client_(std::move(client)),
-      autocomplete_controller_(std::make_unique<AutocompleteController>(
-          client_->CreateAutocompleteProviderClient(),
-          AutocompleteClassifier::DefaultOmniboxProviders(),
-          autocomplete_stop_timer_duration)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this,
           view)) {
+  AutocompleteControllerConfig autocomplete_controller_config{
+      .provider_types = AutocompleteClassifier::DefaultOmniboxProviders()};
+  if (autocomplete_stop_timer_duration.has_value()) {
+    autocomplete_controller_config.stop_timer_duration =
+        autocomplete_stop_timer_duration.value();
+  }
+  autocomplete_controller_ = std::make_unique<AutocompleteController>(
+      client_->CreateAutocompleteProviderClient(),
+      autocomplete_controller_config);
+
   // Directly observe omnibox's `AutocompleteController` instance - i.e., when
   // `view` is provided in the constructor. In the case of realbox - i.e., when
   // `view` is not provided in the constructor - `RealboxHandler` directly

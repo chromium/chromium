@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/prefs/pref_service.h"
@@ -64,7 +65,8 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
   controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
-      provider_types, /*is_cros_launcher=*/true),
+      AutocompleteControllerConfig{.provider_types = provider_types,
+                                   .unscoped_open_tab_suggestions = true}),
   controller_->AddObserver(this);
 }
 

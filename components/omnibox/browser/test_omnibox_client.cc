@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/mock_unscoped_extension_provider_delegate.h"
@@ -24,7 +25,9 @@ TestOmniboxClient::TestOmniboxClient()
       autocomplete_classifier_(
           std::make_unique<AutocompleteController>(
               CreateAutocompleteProviderClient(),
-              AutocompleteClassifier::DefaultOmniboxProviders()),
+              AutocompleteControllerConfig{
+                  .provider_types =
+                      AutocompleteClassifier::DefaultOmniboxProviders()}),
           std::make_unique<TestSchemeClassifier>()),
       last_log_disposition_(WindowOpenDisposition::UNKNOWN) {}
 

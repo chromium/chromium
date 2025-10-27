@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -86,7 +87,7 @@ class MockAutoCompleteController : public AutocompleteController {
   MockAutoCompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            0) {}
+            AutocompleteControllerConfig{}) {}
   MockAutoCompleteController(const MockAutoCompleteController&) = delete;
   MockAutoCompleteController& operator=(const MockAutoCompleteController&) =
       delete;

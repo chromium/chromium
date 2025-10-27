@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_controller_metrics.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -57,9 +58,6 @@ struct OmniboxLog;
 // omnibox. Only set when the navigation is initiated from the Gemini
 // built-in keyword.
 inline constexpr char kOmniboxGeminiHeader[] = "X-Omnibox-Gemini";
-
-inline constexpr base::TimeDelta kAutocompleteDefaultStopTimerDuration =
-    base::Milliseconds(1500);
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
@@ -164,23 +162,11 @@ class AutocompleteController : public AutocompleteProviderListener,
       double ml_score,
       std::vector<std::pair<double, int>> break_points);
 
-  // `provider_types` is a bitmap containing AutocompleteProvider::Type values
-  // that will (potentially, depending on platform, flags, etc.) be
-  // instantiated. `provider_client` is passed to all those providers, and
-  // is used to get access to the template URL service. `disable_ml` forces ML
-  // scoring off regardless of its feature state; this is useful for
-  // chrome://omnibox/ml.
+  // `provider_client` is passed to all providers.`config` customizes
+  // autocomplete behavior for its embedders.
   AutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types,
-      bool is_cros_launcher = false,
-      bool disable_ml = false);
-  AutocompleteController(
-      std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types,
-      base::TimeDelta stop_timer_duration,
-      bool is_cros_launcher = false,
-      bool disable_ml = false);
+      const AutocompleteControllerConfig& config);
   ~AutocompleteController() override;
   AutocompleteController(const AutocompleteController&) = delete;
   AutocompleteController& operator=(const AutocompleteController&) = delete;
@@ -560,37 +546,21 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // A list of all providers.
   Providers providers_;
-
   raw_ptr<BookmarkProvider> bookmark_provider_ = nullptr;
-
   raw_ptr<HistoryQuickProvider> history_quick_provider_ = nullptr;
-
   raw_ptr<DocumentProvider> document_provider_ = nullptr;
-
   raw_ptr<HistoryURLProvider> history_url_provider_ = nullptr;
-
   raw_ptr<KeywordProvider> keyword_provider_ = nullptr;
-
   raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_ = nullptr;
-
   raw_ptr<SearchProvider> search_provider_ = nullptr;
-
   raw_ptr<ZeroSuggestProvider> zero_suggest_provider_ = nullptr;
-
   raw_ptr<OnDeviceHeadProvider> on_device_head_provider_ = nullptr;
-
   raw_ptr<ClipboardProvider> clipboard_provider_ = nullptr;
-
   raw_ptr<VoiceSuggestProvider> voice_suggest_provider_ = nullptr;
-
   raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_ = nullptr;
-
   raw_ptr<OpenTabProvider> open_tab_provider_ = nullptr;
-
   raw_ptr<TabGroupProvider> tab_group_provider_ = nullptr;
-
   raw_ptr<FeaturedSearchProvider> featured_search_provider_ = nullptr;
-
   raw_ptr<ContextualSearchProvider> contextual_search_provider_ = nullptr;
 
   // A vector of scoring signals annotators for URL suggestions.
@@ -636,12 +606,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Timer used to tell the providers to Stop() searching for matches.
   base::OneShotTimer stop_timer_;
 
-  // Amount of time between when the user stops typing and when we send Stop()
-  // to every provider.  This is intended to avoid the disruptive effect of
-  // belated omnibox updates, updates that come after the user has had to time
-  // to read the whole dropdown and doesn't expect it to change.
-  base::TimeDelta stop_timer_duration_;
-
   // Debouncer to avoid invoking `NotifyChange()` after updating results in
   // quick succession. The last call, i.e. when all providers complete and
   // `done_` is set true; and the 1st call, i.e. the sync update, are immune to
@@ -658,11 +622,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Represents the reason of the last `UpdateResult()` call.
   UpdateType last_update_type_ = UpdateType::kNone;
 
-  // True if this instance of AutocompleteController is owned by the CrOS
-  // launcher. This is currently used to determine whether to enable the Open
-  // Tab provider always (CrOS launcher) or just in keyword mode (!launcher).
-  const bool is_cros_launcher_;
-
   // Logs stability and timing metrics for updates.
   AutocompleteControllerMetrics metrics_{*this};
 
@@ -671,15 +630,18 @@ class AutocompleteController : public AutocompleteProviderListener,
   // controller creation and after |ResetSession| is called.
   bool search_service_worker_signal_sent_ = false;
 
-  // Used for chrome://omnibox/ml to force disable the ML feature state.
-  const bool disable_ml_;
-
   const raw_ptr<TemplateURLService> template_url_service_;
 
   const raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
 
   // The preferred steady state (unfocused) omnibox position.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
+
+  // Configures autocomplete provider for different embedders.
+  // TODO(crbug.com/455133849 & crbug.com/455132352): Make `const` after
+  //   removing `OmniboxFieldTrial::GetDisabledProviderTypes()` &
+  //   `SetStartStopTimerDurationForTesting()`.
+  AutocompleteControllerConfig config_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_

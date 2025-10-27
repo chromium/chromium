@@ -11,6 +11,7 @@
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_controller_config.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -52,7 +53,9 @@ class MockAutocompleteController : public AutocompleteController {
   MockAutocompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            AutocompleteClassifier::DefaultOmniboxProviders()) {}
+            AutocompleteControllerConfig{
+                .provider_types =
+                    AutocompleteClassifier::DefaultOmniboxProviders()}) {}
   MockAutocompleteController(const MockAutocompleteController&) = delete;
   MockAutocompleteController& operator=(const MockAutocompleteController&) =
       delete;

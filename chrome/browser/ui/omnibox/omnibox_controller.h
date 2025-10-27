@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/memory/safety_checks.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -26,8 +28,8 @@ class OmniboxController : public AutocompleteController::Observer {
  public:
   OmniboxController(OmniboxView* view,
                     std::unique_ptr<OmniboxClient> client,
-                    base::TimeDelta autocomplete_stop_timer_duration =
-                        kAutocompleteDefaultStopTimerDuration);
+                    std::optional<base::TimeDelta>
+                        autocomplete_stop_timer_duration = std::nullopt);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;

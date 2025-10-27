@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -41,7 +42,7 @@ class MockAutocompleteController : public AutocompleteController {
   MockAutocompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            /*provider_types=*/0) {}
+            AutocompleteControllerConfig{}) {}
 
   // AutocompleteController:
   MOCK_METHOD(void, Start, (const AutocompleteInput&), (override));
