@@ -30,7 +30,7 @@ class CONTENT_EXPORT ConfigFetcher {
   struct CONTENT_EXPORT FetchError {
     FetchError(const FetchError& info);
     FetchError(blink::mojom::FederatedAuthRequestResult result,
-               webid::RequestIdTokenStatus token_status,
+               RequestIdTokenStatus token_status,
                std::optional<std::string> additional_console_error_message);
     ~FetchError();
 
@@ -87,10 +87,10 @@ class CONTENT_EXPORT ConfigFetcher {
  private:
   void OnWellKnownFetched(
       FetchResult& fetch_result,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       const IdpNetworkRequestManager::WellKnown& well_known);
   void OnConfigFetched(FetchResult& fetch_result,
-                       IdpNetworkRequestManager::FetchStatus status,
+                       FetchStatus status,
                        IdpNetworkRequestManager::Endpoints endpoints,
                        IdentityProviderMetadata idp_metadata);
 
@@ -98,7 +98,7 @@ class CONTENT_EXPORT ConfigFetcher {
   // endpoint fails.
   void OnError(FetchResult& fetch_result,
                blink::mojom::FederatedAuthRequestResult result,
-               webid::RequestIdTokenStatus token_status,
+               RequestIdTokenStatus token_status,
                std::optional<std::string> additional_console_error_message);
 
   void RunCallbackIfDone();

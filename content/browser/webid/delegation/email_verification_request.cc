@@ -45,7 +45,7 @@ std::optional<std::string> GetDomainFromEmail(const std::string& email) {
 EmailVerificationRequest::EmailVerificationRequest(
     RenderFrameHostImpl& render_frame_host)
     : EmailVerificationRequest(
-          IdpNetworkRequestManager::Create(&render_frame_host),
+          EmailVerifierNetworkRequestManager::Create(&render_frame_host),
           std::make_unique<DnsRequest>(base::BindRepeating(
               [](RenderFrameHost* rfh) -> network::mojom::NetworkContext* {
                 return rfh->GetStoragePartition()->GetNetworkContext();
@@ -54,7 +54,7 @@ EmailVerificationRequest::EmailVerificationRequest(
           render_frame_host.GetSafeRef()) {}
 
 EmailVerificationRequest::EmailVerificationRequest(
-    std::unique_ptr<IdpNetworkRequestManager> network_manager,
+    std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager,
     std::unique_ptr<DnsRequest> dns_request,
     base::SafeRef<RenderFrameHost> render_frame_host)
     : dns_request_(std::move(dns_request)),
@@ -164,12 +164,12 @@ void EmailVerificationRequest::OnWellKnownFetched(
     const url::Origin& issuer,
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback,
-    IdpNetworkRequestManager::FetchStatus status,
-    const IdpNetworkRequestManager::WellKnown& well_known) {
+    FetchStatus status,
+    EmailVerifierNetworkRequestManager::WellKnown well_known) {
   // Step 3.3: when the .well-known/web-identity file is fetched,
   // the browser checks that the issuance_endpoint is present.
 
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -203,31 +203,24 @@ void EmailVerificationRequest::OnWellKnownFetched(
   // issuance_endpoint with the request_token as a form parameter.
 
   network_manager_->SendTokenRequest(
-      well_known.issuance_endpoint, email,
-      "request_token=" + request_token.value(),
-      /*idp_blindness=*/true,
-      base::BindOnce(&EmailVerificationRequest::OnTokenRequestComplete,
-                     weak_ptr_factory_.GetWeakPtr(), nonce,
-                     std::move(private_key), std::move(callback)),
-      // TODO(crbug.com/380367784): we should probably not be using a
-      // DoNothing here, but we also don't support the continuation_url.
-      base::DoNothing(),
+      well_known.issuance_endpoint, "request_token=" + request_token.value(),
       // TODO(crbug.com/380367784): figure out how to measure the feature
       // here.
-      base::DoNothing());
+      base::BindOnce(&EmailVerificationRequest::OnTokenRequestComplete,
+                     weak_ptr_factory_.GetWeakPtr(), nonce,
+                     std::move(private_key), std::move(callback)));
 }
 
 void EmailVerificationRequest::OnTokenRequestComplete(
     const std::string& nonce,
     std::unique_ptr<crypto::keypair::PrivateKey> private_key,
     EmailVerifier::OnEmailVerifiedCallback callback,
-    IdpNetworkRequestManager::FetchStatus token_status,
-    IdpNetworkRequestManager::TokenResult&& result) {
+    FetchStatus token_status,
+    EmailVerifierNetworkRequestManager::TokenResult&& result) {
   // Step 5: Token Presentation
 
-  if (token_status.parse_status !=
-          IdpNetworkRequestManager::ParseStatus::kSuccess ||
-      !result.token || !result.token->is_string()) {
+  if (token_status.parse_status != ParseStatus::kSuccess || !result.token ||
+      !result.token->is_string()) {
     std::move(callback).Run(std::nullopt);
     return;
   }

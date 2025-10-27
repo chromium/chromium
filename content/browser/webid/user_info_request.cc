@@ -209,14 +209,13 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
 }
 
 void UserInfoRequest::OnAccountsResponseReceived(
-    IdpNetworkRequestManager::FetchStatus fetch_status,
+    FetchStatus fetch_status,
     std::vector<IdentityRequestAccountPtr> accounts) {
   UpdateIdpSigninStatusForAccountsEndpointResponse(
       *render_frame_host_, idp_config_url_, fetch_status,
       does_idp_have_failing_signin_status_, permission_delegate_);
 
-  if (fetch_status.parse_status !=
-      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     CompleteWithError(UserInfoRequestResult::kInvalidAccountsResponse);
     return;
   }

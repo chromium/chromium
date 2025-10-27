@@ -311,7 +311,7 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
 
 void AccountsFetcher::OnAccountsResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     std::vector<IdentityRequestAccountPtr> accounts) {
   federated_auth_request_impl_->SetAccountsFetchedTime(base::TimeTicks::Now());
 
@@ -323,7 +323,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
       *render_frame_host_, idp_config_url, status,
       idp_info->has_failing_idp_signin_status, permission_delegate_);
 
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (status.parse_status != ParseStatus::kSuccess) {
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
     HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
@@ -367,7 +367,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
         "hint, and/or account labels provided.");
     // If there are no accounts after filtering,treat this exactly the same
     // as if we had received an empty accounts list, i.e.
-    // IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+    // ParseStatus::kEmptyListError.
     HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
                                FederatedAuthRequestResult::kAccountsListEmpty,
                                TokenStatus::kAccountsListEmpty, status);
@@ -383,7 +383,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
 
 void AccountsFetcher::OnAccountsFetchSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     std::vector<IdentityRequestAccountPtr> accounts) {
   bool need_client_metadata = false;
   if (IsIframeOriginEnabled()) {
@@ -434,7 +434,7 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
 void AccountsFetcher::OnClientMetadataResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     std::vector<IdentityRequestAccountPtr>&& accounts,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
   federated_auth_request_impl_->SetClientMetadataFetchedTime(
       base::TimeTicks::Now());
@@ -606,8 +606,8 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     std::optional<bool> old_idp_signin_status,
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<TokenStatus> token_status,
-    const IdpNetworkRequestManager::FetchStatus& status) {
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+    const FetchStatus& status) {
+  if (status.parse_status != ParseStatus::kSuccess) {
     webid::MaybeAddResponseCodeToConsole(
         *render_frame_host_, "accounts endpoint", status.response_code);
   }

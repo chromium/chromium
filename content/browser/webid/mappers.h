@@ -74,32 +74,30 @@ MetricsEndpointErrorCode FederatedAuthRequestResultToMetricsEndpointErrorCode(
 // for the result. The second member of the pair is a FedCmRequestIdTokenStatus,
 // which is a type used in metrics recording. Should not be invoked with
 // ParseStatus::kSuccess.
-std::pair<blink::mojom::FederatedAuthRequestResult, webid::RequestIdTokenStatus>
-AccountParseStatusToRequestResultAndTokenStatus(
-    IdpNetworkRequestManager::ParseStatus status);
+std::pair<blink::mojom::FederatedAuthRequestResult, RequestIdTokenStatus>
+AccountParseStatusToRequestResultAndTokenStatus(ParseStatus status);
 
-webid::LifecycleStateFailureReason
+LifecycleStateFailureReason
 LifecycleStateImplLifecycleStateImplToFedCmLifecycleStateFailureReason(
     RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
 
 // Converts a FederatedApiPermissionStatus to a (FederatedAuthRequestResult,
 // FedCmRequestIdTokenStatus) pair. Should not be invoked with
 // FederatedApiPermissionStatus::GRANTED.
-std::pair<blink::mojom::FederatedAuthRequestResult, webid::RequestIdTokenStatus>
+std::pair<blink::mojom::FederatedAuthRequestResult, RequestIdTokenStatus>
 PermissionStatusToRequestResultAndTokenStatus(
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus
         permission_status);
 
-webid::ErrorDialogResult DismissReasonToErrorDialogResult(
+ErrorDialogResult DismissReasonToErrorDialogResult(
     IdentityRequestDialogController::DismissReason dismiss_reason,
     bool has_url);
 
 // Converts a FetchStatus from the ID assertion endpoint to a
 // (FederatedAuthRequestResult, FedCmRequestIdTokenStatus) pair. Should not be
 // invoked when the parse_status is ParseStatus::kSuccess.
-std::pair<blink::mojom::FederatedAuthRequestResult, webid::RequestIdTokenStatus>
-IdAssertionFetchStatusToRequestResultAndTokenStatus(
-    IdpNetworkRequestManager::FetchStatus status);
+std::pair<blink::mojom::FederatedAuthRequestResult, RequestIdTokenStatus>
+IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status);
 
 // Returns a list of fields that we should mediate authorization for. If
 // empty, we should not show a permission request dialog.

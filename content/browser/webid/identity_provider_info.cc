@@ -4,7 +4,7 @@
 
 #include "content/browser/webid/identity_provider_info.h"
 
-namespace content {
+namespace content::webid {
 
 IdentityProviderInfo::IdentityProviderInfo(
     const blink::mojom::IdentityProviderRequestOptionsPtr& provider,
@@ -32,4 +32,4 @@ IdentityProviderInfo::IdentityProviderInfo(const IdentityProviderInfo& other) {
   format = other.format;
 }
 
-}  // namespace content
+}  // namespace content::webid

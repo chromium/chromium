@@ -21,7 +21,7 @@ static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 
 void SetError(ConfigFetcher::FetchResult& fetch_result,
               blink::mojom::FederatedAuthRequestResult result,
-              webid::RequestIdTokenStatus token_status,
+              RequestIdTokenStatus token_status,
               std::optional<std::string> additional_console_error_message) {
   fetch_result.error = ConfigFetcher::FetchError(
       result, token_status, additional_console_error_message);
@@ -36,7 +36,7 @@ ConfigFetcher::FetchError::FetchError(const FetchError&) = default;
 
 ConfigFetcher::FetchError::FetchError(
     blink::mojom::FederatedAuthRequestResult result,
-    webid::RequestIdTokenStatus token_status,
+    RequestIdTokenStatus token_status,
     std::optional<std::string> additional_console_error_message)
     : result(result),
       token_status(token_status),
@@ -92,53 +92,53 @@ void ConfigFetcher::Start(const std::vector<FetchRequest>& requested_providers,
 
 void ConfigFetcher::OnWellKnownFetched(
     FetchResult& fetch_result,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     const IdpNetworkRequestManager::WellKnown& well_known) {
   pending_well_known_fetches_.erase(fetch_result.identity_provider_config_url);
 
   constexpr char kWellKnownFileStr[] = "well-known file";
 
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess &&
+  if (status.parse_status != ParseStatus::kSuccess &&
       !ShouldSkipWellKnownEnforcementForIdp(fetch_result)) {
     std::optional<std::string> additional_console_error_message =
-        webid::ComputeConsoleMessageForHttpResponseCode(kWellKnownFileStr,
-                                                        status.response_code);
+        ComputeConsoleMessageForHttpResponseCode(kWellKnownFileStr,
+                                                 status.response_code);
 
     switch (status.parse_status) {
-      case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
+      case ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kWellKnownHttpNotFound,
                 TokenStatus::kWellKnownHttpNotFound,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
+      case ParseStatus::kNoResponseError: {
         OnError(fetch_result, FederatedAuthRequestResult::kWellKnownNoResponse,
                 TokenStatus::kWellKnownNoResponse,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
+      case ParseStatus::kInvalidResponseError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kWellKnownInvalidResponse,
                 TokenStatus::kWellKnownInvalidResponse,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
+      case ParseStatus::kEmptyListError: {
         OnError(fetch_result, FederatedAuthRequestResult::kWellKnownListEmpty,
                 TokenStatus::kWellKnownListEmpty,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
+      case ParseStatus::kInvalidContentTypeError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kWellKnownInvalidContentType,
                 TokenStatus::kWellKnownInvalidContentType,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kSuccess: {
+      case ParseStatus::kSuccess: {
         NOTREACHED();
       }
     }
@@ -151,49 +151,49 @@ void ConfigFetcher::OnWellKnownFetched(
 
 void ConfigFetcher::OnConfigFetched(
     FetchResult& fetch_result,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata idp_metadata) {
   pending_config_fetches_.erase(fetch_result.identity_provider_config_url);
 
   constexpr char kConfigFileStr[] = "config file";
 
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (status.parse_status != ParseStatus::kSuccess) {
     std::optional<std::string> additional_console_error_message =
-        webid::ComputeConsoleMessageForHttpResponseCode(kConfigFileStr,
-                                                        status.response_code);
+        ComputeConsoleMessageForHttpResponseCode(kConfigFileStr,
+                                                 status.response_code);
 
     switch (status.parse_status) {
-      case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
+      case ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result, FederatedAuthRequestResult::kConfigHttpNotFound,
                 TokenStatus::kConfigHttpNotFound,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
+      case ParseStatus::kNoResponseError: {
         OnError(fetch_result, FederatedAuthRequestResult::kConfigNoResponse,
                 TokenStatus::kConfigNoResponse,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
+      case ParseStatus::kInvalidResponseError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kConfigInvalidResponse,
                 TokenStatus::kConfigInvalidResponse,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError: {
+      case ParseStatus::kInvalidContentTypeError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kConfigInvalidContentType,
                 TokenStatus::kConfigInvalidContentType,
                 additional_console_error_message);
         return;
       }
-      case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
+      case ParseStatus::kEmptyListError: {
         NOTREACHED() << "kEmptyListError is undefined for OnConfigFetched";
       }
-      case IdpNetworkRequestManager::ParseStatus::kSuccess: {
+      case ParseStatus::kSuccess: {
         NOTREACHED();
       }
     }
@@ -227,7 +227,7 @@ void ConfigFetcher::OnConfigFetched(
 void ConfigFetcher::OnError(
     FetchResult& fetch_result,
     blink::mojom::FederatedAuthRequestResult result,
-    webid::RequestIdTokenStatus token_status,
+    RequestIdTokenStatus token_status,
     std::optional<std::string> additional_console_error_message) {
   SetError(fetch_result, result, token_status,
            additional_console_error_message);
@@ -254,17 +254,17 @@ void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
   // If one of these conditions are not met (e.g. one of the urls are not
   // valid), we consider the config file invalid.
 
-  bool is_token_valid = webid::IsEndpointSameOrigin(
+  bool is_token_valid = IsEndpointSameOrigin(
       result.identity_provider_config_url, result.endpoints.token);
   bool is_accounts_valid =
-      webid::IsEndpointSameOrigin(result.identity_provider_config_url,
-                                  result.endpoints.accounts) ||
+      IsEndpointSameOrigin(result.identity_provider_config_url,
+                           result.endpoints.accounts) ||
       (IsLightweightModeEnabled() && result.endpoints.accounts.is_empty());
 
   bool is_login_url_valid =
       result.metadata &&
-      webid::IsEndpointSameOrigin(result.identity_provider_config_url,
-                                  result.metadata->idp_login_url);
+      IsEndpointSameOrigin(result.identity_provider_config_url,
+                           result.metadata->idp_login_url);
 
   if (!is_token_valid || !is_accounts_valid || !is_login_url_valid) {
     std::string console_message =

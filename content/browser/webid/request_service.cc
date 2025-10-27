@@ -68,10 +68,6 @@ using FederatedApiPermissionStatus =
 using DisconnectStatusForMetrics = content::webid::DisconnectStatus;
 using TokenStatus = content::webid::RequestIdTokenStatus;
 using SignInStateMatchStatus = content::webid::SignInStateMatchStatus;
-using TokenResponseType =
-    content::IdpNetworkRequestManager::FedCmTokenResponseType;
-using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
-using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using ErrorDialogResult = content::webid::ErrorDialogResult;
@@ -81,6 +77,10 @@ using CompleteRequestWithErrorCallback =
                             bool)>;
 
 namespace content::webid {
+
+using TokenResponseType = IdpNetworkRequestManager::FedCmTokenResponseType;
+using ErrorDialogType = IdpNetworkRequestManager::FedCmErrorDialogType;
+using ErrorUrlType = IdpNetworkRequestManager::FedCmErrorUrlType;
 
 namespace {
 static constexpr base::TimeDelta kTokenRequestDelay = base::Seconds(3);
@@ -1517,7 +1517,7 @@ void RequestService::OnDismissFailureDialog(
 
 void RequestService::OnDismissErrorDialog(
     const GURL& idp_config_url,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
   bool has_url = token_error_ && !token_error_->url.is_empty();
   ErrorDialogResult result =
@@ -1627,7 +1627,7 @@ void RequestService::ShowModalDialog(DialogType dialog_type,
 
 void RequestService::OnContinueOnResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     const GURL& continue_on) {
   id_assertion_response_time_ = base::TimeTicks::Now();
 
@@ -1670,10 +1670,9 @@ void RequestService::OnContinueOnResponseReceived(
                   continue_on);
 }
 
-void RequestService::ShowErrorDialog(
-    const GURL& idp_config_url,
-    IdpNetworkRequestManager::FetchStatus status,
-    std::optional<TokenError> token_error) {
+void RequestService::ShowErrorDialog(const GURL& idp_config_url,
+                                     FetchStatus status,
+                                     std::optional<TokenError> token_error) {
   CHECK(idp_infos_.find(idp_config_url) != idp_infos_.end());
 
   dialog_type_ = DialogType::kError;
@@ -1703,7 +1702,7 @@ void RequestService::ShowErrorDialog(
 
 void RequestService::OnTokenResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
-    IdpNetworkRequestManager::FetchStatus status,
+    FetchStatus status,
     IdpNetworkRequestManager::TokenResult&& result) {
   CHECK(result.token.has_value() || result.error.has_value());
 
@@ -1712,8 +1711,7 @@ void RequestService::OnTokenResponseReceived(
                                  : VerifyingDialogResult::kSuccessAutoReauthn;
 
   bool should_show_error_ui =
-      result.error ||
-      status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess;
+      result.error || status.parse_status != ParseStatus::kSuccess;
   auto complete_request_callback =
       should_show_error_ui
           ? base::BindOnce(&RequestService::ShowErrorDialog,
@@ -1765,15 +1763,14 @@ void RequestService::MarkUserAsSignedIn(const GURL& idp_config_url,
   SetRequiresUserMediation(false, base::DoNothing());
 }
 
-void RequestService::CompleteTokenRequest(
-    const GURL& idp_config_url,
-    IdpNetworkRequestManager::FetchStatus status,
-    std::optional<base::Value> token,
-    std::optional<TokenError> token_error,
-    bool should_delay_callback) {
+void RequestService::CompleteTokenRequest(const GURL& idp_config_url,
+                                          FetchStatus status,
+                                          std::optional<base::Value> token,
+                                          std::optional<TokenError> token_error,
+                                          bool should_delay_callback) {
   DCHECK(!start_time_.is_null());
   constexpr char kIdAssertionUrl[] = "id assertion endpoint";
-  if (status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (status.parse_status != ParseStatus::kSuccess) {
     MaybeAddResponseCodeToConsole(render_frame_host(), kIdAssertionUrl,
                                   status.response_code);
     std::pair<FederatedAuthRequestResult, TokenStatus> resultAndTokenStatus =

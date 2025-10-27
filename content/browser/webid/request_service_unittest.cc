@@ -62,18 +62,18 @@ using AuthRequestCallbackHelper =
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using Field = content::IdentityRequestDialogDisclosureField;
-using TokenError = content::IdentityCredentialTokenError;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
+using FetchStatus = content::webid::FetchStatus;
+using ParseStatus = content::webid::ParseStatus;
 using TokenStatus = content::webid::RequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using SignInStateMatchStatus = content::webid::SignInStateMatchStatus;
-using ErrorDialogType = content::IdpNetworkRequestManager::FedCmErrorDialogType;
+using ErrorDialogType =
+    content::webid::IdpNetworkRequestManager::FedCmErrorDialogType;
 using TokenResponseType =
-    content::IdpNetworkRequestManager::FedCmTokenResponseType;
-using ErrorUrlType = content::IdpNetworkRequestManager::FedCmErrorUrlType;
+    content::webid::IdpNetworkRequestManager::FedCmTokenResponseType;
+using ErrorUrlType =
+    content::webid::IdpNetworkRequestManager::FedCmErrorUrlType;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -3229,7 +3229,7 @@ TEST_F(RequestServiceTest,
   configuration.mediation_requirement = MediationRequirement::kSilent;
   // Let the first IDP accounts fetch fail.
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
-      IdpNetworkRequestManager::ParseStatus::kNoResponseError;
+      ParseStatus::kNoResponseError;
 
   RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
   EXPECT_FALSE(auth_helper_->was_callback_called());
@@ -4869,9 +4869,9 @@ TEST_F(RequestServiceTest, MultiIdpWithAllIdpsMismatch) {
   // Set the config so that both accounts fetches result in failure.
   MockConfiguration config = kConfigurationMultiIdpValid;
   config.idp_info[kProviderUrlFull].accounts_response.parse_status =
-      IdpNetworkRequestManager::ParseStatus::kEmptyListError;
+      ParseStatus::kEmptyListError;
   config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
-      IdpNetworkRequestManager::ParseStatus::kInvalidResponseError;
+      ParseStatus::kInvalidResponseError;
   // Need to change the accounts dialog action since we won't get any accounts.
   config.accounts_dialog_action = AccountsDialogAction::kClose;
 
@@ -4915,7 +4915,7 @@ TEST_F(RequestServiceTest, MultiIdpWithOneIdpMismatch) {
   // Set the config so that both accounts fetches result in failure.
   MockConfiguration config = kConfigurationMultiIdpValid;
   config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
-      IdpNetworkRequestManager::ParseStatus::kEmptyListError;
+      ParseStatus::kEmptyListError;
 
   RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
 
@@ -5170,7 +5170,7 @@ TEST_F(RequestServiceTest, MultiIdpWithSilentMediationAndOneIdpFetchFailure) {
   configuration.mediation_requirement = MediationRequirement::kSilent;
   // Let the first IDP accounts fetch fail.
   configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
-      IdpNetworkRequestManager::ParseStatus::kNoResponseError;
+      ParseStatus::kNoResponseError;
 
   RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, configuration);
   EXPECT_FALSE(auth_helper_->was_callback_called());

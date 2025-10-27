@@ -89,18 +89,18 @@ class AccountsFetcher {
 
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       std::vector<IdentityRequestAccountPtr> accounts);
 
   void OnAccountsFetchSucceeded(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       std::vector<IdentityRequestAccountPtr> accounts);
 
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       std::vector<IdentityRequestAccountPtr>&& accounts,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata client_metadata);
 
   void OnFetchDataForIdpSucceeded(
@@ -132,7 +132,7 @@ class AccountsFetcher {
       std::optional<bool> old_idp_signin_status,
       blink::mojom::FederatedAuthRequestResult result,
       std::optional<webid::RequestIdTokenStatus> token_status,
-      const IdpNetworkRequestManager::FetchStatus& status);
+      const FetchStatus& status);
 
   void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
 

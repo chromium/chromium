@@ -12,10 +12,9 @@
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/dns_request.h"
+#include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
-#include "content/browser/webid/idp_network_request_manager.h"
-#include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/test_renderer_host.h"
@@ -50,6 +49,26 @@ class MockDnsRequest : public DnsRequest {
               (override));
 };
 
+class MockEmailVerifierNetworkRequestManager
+    : public EmailVerifierNetworkRequestManager {
+ public:
+  MockEmailVerifierNetworkRequestManager()
+      : EmailVerifierNetworkRequestManager(url::Origin(),
+                                           nullptr,
+                                           nullptr,
+                                           content::FrameTreeNodeId()) {}
+  ~MockEmailVerifierNetworkRequestManager() override = default;
+
+  MOCK_METHOD(void,
+              FetchWellKnown,
+              (const GURL&, FetchWellKnownCallback),
+              (override));
+  MOCK_METHOD(void,
+              SendTokenRequest,
+              (const GURL&, const std::string&, TokenRequestCallback),
+              (override));
+};
+
 class EmailVerificationRequestTest : public RenderViewHostTestHarness {
  public:
   EmailVerificationRequestTest() = default;
@@ -65,8 +84,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
       std::make_unique<NiceMock<MockDnsRequest>>(&mock_network_context_);
   NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
   auto mock_network_manager_ptr =
-      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
-  NiceMock<MockIdpNetworkRequestManager>* mock_network_manager_ =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
       mock_network_manager_ptr.get();
   webid::EmailVerificationRequest email_verification_request_(
       std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
@@ -89,20 +108,19 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
       .WillOnce(WithArgs<1>(
-          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
-            IdpNetworkRequestManager::WellKnown well_known;
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
-            std::move(callback).Run(
-                IdpNetworkRequestManager::FetchStatus{
-                    IdpNetworkRequestManager::ParseStatus::kSuccess},
-                well_known);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
           }));
 
-  EXPECT_CALL(*mock_network_manager_,
-              SendTokenRequest(kIssuanceEndpoint, kEmail, _, _, _, _, _))
-      .WillOnce(WithArgs<2, 4>(
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest(kIssuanceEndpoint, _, _))
+      .WillOnce(WithArgs<1, 2>(
           [&](const std::string& url_encoded_post_data,
-              IdpNetworkRequestManager::TokenRequestCallback callback) {
+              EmailVerifierNetworkRequestManager::TokenRequestCallback
+                  callback) {
             base::StringPairs params;
             EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
                 url_encoded_post_data, '=', '&', &params));
@@ -152,12 +170,10 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
             token.jwt = issued_jwt;
 
-            IdpNetworkRequestManager::TokenResult result;
+            EmailVerifierNetworkRequestManager::TokenResult result;
             result.token = base::Value(token.Serialize());
-            std::move(callback).Run(
-                IdpNetworkRequestManager::FetchStatus{
-                    IdpNetworkRequestManager::ParseStatus::kSuccess},
-                std::move(result));
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(result));
           }));
 
   base::test::TestFuture<std::optional<std::string>> future;

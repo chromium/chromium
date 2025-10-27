@@ -210,17 +210,15 @@ void DisconnectRequest::OnAllConfigAndWellKnownFetched(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DisconnectRequest::OnDisconnectResponse(
-    IdpNetworkRequestManager::FetchStatus fetch_status,
-    const std::string& account_id) {
+void DisconnectRequest::OnDisconnectResponse(FetchStatus fetch_status,
+                                             const std::string& account_id) {
   CHECK(callback_);
   // Matches the GrantSharingPermission() call in
   // RequestService::CompleteTokenRequest(). Note that the IDP origin
   // cannot be an arbitrary origin, but rather needs to be a potentially
   // trustworthy one.
   url::Origin idp_origin = url::Origin::Create(options_->config->config_url);
-  if (fetch_status.parse_status !=
-      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     // Even though the response was unsuccessful, the credentialed fetch was
     // sent to the IDP, so disconnect all permissions associated with the triple
     // (`origin_`, `embedding_origin`, `idp_origin`).

@@ -63,7 +63,7 @@ class CONTENT_EXPORT DisconnectRequest {
   void OnAllConfigAndWellKnownFetched(
       std::vector<ConfigFetcher::FetchResult> fetch_results);
 
-  void OnDisconnectResponse(IdpNetworkRequestManager::FetchStatus fetch_status,
+  void OnDisconnectResponse(FetchStatus fetch_status,
                             const std::string& account_id);
 
   // Records disconnect metrics and completes the request.

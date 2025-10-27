@@ -410,39 +410,36 @@ void Metrics::RecordSignInStateMatchStatus(const GURL& provider,
 }
 
 // static
-void Metrics::RecordIdpSigninMatchStatus(
-    std::optional<bool> idp_signin_status,
-    IdpNetworkRequestManager::ParseStatus accounts_endpoint_status) {
+void Metrics::RecordIdpSigninMatchStatus(std::optional<bool> idp_signin_status,
+                                         ParseStatus accounts_endpoint_status) {
   IdpSigninMatchStatus match_status = IdpSigninMatchStatus::kMaxValue;
   if (!idp_signin_status.has_value()) {
-    match_status = (accounts_endpoint_status ==
-                    IdpNetworkRequestManager::ParseStatus::kSuccess)
+    match_status = (accounts_endpoint_status == ParseStatus::kSuccess)
                        ? IdpSigninMatchStatus::kUnknownStatusWithAccounts
                        : IdpSigninMatchStatus::kUnknownStatusWithoutAccounts;
   } else if (idp_signin_status.value()) {
     switch (accounts_endpoint_status) {
-      case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError:
+      case ParseStatus::kHttpNotFoundError:
         match_status = IdpSigninMatchStatus::kMismatchWithNetworkError;
         break;
-      case IdpNetworkRequestManager::ParseStatus::kNoResponseError:
+      case ParseStatus::kNoResponseError:
         match_status = IdpSigninMatchStatus::kMismatchWithNoContent;
         break;
-      case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError:
+      case ParseStatus::kInvalidResponseError:
         match_status = IdpSigninMatchStatus::kMismatchWithInvalidResponse;
         break;
-      case IdpNetworkRequestManager::ParseStatus::kEmptyListError:
+      case ParseStatus::kEmptyListError:
         match_status = IdpSigninMatchStatus::kMismatchWithNoContent;
         break;
-      case IdpNetworkRequestManager::ParseStatus::kInvalidContentTypeError:
+      case ParseStatus::kInvalidContentTypeError:
         match_status = IdpSigninMatchStatus::kMismatchWithInvalidResponse;
         break;
-      case IdpNetworkRequestManager::ParseStatus::kSuccess:
+      case ParseStatus::kSuccess:
         match_status = IdpSigninMatchStatus::kMatchWithAccounts;
         break;
     }
   } else {
-    match_status = (accounts_endpoint_status ==
-                    IdpNetworkRequestManager::ParseStatus::kSuccess)
+    match_status = (accounts_endpoint_status == ParseStatus::kSuccess)
                        ? IdpSigninMatchStatus::kMismatchWithUnexpectedAccounts
                        : IdpSigninMatchStatus::kMatchWithoutAccounts;
   }
@@ -775,7 +772,7 @@ ukm::SourceId Metrics::GetOrCreateProviderSourceId(const GURL& provider) {
   }
   ukm::SourceId source_id =
       ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
-          base::PassKey<webid::Metrics>(), provider);
+          base::PassKey<Metrics>(), provider);
   provider_source_ids_[provider] = source_id;
   return source_id;
 }

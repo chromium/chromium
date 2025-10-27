@@ -330,7 +330,7 @@ class CONTENT_EXPORT RequestService
                        const GURL& idp_config_url,
                        const GURL& url_to_show);
   void ShowErrorDialog(const GURL& idp_config_url,
-                       IdpNetworkRequestManager::FetchStatus status,
+                       FetchStatus status,
                        std::optional<TokenError> error);
   // Called when we should show a failure dialog in the case where a single IDP
   // account fetch resulted in a mismatch with its login status.
@@ -344,22 +344,22 @@ class CONTENT_EXPORT RequestService
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDismissErrorDialog(
       const GURL& idp_config_url,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void CompleteTokenRequest(const GURL& idp_config_url,
-                            IdpNetworkRequestManager::FetchStatus status,
+                            FetchStatus status,
                             std::optional<base::Value> token,
                             std::optional<TokenError> token_error,
                             bool should_delay_callback);
   void OnTokenResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       IdpNetworkRequestManager::TokenResult&& result);
   void OnContinueOnResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
-      IdpNetworkRequestManager::FetchStatus status,
+      FetchStatus status,
       const GURL& url);
 
   // Called after we get at token (either from the ID assertion endpoint or
@@ -567,7 +567,7 @@ class CONTENT_EXPORT RequestService
   GURL config_url_;
 
   // If dialog_type_ is kError, this is the fetch status of the token request.
-  IdpNetworkRequestManager::FetchStatus token_request_status_;
+  FetchStatus token_request_status_;
 
   // If dialog_type_ is kError, this is the token error.
   std::optional<TokenError> token_error_;

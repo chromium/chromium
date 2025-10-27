@@ -51,7 +51,6 @@ using AuthRequestCallbackHelper =
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using RequesterFrameType = content::webid::RequesterFrameType;
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using RequestTokenCallback =
     content::webid::RequestService::RequestTokenCallback;
 using blink::mojom::RequestTokenStatus;
@@ -158,8 +157,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   // If true, will send `client_is_third_party_to_top_frame_origin: true` in the
   // client metadata request.
   bool send_client_is_third_party_to_top_frame_origin_{false};
-  FetchStatus kFetchStatusSuccess{
-      IdpNetworkRequestManager::ParseStatus::kSuccess, net::HTTP_OK};
+  FetchStatus kFetchStatusSuccess{ParseStatus::kSuccess, net::HTTP_OK};
 };
 
 class TestDialogController

@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "content/browser/webid/network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents.h"
@@ -31,21 +32,17 @@ namespace net {
 enum class ReferrerPolicy;
 }
 
-namespace network {
-class SimpleURLLoader;
-}
-
 namespace content {
-
-namespace webid {
-enum class MetricsEndpointErrorCode;
-}
 
 using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
-class IdentityProviderInfo;
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHostImpl;
+
+namespace webid {
+
+class IdentityProviderInfo;
+enum class MetricsEndpointErrorCode;
 
 // Manages network requests and maintains relevant state for interaction with
 // the Identity Provider across a FedCM transaction. Owned by
@@ -75,30 +72,8 @@ class RenderFrameHostImpl;
 // If the IDP returns an token, the sequence finishes. If it returns a
 // login_url, that URL is loaded as a rendered Document into a new window for
 // the user to interact with the IDP.
-class CONTENT_EXPORT IdpNetworkRequestManager {
+class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
  public:
-  enum class ParseStatus {
-    kSuccess,
-    kHttpNotFoundError,
-    kNoResponseError,
-    kInvalidResponseError,
-    // ParseStatus::kEmptyListError only applies to well known and account list
-    // responses. It is used to classify a successful response where the list in
-    // the response is empty.
-    kEmptyListError,
-    kInvalidContentTypeError,
-  };
-
-  struct FetchStatus {
-    ParseStatus parse_status;
-    // The HTTP response code, if one was received, otherwise the net error. It
-    // is possible to distinguish which it is since HTTP response codes are
-    // positive and net errors are negative.
-    int response_code;
-    bool cors_error = false;
-    bool from_accounts_push = false;
-  };
-
   enum class LogoutResponse {
     kSuccess,
     kError,
@@ -141,7 +116,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::set<GURL> provider_urls;
     GURL accounts;
     GURL login_url;
-    GURL issuance_endpoint;
   };
 
   struct CONTENT_EXPORT ClientMetadata {
@@ -233,11 +207,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus,
                               std::vector<IdentityRequestAccountPtr>)>;
-  using DownloadCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body,
-                              int response_code,
-                              const std::string& mime_type,
-                              bool cors_error)>;
   using FetchAccountPicturesAndBrandIconsCallback =
       base::OnceCallback<void(std::vector<IdentityRequestAccountPtr>,
                               std::unique_ptr<IdentityProviderInfo>,
@@ -251,9 +220,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using FetchClientMetadataCallback =
       base::OnceCallback<void(FetchStatus, ClientMetadata)>;
   using LogoutCallback = base::OnceCallback<void()>;
-  using ParseJsonCallback =
-      base::OnceCallback<void(FetchStatus,
-                              data_decoder::DataDecoder::ValueOrError)>;
   using DisconnectCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
   using TokenRequestCallback =
@@ -276,13 +242,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       network::mojom::ClientSecurityStatePtr client_security_state,
       content::FrameTreeNodeId frame_tree_node_id);
 
-  virtual ~IdpNetworkRequestManager();
+  ~IdpNetworkRequestManager() override;
 
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
-
-  // Computes the well-known URL from the identity provider URL.
-  static std::optional<GURL> ComputeWellKnownUrl(const GURL& url);
 
   // Fetch the well-known file. This is the /.well-known/web-identity file on
   // the eTLD+1 calculated from the provider URL, used to check that the
@@ -336,7 +299,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
       bool did_show_ui,
-      webid::MetricsEndpointErrorCode error_code);
+      MetricsEndpointErrorCode error_code);
 
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
@@ -374,6 +337,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                     const std::vector<GURL>& picture_urls);
 
  private:
+  // NetworkRequestManager:
+  net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() override;
+
   void FetchImage(const GURL& url, base::OnceClosure callback);
   void FetchCachedAccountImage(const url::Origin& idp_origin,
                                const GURL& url,
@@ -391,28 +357,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   bool IsCrossSiteIframe() const;
 
-  // Starts download request using `url_loader`. Calls `parse_json_callback`
-  // when the download result has been parsed.
-  void DownloadJsonAndParse(
-      std::unique_ptr<network::ResourceRequest> resource_request,
-      std::optional<std::string> url_encoded_post_data,
-      ParseJsonCallback parse_json_callback,
-      size_t max_download_size,
-      bool allow_http_error_results = false);
-
-  // Starts download result using `url_loader`. Calls `download_callback` when
-  // the download completes.
-  void DownloadUrl(std::unique_ptr<network::ResourceRequest> resource_request,
-                   std::optional<std::string> url_encoded_post_data,
-                   DownloadCallback download_callback,
-                   size_t max_download_size,
-                   bool allow_http_error_results = false);
-
-  // Called when download initiated by DownloadUrl() completes.
-  void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,
-                       DownloadCallback callback,
-                       std::unique_ptr<std::string> response_body);
-
   void OnDownloadedImage(ImageCallback callback,
                          std::unique_ptr<std::string> response_body,
                          int response_code,
@@ -421,43 +365,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   void OnDecodedImage(ImageCallback callback, const SkBitmap& decoded_bitmap);
 
-  std::unique_ptr<network::ResourceRequest> CreateUncredentialedResourceRequest(
-      const GURL& target_url,
-      bool send_origin,
-      bool follow_redirects = false) const;
-
-  enum class CredentialedResourceRequestType {
-    kNoOrigin,
-    kOriginWithoutCORS,
-    kOriginWithCORS
-  };
-
-  std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
-      const GURL& target_url,
-      CredentialedResourceRequestType type) const;
-
   std::unique_ptr<network::ResourceRequest> CreateCachedAccountPictureRequest(
       const url::Origin& idp_origin,
       const GURL& target_url,
       bool cache_only) const;
 
-  url::Origin relying_party_origin_;
   url::Origin rp_embedding_origin_;
-
-  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;
-
-  network::mojom::ClientSecurityStatePtr client_security_state_;
-
-  const content::FrameTreeNodeId frame_tree_node_id_;
-
-  // Maps each SimpleURLLoader instance to a unique, unguessable token
-  // (request_id) used for tracking and associating network requests
-  // with DevTools instrumentation.
-  base::flat_map<network::SimpleURLLoader*, base::UnguessableToken>
-      urlloader_devtools_request_id_map_;
 
   // The downloaded image data.
   std::map<GURL, gfx::Image> downloaded_images_;
@@ -465,6 +381,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };
 
+}  // namespace webid
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_IDP_NETWORK_REQUEST_MANAGER_H_

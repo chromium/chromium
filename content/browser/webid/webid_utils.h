@@ -23,10 +23,6 @@ class NamedTrack;
 
 namespace content {
 class BrowserContext;
-namespace webid {
-enum class DisconnectStatus;
-enum class RequesterFrameType;
-}  // namespace webid
 enum class FedCmIdpSigninStatusMode;
 class FederatedIdentityApiPermissionContextDelegate;
 class FederatedIdentityPermissionContextDelegate;
@@ -36,6 +32,8 @@ class RenderFrameHost;
 namespace webid {
 
 class RequestPageData;
+enum class DisconnectStatus;
+enum class RequesterFrameType;
 
 // Returns true if `origin` is same site with `render_frame_host` and
 // all its ancestors. Also returns true if there are no ancestors or
@@ -77,8 +75,8 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
     RenderFrameHost& host,
     const GURL& identity_provider_config_url,
-    IdpNetworkRequestManager::FetchStatus account_endpoint_fetch_status,
-    bool does_idp_have_failing_idp_signin_status,
+    FetchStatus account_endpoint_fetch_status,
+    bool does_idp_have_failing_signin_status,
     FederatedIdentityPermissionContextDelegate* permission_delegate);
 
 // Returns a string to be used as the console error message from a
@@ -89,7 +87,7 @@ CONTENT_EXPORT std::string GetConsoleErrorMessageFromResult(
 // Returns a string to be used as the console error message for a disconnect()
 // call.
 CONTENT_EXPORT std::string GetDisconnectConsoleErrorMessage(
-    webid::DisconnectStatus disconnect_status_for_metrics);
+    DisconnectStatus disconnect_status_for_metrics);
 
 // Returns the eTLD+1 for a given url. For localhost, returns the host.
 std::string FormatUrlForDisplay(const GURL& url);
@@ -110,10 +108,9 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
 RequestPageData* GetPageData(Page& page);
 
 // Returns the frame type of the requester.
-webid::RequesterFrameType ComputeRequesterFrameType(
-    const RenderFrameHost& rfh,
-    const url::Origin& requester,
-    const url::Origin& embedder);
+RequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
+                                             const url::Origin& requester,
+                                             const url::Origin& embedder);
 
 void MaybeAddResponseCodeToConsole(RenderFrameHost& render_frame_host,
                                    const char* fetch_description,

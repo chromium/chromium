@@ -9,8 +9,8 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/delegation/dns_request.h"
+#include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
-#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "crypto/keypair.h"
@@ -19,6 +19,10 @@
 
 // This class implements the Email Verification Protocol as described here:
 // https://github.com/dickhardt/email-verification-protocol
+
+namespace content {
+class RenderFrameHostImpl;
+}
 
 namespace content::webid {
 
@@ -37,7 +41,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
  public:
   explicit EmailVerificationRequest(RenderFrameHostImpl& render_frame_host);
   EmailVerificationRequest(
-      std::unique_ptr<IdpNetworkRequestManager> network_manager,
+      std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager,
       std::unique_ptr<DnsRequest> dns_request,
       base::SafeRef<RenderFrameHost> render_frame_host);
   virtual ~EmailVerificationRequest();
@@ -63,17 +67,17 @@ class CONTENT_EXPORT EmailVerificationRequest {
       const url::Origin& issuer,
       const std::string& nonce,
       EmailVerifier::OnEmailVerifiedCallback callback,
-      IdpNetworkRequestManager::FetchStatus status,
-      const IdpNetworkRequestManager::WellKnown& well_known);
+      FetchStatus status,
+      EmailVerifierNetworkRequestManager::WellKnown well_known);
   void OnTokenRequestComplete(
       const std::string& nonce,
       std::unique_ptr<crypto::keypair::PrivateKey> private_key,
       EmailVerifier::OnEmailVerifiedCallback callback,
-      IdpNetworkRequestManager::FetchStatus token_status,
-      IdpNetworkRequestManager::TokenResult&& result);
+      FetchStatus token_status,
+      EmailVerifierNetworkRequestManager::TokenResult&& result);
 
   std::unique_ptr<DnsRequest> dns_request_;
-  std::unique_ptr<IdpNetworkRequestManager> network_manager_;
+  std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;
   base::SafeRef<RenderFrameHost> render_frame_host_;
 
   base::WeakPtrFactory<EmailVerificationRequest> weak_ptr_factory_{this};

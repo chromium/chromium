@@ -16,7 +16,7 @@ class Origin;
 
 namespace content {
 
-class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
+class MockIdpNetworkRequestManager : public webid::IdpNetworkRequestManager {
  public:
   MockIdpNetworkRequestManager();
   ~MockIdpNetworkRequestManager() override;

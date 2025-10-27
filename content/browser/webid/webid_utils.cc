@@ -131,7 +131,7 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
 void UpdateIdpSigninStatusForAccountsEndpointResponse(
     RenderFrameHost& host,
     const GURL& identity_provider_config_url,
-    IdpNetworkRequestManager::FetchStatus fetch_status,
+    FetchStatus fetch_status,
     bool does_idp_have_failing_signin_status,
     FederatedIdentityPermissionContextDelegate* permission_delegate) {
   url::Origin idp_origin = url::Origin::Create(identity_provider_config_url);
@@ -142,8 +142,7 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
   Metrics::RecordIdpSigninMatchStatus(idp_signin_status,
                                       fetch_status.parse_status);
 
-  if (fetch_status.parse_status ==
-      IdpNetworkRequestManager::ParseStatus::kSuccess) {
+  if (fetch_status.parse_status == ParseStatus::kSuccess) {
     // `does_idp_have_failing_signin_status` fails the request prior to fetching
     // the accounts endpoint for FedCmIdpSigninStatusMode::ENABLED mode but not
     // FedCmIdpSigninStatusMode::METRICS_ONLY mode. Do not set the IdP sign-in

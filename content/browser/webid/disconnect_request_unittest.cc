@@ -31,14 +31,12 @@
 
 using PermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
 using DisconnectResponse =
-    content::IdpNetworkRequestManager::DisconnectResponse;
+    content::webid::IdpNetworkRequestManager::DisconnectResponse;
 using DisconnectStatus = content::webid::DisconnectStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 

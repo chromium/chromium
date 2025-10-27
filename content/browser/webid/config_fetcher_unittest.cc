@@ -16,8 +16,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using ::testing::_;
 using ::testing::StrictMock;
 using ::testing::WithArg;

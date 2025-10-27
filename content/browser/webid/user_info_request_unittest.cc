@@ -34,9 +34,7 @@
 
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
-using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using blink::mojom::RequestUserInfoStatus;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -62,7 +60,7 @@ constexpr char kAccountUsername[] = "@julius";
 
 struct AccountConfig {
   std::string id;
-  std::optional<IdentityRequestAccount::LoginState> login_state;
+  std::optional<LoginState> login_state;
   bool was_granted_sharing_permission;
 };
 

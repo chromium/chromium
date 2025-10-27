@@ -17,13 +17,11 @@
 using blink::mojom::FederatedAuthRequestResult;
 using blink::mojom::RequestTokenStatus;
 using ErrorDialogResult = content::webid::ErrorDialogResult;
-using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using LifecycleStateImpl = content::RenderFrameHostImpl::LifecycleStateImpl;
 using FederatedApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 
-namespace content {
-namespace webid {
+namespace content::webid {
 
 std::vector<std::string> DisclosureFieldsToStringList(
     const std::vector<IdentityRequestDialogDisclosureField>& fields) {
@@ -267,8 +265,7 @@ webid::ErrorDialogResult DismissReasonToErrorDialogResult(
 }
 
 std::pair<FederatedAuthRequestResult, webid::RequestIdTokenStatus>
-IdAssertionFetchStatusToRequestResultAndTokenStatus(
-    IdpNetworkRequestManager::FetchStatus status) {
+IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status) {
   switch (status.parse_status) {
     case ParseStatus::kHttpNotFoundError:
       return {FederatedAuthRequestResult::kIdTokenHttpNotFound,
@@ -289,7 +286,7 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(
               webid::RequestIdTokenStatus::kIdTokenInvalidContentType};
     case ParseStatus::kEmptyListError:
       NOTREACHED() << "EmptyListError is not an option for this fetch";
-    case IdpNetworkRequestManager::ParseStatus::kSuccess:
+    case ParseStatus::kSuccess:
       NOTREACHED() << "Should not be invoked with success";
   }
 }
@@ -374,5 +371,4 @@ void ComputeAccountFields(
   }
 }
 
-}  // namespace webid
-}  // namespace content
+}  // namespace content::webid

@@ -15,7 +15,7 @@ namespace gfx {
 class Image;
 }
 
-namespace content {
+namespace content::webid {
 
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 
@@ -44,6 +44,6 @@ class IdentityProviderInfo {
   bool client_is_third_party_to_top_frame_origin{false};
 };
 
-}  // namespace content
+}  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_IDENTITY_PROVIDER_INFO
