@@ -103,9 +103,10 @@ enum class GlicActuationOnWebPolicyState {
 
   kMaxValue = kDisabled
 };
+// This perf is only applicable to enterprise accounts.
 inline constexpr char kGlicActuationOnWeb[] = "glic.actuation_on_web";
 
-// Boolean pref for the user enabled acutuation on web setting.
+// Boolean pref for the user enabled actuation on web setting.
 inline constexpr char kGlicUserEnabledActuationOnWeb[] =
     "glic.user_enabled_actuation_on_web";
 

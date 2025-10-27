@@ -291,6 +291,19 @@ extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayLcp);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicActorScrollTargetIntoView;
 
+// Specifies the default pref value for `glic:prefs::kGlicActuationOnWeb` for
+// enterprise users. Does not affect non-enterprise users.
+enum class GlicActorEnterprisePrefDefault {
+  kEnabledByDefault = 0,
+  kDisabledByDefault,
+  // When this is set, the browser does not have the capability, regardless of
+  // the policy value (the pref value is ignored).
+  kForcedDisabled,
+};
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<GlicActorEnterprisePrefDefault>(
+    kGlicActorEnterprisePrefDefault);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorIncrementalTyping);
 COMPONENT_EXPORT(CHROME_FEATURES)

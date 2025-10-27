@@ -421,6 +421,22 @@ const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{
 const base::FeatureParam<bool> kGlicActorScrollTargetIntoView{
     &kGlicActor, "scroll-target-into-view", true};
 
+constexpr base::FeatureParam<GlicActorEnterprisePrefDefault>::Option
+    kGlicActorEnterprisePrefDefaultOptions[] = {
+        {GlicActorEnterprisePrefDefault::kEnabledByDefault,
+         "enabled_by_default"},
+        {GlicActorEnterprisePrefDefault::kDisabledByDefault,
+         "disabled_by_default"},
+        {GlicActorEnterprisePrefDefault::kForcedDisabled, "forced_disabled"},
+};
+
+BASE_FEATURE_ENUM_PARAM(GlicActorEnterprisePrefDefault,
+                        kGlicActorEnterprisePrefDefault,
+                        &kGlicActor,
+                        "glic_actor_enterprise_pref_default",
+                        GlicActorEnterprisePrefDefault::kForcedDisabled,
+                        &kGlicActorEnterprisePrefDefaultOptions);
+
 BASE_FEATURE(kGlicActorPermissionsBypass, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_ENABLED_BY_DEFAULT);
