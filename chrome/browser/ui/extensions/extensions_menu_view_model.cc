@@ -300,6 +300,17 @@ void ExtensionsMenuViewModel::OnHostAccessRequestRemoved(
   platform_delegate_->OnAccessRequestRemoved(extension_id);
 }
 
+void ExtensionsMenuViewModel::OnHostAccessRequestsCleared(int tab_id) {
+  // Ignore requests for other tabs.
+  int current_tab_id =
+      extensions::ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  platform_delegate_->OnAccessRequestsCleared();
+}
+
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   platform_delegate_->OnActionAdded(action_id);

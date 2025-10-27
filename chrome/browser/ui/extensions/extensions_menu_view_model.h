@@ -53,6 +53,7 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                   int tab_id) override;
   void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
+  void OnHostAccessRequestsCleared(int tab_id) override;
 
   // ToolbarActionsModel::Observer:
   void OnToolbarActionAdded(

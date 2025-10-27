@@ -39,6 +39,13 @@ class ExtensionsMenuViewPlatformDelegate {
   virtual void OnAccessRequestRemoved(
       const extensions::ExtensionId& extension_id) = 0;
 
+  // Notifies the delegate that host access requests on the current site were
+  // cleared.
+  // TODO(crbug.com/449814184): Rename to `OnHostAccessRequestCleared` after we
+  // finish migrating all PermissionsManager::Observer method from the platform
+  // delegate to the model, since same name causes parameter type mismatch.
+  virtual void OnAccessRequestsCleared() = 0;
+
   // Notifies the delegate that a new toolbar action was added.
   // TODO(crbug.com/449814184): Rename to `OnToolbarActionAdded` after we
   // finish migrating all ToolbarActionsModel::Observer method from the platform

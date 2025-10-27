@@ -40,6 +40,7 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
       content::WebContents* web_contents) override {}
   void OnAccessRequestRemoved(
       const extensions::ExtensionId& extension_id) override {}
+  void OnAccessRequestsCleared() override {}
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
 };
 
