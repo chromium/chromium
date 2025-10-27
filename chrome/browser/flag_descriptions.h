@@ -4907,6 +4907,11 @@ inline constexpr char kAndroidComposeplateName[] =
 inline constexpr char kAndroidComposeplateDescription[] =
     "Show a composeplate on New Tab Page.";
 
+inline constexpr char kAndroidComposeplateLFFName[] =
+    "Enable composeplate button on New Tab Page for large form factors";
+inline constexpr char kAndroidComposeplateLFFDescription[] =
+    "Show a composeplate button on New Tab Page for large form factors.";
+
 inline constexpr char kAndroidContextMenuDuplicateTabsName[] =
     "Android context menu duplicate tabs";
 inline constexpr char kAndroidContextMenuDuplicateTabsDescription[] =

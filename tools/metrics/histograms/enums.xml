@@ -14591,6 +14591,7 @@ from previous Chrome versions.
   <int value="103677701" label="LogoPolish:disabled"/>
   <int value="103932290" label="show-autofill-type-predictions"/>
   <int value="104175200" label="AccessibilityFaceGaze:enabled"/>
+  <int value="104466551" label="AndroidComposeplateLFF:enabled"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
   <int value="105164136" label="EnterpriseReportingUI:enabled"/>
   <int value="105284154" label="PromiseIcons:enabled"/>
@@ -16704,6 +16705,7 @@ from previous Chrome versions.
   <int value="842789526" label="CloudPrinterHandler:disabled"/>
   <int value="843857704" label="PassExplicitSyncPassphraseToGmsCore:enabled"/>
   <int value="843896452" label="UserActivationV2:enabled"/>
+  <int value="844065049" label="AndroidComposeplateLFF:disabled"/>
   <int value="844420869" label="PrintJobManagementApp:enabled"/>
   <int value="844587371"
       label="DesktopPWAsLocalUpdatingThrottlePersistence:disabled"/>

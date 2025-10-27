@@ -719,6 +719,21 @@
             ]
         }
     ],
+    "AndroidComposeplateLFF": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidComposeplateLFF"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopWebPrefsLargeDisplays": [
         {
             "platforms": [

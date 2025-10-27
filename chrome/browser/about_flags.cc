@@ -6838,6 +6838,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAndroidComposeplateVariations,
                                     "AndroidComposeplate")},
 
+    {"android-composeplate-lff", flag_descriptions::kAndroidComposeplateLFFName,
+     flag_descriptions::kAndroidComposeplateLFFDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidComposeplateLFF)},
+
     {"new-tab-page-customization-for-mvt",
      flag_descriptions::kNewTabPageCustomizationForMvtName,
      flag_descriptions::kNewTabPageCustomizationForMvtDescription, kOsAndroid,

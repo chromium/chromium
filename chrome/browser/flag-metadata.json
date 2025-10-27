@@ -300,6 +300,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-composeplate-lff",
+    "owners": [ "hanxi@chromium.org", "clank-start@google.com", "chrome-mobile-search@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "android-context-menu-duplicate-tabs",
     "owners": [
       "hitarthkothari@google.com",

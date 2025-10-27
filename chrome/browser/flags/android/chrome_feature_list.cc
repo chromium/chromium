@@ -212,6 +212,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBottomToolbar,
     &kAndroidBottomToolbarV2,
     &kAndroidComposeplate,
+    &kAndroidComposeplateLFF,
     &kAndroidContextMenuDuplicateTabs,
     &kAndroidDataImporterService,
     &kAndroidDesktopDensity,
@@ -551,6 +552,7 @@ BASE_FEATURE(kAndroidBottomToolbar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomToolbarV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidComposeplate, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidComposeplateAllLocales, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidComposeplateLFF, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuDuplicateTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDataImporterService, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopDensity, base::FEATURE_DISABLED_BY_DEFAULT);
