@@ -228,11 +228,8 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
                                       "ImageBitmap construction failed");
   }
 
-  if (plain_text_painter_ != nullptr) {
-    plain_text_painter_->DidSwitchFrame();
-  }
-  if (unique_font_selector_) {
-    unique_font_selector_->DidSwitchFrame();
+  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    NotifyCachesOfSwitchingFrame();
   }
   return image;
 }
@@ -282,13 +279,9 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   }
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
 
-  if (RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled()) {
-    if (plain_text_painter_) {
-      plain_text_painter_->DidSwitchFrame();
-    }
-    if (unique_font_selector_) {
-      unique_font_selector_->DidSwitchFrame();
-    }
+  if (RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() &&
+      !RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    NotifyCachesOfSwitchingFrame();
   }
   return image;
 }
@@ -562,11 +555,8 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
       std::move(canvas_resource), current_frame_damage_rect_, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
 
-  if (plain_text_painter_ != nullptr) {
-    plain_text_painter_->DidSwitchFrame();
-  }
-  if (unique_font_selector_) {
-    unique_font_selector_->DidSwitchFrame();
+  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    NotifyCachesOfSwitchingFrame();
   }
   return true;
 }

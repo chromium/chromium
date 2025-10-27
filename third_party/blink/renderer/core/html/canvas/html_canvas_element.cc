@@ -813,12 +813,7 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     NotifyListenersCanvasChanged();
   did_notify_listeners_for_current_frame_ = false;
 
-  if (plain_text_painter_ != nullptr) {
-    plain_text_painter_->DidSwitchFrame();
-  }
-  if (unique_font_selector_) {
-    unique_font_selector_->DidSwitchFrame();
-  }
+  NotifyCachesOfSwitchingFrame();
 }
 
 void HTMLCanvasElement::OnAccelerationDisabled() {

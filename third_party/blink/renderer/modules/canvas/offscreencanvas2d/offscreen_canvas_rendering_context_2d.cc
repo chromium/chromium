@@ -137,6 +137,9 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     return;
   }
   resource_provider_->FlushCanvas(reason);
+  if (RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    Host()->NotifyCachesOfSwitchingFrame();
+  }
 }
 
 // BaseRenderingContext2D implementation

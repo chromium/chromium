@@ -80,6 +80,15 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
   }
 }
 
+void CanvasRenderingContextHost::NotifyCachesOfSwitchingFrame() {
+  if (plain_text_painter_) {
+    plain_text_painter_->DidSwitchFrame();
+  }
+  if (unique_font_selector_) {
+    unique_font_selector_->DidSwitchFrame();
+  }
+}
+
 void CanvasRenderingContextHost::UpdateMemoryUsage() {
   intptr_t externally_allocated_memory =
       RenderingContext() ? RenderingContext()->AllocatedBufferSize() : 0;

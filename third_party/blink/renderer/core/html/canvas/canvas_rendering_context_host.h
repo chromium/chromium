@@ -65,6 +65,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   void DidDraw() { DidDraw(SkIRect::MakeWH(width(), height())); }
 
   virtual void PostFinalizeFrame(FlushReason) = 0;
+  void NotifyCachesOfSwitchingFrame();
   virtual bool PushFrame(scoped_refptr<CanvasResource>&& frame,
                          const SkIRect& damage_rect) = 0;
   virtual bool OriginClean() const = 0;

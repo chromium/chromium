@@ -921,6 +921,11 @@
     },
     {
       // crbug.com/450531794.
+      name: "CanvasTextSwitchFrameOnFinalize",
+      status: "stable",
+    },
+    {
+      // crbug.com/450531794.
       name: "CanvasTextTexImage2DFix",
       status: "stable",
     },
