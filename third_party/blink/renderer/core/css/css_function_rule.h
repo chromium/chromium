@@ -43,6 +43,8 @@ struct DowncastTraits<CSSFunctionRule> {
   }
 };
 
+void AppendCSSType(const CSSSyntaxDefinition& syntax, StringBuilder& builder);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FUNCTION_RULE_H_

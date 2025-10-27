@@ -39,8 +39,6 @@ String CSSFunctionRule::returnType() const {
   return To<StyleRuleFunction>(*group_rule_).GetReturnType().ToString();
 }
 
-namespace {
-
 // <css-type> = <syntax-component> | <type()>
 // https://drafts.csswg.org/css-mixins-1/#typedef-css-type
 void AppendCSSType(const CSSSyntaxDefinition& syntax, StringBuilder& builder) {
@@ -54,8 +52,6 @@ void AppendCSSType(const CSSSyntaxDefinition& syntax, StringBuilder& builder) {
     builder.Append(")");
   }
 }
-
-}  // namespace
 
 String CSSFunctionRule::cssText() const {
   const auto& rule = To<StyleRuleFunction>(*group_rule_);
