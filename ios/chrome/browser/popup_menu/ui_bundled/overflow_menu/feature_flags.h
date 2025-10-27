@@ -7,6 +7,9 @@
 
 #include "base/feature_list.h"
 
+// Feature to enable the new overflow menu.
+BASE_DECLARE_FEATURE(kNewOverflowMenu);
+
 // Whether the NewOverflowMenu feature is enabled.
 bool IsNewOverflowMenuEnabled();
 
