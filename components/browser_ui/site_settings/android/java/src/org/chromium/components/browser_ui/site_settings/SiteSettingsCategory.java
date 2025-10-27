@@ -685,5 +685,10 @@ public class SiteSettingsCategory {
         protected String getMessageForEnablingOsPerAppPermission(Context context, String appName) {
             return context.getString(R.string.android_permission_off_plural, appName);
         }
+
+        @Override
+        protected boolean shouldShowPerAppWarning(Context context) {
+            return true;
+        }
     }
 }
