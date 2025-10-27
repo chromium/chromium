@@ -67,14 +67,9 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  // Handles notifications from other processes. The function receives the
-  // command line and directory with which the other Chrome process was
-  // launched. Return true if the command line will be handled within the
-  // current browser instance or false if the remote process should handle it
-  // (i.e., because the current process is shutting down).
-  static bool ProcessSingletonNotificationCallback(
-      base::CommandLine command_line,
-      const base::FilePath& current_directory);
+  // See ProcessSingletonNotificationCallback() for details.
+  static bool ProcessSingletonNotificationForTesting(
+      base::CommandLine command_line);
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
  protected:

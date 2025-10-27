@@ -332,6 +332,7 @@
 #endif
 
 namespace {
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kMediaHistoryDatabaseName[] =
@@ -501,6 +502,68 @@ void ProcessSingletonNotificationCallbackImpl(
   if constexpr (kShouldRecordActiveUse) {
     GoogleUpdateSettings::SetLastRunTime();
   }
+}
+
+// Handles notifications from other processes. The function receives the
+// command line and directory with which the other Chrome process was
+// launched. Return true if the command line will be handled within the
+// current browser instance or false if the remote process should handle it
+// (i.e., because the current process is shutting down).
+bool ProcessSingletonNotificationCallback(
+    base::CommandLine command_line,
+    const base::FilePath& current_directory) {
+  // Drop the request if the browser process is already shutting down.
+  // Note that we're going to post an async task below. Even if the browser
+  // process isn't shutting down right now, it could be by the time the task
+  // starts running. So, an additional check needs to happen when it starts.
+  // But regardless of any future check, there is no reason to post the task
+  // now if we know we're already shutting down.
+  if (!g_browser_process || g_browser_process->IsShuttingDown()) {
+    return false;
+  }
+
+  // Drop the request if this or the requesting process is running with
+  // automation enabled to avoid hard to cope with startup races.
+  auto should_drop_for_automation = [](const base::CommandLine& command_line) {
+    bool current_enables_automation =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableAutomation);
+    bool new_enables_automation =
+        command_line.HasSwitch(switches::kEnableAutomation);
+    bool new_has_app_id = command_line.HasSwitch(switches::kAppId);
+
+    // Make an exception for the case where the new command line is used to
+    // launch an installed web app from OS artifacts like shortcuts. The command
+    // line must also explicitly include the
+    // --enable-automation switch to acknowledge the potential for startup
+    // races.
+    if (current_enables_automation && new_enables_automation &&
+        new_has_app_id) {
+      return /*should_drop=*/false;
+    }
+    return /*should_drop=*/current_enables_automation || new_enables_automation;
+  };
+  if (should_drop_for_automation(command_line)) {
+    return false;
+  }
+
+  // Drop the request if headless mode is in effect or the request is from
+  // a headless Chrome process.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (headless::IsHeadlessMode() ||
+      command_line.HasSwitch(switches::kHeadless)) {
+    return false;
+  }
+#endif
+
+  // In order to handle this request on Windows, there is platform specific
+  // code in browser_finder.cc that requires making outbound COM calls to
+  // cross-apartment shell objects (via IVirtualDesktopManager). That is not
+  // allowed within a SendMessage handler, which this function is a part of.
+  // So, we post a task to asynchronously finish the command line processing.
+  return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ProcessSingletonNotificationCallbackImpl,
+                                std::move(command_line), current_directory));
 }
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
@@ -1508,8 +1571,8 @@ void ChromeBrowserMainParts::PostBrowserStart() {
   // Allow ProcessSingleton to process messages.
   // This is done here instead of just relying on the main message loop's start
   // to avoid rendezvous in RunLoops that may precede MainMessageLoopRun.
-  ChromeProcessSingleton::GetInstance()->Unlock(base::BindRepeating(
-      &ChromeBrowserMainParts::ProcessSingletonNotificationCallback));
+  ChromeProcessSingleton::GetInstance()->Unlock(
+      base::BindRepeating(&ProcessSingletonNotificationCallback));
 #endif
 
   // Set up a task to delete old WebRTC log files for all profiles. Use a delay
@@ -2104,60 +2167,9 @@ std::unique_ptr<base::RunLoop> ChromeBrowserMainParts::TakeRunLoopForTest() {
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 // static
-bool ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-    base::CommandLine command_line,
-    const base::FilePath& current_directory) {
-  // Drop the request if the browser process is already shutting down.
-  // Note that we're going to post an async task below. Even if the browser
-  // process isn't shutting down right now, it could be by the time the task
-  // starts running. So, an additional check needs to happen when it starts.
-  // But regardless of any future check, there is no reason to post the task
-  // now if we know we're already shutting down.
-  if (!g_browser_process || g_browser_process->IsShuttingDown()) {
-    return false;
-  }
-
-  // Drop the request if this or the requesting process is running with
-  // automation enabled to avoid hard to cope with startup races.
-  auto should_drop_for_automation = [](const base::CommandLine& command_line) {
-    bool current_enables_automation =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableAutomation);
-    bool new_enables_automation =
-        command_line.HasSwitch(switches::kEnableAutomation);
-    bool new_has_app_id = command_line.HasSwitch(switches::kAppId);
-
-    // Make an exception for the case where the new command line is used to
-    // launch an installed web app from OS artifacts like shortcuts. The command
-    // line must also explicitly include the
-    // --enable-automation switch to acknowledge the potential for startup
-    // races.
-    if (current_enables_automation && new_enables_automation &&
-        new_has_app_id) {
-      return /*should_drop=*/false;
-    }
-    return /*should_drop=*/current_enables_automation || new_enables_automation;
-  };
-  if (should_drop_for_automation(command_line)) {
-    return false;
-  }
-
-  // Drop the request if headless mode is in effect or the request is from
-  // a headless Chrome process.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  if (headless::IsHeadlessMode() ||
-      command_line.HasSwitch(switches::kHeadless)) {
-    return false;
-  }
-#endif
-
-  // In order to handle this request on Windows, there is platform specific
-  // code in browser_finder.cc that requires making outbound COM calls to
-  // cross-apartment shell objects (via IVirtualDesktopManager). That is not
-  // allowed within a SendMessage handler, which this function is a part of.
-  // So, we post a task to asynchronously finish the command line processing.
-  return base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ProcessSingletonNotificationCallbackImpl,
-                                std::move(command_line), current_directory));
+bool ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+    base::CommandLine command_line) {
+  return ProcessSingletonNotificationCallback(command_line,
+                                              /*current_directory=*/{});
 }
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)

@@ -42,8 +42,7 @@ void ShortcutCreationTestSupport::LaunchShortcut(const base::FilePath& path) {
   base::ScopedAllowBlockingForTesting allow_io;
   auto command_line = CommandLineFromShortcut(path);
   CHECK(command_line.has_value());
-  ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-      *command_line, /*current_directory=*/{});
+  ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(*command_line);
 }
 
 // static

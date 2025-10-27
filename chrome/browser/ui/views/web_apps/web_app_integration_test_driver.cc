@@ -1957,16 +1957,16 @@ void WebAppIntegrationTestDriver::LaunchFromAppShimFallback(Site site) {
     // LaunchFromPlatformShortcut, however currently launching from app shim
     // fallback actually uses the non-mac launch code, so for now that is what
     // this is expecting.
-    ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-        command_line, /*current_directory=*/{}));
+    ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+        command_line));
     content::RunAllTasksUntilIdle();
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
-    ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-        command_line, /*current_directory=*/{}));
+    ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+        command_line));
     content::RunAllTasksUntilIdle();
   }
   AfterStateChangeAction();

@@ -57,8 +57,8 @@ IN_PROC_BROWSER_TEST_F(WebAppAutomationBrowserTest,
 
   base::CommandLine command_line =
       GetWebAppCommandLine(app_id, /*enable_automation=*/false);
-  ASSERT_FALSE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-      command_line, /*current_directory=*/{}));
+  ASSERT_FALSE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+      command_line));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppAutomationBrowserTest,
@@ -69,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(WebAppAutomationBrowserTest,
       GetWebAppCommandLine(app_id, /*enable_automation=*/true);
   command_line.AppendSwitch(switches::kEnableAutomation);
 
-  ASSERT_FALSE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-      command_line, /*current_directory=*/{}));
+  ASSERT_FALSE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+      command_line));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppAutomationBrowserTest,
@@ -83,8 +83,8 @@ IN_PROC_BROWSER_TEST_F(WebAppAutomationBrowserTest,
   base::CommandLine command_line =
       GetWebAppCommandLine(app_id, /*enable_automation=*/true);
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-      command_line, /*current_directory=*/{}));
+  ASSERT_TRUE(ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+      command_line));
   EXPECT_TRUE(AppBrowserController::IsForWebApp(browser_created_observer.Wait(),
                                                 app_id));
 }

@@ -2406,8 +2406,8 @@ class StartupBrowserCreatorTestWithGuestParam
   void OpenTabAlreadyRunning() {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendArg(GetTestURL().spec());
-    ChromeBrowserMainParts::ProcessSingletonNotificationCallback(
-        command_line, /*current_directory=*/{});
+    ChromeBrowserMainParts::ProcessSingletonNotificationForTesting(
+        command_line);
   }
 };
 
