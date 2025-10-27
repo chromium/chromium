@@ -4,8 +4,7 @@
 //! to some output stream.
 
 pub use self::config::EmitterConfig;
-pub use self::emitter::EmitterError as Error;
-pub use self::emitter::Result;
+pub use self::emitter::{EmitterError as Error, Result};
 pub use self::events::XmlEvent;
 
 use self::emitter::Emitter;

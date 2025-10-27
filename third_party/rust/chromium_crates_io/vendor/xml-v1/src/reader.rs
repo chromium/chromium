@@ -116,6 +116,18 @@ impl<R: Read> EventReader<R> {
     pub fn doctype(&self) -> Option<&str> {
         self.parser.doctype()
     }
+
+    /// Add new entity definitions **before any XML elements have been parsed**.
+    ///
+    /// ## Errors
+    ///
+    /// It's valid to call this after DOCTYPE, but not later. It won't be possible to add entities to a document without either XML decl or DOCTYPE.
+    ///
+    /// It will fail if the document is declared as _standalone_.
+    #[inline]
+    pub fn add_entities<S: Into<String>, T: Into<String>>(&mut self, entities: impl IntoIterator<Item=(S, T)>) -> std::result::Result<(), crate::reader::error::ImmutableEntitiesError> {
+        self.parser.add_entities(entities)
+    }
 }
 
 impl<B: Read> Position for EventReader<B> {
@@ -160,6 +172,20 @@ impl<R: Read> Events<R> {
     ///
     /// It's not recommended to use it while the events are still being parsed
     pub fn source_mut(&mut self) -> &mut R { &mut self.reader.source }
+}
+
+impl<R: Read> std::ops::Deref for Events<R> {
+    type Target = EventReader<R>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.reader
+    }
+}
+
+impl<R: Read> std::ops::DerefMut for Events<R> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.reader
+    }
 }
 
 impl<R: Read> FusedIterator for Events<R> {

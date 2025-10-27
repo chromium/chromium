@@ -20,7 +20,7 @@ impl PullParser {
             DoctypeSubstate::Outside => match t {
                 Token::TagEnd => {
                     let event = XmlEvent::Doctype {
-                        syntax: self.data.doctype.clone().unwrap_or_default()
+                        syntax: self.data.doctype.clone().unwrap_or_default(),
                     };
                     self.into_state_emit(State::OutsideTag, Ok(event))
                 },
@@ -69,7 +69,9 @@ impl PullParser {
                     let buf = self.take_buf();
                     match buf.as_str() {
                         "ENTITY" => self.into_state_continue(State::InsideDoctype(DoctypeSubstate::BeforeEntityName)),
-                        "NOTATION" | "ELEMENT" | "ATTLIST" => self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SkipDeclaration)),
+                        "NOTATION" | "ELEMENT" | "ATTLIST" => {
+                            self.into_state_continue(State::InsideDoctype(DoctypeSubstate::SkipDeclaration))
+                        },
                         _ => Some(self.error(SyntaxError::UnknownMarkupDeclaration(buf.into()))),
                     }
                 },

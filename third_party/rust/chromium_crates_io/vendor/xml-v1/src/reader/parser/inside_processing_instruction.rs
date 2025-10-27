@@ -31,18 +31,16 @@ impl PullParser {
 
                         // Found <?xml-like PI not at the beginning of a document,
                         // it is an error - see section 2.6 of XML 1.1 spec
-                        n if "xml".eq_ignore_ascii_case(n) =>
-                            Some(self.error(SyntaxError::InvalidXmlProcessingInstruction(name.into()))),
+                        n if "xml".eq_ignore_ascii_case(n) => {
+                            Some(self.error(SyntaxError::InvalidXmlProcessingInstruction(name.into())))
+                        },
 
                         // All is ok, emitting event
                         _ => {
                             debug_assert!(self.next_event.is_none(), "{:?}", self.next_event);
                             // can't have a PI before `<?xml`
                             let event1 = self.set_encountered(Encountered::Declaration);
-                            let event2 = Some(Ok(XmlEvent::ProcessingInstruction {
-                                name,
-                                data: None
-                            }));
+                            let event2 = Some(Ok(XmlEvent::ProcessingInstruction { name, data: None }));
                             // emitting two events at once is cumbersome
                             let event1 = if event1.is_some() {
                                 self.next_event = event2;
@@ -61,13 +59,15 @@ impl PullParser {
 
                     match &*name {
                         // We have not ever encountered an element and have not parsed XML declaration
-                        "xml" if self.encountered == Encountered::None =>
-                            self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeVersion)),
+                        "xml" if self.encountered == Encountered::None => {
+                            self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeVersion))
+                        },
 
                         // Found <?xml-like PI after the beginning of a document,
                         // it is an error - see section 2.6 of XML 1.1 spec
-                        n if "xml".eq_ignore_ascii_case(n) =>
-                            Some(self.error(SyntaxError::InvalidXmlProcessingInstruction(name.into()))),
+                        n if "xml".eq_ignore_ascii_case(n) => {
+                            Some(self.error(SyntaxError::InvalidXmlProcessingInstruction(name.into())))
+                        },
 
                         // All is ok, starting parsing PI data
                         _ => {

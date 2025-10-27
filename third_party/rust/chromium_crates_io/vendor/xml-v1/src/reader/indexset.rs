@@ -3,7 +3,7 @@ use crate::name::OwnedName;
 
 use std::collections::hash_map::RandomState;
 use std::collections::HashSet;
-use std::hash::{BuildHasher, Hash, Hasher};
+use std::hash::{BuildHasher, Hasher};
 
 /// An ordered set
 pub struct AttributesSet {
@@ -28,9 +28,7 @@ impl AttributesSet {
     }
 
     fn hash(&self, val: &OwnedName) -> u64 {
-        let mut h = self.hasher.build_hasher();
-        val.hash(&mut h);
-        h.finish()
+        self.hasher.hash_one(val)
     }
 
     pub fn len(&self) -> usize {

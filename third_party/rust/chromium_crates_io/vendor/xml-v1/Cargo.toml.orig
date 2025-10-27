@@ -1,6 +1,6 @@
 [package]
 name = "xml"
-version = "1.0.1"
+version = "1.1.0"
 authors = ["Vladimir Matveev <vmatveev@citrine.cc>", "Kornel (https://github.com/kornelski)"]
 license = "MIT"
 description = "An XML library in pure Rust"
@@ -11,7 +11,7 @@ readme = "README.md"
 keywords = ["xml", "parser", "sax", "event-reader", "writer"]
 categories = ["parser-implementations"]
 edition = "2021"
-rust-version = "1.70"
+rust-version = "1.71" # bump CI too
 include = ["src/**", "LICENSE", "README.md"]
 
 [badges]

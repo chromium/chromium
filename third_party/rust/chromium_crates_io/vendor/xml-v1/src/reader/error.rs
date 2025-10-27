@@ -25,6 +25,16 @@ pub enum ErrorKind {
     EmitterError(Box<EmitterError>),
 }
 
+/// Returned by `add_entities()`
+#[derive(Clone, PartialEq)]
+#[non_exhaustive]
+pub enum ImmutableEntitiesError {
+    /// Too late to modify
+    ElementEncountered,
+    /// `<?xml standalone="yes" ?>` can't have entities
+    StandaloneDocument,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 #[non_exhaustive]
 pub(crate) enum SyntaxError {
@@ -140,7 +150,7 @@ pub struct Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        use self::ErrorKind::{Io, Syntax, UnexpectedEof, Utf8, EmitterError};
+        use self::ErrorKind::{EmitterError, Io, Syntax, UnexpectedEof, Utf8};
 
         write!(f, "{} ", self.pos)?;
         match &self.kind {
@@ -153,6 +163,24 @@ impl fmt::Display for Error {
     }
 }
 
+impl fmt::Display for ImmutableEntitiesError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::ElementEncountered => "Element encountered",
+            Self::StandaloneDocument => "Standalone XML",
+        })
+    }
+}
+
+impl fmt::Debug for ImmutableEntitiesError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(self, f)
+    }
+}
+
+impl error::Error for ImmutableEntitiesError {
+}
+
 impl Position for Error {
     #[inline]
     fn position(&self) -> TextPosition { self.pos }
@@ -160,6 +188,7 @@ impl Position for Error {
 
 impl Error {
     #[doc(hidden)]
+    #[must_use] 
     pub fn msg(&self) -> String {
         self.to_string()
     }
@@ -235,16 +264,26 @@ impl From<EmitterError> for Error {
     }
 }
 
+impl From<ImmutableEntitiesError> for Error {
+    #[cold]
+    fn from(e: ImmutableEntitiesError) -> Self {
+        Self {
+            pos: TextPosition::new(),
+            kind: ErrorKind::Io(io::Error::new(io::ErrorKind::Other, e)),
+        }
+    }
+}
+
 impl From<ErrorKind> for Error {
     fn from(kind: ErrorKind) -> Self {
-        Self{ kind, pos: TextPosition::new() }
+        Self { kind, pos: TextPosition::new() }
     }
 }
 
 impl Clone for ErrorKind {
     #[cold]
     fn clone(&self) -> Self {
-        use self::ErrorKind::{Io, Syntax, UnexpectedEof, Utf8, EmitterError};
+        use self::ErrorKind::{EmitterError, Io, Syntax, UnexpectedEof, Utf8};
         match self {
             UnexpectedEof => UnexpectedEof,
             Utf8(reason) => Utf8(*reason),

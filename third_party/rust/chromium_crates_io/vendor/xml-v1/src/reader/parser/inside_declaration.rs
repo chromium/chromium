@@ -47,15 +47,16 @@ impl PullParser {
 
     // TODO: remove redundancy via macros or extra methods
     pub fn inside_declaration(&mut self, t: Token, s: DeclarationSubstate) -> Option<Result> {
-
         match s {
             DeclarationSubstate::BeforeVersion => match t {
-                Token::Character('v') => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideVersion)),
-                Token::Character(c) if is_whitespace_char(c) => None,  // continue
+                Token::Character('v') => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideVersion))
+                },
+                Token::Character(c) if is_whitespace_char(c) => None, // continue
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
 
-            DeclarationSubstate::InsideVersion => self.read_qualified_name(t, QualifiedNameTarget::AttributeNameTarget, |this, token, name| {
+            DeclarationSubstate::InsideVersion => self.read_qualified_name(t, QualifiedNameTarget::Attribute, |this, token, name| {
                 match &*name.local_name {
                     "ersion" if name.namespace.is_none() =>
                         this.into_state_continue(State::InsideDeclaration(
@@ -70,7 +71,9 @@ impl PullParser {
             }),
 
             DeclarationSubstate::AfterVersion => match t {
-                Token::EqualsSign => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideVersionValue)),
+                Token::EqualsSign => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideVersionValue))
+                },
                 Token::Character(c) if is_whitespace_char(c) => None,
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
@@ -102,7 +105,7 @@ impl PullParser {
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
 
-            DeclarationSubstate::InsideEncoding => self.read_qualified_name(t, QualifiedNameTarget::AttributeNameTarget, |this, token, name| {
+            DeclarationSubstate::InsideEncoding => self.read_qualified_name(t, QualifiedNameTarget::Attribute, |this, token, name| {
                 match &*name.local_name {
                     "ncoding" if name.namespace.is_none() =>
                         this.into_state_continue(State::InsideDeclaration(
@@ -113,7 +116,9 @@ impl PullParser {
             }),
 
             DeclarationSubstate::AfterEncoding => match t {
-                Token::EqualsSign => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideEncodingValue)),
+                Token::EqualsSign => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideEncodingValue))
+                },
                 Token::Character(c) if is_whitespace_char(c) => None,
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
@@ -124,19 +129,23 @@ impl PullParser {
             }),
 
             DeclarationSubstate::AfterEncodingValue => match t {
-                Token::Character(c) if is_whitespace_char(c) => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeStandaloneDecl)),
+                Token::Character(c) if is_whitespace_char(c) => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeStandaloneDecl))
+                },
                 Token::ProcessingInstructionEnd => self.emit_start_document(),
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
 
             DeclarationSubstate::BeforeStandaloneDecl => match t {
-                Token::Character('s') => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideStandaloneDecl)),
+                Token::Character('s') => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideStandaloneDecl))
+                },
                 Token::ProcessingInstructionEnd => self.emit_start_document(),
                 Token::Character(c) if is_whitespace_char(c) => None, // skip whitespace
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
 
-            DeclarationSubstate::InsideStandaloneDecl => self.read_qualified_name(t, QualifiedNameTarget::AttributeNameTarget, |this, token, name| {
+            DeclarationSubstate::InsideStandaloneDecl => self.read_qualified_name(t, QualifiedNameTarget::Attribute, |this, token, name| {
                 match &*name.local_name {
                     "tandalone" if name.namespace.is_none() =>
                         this.into_state_continue(State::InsideDeclaration(
@@ -151,7 +160,9 @@ impl PullParser {
             }),
 
             DeclarationSubstate::AfterStandaloneDecl => match t {
-                Token::EqualsSign => self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideStandaloneDeclValue)),
+                Token::EqualsSign => {
+                    self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::InsideStandaloneDeclValue))
+                },
                 Token::Character(c) if is_whitespace_char(c) => None,
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },

@@ -132,12 +132,12 @@ impl Emitter {
 
     #[inline]
     fn wrote_text(&self) -> bool {
-        self.indent_stack.last().map_or(false, |&e| e == IndentFlags::WroteText)
+        self.indent_stack.last().is_some_and(|&e| e == IndentFlags::WroteText)
     }
 
     #[inline]
     fn wrote_markup(&self) -> bool {
-        self.indent_stack.last().map_or(false, |&e| e == IndentFlags::WroteMarkup)
+        self.indent_stack.last().is_some_and(|&e| e == IndentFlags::WroteMarkup)
     }
 
     #[inline]
@@ -333,9 +333,11 @@ impl Emitter {
                 //// there is already a namespace binding with this prefix in scope
                 //prefix if self.nst.get(prefix) == Some(uri) => Ok(()),
                 // emit xmlns only if it is overridden
-                NS_NO_PREFIX => if uri != NS_EMPTY_URI {
+                NS_NO_PREFIX => if uri == NS_EMPTY_URI {
+                    Ok(())
+                } else {
                     write!(target, " xmlns=\"{uri}\"")
-                } else { Ok(()) },
+                },
                 // everything else
                 prefix => write!(target, " xmlns:{prefix}=\"{uri}\""),
             }?;
@@ -343,9 +345,8 @@ impl Emitter {
         Ok(())
     }
 
-    pub fn emit_attributes<W: Write>(&self, target: &mut W,
-                                      attributes: &[Attribute<'_>]) -> Result<()> {
-        for attr in attributes {            
+    pub fn emit_attributes<W: Write>(&self, target: &mut W, attributes: &[Attribute<'_>]) -> Result<()> {
+        for attr in attributes {
             write!(target, " {}=\"", attr.name.repr_display())?;
             if self.config.perform_escaping {
                 write!(target, "{}", Escaped::<AttributeEscapes>::new(attr.value))?;
@@ -357,8 +358,7 @@ impl Emitter {
         Ok(())
     }
 
-    pub fn emit_end_element<W: Write>(&mut self, target: &mut W,
-                                      name: Option<Name<'_>>) -> Result<()> {
+    pub fn emit_end_element<W: Write>(&mut self, target: &mut W, name: Option<Name<'_>>) -> Result<()> {
         let owned_name = if self.config.keep_element_names_stack {
             Some(self.element_names.pop().ok_or(EmitterError::LastElementNameNotAvailable)?)
         } else {

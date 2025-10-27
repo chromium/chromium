@@ -178,11 +178,14 @@ impl XmlEvent {
     ///
     ///     for e in reader {
     ///         match e.unwrap() {
-    ///             ReaderEvent::Characters(s) =>
-    ///                 writer.write(WriterEvent::characters(&s.to_uppercase())).unwrap(),
-    ///             e => if let Some(e) = e.as_writer_event() {
-    ///                 writer.write(e).unwrap()
-    ///             }
+    ///             ReaderEvent::Characters(s) => {
+    ///                 writer.write(WriterEvent::characters(&s.to_uppercase())).unwrap()
+    ///             },
+    ///             e => {
+    ///                 if let Some(e) = e.as_writer_event() {
+    ///                     writer.write(e).unwrap()
+    ///                 }
+    ///             },
     ///         }
     ///     }
     /// }

@@ -76,7 +76,7 @@ impl PullParser {
                 let next_event = self.set_encountered(Encountered::Comment);
                 // We need to switch the lexer into a comment mode inside comments
                 self.into_state(State::InsideComment, next_event)
-            }
+            },
 
             Token::CDataStart if self.depth() > 0 && self.config.coalesce_characters && self.config.cdata_to_characters => {
                 if self.buf.is_empty() {
@@ -120,8 +120,9 @@ impl PullParser {
                         self.into_state(State::InsideOpeningTag(OpeningTagSubstate::InsideName), next_event)
                     },
 
-                    Token::ClosingTagStart if self.depth() > 0 =>
-                        self.into_state(State::InsideClosingTag(ClosingTagSubstate::CTInsideName), next_event),
+                    Token::ClosingTagStart if self.depth() > 0 => {
+                        self.into_state(State::InsideClosingTag(ClosingTagSubstate::CTInsideName), next_event)
+                    },
 
                     Token::CommentStart => {
                         if let Some(e) = self.set_encountered(Encountered::Comment) {
@@ -141,8 +142,10 @@ impl PullParser {
                         self.into_state(State::InsideDoctype(DoctypeSubstate::Outside), next_event)
                     },
 
-                    Token::ProcessingInstructionStart =>
-                        self.into_state(State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideName), next_event),
+                    Token::ProcessingInstructionStart => self.into_state(
+                        State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideName),
+                        next_event,
+                    ),
 
                     Token::CDataStart if self.depth() > 0 => {
                         self.into_state(State::InsideCData, next_event)
@@ -198,7 +201,9 @@ impl PullParser {
 
             Token::ProcessingInstructionStart => {
                 self.push_pos();
-                self.into_state_continue(State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideName))
+                self.into_state_continue(State::InsideProcessingInstruction(
+                    ProcessingInstructionSubstate::PIInsideName,
+                ))
             },
 
             _ => Some(self.error(SyntaxError::UnexpectedToken(t))),

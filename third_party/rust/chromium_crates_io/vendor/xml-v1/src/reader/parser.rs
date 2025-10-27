@@ -5,7 +5,7 @@ use crate::common::{Position, TextPosition, XmlVersion};
 use crate::name::OwnedName;
 use crate::namespace::NamespaceStack;
 use crate::reader::config::ParserConfig;
-use crate::reader::error::SyntaxError;
+use crate::reader::error::{ImmutableEntitiesError, SyntaxError};
 use crate::reader::error::Error;
 use crate::reader::events::XmlEvent;
 use crate::reader::indexset::AttributesSet;
@@ -55,6 +55,8 @@ static DEFAULT_VERSION: XmlVersion = XmlVersion::Version10;
 static DEFAULT_STANDALONE: Option<bool> = None;
 
 type ElementStack = Vec<OwnedName>;
+
+/// Newtype for `XmlEvent` only. If you import this, use `std::result::Result` for other results.
 pub type Result = super::Result<XmlEvent>;
 
 /// Pull-based XML parser.
@@ -78,7 +80,7 @@ pub(crate) struct PullParser {
 
     encountered: Encountered,
     inside_whitespace: bool,
-    read_prefix_separator: bool,
+    seen_prefix_separator: bool,
     pop_namespace: bool,
 }
 
@@ -138,7 +140,7 @@ impl PullParser {
 
             encountered: Encountered::None,
             inside_whitespace: true,
-            read_prefix_separator: false,
+            seen_prefix_separator: false,
             pop_namespace: false,
         }
     }
@@ -174,6 +176,18 @@ impl PullParser {
             None
         }
     }
+
+    #[inline]
+    pub fn add_entities<S: Into<String>, T: Into<String>>(&mut self, entities: impl IntoIterator<Item=(S, T)>) -> std::result::Result<(), ImmutableEntitiesError> {
+        if self.data.standalone == Some(true) {
+            return Err(ImmutableEntitiesError::StandaloneDocument);
+        }
+        if self.encountered == Encountered::Element {
+            return Err(ImmutableEntitiesError::ElementEncountered);
+        }
+        self.config.extra_entities.extend(entities.into_iter().map(|(k, v)| (k.into(), v.into())));
+        Ok(())
+    }
 }
 
 impl Position for PullParser {
@@ -184,7 +198,7 @@ impl Position for PullParser {
     }
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum State {
     OutsideTag,
     InsideOpeningTag(OpeningTagSubstate),
@@ -198,7 +212,7 @@ pub(crate) enum State {
     DocumentStart,
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum DoctypeSubstate {
     Outside,
     String,
@@ -219,7 +233,7 @@ pub(crate) enum DoctypeSubstate {
     Comment,
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum OpeningTagSubstate {
     InsideName,
 
@@ -232,19 +246,19 @@ pub(crate) enum OpeningTagSubstate {
     AfterAttributeValue,
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum ClosingTagSubstate {
     CTInsideName,
     CTAfterName,
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum ProcessingInstructionSubstate {
     PIInsideName,
     PIInsideData,
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum DeclarationSubstate {
     BeforeVersion,
     InsideVersion,
@@ -268,11 +282,11 @@ pub(crate) enum DeclarationSubstate {
     AfterStandaloneDeclValue,
 }
 
-#[derive(Copy, Clone, PartialEq)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 enum QualifiedNameTarget {
-    AttributeNameTarget,
-    OpeningTagNameTarget,
-    ClosingTagNameTarget,
+    Attribute,
+    OpeningTag,
+    ClosingTag,
 }
 
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -489,14 +503,10 @@ impl PullParser {
     /// * `on_name` --- a callback which is executed when whitespace is encountered.
     fn read_qualified_name<F>(&mut self, t: Token, target: QualifiedNameTarget, on_name: F) -> Option<Result>
       where F: Fn(&mut Self, Token, OwnedName) -> Option<Result> {
-        // We can get here for the first time only when self.data.name contains zero or one character,
-        // but first character cannot be a colon anyway
-        if self.buf.len() <= 1 {
-            self.read_prefix_separator = false;
-        }
 
-        let invoke_callback = move |this: &mut Self, t| {
+        let try_consume_name = move |this: &mut Self, t| {
             let name = this.take_buf();
+            this.seen_prefix_separator = false;
             match name.parse() {
                 Ok(name) => on_name(this, t, name),
                 Err(()) => Some(this.error(SyntaxError::InvalidQualifiedName(name.into()))),
@@ -505,9 +515,9 @@ impl PullParser {
 
         match t {
             // There can be only one colon, and not as the first character
-            Token::Character(':') if self.buf_has_data() && !self.read_prefix_separator => {
+            Token::Character(':') if self.buf_has_data() && !self.seen_prefix_separator => {
                 self.buf.push(':');
-                self.read_prefix_separator = true;
+                self.seen_prefix_separator = true;
                 None
             },
 
@@ -520,14 +530,14 @@ impl PullParser {
                 None
             },
 
-            Token::EqualsSign if target == QualifiedNameTarget::AttributeNameTarget => invoke_callback(self, t),
+            Token::EqualsSign if target == QualifiedNameTarget::Attribute => try_consume_name(self, t),
 
-            Token::EmptyTagEnd if target == QualifiedNameTarget::OpeningTagNameTarget => invoke_callback(self, t),
+            Token::EmptyTagEnd if target == QualifiedNameTarget::OpeningTag => try_consume_name(self, t),
 
-            Token::TagEnd if target == QualifiedNameTarget::OpeningTagNameTarget ||
-                      target == QualifiedNameTarget::ClosingTagNameTarget => invoke_callback(self, t),
+            Token::TagEnd if target == QualifiedNameTarget::OpeningTag ||
+                      target == QualifiedNameTarget::ClosingTag => try_consume_name(self, t),
 
-            Token::Character(c) if is_whitespace_char(c) => invoke_callback(self, t),
+            Token::Character(c) if is_whitespace_char(c) => try_consume_name(self, t),
 
             _ => Some(self.error(SyntaxError::UnexpectedQualifiedName(t))),
         }
@@ -572,7 +582,9 @@ impl PullParser {
                 self.into_state_continue(State::InsideReference)
             },
 
-            Token::OpeningTagStart | Token::ProcessingInstructionStart => Some(self.error(SyntaxError::UnexpectedOpeningTag)),
+            Token::OpeningTagStart | Token::ProcessingInstructionStart => {
+                Some(self.error(SyntaxError::UnexpectedOpeningTag))
+            },
 
             Token::Character(c) if !self.is_valid_xml_char_not_restricted(c) => {
                 Some(self.error(SyntaxError::InvalidCharacterEntity(c as u32)))

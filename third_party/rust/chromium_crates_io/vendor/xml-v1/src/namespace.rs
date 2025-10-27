@@ -1,9 +1,8 @@
 //! Contains namespace manipulation types and functions.
 
 use std::borrow::Cow;
+use std::collections::btree_map::{BTreeMap, Entry, Iter as Entries};
 use std::collections::HashSet;
-use std::collections::btree_map::Iter as Entries;
-use std::collections::btree_map::{BTreeMap, Entry};
 use std::iter::{Map, Rev};
 use std::slice::Iter;
 

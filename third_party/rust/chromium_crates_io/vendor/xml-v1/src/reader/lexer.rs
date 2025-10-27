@@ -641,7 +641,8 @@ impl Lexer {
 
 #[cfg(test)]
 mod tests {
-    use crate::{common::Position, reader::ParserConfig};
+    use crate::common::Position;
+    use crate::reader::ParserConfig;
     use std::io::{BufReader, Cursor};
 
     use super::{Lexer, Token};

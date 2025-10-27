@@ -203,8 +203,34 @@ impl ParserConfig {
     ///     .create_reader(&mut source);
     /// ```
     #[must_use]
+    #[inline]
     pub fn add_entity<S: Into<String>, T: Into<String>>(mut self, entity: S, value: T) -> Self {
         self.extra_entities.insert(entity.into(), value.into());
+        self
+    }
+
+    /// Adds entities and returns an updated config object.
+    ///
+    /// This is a convenience method for adding external entities mappings to the XML parser.
+    /// An example:
+    ///
+    /// ```rust
+    /// use xml::reader::ParserConfig;
+    ///
+    /// let mut source: &[u8] = b"...";
+    ///
+    /// let reader = ParserConfig::new()
+    ///     .add_entities([
+    ///         ("nbsp", " "),
+    ///         ("copy", "©"),
+    ///         ("reg", "®"),
+    ///     ])
+    ///     .create_reader(&mut source);
+    /// ```
+    #[must_use]
+    #[inline]
+    pub fn add_entities<S: Into<String>, T: Into<String>>(mut self, entities: impl IntoIterator<Item=(S, T)>) -> Self {
+        self.extra_entities.extend(entities.into_iter().map(|(k, v)| (k.into(), v.into())));
         self
     }
 }
