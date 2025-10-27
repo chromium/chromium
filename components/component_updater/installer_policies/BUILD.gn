@@ -14,8 +14,6 @@ group("installer_policies") {
 # Prefer adding installer policies here.
 static_library("installer_policies_no_content_deps") {
   sources = [
-    "afp_content_rule_list_component_installer.cc",
-    "afp_content_rule_list_component_installer.h",
     "amount_extraction_heuristic_regexes_component_installer.cc",
     "amount_extraction_heuristic_regexes_component_installer.h",
     "autofill_states_component_installer.cc",
@@ -86,7 +84,6 @@ static_library("installer_policies_with_content_deps") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "afp_content_rule_list_component_installer_unittest.cc",
     "amount_extraction_heuristic_regexes_component_installer_unittest.cc",
     "autofill_states_component_installer_unittest.cc",
     "cookie_readiness_list_component_installer_policy_unittest.cc",
