@@ -52,6 +52,10 @@ OzonePlatform::PlatformRuntimeProperties::SupportsForTest OzonePlatform::
     PlatformRuntimeProperties::override_supports_per_window_scaling_for_test =
         OzonePlatform::PlatformRuntimeProperties::SupportsForTest::kNotSet;
 
+OzonePlatform::PlatformProperties::SupportsForTest OzonePlatform::
+    PlatformProperties::override_set_parent_for_non_top_level_windows_for_test =
+        OzonePlatform::PlatformProperties::SupportsForTest::kNotSet;
+
 OzonePlatform::PlatformProperties::PlatformProperties() = default;
 OzonePlatform::PlatformProperties::~PlatformProperties() = default;
 

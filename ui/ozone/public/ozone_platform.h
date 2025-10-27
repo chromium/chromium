@@ -112,6 +112,13 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     PlatformProperties& operator=(const PlatformProperties& other) = delete;
     ~PlatformProperties();
 
+    // Values to override the value of a property in tests.
+    enum class SupportsForTest {
+      kNotSet,  // The property is not overridden.
+      kYes,     // The platform should return true.
+      kNo,      // The platform should return false.
+    };
+
     // Determines whether we should default to native decorations or the custom
     // frame based on the currently-running window manager.
     bool custom_frame_pref_default = false;
@@ -135,6 +142,12 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether windows which are not top level ones
     // should be given parents explicitly.
     bool set_parent_for_non_top_level_windows = false;
+
+    // Allows overriding whether `set_parent_for_non_top_level_windows` is
+    // enabled in tests. This value must be reset at the end of each test to
+    // avoid affecting subsequent tests.
+    static SupportsForTest
+        override_set_parent_for_non_top_level_windows_for_test;
 
     // If true, the platform shows and updates the drag image.
     bool platform_shows_drag_image = true;
@@ -164,7 +177,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     enum class SupportsForTest {
       kNotSet,  // The property is not overridden.
       kYes,     // The platform should return true.
-      kNo,      // The plafrorm should return false.
+      kNo,      // The platform should return false.
     };
 
     // Whether the underlying platform supports deferring compositing of buffers

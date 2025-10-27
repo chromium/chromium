@@ -2456,9 +2456,14 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
             last_menu_item->SubmenuIsShowing()) {
           params.context = last_menu_item->GetSubmenu()->GetWidget();
         } else {
+          // Do not hide submenus where the parent is the top-level menu; this
+          // fixes a case where context menus from empty bookmark folders can't
+          // be dismissed. See crbug.com/446647004. This issue will eventually
+          // cause a crash. See crbug.com/446633193.
           if (state_.menu_type == MenuType::kMenuItemContextMenu &&
               PlatformSetsParentForNonTopLevelWindows() &&
-              last_menu_item->SubmenuIsShowing()) {
+              last_menu_item->SubmenuIsShowing() &&
+              last_menu_item->GetParentMenuItem()) {
             // Before showing the new menu, ensure submenu of the last menu item
             // is hidden on platforms like Linux Wayland where destroyed popup
             // needs to be topmost. Without this, clicking on an item in the new
