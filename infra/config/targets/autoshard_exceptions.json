@@ -68,7 +68,7 @@
                 "try_builder": "chromeos-amd64-generic-rel-gtest"
             },
             "telemetry_unittests": {
-                "shards": 40,
+                "shards": 67,
                 "try_builder": "chromeos-amd64-generic-rel-gtest"
             }
         },
@@ -118,7 +118,7 @@
                 "try_builder": "fuchsia-x64-cast-receiver-rel"
             },
             "components_unittests": {
-                "shards": 1,
+                "shards": 2,
                 "try_builder": "fuchsia-x64-cast-receiver-rel"
             },
             "content_unittests": {
@@ -186,7 +186,7 @@
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "interactive_ui_tests": {
-                "shards": 84,
+                "shards": 92,
                 "try_builder": "linux_chromium_asan_rel_ng"
             },
             "sync_integration_tests": {
