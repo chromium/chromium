@@ -8629,6 +8629,33 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER" desc="Placeholder text for the composebox when in create image mode.">
         Describe your image
       </message>
+      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" translateable="true" desc="Heading of the tab action chip on the NTP." >
+        Ask about previous tab
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_2" translateable="true" desc="Heading of the tab action chip on the NTP." >
+        Ask about a tab
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_1" translateable="true" desc="Body text in the tab action chip describing the use of the chip." >
+        Ask about this tab
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_TAB_BODY_2" translateable="true" desc="Body text in the tab action chip describing the use of the chip." >
+        Search deeply on a tab
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_HEADING" translateable="true" desc="Heading of the create image action chip on the NTP." >
+        Create image
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_1" translateable="true" desc="Body text in the create image action chip describing the use of the chip.">
+        Add an image and reimagine it
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_CREATE_IMAGE_BODY_2" translateable="true" desc="Body text in the create image action chip describing the use of the chip.">
+        Reimagine a photo
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_HEADING" translateable="true" desc="Heading of the deep search action chip on the NTP.">
+        Research a topic
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY" translateable="true" desc="Body text in the deep search action chip describing the use of the chip.">
+        Dive deep into something new
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_SETUP_LIST_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
