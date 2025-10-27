@@ -176,6 +176,13 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
               feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
           web_contents))
       .Times(2);
+  EXPECT_CALL(
+      *GetMockFeaturePromoHelper(),
+      RecordPromoFeatureUsageAndClosePromo(
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature),
+          web_contents))
+      .Times(2);
 
   handler_->SetCustomizeChromeSidePanelVisible(
       /*visible=*/true, CustomizeChromeSection::kUnspecified,
@@ -299,6 +306,13 @@ IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
       RecordPromoFeatureUsageAndClosePromo(
           testing::Ref(
               feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature),
+          web_contents))
+      .Times(1);
+  EXPECT_CALL(
+      *GetMockFeaturePromoHelper(),
+      RecordPromoFeatureUsageAndClosePromo(
+          testing::Ref(
+              feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature),
           web_contents))
       .Times(1);
 
