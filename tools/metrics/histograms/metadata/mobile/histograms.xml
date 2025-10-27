@@ -801,33 +801,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.OSPromptResult"
-    enum="BooleanEnabled" expires_after="2024-07-07">
+    enum="BooleanEnabled" expires_after="2026-10-26">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records the action taken by the user after being shown the OS prompt to
     grant notification permissions. Only recorded on Android T+.
+
+    Warning: This histogram was expired from M130 and re-enabled in M143; data
+    may be missing in between.
   </summary>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.RationaleResult"
-    enum="NotificationRationaleResult" expires_after="2024-07-07">
+    enum="NotificationRationaleResult" expires_after="2026-10-26">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records the action taken by the user after being shown the notification
     rationale prompt. Only recorded on Android T+.
+
+    Warning: This histogram was expired from M130 and re-enabled in M143; data
+    may be missing in between.
   </summary>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.StartupRequestCount"
-    units="attempts" expires_after="2024-07-07">
+    units="attempts" expires_after="2026-10-26">
   <owner>salg@google.com</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records how many times we've shown the user any notification permission UI
     (either rationale and/or OS prompt) on startup. Recorded every time we are
     about to show any UI. Only recorded on Android T+.
+
+    Warning: This histogram was expired from M130 and re-enabled in M143; data
+    may be missing in between.
   </summary>
 </histogram>
 
