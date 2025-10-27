@@ -32,6 +32,7 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_request.h"
@@ -76,7 +77,30 @@ const char* kPermissionsKillSwitchBlockedValue = permissions::
     ContentSettingPermissionContextBase::kPermissionsKillSwitchBlockedValue;
 const char kPermissionsKillSwitchTestGroup[] = "TestGroup";
 
-class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
+class PermissionRequestManagerBrowserTestBase : public InProcessBrowserTest {
+ public:
+  PermissionRequestManagerBrowserTestBase() = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  permissions::PermissionRequestManager* GetPermissionRequestManager() {
+    return permissions::PermissionRequestManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  content::RenderFrameHost* GetActiveMainFrame() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
+  }
+};
+
+class PermissionRequestManagerBrowserTest
+    : public PermissionRequestManagerBrowserTestBase {
  public:
   PermissionRequestManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -91,25 +115,20 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   ~PermissionRequestManagerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    PermissionRequestManagerBrowserTestBase::SetUpOnMainThread();
     permissions::PermissionRequestManager* manager =
         GetPermissionRequestManager();
     mock_permission_prompt_factory_ =
         std::make_unique<permissions::MockPermissionPromptFactory>(manager);
-
-    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void TearDownOnMainThread() override {
+    PermissionRequestManagerBrowserTestBase::TearDownOnMainThread();
     ShutDownFirstTabMockPermissionPromptFactory();
   }
 
   void ShutDownFirstTabMockPermissionPromptFactory() {
     mock_permission_prompt_factory_.reset();
-  }
-
-  permissions::PermissionRequestManager* GetPermissionRequestManager() {
-    return permissions::PermissionRequestManager::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   permissions::MockPermissionPromptFactory* bubble_factory() {
@@ -191,13 +210,6 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
       EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
       EXPECT_EQ("granted", result);
     }
-  }
-
-  content::RenderFrameHost* GetActiveMainFrame() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetPrimaryMainFrame();
   }
 
  private:
@@ -1582,6 +1594,89 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   web_contents->GetController().GoBack();
   EXPECT_TRUE(request_state.cancelled);
+}
+
+class PermissionRequestManagerApproximateLocationBrowserTest
+    : public PermissionRequestManagerBrowserTestBase {
+  base::test::ScopedFeatureList scoped_feature_list_ =
+      base::test::ScopedFeatureList(
+          content_settings::features::kApproximateGeolocationPermission);
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
+                       RequestGeolocationAndApproximateLocationGranted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                            initial_url, 1);
+
+  ASSERT_TRUE(GetActiveMainFrame()->IsActive());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  blink::mojom::PermissionDescriptorPtr geolocation_permission_descriptor =
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::GEOLOCATION);
+  content::PermissionResult approx_only_permission_result(
+      blink::mojom::PermissionStatus::GRANTED,
+      content::PermissionStatusSource::UNSPECIFIED,
+      GeolocationSetting({.approximate = PermissionOption::kAllowed,
+                          .precise = PermissionOption::kDenied}));
+
+  permissions::PermissionRequestManager* request_manager =
+      GetPermissionRequestManager();
+
+  {
+    request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+    request_manager->set_auto_response_prompt_options_for_test(
+        GeolocationPromptOptions{.selected_precise = false});
+
+    base::RunLoop run_loop;
+    base::MockOnceCallback<void(content::PermissionResult)> callback;
+    EXPECT_CALL(callback, Run(approx_only_permission_result)).WillOnce([&] {
+      run_loop.Quit();
+    });
+
+    content::PermissionController* permission_controller =
+        browser()->profile()->GetPermissionController();
+    permission_controller->RequestPermissionFromCurrentDocument(
+        GetActiveMainFrame(),
+        content::PermissionRequestDescription(
+            geolocation_permission_descriptor.Clone(),
+            /*user_gesture=*/true),
+        callback.Get());
+
+    run_loop.Run();
+  }
+
+  // Now request the permission again. This should not trigger another prompt
+  // but it should keep returning the granted permission.
+  {
+    request_manager->set_auto_response_for_test(
+        permissions::PermissionRequestManager::AutoResponseType::NONE);
+
+    base::RunLoop run_loop;
+    base::MockOnceCallback<void(content::PermissionResult)> callback;
+    EXPECT_CALL(callback, Run(approx_only_permission_result)).WillOnce([&] {
+      run_loop.Quit();
+    });
+
+    content::PermissionController* permission_controller =
+        browser()->profile()->GetPermissionController();
+    EXPECT_EQ(permission_controller->GetPermissionResultForCurrentDocument(
+                  geolocation_permission_descriptor.Clone(),
+                  web_contents->GetPrimaryMainFrame()),
+              approx_only_permission_result);
+    permission_controller->RequestPermissionFromCurrentDocument(
+        web_contents->GetPrimaryMainFrame(),
+        content::PermissionRequestDescription(
+            geolocation_permission_descriptor.Clone(),
+            /*user_gesture=*/true),
+        callback.Get());
+
+    run_loop.Run();
+  }
 }
 
 }  // anonymous namespace

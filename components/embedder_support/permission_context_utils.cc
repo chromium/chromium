@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_permission_context.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
@@ -23,7 +24,6 @@
 #include "device/vr/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -81,12 +81,12 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           browser_context,
           std::move(
               delegates.clipboard_sanitized_write_permission_context_delegate));
-#if BUILDFLAG(IS_ANDROID)
-  auto location_context_key =
+  ContentSettingsType location_context_key =
       base::FeatureList::IsEnabled(
           content_settings::features::kApproximateGeolocationPermission)
           ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
           : ContentSettingsType::GEOLOCATION;
+#if BUILDFLAG(IS_ANDROID)
   permission_contexts[location_context_key] =
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
           browser_context,
@@ -94,18 +94,18 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
           is_regular_profile);
 #elif BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
-    permission_contexts[ContentSettingsType::GEOLOCATION] =
+    permission_contexts[location_context_key] =
         std::make_unique<permissions::GeolocationPermissionContextSystem>(
             browser_context,
             std::move(delegates.geolocation_permission_context_delegate));
   } else {
-    permission_contexts[ContentSettingsType::GEOLOCATION] =
+    permission_contexts[location_context_key] =
         std::make_unique<permissions::GeolocationPermissionContext>(
             browser_context,
             std::move(delegates.geolocation_permission_context_delegate));
   }
 #else
-  permission_contexts[ContentSettingsType::GEOLOCATION] =
+  permission_contexts[location_context_key] =
       std::make_unique<permissions::GeolocationPermissionContext>(
           browser_context,
           std::move(delegates.geolocation_permission_context_delegate));
