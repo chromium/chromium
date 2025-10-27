@@ -14,6 +14,8 @@ source_set("passage_embeddings") {
 
   if (!is_android) {
     sources += [
+      "embeddings_candidate_generator.cc",
+      "embeddings_candidate_generator.h",
       "page_embeddings_service.cc",
       "page_embeddings_service.h",
       "page_embeddings_service_factory.cc",
