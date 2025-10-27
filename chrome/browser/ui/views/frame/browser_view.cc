@@ -5064,8 +5064,7 @@ void BrowserView::AddedToWidget() {
   auto* side_panel_coordinator =
       browser_->GetFeatures().side_panel_coordinator();
   contents_height_side_panel_->AddObserver(side_panel_coordinator);
-  // TODO(crbug.com/445442616): Add toolbar height side panel observation once
-  // SidePanelCoordinator fully supports the toolbar panel type.
+  toolbar_height_side_panel_->AddObserver(side_panel_coordinator);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()
