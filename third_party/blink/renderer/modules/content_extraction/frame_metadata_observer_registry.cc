@@ -405,13 +405,15 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
     }
 
     auto& last_sent_meta_tags = it.value->last_sent_meta_tags;
-    if (mojo::Equals(last_sent_meta_tags, current_meta_tags)) {
+    if (it.value->sent_initial_update &&
+        mojo::Equals(last_sent_meta_tags, current_meta_tags)) {
       continue;
     }
 
     auto* observer = metatags_observers_.Get(remote_id);
     observer->OnMetaTagsChanged(mojo::Clone(current_meta_tags));
     last_sent_meta_tags = std::move(current_meta_tags);
+    it.value->sent_initial_update = true;
   }
 }
 

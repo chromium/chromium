@@ -349,7 +349,8 @@ TEST_F(FrameMetadataObserverRegistryTest, MetaTagsNameMismatch) {
                                  observer.BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observer.future().IsReady());
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Take().empty());
 }
 
 TEST_F(FrameMetadataObserverRegistryTest, NoMetaTags) {
@@ -365,7 +366,25 @@ TEST_F(FrameMetadataObserverRegistryTest, NoMetaTags) {
                                  observer.BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
-  EXPECT_FALSE(observer.future().IsReady());
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Take().empty());
+}
+
+TEST_F(FrameMetadataObserverRegistryTest,
+       MetaTagsInitialUpdateWithNoMatchingTags) {
+  LoadHTML("<body></body>");
+  BindRegistry();
+
+  MockMetaTagsObserver observer;
+  Vector<String> names_to_observe;
+  names_to_observe.push_back("author");
+
+  registry_->AddMetaTagsObserver(names_to_observe,
+                                 observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Take().empty());
 }
 
 TEST_F(FrameMetadataObserverRegistryTest, MetaTagsUpdated) {
@@ -539,8 +558,9 @@ TEST_F(FrameMetadataObserverRegistryTest, MetaTagsAddedWithHead) {
                                  observer.BindNewPipeAndPassRemote());
   test::RunPendingTasks();
 
-  // Initially, no head and no meta tags.
-  EXPECT_FALSE(observer.future().IsReady());
+  // Initially, no head and no meta tags. An empty update should be sent.
+  ASSERT_TRUE(observer.future().IsReady());
+  EXPECT_TRUE(observer.future().Take().empty());
 
   // Dynamically add a head and meta tag.
   auto* head = MakeGarbageCollected<HTMLHeadElement>(*GetDocument());

@@ -114,11 +114,14 @@ void PageContentMetadataObserver::DispatchMetadata() {
     if (frame_data.metadata) {
       page_metadata->frame_metadata.push_back(frame_data.metadata->Clone());
     } else {
+      const auto& url = render_frame_host->GetLastCommittedURL();
+      if (url.is_empty() || url.IsAboutBlank()) {
+        continue;
+      }
       // Create a representation for a frame with no matching meta tags.
       auto frame_metadata = blink::mojom::FrameMetadata::New();
       frame_metadata->url = GetURLForFrameMetadata(
-          render_frame_host->GetLastCommittedURL(),
-          render_frame_host->GetLastCommittedOrigin());
+          url, render_frame_host->GetLastCommittedOrigin());
       page_metadata->frame_metadata.push_back(std::move(frame_metadata));
     }
   }

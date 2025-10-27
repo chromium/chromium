@@ -256,6 +256,7 @@ class MODULES_EXPORT FrameMetadataObserverRegistry final
 
     HeapVector<String> names_to_observe;
     Vector<mojom::blink::MetaTagPtr> last_sent_meta_tags;
+    bool sent_initial_update = false;
   };
 
   // Data for each metatags observer, keyed by RemoteSetElementId.
