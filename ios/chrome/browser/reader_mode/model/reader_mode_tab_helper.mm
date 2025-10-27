@@ -23,6 +23,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
@@ -106,27 +107,6 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client,
           ->GetPrimaryModel();
   return translate_client->GetTranslateManager()->GetTargetLanguageForDisplay(
       translate_prefs.get(), language_model);
-}
-
-// Applies the language settings from the Reading mode page.
-void ApplyLanguageSettingsFromClient(ChromeIOSTranslateClient* translate_client,
-                                     web::WebState* reader_mode_web_state) {
-  ChromeIOSTranslateClient* content_translate_client =
-      ChromeIOSTranslateClient::FromWebState(reader_mode_web_state);
-  if (IsTranslateEnabled(content_translate_client)) {
-    // Ensure the language settings are updated with the latest version from
-    // Reading Mode.
-    const std::string source_code =
-        GetSourceLanguageCode(content_translate_client);
-    const std::string target_code =
-        GetTargetLanguageCode(content_translate_client, reader_mode_web_state);
-
-    translate::TranslateManager* translate_manager =
-        translate_client->GetTranslateManager();
-    translate_manager->ShowTranslateUI(source_code, target_code,
-                                       /*auto_translate=*/true,
-                                       /*triggered_from_menu=*/true);
-  }
 }
 
 // Removes the translate infobar from the list of tracked infobars to ensure
@@ -608,17 +588,15 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
     RemoveTranslateInfobarIfExists(manager);
   }
 
-  // Display translation badge and infobar showing success state if a
-  // translation was applied before or during Reading Mode activation for active
-  // tabs.
+  // Display translation badge if a translation was applied before or
+  // during Reading Mode activation for active tabs.
   if (IsReaderModeTranslationAvailable()) {
     switch (reason) {
       case ReaderModeDeactivationReason::kNavigationDeactivated:
       case ReaderModeDeactivationReason::kUserDeactivated: {
         ChromeIOSTranslateClient* translate_client =
             ChromeIOSTranslateClient::FromWebState(web_state_.get());
-        ApplyLanguageSettingsFromClient(translate_client,
-                                        reader_mode_web_state_.get());
+        ApplyLanguageSettingsFromClient(translate_client);
         break;
       }
       case ReaderModeDeactivationReason::kDistillationFailureDeactivated: {
@@ -669,10 +647,40 @@ void ReaderModeTabHelper::CancelDistillation() {
       ReaderModeDeactivationReason::kDistillationFailureDeactivated);
 }
 
+void ReaderModeTabHelper::ApplyLanguageSettingsFromClient(
+    ChromeIOSTranslateClient* translate_client) {
+  ChromeIOSTranslateClient* content_translate_client =
+      ChromeIOSTranslateClient::FromWebState(reader_mode_web_state_.get());
+  if (IsTranslateEnabled(content_translate_client)) {
+    // Suppresses the translate infobar that would be displayed following the
+    // translation of the page.
+    InfobarOverlayRequestInserter::FromWebState(web_state_.get())
+        ->SuppressNextInfobarOfType(InfobarType::kInfobarTypeTranslate);
+
+    // Ensure the language settings are updated with the latest version from
+    // Reading Mode.
+    const std::string source_code =
+        GetSourceLanguageCode(content_translate_client);
+    const std::string target_code = GetTargetLanguageCode(
+        content_translate_client, reader_mode_web_state_.get());
+
+    translate::TranslateManager* translate_manager =
+        translate_client->GetTranslateManager();
+    translate_manager->ShowTranslateUI(source_code, target_code,
+                                       /*auto_translate=*/true,
+                                       /*triggered_from_menu=*/true);
+  }
+}
+
 void ReaderModeTabHelper::ApplyLanguageSettingsFromSource() {
   ChromeIOSTranslateClient* translate_client =
       ChromeIOSTranslateClient::FromWebState(web_state_.get());
   if (source_translation_state_.is_original_source_translated) {
+    // Suppresses the translate infobar that would be displayed following the
+    // translation of the page.
+    InfobarOverlayRequestInserter::FromWebState(web_state_.get())
+        ->SuppressNextInfobarOfType(InfobarType::kInfobarTypeTranslate);
+
     translate::TranslateManager* translate_manager =
         translate_client->GetTranslateManager();
     translate_manager->ShowTranslateUI(source_translation_state_.source_code,

@@ -313,6 +313,8 @@ void TestResponseProvider::GetLanguageResponse(
   config.features_enabled.push_back(kEnableReaderModeTranslationWithInfobar);
 
   if ([self isRunningTest:@selector(testTranslateInReaderMode)] ||
+      [self isRunningTest:@selector(testTranslateAfterReaderMode)] ||
+      [self isRunningTest:@selector(testTranslatePriorToReaderMode)] ||
       [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)]) {
     config.features_enabled.push_back(kEnableReaderMode);
@@ -1305,9 +1307,7 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that triggering translate after opening and closing reader mode works.
-// TODO(crbug.com/430489596): `kTranslateInfobarModalTranslateButtonAXId` cannot
-// be found occasionally. This test should be reenabled.
-- (void)DISABLED_testTranslateAfterReaderMode {
+- (void)testTranslateAfterReaderMode {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
@@ -1341,18 +1341,19 @@ void TestResponseProvider::GetLanguageResponse(
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
-  // Open modal.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(kBadgeButtonTranslateAccessibilityIdentifier)]
-      performAction:grey_tap()];
+  // Translate the page.
+  [ChromeEarlGreyUI openToolsMenu];
 
-  // Translate.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(
-                                kTranslateInfobarModalTranslateButtonAXId),
-                            grey_accessibilityTrait(UIAccessibilityTraitButton),
-                            nil)] performAction:grey_tap()];
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuTranslateId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
 
   // Verify page is translated.
   GREYAssertTrue([self isAfterTranslateBannerVisible],
@@ -1362,7 +1363,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that translation applied prior to Reader Mode is displayed and that
 // translate infobars are suppressed when reader mode is activated.
-- (void)testTranslateInReaderMode {
+- (void)testTranslatePriorToReaderMode {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
@@ -1428,6 +1429,90 @@ void TestResponseProvider::GetLanguageResponse(
                      kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+}
+
+// Tests that translation settings in Reader Mode is displayed and that
+// translation is applied when selected.
+- (void)testTranslateInReaderMode {
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
+  }
+#endif
+  // Set up server with a French page.
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPageDistillablePath));
+
+  // Load URL.
+  [ChromeEarlGrey loadURL:URL];
+
+  // Open Reader Mode.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
+
+  // Verify Reader Mode is active.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Select translation in the tools menu.
+  [ChromeEarlGreyUI openToolsMenu];
+
+  id<GREYMatcher> tableViewMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuTranslateId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+
+  // Check Translate banner is presented.
+  GREYAssertTrue([self isBeforeTranslateBannerVisible],
+                 @"Before Translate banner was not found");
+  // Tap banner button to translate.
+  GREYAssertTrue([self selectTranslateButton],
+                 @"Could not tap on Translate banner action button");
+
+  // Verify page is translated.
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+
+  // Close Reader Mode.
+  [ChromeEarlGrey hideReaderMode];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Verify badge is shown and page is translated.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+
+  // The "Show Original?" banner should not be visible.
+  GREYAssertFalse([self isAfterTranslateBannerVisible],
+                  @"Show Original Banner was found.");
+
+  // Select translation in the tools menu.
+  [ChromeEarlGreyUI openToolsMenu];
+
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuTranslateId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+
+  // The "Show Original?" banner should be visible again.
+  GREYAssertTrue([self isAfterTranslateBannerVisible],
+                 @"Show Original Banner was not found.");
 }
 
 // Tests that if the original page is not translated, the Reading Mode page is

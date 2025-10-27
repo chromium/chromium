@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -178,6 +179,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Applies the language settings from the original source page.
   void ApplyLanguageSettingsFromSource();
+
+  // Applies the language settings from the `translate_client`.
+  void ApplyLanguageSettingsFromClient(
+      ChromeIOSTranslateClient* translate_client);
 
   // Script to be used to initialise the scrolling position when the Reader mode
   // content has loaded.
