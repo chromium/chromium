@@ -2936,6 +2936,11 @@ if (!is_robolectric && enable_java_templates) {
           deps += [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
 
+          if (!defined(enable_proguard_checks) && defined(testonly) && testonly) {
+            # Ignore -checkdiscard and -checkenumunboxed failures.
+            enable_proguard_checks = false
+          }
+
           # Must not be set via write_build_config, because that will cause it
           # to be picked up by test apks that use apk_under_test.
           if (!_assertions_implicitly_enabled && !enable_java_asserts &&
@@ -3822,7 +3827,6 @@ if (!is_robolectric && enable_java_templates) {
         if (defined(invoker.proguard_configs)) {
           proguard_configs += invoker.proguard_configs
         }
-        enable_proguard_checks = false
         if (defined(invoker.final_apk_path)) {
           _final_apk_path = invoker.final_apk_path
         } else {
