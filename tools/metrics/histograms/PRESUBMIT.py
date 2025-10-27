@@ -15,7 +15,6 @@ import sys
 import tempfile
 from typing import Any, Callable, List, Type
 
-
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
 # anything with a Check prefix as a function.
 class HistogramsPresubmitCheckType(Enum):
@@ -353,21 +352,30 @@ def ExecuteCheckBooleansAreEnums(input_api, output_api):
 
 def CheckRemovedSegmentationHistograms(input_api, output_api):
   """Checks if any histogram used by segmentation platform is removed."""
-  # Only run check if XML files are changed.
-  if not any(f.LocalPath().endswith('.xml')
-             for f in input_api.AffectedFiles(include_deletes=True)):
+  affected_xml_files = [
+      f for f in input_api.AffectedFiles(include_deletes=True)
+      if 'histograms.xml' in f.LocalPath()
+  ]
+  if not affected_xml_files:
     return []
 
+  import print_histogram_names
   removed_histograms = set()
-  try:
-    import print_histogram_names
-    # get_histogram_diff compares the working directory with HEAD, which is
-    # what we wantfor presubmit.
-    _added_names, removed_names = print_histogram_names.get_histogram_diff(
-        'HEAD~')
-    removed_histograms = set(removed_names)
-  except Exception as e:
-    return [output_api.PresubmitError(f'Error getting histogram diff: {e}')]
+  for f in affected_xml_files:
+    old_histograms = set()
+    if f.Action() != 'A':
+      old_histograms = print_histogram_names.get_names_from_contents(
+          f.OldContents())
+
+    new_histograms = set()
+    if f.Action() != 'D':
+      new_histograms = print_histogram_names.get_names_from_contents(
+          f.NewContents())
+
+    removed_histograms.update(old_histograms - new_histograms)
+
+  if not removed_histograms:
+    return []
 
   # It's important to add the directory of generate_histogram_list.py to
   # sys.path. PRESUBMIT.py is in src/tools/metrics/histograms.
