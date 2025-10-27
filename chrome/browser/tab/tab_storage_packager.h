@@ -44,15 +44,14 @@ class TabStoragePackager {
                                            StorageIdMapping& mapping);
 
  protected:
-  virtual std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
-      const TabGroupTabCollection* collection,
-      StorageIdMapping& mapping) = 0;
-
   virtual std::unique_ptr<Payload> PackageTabStripCollectionData(
       const TabStripCollection* collection,
       StorageIdMapping& mapping) = 0;
 
  private:
+  std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
+      const TabGroupTabCollection* collection,
+      StorageIdMapping& mapping);
   std::unique_ptr<Payload> PackageSplitTabCollectionData(
       const SplitTabCollection* collection,
       StorageIdMapping& mapping);

@@ -64,10 +64,6 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  std::unique_ptr<Payload> PackageTabGroupTabCollectionData(
-      const TabGroupTabCollection* collection,
-      StorageIdMapping& mapping) override;
-
   std::unique_ptr<Payload> PackageTabStripCollectionData(
       const TabStripCollection* collection,
       StorageIdMapping& mapping) override;

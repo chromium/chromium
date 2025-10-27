@@ -2932,6 +2932,8 @@ static_library("browser") {
       "android/tab_favicon.h",
       "android/tab_group_android.cc",
       "android/tab_group_android.h",
+      "android/tab_group_collection_data_android.cc",
+      "android/tab_group_collection_data_android.h",
       "android/tab_group_features.cc",
       "android/tab_group_features.h",
       "android/tab_interface_android.cc",

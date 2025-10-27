@@ -35,22 +35,6 @@
 namespace tabs {
 static const int kTabStoragePackagerAndroidVersion = 1;
 
-// A payload of data representing TabGroupTabCollection.
-class TabGroupCollectionStorageData : public Payload {
- public:
-  explicit TabGroupCollectionStorageData(tabs_pb::TabGroupCollectionState state)
-      : state_(std::move(state)) {}
-
-  ~TabGroupCollectionStorageData() override = default;
-
-  std::string SerializePayload() const override {
-    return state_.SerializeAsString();
-  }
-
- private:
-  tabs_pb::TabGroupCollectionState state_;
-};
-
 // A payload of data representing TabStripCollection.
 class TabStripCollectionStorageData : public Payload {
  public:
@@ -95,24 +79,6 @@ TabStoragePackagerAndroid::PackageTabStripCollectionData(
       reinterpret_cast<TabStripCollectionStorageData*>(ptr_value);
 
   return base::WrapUnique(data);
-}
-
-std::unique_ptr<Payload>
-TabStoragePackagerAndroid::PackageTabGroupTabCollectionData(
-    const TabGroupTabCollection* collection,
-    StorageIdMapping& mapping) {
-  tabs_pb::TabGroupCollectionState state;
-  const base::Token group_id = collection->GetTabGroupId().token();
-  state.set_group_id_high(group_id.high());
-  state.set_group_id_low(group_id.low());
-
-  const tab_groups::TabGroupVisualData* visual_data =
-      collection->GetTabGroup()->visual_data();
-  state.set_color(static_cast<int32_t>(visual_data->color()));
-  state.set_is_collapsed(visual_data->is_collapsed());
-  state.set_title(base::UTF16ToUTF8(visual_data->title()));
-
-  return std::make_unique<TabGroupCollectionStorageData>(std::move(state));
 }
 
 long TabStoragePackagerAndroid::ConsolidateTabData(
