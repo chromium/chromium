@@ -8,6 +8,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
@@ -222,13 +223,13 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   ImageModel icon;
   switch (state.controller) {
     case kActor:
-      text = TAKE_OVER_TASK_TEXT;
+      text = l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL);
       icon = ImageModel::FromVectorIcon(vector_icons::kPauseIcon,
                                         ::ui::kColorLabelForeground,
                                         kHandoffButtonIconSize);
       break;
     case kClient:
-      text = GIVE_TASK_BACK_TEXT;
+      text = l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_LABEL);
       icon = ImageModel::FromVectorIcon(vector_icons::kPlayArrowIcon,
                                         ::ui::kColorLabelForeground,
                                         kHandoffButtonIconSize);

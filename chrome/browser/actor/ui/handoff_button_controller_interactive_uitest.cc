@@ -8,6 +8,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +28,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/focus/focus_manager.h"
@@ -167,9 +169,10 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
       ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
-      InAnyContext(
-          CheckViewProperty(HandoffButtonController::kHandoffButtonElementId,
-                            &views::LabelButton::GetText, TAKE_OVER_TASK_TEXT)),
+      InAnyContext(CheckViewProperty(
+          HandoffButtonController::kHandoffButtonElementId,
+          &views::LabelButton::GetText,
+          l10n_util::GetStringUTF16(IDS_TAKE_OVER_TASK_LABEL))),
       // Start polling the button's text property.
       InAnyContext(PollViewProperty(
           kButtonTextState, HandoffButtonController::kHandoffButtonElementId,
@@ -178,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
           PressButton(HandoffButtonController::kHandoffButtonElementId)),
       // Verify the text change on the button. This waits for the
       // notification chain and UI update to complete.
-      WaitForState(kButtonTextState, GIVE_TASK_BACK_TEXT));
+      WaitForState(kButtonTextState,
+                   l10n_util::GetStringUTF16(IDS_GIVE_TASK_BACK_LABEL)));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
