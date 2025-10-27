@@ -110,6 +110,7 @@ constexpr char kAuthServiceCalendarName[] = "auth_service_calendar";
 constexpr char kAuthServiceGlanceablesClassroomName[] =
     "auth_service_glanceables_classroom";
 constexpr char kAuthServiceTasksClientName[] = "auth_service_tasks_client";
+constexpr char kYouTubeMusicName[] = "youtube_music";
 
 }  // namespace
 
@@ -474,6 +475,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
           /*name=*/kAuthServiceTasksClientName,
           /*scopes=*/{GaiaConstants::kTasksReadOnlyOAuth2Scope,
                       GaiaConstants::kTasksOAuth2Scope});
+    case OAuthConsumerId::kYouTubeMusic:
+      return OAuthConsumer(
+          /*name=*/kYouTubeMusicName,
+          /*scopes=*/{GaiaConstants::kYouTubeMusicOAuth2Scope});
   }
   NOTREACHED();
 }

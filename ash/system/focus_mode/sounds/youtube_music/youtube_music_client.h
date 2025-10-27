@@ -24,7 +24,6 @@ class ASH_EXPORT YouTubeMusicClient {
   // client.
   using CreateRequestSenderCallback =
       base::RepeatingCallback<std::unique_ptr<google_apis::RequestSender>(
-          const std::vector<std::string>& scopes,
           const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)>;
 
   explicit YouTubeMusicClient(

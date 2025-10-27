@@ -769,6 +769,7 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="Auth Service (Calendar)"/>
   <int value="75" label="Auth Service (Glanceables Classroom)"/>
   <int value="76" label="Auth Service (Tasks Client)"/>
+  <int value="77" label="YouTube Music"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

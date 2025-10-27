@@ -34,16 +34,13 @@ BASE_FEATURE(kFocusModeOldVersion, base::FEATURE_DISABLED_BY_DEFAULT);
 // of it expiring.
 constexpr base::TimeDelta kCertificateBuffer = base::Hours(36);
 
-// This will be used as a callback that is passed to the client to generate
-// `google_apis::RequestSender`. The request sender class implements the
-// OAuth 2.0 protocol, so we do not need to do anything extra for authentication
-// and authorization.
-//   `scopes`:
-//     The OAuth scopes.
+// This will be used as a callback that is passed to the youtube music client to
+// generate `google_apis::RequestSender`. The request sender class implements
+// the OAuth 2.0 protocol, so we do not need to do anything extra for
+// authentication and authorization.
 //   `traffic_annotation_tag`:
 //     It documents the network request for system admins and regulators.
-std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
-    const std::vector<std::string>& scopes,
+std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForYouTubeMusic(
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   signin::IdentityManager* identity_manager =
@@ -55,7 +52,8 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForClient(
       std::make_unique<google_apis::AuthService>(
           identity_manager,
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-          url_loader_factory, scopes);
+          url_loader_factory,
+          signin::OAuthConsumerId::kYouTubeMusic);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -128,7 +126,7 @@ ChromeFocusModeDelegate::CreateYouTubeMusicClient(
     const AccountId& account_id,
     const std::string& device_id) {
   return std::make_unique<ash::youtube_music::YouTubeMusicClient>(
-      base::BindRepeating(&CreateRequestSenderForClient),
+      base::BindRepeating(&CreateRequestSenderForYouTubeMusic),
       std::make_unique<RequestSignerImpl>(account_id, device_id));
 }
 
