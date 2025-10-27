@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -2075,6 +2076,166 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
   // TODO(crbug.com/40768859): Ideally, this would be recoverable.
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NETWORK_CHANGED));
   EXPECT_FALSE(session);
+}
+
+TEST_F(SpdySessionPoolTest, NotifyConnectionChangeOnSessionClose) {
+  const char kTestHost[] = "www.foo.com";
+  const int kTestPort = 443;
+
+  HostPortPair test_host_port_pair(kTestHost, kTestPort);
+  SpdySessionKey test_key(test_host_port_pair, PRIVACY_MODE_DISABLED,
+                          ProxyChain::Direct(), SessionUsage::kDestination,
+                          SocketTag(), NetworkAnonymizationKey(),
+                          SecureDnsPolicy::kAllow,
+                          /*disable_cert_verification_network_fetches=*/false);
+
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+  };
+
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  SSLSocketDataProvider ssl(SYNCHRONOUS, OK);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl);
+
+  // The test only works when this feature is enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kConnectionKeepAliveForHttp2);
+
+  CreateNetworkSession();
+
+  auto connection_change_observer =
+      std::make_unique<TestConnectionChangeObserver>();
+
+  // Create a session with the ConnectionChangeObserver.
+  auto connection = std::make_unique<ClientSocketHandle>();
+  TestCompletionCallback callback;
+  NetLogWithSource net_log;
+  scoped_refptr<ClientSocketPool::SocketParams> socket_params =
+      base::MakeRefCounted<ClientSocketPool::SocketParams>(
+          /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  int rv = connection->Init(
+      ClientSocketPool::GroupId(
+          url::SchemeHostPort(url::kHttpsScheme,
+                              test_key.host_port_pair().HostForURL(),
+                              test_key.host_port_pair().port()),
+          test_key.privacy_mode(), NetworkAnonymizationKey(),
+          SecureDnsPolicy::kAllow,
+          /*disable_cert_network_fetches=*/false),
+      socket_params, /*proxy_annotation_tag=*/std::nullopt, MEDIUM,
+      test_key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
+      callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+      /*fail_if_alias_requires_proxy_override=*/false,
+      http_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+                                   ProxyChain::Direct()),
+      net_log);
+  rv = callback.GetResult(rv);
+  EXPECT_THAT(rv, IsOk());
+
+  base::WeakPtr<SpdySession> session;
+  auto connection_management_config = ConnectionManagementConfig();
+  connection_management_config.connection_change_observer =
+      connection_change_observer.get();
+  rv = spdy_session_pool_->CreateAvailableSessionFromSocketHandle(
+      test_key, std::move(connection), net_log,
+      MultiplexedSessionCreationInitiator::kUnknown, &session,
+      connection_management_config);
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(session);
+
+  // Flush the SpdySession::OnReadComplete() task.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that we have a session.
+  EXPECT_TRUE(HasSpdySession(spdy_session_pool_, test_key));
+
+  // Close the session.
+  session->CloseSessionOnError(ERR_ABORTED, "test");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, connection_change_observer->session_closed());
+}
+
+TEST_F(SpdySessionPoolTest, NotifyConnectionChangeOnConnectionFailure) {
+  const char kTestHost[] = "www.foo.com";
+  const int kTestPort = 443;
+
+  HostPortPair test_host_port_pair(kTestHost, kTestPort);
+  SpdySessionKey test_key(test_host_port_pair, PRIVACY_MODE_DISABLED,
+                          ProxyChain::Direct(), SessionUsage::kDestination,
+                          SocketTag(), NetworkAnonymizationKey(),
+                          SecureDnsPolicy::kAllow,
+                          /*disable_cert_verification_network_fetches=*/false);
+
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
+  };
+
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  auto ssl = std::make_unique<SSLSocketDataProvider>(SYNCHRONOUS, OK);
+  // This will cause SpdySession::HasAcceptableTransportSecurity() to return
+  // false.
+  ssl->ssl_info.connection_status = 0;
+  session_deps_.socket_factory->AddSSLSocketDataProvider(ssl.get());
+  ssl_data_vector_.push_back(std::move(ssl));
+
+  // The test only works when these features are enabled.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {net::features::kSpdySessionForProxyAdditionalChecks,
+       net::features::kConnectionKeepAliveForHttp2},
+      {});
+
+  CreateNetworkSession();
+
+  auto connection_change_observer =
+      std::make_unique<TestConnectionChangeObserver>();
+
+  // Create a session with the ConnectionChangeObserver.
+  auto connection = std::make_unique<ClientSocketHandle>();
+  TestCompletionCallback callback;
+  NetLogWithSource net_log;
+  scoped_refptr<ClientSocketPool::SocketParams> socket_params =
+      base::MakeRefCounted<ClientSocketPool::SocketParams>(
+          /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
+  int rv = connection->Init(
+      ClientSocketPool::GroupId(
+          url::SchemeHostPort(url::kHttpsScheme,
+                              test_key.host_port_pair().HostForURL(),
+                              test_key.host_port_pair().port()),
+          test_key.privacy_mode(), NetworkAnonymizationKey(),
+          SecureDnsPolicy::kAllow,
+          /*disable_cert_network_fetches=*/false),
+      socket_params, /*proxy_annotation_tag=*/std::nullopt, MEDIUM,
+      test_key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
+      callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+      /*fail_if_alias_requires_proxy_override=*/false,
+      http_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+                                   ProxyChain::Direct()),
+      net_log);
+  rv = callback.GetResult(rv);
+  EXPECT_THAT(rv, IsOk());
+
+  base::WeakPtr<SpdySession> session;
+  auto connection_management_config = ConnectionManagementConfig();
+  connection_management_config.connection_change_observer =
+      connection_change_observer.get();
+  rv = spdy_session_pool_->CreateAvailableSessionFromSocketHandle(
+      test_key, std::move(connection), net_log,
+      MultiplexedSessionCreationInitiator::kUnknown, &session,
+      connection_management_config);
+  EXPECT_THAT(rv, IsError(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY));
+  EXPECT_FALSE(session);
+
+  EXPECT_EQ(1, connection_change_observer->connection_failed());
 }
 
 }  // namespace net

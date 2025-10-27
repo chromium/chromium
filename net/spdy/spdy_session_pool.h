@@ -468,6 +468,14 @@ class NET_EXPORT SpdySessionPool
       const std::vector<IPEndPoint>& ip_endpoints,
       const std::set<std::string>& dns_aliases);
 
+  // Methods to notify the ConnectionChangeObserver about connection changing
+  // events. `NotifyOnNetworkEvent` will notify all of the notifiers on network
+  // change events, since it affects all of the connections. Otherwise, the
+  // events are specific to each connection.
+  void NotifyOnNetworkEvent(net::NetworkChangeEvent event);
+  void NotifyOnSessionClosed(const SpdySessionKey& session_key);
+  void NotifyOnConnectionFailure(const SpdySessionKey& session_key);
+
   raw_ptr<HttpServerProperties> http_server_properties_;
 
   raw_ptr<TransportSecurityState> transport_security_state_;

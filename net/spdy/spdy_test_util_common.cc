@@ -1004,4 +1004,22 @@ SHA256HashValue GetTestHashValue(uint8_t label) {
 }
 
 }  // namespace test
+
+TestConnectionChangeObserver::TestConnectionChangeObserver() = default;
+TestConnectionChangeObserver::~TestConnectionChangeObserver() = default;
+
+void TestConnectionChangeObserver::OnSessionClosed() {
+  session_closed_++;
+}
+
+void TestConnectionChangeObserver::OnConnectionFailed() {
+  connection_failed_++;
+}
+
+void TestConnectionChangeObserver::OnNetworkEvent(
+    net::NetworkChangeEvent event) {
+  network_event_++;
+  last_network_event_ = event;
+}
+
 }  // namespace net

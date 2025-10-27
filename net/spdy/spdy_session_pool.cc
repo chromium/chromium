@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -487,6 +488,8 @@ void SpdySessionPool::RemoveUnavailableSession(
   CHECK(it != sessions_.end());
   std::unique_ptr<SpdySession> owned_session(*it);
   sessions_.erase(it);
+
+  NotifyOnSessionClosed(owned_session->spdy_session_key());
 }
 
 // Make a copy of |sessions_| in the Close* functions below to avoid
@@ -711,6 +714,7 @@ void SpdySessionPool::CloseCurrentSessionsHelper(Error error,
 
     session->CloseSessionOnError(error, description);
 
+    NotifyOnSessionClosed(session->spdy_session_key());
     DCHECK(!IsSessionAvailable(session));
     DCHECK(!session || session->IsDraining());
   }
@@ -794,6 +798,7 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
   if (!available_session->HasAcceptableTransportSecurity()) {
     available_session->CloseSessionOnError(
         ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, "");
+    NotifyOnConnectionFailure(key);
     return base::unexpected(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY);
   }
 
@@ -801,6 +806,7 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
   if (rv != OK) {
     DCHECK_NE(ERR_IO_PENDING, rv);
     // ParseAlps() already closed the connection on error.
+    NotifyOnConnectionFailure(key);
     return base::unexpected(rv);
   }
 
@@ -947,6 +953,30 @@ void SpdySessionPool::AddConnectionManagementConfig(
     }
     connection_change_notifier_map_[key]->AddObserver(
         connection_management_config.connection_change_observer);
+  }
+}
+
+void SpdySessionPool::NotifyOnNetworkEvent(net::NetworkChangeEvent event) {
+  // TODO(crbug.com/453308537): We currently do not support
+  // `NotifyOnNetworkEvent` since `SpdySessionPool` does not observe
+  // `NetworkObserver`. We should add support, but for the time being, we can
+  // get similar behavior via the `IPAddressObserver`, which would close the
+  // connection on network changes.
+  NOTIMPLEMENTED() << "SpdySessionPool does not support NotifyOnNetworkEvent";
+}
+
+void SpdySessionPool::NotifyOnSessionClosed(const SpdySessionKey& session_key) {
+  auto notifier = connection_change_notifier_map_.find(session_key);
+  if (notifier != connection_change_notifier_map_.end()) {
+    notifier->second->OnSessionClosed();
+  }
+}
+
+void SpdySessionPool::NotifyOnConnectionFailure(
+    const SpdySessionKey& session_key) {
+  auto notifier = connection_change_notifier_map_.find(session_key);
+  if (notifier != connection_change_notifier_map_.end()) {
+    notifier->second->OnConnectionFailed();
   }
 }
 

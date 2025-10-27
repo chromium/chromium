@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -497,6 +498,32 @@ namespace test {
 SHA256HashValue GetTestHashValue(uint8_t label);
 
 }  // namespace test
+
+class TestConnectionChangeObserver : public ConnectionChangeNotifier::Observer {
+ public:
+  TestConnectionChangeObserver();
+  ~TestConnectionChangeObserver() override;
+
+  void OnSessionClosed() override;
+
+  void OnConnectionFailed() override;
+
+  void OnNetworkEvent(net::NetworkChangeEvent event) override;
+
+  int session_closed() const { return session_closed_; }
+  int connection_failed() const { return connection_failed_; }
+  int network_event() const { return network_event_; }
+  std::optional<net::NetworkChangeEvent> last_network_event() const {
+    return last_network_event_;
+  }
+
+ private:
+  int session_closed_ = 0;
+  int connection_failed_ = 0;
+  int network_event_ = 0;
+  std::optional<net::NetworkChangeEvent> last_network_event_;
+};
+
 }  // namespace net
 
 #endif  // NET_SPDY_SPDY_TEST_UTIL_COMMON_H_
