@@ -30,7 +30,6 @@ SpotlightService::~SpotlightService() = default;
 
 std::unique_ptr<google_apis::RequestSender>
 SpotlightService::CreateRequestSender() {
-  std::vector<std::string> scopes = {kSchoolToolsAuthScope};
   auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
   auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
 
@@ -40,7 +39,8 @@ SpotlightService::CreateRequestSender() {
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory, scopes);
+      url_loader_factory,
+      signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth);
 
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,

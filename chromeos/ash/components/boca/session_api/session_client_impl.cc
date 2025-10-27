@@ -38,15 +38,14 @@ SessionClientImpl::~SessionClientImpl() = default;
 
 std::unique_ptr<google_apis::RequestSender>
 SessionClientImpl::CreateRequestSender() {
-  std::vector<std::string> scopes = {kSchoolToolsAuthScope};
-
   CHECK(url_loader_factory_);
   CHECK(identity_manager_);
 
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager_,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory_, scopes);
+      url_loader_factory_,
+      signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth);
 
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory_,

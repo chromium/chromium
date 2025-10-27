@@ -38,11 +38,11 @@ std::unique_ptr<google_apis::RequestSender> CreateSender(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  std::vector<std::string> scopes = {kSchoolToolsAuthScope};
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory, scopes);
+      url_loader_factory,
+      signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory,
       base::ThreadPool::CreateSequencedTaskRunner(
