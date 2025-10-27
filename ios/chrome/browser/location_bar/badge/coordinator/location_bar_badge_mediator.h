@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 
 @protocol LocationBarBadgeConsumer;
 
@@ -18,7 +19,8 @@
 @interface LocationBarBadgeMediator
     : NSObject <BadgeViewVisibilityDelegate,
                 IncognitoBadgeViewVisibilityDelegate,
-                ReaderModeChipVisibilityDelegate>
+                ReaderModeChipVisibilityDelegate,
+                LocationBarBadgeCommands>
 
 @property(nonatomic, weak) id<LocationBarBadgeConsumer> consumer;
 

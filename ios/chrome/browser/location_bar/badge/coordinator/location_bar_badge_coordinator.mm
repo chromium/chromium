@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 
@@ -31,29 +32,34 @@
   LocationBarBadgeMediator* _locationBarBadgeMediator;
   // The mediator for contextual panel badge and chip.
   ContextualPanelEntrypointMediator* _contextualPanelEntryPointMediator;
-
   // Observer that updates LocationBarBadgeViewController for
   // fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _locationBarBadgeFullscreenUIUpdater;
-
   // The AnimatedFullscreenDisabler to disable fullscreen momentarily as the
   // large entrypoint is shown.
   std::unique_ptr<AnimatedScopedFullscreenDisabler> _animatedFullscreenDisabler;
+  // Command dispatcher.
+  CommandDispatcher* _dispatcher;
 }
 
 - (void)start {
   _viewController = [[LocationBarBadgeViewController alloc] init];
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
+  _dispatcher = self.browser->GetCommandDispatcher();
   if (IsContextualPanelEnabled()) {
     [self createContextualPanelEntryPointMediator];
   }
   _locationBarBadgeMediator = [[LocationBarBadgeMediator alloc] init];
   _locationBarBadgeMediator.consumer = _viewController;
+  [_dispatcher startDispatchingToTarget:_locationBarBadgeMediator
+                            forProtocol:@protocol(LocationBarBadgeCommands)];
 }
 
 - (void)stop {
   _viewController = nil;
   [self stopContextualPanelEntrypointMediator];
+  [_dispatcher stopDispatchingToTarget:_locationBarBadgeMediator];
+  _dispatcher = nil;
   _locationBarBadgeMediator = nil;
   _locationBarBadgeFullscreenUIUpdater = nullptr;
   _animatedFullscreenDisabler = nullptr;
@@ -102,19 +108,20 @@
 
 #pragma mark - Private
 
+// TODO(crbug.com/454351425): Remove when Contextual Panel Entry Point is
+// integrated with LocationBarBadgeMediator.
 // Creates a Contextual Panel entry point mediator.
 - (void)createContextualPanelEntryPointMediator {
   WebStateList* webStateList = self.browser->GetWebStateList();
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 
-  [dispatcher
+  [_dispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(ContextualPanelEntrypointCommands)];
 
   id<ContextualSheetCommands> contextualSheetHandler =
-      HandlerForProtocol(dispatcher, ContextualSheetCommands);
+      HandlerForProtocol(_dispatcher, ContextualSheetCommands);
   id<ContextualPanelEntrypointIPHCommands> entrypointHelpHandler =
-      HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
+      HandlerForProtocol(_dispatcher, ContextualPanelEntrypointIPHCommands);
 
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(self.profile);
@@ -136,8 +143,7 @@
 
 // Cleans up ContextualPanelEntrypointMediator.
 - (void)stopContextualPanelEntrypointMediator {
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  [dispatcher stopDispatchingToTarget:self];
+  [_dispatcher stopDispatchingToTarget:self];
 
   [_contextualPanelEntryPointMediator disconnect];
   _contextualPanelEntryPointMediator.consumer = nil;

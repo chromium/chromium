@@ -28,4 +28,10 @@
   [self.consumer setBadge:LocationBarBadgeType::kReaderMode hidden:hidden];
 }
 
+#pragma mark - LocationBarBadgeCommands
+
+- (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  [self.consumer setBadgeConfig:config];
+}
+
 @end
