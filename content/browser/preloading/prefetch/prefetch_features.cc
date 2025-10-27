@@ -72,9 +72,6 @@ const base::FeatureParam<size_t>
         &kPrefetchSchedulerTesting,
         "kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", 1};
 
-BASE_FEATURE(kPrefetchQueueingPartialFixWithoutScheduler,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchCanaryCheckerParams, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase,

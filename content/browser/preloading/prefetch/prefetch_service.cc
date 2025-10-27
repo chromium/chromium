@@ -1416,9 +1416,7 @@ void PrefetchService::MayReleasePrefetch(
 
   if (!UsePrefetchScheduler()) {
     ResetPrefetchContainer(prefetch_container);
-    if (base::FeatureList::IsEnabled(
-            features::kPrefetchQueueingPartialFixWithoutScheduler) &&
-        !active_prefetch_) {
+    if (!active_prefetch_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&PrefetchService::Prefetch,
                                     weak_method_factory_.GetWeakPtr()));
