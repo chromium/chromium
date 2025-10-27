@@ -5,8 +5,10 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVABLE_STATE_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVABLE_STATE_H_
 
+#include <optional>
 #include <ostream>
 
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -45,6 +47,78 @@ enum class PrefetchServableState {
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                         PrefetchServableState servable_state);
+
+// Action for wait loop of prefetch matching
+//
+// This represents an action of `PrefetchMatchResolver` for `PrefetchContainer`.
+//
+// Currently, this is an intermediate data and converted to
+// `PrefetchServableState`.
+//
+// Mid-term plan:
+// https://docs.google.com/document/d/1yRYq7GekwIjvvF5XRjDa6bGoba3HQKrlcw8vZIjTIo0
+class PrefetchMatchResolverAction {
+ public:
+  enum class ActionKind {
+    // The `PrefetchContainer` is not available now. Please drop and don't wait.
+    kDrop,
+    // The `PrefetchContainer` will be loaded. Please wait further events.
+    kWait,
+    // The `PrefetchContainer` is likely servebale. Please check further
+    // conditions e.g. `IsCandidateAvailable()` in prefetch_match_resolver.h,
+    // and try to start serving it.
+    kMaybeServe,
+  };
+
+  // `is_expired` must be non null iff `kind == ActionKind::kMaybeServe`.
+  PrefetchMatchResolverAction(ActionKind kind,
+                              PrefetchContainer::LoadState reason,
+                              std::optional<bool> is_expired);
+  ~PrefetchMatchResolverAction();
+
+  // Movable but not copyable.
+  PrefetchMatchResolverAction(PrefetchMatchResolverAction&& other) = default;
+  PrefetchMatchResolverAction& operator=(PrefetchMatchResolverAction&& other) =
+      default;
+  PrefetchMatchResolverAction(const PrefetchMatchResolverAction&) = delete;
+  PrefetchMatchResolverAction& operator=(const PrefetchMatchResolverAction&) =
+      delete;
+
+  PrefetchServableState ToServableState() const;
+
+  ActionKind kind() const { return kind_; }
+  PrefetchContainer::LoadState prefetch_container_load_state() const {
+    return prefetch_container_load_state_;
+  }
+  std::optional<bool> is_expired() const { return is_expired_; }
+
+ private:
+  ActionKind kind_;
+  PrefetchContainer::LoadState prefetch_container_load_state_;
+  std::optional<bool> is_expired_;
+};
+
+// Encodes servable state and matcher action to int for debug
+//
+// Cardinality for `base::UmaHistogramSparse()`:
+//
+// ```
+//    cardinality
+// <= #PrefetchServableState * #PrefetchMatchResolverAction * 2
+// =  3 * 8 * 2
+// =  48
+// ```
+//
+// For more details, see the implementation of
+// `PrefetchContainer::GetMatchResolverAction()`. (Each `case` has at most two
+// possible return values.)
+//
+// We expect `PrefetchServableState` derived from `PrefetchMatchResolverAction`
+// coicides with `GetPrefetchServableState()`, and actual cardinality is at
+// most 16.
+int GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
+    PrefetchServableState servable_state,
+    const PrefetchMatchResolverAction& match_resolver_action);
 
 }  // namespace content
 

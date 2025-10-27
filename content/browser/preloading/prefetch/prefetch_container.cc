@@ -1087,6 +1087,60 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 
 PrefetchServableState PrefetchContainer::GetServableState(
     base::TimeDelta cacheable_duration) const {
+  // We allow the differences between `GetServableStateInternal()` and
+  // `match_resolver_action.ToServableState()` because we know the latter should
+  // be the correct behavior.
+  auto is_known_allowed_exception =
+      [&](PrefetchServableState servable_state,
+          const PrefetchMatchResolverAction& match_resolver_action) {
+        // `GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug()
+        // == 2181`
+        // Failed test: PrefetchServiceTest.IneligibleRedirectCookies/*
+        //
+        // `OnDeterminedHead()` is called when redirect is judged as ineligible,
+        // with `GetNonRedirectResponseReader()` null. Ideally, we should treat
+        // this case as `PrefetchServableState::kNotServable`, but the current
+        // `GetServableStateInternal()` returns
+        // `PrefetchServableState::kShouldBlockUntilHeadReceived`. We will keep
+        // the current behavior and fix it by replacing the implementation with
+        // `GetMatchResolverAction()`.
+        //
+        // TODO(crbug.com/455448933): Do it.
+        if (servable_state ==
+                PrefetchServableState::kShouldBlockUntilHeadReceived &&
+            match_resolver_action.kind() ==
+                PrefetchMatchResolverAction::ActionKind::kDrop &&
+            match_resolver_action.prefetch_container_load_state() ==
+                PrefetchContainer::LoadState::kFailedDeterminedHead) {
+          return true;
+        }
+
+        return false;
+      };
+
+  PrefetchServableState servable_state =
+      GetServableStateInternal(cacheable_duration);
+  PrefetchMatchResolverAction match_resolver_action =
+      GetMatchResolverAction(cacheable_duration);
+
+  if (servable_state != match_resolver_action.ToServableState() &&
+      !is_known_allowed_exception(servable_state, match_resolver_action)) {
+    // We are going to switch from the old implementation
+    // (`GetServableStateInternal()`) to the new one
+    // (`match_resolver_action.ToServableState()`), and check the behavior
+    // difference, if any.
+    SCOPED_CRASH_KEY_NUMBER(
+        "PrefetchContainer", "GSS_ssma",
+        GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
+            servable_state, match_resolver_action));
+    DUMP_WILL_BE_NOTREACHED();
+  }
+
+  return servable_state;
+}
+
+PrefetchServableState PrefetchContainer::GetServableStateInternal(
+    base::TimeDelta cacheable_duration) const {
   // Servable if the non-redirect response (either fully or partially
   // received body) is servable.
   if (GetNonRedirectResponseReader() &&
@@ -1122,6 +1176,65 @@ PrefetchServableState PrefetchContainer::GetServableState(
   }
 
   return PrefetchServableState::kNotServable;
+}
+
+PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction(
+    base::TimeDelta cacheable_duration) const {
+  switch (load_state_) {
+    case LoadState::kNotStarted:
+      if (features::UsePrefetchPrerenderIntegration()) {
+        return PrefetchMatchResolverAction(
+            PrefetchMatchResolverAction::ActionKind::kWait, load_state_,
+            std::nullopt);
+      } else {
+        return PrefetchMatchResolverAction(
+            PrefetchMatchResolverAction::ActionKind::kDrop, load_state_,
+            std::nullopt);
+      }
+    case LoadState::kEligible:
+      if (features::UsePrefetchPrerenderIntegration()) {
+        return PrefetchMatchResolverAction(
+            PrefetchMatchResolverAction::ActionKind::kWait, load_state_,
+            std::nullopt);
+      } else {
+        return PrefetchMatchResolverAction(
+            PrefetchMatchResolverAction::ActionKind::kDrop, load_state_,
+            std::nullopt);
+      }
+    case LoadState::kStarted:
+      return PrefetchMatchResolverAction(
+          PrefetchMatchResolverAction::ActionKind::kWait, load_state_,
+          std::nullopt);
+    case LoadState::kDeterminedHead: {
+      const bool is_expired = false;
+      return PrefetchMatchResolverAction(
+          PrefetchMatchResolverAction::ActionKind::kMaybeServe, load_state_,
+          is_expired);
+    }
+    case LoadState::kFailedDeterminedHead:
+      return PrefetchMatchResolverAction(
+          PrefetchMatchResolverAction::ActionKind::kDrop, load_state_,
+          std::nullopt);
+    case LoadState::kCompleted: {
+      CHECK(!redirect_chain_.empty());
+      CHECK_EQ(redirect_chain_.back()->response_reader_->load_state(),
+               PrefetchResponseReader::LoadState::kCompleted);
+      // This branch corresponds to the first `if` in
+      // `GetServableStateInternal()`.
+      CHECK(GetNonRedirectResponseReader());
+      const bool is_expired =
+          !GetNonRedirectResponseReader()->Servable(cacheable_duration);
+      return PrefetchMatchResolverAction(
+          PrefetchMatchResolverAction::ActionKind::kMaybeServe, load_state_,
+          is_expired);
+    }
+    case LoadState::kFailedHeldback:
+    case LoadState::kFailedIneligible:
+    case LoadState::kFailed:
+      return PrefetchMatchResolverAction(
+          PrefetchMatchResolverAction::ActionKind::kDrop, load_state_,
+          std::nullopt);
+  }
 }
 
 PrefetchSingleRedirectHop&

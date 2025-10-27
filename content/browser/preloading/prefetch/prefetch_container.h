@@ -38,6 +38,7 @@ class Origin;
 namespace content {
 
 class PrefetchKey;
+class PrefetchMatchResolverAction;
 class PrefetchNetworkContext;
 class PrefetchRequest;
 class PrefetchResponseReader;
@@ -372,6 +373,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // `PrefetchResponseReader::CreateRequestHandler()`.
   PrefetchServableState GetServableState(
       base::TimeDelta cacheable_duration) const;
+  PrefetchMatchResolverAction GetMatchResolverAction(
+      base::TimeDelta cacheable_duration) const;
 
   // Starts blocking `PrefetchMatchResolver` until non-redirect response header
   // is determined or timeouted. `on_maybe_determined_head_callback` will be
@@ -650,6 +653,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // `OnPrefetchCompleteInternal()`.
   void OnPrefetchCompleteInternal(
       const network::URLLoaderCompletionStatus& completion_status);
+
+  PrefetchServableState GetServableStateInternal(
+      base::TimeDelta cacheable_duration) const;
 
   // The prefetch request parameters of the very first initiator/requester of
   // this prefetch at the time of request creation.
