@@ -1,0 +1,72 @@
+caption: Proxy override rules
+desc: |-
+  Setting this policy configures rules that select what proxy the browser uses depending on the destination's URL and other conditions. This policy will take precedence over proxy settings set from the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy, the <ph name="PROXY_SETTINGS_EXTENSION_API">chrome.proxy</ph> extension API or manual user settings if any is set.
+
+  Leaving the policy unset has no effect on other proxy policies or user settings.
+
+  When the browser needs to decide what proxy to use, entries of the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy are evaluated in sequence until an entry has a match for at least one of the URL hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> and if all entries in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> are met. The value in <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN">ProxyChain</ph> will be used as a proxy for such a match. If no match is found, proxy settings will fall back to what is set in the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy.
+
+  The <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN">ProxyChain</ph> field entries correspond to string values of PAC files such as:
+    * DIRECT
+    * PROXY host:port
+    * HTTPS host:port
+  The first reachable entry will be used as a proxy.
+
+  The <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> field contains a list of conditions that must all be met for its override rule to be used to decide the proxy to use. If it is left unset, the entry will be used as long as at least one host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
+
+  The <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE">DnsProbe</ph> condition checks if the provided DNS <ph name="PROXY_OVERRIDE_RULES_HOST">Host</ph> is able to resolve to an IP address. If the value of <ph name="PROXY_OVERRIDE_RULES_RESULT">Result</ph> is "<ph name="PROXY_OVERRIDE_RULES_RESOLVES">resolves</ph>" then the condition is considered as met. If the value is instead set to <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND">not_found</ph>, then the condition is considered met if the resolution failed.
+
+example_value:
+- DestinationMatchers:
+  - 'https://some.app.com'
+  - 'https://other.app.org'
+  ProxyChain:
+  - 'HTTPS proxy.app:443'
+  - 'DIRECT'
+  Conditions:
+  - DnsProbe:
+      Host: 'corp.ads'
+      Result: "resolves"
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+- android
+owners:
+- seblalancette@chromium.org
+- domfc@chromium.org
+- cbe-eng@google.com
+schema:
+  type: array
+  items:
+    type: object
+    properties:
+      DestinationMatchers:
+        type: array
+        items:
+          type: string
+      ProxyChain:
+        type: array
+        items:
+          type: string
+      Conditions:
+        type: array
+        items:
+          type: object
+          properties:
+            DnsProbe:
+              type: object
+              properties:
+                Host:
+                  type: string
+                Result:
+                  type: string
+                  enum:
+                  - resolves
+                  - not_found
+type: dict
+tags:
+- system-security

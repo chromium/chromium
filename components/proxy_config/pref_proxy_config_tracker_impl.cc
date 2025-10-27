@@ -262,6 +262,11 @@ void PrefProxyConfigTrackerImpl::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(proxy_config::prefs::kProxy,
                                    ProxyConfigDictionary::CreateSystem());
   registry->RegisterBooleanPref(proxy_config::prefs::kUseSharedProxies, false);
+  registry->RegisterListPref(proxy_config::prefs::kProxyOverrideRules);
+#if !BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterIntegerPref(proxy_config::prefs::kProxyOverrideRulesScope,
+                                0);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // static

@@ -45,6 +45,13 @@ component("proxy_config") {
       "proxy_policy_handler.h",
     ]
   }
+
+  if (!is_ios && !is_fuchsia) {
+    sources += [
+      "proxy_override_rules_policy_handler.cc",
+      "proxy_override_rules_policy_handler.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
