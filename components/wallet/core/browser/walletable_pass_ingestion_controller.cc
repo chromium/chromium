@@ -55,9 +55,8 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
     return;
   }
 
-  GetAnnotatedPageContent(base::BindOnce(
-      &WalletablePassIngestionController::OnGetAnnotatedPageContent,
-      weak_ptr_factory_.GetWeakPtr(), url));
+  // TODO(crbug.com/444148314): Request user consent if not consented yet.
+  ShowConsentBubble(url);
 }
 
 bool WalletablePassIngestionController::IsEligibleForExtraction(
@@ -72,6 +71,35 @@ bool WalletablePassIngestionController::IsEligibleForExtraction(
              optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST,
              /*optimization_metadata=*/nullptr) ==
          optimization_guide::OptimizationGuideDecision::kTrue;
+}
+
+void WalletablePassIngestionController::ShowConsentBubble(const GURL& url) {
+  // TODO(crbug.com/444147446): Check strike before showing the consent bubble.
+  client_->ShowWalletablePassConsentBubble(base::BindOnce(
+      &WalletablePassIngestionController::OnGetConsentBubbleResult,
+      weak_ptr_factory_.GetWeakPtr(), url));
+}
+
+void WalletablePassIngestionController::OnGetConsentBubbleResult(
+    const GURL& url,
+    WalletablePassClient::WalletablePassBubbleResult result) {
+  switch (result) {
+    case kAccepted:
+      // TODO(crbug.com/444148314): Write consent result to local storage
+      GetAnnotatedPageContent(base::BindOnce(
+          &WalletablePassIngestionController::OnGetAnnotatedPageContent,
+          weak_ptr_factory_.GetWeakPtr(), url));
+      break;
+    case kDeclined:
+    case kClosed:
+      // Add strikes for cases where user rejects explicitly
+      // TODO(crbug.com/452779539): Report user rejects explicitly to UMA.
+      break;
+    case kLostFocus:
+    case kUnknown:
+      // TODO(crbug.com/452779539): Report other outcomes to UMA.
+      break;
+  }
 }
 
 void WalletablePassIngestionController::OnGetAnnotatedPageContent(

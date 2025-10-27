@@ -26,7 +26,6 @@ class WalletablePass;
 }  // namespace optimization_guide
 
 namespace wallet {
-// class WalletablePassSaveStrikeDatabaseByCategory;
 
 // Controls the detection of walletable passes on a web page.
 class WalletablePassIngestionController {
@@ -71,6 +70,10 @@ class WalletablePassIngestionController {
       const GURL& url,
       optimization_guide::proto::AnnotatedPageContent annotated_page_content);
 
+  // Shows the "Consent" bubble to the user, allowing them to agree to use the
+  // feature.
+  void ShowConsentBubble(const GURL& url);
+
   // Shows the "Save" bubble to the user, allowing them to save the provided
   // pass.
   void ShowSaveBubble(std::unique_ptr<optimization_guide::proto::WalletablePass>
@@ -89,6 +92,12 @@ class WalletablePassIngestionController {
   void OnExtractWalletablePass(
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
+  // Callback invoked when the user interacts with the consent bubble (e.g.,
+  // accepts, declines, or dismisses).
+  void OnGetConsentBubbleResult(
+      const GURL& url,
+      WalletablePassClient::WalletablePassBubbleResult result);
 
   // Callback invoked when the user interacts with the save bubble (e.g.,
   // accepts, declines, or dismisses).

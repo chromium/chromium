@@ -11,12 +11,19 @@ class WebContents;
 
 namespace wallet {
 
+class WalletablePassConsentBubbleView;
+class WalletablePassConsentBubbleController;
 class WalletablePassSaveBubbleView;
 class WalletablePassSaveBubbleController;
 
 // Factory for creating walletable pass UI elements.
 class WalletablePassBubbleViewFactory {
  public:
+  // Creates and returns a `WalletablePassConsentBubbleView`.
+  static WalletablePassConsentBubbleView* CreateConsentBubbleView(
+      content::WebContents* web_contents,
+      WalletablePassConsentBubbleController* controller);
+
   // Creates and returns a `WalletablePassSaveBubbleView`.
   static WalletablePassSaveBubbleView* CreateSaveBubbleView(
       content::WebContents* web_contents,

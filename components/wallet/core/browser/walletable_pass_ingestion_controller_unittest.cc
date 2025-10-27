@@ -196,6 +196,17 @@ TEST_F(WalletablePassIngestionControllerTest,
       CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
       .WillOnce(Return(kTrue));
 
+  // Expect ShowWalletablePassConsentBubble to be called.
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_))
+      .WillOnce(WithArgs<0>(
+          [&consent_callback](
+              WalletablePassClient::WalletablePassBubbleResultCallback
+                  callback) { consent_callback = std::move(callback); }));
+
+  test_api(controller()).StartWalletablePassDetectionFlow(url);
+  ASSERT_TRUE(consent_callback);
+
   // Expect GetAnnotatedPageContent to be called, and simulate a successful
   // response.
   EXPECT_CALL(*controller(), GetAnnotatedPageContent(_))
@@ -211,7 +222,55 @@ TEST_F(WalletablePassIngestionControllerTest,
   EXPECT_CALL(mock_model_executor(),
               ExecuteModel(kWalletablePassExtraction, _, _, _));
 
-  test_api(controller()).StartWalletablePassDetectionFlow(url);
+  // Simulate accepting the consent bubble.
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kAccepted);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_Accepted_GetsPageContent) {
+  GURL url("https://example.com");
+
+  // Expect ShowWalletablePassConsentBubble to be called.
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_))
+      .WillOnce(WithArgs<0>(
+          [&consent_callback](
+              WalletablePassClient::WalletablePassBubbleResultCallback
+                  callback) { consent_callback = std::move(callback); }));
+
+  test_api(controller()).ShowConsentBubble(url);
+  ASSERT_TRUE(consent_callback);
+
+  // Expect GetAnnotatedPageContent to be called when consent is accepted.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_));
+
+  // Simulate accepting the consent bubble.
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kAccepted);
+}
+
+TEST_F(WalletablePassIngestionControllerTest,
+       ShowConsentBubble_Declined_NoAction) {
+  GURL url("https://example.com");
+
+  // Expect ShowWalletablePassConsentBubble to be called.
+  WalletablePassClient::WalletablePassBubbleResultCallback consent_callback;
+  EXPECT_CALL(mock_client(), ShowWalletablePassConsentBubble(_))
+      .WillOnce(WithArgs<0>(
+          [&consent_callback](
+              WalletablePassClient::WalletablePassBubbleResultCallback
+                  callback) { consent_callback = std::move(callback); }));
+
+  test_api(controller()).ShowConsentBubble(url);
+  ASSERT_TRUE(consent_callback);
+
+  // Expect GetAnnotatedPageContent NOT to be called when consent is declined.
+  EXPECT_CALL(*controller(), GetAnnotatedPageContent(_)).Times(0);
+
+  // Simulate declining the consent bubble.
+  std::move(consent_callback)
+      .Run(WalletablePassClient::WalletablePassBubbleResult::kDeclined);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,

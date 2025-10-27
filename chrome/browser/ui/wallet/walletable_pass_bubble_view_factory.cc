@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
+#include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_view.h"
 #include "content/public/browser/web_contents.h"
@@ -39,6 +41,15 @@ BubbleView* CreateBubbleView(content::WebContents* web_contents,
 }
 
 }  // namespace
+
+// Static
+WalletablePassConsentBubbleView*
+WalletablePassBubbleViewFactory::CreateConsentBubbleView(
+    content::WebContents* web_contents,
+    WalletablePassConsentBubbleController* controller) {
+  return CreateBubbleView<WalletablePassConsentBubbleView>(web_contents,
+                                                           controller);
+}
 
 // Static
 WalletablePassSaveBubbleView*

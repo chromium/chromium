@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 
+#include "chrome/browser/ui/wallet/walletable_pass_bubble_view_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_view.h"
 #include "content/public/browser/web_contents.h"
 
@@ -22,7 +23,8 @@ autofill::BubbleType WalletablePassConsentBubbleController::GetBubbleType()
 }
 
 void WalletablePassConsentBubbleController::ShowBubble() {
-  // TODO(crbug.com/445826875): Create and set the actual bubble view here.
+  SetBubbleView(*WalletablePassBubbleViewFactory::CreateConsentBubbleView(
+      web_contents(), this));
 }
 
 void WalletablePassConsentBubbleController::SetUpAndShowConsentBubble(

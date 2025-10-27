@@ -40,6 +40,10 @@ class WalletablePassIngestionControllerTestApi {
     controller_->StartWalletablePassDetectionFlow(url);
   }
 
+  void ShowConsentBubble(const GURL& url) {
+    controller_->ShowConsentBubble(url);
+  }
+
   void ShowSaveBubble(std::unique_ptr<optimization_guide::proto::WalletablePass>
                           walletable_pass) {
     controller_->ShowSaveBubble(std::move(walletable_pass));
