@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "components/version_info/channel.h"
+#include "composebox_metrics_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class ComposeboxQueryController;
@@ -32,6 +33,9 @@ class ContextualSessionService : public KeyedService {
   using SessionId = base::UnguessableToken;
   class SessionHandle;
 
+  static inline constexpr char kDefaultRecorderName[] =
+      "UnnamedMetricsRecorder";
+
   ContextualSessionService(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -44,13 +48,15 @@ class ContextualSessionService : public KeyedService {
   // Creates a new session and returns a handle to it.
   std::unique_ptr<SessionHandle> CreateSession(
       std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
-          query_controller_config_params);
+          query_controller_config_params,
+      const std::string& composebox_metric_name = kDefaultRecorderName);
   // Returns a new handle for an existing session. Returns nullptr if the
   // session does not exist (e.g. has been released).
   std::unique_ptr<SessionHandle> GetSession(const SessionId& session_id);
 
   std::unique_ptr<SessionHandle> CreateSessionForTesting(
-      std::unique_ptr<ComposeboxQueryController> controller);
+      std::unique_ptr<ComposeboxQueryController> controller,
+      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder);
 
  protected:
   friend class SessionHandle;
@@ -58,6 +64,14 @@ class ContextualSessionService : public KeyedService {
 
   // Called by SessionHandle to retrieve a reference to the session controller.
   ComposeboxQueryController* GetSessionController(const SessionId& session_id);
+
+  // Called by SessionHandle to retrieve a reference to the metrics recorder.
+  ComposeboxMetricsRecorder* GetSessionMetricsRecorder(
+      const SessionId& session_id);
+
+  // Called by SessionHandle to retrieve name of metrics recorder.
+  std::string GetSessionMetricsRecorderName(const SessionId& session_id) const;
+
   // Called by SessionHandle to manage ref counts.
   void ReleaseSession(const SessionId& session_id);
 
@@ -88,6 +102,12 @@ class ContextualSessionService::SessionHandle {
   // nullptr if the session is not valid.
   ComposeboxQueryController* GetController() const;
 
+  // Returns the ComposeboxMetricsRecorder reference held by this handle or
+  // nullptr if the session is not valid.
+  ComposeboxMetricsRecorder* GetMetricsRecorder() const;
+
+  std::string GetMetricsRecorderName() const;
+
  private:
   friend class ContextualSessionService;
 
@@ -113,9 +133,13 @@ class ContextualSessionService::SessionEntry {
  private:
   friend class ContextualSessionService;
 
-  explicit SessionEntry(std::unique_ptr<ComposeboxQueryController> controller);
+  explicit SessionEntry(
+      std::unique_ptr<ComposeboxQueryController> controller,
+      std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder);
 
   std::unique_ptr<ComposeboxQueryController> controller_;
+  std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder_;
+
   size_t ref_count_ = 1;
 };
 

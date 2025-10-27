@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/base_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
-#include "components/omnibox/composebox/composebox_metrics_recorder.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,7 +41,6 @@ class ComposeboxHandler
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
-      std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
       Profile* profile,
       content::WebContents* web_contents);
   ~ComposeboxHandler() override;

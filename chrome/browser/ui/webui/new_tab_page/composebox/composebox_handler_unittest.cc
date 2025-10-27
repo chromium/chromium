@@ -77,25 +77,26 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
         fake_variations_client(), std::move(query_controller_config_params));
     query_controller_ = query_controller_ptr.get();
 
+    auto metrics_recorder_ptr =
+        std::make_unique<MockComposeboxMetricsRecorder>();
+    metrics_recorder_ = metrics_recorder_ptr.get();
+
     service_ = std::make_unique<ContextualSessionService>(
         /*identity_manager=*/nullptr, url_loader_factory(),
         template_url_service(), fake_variations_client(),
         version_info::Channel::UNKNOWN, "en-US");
-    auto contextual_session_handle =
-        service_->CreateSessionForTesting(std::move(query_controller_ptr));
+    auto contextual_session_handle = service_->CreateSessionForTesting(
+        std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
     ContextualSessionWebContentsHelper::GetOrCreateForWebContents(
         web_contents())
         ->set_session_handle(std::move(contextual_session_handle));
 
     web_contents()->SetDelegate(&delegate_);
-    auto metrics_recorder_ptr =
-        std::make_unique<MockComposeboxMetricsRecorder>();
-    metrics_recorder_ = metrics_recorder_ptr.get();
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(),
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        std::move(metrics_recorder_ptr), profile(), web_contents());
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
+        web_contents());
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }

@@ -24,14 +24,12 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
-    std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents)
     : ContextualSearchboxHandler(
           std::move(pending_searchbox_handler),
           profile,
           web_contents,
-          std::move(composebox_metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
               std::make_unique<composebox::ComposeboxOmniboxClient>(

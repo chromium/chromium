@@ -154,13 +154,9 @@ void OmniboxPopupUI::CreatePageHandler(
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
 
-  constexpr char kComposeboxMetricsReporterPrefName[] = "NewTabPage.";
-
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler),
-      std::make_unique<ComposeboxMetricsRecorder>(
-          kComposeboxMetricsReporterPrefName),
       profile_, web_ui()->GetWebContents());
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
