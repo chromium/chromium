@@ -268,6 +268,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed.{ApplicationAPStatus}"
+    enum="ApplicationAdvancedProtectionEvent" expires_after="2026-10-20">
+  <owner>minap@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records events that change application-wide Advanced Protection status
+    to {ApplicationAPStatus}.
+  </summary>
+  <token key="ApplicationAPStatus">
+    <variant name="Disabled"
+        summary="Application Advanced Protection status changed to disabled"/>
+    <variant name="Enabled"
+        summary="Application Advanced Protection status changed to enabled"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.AsyncCheck.CommittedNavigationIdsSize"
     units="count" expires_after="2025-12-28">
   <owner>xinghuilu@chromium.org</owner>

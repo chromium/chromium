@@ -88,6 +88,17 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="NOT_SENT_UNCONSENTED"/>
 </enum>
 
+<!-- LINT.IfChange(ApplicationAdvancedProtectionEvent) -->
+
+<enum name="ApplicationAdvancedProtectionEvent">
+  <int value="0" label="Detector initialized"/>
+  <int value="1" label="Profile added"/>
+  <int value="2" label="Profile removed"/>
+  <int value="3" label="Profile Advanced Protection status changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/application_advanced_protection_status_detector.h:ApplicationAdvancedProtectionEvent)-->
+
 <enum name="BooleanBackoff">
   <int value="0" label="No backoff"/>
   <int value="1" label="Backoff mode enabled"/>

@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -115,15 +116,21 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, NoProfiles) {
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
-       InitializedWithExistingProfilesWithoutAPDisabled) {
+       InitializedWithExistingProfilesWithAPDisabled) {
+  base::HistogramTester histogram_tester;
   CreateProfile("profile1");
   CreateProfile("profile2");
 
   EXPECT_FALSE(MakeTestDetectorWithObserver()->IsUnderAdvancedProtection());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Disabled",
+      ApplicationAdvancedProtectionEvent::kInitialized, /* expected_count */ 1);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        InitializedWithExistingProfilesWithAPEnabled) {
+  base::HistogramTester histogram_tester;
   CreateProfile("profile1");
   TestingProfile* profile_2 = CreateProfile("profile2");
   GetAPManager(profile_2)->SetAdvancedProtectionStatusForTesting(true);
@@ -131,10 +138,34 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
   auto detector = std::make_unique<ApplicationAdvancedProtectionStatusDetector>(
       profile_manager());
   EXPECT_TRUE(detector->IsUnderAdvancedProtection());
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Enabled",
+      ApplicationAdvancedProtectionEvent::kInitialized, /* expected_count */ 1);
+}
+
+TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
+       InitializedWithExistingProfilesWithMultipleAPEnabled) {
+  base::HistogramTester histogram_tester;
+  TestingProfile* profile_1 = CreateProfile("profile1");
+  TestingProfile* profile_2 = CreateProfile("profile2");
+  GetAPManager(profile_1)->SetAdvancedProtectionStatusForTesting(true);
+  GetAPManager(profile_2)->SetAdvancedProtectionStatusForTesting(true);
+
+  auto detector = std::make_unique<ApplicationAdvancedProtectionStatusDetector>(
+      profile_manager());
+
+  EXPECT_TRUE(detector->IsUnderAdvancedProtection());
+  // Verify that only one event should be logged.
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Enabled",
+      ApplicationAdvancedProtectionEvent::kInitialized, /* expected_count */ 1);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        ProfileAddedWithAPDisabled) {
+  base::HistogramTester histogram_tester;
   auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile = CreateProfile("profile1");
 
@@ -142,6 +173,17 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
   // profile sign-in.
   GetAPManager(profile)->SetAdvancedProtectionStatusForTesting(false);
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
+  // Expected no histogram logged for non-AP profile added.
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Enabled",
+      ApplicationAdvancedProtectionEvent::kProfileAdded,
+      /* expected_count */ 0);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Disabled",
+      ApplicationAdvancedProtectionEvent::kProfileAdded,
+      /* expected_count */ 0);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
@@ -159,6 +201,8 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        MultipleAdvancedProtectionStatusChangedNotifiedWithSameValue) {
+  base::HistogramTester histogram_tester;
+
   auto* application_ap_detector = MakeTestDetectorWithObserver();
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(_))
       .Times(0);
@@ -182,9 +226,23 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(false))
       .Times(1);
   GetAPManager(profile)->SetAdvancedProtectionStatusForTesting(false);
+
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Enabled",
+      ApplicationAdvancedProtectionEvent::
+          kProfileAdvancedProtectionStatusChanged,
+      /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Disabled",
+      ApplicationAdvancedProtectionEvent::
+          kProfileAdvancedProtectionStatusChanged,
+      /* expected_count */ 1);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, APEnabledThenDisabled) {
+  base::HistogramTester histogram_tester;
   auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile = CreateProfile("profile1");
 
@@ -197,9 +255,23 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, APEnabledThenDisabled) {
   GetAPManager(profile)->SetAdvancedProtectionStatusForTesting(false);
 
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Disabled",
+      ApplicationAdvancedProtectionEvent::
+          kProfileAdvancedProtectionStatusChanged,
+      /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Enabled",
+      ApplicationAdvancedProtectionEvent::
+          kProfileAdvancedProtectionStatusChanged,
+      /* expected_count */ 1);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, MultipleProfiles) {
+  base::HistogramTester histogram_tester;
   auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile1 = CreateProfile("profile1");
   TestingProfile* profile2 = CreateProfile("profile2");
@@ -221,9 +293,23 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, MultipleProfiles) {
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(false));
   GetAPManager(profile2)->SetAdvancedProtectionStatusForTesting(false);
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Disabled",
+      ApplicationAdvancedProtectionEvent::
+          kProfileAdvancedProtectionStatusChanged,
+      /* expected_count */ 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Enabled",
+      ApplicationAdvancedProtectionEvent::
+          kProfileAdvancedProtectionStatusChanged,
+      /* expected_count */ 1);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, ProfileRemoved) {
+  base::HistogramTester histogram_tester;
   auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile1 = CreateProfile("profile1");
   TestingProfile* profile2 = CreateProfile("profile2");
@@ -241,6 +327,12 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, ProfileRemoved) {
   profile_manager_.DeleteTestingProfile("profile2");
 
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed."
+      "Disabled",
+      ApplicationAdvancedProtectionEvent::kProfileRemoved,
+      /* expected_count */ 1);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,

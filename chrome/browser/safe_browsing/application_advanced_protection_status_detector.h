@@ -20,6 +20,16 @@ class Profile;
 class ProfileManager;
 namespace safe_browsing {
 
+// LINT.IfChange(ApplicationAdvancedProtectionEvent)
+enum class ApplicationAdvancedProtectionEvent {
+  kInitialized = 0,
+  kProfileAdded = 1,
+  kProfileRemoved = 2,
+  kProfileAdvancedProtectionStatusChanged = 3,
+  kMaxValue = kProfileAdvancedProtectionStatusChanged,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:ApplicationAdvancedProtectionEvent)
+
 // This class is responsible for monitoring the advanced protection status
 // of all profiles managed by ProfileManager. It aggregates the status and
 // notifies observers if any profile is under advanced protection.
@@ -63,8 +73,11 @@ class ApplicationAdvancedProtectionStatusDetector
  private:
   class ProfileAdvancedProtectionObserver;
 
-  void AddProfile(Profile* profile);
+  void AddProfile(Profile* profile, ApplicationAdvancedProtectionEvent event);
   void OnAdvancedProtectionStatusChangedForSingleProfile(bool status);
+  void HandleStatusChangedForSingleProfile(
+      bool status,
+      ApplicationAdvancedProtectionEvent event);
   void NotifyObservers();
 
   // Observes the ProfileManager for profile additions and removals.

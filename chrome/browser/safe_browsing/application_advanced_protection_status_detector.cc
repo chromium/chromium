@@ -4,10 +4,8 @@
 
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 
-#include <utility>
-
-#include "base/logging.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -15,6 +13,20 @@
 
 namespace safe_browsing {
 namespace {
+// Histogram names.
+constexpr char kApplicationAdvancedProtectionHistogram[] =
+    "SafeBrowsing.ApplicationAdvancedProtectionStatusDetector.Changed.";
+constexpr char kEnabledSuffix[] = "Enabled";
+constexpr char kDisabledSuffix[] = "Disabled";
+
+void RecordApplicationAdvancedProtectionHistogram(
+    bool status,
+    safe_browsing::ApplicationAdvancedProtectionEvent event) {
+  std::string_view status_str = status ? kEnabledSuffix : kDisabledSuffix;
+  base::UmaHistogramEnumeration(
+      base::StrCat({kApplicationAdvancedProtectionHistogram, status_str}),
+      event);
+}
 
 bool IsIgnoredProfile(Profile* profile) {
   // We only care about regular profiles, not incognito, guest, or system
@@ -44,6 +56,9 @@ class ApplicationAdvancedProtectionStatusDetector::
 
   // AdvancedProtectionStatusManager::StatusChangedObserver:
   void OnAdvancedProtectionStatusChanged(bool enabled) override {
+    // `OnAdvancedProtectionStatusChanged` may be called with `false` during
+    // profile sign-in. Only notifies detector if status is not the same as
+    // cached value. This keeps `advanced_protection_profile_count_` accurate.
     if (latest_status_ != enabled) {
       latest_status_ = enabled;
       detector_->OnAdvancedProtectionStatusChangedForSingleProfile(enabled);
@@ -77,7 +92,14 @@ ApplicationAdvancedProtectionStatusDetector::
 
   profile_manager_observation_.Observe(profile_manager_);
   for (Profile* profile : profile_manager_->GetLoadedProfiles()) {
-    AddProfile(profile);
+    AddProfile(profile, ApplicationAdvancedProtectionEvent::kInitialized);
+  }
+  // The "ApplicationAdvancedProtectionStatusDetector.Changed.Enabled"
+  // is logged if there is a profile with Advanced Protection enabled. Otherwise
+  // "Disabled" case is logged here.
+  if (!IsUnderAdvancedProtection()) {
+    RecordApplicationAdvancedProtectionHistogram(
+        /*status=*/false, ApplicationAdvancedProtectionEvent::kInitialized);
   }
 }
 
@@ -101,7 +123,7 @@ void ApplicationAdvancedProtectionStatusDetector::RemoveObserver(
 
 void ApplicationAdvancedProtectionStatusDetector::OnProfileAdded(
     Profile* profile) {
-  AddProfile(profile);
+  AddProfile(profile, ApplicationAdvancedProtectionEvent::kProfileAdded);
 }
 
 void ApplicationAdvancedProtectionStatusDetector::OnProfileManagerDestroying() {
@@ -129,7 +151,8 @@ void ApplicationAdvancedProtectionStatusDetector::OnProfileWillBeDestroyed(
   // If this profile is under Advanced Protection, check if the remaining
   // profiles have Advanced Protection and update status accordingly.
   if (profile_ap_observer->latest_status()) {
-    OnAdvancedProtectionStatusChangedForSingleProfile(false);
+    HandleStatusChangedForSingleProfile(
+        false, ApplicationAdvancedProtectionEvent::kProfileRemoved);
   }
   profile_ap_observer->Reset();
   profile_observations_.RemoveObservation(profile);
@@ -141,23 +164,11 @@ void ApplicationAdvancedProtectionStatusDetector::
   NotifyObservers();
 }
 
-void ApplicationAdvancedProtectionStatusDetector::
-    OnAdvancedProtectionStatusChangedForSingleProfile(bool status) {
-  if (status) {
-    advanced_protection_profile_count_++;
-    if (advanced_protection_profile_count_ == 1) {
-      NotifyObservers();
-    }
-  } else {
-    advanced_protection_profile_count_--;
-    DCHECK_GE(advanced_protection_profile_count_, 0);
-    if (advanced_protection_profile_count_ == 0) {
-      NotifyObservers();
-    }
-  }
-}
-
-void ApplicationAdvancedProtectionStatusDetector::AddProfile(Profile* profile) {
+void ApplicationAdvancedProtectionStatusDetector::AddProfile(
+    Profile* profile,
+    ApplicationAdvancedProtectionEvent event) {
+  DCHECK(event == ApplicationAdvancedProtectionEvent::kInitialized ||
+         event == ApplicationAdvancedProtectionEvent::kProfileAdded);
   if (IsIgnoredProfile(profile)) {
     return;
   }
@@ -167,13 +178,39 @@ void ApplicationAdvancedProtectionStatusDetector::AddProfile(Profile* profile) {
   auto profile_ap_observer =
       std::make_unique<ProfileAdvancedProtectionObserver>(this, profile);
   if (profile_ap_observer->latest_status()) {
-    advanced_protection_profile_count_++;
-    if (advanced_protection_profile_count_ == 1) {
-      NotifyObservers();
-    }
+    HandleStatusChangedForSingleProfile(true, event);
   }
   DCHECK(profile_ap_observers_.find(profile) == profile_ap_observers_.end());
   profile_ap_observers_[profile] = std::move(profile_ap_observer);
+}
+
+void ApplicationAdvancedProtectionStatusDetector::
+    OnAdvancedProtectionStatusChangedForSingleProfile(bool status) {
+  HandleStatusChangedForSingleProfile(
+      status, ApplicationAdvancedProtectionEvent::
+                  kProfileAdvancedProtectionStatusChanged);
+}
+
+void ApplicationAdvancedProtectionStatusDetector::
+    HandleStatusChangedForSingleProfile(
+        bool status,
+        ApplicationAdvancedProtectionEvent event) {
+  if (status) {
+    advanced_protection_profile_count_++;
+    if (advanced_protection_profile_count_ == 1) {
+      NotifyObservers();
+      RecordApplicationAdvancedProtectionHistogram(
+          /*status=*/true, event);
+    }
+  } else {
+    advanced_protection_profile_count_--;
+    DCHECK_GE(advanced_protection_profile_count_, 0);
+    if (advanced_protection_profile_count_ == 0) {
+      NotifyObservers();
+      RecordApplicationAdvancedProtectionHistogram(
+          /*status=*/false, event);
+    }
+  }
 }
 
 void ApplicationAdvancedProtectionStatusDetector::NotifyObservers() {
