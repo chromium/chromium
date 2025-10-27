@@ -1425,7 +1425,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SyncPlaceholderTabResyncResult">
   <int value="0" label="PLACEHOLDER_TAB_FOUND"/>
   <int value="1" label="PLACEHOLDER_TAB_RESYNCED"/>
-  <int value="2" label="PLACEHOLDER_TAB_NOT_SYNCED"/>
+  <int value="2" label="(Obsolete) PLACEHOLDER_TAB_NOT_SYNCED"/>
   <int value="3" label="PLACEHOLDER_TAB_RESYNC_FAILED"/>
 </enum>
 

@@ -39,7 +39,7 @@ using sessions::SerializedNavigationEntry;
 enum PlaceholderTabResyncResultHistogramValue {
   PLACEHOLDER_TAB_FOUND = 0,
   PLACEHOLDER_TAB_RESYNCED = 1,
-  PLACEHOLDER_TAB_NOT_SYNCED = 2,
+  // PLACEHOLDER_TAB_NOT_SYNCED = 2,
   PLACEHOLDER_TAB_RESYNC_FAILED = 3,
 
   kMaxValue = PLACEHOLDER_TAB_RESYNC_FAILED
@@ -499,12 +499,6 @@ void LocalSessionEventHandlerImpl::HandlePlaceholderTabForAssociate(
     } else if (is_session_restore) {
       RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_RESYNC_FAILED);
     }
-  } else if (is_session_restore) {
-    // This metric logic path will likely record no tab data as long as
-    // the RestoreSyncedPlaceholderTabs flag is enabled. If it is
-    // disabled, this path will record all placeholder tabs that the
-    // flag-guarded logic would have attempted to target.
-    RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_NOT_SYNCED);
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
