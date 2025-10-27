@@ -19,8 +19,6 @@ namespace platform_util {
 
 namespace {
 
-bool shell_operations_allowed = true;
-
 void VerifyAndOpenItemOnBlockingThread(const base::FilePath& path,
                                        OpenItemType type,
                                        OpenOperationCallback callback) {
@@ -40,26 +38,15 @@ void VerifyAndOpenItemOnBlockingThread(const base::FilePath& path,
     return;
   }
 
-  if (shell_operations_allowed)
+  if (internal::AreShellOperationsAllowed()) {
     internal::PlatformOpenVerifiedItem(path, type);
+  }
   if (!callback.is_null())
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), OPEN_SUCCEEDED));
 }
 
 }  // namespace
-
-namespace internal {
-
-void DisableShellOperationsForTesting() {
-  shell_operations_allowed = false;
-}
-
-bool AreShellOperationsAllowed() {
-  return shell_operations_allowed;
-}
-
-}  // namespace internal
 
 void OpenItem(Profile*,
               const base::FilePath& full_path,

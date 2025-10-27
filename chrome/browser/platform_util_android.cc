@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/platform_util_internal.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
@@ -21,10 +22,20 @@
 using base::android::ScopedJavaLocalRef;
 
 namespace platform_util {
+namespace internal {
+namespace {
+bool g_shell_operations_allowed = true;
+}  // namespace
+
+}  // namespace internal
 
 // TODO: crbug/115682 to track implementation of the following methods.
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
+  // Skip opening the folder in some browser tests.
+  if (!internal::g_shell_operations_allowed) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   std::optional<base::FilePath> contentUri =
       base::ResolveToContentUri(full_path);

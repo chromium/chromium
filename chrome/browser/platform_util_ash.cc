@@ -66,14 +66,6 @@ void ShowWarningOnOpenOperationResult(Profile* profile,
 
 }  // namespace
 
-namespace internal {
-
-void DisableShellOperationsForTesting() {
-  file_manager::util::DisableShellOperationsForTesting();
-}
-
-}  // namespace internal
-
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   file_manager::util::ShowItemInFolder(
