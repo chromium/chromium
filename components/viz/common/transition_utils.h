@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -33,8 +33,8 @@ class VIZ_COMMON_EXPORT TransitionUtils {
   }
 
   // If |full_data| is false, only essential information are included.
-  static std::string RenderPassListToString(
-      const CompositorRenderPassList& render_passes,
+  static std::string CompositorFrameToString(
+      const CompositorFrame& render_passes,
       bool full_data);
 };
 

@@ -14,6 +14,10 @@
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/display_color_spaces.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace viz {
 
 // This is a transition directive that can be associated with a compositor
@@ -52,6 +56,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     friend bool operator==(const SharedElement&,
                            const SharedElement&) = default;
 
+    void AsValueInto(base::trace_event::TracedValue* value) const;
+
     // The render pass corresponding to a DOM element. The id is scoped to the
     // same frame that the directive corresponds to.
     CompositorRenderPassId render_pass_id;
@@ -84,6 +90,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
 
   CompositorFrameTransitionDirective& operator=(
       const CompositorFrameTransitionDirective&);
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // A monotonically increasing sequence_id for a given communication channel
   // (i.e. surface). This is used to distinguish new directives from directives

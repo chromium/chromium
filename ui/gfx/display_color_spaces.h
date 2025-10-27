@@ -17,6 +17,10 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace mojo {
 template <class T, class U>
 struct StructTraits;
@@ -132,6 +136,8 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   void ToStrings(std::vector<std::string>* out_names,
                  std::vector<gfx::ColorSpace>* out_color_spaces,
                  std::vector<viz::SharedImageFormat>* out_formats) const;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   bool operator==(const DisplayColorSpaces& other) const;
 

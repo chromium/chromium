@@ -181,10 +181,17 @@ std::unordered_set<uint64_t> ProcessStack(std::ostringstream& str,
 
 }  // namespace
 
-std::string TransitionUtils::RenderPassListToString(
-    const CompositorRenderPassList& list,
+std::string TransitionUtils::CompositorFrameToString(
+    const CompositorFrame& frame,
     bool full_data) {
   std::ostringstream str;
+  if (full_data) {
+    str << "meta data:\n";
+    str << frame.metadata.ToString();
+    str << "\n";
+  }
+
+  const CompositorRenderPassList& list = frame.render_pass_list;
 
   if ((list.size() > kMaxListToProcess && !full_data) || list.empty()) {
     str << "RenderPassList too large or too small (" << list.size()

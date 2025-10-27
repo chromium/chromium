@@ -212,4 +212,12 @@ BeginFrameAck BeginFrameAck::CreateManualAckWithDamage() {
                        BeginFrameArgs::kStartingFrameNumber, true);
 }
 
+void BeginFrameAck::AsValueInto(base::trace_event::TracedValue* dict) const {
+  dict->SetInteger("source_id", static_cast<int>(frame_id.source_id));
+  dict->SetInteger("sequence_number",
+                   static_cast<int>(frame_id.sequence_number));
+  dict->SetBoolean("has_damage", has_damage);
+  dict->SetInteger("trace_id", static_cast<int>(trace_id));
+}
+
 }  // namespace viz

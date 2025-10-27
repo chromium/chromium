@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -37,6 +38,10 @@
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/selection_bound.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
 
 namespace viz {
 
@@ -87,6 +92,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   CompositorFrameMetadata& operator=(CompositorFrameMetadata&& other);
 
   CompositorFrameMetadata Clone() const;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+  std::string ToString() const;
 
   // The device scale factor used to generate this compositor frame. Must be
   // greater than zero.

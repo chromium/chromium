@@ -278,6 +278,8 @@ struct VIZ_COMMON_EXPORT BeginFrameAck {
   // |true| if the observer has produced damage (e.g. sent a CompositorFrame or
   // damaged a surface) as part of responding to the BeginFrame.
   bool has_damage = false;
+
+  void AsValueInto(base::trace_event::TracedValue* dict) const;
 };
 
 }  // namespace viz

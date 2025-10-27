@@ -12,6 +12,7 @@
 #include <array>
 #include <cmath>
 
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/skcolorspace_primaries.h"
@@ -239,6 +240,27 @@ void DisplayColorSpaces::ToStrings(
     out_color_spaces->push_back(color_spaces_[i]);
     i = j;
   };
+}
+
+void DisplayColorSpaces::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  std::vector<std::string> names;
+  std::vector<gfx::ColorSpace> color_spaces;
+  std::vector<viz::SharedImageFormat> formats;
+  ToStrings(&names, &color_spaces, &formats);
+  value->BeginArray("configs");
+  for (size_t i = 0; i < names.size(); ++i) {
+    value->BeginDictionary();
+    value->SetString("name", names[i]);
+    value->SetString("color_space", color_spaces[i].ToString());
+    value->SetString("format", formats[i].ToString());
+    value->EndDictionary();
+  }
+  value->EndArray();
+  value->SetString("primaries",
+                   skia::SkColorSpacePrimariesToString(primaries_));
+  value->SetDouble("sdr_max_luminance_nits", sdr_max_luminance_nits_);
+  value->SetDouble("hdr_max_luminance_relative", hdr_max_luminance_relative_);
 }
 
 bool DisplayColorSpaces::operator==(const DisplayColorSpaces& other) const {

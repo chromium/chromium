@@ -2954,8 +2954,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   if (dump_compositor_frame_ && frame_token >= dump_compositor_frame_begin_ &&
       frame_token <= dump_compositor_frame_end_) {
     // This is purely for debugging TreesInViz and TreeAnimationInViz purposes.
-    std::string data = viz::TransitionUtils::RenderPassListToString(
-        compositor_frame.render_pass_list, /*full_data=*/true);
+    std::string data = viz::TransitionUtils::CompositorFrameToString(
+        compositor_frame, /*full_data=*/true);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&DoDumpCompositorFrame, data,
@@ -2998,9 +2998,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
   // Dump property trees and layers if VerboseLogEnabled().
   VERBOSE_LOG() << "Submitting a frame:\n"
-                << viz::TransitionUtils::RenderPassListToString(
-                       compositor_frame.render_pass_list,
-                       /*full_data=*/false);
+                << viz::TransitionUtils::CompositorFrameToString(
+                       compositor_frame, /*full_data=*/false);
 
   base::TimeTicks submit_time = base::TimeTicks::Now();
   base::TimeTicks trees_in_viz_submit_time;
