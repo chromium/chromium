@@ -465,8 +465,9 @@ class HistoryService : public KeyedService,
       GetLastVisitCallback callback,
       base::CancelableTaskTracker* tracker);
 
-  // Same as the above, but for the given origin instead of host.
-  base::CancelableTaskTracker::TaskId GetLastVisitToOrigin(
+  // Same as the above, but for the given origin instead of host. Virtual for
+  // testing.
+  virtual base::CancelableTaskTracker::TaskId GetLastVisitToOrigin(
       const url::Origin& origin,
       base::Time begin_time,
       base::Time end_time,

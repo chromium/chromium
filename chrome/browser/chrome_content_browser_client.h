@@ -657,6 +657,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   CreateCommitDeferringConditionsForNavigation(
       content::NavigationHandle* navigation_handle,
       content::CommitDeferringCondition::NavigationType type) override;
+  std::vector<std::unique_ptr<content::ProcessSelectionDeferringCondition>>
+  CreateProcessSelectionDeferringConditionsForNavigation(
+      content::NavigationHandle& navigation_handle) override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<media::ScreenEnumerator> CreateScreenEnumerator()
@@ -960,8 +963,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin) override;
   bool IsJitDisabledForSite(content::BrowserContext* browser_context,
                             const GURL& site_url) override;
-  bool AreV8OptimizationsDisabledForSite(
+  bool AreV8OptimizationsEnabledForSite(
       content::BrowserContext* browser_context,
+      const std::optional<base::SafeRef<content::ProcessSelectionUserData>>&
+          process_selection_user_data,
       const GURL& site_url) override;
   bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override;
   ukm::UkmService* GetUkmService() override;

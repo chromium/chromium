@@ -5,10 +5,12 @@
 #include "content/browser/site_info.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +22,7 @@
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
@@ -129,6 +132,8 @@ bool IsOriginIsolatedSandboxedFrame(const UrlInfo& url_info) {
 bool CheckShouldDisableV8Optimization(
     BrowserContext* browser_context,
     const BrowsingInstanceId& browsing_instance_id,
+    const std::optional<base::SafeRef<ProcessSelectionUserData>>&
+        process_selection_user_data,
     const GURL& process_lock_url) {
   std::optional<bool> are_v8_optimizations_disabled_result =
       ChildProcessSecurityPolicyImpl::GetInstance()
@@ -138,8 +143,8 @@ bool CheckShouldDisableV8Optimization(
     return are_v8_optimizations_disabled_result.value();
   }
 
-  return GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-      browser_context, process_lock_url);
+  return !GetContentClient()->browser()->AreV8OptimizationsEnabledForSite(
+      browser_context, process_selection_user_data, process_lock_url);
 }
 
 }  // namespace
@@ -188,7 +193,8 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
   bool are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
-      browser_context, isolation_context.browsing_instance_id(), GURL());
+      browser_context, isolation_context.browsing_instance_id(), std::nullopt,
+      GURL());
 
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
@@ -304,7 +310,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
                         browser_context, agent_cluster_url_or_default);
   are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
       browser_context, isolation_context.browsing_instance_id(),
-      agent_cluster_url_or_default);
+      url_info.process_selection_user_data, agent_cluster_url_or_default);
 
   if (!storage_partition_config.has_value()) {
     storage_partition_config =

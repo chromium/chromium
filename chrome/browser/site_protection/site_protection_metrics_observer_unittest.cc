@@ -29,6 +29,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/common/content_client.h"
@@ -213,8 +214,8 @@ class SiteProtectionMetricsObserverTest
               GetUkmFamiliarityHeuristicValue(ukm_recorder, metric_name));
   }
 
-  bool AreV8OptimizersDisabled(content::RenderFrameHost* rfh) {
-    return rfh->GetProcess()->AreV8OptimizationsDisabled();
+  bool AreV8OptimizersEnabled(content::RenderFrameHost* rfh) {
+    return !rfh->GetProcess()->AreV8OptimizationsDisabled();
   }
 
  protected:
@@ -584,19 +585,19 @@ TEST_F(SiteProtectionMetricsObserverTest, MatchesHeuristicCandidate) {
 class TestRenderProcessHost : public content::MockRenderProcessHost {
  public:
   explicit TestRenderProcessHost(content::BrowserContext* browser_context,
-                                 bool are_v8_optimizations_disabled)
+                                 bool are_v8_optimizations_enabled)
       : content::MockRenderProcessHost(browser_context,
                                        /*is_for_guests_only=*/false),
-        are_v8_optimizations_disabled_(are_v8_optimizations_disabled) {}
+        are_v8_optimizations_enabled_(are_v8_optimizations_enabled) {}
 
   ~TestRenderProcessHost() override = default;
 
   bool AreV8OptimizationsDisabled() override {
-    return are_v8_optimizations_disabled_;
+    return !are_v8_optimizations_enabled_;
   }
 
  private:
-  bool are_v8_optimizations_disabled_ = false;
+  bool are_v8_optimizations_enabled_ = false;
 };
 
 // Factory for TestRenderProcessHost.
@@ -612,11 +613,11 @@ class TestRenderProcessHostFactory
   std::unique_ptr<content::MockRenderProcessHost> BuildRenderProcessHost(
       content::BrowserContext* browser_context,
       content::SiteInstance* site_instance) override {
-    bool should_disable_v8_optimizers =
-        browser_client_->AreV8OptimizationsDisabledForSite(browser_context,
-                                                           GURL());
-    return std::make_unique<TestRenderProcessHost>(
-        browser_context, should_disable_v8_optimizers);
+    bool should_enable_v8_optimizers =
+        browser_client_->AreV8OptimizationsEnabledForSite(browser_context,
+                                                          std::nullopt, GURL());
+    return std::make_unique<TestRenderProcessHost>(browser_context,
+                                                   should_enable_v8_optimizers);
   }
 
  private:
@@ -630,18 +631,20 @@ class TestContentBrowserClient : public content::ContentBrowserClient {
   TestContentBrowserClient() = default;
   ~TestContentBrowserClient() override = default;
 
-  bool AreV8OptimizationsDisabledForSite(
+  bool AreV8OptimizationsEnabledForSite(
       content::BrowserContext* browser_context,
+      const std::optional<base::SafeRef<content::ProcessSelectionUserData>>&
+          process_selection_user_data,
       const GURL& site_url) override {
-    return are_v8_optimizations_disabled_;
+    return are_v8_optimizations_enabled_;
   }
 
   bool ShouldDisableOriginIsolation() override {
     return !should_use_origin_isolation_;
   }
 
-  void SetAreV8OptimizationsDisabled(bool are_v8_optimizations_disabled) {
-    are_v8_optimizations_disabled_ = are_v8_optimizations_disabled;
+  void SetAreV8OptimizationsEnabled(bool are_v8_optimizations_enabled) {
+    are_v8_optimizations_enabled_ = are_v8_optimizations_enabled;
   }
 
   void SetUseOriginIsolation(bool should_use_origin_isolation) {
@@ -649,7 +652,7 @@ class TestContentBrowserClient : public content::ContentBrowserClient {
   }
 
  private:
-  bool are_v8_optimizations_disabled_ = false;
+  bool are_v8_optimizations_enabled_ = false;
   bool should_use_origin_isolation_ = false;
 };
 
@@ -702,29 +705,28 @@ class SiteProtectionMetricsObserverV8OptTest
   }
 
   void SetV8OptimizerStateForFutureRenderProcesses(
-      bool are_v8_optimizations_disabled) {
-    browser_client_.SetAreV8OptimizationsDisabled(
-        are_v8_optimizations_disabled);
+      bool are_v8_optimizations_enabled) {
+    browser_client_.SetAreV8OptimizationsEnabled(are_v8_optimizations_enabled);
   }
 
   void NavigateToPageWithIframeAndV8OptState(
       const GURL& main_url,
-      bool topmost_are_v8_optimizations_disabled,
+      bool topmost_are_v8_optimizations_enabled,
       const GURL& iframe_url,
-      bool iframe_are_v8_optimizations_disabled) {
+      bool iframe_are_v8_optimizations_enabled) {
     SetV8OptimizerStateForFutureRenderProcesses(
-        topmost_are_v8_optimizations_disabled);
+        topmost_are_v8_optimizations_enabled);
     NavigateAndCommit(main_url);
     content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
-    ASSERT_EQ(topmost_are_v8_optimizations_disabled,
-              AreV8OptimizersDisabled(main_rfh));
+    ASSERT_EQ(topmost_are_v8_optimizations_enabled,
+              AreV8OptimizersEnabled(main_rfh));
 
     SetV8OptimizerStateForFutureRenderProcesses(
-        iframe_are_v8_optimizations_disabled);
+        iframe_are_v8_optimizations_enabled);
     content::RenderFrameHost* iframe_rfh =
         CreateAndNavigateIframe(main_rfh, iframe_url);
-    ASSERT_EQ(iframe_are_v8_optimizations_disabled,
-              AreV8OptimizersDisabled(iframe_rfh));
+    ASSERT_EQ(iframe_are_v8_optimizations_enabled,
+              AreV8OptimizersEnabled(iframe_rfh));
   }
 
   void SetUseOriginIsolation(bool should_use_origin_isolation) {
@@ -757,8 +759,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://bar.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/false, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/false);
+      /*topmost_are_v8_optimizations_enabled=*/true, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/true);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.IframeState",
       IframeV8OptimizerState::kEnabledForChildAndTopmost, 1);
@@ -771,8 +773,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://bar.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/true, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/false);
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/true);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.IframeState",
       IframeV8OptimizerState::kEnabledForChildDisabledForTopmost, 1);
@@ -785,8 +787,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://bar.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/false, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/true);
+      /*topmost_are_v8_optimizations_enabled=*/true, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.IframeState",
       IframeV8OptimizerState::kDisabledForChildEnabledForTopmost, 1);
@@ -799,8 +801,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://bar.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/true, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/true);
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.IframeState",
       IframeV8OptimizerState::kDisabledForChildAndTopmost, 1);
@@ -815,8 +817,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://sub.foo.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/true, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/true);
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
   EXPECT_EQ(0u,
             histogram_tester
                 .GetAllSamples("SafeBrowsing.V8Optimizer."
@@ -833,8 +835,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://sub.foo.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/true, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/true);
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.DifferentRendererProcess.SameSite.IframeState",
       IframeV8OptimizerState::kDisabledForChildAndTopmost, 1);
@@ -849,8 +851,8 @@ TEST_F(SiteProtectionMetricsObserverV8OptTest,
   GURL kIframeUrl("https://bar.com");
   NavigateToPageWithIframeAndV8OptState(
       kMainUrl,
-      /*topmost_are_v8_optimizations_disabled=*/true, kIframeUrl,
-      /*iframe_are_v8_optimizations_disabled=*/true);
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
 
   EXPECT_EQ(0u,
             histogram_tester

@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -18,6 +20,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_runner.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -754,8 +757,9 @@ SpareRenderProcessHostManagerImpl::DoesEmbedderAllowSpareUsage(
   // V8 optimizations are globally enabled or disabled for a whole process,
   // and spare renderers always have V8 optimizations enabled, so we can never
   // use them if they're supposed to be disabled for this site.
-  if (GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-          browser_context, site_instance->GetSiteInfo().GetProcessLockURL())) {
+  if (!GetContentClient()->browser()->AreV8OptimizationsEnabledForSite(
+          browser_context, std::nullopt,
+          site_instance->GetSiteInfo().GetProcessLockURL())) {
     return ContentBrowserClient::SpareProcessRefusedByEmbedderReason::
         V8OptimizationsDisabled;
   }

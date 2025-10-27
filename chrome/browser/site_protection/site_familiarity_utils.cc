@@ -14,6 +14,12 @@
 
 namespace site_protection {
 
+bool AreV8OptimizationsDisabledOnUnfamiliarSites(Profile* profile) {
+  return ComputeDefaultJavascriptOptimizerSetting(profile) ==
+         content_settings::JavascriptOptimizerSetting::
+             kBlockedForUnfamiliarSites;
+}
+
 content_settings::JavascriptOptimizerSetting
 ComputeDefaultJavascriptOptimizerSetting(Profile* profile) {
   HostContentSettingsMap* host_content_settings_map =

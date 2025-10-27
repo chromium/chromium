@@ -4005,6 +4005,18 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram
+    name="SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity"
+    enum="BooleanOccurred" expires_after="2026-02-28">
+  <owner>pkotwicz@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Recorded during NavigationRequest::OnResponseStarted(). Records whether the
+    navigation was delayed due to computing whether to disable v8-optimizations
+    due to computing site-familiarity.
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.V8Optimizer.DifferentRendererProcess.SameSite.IframeState"
     enum="V8IframeState" expires_after="2026-01-01">
   <owner>pkotwicz@google.com</owner>
