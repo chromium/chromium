@@ -160,12 +160,14 @@ void EtwSystemDataSource::OnStart(const StartArgs&) {
 
 void EtwSystemDataSource::OnStop(const StopArgs& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  consume_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&EtwConsumer::Flush, base::Unretained(consumer_.get()),
-                     args.HandleStopAsynchronously()));
+  if (consumer_) {
+    consume_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&EtwConsumer::Flush, base::Unretained(consumer_.get()),
+                       args.HandleStopAsynchronously()));
+    consumer_.reset();
+  }
   etw_controller_.Stop(nullptr);
-  consumer_.reset();
 }
 
 }  // namespace tracing
