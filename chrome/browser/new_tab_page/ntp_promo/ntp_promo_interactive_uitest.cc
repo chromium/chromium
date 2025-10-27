@@ -466,7 +466,13 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleEnabled) {
                   CheckShowMetrics(ShowNtpPromosResult::kNotShownDueToPolicy));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
+// Broken on M142 branch on Mac. crbug.com/454672587
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ModuleDisabled DISABLED_ModuleDisabled
+#else
+#define MAYBE_ModuleDisabled ModuleDisabled
+#endif
+IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, MAYBE_ModuleDisabled) {
   // Disable the Tab Groups module in prefs.
   {
     ScopedListPrefUpdate update(browser()->profile()->GetPrefs(),
