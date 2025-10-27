@@ -61,7 +61,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
     return IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
   }
 
- private:
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupported(
       viz::SharedImageFormat format,

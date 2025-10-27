@@ -391,27 +391,19 @@ bool SharedImageFactory::CreateSharedImage(
 
 bool SharedImageFactory::IsNativeBufferSupported(viz::SharedImageFormat format,
                                                  gfx::BufferUsage usage) {
-  // Note that we are initializing the |supported_gmb_configurations_| here to
-  // make sure gpu service have already initialized and required metadata like
-  // supported buffer configurations have already been sent from browser
-  // process to GPU process for wayland.
-  if (!supported_gmb_configurations_inited_) {
-    supported_gmb_configurations_inited_ = true;
-    if (WillGetGmbConfigFromGpu()) {
+  if (WillGetGmbConfigFromGpu()) {
 #if BUILDFLAG(IS_OZONE_X11)
-      for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
-        supported_gmb_configurations_.emplace(config);
-      }
+    return base::Contains(
+        gpu_extra_info_.gpu_memory_buffer_support_x11,
+        gfx::BufferUsageAndFormat(
+            usage, viz::SharedImageFormatToBufferFormat(format)));
+#else
+    return false;
 #endif  // BUILDFLAG(IS_OZONE_X11)
-    } else {
-      supported_gmb_configurations_ =
-          gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-    }
+  } else {
+    return gpu::GpuMemoryBufferSupport::
+        IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
   }
-  return base::Contains(
-      supported_gmb_configurations_,
-      gfx::BufferUsageAndFormat(usage,
-                                viz::SharedImageFormatToBufferFormat(format)));
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,

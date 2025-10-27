@@ -240,8 +240,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #endif
 
   gfx::GpuExtraInfo gpu_extra_info_;
-  gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
-  bool supported_gmb_configurations_inited_ = false;
   gpu::GpuPreferences gpu_preferences_;
 #if BUILDFLAG(IS_MAC)
   uint32_t texture_target_for_io_surfaces_;
