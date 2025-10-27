@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table_test_api.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -77,6 +78,12 @@ EntityInstance CreateServerVehicleEntityInstance(
     test::VehicleOptions options = {}) {
   options.nickname = "";
   options.record_type = EntityInstance::RecordType::kServerWallet;
+  return test::GetVehicleEntityInstance(options);
+}
+
+EntityInstance CreateLocalVehicleEntityInstance(
+    test::VehicleOptions options = {}) {
+  options.record_type = EntityInstance::RecordType::kLocal;
   return test::GetVehicleEntityInstance(options);
 }
 
@@ -438,6 +445,40 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyDisableSyncChanges_ClearsMetadata) {
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
   EXPECT_THAT(GetMetadataEntries(), ElementsAre(local_vehicle2.metadata()));
+}
+
+// Tests that `EntityInstanceChanged()` ignores local entities.
+TEST_F(ValuableMetadataSyncBridgeTest, EntityInstanceChanged_IgnoresLocal) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  const EntityInstance vehicle = CreateLocalVehicleEntityInstance();
+
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` handles ADD and UPDATE changes.
+TEST_F(ValuableMetadataSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = CreateServerVehicleEntityInstance();
+
+  EXPECT_CALL(mock_processor(), Put(*vehicle.guid(), _, _));
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+
+  EXPECT_CALL(mock_processor(), Put(*vehicle.guid(), _, _));
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::UPDATE, vehicle.guid(), vehicle));
+}
+
+// Tests that `EntityInstanceChanged()` handles a REMOVE change.
+TEST_F(ValuableMetadataSyncBridgeTest, EntityInstanceChanged_Remove) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = CreateServerVehicleEntityInstance();
+
+  EXPECT_CALL(mock_processor(), Delete(*vehicle.guid(), _, _));
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
 }
 
 }  // namespace

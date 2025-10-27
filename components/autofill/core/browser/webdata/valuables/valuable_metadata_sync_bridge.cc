@@ -13,6 +13,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/deletion_origin.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -24,6 +26,20 @@ namespace autofill {
 namespace {
 // The address of this variable is used as the user data key.
 static const int kAutofillValuableMetadataSyncBridgeUserDataKey = 0;
+
+// Returns if the entity `change` should be uploaded to
+// AUTOFILL_VALUABLE_METADATA. Only metadata entries related to server entities
+// should be uploaded.
+bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
+  switch (change.data_model()->record_type()) {
+    case EntityInstance::RecordType::kLocal:
+      // Local entities are not uploaded as AUTOFILL_VALUABLE.
+      return false;
+    case EntityInstance::RecordType::kServerWallet:
+      return true;
+  }
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -39,7 +55,9 @@ ValuableMetadataSyncBridge::ValuableMetadataSyncBridge(
     return;
   }
 
+  CHECK(base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata));
   LoadMetadata();
+  scoped_observation_.Observe(web_data_backend_.get());
 }
 
 ValuableMetadataSyncBridge::~ValuableMetadataSyncBridge() = default;
@@ -281,6 +299,40 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
       syncer::AUTOFILL_VALUABLE_METADATA);
 
   return std::nullopt;
+}
+
+void ValuableMetadataSyncBridge::EntityInstanceChanged(
+    const EntityInstanceChange& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata));
+
+  if (!ShouldUploadEntityChange(change)) {
+    return;
+  }
+
+  CHECK(change_processor()->IsTrackingMetadata());
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+
+  switch (change.type()) {
+    case EntityInstanceChange::ADD:
+    case EntityInstanceChange::UPDATE:
+      CHECK(change.data_model());
+      change_processor()->Put(
+          *change.key(),
+          CreateEntityDataFromEntityInstance(*change.data_model()),
+          metadata_change_list.get());
+      break;
+    case EntityInstanceChange::REMOVE:
+      change_processor()->Delete(
+          *change.key(), syncer::DeletionOrigin::FromLocation(FROM_HERE),
+          metadata_change_list.get());
+      break;
+    case EntityInstanceChange::HIDE_IN_AUTOFILL:
+      // Removing valuables is not supported from the client.
+      NOTREACHED();
+  }
 }
 
 std::optional<syncer::ModelError>

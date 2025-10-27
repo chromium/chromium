@@ -10,11 +10,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
@@ -30,8 +32,10 @@ namespace autofill {
 
 class AutofillWebDataService;
 
-class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
-                                   public syncer::DataTypeSyncBridge {
+class ValuableMetadataSyncBridge
+    : public AutofillWebDataServiceObserverOnDBSequence,
+      public base::SupportsUserData::Data,
+      public syncer::DataTypeSyncBridge {
  public:
   ValuableMetadataSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
@@ -70,6 +74,9 @@ class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
                                    delete_metadata_change_list) override;
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
+
+  // AutofillWebDataServiceObserverOnDBSequence:
+  void EntityInstanceChanged(const EntityInstanceChange& change) override;
 
  private:
   // Merges remote changes, specified in `entity_data`, with the local DB and,
@@ -111,6 +118,10 @@ class ValuableMetadataSyncBridge : public base::SupportsUserData::Data,
   // These are converted to their `AutofillValuableMetadataSpecifics`
   // representation and returned as a `syncer::MutableDataBatch`.
   std::unique_ptr<syncer::MutableDataBatch> GetAllData();
+
+  base::ScopedObservation<AutofillWebDataBackend,
+                          AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observation_{this};
 
   // The bridge should be used on the same sequence where it has been
   // constructed.
