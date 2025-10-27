@@ -491,7 +491,6 @@ BASE_FEATURE(kPrivacySandboxAdsAPIsM1Override,
 BASE_FEATURE(kContinueGestureOnLosingFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
              base::FEATURE_DISABLED_BY_DEFAULT);

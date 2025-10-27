@@ -35,8 +35,9 @@ std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
 
 const char* BrowsingInstanceSwapResultToString(
     std::optional<ShouldSwapBrowsingInstance> reason) {
-  if (!reason)
+  if (!reason) {
     return "no BI swap result";
+  }
   switch (reason.value()) {
     case ShouldSwapBrowsingInstance::kYes_ForceSwap:
       return "forced BI swap";
@@ -318,8 +319,9 @@ std::string DisallowActivationReasonsToString(
 }  // namespace
 
 std::string BackForwardCacheCanStoreDocumentResult::ToString() const {
-  if (CanStore())
+  if (CanStore()) {
     return "Yes";
+  }
   std::vector<std::string> reason_strs;
   for (BackForwardCacheMetrics::NotRestoredReason reason :
        not_restored_reasons_) {
@@ -633,8 +635,8 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
         reason_to_source_map_[nrr_report_str];
       }
     }
-    }
   }
+}
 
 void BackForwardCacheCanStoreDocumentResult::
     NoDueToDisableForRenderFrameHostCalled(
@@ -686,8 +688,9 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
   for (const auto& reason : other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
-  if (other.browsing_instance_swap_result_)
+  if (other.browsing_instance_swap_result_) {
     browsing_instance_swap_result_ = other.browsing_instance_swap_result_;
+  }
   for (const auto reason : other.disallow_activation_reasons()) {
     disallow_activation_reasons_.insert(reason);
   }

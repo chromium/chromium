@@ -289,8 +289,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   // This test assumes cross-site navigation staying in the same
   // BrowsingInstance to use a different SiteInstance. Otherwise, it will
   // timeout at step 2).
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     return;
+  }
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
