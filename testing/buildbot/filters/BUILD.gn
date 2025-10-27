@@ -332,6 +332,7 @@ source_set("services_unittests_filters") {
     "//testing/buildbot/filters/fuchsia.services_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.services_unittests.filter",
     "//testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter",
+    "//testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.services_webnn_unittests.filter",
   ]
 }
 
@@ -386,6 +387,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/win.amd.7600.gl_tests_passthrough.filter",
+    "//testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/win.uhd_770.gl_tests_passthrough.filter",
   ]
 }
@@ -400,6 +402,7 @@ source_set("gl_unittests_filters") {
     "//testing/buildbot/filters/win.amd.780m.gl_unittests.filter",
     "//testing/buildbot/filters/win.amd.890m.gl_unittests.filter",
     "//testing/buildbot/filters/win.nvidia.gtx.1660.gl_unittests.filter",
+    "//testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_unittests.filter",
   ]
 }
 

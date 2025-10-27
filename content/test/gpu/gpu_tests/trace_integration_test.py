@@ -507,6 +507,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     #   * Mac/NVIDIA (due to old/slow hardware)
     #   * Linux (unknown cause)
     #   * ChromeOS VMs (extra load from VM slows down system)
+    #   * Win/ARM64 (likely slow due to using x64 emulation)
     load_timeout = 2
     slow_load_timeout = 10
     os_name = cls.browser.platform.GetOSName()
@@ -519,6 +520,9 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       load_timeout = slow_load_timeout
     elif os_name == 'chromeos':
       if 'chromeos-board-amd64-generic' in cls.GetPlatformTags(cls.browser):
+        load_timeout = slow_load_timeout
+    elif os_name == 'win':
+      if 'arch-arm64' in cls.GetPlatformTags(cls.browser):
         load_timeout = slow_load_timeout
     return load_timeout
 

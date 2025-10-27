@@ -278,6 +278,9 @@ crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition
 [ win11 qualcomm ] WebGPUTraceTest* [ Failure ]
 [ win11 qualcomm ] WebGPUCachingTraceTest_* [ Failure ]
 
+# Win11/Qualcomm Snapdragon X Elite
+crbug.com/453704683 [ win11 qualcomm-0x36334330 ] OverlayModeTraceTest_DirectComposition* [ Failure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################

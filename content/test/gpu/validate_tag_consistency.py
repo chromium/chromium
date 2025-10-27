@@ -125,7 +125,7 @@ TAG_SPECIALIZATIONS = {
         'qualcomm': [
             # 043a = 0x41333430 = older Adreno GPU
             # 0636 = 0x36333630 = Adreno 690 GPU (such as Surface Pro 9 5G)
-            # 0c36 = 0x36334330 = Adreno 741 GPU
+            # 0c36 = 0x36334330 = Adreno 741 GPU (Snapdragon X Elite)
             'qualcomm-0x41333430',
             'qualcomm-0x36333630',
             'qualcomm-0x36334330',

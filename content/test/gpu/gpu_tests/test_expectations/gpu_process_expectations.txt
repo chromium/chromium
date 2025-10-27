@@ -126,6 +126,7 @@ crbug.com/1448964 [ mac angle-metal ] GpuProcess_mac_webgl_terminated_high_perfo
 [ win qualcomm-0x41333430 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 [ win qualcomm-0x36333630 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
 [ win qualcomm-0x36334330 ] GpuProcess_no_swiftshader_for_webgl_without_flags [ Skip ]
+[ win qualcomm-0x36334330 ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 
 # Software Compositing is not supported on ChromeOS.
 crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
