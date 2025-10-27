@@ -193,6 +193,10 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.S,
+            supported_abis_includes = "x86",
+            message = "crbug.com/455491374")
     public void testClicksThroughOtherSurfaceAreAreProcessed()
             throws ExecutionException, TimeoutException, InterruptedException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
@@ -215,6 +219,10 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.S,
+            supported_abis_includes = "x86",
+            message = "crbug.com/455491374")
     public void testClicksThroughOtherSurfaceAreIgnored()
             throws ExecutionException, TimeoutException, InterruptedException {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
