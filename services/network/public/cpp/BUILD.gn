@@ -788,6 +788,7 @@ source_set("tests") {
     "cross_thread_pending_shared_url_loader_factory_unittest.cc",
     "data_pipe_to_source_stream_unittest.cc",
     "default_credentials_mojom_traits_unittest.cc",
+    "device_bound_sessions_mojom_traits_unittest.cc",
     "devtools_observer_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
     "document_isolation_policy_parser_unittest.cc",

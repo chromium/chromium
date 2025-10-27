@@ -13,6 +13,7 @@ include_rules = [
   "+components/prefs",
   "+components/privacy_sandbox/privacy_sandbox_features.h",
   "+components/privacy_sandbox/masked_domain_list",
+  "+components/unexportable_keys",
   "+components/url_matcher",
   "+components/url_pattern",
   "+components/version_info",

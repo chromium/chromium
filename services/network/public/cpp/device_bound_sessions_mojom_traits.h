@@ -8,6 +8,7 @@
 #include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/session_access.h"
 #include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 
 namespace mojo {
@@ -151,6 +152,147 @@ struct EnumTraits<network::mojom::DeviceBoundSessionDeletionReason,
         return true;
     }
   }
+};
+
+template <>
+struct EnumTraits<
+    network::mojom::DeviceBoundSessionScopeSpecificationType,
+    net::device_bound_sessions::SessionParams::Scope::Specification::Type> {
+  static network::mojom::DeviceBoundSessionScopeSpecificationType ToMojom(
+      net::device_bound_sessions::SessionParams::Scope::Specification::Type
+          type) {
+    using enum net::device_bound_sessions::SessionParams::Scope::Specification::
+        Type;
+    switch (type) {
+      case kExclude:
+        return network::mojom::DeviceBoundSessionScopeSpecificationType::
+            kExclude;
+      case kInclude:
+        return network::mojom::DeviceBoundSessionScopeSpecificationType::
+            kInclude;
+    }
+  }
+
+  static bool FromMojom(
+      network::mojom::DeviceBoundSessionScopeSpecificationType input,
+      net::device_bound_sessions::SessionParams::Scope::Specification::Type*
+          output) {
+    using enum net::device_bound_sessions::SessionParams::Scope::Specification::
+        Type;
+    switch (input) {
+      case network::mojom::DeviceBoundSessionScopeSpecificationType::kExclude:
+        *output = kExclude;
+        return true;
+      case network::mojom::DeviceBoundSessionScopeSpecificationType::kInclude:
+        *output = kInclude;
+        return true;
+    }
+  }
+};
+
+template <>
+struct StructTraits<
+    network::mojom::DeviceBoundSessionScopeSpecificationDataView,
+    net::device_bound_sessions::SessionParams::Scope::Specification> {
+  static net::device_bound_sessions::SessionParams::Scope::Specification::Type
+  type(const net::device_bound_sessions::SessionParams::Scope::Specification&
+           obj) {
+    return obj.type;
+  }
+
+  static const std::string& domain(
+      const net::device_bound_sessions::SessionParams::Scope::Specification&
+          obj) {
+    return obj.domain;
+  }
+
+  static const std::string& path(
+      const net::device_bound_sessions::SessionParams::Scope::Specification&
+          obj) {
+    return obj.path;
+  }
+
+  static bool Read(
+      network::mojom::DeviceBoundSessionScopeSpecificationDataView data,
+      net::device_bound_sessions::SessionParams::Scope::Specification* out);
+};
+
+template <>
+struct StructTraits<network::mojom::DeviceBoundSessionScopeDataView,
+                    net::device_bound_sessions::SessionParams::Scope> {
+  static bool include_site(
+      const net::device_bound_sessions::SessionParams::Scope& obj) {
+    return obj.include_site;
+  }
+
+  static const std::vector<
+      net::device_bound_sessions::SessionParams::Scope::Specification>&
+  specifications(const net::device_bound_sessions::SessionParams::Scope& obj) {
+    return obj.specifications;
+  }
+
+  static const std::string& origin(
+      const net::device_bound_sessions::SessionParams::Scope& obj) {
+    return obj.origin;
+  }
+
+  static bool Read(network::mojom::DeviceBoundSessionScopeDataView data,
+                   net::device_bound_sessions::SessionParams::Scope* out);
+};
+
+template <>
+struct StructTraits<network::mojom::DeviceBoundSessionCredentialDataView,
+                    net::device_bound_sessions::SessionParams::Credential> {
+  static const std::string& name(
+      const net::device_bound_sessions::SessionParams::Credential& obj) {
+    return obj.name;
+  }
+
+  static const std::string& attributes(
+      const net::device_bound_sessions::SessionParams::Credential& obj) {
+    return obj.attributes;
+  }
+
+  static bool Read(network::mojom::DeviceBoundSessionCredentialDataView data,
+                   net::device_bound_sessions::SessionParams::Credential* out);
+};
+
+template <>
+struct StructTraits<network::mojom::DeviceBoundSessionParamsDataView,
+                    net::device_bound_sessions::SessionParams> {
+  static const std::string& session_id(
+      const net::device_bound_sessions::SessionParams& obj) {
+    return obj.session_id;
+  }
+
+  static const GURL& fetcher_url(
+      const net::device_bound_sessions::SessionParams& obj) {
+    return obj.fetcher_url;
+  }
+
+  static const std::string& refresh_url(
+      const net::device_bound_sessions::SessionParams& obj) {
+    return obj.refresh_url;
+  }
+
+  static const net::device_bound_sessions::SessionParams::Scope& scope(
+      const net::device_bound_sessions::SessionParams& obj) {
+    return obj.scope;
+  }
+
+  static const std::vector<
+      net::device_bound_sessions::SessionParams::Credential>&
+  credentials(const net::device_bound_sessions::SessionParams& obj) {
+    return obj.credentials;
+  }
+
+  static const std::vector<std::string>& allowed_refresh_initiators(
+      const net::device_bound_sessions::SessionParams& obj) {
+    return obj.allowed_refresh_initiators;
+  }
+
+  static bool Read(network::mojom::DeviceBoundSessionParamsDataView data,
+                   net::device_bound_sessions::SessionParams* out);
 };
 
 }  // namespace mojo

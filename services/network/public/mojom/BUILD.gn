@@ -1011,6 +1011,11 @@ mojom("url_loader_base") {
           mojom = "network.mojom.DeviceBoundSessionDeletionReason"
           cpp = "::net::device_bound_sessions::DeletionReason"
         },
+        {
+          mojom = "network.mojom.DeviceBoundSessionParams"
+          cpp = "::net::device_bound_sessions::SessionParams"
+          move_only = true
+        },
       ]
       traits_headers = [
         "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",
@@ -1018,7 +1023,10 @@ mojom("url_loader_base") {
       traits_sources = [
         "//services/network/public/cpp/device_bound_sessions_mojom_traits.cc",
       ]
-      traits_public_deps = [ "//net" ]
+      traits_public_deps = [
+        "//components/unexportable_keys",
+        "//net",
+      ]
     },
     {
       types = [

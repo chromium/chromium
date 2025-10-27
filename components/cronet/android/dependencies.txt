@@ -34,6 +34,7 @@
 //components/network_time/time_tracker
 //components/prefs
 //components/prefs/android
+//components/unexportable_keys
 //crypto
 //net
 //net/android

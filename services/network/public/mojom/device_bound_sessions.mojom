@@ -65,6 +65,44 @@ enum DeviceBoundSessionDeletionReason {
 
 // LINT.ThenChange(//net/device_bound_sessions/deletion_reason.h:DeletionReason)
 
+// LINT.IfChange(DeviceBoundSessionParams)
+
+// The following provides Mojo bindings over the DBSC JSON registration
+// payload. See the spec for details about their intended semantics:
+// https://w3c.github.io/webappsec-dbsc/#format-session-instructions
+enum DeviceBoundSessionScopeSpecificationType {
+  kExclude,
+  kInclude,
+};
+
+struct DeviceBoundSessionScopeSpecification {
+  DeviceBoundSessionScopeSpecificationType type;
+  string domain;
+  string path;
+};
+
+struct DeviceBoundSessionScope {
+  bool include_site;
+  array<DeviceBoundSessionScopeSpecification> specifications;
+  string origin;
+};
+
+struct DeviceBoundSessionCredential {
+  string name;
+  string attributes;
+};
+
+struct DeviceBoundSessionParams {
+  string session_id;
+  url.mojom.Url fetcher_url;
+  string refresh_url;
+  DeviceBoundSessionScope scope;
+  array<DeviceBoundSessionCredential> credentials;
+  array<string> allowed_refresh_initiators;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_params.h:SessionParams)
+
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
 [RequireContext=sandbox.mojom.Context.kBrowser]

@@ -6,6 +6,8 @@
 
 namespace net::device_bound_sessions {
 
+SessionParams::SessionParams() = default;
+
 SessionParams::SessionParams(
     std::string id,
     GURL fetcher_url,

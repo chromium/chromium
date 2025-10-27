@@ -478,6 +478,8 @@ component("net") {
     "device_bound_sessions/session_access.h",
     "device_bound_sessions/session_key.cc",
     "device_bound_sessions/session_key.h",
+    "device_bound_sessions/session_params.cc",
+    "device_bound_sessions/session_params.h",
     "device_bound_sessions/session_usage.h",
     "disk_cache/backend_cleanup_tracker.cc",
     "disk_cache/backend_cleanup_tracker.h",
@@ -1174,6 +1176,7 @@ component("net") {
     ":cronet_buildflags",
     ":net_deps",
     "//components/network_time/time_tracker",
+    "//components/unexportable_keys",
     "//net/http:transport_security_state_generated_files",
     "//third_party/simdutf",
   ]
@@ -1272,8 +1275,6 @@ component("net") {
       "device_bound_sessions/session_inclusion_rules.h",
       "device_bound_sessions/session_json_utils.cc",
       "device_bound_sessions/session_json_utils.h",
-      "device_bound_sessions/session_params.cc",
-      "device_bound_sessions/session_params.h",
       "device_bound_sessions/session_service.cc",
       "device_bound_sessions/session_service.h",
       "device_bound_sessions/session_service_impl.cc",
@@ -1292,7 +1293,6 @@ component("net") {
       ":device_bound_sessions_storage_proto",
       "//build:branding_buildflags",
       "//components/sqlite_proto",
-      "//components/unexportable_keys",
       "//sql",
     ]
   }
