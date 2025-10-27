@@ -54,6 +54,77 @@
     Hi, <ph name="PROFILE_NAME">$1<ex>User</ex></ph>
   </message>
 
+  <!-- Identity error message for passkey unlock experiment -->
+  <if expr="use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock Your Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock your passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get Your Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get your passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify It's You
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY" desc="A short label for the avatar button, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device. Tapping the button will open the profile menu. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify it's you
+    </message>
+  </if>
+  <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK" desc="Subtitle in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+    Verify it’s you to save and use your passkeys on this device
+  </message>
+  <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET" desc="Subtitle in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+    Get your passkeys on this device with Google Password Manager
+  </message>
+  <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY" desc="Subtitle in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+    Verify it’s you to get your passkeys on this device
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock Your Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Unlock your passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get Passkeys
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Get passkeys
+    </message>
+  </if>
+  <if expr="use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify It's You
+    </message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY" desc="Button in the profile menu, shown when the user needs to verify their identity to unlock usage of their Google Password Manager passkeys on this device, e.g. by presenting a PIN. Tapping the button will open a tab asking the user to verify their identity with a PIN or other challenge. The word 'passkey' is distinct from 'password', consult the glossary for a translation.">
+      Verify it's you
+    </message>
+  </if>
+
   <!-- Multi-profile -->
   <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
     Profiles

@@ -24,6 +24,12 @@ namespace webauthn {
 class PasskeyUnlockManager : public KeyedService,
                              public PasskeyModel::Observer {
  public:
+  enum class ExperimentArm {
+    kUnlock,
+    kGet,
+    kVerify,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Notifies the observer that state has changed.
@@ -49,6 +55,13 @@ class PasskeyUnlockManager : public KeyedService,
 
   // Opens a browser tab with a challenge for unlocking passkeys.
   static void OpenTabWithPasskeyUnlockChallenge(Browser* browser);
+
+  // Methods providing the UI strings depending on the experiment arms.
+  std::u16string GetPasskeyErrorProfilePillTitle(ExperimentArm experiment_arm);
+  std::u16string GetPasskeyErrorProfileMenuDetails(
+      ExperimentArm experiment_arm);
+  std::u16string GetPasskeyErrorProfileMenuButtonLabel(
+      ExperimentArm experiment_arm);
 
  private:
   // Returns the PasskeyModel associated with the profile passed to the

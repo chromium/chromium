@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
+#include "chrome/grit/generated_resources.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace webauthn {
 PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
@@ -44,6 +46,48 @@ void PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(Browser* browser) {
   NavigateParams params(GetSingletonTabNavigateParams(
       browser, GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url()));
   Navigate(&params);
+}
+
+std::u16string PasskeyUnlockManager::GetPasskeyErrorProfilePillTitle(
+    ExperimentArm experiment_arm) {
+  switch (experiment_arm) {
+    case ExperimentArm::kUnlock:
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_UNLOCK);
+    case ExperimentArm::kGet:
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_GET);
+    case ExperimentArm::kVerify:
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY);
+  }
+}
+
+std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuDetails(
+    ExperimentArm experiment_arm) {
+  switch (experiment_arm) {
+    case ExperimentArm::kUnlock:
+      return l10n_util::GetStringUTF16(
+          IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_UNLOCK);
+    case ExperimentArm::kGet:
+      return l10n_util::GetStringUTF16(
+          IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_GET);
+    case ExperimentArm::kVerify:
+      return l10n_util::GetStringUTF16(
+          IDS_PROFILE_MENU_PASSKEYS_ERROR_DESCRIPTION_VERIFY);
+  }
+}
+
+std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuButtonLabel(
+    ExperimentArm experiment_arm) {
+  switch (experiment_arm) {
+    case ExperimentArm::kUnlock:
+      return l10n_util::GetStringUTF16(
+          IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_UNLOCK);
+    case ExperimentArm::kGet:
+      return l10n_util::GetStringUTF16(
+          IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_GET);
+    case ExperimentArm::kVerify:
+      return l10n_util::GetStringUTF16(
+          IDS_PROFILE_MENU_PASSKEYS_ERROR_BUTTON_VERIFY);
+  }
 }
 
 PasskeyModel* PasskeyUnlockManager::passkey_model() {
