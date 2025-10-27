@@ -64,7 +64,6 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
   options.expected_app_id = use_dedicated_origin_chat
                                 ? ash::kGoogleChatAppId
                                 : ash::kOldGoogleChatAppId;
-  options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating(
       [](bool is_standalone, webapps::ManifestId manifest_id, GURL start_url,
          GURL scope) {

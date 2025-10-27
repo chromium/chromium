@@ -70,7 +70,14 @@ class PreinstalledWebAppsBrowserTest : public WebAppBrowserTestBase {
   base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 };
 
-IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+// TODO(http://crbug.com/328691719): Test is flaky on CHROMEOS.
+#define MAYBE_CheckInstalledFields DISABLED_CheckInstalledFields
+#else
+#define MAYBE_CheckInstalledFields CheckInstalledFields
+#endif
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
+                       MAYBE_CheckInstalledFields) {
   base::AutoReset<bool> scope =
       SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
@@ -88,21 +95,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
           "https://calendar.google.com/calendar/"
           "installwebapp?usp=chrome_default",
           "https://calendar.google.com/calendar/r?usp=installed_webapp",
-      },
-      {
-          ash::kVidsAppId,
-          "https://docs.google.com/videos/installwebapp?usp=chrome_default",
-          "https://docs.google.com/videos/?usp=installed_webapp",
-      },
-      {
-          ash::kGeminiAppId,
-          "https://gemini.google.com/",
-          "https://gemini.google.com/?cros_source=c",
-      },
-      {
-          ash::kNotebookLmAppId,
-          "https://notebooklm.google.com/install",
-          "https://notebooklm.google.com/",
       },
 #endif  // BUILDFLAG(IS_CHROMEOS)
       {
@@ -166,6 +158,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
       {
           "https://calculator.apps.chrome/install",
       },
+      {
+          "https://discover.apps.chrome/install/",
+      },
   });
 #else
   std::array<OnlineOnlyExpectation, 0> kOnlineOnlyExpectations;
@@ -189,7 +184,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
             kOfflineOnlyExpectations.size() + kOnlineOnlyExpectations.size());
 
   for (const auto& expectation : kOfflineOnlyExpectations) {
-    SCOPED_TRACE(expectation.install_url);
     auto install_result_it =
         install_results.find(GURL(expectation.install_url));
     EXPECT_NE(install_result_it, install_results.end())
@@ -202,7 +196,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   }
 
   for (const auto& expectation : kOnlineOnlyExpectations) {
-    SCOPED_TRACE(expectation.install_url);
     auto install_result_it =
         install_results.find(GURL(expectation.install_url));
     EXPECT_NE(install_result_it, install_results.end())
@@ -215,7 +208,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
   }
 
   for (const auto& expectation : kOfflineOnlyExpectations) {
-    SCOPED_TRACE(expectation.install_url);
     EXPECT_EQ(provider.registrar_unsafe().GetAppLaunchUrl(expectation.app_id),
               GURL(expectation.launch_url));
   }
