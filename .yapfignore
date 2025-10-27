@@ -15,4 +15,5 @@
 # Third-party code.
 third_party/blink/tools/blinkpy/third_party/*
 third_party/blink/web_tests/external/wpt/*
+third_party/rust/chromium_crates_io/vendor/*
 tools/valgrind/asan/third_party/asan_symbolize.py
