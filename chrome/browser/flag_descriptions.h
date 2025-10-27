@@ -6103,6 +6103,12 @@ inline constexpr char kReadAnythingDocsLoadMoreButtonDescription[] =
     "Adds a button to the end of the Reading Mode UI. When clicked, "
     "the main page scrolls to show the next page's content.";
 
+inline constexpr char kReadAnythingWithReadabilityName[] =
+    "Reading Mode Experimental Webpage Distilation";
+inline constexpr char kReadAnythingWithReadabilityDescription[] =
+    "Enables the experimental text webpage distillation using readability.js "
+    "method for reading mode.";
+
 inline constexpr char kLinkPreviewName[] = "Link Preview";
 inline constexpr char kLinkPreviewDescription[] =
     "When enabled, Link Preview feature gets to be available to preview a "

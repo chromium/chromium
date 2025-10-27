@@ -12173,6 +12173,8 @@ from previous Chrome versions.
       label="OmniboxUIExperimentShowSuggestionFavicons:enabled"/>
   <int value="-757379927" label="Canvas2DImageChromium:enabled"/>
   <int value="-757282194" label="EnableFilesystemInIncognito:enabled"/>
+  <int value="-757144288"
+      label="read-anything-with-readability-enabled:enabled"/>
   <int value="-756038603" label="ImeKoreanModeSwitchDebug:disabled"/>
   <int value="-755776824" label="OmniboxRedoCurrentMatch:disabled"/>
   <int value="-755068996" label="AutofillEnableCardArtImage:disabled"/>
@@ -13670,6 +13672,7 @@ from previous Chrome versions.
   <int value="-224262386" label="OutlineSilhouetteIcon:enabled"/>
   <int value="-223595595" label="OSKResizesVisualViewportByDefault:enabled"/>
   <int value="-223197964" label="MediaSessionEnterPictureInPicture:enabled"/>
+  <int value="-222824745" label="ReadAnythingWithReadability:disabled"/>
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-221649438" label="AllowTouchpadHapticClickSettings:disabled"/>
@@ -17554,6 +17557,7 @@ from previous Chrome versions.
   <int value="1149417604" label="StreamlinedUsbPrinterSetup:disabled"/>
   <int value="1149731024" label="MultiDisplayOverviewAndSplitView:enabled"/>
   <int value="1149741132" label="RecordPermissionExpirationTimestamps:enabled"/>
+  <int value="1149763389" label="ReadAnythingWithReadability:enabled"/>
   <int value="1149823105" label="enable-input-ime-api"/>
   <int value="1150622273" label="enable-apps-file-associations"/>
   <int value="1151907729" label="NtpModuleSignInRequirement:enabled"/>
@@ -19435,6 +19439,8 @@ from previous Chrome versions.
   <int value="1801297618" label="HelpAppAutoTriggerInstallDialog:disabled"/>
   <int value="1801585504" label="ContextMenuShopWithGoogleLens:enabled"/>
   <int value="1801934728" label="SysUiShouldHoldbackFocusMode:enabled"/>
+  <int value="1802631070"
+      label="read-anything-with-readability-enabled:disabled"/>
   <int value="1802821192" label="VCBackgroundReplace:disabled"/>
   <int value="1802874714" label="QueryTilesEnableQueryEditing:disabled"/>
   <int value="1803465156" label="enable-zero-suggest-most-visited"/>

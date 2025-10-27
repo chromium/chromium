@@ -13457,6 +13457,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConnectionAllowlistsDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kConnectionAllowlists)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"read-anything-with-readability-enabled",
+     flag_descriptions::kReadAnythingWithReadabilityName,
+     flag_descriptions::kReadAnythingWithReadabilityDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingWithReadability)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
