@@ -861,6 +861,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     When a user performs a scroll using touchscreen, a sequence of touch-move
     events are generated leading to a sequence of gesture-scroll-update events.
@@ -881,6 +882,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-04-12">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     When a user performs a scroll using touchscreen, a sequence of touch-move
     events are generated leading to a sequence of gesture-scroll-update events.
@@ -903,6 +905,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-02-22">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {NonTouchscreenScrollInputType}
     gesture-scroll-update events that are non-inertial (i.e. not generated due
@@ -924,6 +927,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-03-01">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of all event types, from when the user input causing
     the event is performed until the frame caused by the event is submitted by
@@ -938,6 +942,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-01">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {ScrollInputType} {NonGsuScrollEventType}, from when
     the user input causing the event is performed until the frame caused by the
@@ -971,6 +976,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-04-12">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {NonScrollPinchEventType}, from when the user input
     causing the event is performed generated until the frame caused by the event
@@ -1007,6 +1013,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-01">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {PinchInputType} {PinchEventType}, from when the
     user input causing the event is performed until the frame caused by the
@@ -1031,6 +1038,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-03-15">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks latency from when the user input causing the event is generated until
     the the event is first processed on the Browser Main Thread. Reported for
@@ -1045,6 +1053,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2026-04-19">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {ScrollEventType}, from when the user input causing
     the event is performed generated until the frame caused by the event is
