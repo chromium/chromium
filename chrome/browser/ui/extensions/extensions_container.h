@@ -5,48 +5,22 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_
 
-#include <memory>
-#include <optional>
 #include <string>
 
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
-#include "extensions/common/extension_id.h"
 
 class ToolbarActionViewController;
-class ToolbarActionView;
 
 // An interface for containers in the toolbar that host extensions.
+//
+// This interface provides a minimal set of APIs that allows non-UI code to
+// interact with the extension toolbar UI. Add new methods to this interface
+// only if they are called from non-UI code.
 class ExtensionsContainer {
  public:
   // Returns the action for the given |id|, if one exists.
   virtual ToolbarActionViewController* GetActionForId(
       const std::string& action_id) = 0;
-
-  // Get the currently popped out action id, if any.
-  // TODO(pbos): Consider supporting multiple popped out actions for bubbles
-  // that relate to more than one extension.
-  virtual std::optional<extensions::ExtensionId> GetPoppedOutActionId()
-      const = 0;
-
-  // Called when the context menu of a toolbar action with `action_id` is
-  // opened, so the container can perform any necessary setup.
-  virtual void OnContextMenuShownFromToolbar(const std::string& action_id) {}
-
-  // Called when the context menu of a toolbar action is closed, so the
-  // container can perform any necessary cleanup.
-  virtual void OnContextMenuClosedFromToolbar() {}
-
-  // Returns true if the action pointed by `action_id` is visible on the
-  // toolbar.
-  virtual bool IsActionVisibleOnToolbar(const std::string& action_id) const = 0;
-
-  // Undoes the current "pop out"; i.e., moves the popped out action back into
-  // overflow.
-  virtual void UndoPopOut() = 0;
-
-  // Sets the active popup owner to be |popup_owner|.
-  virtual void SetPopupOwner(ToolbarActionViewController* popup_owner) = 0;
 
   // Hides the actively showing popup, if any.
   virtual void HideActivePopup() = 0;
@@ -54,11 +28,6 @@ class ExtensionsContainer {
   // Closes the overflow menu, if it was open. Returns whether or not the
   // overflow menu was closed.
   virtual bool CloseOverflowMenuIfOpen() = 0;
-
-  // Pops out `action_id`, ensuring it is visible. `closure` will be called once
-  // any animation is complete.
-  virtual void PopOutAction(const extensions::ExtensionId& action_id,
-                            base::OnceClosure closure) = 0;
 
   // Shows the popup for the action with |id| as the result of an API call,
   // returning true if a popup is shown and invoking |callback| upon completion.
@@ -70,29 +39,6 @@ class ExtensionsContainer {
 
   // Whether there are any Extensions registered with the ExtensionsContainer.
   virtual bool HasAnyExtensions() const = 0;
-
-  // Updates the hover card for `action_view` based on `update_type`.
-  virtual void UpdateToolbarActionHoverCard(
-      ToolbarActionView* action_view,
-      ToolbarActionHoverCardUpdateType update_type) = 0;
-
-  // Collapses the confirmation on the request access button, effectively
-  // hiding the button. Does nothing if the confirmation is not showing
-  // anymore.
-  virtual void CollapseConfirmation() = 0;
-
-  // Shows the context menu for the action as a fallback for performing another
-  // action.
-  virtual void ShowContextMenuAsFallback(
-      const extensions::ExtensionId& action_id) = 0;
-
-  // Called when a popup is shown. If `by_user` is true, then this was through
-  // a direct user action (as opposed to, e.g., an API call).
-  virtual void OnPopupShown(const extensions::ExtensionId& action_id,
-                            bool by_user) = 0;
-
-  // Called when a popup is closed.
-  virtual void OnPopupClosed(const extensions::ExtensionId& action_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_CONTAINER_H_

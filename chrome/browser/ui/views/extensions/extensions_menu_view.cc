@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -73,7 +73,7 @@ ExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
 ExtensionsMenuView::ExtensionsMenuView(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainer* extensions_container)
+    ExtensionsContainerViews* extensions_container)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
@@ -505,7 +505,7 @@ base::AutoReset<bool> ExtensionsMenuView::AllowInstancesForTesting() {
 views::Widget* ExtensionsMenuView::ShowBubble(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainer* extensions_container) {
+    ExtensionsContainerViews* extensions_container) {
   DCHECK(!g_extensions_dialog);
   // Experiment `kExtensionsMenuAccessControl` is introducing a new menu. Check
   // `ExtensionsMenuView` is only constructed when the experiment is disabled.

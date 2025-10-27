@@ -3743,6 +3743,7 @@ static_library("ui") {
       "views/extensions/extension_permissions_view.h",
       "views/extensions/extension_view_utils.cc",
       "views/extensions/extension_view_utils.h",
+      "views/extensions/extensions_container_views.h",
       "views/extensions/extensions_menu_button.cc",
       "views/extensions/extensions_menu_button.h",
       "views/extensions/extensions_menu_coordinator.cc",

@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   VerifyUi();
   TriggerSingleExtensionButton();
 
-  ExtensionsContainer* const extensions_container =
+  ExtensionsContainerViews* const extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   std::optional<extensions::ExtensionId> action_id =
       extensions_container->GetPoppedOutActionId();
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   VerifyUi();
   TriggerExtensionButton(id1);
 
-  ExtensionsContainer* const extensions_container =
+  ExtensionsContainerViews* const extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   ASSERT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   destroyed_waiter.Wait();
 
-  ExtensionsContainer* const extensions_container =
+  ExtensionsContainerViews* const extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
 
   // This test should not use a popped-out action, as we want to make sure that

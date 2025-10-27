@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -32,7 +32,7 @@ using extensions::ActionInfo;
 
 ExtensionActionPlatformDelegateViews::ExtensionActionPlatformDelegateViews(
     BrowserWindowInterface* browser,
-    ExtensionsContainer* extensions_container)
+    ExtensionsContainerViews* extensions_container)
     : browser_(browser), extensions_container_(extensions_container) {}
 
 ExtensionActionPlatformDelegateViews::~ExtensionActionPlatformDelegateViews() {

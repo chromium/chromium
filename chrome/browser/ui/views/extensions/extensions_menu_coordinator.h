@@ -13,7 +13,7 @@
 class Browser;
 class ExtensionsMenuViewPlatformDelegateViews;
 class ExtensionsMenuViewModel;
-class ExtensionsContainer;
+class ExtensionsContainerViews;
 
 namespace views {
 class BubbleDialogDelegate;
@@ -31,7 +31,7 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
 
   // Displays the extensions menu under `anchor`.
   void Show(views::BubbleAnchor anchor,
-            ExtensionsContainer* extensions_container);
+            ExtensionsContainerViews* extensions_container);
 
   // Hides the currently-showing extensions menu, if it exists.
   void Hide();
@@ -49,14 +49,14 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegateForTesting(
       views::BubbleAnchor anchor,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainerViews* extensions_container);
 
  private:
   // Creates the bubble contents and returns its delegate.
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegate(
       views::BubbleAnchor anchor,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainerViews* extensions_container);
 
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;

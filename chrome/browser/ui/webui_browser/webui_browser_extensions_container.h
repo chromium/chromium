@@ -8,8 +8,8 @@
 #include <map>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/webui_browser/extensions_bar.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -22,14 +22,14 @@ class Browser;
 class WebUIBrowserWindow;
 
 class WebUIBrowserExtensionsContainer
-    : public ExtensionsContainer,
+    : public ExtensionsContainerViews,
       public ToolbarActionsModel::Observer,
       public extensions_bar::mojom::PageHandler {
  public:
   WebUIBrowserExtensionsContainer(Browser& browser, WebUIBrowserWindow& window);
   ~WebUIBrowserExtensionsContainer() override;
 
-  // ExtensionsContainer:
+  // ExtensionsContainerViews:
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
   std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;

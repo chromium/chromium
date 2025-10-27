@@ -13,7 +13,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 class BrowserWindowInterface;
-class ExtensionsContainer;
+class ExtensionsContainerViews;
 class ToolbarActionViewDelegateViews;
 
 namespace extensions {
@@ -35,7 +35,7 @@ class ExtensionActionPlatformDelegateViews
  public:
   ExtensionActionPlatformDelegateViews(
       BrowserWindowInterface* browser,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainerViews* extensions_container);
 
   ExtensionActionPlatformDelegateViews(
       const ExtensionActionPlatformDelegateViews&) = delete;
@@ -94,8 +94,8 @@ class ExtensionActionPlatformDelegateViews
   // The corresponding browser window.
   const raw_ptr<BrowserWindowInterface> browser_;
 
-  // The corresponding ExtensionsContainer on the toolbar.
-  const raw_ptr<ExtensionsContainer> extensions_container_;
+  // The corresponding ExtensionsContainerViews on the toolbar.
+  const raw_ptr<ExtensionsContainerViews> extensions_container_;
 
   // The platform-agnostic view model.
   raw_ptr<ExtensionActionViewController> controller_{nullptr};

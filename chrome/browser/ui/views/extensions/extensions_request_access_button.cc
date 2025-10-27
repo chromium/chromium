@@ -22,10 +22,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -58,7 +58,7 @@ std::vector<const extensions::Extension*> GetExtensions(
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
     Browser* browser,
-    ExtensionsContainer* extensions_container)
+    ExtensionsContainerViews* extensions_container)
     : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this)),
@@ -227,7 +227,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   // lifetime of `extensions_container_`.
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
-      base::BindOnce(&ExtensionsContainer::CollapseConfirmation,
+      base::BindOnce(&ExtensionsContainerViews::CollapseConfirmation,
                      base::Unretained(extensions_container_)));
 
   base::RecordAction(base::UserMetricsAction(

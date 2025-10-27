@@ -32,7 +32,7 @@ ExtensionsMenuCoordinator::~ExtensionsMenuCoordinator() {
 
 void ExtensionsMenuCoordinator::Show(
     views::BubbleAnchor anchor,
-    ExtensionsContainer* extensions_container) {
+    ExtensionsContainerViews* extensions_container) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
@@ -63,14 +63,14 @@ views::Widget* ExtensionsMenuCoordinator::GetExtensionsMenuWidget() {
 std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegateForTesting(
     views::BubbleAnchor anchor,
-    ExtensionsContainer* extensions_container) {
+    ExtensionsContainerViews* extensions_container) {
   return CreateExtensionsMenuBubbleDialogDelegate(anchor, extensions_container);
 }
 
 std::unique_ptr<views::BubbleDialogDelegate>
 ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
     views::BubbleAnchor anchor,
-    ExtensionsContainer* extensions_container) {
+    ExtensionsContainerViews* extensions_container) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(

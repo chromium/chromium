@@ -15,8 +15,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -36,7 +36,7 @@ class ExtensionsMenuCoordinator;
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
 class ExtensionsToolbarContainer : public ToolbarIconContainerView,
-                                   public ExtensionsContainer,
+                                   public ExtensionsContainerViews,
                                    public ToolbarActionView::Delegate,
                                    public views::WidgetObserver {
   METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)

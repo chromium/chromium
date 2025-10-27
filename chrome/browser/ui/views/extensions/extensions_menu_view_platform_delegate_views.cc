@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
@@ -279,7 +279,7 @@ ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
 ExtensionsMenuViewPlatformDelegateViews::
     ExtensionsMenuViewPlatformDelegateViews(
         Browser* browser,
-        ExtensionsContainer* extensions_container,
+        ExtensionsContainerViews* extensions_container,
         views::View* bubble_contents)
     : browser_(browser),
       extensions_container_(extensions_container),

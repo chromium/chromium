@@ -30,11 +30,11 @@
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -138,7 +138,7 @@ std::unique_ptr<ExtensionActionViewController>
 ExtensionActionViewController::Create(
     const extensions::ExtensionId& extension_id,
     BrowserWindowInterface* browser,
-    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate) {
   DCHECK(browser);
   DCHECK(extensions_container);
@@ -177,7 +177,7 @@ ExtensionActionViewController::ExtensionActionViewController(
     BrowserWindowInterface* browser,
     extensions::ExtensionAction* extension_action,
     extensions::ExtensionRegistry* extension_registry,
-    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate)
     : extension_(std::move(extension)),
       browser_(browser),
