@@ -87,22 +87,6 @@ static WebAppInstallInfo CreateInstallInfoForCreateDiy(
   return create_diy_app_info;
 }
 
-// Determine if `install_source` is considered trusted so that all manifest
-// icons can be considered as trusted icons.
-bool IsInstallSurfaceTrusted(const ExternalInstallSource& install_source) {
-  switch (install_source) {
-    case ExternalInstallSource::kInternalDefault:
-    case ExternalInstallSource::kExternalDefault:
-    case ExternalInstallSource::kExternalPolicy:
-    case ExternalInstallSource::kSystemInstalled:
-    case ExternalInstallSource::kKiosk:
-      return true;
-    case ExternalInstallSource::kExternalLockScreen:
-    case ExternalInstallSource::kInternalMicrosoft365Setup:
-      return false;
-  }
-}
-
 }  // namespace
 
 ExternalAppResolutionCommand::ExternalAppResolutionCommand(
@@ -377,8 +361,9 @@ void ExternalAppResolutionCommand::RetrieveWebAppInfoFromManifest(
   // true, the app needs resources fetched from the manifest and it should also
   // behave like DIY apps.
   construct_options.force_override_name = install_params_->install_as_diy;
-  construct_options.use_manifest_icons_as_trusted =
-      IsInstallSurfaceTrusted(install_options_.install_source);
+
+  // All external installs are done by Chrome and can be considered trusted.
+  construct_options.use_manifest_icons_as_trusted = true;
 
   GetMutableDebugValue().Set("manifest_id", opt_manifest->id.spec());
 
