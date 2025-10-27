@@ -516,7 +516,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
           element && element->InterestForElement()) {
         CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
         data.opened_from_interest_for = true;
-        data.interest_for_node_id = element->NodeID();
+        data.interest_for_node_id = element->GetDomNodeId();
         break;
       }
     }
