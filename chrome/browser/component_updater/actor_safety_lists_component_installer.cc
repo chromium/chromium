@@ -20,6 +20,7 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/browser/actor/safety_list_manager.h"
 #include "components/component_updater/component_updater_paths.h"
 
 namespace {
@@ -140,8 +141,10 @@ void RegisterActorSafetyListsComponent(ComponentUpdateService* cus,
       std::make_unique<ActorSafetyListsComponentInstallerPolicy>(
           base::BindRepeating(
               [](const std::optional<std::string>& raw_metadata) {
-                // TODO(crbug.com/453660392): Invoke parser API.
-                return;
+                if (raw_metadata.has_value()) {
+                  actor::SafetyListManager::GetInstance()->ParseSafetyLists(
+                      *raw_metadata);
+                }
               })));
   policy->Register(cus, std::move(callback));
 }
