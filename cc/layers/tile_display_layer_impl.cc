@@ -190,12 +190,6 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
-  // If this layer is used as a backdrop filter, don't create and append a quad
-  // as that will be done in RenderSurfaceImpl::AppendQuads.
-  if (is_backdrop_filter_mask()) {
-    return;
-  }
-
   if (solid_color_) {
     CHECK(tilings_.empty());
     AppendSolidQuad(render_pass, append_quads_data, *solid_color_);

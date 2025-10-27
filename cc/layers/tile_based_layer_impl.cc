@@ -17,6 +17,14 @@ TileBasedLayerImpl::~TileBasedLayerImpl() = default;
 void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
                                      viz::CompositorRenderPass* render_pass,
                                      AppendQuadsData* append_quads_data) {
+  // RenderSurfaceImpl::AppendQuads sets mask properties in the DrawQuad for
+  // the masked surface, which will apply to both the backdrop filter and the
+  // contents of the masked surface, so we should not append quads of the mask
+  // layer in DstIn blend mode which would apply the mask in another codepath.
+  if (is_backdrop_filter_mask()) {
+    return;
+  }
+
   AppendQuadsSpecialization(context, render_pass, append_quads_data);
 }
 
