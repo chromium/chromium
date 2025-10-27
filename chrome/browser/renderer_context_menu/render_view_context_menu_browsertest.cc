@@ -732,9 +732,17 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   EXPECT_TRUE(menu3->IsCommandIdVisible(IDC_CONTENT_CONTEXT_COPYLINKTEXT));
 }
 
+// TODO(crbug.com/455524503): De-flake and re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SaveLinkAsEntryIsDisabledForBlockedUrls \
+  DISABLED_SaveLinkAsEntryIsDisabledForBlockedUrls
+#else
+#define MAYBE_SaveLinkAsEntryIsDisabledForBlockedUrls \
+  SaveLinkAsEntryIsDisabledForBlockedUrls
+#endif
 // Verifies "Save link as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
-                       SaveLinkAsEntryIsDisabledForBlockedUrls) {
+                       MAYBE_SaveLinkAsEntryIsDisabledForBlockedUrls) {
   base::Value::List list;
   list.Append("google.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
@@ -792,9 +800,17 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_SAVE_PAGE));
 }
 
+// TODO(crbug.com/455524503): De-flake and re-enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SaveImageAsEntryIsDisabledForBlockedUrls \
+  DISABLED_SaveImageAsEntryIsDisabledForBlockedUrls
+#else
+#define MAYBE_SaveImageAsEntryIsDisabledForBlockedUrls \
+  SaveImageAsEntryIsDisabledForBlockedUrls
+#endif
 // Verifies "Save image as" is not enabled for links blocked via policy.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
-                       SaveImageAsEntryIsDisabledForBlockedUrls) {
+                       MAYBE_SaveImageAsEntryIsDisabledForBlockedUrls) {
   base::Value::List list;
   list.Append("url.com");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
