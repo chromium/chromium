@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.site_settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Bundle;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +30,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.LocationPermissionOptionsPreference;
 import org.chromium.components.browser_ui.site_settings.LocationPermissionSubpageSettings;
@@ -55,24 +59,25 @@ public class LocationPermissionSubpageSettingsTest {
     public SettingsActivityTestRule<LocationPermissionSubpageSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(LocationPermissionSubpageSettings.class);
 
-    private SettingsActivity mSettingsActivity;
-    private Website mWebsite;
-
-    @Before
-    public void setUp() {
-        GeolocationSetting allowApproximateSetting =
-                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
-        mWebsite = createWebsiteWithGeolocationPermission(allowApproximateSetting);
-        assertEquals(allowApproximateSetting, getGeolocationSetting(mWebsite));
-
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, mWebsite);
-        mSettingsActivity = mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
-    }
-
     @Test
     @SmallTest
     public void selectionChangesShouldUpdatePermission() {
+        // Fake enable android fine location permission.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ true);
+
+        GeolocationSetting allowApproximateSetting =
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
+        Website website = createWebsiteWithGeolocationPermission(allowApproximateSetting);
+        assertEquals(allowApproximateSetting, getGeolocationSetting(website));
+
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, website);
+        SettingsActivity settingsActivity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+
         GeolocationSetting allowPreciseSetting =
                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
 
@@ -82,13 +87,70 @@ public class LocationPermissionSubpageSettingsTest {
                         .getFragment()
                         .findPreference(LocationPermissionSubpageSettings.RADIO_BUTTON_GROUP_KEY);
         assertTrue(preference.getApproximateButtonForTesting().isChecked());
+        checkNoWarning();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     preference.getPreciseButtonForTesting().performClick();
                 });
         assertTrue(preference.getPreciseButtonForTesting().isChecked());
-        assertEquals(allowPreciseSetting, getGeolocationSetting(mWebsite));
+        assertEquals(allowPreciseSetting, getGeolocationSetting(website));
+        checkNoWarning();
+    }
+
+    @Test
+    @SmallTest
+    public void showAndToggleWarningIfChromeHasOnlyCoarseLocationAccess() {
+        // Disable android fine location permission.
+        LocationSettingsTestUtil.setSystemAndAndroidLocationSettings(
+                /* systemEnabled= */ true,
+                /* androidEnabled= */ true,
+                /* androidFineEnabled= */ false);
+
+        GeolocationSetting allowApproximateSetting =
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
+        Website website = createWebsiteWithGeolocationPermission(allowApproximateSetting);
+        assertEquals(allowApproximateSetting, getGeolocationSetting(website));
+
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, website);
+        SettingsActivity settingsActivity =
+                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        checkNoWarning();
+
+        LocationPermissionOptionsPreference preference =
+                mSettingsActivityTestRule
+                        .getFragment()
+                        .findPreference(LocationPermissionSubpageSettings.RADIO_BUTTON_GROUP_KEY);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    preference.getPreciseButtonForTesting().performClick();
+                });
+        assertTrue(preference.getPreciseButtonForTesting().isChecked());
+        GeolocationSetting allowPreciseSetting =
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
+        assertEquals(allowPreciseSetting, getGeolocationSetting(website));
+        checkHasWarning();
+    }
+
+    private void checkNoWarning() {
+        Preference warning =
+                mSettingsActivityTestRule
+                        .getFragment()
+                        .findPreference(
+                                LocationPermissionSubpageSettings.PREF_OS_PERMISSIONS_WARNING);
+        assertNull(warning);
+    }
+
+    private void checkHasWarning() {
+        PreferenceScreen preferenceScreen =
+                mSettingsActivityTestRule.getFragment().getPreferenceScreen();
+        Preference warning =
+                preferenceScreen.getPreference(preferenceScreen.getPreferenceCount() - 1);
+        assertEquals(
+                LocationPermissionSubpageSettings.PREF_OS_PERMISSIONS_WARNING, warning.getKey());
+        assertNotNull(warning);
+        assertTrue(warning.isVisible());
     }
 
     private static Website createWebsiteWithGeolocationPermission(GeolocationSetting setting) {
