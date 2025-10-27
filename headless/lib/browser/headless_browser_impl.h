@@ -113,6 +113,8 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 #endif
 
  private:
+  void CreateOSCryptAsync();
+
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   std::optional<HeadlessBrowser::Options> options_;
   std::unique_ptr<HeadlessPlatformDelegate> platform_delegate_;

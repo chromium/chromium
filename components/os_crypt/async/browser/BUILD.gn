@@ -79,7 +79,7 @@ if (is_win) {
   }
 }
 
-if (is_posix && !is_apple) {
+if ((is_posix || is_fuchsia) && !is_apple) {
   source_set("posix_key_provider") {
     sources = [
       "posix_key_provider.cc",

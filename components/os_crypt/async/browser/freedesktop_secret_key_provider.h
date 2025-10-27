@@ -32,7 +32,8 @@ namespace os_crypt_async {
 
 // FreedesktopSecretKeyProvider uses the org.freedesktop.secrets interface
 // to retrieve a secret from backend (GNOME Keyring, KWallet, KeePassXC),
-// which can then be used to encrypt confidential data.
+// which can then be used to encrypt confidential data. If registration with
+// D-Bus services fails, this class will fallback to using PosixKeyProvider.
 class FreedesktopSecretKeyProvider : public KeyProvider {
  public:
   enum class InitStatus {

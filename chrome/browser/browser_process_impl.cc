@@ -1385,33 +1385,30 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
 #if BUILDFLAG(IS_LINUX)
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore) !=
-      "basic") {
+  const auto password_store =
+      cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
+  if (password_store != "basic") {
     if (base::FeatureList::IsEnabled(features::kDbusSecretPortal)) {
+      // Use a higher priority than the FreedesktopSecretKeyProvider.
       providers.emplace_back(
-          /*precedence=*/10u,
+          /*precedence=*/15u,
           std::make_unique<os_crypt_async::SecretPortalKeyProvider>(
               local_state(),
               base::FeatureList::IsEnabled(
                   features::kSecretPortalKeyProviderUseForEncryption)));
     }
-    const auto password_store =
-        cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
-    // Use a higher priority than the SecretPortalKeyProvider.
-    providers.emplace_back(
-        /*precedence=*/15u,
-        std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
-            password_store, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME),
-            nullptr));
   }
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+          password_store, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  // On Linux, this is used if the other key providers are disabled or not
-  // available. On other POSIX systems, this is the only key provider.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
+  // On other POSIX systems, this is the only key provider.
   providers.emplace_back(
       /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>());
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kUseKeychainKeyProvider)) {

@@ -24,6 +24,7 @@ source_set("model") {
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
     "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:keychain_key_provider",
     "//components/prefs",
     "//components/sessions",
     "//components/signin/core/browser",

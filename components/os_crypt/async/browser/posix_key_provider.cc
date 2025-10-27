@@ -37,11 +37,7 @@ bool PosixKeyProvider::UseForEncryption() {
 }
 
 bool PosixKeyProvider::IsCompatibleWithOsCryptSync() {
-#if BUILDFLAG(IS_LINUX)
-  return false;
-#else
   return true;
-#endif
 }
 
 }  // namespace os_crypt_async

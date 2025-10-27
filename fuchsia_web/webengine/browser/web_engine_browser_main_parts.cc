@@ -36,6 +36,7 @@
 #include "build/chromecast_buildflags.h"
 #include "components/fuchsia_component_support/inspect.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/posix_key_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -188,9 +189,12 @@ void WebEngineBrowserMainParts::PostEarlyInitialization() {
 int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   DCHECK_EQ(context_bindings_.size(), 0u);
 
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
-                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
+  auto key_provider = std::make_unique<os_crypt_async::PosixKeyProvider>();
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      key_providers;
+  key_providers.emplace_back(/*precedence=*/5u, std::move(key_provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(key_providers));
 
   // Initialize the |component_inspector_| to allow diagnostics to be published.
   component_inspector_ = std::make_unique<inspect::ComponentInspector>(

@@ -34,6 +34,14 @@
 #include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "components/password_manager/core/browser/password_manager_switches.h"
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+#include "components/os_crypt/common/os_crypt_switches.h"
+#endif
+
 namespace headless {
 
 namespace {
@@ -69,6 +77,17 @@ void HeadlessBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   if (ShouldEnableSitePerProcess()) {
     command_line->AppendSwitch(::switches::kSitePerProcess);
   }
+
+  // Don't use the native password stores since they may prompt for additional
+  // UI during tests and cause timeouts.
+#if BUILDFLAG(IS_LINUX)
+  if (!command_line->HasSwitch(password_manager::kPasswordStore)) {
+    command_line->AppendSwitchASCII(password_manager::kPasswordStore, "basic");
+  }
+#endif
+#if BUILDFLAG(IS_APPLE)
+  command_line->AppendSwitch(os_crypt::switches::kUseMockKeychain);
+#endif
 }
 
 void HeadlessBrowserTest::SetUpWithoutGPU() {

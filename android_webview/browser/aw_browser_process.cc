@@ -26,6 +26,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/posix_key_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -103,11 +104,14 @@ AwBrowserProcess::AwBrowserProcess(AwContentBrowserClient* browser_client)
   origin_trials_settings_storage_ =
       std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
 
-  // Initialize OSCryptAsync with no providers. This delegates all encryption
-  // operations to OSCrypt.
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<
-          std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>());
+  // Initialize OSCryptAsync with a PosixKeyProvider. Initialization always
+  // succeeds, so encryption is never delegated to synchronous OSCrypt.
+  auto key_provider = std::make_unique<os_crypt_async::PosixKeyProvider>();
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      key_providers;
+  key_providers.emplace_back(/*precedence=*/5u, std::move(key_provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(key_providers));
 }
 
 AwBrowserProcess::~AwBrowserProcess() {

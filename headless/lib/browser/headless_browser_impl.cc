@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -31,7 +32,22 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
+#include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #include "headless/public/switches.h"
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+#include "components/os_crypt/async/browser/keychain_key_provider.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#include "base/command_line.h"
+#include "components/os_crypt/async/browser/freedesktop_secret_key_provider.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include "components/os_crypt/async/browser/posix_key_provider.h"  // nogncheck
 #endif
 
 #if defined(HEADLESS_USE_PREFS)
@@ -256,9 +272,7 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
 }
 
 void HeadlessBrowserImpl::PreMainMessageLoopRun() {
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
-                            std::unique_ptr<os_crypt_async::KeyProvider>>>{});
+  CreateOSCryptAsync();
 
   platform_delegate_->Initialize(options_.value());
 
@@ -385,5 +399,34 @@ PrefService* HeadlessBrowserImpl::GetPrefs() {
   return local_state_.get();
 }
 #endif  // defined(HEADLESS_USE_PREFS)
+
+void HeadlessBrowserImpl::CreateOSCryptAsync() {
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      providers;
+#if BUILDFLAG(IS_WIN) && defined(HEADLESS_USE_PREFS)
+  if (local_state_) {
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u, std::make_unique<os_crypt_async::DPAPIKeyProvider>(
+                                local_state_.get())));
+  }
+#elif BUILDFLAG(IS_APPLE)
+  providers.emplace_back(std::make_pair(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::KeychainKeyProvider>()));
+#elif BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  const auto password_store =
+      cmd_line->GetSwitchValueASCII(password_manager::kPasswordStore);
+  providers.emplace_back(
+      /*precedence=*/10u,
+      std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
+          password_store, kHeadlessProductName, nullptr));
+#elif BUILDFLAG(IS_POSIX)
+  providers.emplace_back(
+      /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>());
+#endif
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
+}
 
 }  // namespace headless

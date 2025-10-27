@@ -328,6 +328,7 @@ ios_web_view_deps = [
   "//components/metrics/demographics",
   "//components/omnibox/browser:location_bar",
   "//components/os_crypt/async/browser",
+  "//components/os_crypt/async/browser:keychain_key_provider",
   "//components/password_manager/core/browser",
   "//components/password_manager/core/browser/affiliation:affiliation_fetching",
   "//components/password_manager/core/browser/affiliation:affiliation_match_helper",

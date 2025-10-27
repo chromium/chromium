@@ -45,6 +45,7 @@ specific_include_rules = {
     "+services/device/public/cpp/geolocation/system_geolocation_source_apple.h",
     "+services/device/public/cpp/geolocation/geolocation_system_permission_manager.h",
     "+components/os_crypt/async",
+    "+components/password_manager/core/browser/password_manager_switches.h",
     "+components/policy",
     "+components/prefs",
     "+components/pref_registry",

@@ -207,6 +207,7 @@ component("web_engine_core") {
     "//components/on_load_script_injector/browser",
     "//components/on_load_script_injector/renderer",
     "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:posix_key_provider",
     "//components/permissions",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/profile_metrics",

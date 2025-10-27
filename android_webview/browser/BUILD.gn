@@ -294,6 +294,7 @@ source_set("browser") {
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
     "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:posix_key_provider",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
     "//components/payments/content/android",

@@ -501,11 +501,29 @@ component("headless_non_renderer") {
   }
 
   if (is_win) {
-    deps += [ "//sandbox" ]
+    deps += [
+      "//components/os_crypt/async/browser:dpapi_key_provider",
+      "//sandbox",
+    ]
   }
 
   if (is_linux || is_chromeos) {
     data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+  }
+
+  if (is_linux && use_dbus) {
+    deps += [
+      "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+      "//components/password_manager/core/browser:password_switches",
+    ]
+  }
+
+  if (is_apple) {
+    deps += [ "//components/os_crypt/async/browser:keychain_key_provider" ]
+  }
+
+  if (is_posix && !is_apple) {
+    deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
   }
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
@@ -730,6 +748,8 @@ test("headless_browsertests") {
     "//components/headless/test:shared_test",
     "//components/infobars/content",
     "//components/infobars/core",
+    "//components/os_crypt/common:switches",
+    "//components/password_manager/core/browser:password_switches",
     "//components/policy/core/browser",
     "//components/security_state/content",
     "//components/version_info",

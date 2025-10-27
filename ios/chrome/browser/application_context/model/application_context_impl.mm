@@ -37,6 +37,7 @@
 #import "components/net_log/net_export_file_writer.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "components/os_crypt/async/browser/keychain_key_provider.h"
 #import "components/os_crypt/async/browser/os_crypt_async.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -125,9 +126,12 @@ void ApplicationContextImpl::PreCreateThreads() {
 
 void ApplicationContextImpl::PostCreateThreads() {
   // Delegate all encryption calls to OSCrypt.
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
-                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
+  auto key_provider = std::make_unique<os_crypt_async::KeychainKeyProvider>();
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      key_providers;
+  key_providers.emplace_back(/*precedence=*/10u, std::move(key_provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(key_providers));
 
   // Trigger an instance grab on a background thread if necessary.
   os_crypt_async_->GetInstance(base::DoNothing());
