@@ -1021,13 +1021,6 @@ if (_is_default_toolchain) {
     }
   }
 
-  android_assets("stub_assets") {
-    renaming_sources =
-        [ "$root_gen_dir/components/resources/about_credits.html" ]
-    renaming_destinations = [ "webview_licenses.notice" ]
-    deps = [ "//components/resources:about_credits" ]
-  }
-
   android_resources("resources") {
     sources = [
       "java/res/drawable-hdpi/ic_play_circle_outline_black_48dp.png",
