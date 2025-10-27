@@ -239,12 +239,12 @@ public class TabStateFileManager {
         long startTime = SystemClock.elapsedRealtime();
         TabState tabState = restoreTabStateInternal(file, encrypted, cipherFactory);
         if (tabState != null) {
+            RecordHistogram.recordTimesHistogram(
+                    "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
             if (useFlatBuffer && ChromeFeatureList.sCleanupLegacyTabState.isEnabled()) {
                 tabState.legacyFileToDelete =
                         getTabStateFile(stateFolder, id, encrypted, /* isFlatbuffer= */ false);
             }
-            RecordHistogram.recordTimesHistogram(
-                    "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
         }
         return tabState;
     }
