@@ -28,7 +28,6 @@
 +org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator
 +org.chromium.chrome.browser.share.qrcode.QrCodeDialog
 +org.chromium.chrome.browser.share.ShareHelper$ChooserActionHelper
-+org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder
 +org.chromium.chrome.browser.tab.SadTab
 +org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper
 +org.chromium.chrome.browser.tab.TabBuilder

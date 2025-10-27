@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,6 +69,8 @@ class ShareSheetPropertyModelBuilder {
     private final PackageManager mPackageManager;
     private final Profile mProfile;
 
+    private static @Nullable List<PropertyModel> sSelectThirdPartyAppsOverrideForTesting;
+
     ShareSheetPropertyModelBuilder(
             BottomSheetController bottomSheetController,
             PackageManager packageManager,
@@ -106,6 +109,11 @@ class ShareSheetPropertyModelBuilder {
                 /* showNewBadge= */ false);
     }
 
+    public static void setSelectThirdPartyAppsOverrideForTesting(List<PropertyModel> value) {
+        sSelectThirdPartyAppsOverrideForTesting = value;
+        ResettersForTesting.register(() -> sSelectThirdPartyAppsOverrideForTesting = null);
+    }
+
     protected List<PropertyModel> selectThirdPartyApps(
             ShareSheetBottomSheetContent bottomSheet,
             Set<Integer> contentTypes,
@@ -114,6 +122,10 @@ class ShareSheetPropertyModelBuilder {
             long shareStartTime,
             @LinkGeneration int linkGenerationStatusForMetrics,
             LinkToggleMetricsDetails linkToggleMetricsDetails) {
+        if (sSelectThirdPartyAppsOverrideForTesting != null) {
+            return sSelectThirdPartyAppsOverrideForTesting;
+        }
+
         List<String> thirdPartyActivityNames = FALLBACK_ACTIVITIES;
         List<ResolveInfo> resolveInfoList =
                 getCompatibleApps(contentTypes, params.getFileContentType());
