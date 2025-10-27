@@ -49,6 +49,8 @@ struct HTMLConstructionSiteTask {
     kInsertAlreadyParsedChild,  // Insert w/o calling begin/end parsing.
     kReparent,
     kTakeAllChildren,
+    kRemoveChildren,
+    kReplaceChild,
   };
 
   explicit HTMLConstructionSiteTask(Operation op)
@@ -116,7 +118,6 @@ class HTMLConstructionSite final {
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
 
-  void SetPatchScope(ContainerNode* scope);
   void Trace(Visitor*) const;
 
   void Detach();
@@ -224,6 +225,7 @@ class HTMLConstructionSite final {
   }
 
   void FinishedTemplateElement(DocumentFragment* content_fragment);
+  void PreprocessInsertionTask(HTMLConstructionSiteTask&);
 
   static CustomElementDefinition* LookUpCustomElementDefinition(
       Document&,
@@ -297,11 +299,6 @@ class HTMLConstructionSite final {
   mutable HTMLFormattingElementList active_formatting_elements_;
 
   TaskQueue task_queue_;
-
-  // When using node.patchAll(), that node would be used to select
-  // the patch target rather than the tree scope where the patch template is
-  // found.
-  Member<ContainerNode> patch_scope_;
 
   class PendingText final {
     DISALLOW_NEW();

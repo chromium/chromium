@@ -142,7 +142,6 @@ class SubtreePatchSink : public UnderlyingSinkBase {
         sink_template->content(), sink_template,
         ParserContentPolicy::kDisallowScriptingAndPluginContent,
         ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr);
-    parser->SetPatchScope(root_);
     parser_ = parser;
     return ToResolvedUndefinedPromise(script_state);
   }

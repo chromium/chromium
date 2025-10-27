@@ -8,12 +8,14 @@
 <script>
 test(() => {
     const container = document.getElementById("container");
-    container.innerHTML = `<div id="placeholder">Old content in innerHTML</div><template patchfor="placeholder">New content</template>`;
-    // <template patchfor> doesn't work within an innerHTML fragment, so the
-    // placeholder should be intact and the <template> element remain in tree.
+    container.innerHTML = `
+        <div id="placeholder" contentname=p>Old content in innerHTML</div>
+        <template contentmethod="replace-children">
+            <div contentname="p">New content</div>
+        </template>`;
     const placeholder = container.querySelector("div");
     assert_equals(placeholder.id, "placeholder");
-    assert_equals(placeholder.textContent, "Old content in innerHTML");
-    assert_not_equals(container.querySelector("template"), null);
-}, "<template patchfor> in innerHTML patching inner element");
+    assert_equals(placeholder.textContent, "New content");
+    assert_equals(container.querySelector("template"), null);
+}, "<template contentmethod> in innerHTML patching inner element");
 </script>

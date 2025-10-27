@@ -471,22 +471,6 @@ bool HTMLElementStack::HasTemplateInHTMLScope() const {
   return InScopeCommon<IsRootNode>(top_.Get(), HTMLTag::kTemplate);
 }
 
-bool HTMLElementStack::HasOutgoingPatchInHTMLScope() const {
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
-    return false;
-  }
-
-  for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
-    if (HTMLTemplateElement* template_element =
-            DynamicTo<HTMLTemplateElement>(item->GetNode())) {
-      if (template_element->OutgoingPatch()) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 Element* HTMLElementStack::HtmlElement() const {
   DCHECK(root_node_);
   return To<Element>(root_node_.Get());

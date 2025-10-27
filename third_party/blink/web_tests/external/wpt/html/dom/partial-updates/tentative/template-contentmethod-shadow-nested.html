@@ -8,8 +8,10 @@
 <div id="placeholder">Old content in light DOM</div>
 <div id="container">
     <template shadowrootmode="open">
-        <section id="placeholder">Old content in shadow DOM</section>
-        <template patchfor="placeholder">New content</template>
+        <div>
+            <div id="placeholder" contentname="d">Old content in shadow DOM</div>
+            <template contentmethod="replace-children"><div contentname=d>New content</div></template>
+        </div>
     </template>
 </div>
 <script>
@@ -18,6 +20,6 @@ test(() => {
     const {shadowRoot} = document.querySelector("#container");
     assert_equals(shadowRoot.querySelector("#placeholder").innerText, "New content");
     assert_equals(shadowRoot.querySelector("template[patchfor=placeholder]"), null);
-}, "<template patchfor> inside a <template shadowrootmode> should apply directly to its target");
+}, "<template contentmethod> inside a <template shadowrootmode><div> should apply directly to its target");
 
 </script>

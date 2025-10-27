@@ -119,10 +119,6 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     should_skip_leading_newline_ = should_skip;
   }
 
-  void SetPatchScope(ContainerNode* scope) {
-    tree_.SetPatchScope(scope);
-  }
-
  private:
   class CharacterTokenBuffer;
   // Represents HTML5 "insertion mode"

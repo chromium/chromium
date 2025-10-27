@@ -62,6 +62,8 @@ class HTMLCollectionIterator {
     return iterator;
   }
 
+  bool AtEnd() const { return index_ == collection_->length(); }
+
  private:
   const CollectionType* collection_;
   unsigned index_ = 0;

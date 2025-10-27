@@ -37,8 +37,6 @@
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/patching/patch.h"
-#include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -54,10 +52,11 @@ HTMLTemplateElement::~HTMLTemplateElement() = default;
 
 DocumentFragment* HTMLTemplateElement::content() const {
   CHECK(!override_insertion_target_);
-  if (!content_ && GetExecutionContext())
+  if (!content_ && GetExecutionContext()) {
     content_ = MakeGarbageCollected<TemplateContentDocumentFragment>(
         GetDocument().EnsureTemplateDocument(),
         const_cast<HTMLTemplateElement*>(this));
+  }
 
   return content_.Get();
 }
@@ -78,53 +77,16 @@ void HTMLTemplateElement::CloneNonAttributePropertiesFrom(
 
 void HTMLTemplateElement::DidMoveToNewDocument(Document& old_document) {
   HTMLElement::DidMoveToNewDocument(old_document);
-  if (!content_ || !GetExecutionContext())
+  if (!content_ || !GetExecutionContext()) {
     return;
+  }
   GetDocument().EnsureTemplateDocument().AdoptIfNeeded(*content_);
 }
 
 void HTMLTemplateElement::Trace(Visitor* visitor) const {
   visitor->Trace(content_);
   visitor->Trace(override_insertion_target_);
-  visitor->Trace(patch_status_);
   HTMLElement::Trace(visitor);
-}
-
-bool HTMLTemplateElement::ProcessPatch(ContainerNode& target) {
-  // We can't use GetElementAttribute here because the template is not attached
-  // to the DOM.
-  Element* start_after = FastHasAttribute(html_names::kPatchstartafterAttr)
-                             ? target.getElementById(FastGetAttribute(
-                                   html_names::kPatchstartafterAttr))
-                             : nullptr;
-  Element* end_before = FastHasAttribute(html_names::kPatchendbeforeAttr)
-                            ? target.getElementById(FastGetAttribute(
-                                  html_names::kPatchendbeforeAttr))
-                            : nullptr;
-  if ((start_after && start_after->parentElement() != &target) ||
-      (end_before && end_before->parentElement() != &target)) {
-    // TODO(nrosenthal): fire a patcherror event?
-    return false;
-  }
-
-  const KURL src = FastHasAttribute(html_names::kPatchsrcAttr)
-                       ? target.GetDocument().CompleteURL(
-                             FastGetAttribute(html_names::kPatchsrcAttr))
-                       : KURL();
-  SetOverrideInsertionTarget(target);
-  patch_status_ = Patch::Create(target, this, src, start_after, end_before);
-  patch_status_->Start();
-  return true;
-}
-
-void HTMLTemplateElement::FinishParsingChildren() {
-  HTMLElement::FinishParsingChildren();
-  if (!patch_status_) {
-    return;
-  }
-  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-  patch_status_->Finish();
-  patch_status_.Release();
 }
 
 }  // namespace blink

@@ -682,10 +682,6 @@ void HTMLDocumentParser::ForcePlaintextForTextDocument() {
   tokenizer_.SetState(HTMLTokenizer::kPLAINTEXTState);
 }
 
-void HTMLDocumentParser::SetPatchScope(ContainerNode* node) {
-  tree_builder_->SetPatchScope(node);
-}
-
 bool HTMLDocumentParser::PumpTokenizer() {
   DCHECK(!GetDocument()->IsPrefetchOnly());
   DCHECK(!IsStopped());

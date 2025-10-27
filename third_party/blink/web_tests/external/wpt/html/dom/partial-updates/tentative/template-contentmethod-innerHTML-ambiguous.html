@@ -5,20 +5,19 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <div id="container"></div>
-<div id="placeholder">Old content in light DOM</div>
+<div id="placeholder" contentname="placeholder">Old content in light DOM</div>
 <script>
-// The ID "container" appears both after the container on which innerHTML is
+// The contentname "placeholder" appears both after the container on which innerHTML is
 // set, and in created fragment. Which element should be updated depends on the
 // details of how this is spec'd.
 test(() => {
     const container = document.getElementById("container");
     const outerPlaceholder = document.getElementById("placeholder");
-    container.innerHTML = `<div id="placeholder">Old content in innerHTML</div><template patchfor="placeholder">New content</template>`;
+    container.innerHTML = `<div id="placeholder" contentname="placeholder">Old content in innerHTML</div><template contentmethod="replace-children"><div contentname="placeholder">New content</div></template>`;
     const innerPlaceholder = container.firstChild;
     assert_equals(innerPlaceholder.id, "placeholder");
-    // This is the surprising part, that the outer placeholder is updated even
-    // though it appears after the updated placeholder in the final tree order.
-    assert_equals(outerPlaceholder.textContent, "New content");
-    assert_equals(innerPlaceholder.textContent, "Old content in innerHTML");
+    // patches apply inside the fragment
+    assert_equals(outerPlaceholder.textContent, "Old content in light DOM");
+    assert_equals(innerPlaceholder.textContent, "New content");
 }, "<template patchfor> in innerHTML patching inner element");
 </script>

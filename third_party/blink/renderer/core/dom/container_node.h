@@ -179,6 +179,8 @@ class CORE_EXPORT ContainerNode : public Node {
   void ParserFinishedBuildingDocumentFragment(ShouldNotifyInsertedNodes);
   void ParserRemoveChild(Node&);
   void ParserInsertBefore(Node* new_child, Node& ref_child);
+  void ParserRemoveAllChildren();
+  void ParserReplaceChild(Node& new_child, Node& old_child);
   void ParserTakeAllChildrenFrom(ContainerNode&);
 
   void RemoveChildren();

@@ -1109,10 +1109,6 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);
-  if (To<HTMLTemplateElement>(tree_.CurrentElement())->OutgoingPatch()) {
-    DCHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-    parser_->tokenizer().SetState(HTMLTokenizer::kRAWTEXTState);
-  }
 }
 
 bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
@@ -2317,13 +2313,9 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         tree_.OpenElements()->Pop();
         SetInsertionMode(original_insertion_mode_);
 
-        if (tree_.OpenElements()->HasOutgoingPatchInHTMLScope()) {
-          parser_->tokenizer().SetState(HTMLTokenizer::kRAWTEXTState);
-        } else {
-          // We must set the tokenizer's state to DataState explicitly if the
-          // tokenizer didn't have a chance to.
-          parser_->tokenizer().SetState(HTMLTokenizer::kDataState);
-        }
+        // We must set the tokenizer's state to DataState explicitly if the
+        // tokenizer didn't have a chance to.
+        parser_->tokenizer().SetState(HTMLTokenizer::kDataState);
         return;
       }
       tree_.OpenElements()->Pop();

@@ -5,12 +5,12 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<section id="placeholder">
+<section id="placeholder" contentname="p">
     <script>
     window.state = "init";
     </script>
 </section>
-<template patchfor="placeholder"><script>window.state = 'patched';</script></template>
+<template contentmethod="replace-children"><section contentname=p><script>window.state = 'patched';</script></section></template>
 <script>
 test(() => {
     assert_not_equals(document.querySelector("#placeholder").firstElementChild, null);

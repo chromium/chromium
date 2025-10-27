@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/compiler_specific.h"
@@ -58,6 +59,9 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/forms/form_associated.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
@@ -71,7 +75,6 @@
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
-#include "third_party/blink/renderer/core/patching/patch.h"
 #include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -80,6 +83,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -285,6 +289,18 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
   task.parent->ParserTakeAllChildrenFrom(*task.OldParent());
 }
 
+static inline void ExecuteRemoveChildrenTask(HTMLConstructionSiteTask& task) {
+  DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kRemoveChildren);
+
+  task.parent->ParserRemoveAllChildren();
+}
+
+static inline void ExecuteReplaceChildTask(HTMLConstructionSiteTask& task) {
+  DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kReplaceChild);
+
+  task.parent->ParserReplaceChild(*task.child, *task.next_child);
+}
+
 void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   DCHECK(task_queue_.empty());
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
@@ -324,14 +340,25 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   // All the cases below this point are only used by the adoption agency.
   DCHECK(!task.dom_parts_needed);
 
-  if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild)
+  if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild) {
     return ExecuteInsertAlreadyParsedChildTask(task);
+  }
 
-  if (task.operation == HTMLConstructionSiteTask::kReparent)
+  if (task.operation == HTMLConstructionSiteTask::kReparent) {
     return ExecuteReparentTask(task);
+  }
 
-  if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren)
+  if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren) {
     return ExecuteTakeAllChildrenTask(task);
+  }
+
+  if (task.operation == HTMLConstructionSiteTask::kRemoveChildren) {
+    return ExecuteRemoveChildrenTask(task);
+  }
+
+  if (task.operation == HTMLConstructionSiteTask::kReplaceChild) {
+    return ExecuteReplaceChildTask(task);
+  }
 
   NOTREACHED();
 }
@@ -416,6 +443,7 @@ void HTMLConstructionSite::FlushPendingText() {
     task.parent = pending_text_.parent;
     task.next_child = pending_text_.next_child;
     task.child = Text::Create(task.parent->GetDocument(), std::move(substring));
+    PreprocessInsertionTask(task);
     QueueTask(task, false);
     DCHECK_EQ(To<Text>(task.child.Get())->length(),
               break_index - current_position);
@@ -452,6 +480,8 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
     FosterParent(task.child);
     return;
   }
+
+  PreprocessInsertionTask(task);
 
   // Add as a sibling of the parent if we have reached the maximum depth
   // allowed.
@@ -537,10 +567,6 @@ HTMLConstructionSite::~HTMLConstructionSite() {
   DCHECK(pending_text_.IsEmpty());
 }
 
-void HTMLConstructionSite::SetPatchScope(ContainerNode* scope) {
-  patch_scope_ = scope;
-}
-
 void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(reentry_permit_);
   visitor->Trace(document_);
@@ -552,7 +578,6 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(task_queue_);
   visitor->Trace(pending_text_);
   visitor->Trace(pending_dom_parts_);
-  visitor->Trace(patch_scope_);
   visitor->Trace(custom_element_registry_);
 }
 
@@ -900,6 +925,47 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
   open_elements_.Push(HTMLStackItem::Create(form_element, token));
 }
 
+namespace {
+
+enum class ContentMethod {
+  kNone,
+  kReplace,
+  kReplaceChildren,
+  kAppend,
+  kPrepend
+};
+
+ContentMethod GetContentMethod(HTMLTemplateElement* template_element) {
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
+      !template_element->FastHasAttribute(html_names::kContentmethodAttr)) {
+    return ContentMethod::kNone;
+  }
+
+  const AtomicString& method =
+      template_element->FastGetAttribute(html_names::kContentmethodAttr);
+
+  DEFINE_STATIC_LOCAL(AtomicString, kReplace, ("replace"));
+  DEFINE_STATIC_LOCAL(AtomicString, kReplaceChildren, ("replace-children"));
+  DEFINE_STATIC_LOCAL(AtomicString, kAppend, ("append"));
+  DEFINE_STATIC_LOCAL(AtomicString, kPrepend, ("prepend"));
+
+  if (method == kReplace) {
+    return ContentMethod::kReplace;
+  }
+  if (method == kReplaceChildren) {
+    return ContentMethod::kReplaceChildren;
+  }
+  if (method == kAppend) {
+    return ContentMethod::kAppend;
+  }
+  if (method == kPrepend) {
+    return ContentMethod::kPrepend;
+  }
+  return ContentMethod::kNone;
+}
+
+}  // namespace
+
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
     String declarative_shadow_root_mode) {
@@ -913,36 +979,6 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if (RuntimeEnabledFeatures::DocumentPatchingEnabled() &&
-      template_element->FastHasAttribute(html_names::kPatchforAttr)) {
-    const AtomicString& id =
-        template_element->FastGetAttribute(html_names::kPatchforAttr);
-    Element* patch_target = nullptr;
-    // If we have a patch scope, it is used as a scope to resolve patch
-    // target IDs.
-    if (patch_scope_) {
-      patch_target = patch_scope_->getElementById(id);
-    } else {
-      TreeScope* scope = &CurrentNode()->GetTreeScope();
-      if (HTMLTemplateElement* template_parent =
-              DynamicTo<HTMLTemplateElement>(CurrentNode())) {
-        if (ShadowRoot* shadow_root =
-                DynamicTo<ShadowRoot>(template_parent->InsertionTarget())) {
-          scope = shadow_root;
-        }
-      }
-
-      patch_target = scope->getElementById(id);
-    }
-
-    if (patch_target && template_element->ProcessPatch(*patch_target)) {
-      // For now, a template is either targeting a shadow root or a patch.
-      declarative_shadow_root_mode = String();
-
-      // Like with shadowrootmode, the template is discarded.
-      should_attach_template = false;
-    }
-  }
 
   if (!declarative_shadow_root_mode.IsNull() &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
@@ -989,8 +1025,12 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
   if (should_attach_template) {
-    // Attach a normal template element.
-    AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
+    // Attach a normal template element, as long as it doesn't have
+    // contentmethod.
+    if (GetContentMethod(template_element) == ContentMethod::kNone) {
+      AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
+    }
+
     DocumentFragment* template_content = template_element->content();
     if (pending_dom_parts_ && template_content &&
         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
@@ -1078,13 +1118,6 @@ void HTMLConstructionSite::InsertForeignElement(
 
 void HTMLConstructionSite::InsertTextNode(const StringView& string,
                                           WhitespaceMode whitespace_mode) {
-  if (HTMLTemplateElement* current =
-          DynamicTo<HTMLTemplateElement>(CurrentNode())) {
-    if (Patch* patch = current->OutgoingPatch()) {
-      patch->Append(string.ToString());
-      return;
-    }
-  }
   HTMLConstructionSiteTask dummy_task(HTMLConstructionSiteTask::kInsert);
   dummy_task.parent = CurrentNode();
 
@@ -1482,6 +1515,119 @@ void HTMLConstructionSite::FinishedTemplateElement(
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
     pending_dom_parts_->PopPartRoot();
+  }
+}
+
+void HTMLConstructionSite::PreprocessInsertionTask(
+    HTMLConstructionSiteTask& task) {
+  CHECK(task.operation == HTMLConstructionSiteTask::Operation::kInsert ||
+        task.operation == HTMLConstructionSiteTask::Operation::kInsertText);
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
+      OpenElements()->StackDepth() < 2 || !task.child) {
+    return;
+  }
+  HTMLStackItem* top = open_elements_.TopStackItem();
+  CHECK(top);
+
+  HTMLStackItem* one_below_top = top->NextItemInStack();
+  if (task.parent != top->GetNode() || !one_below_top) {
+    return;
+  }
+
+  // This means that we have a <template contentmethod> grandparent,
+  // and we're inserting directly into the target specified by the current
+  // parent. This is set below.
+  if (ContainerNode* insertion_target =
+          one_below_top->AdjustedInsertionTarget()) {
+    CHECK(one_below_top->MatchesHTMLTag(html_names::HTMLTag::kTemplate));
+    // When prepending, the "next child" for insertions would be the first child
+    // at the time of discovering the current parent (the <... contentname>
+    // element). This is set below (see the kPrepend handling).
+    Node* adjusted_next_child = one_below_top->AdjustedInsertionNextChild();
+    if (adjusted_next_child &&
+        adjusted_next_child->parentNode() != insertion_target) {
+      return;
+    }
+    task.parent = insertion_target;
+
+    if (adjusted_next_child && !task.next_child) {
+      task.next_child = adjusted_next_child;
+    }
+    return;
+  }
+
+  HTMLTemplateElement* top_template =
+      DynamicTo<HTMLTemplateElement>(top->GetElement());
+
+  if (!top_template || top_template->IsShadowRootModeTemplate()) {
+    return;
+  }
+
+  top->SetAdjustedInsertionTarget(nullptr);
+  top->SetAdjustedInsertionNextChild(nullptr);
+
+  const ContentMethod content_method = GetContentMethod(top_template);
+  if (content_method == ContentMethod::kNone) {
+    return;
+  }
+  Element* child_element = DynamicTo<Element>(*task.child);
+  if (!child_element ||
+      !child_element->FastHasAttribute(html_names::kContentnameAttr)) {
+    return;
+  }
+
+  ContainerNode* context_node = one_below_top->GetNode();
+  CHECK(context_node);
+  if (HTMLTemplateElement* context_template =
+          DynamicTo<HTMLTemplateElement>(context_node)) {
+    context_node = context_template->InsertionTarget();
+  } else if (context_node == context_node->GetDocument().FirstBodyElement()) {
+    // Allow patches that are direct descendants of <body> to also modify
+    // <head>.
+    context_node = context_node->GetDocument().documentElement();
+  }
+
+  const AtomicString& content_name =
+      child_element->FastGetAttribute(html_names::kContentnameAttr);
+  const HTMLCollection* candidates = context_node->getElementsByTagNameNS(
+      child_element->TagQName().NamespaceURI(),
+      child_element->TagQName().LocalName());
+
+  auto result = std::find_if(
+      candidates->begin(), candidates->end(), [&](Element* candidate) {
+        return candidate->FastGetAttribute(html_names::kContentnameAttr) ==
+               content_name;
+      });
+
+  if (result.AtEnd()) {
+    return;
+  }
+
+  Element* target = *result;
+
+  if (content_method == ContentMethod::kReplace) {
+    task.parent = target->parentNode();
+    task.next_child = target;
+    task.operation = HTMLConstructionSiteTask::Operation::kReplaceChild;
+    return;
+  }
+
+  top->SetAdjustedInsertionTarget(target);
+  switch (content_method) {
+    case ContentMethod::kAppend:
+      return;
+    case ContentMethod::kPrepend:
+      top->SetAdjustedInsertionNextChild(target->firstChild());
+      return;
+    case ContentMethod::kReplaceChildren: {
+      HTMLConstructionSiteTask remove_task(
+          HTMLConstructionSiteTask::kRemoveChildren);
+      remove_task.parent = target;
+      QueueTask(remove_task, /*flush_pending_text=*/false);
+      return;
+    }
+    default:
+      NOTREACHED();
   }
 }
 
