@@ -37,6 +37,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/pref_names.h"
@@ -70,7 +71,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "extensions/browser/ui_util.h"
 #include "ui/base/base_window.h"
@@ -1609,16 +1609,13 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
     return AlreadyResponded();
   }
 
-// TODO(crbug.com/424013333): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   gfx::NativeWindow parent;
   if (!GetSenderWebContents()) {
     CHECK_IS_TEST();
     parent = gfx::NativeWindow();
   } else {
-    parent = chrome::FindBrowserWithTab(GetSenderWebContents())
-                 ->window()
-                 ->GetNativeWindow();
+    parent =
+        platform_util::GetTopLevel(GetSenderWebContents()->GetNativeView());
   }
 
   ShowExtensionMultipleUninstallDialog(
@@ -1630,10 +1627,6 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
           &DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogCancelled,
           this));
   return RespondLater();
-#else
-  DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted();
-  return AlreadyResponded();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogCancelled() {
