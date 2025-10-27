@@ -402,10 +402,11 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
       return kAXSeekBarClassname;
     case ax::mojom::Role::kColorWell:
     case ax::mojom::Role::kComboBoxMenuButton:
-    case ax::mojom::Role::kDate:
     case ax::mojom::Role::kDateTime:
     case ax::mojom::Role::kInputTime:
       return kAXSpinnerClassname;
+    case ax::mojom::Role::kDate:
+      return kAXDatePickerClassname;
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kPopUpButton:
     case ax::mojom::Role::kPdfActionableHighlight:

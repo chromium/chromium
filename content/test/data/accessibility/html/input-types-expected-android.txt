@@ -12,7 +12,7 @@ android.webkit.WebView focusable focused
 ++++++android.widget.Spinner role_description='color picker' clickable focusable interesting name='#000000'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Date: '
-++++++android.widget.Spinner role_description='date picker' clickable focusable interesting hint='Date:' input_type=20
+++++++android.widget.DatePicker role_description='date picker' clickable focusable interesting hint='Date:' input_type=20
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Datetime: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Datetime:' input_type=4

@@ -17,8 +17,9 @@ COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXAbsListViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXAlertDialogClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCheckBoxClassname[];
-COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCompoundButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCheckedTextViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXCompoundButtonClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXDatePickerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXEditTextClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXGridViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM)

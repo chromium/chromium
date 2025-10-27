@@ -14,6 +14,7 @@ const char kAXButtonClassname[] = "android.widget.Button";
 const char kAXCheckBoxClassname[] = "android.widget.CheckBox";
 const char kAXCheckedTextViewClassname[] = " android.widget.CheckedTextView";
 const char kAXCompoundButtonClassname[] = "android.widget.CompoundButton";
+const char kAXDatePickerClassname[] = "android.widget.DatePicker";
 const char kAXEditTextClassname[] = "android.widget.EditText";
 const char kAXGridViewClassname[] = "android.widget.GridView";
 const char kAXHorizontalScrollViewClassname[] =
