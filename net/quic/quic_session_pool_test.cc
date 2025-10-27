@@ -15071,4 +15071,116 @@ TEST_P(QuicSessionPoolTest, ConfigureSSLCompliancePolicy) {
             ssl_compliance_policy_cnsa_202407);
 }
 
+// Test for https://crbug.com/454787716.
+TEST_P(QuicSessionPoolTest,
+       SuccessfullyMigratedToServerPreferredAddressBeforeHandshakeConfirmed) {
+  // Enable register connection close payload feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kQuicRegisterConnectionClosePayload);
+
+  FLAGS_quic_enable_chaos_protection = false;
+  quic_params_->allow_server_migration = true;
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddReadPauseForever();
+  quic_data1.AddWrite(ASYNC,
+                      client_maker_.MakeDummyCHLOPacket(packet_number++));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used to validate server
+  // preferred address.
+  MockQuicData quic_data2(version_);
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_FORWARD_SECURE);
+  client_maker_.set_connection_id(kNewCID);
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
+  quic_data2.AddReadPause();
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddReadPauseForever();
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and wait session creation.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  TestCompletionCallback quic_session_callback;
+  EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+      quic_session_callback.callback()));
+  EXPECT_EQ(ERR_IO_PENDING, quic_session_callback.WaitForResult());
+
+  // NotifySessionOneRttKeyAvailable() makes handshake confirmed.
+  // So manually set encryption level.
+  QuicChromiumClientSession* session = GetPendingSession(kDefaultDestination);
+  session->connection()->InstallDecrypter(
+      quic::ENCRYPTION_FORWARD_SECURE,
+      std::make_unique<quic::test::StrictTaggingDecrypter>(
+          quic::ENCRYPTION_FORWARD_SECURE));
+  session->connection()->SetEncrypter(quic::ENCRYPTION_INITIAL, nullptr);
+  session->OnNewEncryptionKeyAvailable(
+      quic::ENCRYPTION_FORWARD_SECURE,
+      std::make_unique<quic::test::TaggingEncrypter>(
+          quic::ENCRYPTION_FORWARD_SECURE));
+
+  // Configure server preferred address for migration.
+  quic::QuicConfig config;
+  IPEndPoint server_preferred_address = IPEndPoint(IPAddress(1, 2, 3, 4), 123);
+  config.SetIPv4AlternateServerAddressToSend(
+      ToQuicSocketAddress(server_preferred_address));
+  quic::test::QuicConfigPeer::SetPreferredAddressConnectionIdAndToken(
+      &config, kNewCID, quic::QuicUtils::GenerateStatelessResetToken(kNewCID));
+  config.SetStatelessResetTokenToSend(
+      quic::QuicUtils::GenerateStatelessResetToken(
+          quic::test::TestConnectionId()));
+  config.SetOriginalConnectionIdToSend(session->connection()->connection_id());
+  config.SetInitialSourceConnectionIdToSend(
+      session->connection()->connection_id());
+
+  quic::TransportParameters params;
+  ASSERT_TRUE(config.FillTransportParameters(&params));
+  std::string error_details;
+  quic::QuicErrorCode error = session->config()->ProcessTransportParameters(
+      params, /*is_resumption=*/false, &error_details);
+  ASSERT_EQ(quic::QUIC_NO_ERROR, error);
+  session->config()->SetClientConnectionOptions(
+      quic::QuicTagVector{quic::kSPA2});
+
+  session->OnConfigNegotiated();
+  base::RunLoop().RunUntilIdle();
+
+  // Handshake is not confirmed yet.
+  EXPECT_FALSE(session->connection()->IsHandshakeConfirmed());
+
+  const quic::QuicSocketAddress peer_address = session->peer_address();
+  EXPECT_TRUE(session->connection()->HasPendingPathValidation());
+  EXPECT_FALSE(
+      session->connection()->GetStats().server_preferred_address_validated);
+
+  // Trigger migration.
+  quic_data2.Resume();
+
+  EXPECT_FALSE(session->connection()->HasPendingPathValidation());
+  EXPECT_TRUE(
+      session->connection()->GetStats().server_preferred_address_validated);
+  EXPECT_NE(session->peer_address(), peer_address);
+  EXPECT_EQ(session->peer_address(),
+            ToQuicSocketAddress(server_preferred_address));
+
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
+}
+
 }  // namespace net::test
