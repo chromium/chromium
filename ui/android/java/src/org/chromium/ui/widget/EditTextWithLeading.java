@@ -5,7 +5,6 @@
 package org.chromium.ui.widget;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatEditText;
@@ -26,7 +25,7 @@ public class EditTextWithLeading extends AppCompatEditText {
      * TextView - that is no leading will be applied. This method is also available for use from
      * subclasses besides inflation from XML.
      */
-    public EditTextWithLeading(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public EditTextWithLeading(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         TextViewLeadingUtils.applySpacingAttributes(this, attrs, context);
     }
