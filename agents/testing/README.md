@@ -115,6 +115,12 @@ tests:
       # Check that the agent ran git diff and found the new content.
       - type: icontains
         value: "dummy content"
+    metadata:
+      # The compile targets that should be compiled before the prompt runs
+      precompile_targets:
+      - foo_unittests
+      runs_per_test: 10 # The number of iterations to run
+      pass_k_threshold: 5 # The number of iterations that must pass
 ```
 
 ### Example Patch File

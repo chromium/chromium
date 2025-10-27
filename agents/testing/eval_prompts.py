@@ -49,13 +49,21 @@ def _check_uncommitted_changes(cwd):
             'commit or stash them before running the evaluation.')
 
 
-def _build_chromium(cwd):
-    logging.info('Running `gn gen out/Default`')
-    subprocess.check_call(
-        ['gn', 'gen', 'out/Default', '--args=use_remoteexec=true'], cwd=cwd)
-    logging.info('Running `autoninja -C out/Default`')
-    subprocess.check_call(['autoninja', '-C', 'out/Default'], cwd=cwd)
-    logging.info('Finished building')
+def _build_chromium(cwd: pathlib.Path, configs: list[eval_config.TestConfig]):
+    targets = set(t for c in configs for t in c.precompile_targets)
+    if targets:
+        logging.info('Precompiling: %s', ','.join(targets))
+        logging.info('Running `gn gen out/Default`')
+        subprocess.check_call(
+            ['gn', 'gen', 'out/Default', '--args=use_remoteexec=true'],
+            cwd=cwd)
+        cmd = ['autoninja', '-C', 'out/Default', *targets]
+        logging.info('Running `%s`', ' '.join(cmd))
+        subprocess.check_call(['autoninja', '-C', 'out/Default', *targets],
+                              cwd=cwd)
+        logging.info('Finished building')
+    else:
+        logging.debug('No targets to precompile')
 
 
 def _discover_testcase_files() -> list[eval_config.TestConfig]:
@@ -169,7 +177,8 @@ def _get_tests_to_run(
     return configs_to_run
 
 
-def _perform_chromium_setup(force: bool, build: bool) -> None:
+def _perform_chromium_setup(force: bool, build: bool,
+                            configs: list[eval_config.TestConfig]) -> None:
     """Performs setup steps related to the Chromium checkout.
 
     Args:
@@ -184,7 +193,7 @@ def _perform_chromium_setup(force: bool, build: bool) -> None:
     src_path = root_path / 'src'
     _check_uncommitted_changes(src_path)
     if build:
-        _build_chromium(src_path)
+        _build_chromium(src_path, configs)
 
 
 def _fetch_sandbox_image() -> bool:
@@ -273,7 +282,9 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
         logging.info('No tests to run after filtering and sharding')
         return 1
 
-    _perform_chromium_setup(force=args.force, build=not args.no_build)
+    _perform_chromium_setup(force=args.force,
+                            build=not args.no_build,
+                            configs=configs_to_run)
 
     if args.promptfoo_bin:
         promptfoo = promptfoo_installation.PreinstalledPromptfooInstallation(

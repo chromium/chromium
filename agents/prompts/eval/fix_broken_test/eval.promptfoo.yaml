@@ -18,3 +18,5 @@ tests:
     metadata:
       pass_k_threshold: 1
       runs_per_test: 5
+      precompile_targets:
+      - blink_unittests

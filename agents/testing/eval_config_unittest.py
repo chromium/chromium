@@ -50,6 +50,7 @@ class TestConfigFromFileTest(fake_filesystem_unittest.TestCase):
         config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
         self.assertEqual(config.runs_per_test, 1)
         self.assertEqual(config.pass_k_threshold, 1)
+        self.assertEqual(config.precompile_targets, [])
 
     def test_empty_metadata(self):
         """Tests that default values are returned for empty metadata."""
@@ -57,6 +58,7 @@ class TestConfigFromFileTest(fake_filesystem_unittest.TestCase):
         config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
         self.assertEqual(config.runs_per_test, 1)
         self.assertEqual(config.pass_k_threshold, 1)
+        self.assertEqual(config.precompile_targets, [])
 
     def test_with_settings(self):
         """Tests that pass@k settings are read correctly."""
@@ -65,11 +67,15 @@ tests:
   - metadata:
       runs_per_test: 5
       pass_k_threshold: 3
+      precompile_targets:
+        - "target1"
+        - "target2"
 """
         self.fs.create_file('test.yaml', contents=yaml_with_settings)
         config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
         self.assertEqual(config.runs_per_test, 5)
         self.assertEqual(config.pass_k_threshold, 3)
+        self.assertEqual(config.precompile_targets, ["target1", "target2"])
 
     def test_first_test_has_settings(self):
         """Tests that settings are read from the first test with metadata."""
@@ -86,6 +92,7 @@ tests:
         config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
         self.assertEqual(config.runs_per_test, 5)
         self.assertEqual(config.pass_k_threshold, 3)
+        self.assertEqual(config.precompile_targets, [])
 
     def test_later_test_has_settings(self):
         """Tests that settings are read from the first test with metadata."""
@@ -100,6 +107,7 @@ tests:
         config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
         self.assertEqual(config.runs_per_test, 1)
         self.assertEqual(config.pass_k_threshold, 1)
+        self.assertEqual(config.precompile_targets, [])
 
     def test_invalid_runs_type(self):
         """Tests that a ValueError is raised for a non-integer runs_per_test."""

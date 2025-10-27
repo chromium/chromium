@@ -74,13 +74,29 @@ class BuildChromiumUnittest(fake_filesystem_unittest.TestCase):
     @mock.patch('subprocess.check_call')
     def test_build_chromium(self, mock_check_call):
         """Tests that the correct commands are called to build chromium."""
-        eval_prompts._build_chromium('/tmp/src')
+        self.fs.create_file('/test/a.yaml',
+                            contents="""
+tests:
+  - metadata:
+      precompile_targets:
+        - "foo"
+""")
+        eval_prompts._build_chromium(
+            '/tmp/src',
+            [eval_config.TestConfig.from_file(pathlib.Path('/test/a.yaml'))])
         mock_check_call.assert_has_calls([
             mock.call(
                 ['gn', 'gen', 'out/Default', '--args=use_remoteexec=true'],
                 cwd='/tmp/src'),
-            mock.call(['autoninja', '-C', 'out/Default'], cwd='/tmp/src'),
+            mock.call(['autoninja', '-C', 'out/Default', 'foo'],
+                      cwd='/tmp/src'),
         ])
+
+    @mock.patch('subprocess.check_call')
+    def test_build_chromium_no_targets(self, mock_check_call):
+        """Tests that the correct commands are called to build chromium."""
+        eval_prompts._build_chromium('/tmp/src', [])
+        mock_check_call.assert_not_called()
 
 
 class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
@@ -401,14 +417,17 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
         mock_get_gclient_root.return_value = pathlib.Path('/root')
         mock_check_btrfs.return_value = True
 
-        eval_prompts._perform_chromium_setup(force=False, build=True)
+        eval_prompts._perform_chromium_setup(force=False,
+                                             build=True,
+                                             configs=[])
 
         mock_get_gclient_root.assert_called_once()
         mock_check_btrfs.assert_called_once_with(pathlib.Path('/root'))
         mock_subprocess_run.assert_called_once_with(['sudo', '-v'], check=True)
         mock_check_uncommitted_changes.assert_called_once_with(
             pathlib.Path('/root/src'))
-        mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'))
+        mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'),
+                                                    [])
 
     @mock.patch('eval_prompts._build_chromium')
     @mock.patch('eval_prompts._check_uncommitted_changes')
@@ -422,7 +441,9 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
         mock_get_gclient_root.return_value = pathlib.Path('/root')
         mock_check_btrfs.return_value = False
 
-        eval_prompts._perform_chromium_setup(force=False, build=False)
+        eval_prompts._perform_chromium_setup(force=False,
+                                             build=False,
+                                             configs=[])
 
         mock_get_gclient_root.assert_called_once()
         mock_check_btrfs.assert_called_once_with(pathlib.Path('/root'))
@@ -445,14 +466,17 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
         mock_get_gclient_root.return_value = pathlib.Path('/root')
         mock_check_btrfs.return_value = True
 
-        eval_prompts._perform_chromium_setup(force=True, build=True)
+        eval_prompts._perform_chromium_setup(force=True,
+                                             build=True,
+                                             configs=[])
 
         mock_get_gclient_root.assert_called_once()
         mock_check_btrfs.assert_called_once_with(pathlib.Path('/root'))
         mock_subprocess_run.assert_not_called()
         mock_check_uncommitted_changes.assert_called_once_with(
             pathlib.Path('/root/src'))
-        mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'))
+        mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'),
+                                                    [])
 
 
 class FetchSandboxImageUnittest(unittest.TestCase):
@@ -583,9 +607,12 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         with self.assertLogs(level='INFO') as cm:
             returncode = eval_prompts._run_prompt_eval_tests(self.args)
             self.assertIn('Successfully ran 1 tests', cm.output[-1])
-
-        self.mock_perform_chromium_setup.assert_called_once_with(force=False,
-                                                                 build=True)
+        self.mock_perform_chromium_setup.assert_called_once_with(
+            force=False,
+            build=True,
+            configs=[
+                eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))
+            ])
         self.mock_worker_pool.assert_called_once()
         (num_workers, promptfoo, worker_opts,
          result_opts) = self.mock_worker_pool.call_args[0]
@@ -632,8 +659,12 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             self.assertIn('Failed tests:', cm.output[-2])
             self.assertIn('  test', cm.output[-1])
 
-        self.mock_perform_chromium_setup.assert_called_once_with(force=False,
-                                                                 build=False)
+        self.mock_perform_chromium_setup.assert_called_once_with(
+            force=False,
+            build=False,
+            configs=[
+                eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))
+            ])
         self.assertEqual(returncode, 1)
 
     def test_run_prompt_eval_tests_multiple_tests_one_fail(self):
@@ -670,8 +701,14 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             self.assertIn('Failed tests:', cm.output[-2])
             self.assertIn('  test', cm.output[-1])
 
-        self.mock_perform_chromium_setup.assert_called_once_with(force=False,
-                                                                 build=True)
+        self.mock_perform_chromium_setup.assert_called_once_with(
+            force=False,
+            build=True,
+            configs=[
+                eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml')),
+                eval_config.TestConfig(test_file=pathlib.Path('/test/b.yaml')),
+                eval_config.TestConfig(test_file=pathlib.Path('/test/c.yaml')),
+            ])
         self.assertEqual(returncode, 1)
 
     def test_run_prompt_eval_tests_sandbox_prefetch_fails(self):
