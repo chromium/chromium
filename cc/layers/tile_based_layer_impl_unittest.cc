@@ -103,5 +103,54 @@ TEST_F(TileBasedLayerImplTest, SetIsBackdropFilterMask_RedundantCalls) {
   EXPECT_FALSE(layer->is_backdrop_filter_mask());
 }
 
+// Verifies that calling `SetIsBackdropFilterMask` with a new value marks the
+// layer for push properties in the pending tree.
+TEST_F(TileBasedLayerImplTest,
+       SetIsBackdropFilterMask_CallsSetNeedsPushProperties) {
+  // NOTE: LayerImpl::SetNeedsPushProperties() is a no-op in the active tree, so
+  // we need to put the layer in the pending tree here.
+  SetupPendingTree();
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->pending_tree(), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->pending_tree()->AddLayer(std::move(layer));
+
+  // Clear state before running the test.
+  host_impl()->pending_tree()->ClearLayersThatShouldPushProperties();
+  raw_layer->ResetChangeTracking();
+
+  raw_layer->SetIsBackdropFilterMask(true);
+
+  const auto& layers =
+      host_impl()->pending_tree()->LayersThatShouldPushProperties();
+  ASSERT_EQ(layers.size(), 1u);
+  EXPECT_NE(layers.find(raw_layer), layers.end());
+}
+
+// Verifies that calling `SetIsBackdropFilterMask` with the same value as it
+// currently has does not mark the layer for push properties in the pending
+// tree.
+TEST_F(
+    TileBasedLayerImplTest,
+    SetIsBackdropFilterMask_DoesNotCallSetNeedsPushPropertiesIfValueUnchanged) {
+  // NOTE: LayerImpl::SetNeedsPushProperties() is a no-op in the active tree, so
+  // we need to put the layer in the pending tree here.
+  SetupPendingTree();
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->pending_tree(), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->pending_tree()->AddLayer(std::move(layer));
+
+  // Clear state before running the test.
+  host_impl()->pending_tree()->ClearLayersThatShouldPushProperties();
+  raw_layer->ResetChangeTracking();
+
+  raw_layer->SetIsBackdropFilterMask(false);
+
+  const auto& layers =
+      host_impl()->pending_tree()->LayersThatShouldPushProperties();
+  EXPECT_EQ(layers.size(), 0u);
+}
+
 }  // namespace
 }  // namespace cc
