@@ -49,6 +49,8 @@ class PageActionMetricsRecorderInterface;
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
   // Whether the chip should have expand/collapse animations.
+  // The suggestion chip will only animate once per call to
+  // `PageActionController::ShowSuggestionChip`.
   bool should_animate = true;
 
   // Whether the chip should be announced by a screen reader.

@@ -73,7 +73,8 @@ class PageActionModelInterface {
   virtual bool GetVisible() const = 0;
   virtual bool IsChipShowing() const = 0;
   virtual bool ShouldShowSuggestionChip() const = 0;
-  virtual bool GetShouldAnimateChip() const = 0;
+  virtual bool GetShouldAnimateChipOut() const = 0;
+  virtual bool GetShouldAnimateChipIn() const = 0;
   virtual bool GetShouldAnnounceChip() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string& GetText() const = 0;
@@ -143,7 +144,8 @@ class PageActionModel : public PageActionModelInterface {
   bool GetVisible() const override;
   bool IsChipShowing() const override;
   bool ShouldShowSuggestionChip() const override;
-  bool GetShouldAnimateChip() const override;
+  bool GetShouldAnimateChipOut() const override;
+  bool GetShouldAnimateChipIn() const override;
   bool GetShouldAnnounceChip() const override;
 
   const ui::ImageModel& GetImage() const override;
@@ -182,6 +184,9 @@ class PageActionModel : public PageActionModelInterface {
   // Represents whether the suggestion chip is fully expanded or not (in/out
   // animation is completed). Therefore, it should not be animating.
   bool is_chip_showing_ = false;
+
+  // Whether the chip was shown for a given `SetShouldShowSuggestion` request.
+  bool did_show_chip_ = false;
 
   // Represents whether suggestion chips should be announced by a screen
   // reader.

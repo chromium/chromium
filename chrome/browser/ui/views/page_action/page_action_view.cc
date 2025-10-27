@@ -119,13 +119,19 @@ void PageActionView::OnPageActionModelChanged(
   const bool was_chip_visible = IsChipVisible();
   if (!model.GetVisible()) {
     ResetSlideAnimation(/*show=*/false);
-  } else if (!model.GetShouldAnimateChip()) {
-    ResetSlideAnimation(/*show=*/model.ShouldShowSuggestionChip());
     NotifyIsChipShowingChange();
   } else if (model.ShouldShowSuggestionChip()) {
-    AnimateIn(/*string_id=*/std::nullopt);
-  } else {
+    if (model.GetShouldAnimateChipIn()) {
+      AnimateIn(/*string_id=*/std::nullopt);
+    } else {
+      ResetSlideAnimation(/*show=*/true);
+      NotifyIsChipShowingChange();
+    }
+  } else if (model.GetShouldAnimateChipOut()) {
     AnimateOut();
+  } else {
+    ResetSlideAnimation(/*show=*/false);
+    NotifyIsChipShowingChange();
   }
 
   // Announce the chip only if announcements are enabled and the chip was

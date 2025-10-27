@@ -104,6 +104,35 @@ TEST_F(PageActionModelTest, ShouldAnnounceChip) {
   EXPECT_EQ(model_.GetShouldAnnounceChip(), false);
 }
 
+TEST_F(PageActionModelTest, ShouldAnimateChip) {
+  model_.SetSuggestionChipConfig(PassKey(), {.should_animate = true});
+  EXPECT_EQ(model_.GetShouldAnimateChipOut(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), true);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetSuggestionChipConfig(PassKey(), {.should_animate = false});
+  EXPECT_EQ(model_.GetShouldAnimateChipOut(), false);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
+}
+
+TEST_F(PageActionModelTest, ShouldAnimateIn) {
+  model_.SetSuggestionChipConfig(PassKey(), {.should_animate = true});
+  model_.SetShouldShowSuggestionChip(PassKey(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), true);
+
+  // Mark the chip as shown.
+  model_.SetIsChipShowing(PassKey(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
+
+  // Hiding the chip should not reset the animation state.
+  model_.SetIsChipShowing(PassKey(), false);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
+
+  // Requesting to show the chip again should the animation state.
+  model_.SetShouldShowSuggestionChip(PassKey(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), true);
+}
+
 TEST_F(PageActionModelTest, OverrideText) {
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 

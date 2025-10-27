@@ -23,7 +23,8 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(bool, GetVisible, (), (const, override));
   MOCK_METHOD(bool, IsChipShowing, (), (const, override));
   MOCK_METHOD(bool, ShouldShowSuggestionChip, (), (const, override));
-  MOCK_METHOD(bool, GetShouldAnimateChip, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnimateChipOut, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnimateChipIn, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnnounceChip, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetAccessibleName, (), (const, override));

@@ -181,7 +181,9 @@ class PageActionViewTest : public ChromeViewsTestBase {
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, ShouldShowSuggestionChip())
         .WillByDefault(Return(false));
-    ON_CALL(mock_model_, GetShouldAnimateChip()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetShouldAnimateChipIn()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetShouldAnimateChipOut())
+        .WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetAccessibleName())
         .WillByDefault(ReturnRef(mock_string_));
@@ -532,7 +534,7 @@ TEST_F(PageActionViewTest, ChipExpandedCallbackNoAnimation) {
       .WillOnce([&first_loop](bool) { first_loop.Quit(); });
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(false));
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
@@ -548,6 +550,8 @@ TEST_F(PageActionViewTest, ChipExpandedCallbackNoAnimation) {
       .WillOnce([&second_loop](bool) { second_loop.Quit(); });
 
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut())
       .WillRepeatedly(Return(false));
 
   page_action_view()->OnPageActionModelChanged(*model());
@@ -708,7 +712,7 @@ class PageActionViewAnimationTest : public PageActionViewTest {
 };
 
 TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut()).WillRepeatedly(Return(true));
   SetInitialChipVisibility(true);
   ExtendAnimations();
 
@@ -733,7 +737,7 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
 }
 
 TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(true));
   SetInitialChipVisibility(false);
   ExtendAnimations();
 
@@ -763,7 +767,7 @@ TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {
   SetInitialChipVisibility(false);
 
   ExtendAnimations();
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(false));
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));
   page_action_view()->OnPageActionModelChanged(*model());
@@ -772,6 +776,8 @@ TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {
   EXPECT_TRUE(page_action_view()->IsChipVisible());
 
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut())
       .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
@@ -797,7 +803,7 @@ TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateIn) {
       .WillOnce([&run_loop](bool) { run_loop.Quit(); });
 
   // 3)  Animate-in path.
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(true));
   ExtendAnimations();
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));
@@ -833,7 +839,7 @@ TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateOut) {
   }
 
   // 3)  Animate-out path.
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut()).WillRepeatedly(Return(true));
   ExtendAnimations();
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(false));

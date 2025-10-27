@@ -35,6 +35,7 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
 void PageActionModel::SetShouldShowSuggestionChip(
     base::PassKey<PageActionController>,
     bool show) {
+  did_show_chip_ = false;
   if (should_show_suggestion_chip_ == show) {
     return;
   }
@@ -123,8 +124,13 @@ bool PageActionModel::ShouldShowSuggestionChip() const {
   return should_show_suggestion_chip_;
 }
 
-bool PageActionModel::GetShouldAnimateChip() const {
+bool PageActionModel::GetShouldAnimateChipOut() const {
   return should_animate_;
+}
+
+bool PageActionModel::GetShouldAnimateChipIn() const {
+  // Only animate in if the chip was not shown yet.
+  return should_animate_ && !did_show_chip_;
 }
 
 bool PageActionModel::GetShouldAnnounceChip() const {
@@ -220,6 +226,7 @@ void PageActionModel::SetExemptFromOmniboxSuppression(
 
 void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
                                        bool is_chip_showing) {
+  did_show_chip_ |= is_chip_showing;
   if (is_chip_showing_ == is_chip_showing) {
     return;
   }
