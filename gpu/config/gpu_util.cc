@@ -201,6 +201,27 @@ GpuFeatureStatus GetWebGPUFeatureStatus(
   return kGpuFeatureStatusEnabled;
 }
 
+GpuFeatureStatus GetWebGPUOnVulkanViaGLInterop(
+    const std::set<int>& blocklisted_features,
+    const GpuPreferences& gpu_preferences,
+    bool use_swift_shader) {
+  if (use_swift_shader ||
+      gpu_preferences.gr_context_type != GrContextType::kGL) {
+    return kGpuFeatureStatusDisabled;
+  }
+
+  if (blocklisted_features.count(
+          GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP)) {
+    return kGpuFeatureStatusDisabled;
+  }
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+  // Switch to Enabled after commit.
+  return kGpuFeatureStatusDisabled;
+#else
+  return kGpuFeatureStatusDisabled;
+#endif
+}
+
 GpuFeatureStatus Get2DCanvasFeatureStatus(
     const std::set<int>& blocklisted_features,
     bool use_swift_shader) {
@@ -449,6 +470,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
   gpu_feature_info
       .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
       kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
+      kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
     DCHECK_NE(kGpuFeatureStatusUndefined, gpu_feature_info.status_values[ii]);
@@ -483,6 +506,8 @@ GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL() {
       kGpuFeatureStatusSoftware;
   gpu_feature_info
       .status_values[GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR] =
+      kGpuFeatureStatusDisabled;
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
       kGpuFeatureStatusDisabled;
 #if DCHECK_IS_ON()
   for (int ii = 0; ii < NUMBER_OF_GPU_FEATURE_TYPES; ++ii) {
@@ -567,6 +592,11 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       GetWebGL2FeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
       GetWebGPUFeatureStatus(blocklisted_features, use_software_gl);
+
+  gpu_feature_info.status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
+      GetWebGPUOnVulkanViaGLInterop(blocklisted_features, gpu_preferences,
+                                    use_software_gl);
+
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       Get2DCanvasFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =

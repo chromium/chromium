@@ -154,6 +154,13 @@ bool GLTextureImageBackingFactory::IsSupported(
   // Only supports WebGPU usages on ANGLE/GL on a Skia/GL context
   if (usage.HasAny(kWebGPUUsages)) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+    if (enable_webgpu_on_vk_via_gl_interop_) {
+      // WebGPU usages will be handled by ExternalVkImageBackingFactory when
+      // running in webgpu vk on chromium gl.
+      return false;
+    }
+#endif
     if (gr_context_type != GrContextType::kGL ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {

@@ -459,7 +459,9 @@ V8GPUTextureFormat GPU::getPreferredCanvasFormat() {
 }
 
 wgpu::TextureFormat GPU::GetPreferredCanvasFormat() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  // Interop of vulkan and GL has mesa driver bugs for BGRA format
+  // See anglebug.com/40644739
   return wgpu::TextureFormat::RGBA8Unorm;
 #else
   return wgpu::TextureFormat::BGRA8Unorm;

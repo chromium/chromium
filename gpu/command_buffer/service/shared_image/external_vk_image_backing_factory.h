@@ -27,7 +27,8 @@ class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
     : public SharedImageBackingFactory {
  public:
   explicit ExternalVkImageBackingFactory(
-      scoped_refptr<SharedContextState> context_state);
+      scoped_refptr<SharedContextState> context_state,
+      bool enable_webgpu_on_vk_via_gl_interop);
 
   ExternalVkImageBackingFactory(const ExternalVkImageBackingFactory&) = delete;
   ExternalVkImageBackingFactory& operator=(
@@ -101,6 +102,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
   bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
 
   const scoped_refptr<SharedContextState> context_state_;
+  const bool enable_webgpu_on_vk_via_gl_interop_;
   std::unique_ptr<VulkanCommandPool> command_pool_;
 
   // Map VkImageUsageFlags flags based on VkFormat for VK_IMAGE_TILING_OPTIMAL.
