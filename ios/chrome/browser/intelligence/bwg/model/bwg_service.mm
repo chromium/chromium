@@ -123,6 +123,11 @@ void BwgService::OnIdentityManagerShutdown(
   }
 }
 
+void BwgService::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  CheckGeminiEnterpriseEligibility();
+}
+
 #pragma mark - Private
 
 void BwgService::CheckGeminiEnterpriseEligibility() {
@@ -131,10 +136,12 @@ void BwgService::CheckGeminiEnterpriseEligibility() {
     return;
   }
 
+  eligibility_weak_ptr_factory_.InvalidateWeakPtrs();
+
   ios::provider::CheckGeminiEligibility(
-      auth_service_, base::CallbackToBlock(
-                         base::BindOnce(&BwgService::OnGeminiEligibilityResult,
-                                        weak_ptr_factory_.GetWeakPtr())));
+      auth_service_, base::CallbackToBlock(base::BindOnce(
+                         &BwgService::OnGeminiEligibilityResult,
+                         eligibility_weak_ptr_factory_.GetWeakPtr())));
 }
 
 void BwgService::ClearConsentPref() {

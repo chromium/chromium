@@ -11,6 +11,7 @@
 
 class AuthenticationService;
 namespace signin {
+class CoreAccountInfo;
 class IdentityManager;
 }  // namespace signin
 class OptimizationGuideService;
@@ -41,6 +42,8 @@ class BwgService : public KeyedService,
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
@@ -74,7 +77,10 @@ class BwgService : public KeyedService,
   // Invoked when the eligibility check is done.
   void OnGeminiEligibilityResult(bool eligible);
 
-  // Weak pointer factory.
+  // Weak pointer factory for Gemini eligibility checks.
+  base::WeakPtrFactory<BwgService> eligibility_weak_ptr_factory_{this};
+
+  // Generic weak pointer factory.
   base::WeakPtrFactory<BwgService> weak_ptr_factory_{this};
 };
 
