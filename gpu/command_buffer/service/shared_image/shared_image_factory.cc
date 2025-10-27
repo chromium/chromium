@@ -389,12 +389,15 @@ bool SharedImageFactory::CreateSharedImage(
   return RegisterBacking(std::move(backing), std::move(pool_id));
 }
 
-bool SharedImageFactory::IsNativeBufferSupported(viz::SharedImageFormat format,
-                                                 gfx::BufferUsage usage) {
+// static
+bool SharedImageFactory::IsNativeBufferSupported(
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage,
+    const gfx::GpuExtraInfo& gpu_extra_info) {
   if (WillGetGmbConfigFromGpu()) {
 #if BUILDFLAG(IS_OZONE_X11)
     return base::Contains(
-        gpu_extra_info_.gpu_memory_buffer_support_x11,
+        gpu_extra_info.gpu_memory_buffer_support_x11,
         gfx::BufferUsageAndFormat(
             usage, viz::SharedImageFormatToBufferFormat(format)));
 #else
@@ -423,7 +426,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
 
-  auto native_buffer_supported = IsNativeBufferSupported(format, buffer_usage);
+  auto native_buffer_supported =
+      IsNativeBufferSupported(format, buffer_usage, gpu_extra_info_);
   std::unique_ptr<SharedImageBacking> backing;
   if (native_buffer_supported) {
     auto* factory = GetFactoryByUsage(usage, format, size,
@@ -811,7 +815,8 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
       is_angle_metal || is_skia_graphite;
   shared_image_caps.supports_native_nv12_mappable_shared_images =
       IsNativeBufferSupported(viz::MultiPlaneFormat::kNV12,
-                              gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+                              gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+                              gpu_extra_info_);
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
   shared_image_caps.disable_webgpu_shared_images =
