@@ -140,8 +140,16 @@ public class HostZoomMapImpl {
      * @return double The adjusted zoom level.
      */
     public static double adjustZoomLevel(double zoomLevel, float systemFontScale) {
-        // No calculation to do if the user has set OS-level |fontScale| to 1 (default).
-        if (MathUtils.areFloatsEqual(systemFontScale, 1f) || !shouldAdjustForOSLevel()) {
+        // If we are not supposed to adjust for OS-level font scale, set the effective scale to 1.
+        float effectiveSystemFontScale = systemFontScale;
+        if (!shouldAdjustForOSLevel()) {
+            effectiveSystemFontScale = 1.0f;
+        }
+
+        float scaleAdjustment = effectiveSystemFontScale;
+
+        // No calculation to do if the |scaleAdjustment| is 1.0 (default).
+        if (MathUtils.areFloatsEqual(scaleAdjustment, 1.0f)) {
             return zoomLevel;
         }
 
@@ -150,7 +158,7 @@ public class HostZoomMapImpl {
         // Chrome-level zoom of 150%, and a OS-level setting of XL (130%), then we want to continue
         // to display 150% to the user but actually render 1.5 * 1.3 = 1.95 (195%) zoom. We must
         // apply this at the zoom level (not factor) to compensate for logarithmic scale.
-        double adjustedLevel = systemFontScale * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel);
+        double adjustedLevel = scaleAdjustment * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel);
 
         // We do not pass levels to the backend, but factors. So convert back and round.
         double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
