@@ -25,14 +25,14 @@ found in the LICENSE file.
         android:orientation="horizontal"
         android:paddingStart="@dimen/fake_search_box_start_padding"
         android:paddingEnd="@dimen/fake_search_box_end_padding">
-
         <!-- Fake searchbox is only showing when Google is the DSE. -->
         <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/search_box_engine_icon"
             style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:id="@+id/search_box_engine_icon"
             android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
             android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
             android:layout_marginEnd="@dimen/fake_search_box_start_padding_with_dse_logo"
+            android:scaleType="fitCenter"
             android:tint="@null"
             android:focusable="false"
             android:importantForAccessibility="no"
@@ -47,7 +47,6 @@ found in the LICENSE file.
             android:gravity="center_vertical">
 
             <EditText
-                tools:ignore="Autofill,LabelFor"
                 style="@style/TextAppearance.FakeSearchBoxText"
                 android:id="@+id/search_box_text"
                 android:layout_width="match_parent"
@@ -58,31 +57,34 @@ found in the LICENSE file.
                 android:focusableInTouchMode="false"
                 android:inputType="text"
                 android:singleLine="true"
-                android:hint="@string/omnibox_empty_hint"/>
+                android:hint="@string/omnibox_empty_hint"
+                tools:ignore="Autofill,LabelFor"/>
 
         </RelativeLayout>
 
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/composeplate_button"
             style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:id="@+id/composeplate_button"
             android:foreground="@drawable/oval_ripple"
             android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
+            android:visibility="gone"
             app:lottie_rawRes="@raw/composeplate_loop_light"
             app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            android:visibility="gone"/>
+            app:lottie_loop="true"/>
 
         <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/voice_search_button"
             style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:id="@+id/voice_search_button"
             android:contentDescription="@string/accessibility_toolbar_btn_mic"
             android:src="@drawable/ic_mic_white_24dp"/>
 
         <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/lens_camera_button"
             style="@style/LocationBarActionButtonForFakeSearchBox"
+            android:id="@+id/lens_camera_button"
             android:contentDescription="@string/accessibility_btn_lens_camera"
             android:src="@drawable/lens_camera_icon"
             android:visibility="gone"/>
+
     </LinearLayout>
+
 </org.chromium.chrome.browser.ntp.search.SearchBoxContainerView>
