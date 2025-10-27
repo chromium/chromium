@@ -698,6 +698,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="App menu"/>
 </enum>
 
+<enum name="PolicyWarningDialogEvent">
+  <int value="0" label="dialog shown"/>
+  <int value="1" label="Dialog confirmed"/>
+  <int value="2" label="Dialog canceled"/>
+  <int value="3" label="Dialog dismissed"/>
+</enum>
+
 <enum name="PresentAddPassesDialogResult">
   <summary>
     Defines the result of Add Passes dialog presentation. The presentation can

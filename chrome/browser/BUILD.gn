@@ -3052,6 +3052,8 @@ static_library("browser") {
       "download/android/open_download_dialog_bridge.h",
       "download/android/open_download_dialog_bridge_delegate.cc",
       "download/android/open_download_dialog_bridge_delegate.h",
+      "download/android/policy_warning_download_dialog_bridge.cc",
+      "download/android/policy_warning_download_dialog_bridge.h",
       "download/android/service/download_background_task.cc",
       "download/android/service/download_task_scheduler.cc",
       "download/android/service/download_task_scheduler.h",

@@ -28,6 +28,7 @@
 #include "chrome/browser/download/android/dangerous_download_dialog_bridge.h"
 #include "chrome/browser/download/android/download_callback_validator.h"
 #include "chrome/browser/download/android/download_controller_base.h"
+#include "chrome/browser/download/android/policy_warning_download_dialog_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
@@ -92,6 +93,10 @@ class DownloadController : public DownloadControllerBase {
   // Shows the DangerousDownloadDialog (generic dangerous filetype warning).
   void OnDangerousDownload(download::DownloadItem* item);
 
+  // The download item contains sensitive content.
+  // Shows the PolicyWarningDownloadDialog.
+  void OnSensitiveDownload(download::DownloadItem* item);
+
   // Shows the UI warnings from Safe Browsing malicious APK download check.
   void ShowDangerousDownloadWarning(DownloadUIModel& model);
 
@@ -117,6 +122,9 @@ class DownloadController : public DownloadControllerBase {
   DownloadCallbackValidator validator_;
 
   std::unique_ptr<DangerousDownloadDialogBridge> dangerous_download_bridge_;
+
+  std::unique_ptr<PolicyWarningDownloadDialogBridge>
+      policy_warning_download_bridge_;
 
   // The item currently or previously doing an app verification
   // prompt. Because we show at most one at a time, this does not need

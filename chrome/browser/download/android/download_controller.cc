@@ -394,7 +394,10 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
   if (item->IsDangerous() && (item->GetState() != DownloadItem::CANCELLED)) {
     DownloadItemModel model{item};
     MaybeRecordDangerousDownloadWarningShown(model);
-    if (ShouldShowSafeBrowsingAndroidDownloadWarnings()) {
+    if (item->GetDangerType() ==
+        download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+      OnSensitiveDownload(item);
+    } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings()) {
       ShowDangerousDownloadWarning(model);
     } else {
       // Don't show notification for a dangerous download, as user can resume
@@ -466,6 +469,25 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
         std::make_unique<DangerousDownloadDialogBridge>();
   }
   dangerous_download_bridge_->Show(item, window_android);
+}
+
+void DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
+  WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
+  if (!web_contents) {
+    ScheduleRemoveDownloadItem(item);
+    item->RemoveObserver(this);
+    return;
+  }
+
+  ui::ViewAndroid* view_android =
+      web_contents ? web_contents->GetNativeView() : nullptr;
+  ui::WindowAndroid* window_android =
+      view_android ? view_android->GetWindowAndroid() : nullptr;
+  if (!policy_warning_download_bridge_) {
+    policy_warning_download_bridge_ =
+        std::make_unique<PolicyWarningDownloadDialogBridge>();
+  }
+  policy_warning_download_bridge_->Show(item, window_android);
 }
 
 void DownloadController::EnableVerifyAppsDone(

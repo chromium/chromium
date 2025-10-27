@@ -40,6 +40,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/InsecureDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/MediaStoreHelper.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
+    "java/src/org/chromium/chrome/browser/download/PolicyWarningDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/StringUtils.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DangerousDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadDialogUtils.java",
@@ -51,6 +52,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/dialogs/DownloadWarningBypassDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/InsecureDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/dialogs/OpenDownloadDialog.java",
+    "java/src/org/chromium/chrome/browser/download/dialogs/PolicyWarningDownloadDialog.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadHelpPageLauncher.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerCoordinator.java",
     "java/src/org/chromium/chrome/browser/download/home/DownloadManagerUiConfig.java",
@@ -148,6 +150,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/download/DownloadStartupUtils.java",
     "java/src/org/chromium/chrome/browser/download/InsecureDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtils.java",
+    "java/src/org/chromium/chrome/browser/download/PolicyWarningDownloadDialogBridge.java",
     "java/src/org/chromium/chrome/browser/download/StringUtils.java",
     "java/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorFactory.java",
   ]

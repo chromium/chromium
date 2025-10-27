@@ -838,6 +838,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.PolicyWarningDialog.Events"
+    enum="PolicyWarningDialogEvent" expires_after="2026-12-01">
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records user interactions with the policy warning dialog on Android. Records
+    when the dialog is shown, or when user clicks on a button or dismisses the
+    dialog.
+  </summary>
+</histogram>
+
 <histogram name="Download.Progress.InfoBar.Shown"
     enum="DownloadInfoBar.ShownState" expires_after="2023-06-25">
   <owner>shaktisahu@chromium.org</owner>
