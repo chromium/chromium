@@ -4,27 +4,13 @@
 // $ unzip UCD.zip -d UCD
 // $ cargo run --manifest-path generate/Cargo.toml
 
-const T: bool = true;
-const F: bool = false;
-
 #[repr(C, align(8))]
 pub(crate) struct Align8<T>(pub(crate) T);
 #[repr(C, align(64))]
 pub(crate) struct Align64<T>(pub(crate) T);
 
-pub(crate) static ASCII_START: Align64<[bool; 128]> = Align64([
-    F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F,
-    F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F,
-    F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F, F, F, F, F,
-    F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F, F, F, F, F,
-]);
-
-pub(crate) static ASCII_CONTINUE: Align64<[bool; 128]> = Align64([
-    F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F,
-    F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, T, T, T, T, T, T, T, T, T, T, F, F, F, F, F, F,
-    F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F, F, F, F, T,
-    F, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, F, F, F, F, F,
-]);
+pub(crate) const ASCII_START: u128 = 0x7fffffe07fffffe0000000000000000;
+pub(crate) const ASCII_CONTINUE: u128 = 0x7fffffe87fffffe03ff000000000000;
 
 pub(crate) const CHUNK: usize = 64;
 

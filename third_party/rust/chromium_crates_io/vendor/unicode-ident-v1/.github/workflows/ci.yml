@@ -27,8 +27,7 @@ jobs:
       - id: ucd-generate
         run: echo "version=$(grep 'ucd-generate [0-9]\+\.[0-9]\+\.[0-9]\+' tests/tables/tables.rs --only-matching)" >> $GITHUB_OUTPUT
       - run: cargo install ucd-generate
-      - # FIXME: https://www.unicode.org/Public/latest/ucd/UCD.zip still points to 16.0.0, not 17.0.0
-        run: curl https://www.unicode.org/Public/17.0.0/ucd/UCD.zip --location --remote-name --silent --show-error --fail --retry 2
+      - run: curl https://www.unicode.org/Public/latest/ucd/UCD.zip --location --remote-name --silent --show-error --fail --retry 2
       - run: unzip UCD.zip -d UCD
       - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue > tests/tables/tables.rs
       - run: ucd-generate property-bool UCD --include XID_Start,XID_Continue --fst-dir tests/fst
