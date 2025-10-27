@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -489,6 +490,13 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     public void emitWindowContentChangedAnnouncement() {
         cancelWindowContentChangedAnnouncement();
+
+        @StringRes
+        int announcedStringRes =
+                mToolbarOnTop
+                        ? R.string.accessibility_omnibox_suggested_items
+                        : R.string.accessibility_omnibox_suggested_items_above;
+
         // Note: can't use postDelayed until minSdk is 28.
         mHandler.postAtTime(
                 () -> {
@@ -496,7 +504,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                     setContentDescription(
                             getContext()
                                     .getString(
-                                            R.string.accessibility_omnibox_suggested_items,
+                                            announcedStringRes,
                                             mAdapter == null ? 0 : mAdapter.getItemCount()));
                     sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
                     setAccessibilityLiveRegion(ACCESSIBILITY_LIVE_REGION_NONE);
