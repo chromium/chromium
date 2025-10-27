@@ -118,13 +118,14 @@ const char kFirstDownloadUrl[] = "/download1";
 const char kSecondDownloadUrl[] = "/download2";
 const int kDownloadSize = 1024 * 10;
 
+bool IsDownloadExternallyRemoved(download::DownloadItem* item) {
+  CHECK(item);
+  return item->GetFileExternallyRemoved();
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 void OnFileDeleted(bool success) {}
-
-bool IsDownloadExternallyRemoved(download::DownloadItem* item) {
-  return item->GetFileExternallyRemoved();
-}
 
 void OnOpenPromptCreated(download::DownloadItem* item,
                          DownloadOpenPrompt* prompt) {
@@ -599,6 +600,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
   DownloadItem* CreateFirstSlowTestDownload() {
     DownloadManager* manager = GetCurrentManager();
+    CHECK(manager);
 
     EXPECT_EQ(0, manager->BlockingShutdownCount());
     EXPECT_EQ(0, manager->InProgressCount());
@@ -1328,14 +1330,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   }
 }
 
-// TODO(crbug.com/405219117): Enable more tests on desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Test passing the empty query to search().
-// Crashes on desktop Android with no logs and no stack.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchEmptyQuery) {
-  ScopedCancellingItem item(CreateFirstSlowTestDownload());
+  DownloadItem* download_item = CreateFirstSlowTestDownload();
+  ASSERT_TRUE(download_item);
+  ScopedCancellingItem item(download_item);
   ASSERT_TRUE(item.get());
 
   std::optional<base::Value> result = RunFunctionAndReturnResult(
@@ -1346,7 +1346,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // Test that file existence check should be performed after search.
-// Crashes on desktop Android with no logs and no stack.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, FileExistenceCheckAfterSearch) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   DownloadItem* download_item = CreateFirstSlowTestDownload();
@@ -1381,7 +1380,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   RunFunction(base::MakeRefCounted<DownloadsShowFunction>(),
               DownloadItemIdAsArgList(item.get()));
 }
+#endif
 
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+// Desktop Android does not support platform_util::OpenItem(), which is required
+// for this API.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadsShowDefaultFolderFunction) {
   platform_util::internal::DisableShellOperationsForTesting();
@@ -1392,8 +1395,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
               DownloadItemIdAsArgList(item.get()));
 }
 #endif
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test the |filenameRegex| parameter for search().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,

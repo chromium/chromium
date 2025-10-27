@@ -1192,10 +1192,12 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
   DownloadManager* incognito_manager = nullptr;
   GetManagers(browser_context(), include_incognito_information(), &manager,
               &incognito_manager);
+  CHECK(manager);
   ExtensionDownloadsEventRouter* router =
       DownloadCoreServiceFactory::GetForBrowserContext(
           manager->GetBrowserContext())
           ->GetExtensionEventRouter();
+  CHECK(router);
   router->CheckForHistoryFilesRemoval();
   if (incognito_manager) {
     ExtensionDownloadsEventRouter* incognito_router =
