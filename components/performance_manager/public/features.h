@@ -243,6 +243,10 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTransientKeepAlivePolicyDuration);
 
 BASE_DECLARE_FEATURE_PARAM(size_t, kTransientKeepAlivePolicyMaxCount);
 
+// A feature to set the the priority of extension service worker processes to
+// USER_BLOCKING.
+BASE_DECLARE_FEATURE(kExtensionServiceWorkerVoter);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

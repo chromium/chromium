@@ -5,6 +5,7 @@
 #include "components/performance_manager/test_support/test_worker_node_factory.h"
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 
@@ -37,10 +38,12 @@ TestWorkerNodeFactory::~TestWorkerNodeFactory() {
 
 WorkerNodeImpl* TestWorkerNodeFactory::CreateDedicatedWorker(
     ProcessNodeImpl* process_node,
-    FrameNodeImpl* client_frame_node) {
+    FrameNodeImpl* client_frame_node,
+    const url::Origin& origin) {
   auto insertion_result =
       worker_nodes_.insert(TestNodeWrapper<WorkerNodeImpl>::Create(
-          graph_, WorkerNode::WorkerType::kDedicated, process_node));
+          graph_, WorkerNode::WorkerType::kDedicated, process_node, "",
+          blink::WorkerToken(), origin));
   DCHECK(insertion_result.second);
 
   WorkerNodeImpl* worker_node = insertion_result.first->get();
@@ -52,10 +55,12 @@ WorkerNodeImpl* TestWorkerNodeFactory::CreateDedicatedWorker(
 
 WorkerNodeImpl* TestWorkerNodeFactory::CreateDedicatedWorker(
     ProcessNodeImpl* process_node,
-    WorkerNodeImpl* client_worker_node) {
+    WorkerNodeImpl* client_worker_node,
+    const url::Origin& origin) {
   auto insertion_result =
       worker_nodes_.insert(TestNodeWrapper<WorkerNodeImpl>::Create(
-          graph_, WorkerNode::WorkerType::kDedicated, process_node));
+          graph_, WorkerNode::WorkerType::kDedicated, process_node, "",
+          blink::WorkerToken(), origin));
   DCHECK(insertion_result.second);
 
   WorkerNodeImpl* worker_node = insertion_result.first->get();

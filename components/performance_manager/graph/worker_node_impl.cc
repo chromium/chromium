@@ -161,6 +161,15 @@ void WorkerNodeImpl::RemoveClientWorker(WorkerNodeImpl* worker_node) {
 void WorkerNodeImpl::SetPriorityAndReason(
     const PriorityAndReason& priority_and_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // This is also called during initialization to set the initial value. In this
+  // case, do not notify the observers as they aren't even aware of this worker
+  // node anyways.
+  if (CanSetProperty()) {
+    priority_and_reason_.Set(this, priority_and_reason);
+    return;
+  }
+
   priority_and_reason_.SetAndMaybeNotify(this, priority_and_reason);
 }
 

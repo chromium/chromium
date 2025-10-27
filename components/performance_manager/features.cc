@@ -291,4 +291,6 @@ BASE_FEATURE_PARAM(size_t,
                    "count",
                    10);
 
+BASE_FEATURE(kExtensionServiceWorkerVoter, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace performance_manager::features

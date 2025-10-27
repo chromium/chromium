@@ -45,6 +45,11 @@ void SetProcessPriority(const ProcessNode* process_node,
     return;
   }
 
+  // If the process has already exited, don't attempt to set the priority.
+  if (process_node->GetExitStatus().has_value()) {
+    return;
+  }
+
   RenderProcessHostProxy rph_proxy = process_node->GetRenderProcessHostProxy();
   CHECK(rph_proxy.Get());
   rph_proxy.Get()->SetPriorityOverride(priority);
