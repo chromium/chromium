@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
@@ -401,22 +402,21 @@ void TabSharingUIViews::ApplyDlpForAllUsersForTesting() {
 
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    CHECK(browser);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (!IsCapturableByCapturer(browser->GetProfile())) {
+          return true;
+        }
 
-    if (!IsCapturableByCapturer(browser->profile())) {
-      continue;
-    }
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
 
-    OnBrowserAdded(browser);
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); i++) {
-      CreateInfobarForWebContents(tab_strip_model->GetWebContentsAt(i));
-    }
-  }
-  browser_list->AddObserver(this);
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); i++) {
+          CreateInfobarForWebContents(tab_strip_model->GetWebContentsAt(i));
+        }
+        return true;
+      });
+  BrowserList::GetInstance()->AddObserver(this);
 #if BUILDFLAG(IS_CHROMEOS)
   // Observe only for managed users.
   if (g_apply_dlp_for_all_users_for_testing_ ||

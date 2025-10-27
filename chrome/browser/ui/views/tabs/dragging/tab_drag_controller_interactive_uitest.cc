@@ -4419,27 +4419,31 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(TabDragController::IsActive());
   ASSERT_EQ(2u, browser_list()->size());
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    EXPECT_FALSE(GetIsDragged(browser));
-    // Should not be maximized
-    EXPECT_FALSE(browser->window()->IsMaximized());
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser) {
+        EXPECT_FALSE(GetIsDragged(browser));
+        // Should not be maximized
+        EXPECT_FALSE(browser->GetWindow()->IsMaximized());
+        return true;
+      });
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
 namespace {
 
 TabStripViewInterface* GetAttachedTabstripView() {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-
-    if (TabDragController::IsAttachedTo(
-            browser_view->tab_strip_view()->GetDragContext())) {
-      return browser_view->tab_strip_view();
-    }
-  }
-
-  return nullptr;
+  TabStripViewInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&result](BrowserWindowInterface* browser) {
+        BrowserView* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser);
+        if (TabDragController::IsAttachedTo(
+                browser_view->tab_strip_view()->GetDragContext())) {
+          result = browser_view->tab_strip_view();
+        }
+        return !result;
+      });
+  return result;
 }
 
 void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,

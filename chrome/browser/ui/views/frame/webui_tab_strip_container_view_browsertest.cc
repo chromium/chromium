@@ -8,11 +8,13 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -83,13 +85,14 @@ using WebUITabStripDevToolsTest = WebUITabStripContainerViewTest;
 IN_PROC_BROWSER_TEST_F(WebUITabStripDevToolsTest, DevToolsWindowHasNoTabStrip) {
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);
-  Browser* dev_tools_browser = nullptr;
-  for (Browser* browser_instance : *BrowserList::GetInstance()) {
-    if (browser_instance->type() == Browser::TYPE_DEVTOOLS) {
-      dev_tools_browser = browser_instance;
-    }
-  }
-  ASSERT_TRUE(dev_tools_browser);
+
+  auto devtools_browsers =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS;
+      });
+  ASSERT_EQ(1u, devtools_browsers.size());
+  Browser* dev_tools_browser =
+      devtools_browsers[0]->GetBrowserForMigrationOnly();
 
   EXPECT_FALSE(
       WebUITabStripContainerView::UseTouchableTabStrip(dev_tools_browser));

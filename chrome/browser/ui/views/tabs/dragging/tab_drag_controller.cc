@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
@@ -2536,11 +2537,13 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
   // window which was used for dragging is not hidden once all of its tabs are
   // attached to another browser window in DragBrowserToNewTabStrip().
   // TODO(pkotwicz): Fix this properly (crbug.com/358482)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model()->empty()) {
-      exclude.insert(browser->window()->GetNativeWindow());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&exclude](BrowserWindowInterface* browser) {
+        if (browser->GetTabStripModel()->empty()) {
+          exclude.insert(browser->GetWindow()->GetNativeWindow());
+        }
+        return true;
+      });
 #endif
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   *window = window_finder_->GetLocalProcessWindowAtPoint(screen_point, exclude);

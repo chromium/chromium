@@ -578,19 +578,24 @@ BrowserWindowInterface* GetAppBrowserForAppId(const Profile* profile,
 }
 
 content::WebContents* GetAnyWebContentsForAppId(const webapps::AppId& app_id) {
-  auto* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      const webapps::AppId* web_contents_id =
-          WebAppTabHelper::GetAppId(web_contents);
-      if (web_contents_id && *web_contents_id == app_id) {
-        return web_contents;
-      }
-    }
-  }
-  return nullptr;
+  content::WebContents* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&app_id, &result](BrowserWindowInterface* browser) {
+        const TabStripModel* const tab_strip_model =
+            browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+          content::WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          const webapps::AppId* const web_contents_id =
+              WebAppTabHelper::GetAppId(web_contents);
+          if (web_contents_id && *web_contents_id == app_id) {
+            result = web_contents;
+            break;
+          }
+        }
+        return !result;
+      });
+  return result;
 }
 
 class UninstallCompleteWaiter final : public BrowserListObserver,
@@ -3220,42 +3225,49 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
     }
   }
 
-  auto* browser_list = BrowserList::GetInstance();
   // Opening multiple files at the same time can result in multiple app windows.
   // All browser windows are checked.
-  for (Browser* browser : *browser_list) {
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-      auto site_config = GetSiteConfiguration(site);
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &found_foo_files, &found_bar_files,
+       site](BrowserWindowInterface* browser) {
+        const TabStripModel* const tab_strip_model =
+            browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+          auto site_config = GetSiteConfiguration(site);
+          content::WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
 
-      if (!WebAppTabHelper::GetAppId(web_contents)) {
-        continue;
-      }
+          if (!WebAppTabHelper::GetAppId(web_contents)) {
+            continue;
+          }
 
-      static const std::string kFooHandler = "foo_handler.html";
-      static const std::string kBarHandler = "bar_handler.html";
-      webapps::AppId app_id = *WebAppTabHelper::GetAppId(web_contents);
-      std::string url_str = web_contents->GetURL().spec();
+          static const std::string kFooHandler = "foo_handler.html";
+          static const std::string kBarHandler = "bar_handler.html";
+          const webapps::AppId app_id =
+              *WebAppTabHelper::GetAppId(web_contents);
+          const std::string url_str = web_contents->GetURL().spec();
 
-      if (app_id != GetAppIdBySiteMode(site) ||
-          !(base::EndsWith(url_str, kFooHandler) ||
-            base::EndsWith(url_str, kBarHandler))) {
-        continue;
-      }
+          if (app_id != GetAppIdBySiteMode(site) ||
+              !(base::EndsWith(url_str, kFooHandler) ||
+                base::EndsWith(url_str, kBarHandler))) {
+            continue;
+          }
 
-      base::Value::List test_content_list =
-          EvalJs(web_contents, "launchFinishedPromise").TakeValue().TakeList();
-      for (const auto& test_content : test_content_list) {
-        if (base::EndsWith(url_str, kFooHandler)) {
-          found_foo_files.push_back(test_content.GetString());
-        } else {
-          CHECK(base::EndsWith(url_str, kBarHandler));
-          found_bar_files.push_back(test_content.GetString());
+          base::Value::List test_content_list =
+              EvalJs(web_contents, "launchFinishedPromise")
+                  .TakeValue()
+                  .TakeList();
+          for (const auto& test_content : test_content_list) {
+            if (base::EndsWith(url_str, kFooHandler)) {
+              found_foo_files.push_back(test_content.GetString());
+            } else {
+              CHECK(base::EndsWith(url_str, kBarHandler));
+              found_bar_files.push_back(test_content.GetString());
+            }
+          }
         }
-      }
-    }
-  }
+        return true;
+      });
   ASSERT_THAT(expected_foo_files,
               ::testing::UnorderedElementsAreArray(found_foo_files));
   ASSERT_THAT(expected_bar_files,
@@ -3867,27 +3879,25 @@ void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
   }
 
   bool app_launched = false;
-  auto* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    // Bypass apps that open in standalone windows.
-    if (AppBrowserController::IsWebApp(browser)) {
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &app_launched, site](BrowserWindowInterface* browser) {
+        // Bypass apps that open in standalone windows.
+        if (AppBrowserController::IsWebApp(browser)) {
+          return true;
+        }
 
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
-      if (!app_id) {
-        continue;
-      }
-
-      if (*app_id == GetAppIdBySiteMode(site)) {
-        app_launched = true;
-        break;
-      }
-    }
-  }
+        const TabStripModel* const tab_strip_model =
+            browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+          const webapps::AppId* app_id =
+              WebAppTabHelper::GetAppId(tab_strip_model->GetWebContentsAt(i));
+          if (app_id && *app_id == GetAppIdBySiteMode(site)) {
+            app_launched = true;
+            break;
+          }
+        }
+        return !app_launched;
+      });
   EXPECT_TRUE(app_launched);
   AfterStateCheckAction();
 }
@@ -3899,20 +3909,22 @@ void WebAppIntegrationTestDriver::CheckSiteLoadedInTab(Site site) {
 
   GURL site_url = GetUrlForSite(site);
   std::vector<std::string> found_urls;
-  auto* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    // Bypass apps that open in standalone windows.
-    if (AppBrowserController::IsWebApp(browser)) {
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&found_urls](BrowserWindowInterface* browser) {
+        // Bypass apps that open in standalone windows.
+        if (AppBrowserController::IsWebApp(browser)) {
+          return true;
+        }
 
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      GURL committed_url = web_contents->GetLastCommittedURL();
-      found_urls.push_back(committed_url.possibly_invalid_spec());
-    }
-  }
+        const TabStripModel* const tab_strip_model =
+            browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+          const GURL committed_url =
+              tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL();
+          found_urls.push_back(committed_url.possibly_invalid_spec());
+        }
+        return true;
+      });
   EXPECT_THAT(found_urls, testing::Contains(site_url));
   AfterStateCheckAction();
 }
@@ -4172,37 +4184,43 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   base::flat_map<Profile*, ProfileState> profile_state_map;
   for (Profile* profile : GetAllProfiles()) {
     base::flat_map<Browser*, BrowserState> browser_state;
-    auto* browser_list = BrowserList::GetInstance();
-    for (Browser* browser : *browser_list) {
-      if (browser->profile() != profile) {
-        continue;
-      }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this, profile, &browser_state](BrowserWindowInterface* browser) {
+          Profile* browser_profile = browser->GetProfile();
+          if (browser_profile != profile) {
+            return true;
+          }
 
-      TabStripModel* tabs = browser->tab_strip_model();
-      base::flat_map<content::WebContents*, TabState> tab_state_map;
-      for (int i = 0; i < tabs->count(); ++i) {
-        content::WebContents* tab = tabs->GetWebContentsAt(i);
-        CHECK(tab);
-        GURL url = tab->GetURL();
-        tab_state_map.emplace(tab, TabState(url));
-      }
-      content::WebContents* active_tab_contents = tabs->GetActiveWebContents();
-      bool launch_icon_shown = false;
-      bool is_app_browser = AppBrowserController::IsWebApp(browser);
-      if (!is_app_browser && active_tab_contents != nullptr) {
-        EXPECT_TRUE(
-            AwaitIntentPickerTabHelperIconUpdateComplete(active_tab_contents));
-        launch_icon_shown = intent_chip_view()->GetVisible();
-      }
-      webapps::AppId app_id;
-      if (AppBrowserController::IsWebApp(browser)) {
-        app_id = browser->app_controller()->app_id();
-      }
+          TabStripModel* tabs = browser->GetTabStripModel();
+          base::flat_map<content::WebContents*, TabState> tab_state_map;
+          for (int i = 0; i < tabs->count(); ++i) {
+            content::WebContents* tab = tabs->GetWebContentsAt(i);
+            CHECK(tab);
+            GURL url = tab->GetURL();
+            tab_state_map.emplace(tab, TabState(url));
+          }
+          content::WebContents* active_tab_contents =
+              tabs->GetActiveWebContents();
+          bool launch_icon_shown = false;
+          bool is_app_browser = AppBrowserController::IsWebApp(browser);
+          if (!is_app_browser && active_tab_contents != nullptr) {
+            EXPECT_TRUE(AwaitIntentPickerTabHelperIconUpdateComplete(
+                active_tab_contents));
+            launch_icon_shown = intent_chip_view()->GetVisible();
+          }
 
-      browser_state.emplace(
-          browser, BrowserState(browser, tab_state_map, active_tab_contents,
-                                app_id, launch_icon_shown));
-    }
+          webapps::AppId app_id;
+          if (is_app_browser) {
+            app_id = browser->GetAppBrowserController()->app_id();
+          }
+
+          Browser* const raw_browser = browser->GetBrowserForMigrationOnly();
+          browser_state.emplace(
+              raw_browser,
+              BrowserState(raw_browser, tab_state_map, active_tab_contents,
+                           app_id, launch_icon_shown));
+          return true;
+        });
 
     WebAppProvider* provider = GetProviderForProfile(profile);
     base::flat_map<webapps::AppId, AppState> app_state;
