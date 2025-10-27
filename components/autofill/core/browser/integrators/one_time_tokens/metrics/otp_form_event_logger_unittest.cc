@@ -20,6 +20,7 @@
 namespace autofill {
 namespace {
 
+using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using test::CreateTestFormField;
@@ -226,6 +227,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
   autofill_manager().OnAskForValuesToFillTest(
       otp_form, otp_form.fields().front().global_id());
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).otp_form_interactions_flow_id();
   // Simulate the WillSubmit event.
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -239,6 +242,23 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpReady) {
   EXPECT_THAT(autofill_metrics::GetUkmEvents(
                   test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
               autofill_metrics::UkmEventsAre({}));
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{Ukm::kFillingReadinessName, 1},
+              {Ukm::kFillingAssistanceName, 0},
+              {Ukm::kAutofillFillsName, 0},
+              {Ukm::kFormElementUserModificationsName, 0},
+              {Ukm::kFlowIdName, flow_id.value()},
+              {Ukm::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
+    EXPECT_THAT(
+        autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+        Each(otp_form.main_frame_origin().GetURL()));
+  }
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
@@ -258,6 +278,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
   autofill_manager().OnAskForValuesToFillTest(
       otp_form, otp_form.fields().front().global_id());
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).otp_form_interactions_flow_id();
   // Simulate the WillSubmit event.
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -271,6 +293,23 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
   EXPECT_THAT(autofill_metrics::GetUkmEvents(
                   test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
               autofill_metrics::UkmEventsAre({}));
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{Ukm::kFillingReadinessName, 0},
+              {Ukm::kFillingAssistanceName, 0},
+              {Ukm::kAutofillFillsName, 0},
+              {Ukm::kFormElementUserModificationsName, 0},
+              {Ukm::kFlowIdName, flow_id.value()},
+              {Ukm::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
+    EXPECT_THAT(
+        autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+        Each(otp_form.main_frame_origin().GetURL()));
+  }
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
@@ -300,6 +339,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
       otp_form.fields().front().global_id(), &fill_data,
       AutofillTriggerSource::kPopup);
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).otp_form_interactions_flow_id();
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
 
@@ -312,6 +353,25 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/1);
   VerifyUkmSuggestionFilledLogged(otp_form);
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{Ukm::kFillingReadinessName, 1},
+              {Ukm::kFillingAcceptanceName, 1},
+              {Ukm::kFillingCorrectnessName, 1},
+              {Ukm::kFillingAssistanceName, 1},
+              {Ukm::kAutofillFillsName, 1},
+              {Ukm::kFormElementUserModificationsName, 0},
+              {Ukm::kFlowIdName, flow_id.value()},
+              {Ukm::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
+    EXPECT_THAT(
+        autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+        Each(otp_form.main_frame_origin().GetURL()));
+  }
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
@@ -337,6 +397,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
   // Simulate the user NOT accepting the suggestion.
   // We don't call FillOrPreviewForm.
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).otp_form_interactions_flow_id();
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
 
@@ -352,6 +414,24 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
   EXPECT_THAT(autofill_metrics::GetUkmEvents(
                   test_ukm_recorder(), UkmSuggestionFilledType::kEntryName),
               autofill_metrics::UkmEventsAre({}));
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{Ukm::kFillingReadinessName, 1},
+              {Ukm::kFillingAcceptanceName, 0},
+              {Ukm::kFillingAssistanceName, 0},
+              {Ukm::kAutofillFillsName, 0},
+              {Ukm::kFormElementUserModificationsName, 0},
+              {Ukm::kFlowIdName, flow_id.value()},
+              {Ukm::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
+    EXPECT_THAT(
+        autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+        Each(otp_form.main_frame_origin().GetURL()));
+  }
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
@@ -384,6 +464,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   SimulateUserChangedFieldTo(otp_form, otp_form.fields().front().global_id(),
                              u"654321");
 
+  FormInteractionsFlowId flow_id =
+      test_api(autofill_manager()).otp_form_interactions_flow_id();
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
 
@@ -396,6 +478,25 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   VerifyInteractedWithFormUkmMetric(otp_form,
                                     /*expected_local_record_type_count=*/1);
   VerifyUkmSuggestionFilledLogged(otp_form);
+  {
+    using Ukm = UkmAutofillKeyMetricsType;
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {{{Ukm::kFillingReadinessName, 1},
+              {Ukm::kFillingAcceptanceName, 1},
+              {Ukm::kFillingCorrectnessName, 0},
+              {Ukm::kFillingAssistanceName, 1},
+              {Ukm::kAutofillFillsName, 1},
+              {Ukm::kFormElementUserModificationsName, 1},
+              {Ukm::kFlowIdName, flow_id.value()},
+              {Ukm::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kOneTimePasswordForm})}}}));
+    EXPECT_THAT(
+        autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+        Each(otp_form.main_frame_origin().GetURL()));
+  }
 }
 
 }  // namespace
