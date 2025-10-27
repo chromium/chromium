@@ -902,9 +902,11 @@ class TemplateURL {
   // with this template URL, or an empty string if none is associated with it.
   std::string GetBuiltinDescriptionResourceId() const;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the marketing snippet string for the search engine, either the
   // built-in one or a fallback variant.
   std::u16string GetMarketingSnippet() const;
+#endif
 
   // Returns the type of this search engine, or SEARCH_ENGINE_OTHER if no
   // engines match.

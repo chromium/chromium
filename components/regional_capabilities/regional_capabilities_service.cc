@@ -320,10 +320,9 @@ bool RegionalCapabilitiesService::
       .selection_from_settings_counts_as_choice_screen_choice;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::optional<RegionalCapabilitiesService::ChoiceScreenDesign>
 RegionalCapabilitiesService::GetChoiceScreenDesign() {
-  // TODO(crbug.com/440549533): Investigate minimizing apk size by excluding
-  // unused strings and OSE assets from builds.
   switch (GetActiveProgramSettings().program) {
     case Program::kDefault:
       return std::nullopt;
@@ -351,6 +350,7 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
   }
   NOTREACHED();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const std::optional<ChoiceScreenEligibilityConfig>&
 RegionalCapabilitiesService::GetChoiceScreenEligibilityConfig() {

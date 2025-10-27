@@ -1896,10 +1896,12 @@ std::optional<std::u16string> TemplateURL::GetBuiltinMarketingSnippet() const {
   return std::nullopt;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string TemplateURL::GetMarketingSnippet() const {
   return GetBuiltinMarketingSnippet().value_or(l10n_util::GetStringFUTF16(
       IDS_SEARCH_ENGINE_FALLBACK_MARKETING_SNIPPET, short_name()));
 }
+#endif
 
 SearchEngineType TemplateURL::GetEngineType(
     const SearchTermsData& search_terms_data) const {

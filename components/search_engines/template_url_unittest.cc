@@ -3089,6 +3089,7 @@ TEST_F(TemplateURLTest, GetBuiltinImageResourceId_FromCustomEngine) {
   EXPECT_EQ(t_url.GetBuiltinImageResourceId(), "IDR_DEFAULT_FAVICON");
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(TemplateURLTest, GetMarketingSnippet_Custom) {
   std::u16string engine_name = u"My Custom Engine";
   TemplateURLData custom_data;
@@ -3098,6 +3099,7 @@ TEST_F(TemplateURLTest, GetMarketingSnippet_Custom) {
   EXPECT_NE(custom_url.GetMarketingSnippet().find(engine_name),
             std::u16string::npos);
 }
+#endif
 
 TEST_F(TemplateURLTest, GetBuiltinImageResourceId_YahooJpBranded) {
   // Test relevant for this special case of prepopulated search engines data. If
