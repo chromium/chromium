@@ -473,14 +473,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-  if (texture_descriptor_.format == wgpu::TextureFormat::BGRA8Unorm) {
-    // WebGPU on vulkan with GL interop cannot support BGRA due to bugs in
-    // mesa. See anglebug.com/40644739
-    copy_to_swap_texture_required_ = true;
-  }
-#endif
-
   // If the context is configured with STORAGE_BINDING texture usage and
   // "bgra8unorm" is the preferred format but the adapter doesn't support the
   // "bgra8unorm-storage" feature, we can guess that the app is using the

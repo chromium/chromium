@@ -207,10 +207,7 @@ crbug.com/1129879 [ chromeos ] Pixel_Video_Media_Stream_Incompatible_Stride [ Sk
 crbug.com/1129879 [ fuchsia ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 
 # WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
-# And now limited Linux support via gl interop.
-crbug.com/976495 [ linux renderer-skia-gl nvidia ] Pixel_WebGPU* [ Skip ]
-crbug.com/976495 [ linux renderer-skia-gl amd ] Pixel_WebGPU* [ Skip ]
-crbug.com/976495 [ linux renderer-skia-gl intel-gen-9 ] Pixel_WebGPU* [ Skip ]
+crbug.com/976495 [ linux renderer-skia-gl ] Pixel_WebGPU* [ Skip ]
 crbug.com/976497 [ android ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
@@ -356,9 +353,6 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_SolidColor
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ win11 qualcomm ] Pixel_WebGPU* [ Failure ]
-
-# Remove after we commit the initial interop CL.
-[ linux renderer-skia-gl intel-gen-12 ] Pixel_WebGPU* [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #

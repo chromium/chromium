@@ -44,8 +44,6 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
   list->AddSupportedFeature(
       "direct_rendering_display_compositor",
       GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR);
-  list->AddSupportedFeature("webgpu_on_vk_via_gl_interop",
-                            GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP);
   return list;
 }
 

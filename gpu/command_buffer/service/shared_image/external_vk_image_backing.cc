@@ -162,7 +162,6 @@ void WaitSemaphoresOnGrContext(GrDirectContext* gr_context,
 // static
 std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     scoped_refptr<SharedContextState> context_state,
-    bool enable_webgpu_on_vk_via_gl_interop,
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
@@ -247,13 +246,11 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   bool use_separate_gl_texture =
       UseSeparateGLTexture(context_state.get(), format);
-  DCHECK(!enable_webgpu_on_vk_via_gl_interop || !use_separate_gl_texture);
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, std::move(debug_label),
       estimated_size, std::move(context_state), std::move(textures),
-      command_pool, use_separate_gl_texture,
-      enable_webgpu_on_vk_via_gl_interop);
+      command_pool, use_separate_gl_texture);
 
   if (!pixel_data.empty()) {
     auto image_info = backing->AsSkImageInfo();
@@ -275,7 +272,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 // static
 std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     scoped_refptr<SharedContextState> context_state,
-    bool enable_webgpu_on_vk_via_gl_interop,
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
@@ -320,13 +316,12 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
 
   bool use_separate_gl_texture =
       UseSeparateGLTexture(context_state.get(), format);
-  DCHECK(!enable_webgpu_on_vk_via_gl_interop || !use_separate_gl_texture);
   auto backing = std::make_unique<ExternalVkImageBacking>(
       base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
       color_space, surface_origin, alpha_type, usage, std::move(debug_label),
       estimated_size, std::move(context_state), std::move(textures),
-      command_pool, use_separate_gl_texture, enable_webgpu_on_vk_via_gl_interop,
-      std::move(handle), std::move(buffer_usage));
+      command_pool, use_separate_gl_texture, std::move(handle),
+      std::move(buffer_usage));
   backing->SetCleared();
   return backing;
 }
@@ -334,7 +329,6 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
 std::unique_ptr<ExternalVkImageBacking>
 ExternalVkImageBacking::CreateWithPixmap(
     scoped_refptr<SharedContextState> context_state,
-    bool enable_webgpu_on_vk_via_gl_interop,
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
@@ -368,10 +362,10 @@ ExternalVkImageBacking::CreateWithPixmap(
   gfx::GpuMemoryBufferHandle handle(pixmap->ExportHandle());
 
   // Create backing from the handle.
-  return CreateFromGMB(
-      std::move(context_state), enable_webgpu_on_vk_via_gl_interop,
-      command_pool, mailbox, std::move(handle), format, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label));
+  return CreateFromGMB(std::move(context_state), command_pool, mailbox,
+                       std::move(handle), format, size, color_space,
+                       surface_origin, alpha_type, usage,
+                       std::move(debug_label));
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_OZONE)
@@ -392,7 +386,6 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     std::vector<TextureHolderVk> vk_textures,
     VulkanCommandPool* command_pool,
     bool use_separate_gl_texture,
-    bool enable_webgpu_on_vk_via_gl_interop,
     gfx::GpuMemoryBufferHandle handle,
     std::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
@@ -409,8 +402,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
       context_state_(std::move(context_state)),
       vk_textures_(std::move(vk_textures)),
       command_pool_(command_pool),
-      use_separate_gl_texture_(use_separate_gl_texture),
-      enable_webgpu_on_vk_via_gl_interop_(enable_webgpu_on_vk_via_gl_interop) {
+      use_separate_gl_texture_(use_separate_gl_texture) {
 #if BUILDFLAG(IS_OZONE)
   if (!handle.is_null()) {
     // Create a pixmap is there is a valid handle.
@@ -533,64 +525,32 @@ bool ExternalVkImageBacking::BeginAccess(
     // since the Vulkan usage will not provide semaphore for EndAccess() call,
     // if ProduceGL*() is never called. In this case, image layout and queue
     // family will not be ready for GL access as well.
+    auto* gr_context = context_state()->gr_context();
+    for (auto& vk_texture : vk_textures_) {
+      gr_context->setBackendTextureState(
+          vk_texture.backend_texture,
+          skgpu::MutableTextureStates::MakeVulkan(
+              VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+              VK_QUEUE_FAMILY_EXTERNAL));
+    }
 
     ExternalSemaphore external_semaphore =
         external_semaphore_pool()->GetOrCreateSemaphore();
+    GrBackendSemaphore semaphore =
+        GrBackendSemaphores::MakeVk(external_semaphore.GetVkSemaphore());
 
-#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-    if (enable_webgpu_on_vk_via_gl_interop()) {
-      auto command_buffer = command_pool_->CreatePrimaryCommandBuffer();
-      CHECK(command_buffer);
-      {
-        ScopedSingleUseCommandBufferRecorder recorder(*command_buffer);
+    GrFlushInfo flush_info;
+    flush_info.fNumSemaphores = 1;
+    flush_info.fSignalSemaphores = &semaphore;
 
-        for (auto& vk_texture : vk_textures_) {
-          GrVkImageInfo image_info = vk_texture.GetGrVkImageInfo();
+    if (gr_context->flush(flush_info) != GrSemaphoresSubmitted::kYes) {
+      LOG(ERROR) << "Failed to create a signaled semaphore";
+      return false;
+    }
 
-          command_buffer->TransitionImageLayout(
-              image_info.fImage, image_info.fImageLayout,
-              VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_QUEUE_FAMILY_IGNORED,
-              VK_QUEUE_FAMILY_EXTERNAL);
-
-          vk_texture.backend_texture.setMutableState(
-              skgpu::MutableTextureStates::MakeVulkan(
-                  VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                  VK_QUEUE_FAMILY_EXTERNAL));
-        }
-      }
-
-      auto vk_semaphore = external_semaphore.GetVkSemaphore();
-      command_buffer->Submit(0, nullptr, 1, &vk_semaphore);
-      fence_helper()->EnqueueVulkanObjectCleanupForSubmittedWork(
-          std::move(command_buffer));
-    } else
-#endif
-    {
-      auto* gr_context = context_state()->gr_context();
-      for (auto& vk_texture : vk_textures_) {
-        gr_context->setBackendTextureState(
-            vk_texture.backend_texture,
-            skgpu::MutableTextureStates::MakeVulkan(
-                VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-                VK_QUEUE_FAMILY_EXTERNAL));
-      }
-
-      GrBackendSemaphore semaphore =
-          GrBackendSemaphores::MakeVk(external_semaphore.GetVkSemaphore());
-
-      GrFlushInfo flush_info;
-      flush_info.fNumSemaphores = 1;
-      flush_info.fSignalSemaphores = &semaphore;
-
-      if (gr_context->flush(flush_info) != GrSemaphoresSubmitted::kYes) {
-        LOG(ERROR) << "Failed to create a signaled semaphore";
-        return false;
-      }
-
-      if (!gr_context->submit()) {
-        LOG(ERROR) << "Failed GrContext submit";
-        return false;
-      }
+    if (!gr_context->submit()) {
+      LOG(ERROR) << "Failed GrContext submit";
+      return false;
     }
 
     external_semaphores->push_back(std::move(external_semaphore));

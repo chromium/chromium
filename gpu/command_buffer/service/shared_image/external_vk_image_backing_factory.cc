@@ -25,12 +25,6 @@
 namespace gpu {
 
 namespace {
-#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-constexpr SharedImageUsageSet kWebGPUUsages =
-    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
-#endif
 
 VkImageUsageFlags GetMaximalImageUsageFlags(
     VkFormatFeatureFlags feature_flags) {
@@ -168,11 +162,9 @@ SharedImageUsageSet SupportedUsage() {
 }  // namespace
 
 ExternalVkImageBackingFactory::ExternalVkImageBackingFactory(
-    scoped_refptr<SharedContextState> context_state,
-    bool enable_webgpu_on_vk_via_gl_interop)
+    scoped_refptr<SharedContextState> context_state)
     : SharedImageBackingFactory(SupportedUsage()),
       context_state_(std::move(context_state)),
-      enable_webgpu_on_vk_via_gl_interop_(enable_webgpu_on_vk_via_gl_interop),
       command_pool_(context_state_->vk_context_provider()
                         ->GetDeviceQueue()
                         ->CreateCommandPool()),
@@ -204,10 +196,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     bool is_thread_safe) {
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
-      context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      SharedImageUsageSet(usage), std::move(debug_label), image_usage_cache_,
-      base::span<const uint8_t>());
+      context_state_, command_pool_.get(), mailbox, format, size, color_space,
+      surface_origin, alpha_type, SharedImageUsageSet(usage),
+      std::move(debug_label), image_usage_cache_, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -224,10 +215,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> pixel_data) {
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
-      context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, format, size, color_space, surface_origin, alpha_type,
-      SharedImageUsageSet(usage), std::move(debug_label), image_usage_cache_,
-      pixel_data);
+      context_state_, command_pool_.get(), mailbox, format, size, color_space,
+      surface_origin, alpha_type, SharedImageUsageSet(usage),
+      std::move(debug_label), image_usage_cache_, pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -245,9 +235,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   DCHECK(!is_thread_safe);
   CHECK(CanImportGpuMemoryBuffer(handle.type));
   return ExternalVkImageBacking::CreateFromGMB(
-      context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, std::move(handle), format, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label));
+      context_state_, command_pool_.get(), mailbox, std::move(handle), format,
+      size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -267,9 +257,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
 #if BUILDFLAG(IS_OZONE)
   // Creating the backing with a native pixmap so that it can be CPU mappable.
   return ExternalVkImageBacking::CreateWithPixmap(
-      context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, format, surface_handle, size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label), buffer_usage);
+      context_state_, command_pool_.get(), mailbox, format, surface_handle,
+      size, color_space, surface_origin, alpha_type, usage,
+      std::move(debug_label), buffer_usage);
 #else
   // A CPU mappable backing of this type can only be requested for OZONE
   // platforms.
@@ -312,14 +302,6 @@ bool ExternalVkImageBackingFactory::IsSupported(
     return false;
   }
 
-#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-  if (enable_webgpu_on_vk_via_gl_interop_) {
-    if (!usage.HasAny(kWebGPUUsages)) {
-      // Only support GL vulkan webgpu interop.
-      return false;
-    }
-  }
-#endif
   return true;
 }
 

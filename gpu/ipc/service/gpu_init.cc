@@ -713,29 +713,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-  if (gpu_feature_info_
-          .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-      kGpuFeatureStatusEnabled) {
-    if (gpu_preferences_.use_vulkan == gpu::VulkanImplementationName::kNone) {
-      gpu_preferences_.use_vulkan = gpu::VulkanImplementationName::kNative;
-    }
-    gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = true;
-  }
-#endif
-
-  if (!(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-            kGpuFeatureStatusEnabled ||
-        gpu_feature_info_
-                .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-            kGpuFeatureStatusEnabled) ||
+  if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
+          kGpuFeatureStatusEnabled ||
       !InitializeVulkan()) {
     gpu_preferences_.use_vulkan = VulkanImplementationName::kNone;
-    gpu_preferences_.enable_webgpu_on_vk_via_gl_interop = false;
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
-        kGpuFeatureStatusDisabled;
-    gpu_feature_info_
-        .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] =
         kGpuFeatureStatusDisabled;
     if (gpu_preferences_.gr_context_type == GrContextType::kVulkan) {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -1334,11 +1316,8 @@ bool GpuInit::InitializeDawn() {
 bool GpuInit::InitializeVulkan() {
 #if BUILDFLAG(ENABLE_VULKAN)
   TRACE_EVENT("gpu,startup", "gpu::GpuInit::InitializeVulkan");
-  DCHECK(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
-             kGpuFeatureStatusEnabled ||
-         gpu_feature_info_
-                 .status_values[GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP] ==
-             kGpuFeatureStatusEnabled);
+  DCHECK_EQ(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN],
+            kGpuFeatureStatusEnabled);
   DCHECK_NE(gpu_preferences_.use_vulkan, VulkanImplementationName::kNone);
   bool vulkan_use_swiftshader =
       gpu_preferences_.use_vulkan == VulkanImplementationName::kSwiftshader;

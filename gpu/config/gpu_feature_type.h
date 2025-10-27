@@ -23,10 +23,9 @@ enum GpuFeatureType {
   GPU_FEATURE_TYPE_SKIA_GRAPHITE,
   GPU_FEATURE_TYPE_WEBNN,
   GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR,
-  GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP,
   NUMBER_OF_GPU_FEATURE_TYPES
 };
-static_assert(GpuFeatureType::NUMBER_OF_GPU_FEATURE_TYPES == 13,
+static_assert(GpuFeatureType::NUMBER_OF_GPU_FEATURE_TYPES == 12,
               "Please update the mojo definition of the length of "
               "GpuFeatureInfo.status_values");
 

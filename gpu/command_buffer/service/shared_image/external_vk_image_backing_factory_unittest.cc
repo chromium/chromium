@@ -52,9 +52,8 @@ class ExternalVkImageBackingFactoryTest : public SharedImageTestBase {
  protected:
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kVulkan));
-    constexpr bool kIsInterop = false;
-    backing_factory_ = std::make_unique<ExternalVkImageBackingFactory>(
-        context_state_, kIsInterop);
+    backing_factory_ =
+        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
   }
 };
 

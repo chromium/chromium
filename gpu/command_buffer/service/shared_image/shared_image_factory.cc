@@ -316,18 +316,10 @@ SharedImageFactory::SharedImageFactory(
         context_state_, workarounds_);
     factories_.push_back(std::move(ozone_factory));
   }
-
 #if BUILDFLAG(ENABLE_VULKAN) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
-  if (gr_context_type_ == GrContextType::kVulkan
-#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-      /* We support GL context for WebGPU gl-vulkan interop (on linux).*/
-      || gpu_preferences_.enable_webgpu_on_vk_via_gl_interop
-#endif
-  ) {
+  if (gr_context_type_ == GrContextType::kVulkan) {
     auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageBackingFactory>(
-            context_state_,
-            gpu_preferences_.enable_webgpu_on_vk_via_gl_interop);
+        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN) && (BUILDFLAG(IS_LINUX) ||
