@@ -54,7 +54,7 @@ ${this.ntpRealboxNextEnabled ? html`
     <div class="dropdownContainer">
       <contextual-entrypoint-and-carousel id="context"
           part="contextual-entrypoint-and-carousel"
-          exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
+          exportparts="composebox-entrypoint, context-menu-entrypoint-icon, voice-icon"
           .tabSuggestions=${this.tabSuggestions_}
           entrypoint-name="Realbox"
           @add-tab-context="${this.addTabContext_}"
@@ -62,6 +62,7 @@ ${this.ntpRealboxNextEnabled ? html`
           @on-file-validation-error="${this.onFileValidationError_}"
           @set-deep-search-mode="${this.setDeepSearchMode_}"
           @set-create-image-mode="${this.setCreateImageMode_}"
+          @open-voice-search="${this.onVoiceSearchClick_}"
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
           realbox-layout-mode="${this.realboxLayoutMode}"

@@ -22,6 +22,7 @@ export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_bu
 export {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 export {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+export {ContextualEntrypointAndCarouselElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 export {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 export {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';

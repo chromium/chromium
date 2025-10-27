@@ -550,3 +550,22 @@ cr-searchbox-icon {
 :host([realbox-layout-mode='Compact']) cr-searchbox-dropdown::part(dropdown-content) {
   padding-top: 12px;
 }
+
+:host([realbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  --cr-icon-button-fill-color: var(--color-new-tab-page-composebox-font-light);
+  --cr-icon-button-hover-background-color: var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+  --cr-icon-button-margin-end: 0px;
+  --cr-icon-button-margin-start: 0px;
+  --cr-icon-button-size: 36px;
+  display: flex;
+  position: absolute;
+  inset-inline-end: 14px;
+}
+
+:host([realbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  bottom: 10px;
+}
+
+:host([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  top: 60px;
+}

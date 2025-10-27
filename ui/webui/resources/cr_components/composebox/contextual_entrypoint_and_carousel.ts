@@ -37,6 +37,7 @@ export interface ContextualEntrypointAndCarouselElement {
     imageInput: HTMLInputElement,
     imageUploadButton: CrIconButtonElement,
     recentTabChip: RecentTabChipElement,
+    voiceSearchButton: CrIconButtonElement,
   };
 }
 
@@ -446,6 +447,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       inCreateImageMode: this.inCreateImageMode_,
       imagePresent: this.hasImageFiles(),
     });
+  }
+
+  protected onVoiceSearchClick_() {
+    this.fire('open-voice-search');
   }
 
   private recordFileValidationMetric_(

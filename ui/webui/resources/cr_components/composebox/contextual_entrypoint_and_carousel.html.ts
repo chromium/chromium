@@ -117,6 +117,13 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
+  ${this.realboxLayoutMode.startsWith('Tall') && this.showDropdown ? html`
+      <cr-icon-button id="voiceSearchButton" class="voice-icon"
+          part="voice-icon" iron-icon="cr:mic"
+          @click="${this.onVoiceSearchClick_}"
+          title="${this.i18n('voiceSearchButtonLabel')}">
+      </cr-icon-button>
+  ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }
