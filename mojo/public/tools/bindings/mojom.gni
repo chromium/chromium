@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom_rust.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -107,6 +108,7 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/mojom_java_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
       "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
+      "$mojom_generator_root/generators/mojom_rust_generator.py",
       "$mojom_generator_root/generators/mojom_ts_generator.py",
       "$mojom_generator_script",
       "//build/action_helpers.py",
@@ -259,6 +261,10 @@ if (enable_scrambled_message_ids) {
 #       If set to true, Java bindings are generated for Android builds. If
 #       |cpp_only| is set to true, it overrides this to prevent generation of
 #       Java bindings.
+#
+#   generate_rust (optional, under development)
+#       If set to true, Rust bindings are generated, unless |cpp_only| is also
+#       set to true. Still being worked on, and not ready for production use.
 #
 #   enable_js_fuzzing (optional)
 #       Enables generation of javascript fuzzing sources for the target if the
@@ -1603,6 +1609,16 @@ template("mojom") {
       sources_target_name = "${output_target_name}_cpp_sources"
     } else {
       sources_target_name = output_target_name
+    }
+
+    generate_rust = false
+    if (!cpp_only && defined(invoker.generate_rust)) {
+      generate_rust = invoker.generate_rust
+    }
+
+    if (generate_rust) {
+      mojom_rust("${output_target_name}_rust") {
+      }
     }
 
     target(sources_target_type, sources_target_name) {

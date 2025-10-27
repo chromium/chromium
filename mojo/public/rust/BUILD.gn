@@ -48,8 +48,10 @@ rust_executable("exe_using_system_api") {
 }
 
 test("rust_mojo_tests") {
+  testonly = true
   deps = [
     "mojom_parser:mojom_parser_unittests",
+    "test_mojom:test_mojom_rust",
     "//base/test:run_all_unittests",
   ]
 }
