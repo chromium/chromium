@@ -3122,11 +3122,16 @@ suite('NewTabPageRealboxTest', () => {
     // so check the default behavior occurs (deleting a character).
     assertFalse(backspaceEvent.defaultPrevented);
   });
+
   suite('NtpRealboxNext', () => {
+    setup(async () => {
+      realbox.ntpRealboxNextEnabled = true;
+      await microtasksFinished();
+    });
+
     test(
         'fires dropdown-visible-changed event when the feature is on',
         async () => {
-          realbox.ntpRealboxNextEnabled = true;
           // Confirm false -> true causes an event.
           let whenDropdownVisibleChanged =
               eventToPromise('dropdown-visible-changed', realbox);
@@ -3158,6 +3163,48 @@ suite('NewTabPageRealboxTest', () => {
           const e2 = await whenDropdownVisibleChanged;
           assertFalse(e2.detail.value);
         });
+
+    test('hides recent tab chip when searchbox is not focused', async () => {
+      const tabInfo = {
+        tabId: 1,
+        title: 'Sample Tab',
+        url: {url: 'https://example.com'},
+        lastActive: {internalValue: 0n},
+      };
+      testProxy.handler.setResultFor(
+          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
+      realbox = await createAndAppendRealbox();
+      await microtasksFinished();
+
+      realbox.$.input.blur();
+      await microtasksFinished();
+
+      const recentTabChip =
+          realbox.shadowRoot.querySelector<HTMLElement>('#recentTabChip');
+      assertTrue(
+          recentTabChip === null,
+          'recent tab chip should be hidden when not focused');
+    });
+    test('updates focused state on focus in and out', async () => {
+      realbox.$.input.focus();
+      await microtasksFinished();
+      assertTrue(
+          realbox.$.context.parentFocused,
+          'parentFocus should be true when input is focused.');
+
+      realbox.$.input.blur();
+      await microtasksFinished();
+      assertFalse(
+          realbox.$.context.parentFocused,
+          'parentFocus should be false when input is not focused.');
+
+      realbox.$.input.focus();
+      await microtasksFinished();
+      assertTrue(
+          realbox.$.context.parentFocused,
+          'parentFocus should be true when input is focused after having been' +
+              ' blurred.');
+    });
   });
 });
 

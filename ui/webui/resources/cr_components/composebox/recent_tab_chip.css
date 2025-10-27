@@ -22,7 +22,6 @@
   height: 28px;
   line-height: 18px;
   padding: 6px 8px;
-  width: 210px;
   --cr-button-border-color:
       var(--color-new-tab-page-composebox-recent-tab-chip-outline);
   --cr-button-text-color: var(--color-new-tab-page-composebox-upload-button);
