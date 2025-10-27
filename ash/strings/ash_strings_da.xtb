@@ -1386,7 +1386,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5512042095225963688">Slet forrige ord</translation>
 <translation id="5519005148254860683">Udvid Google Huskeliste</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5520229639206813572">Din administrator har fjernet alle eSIM-profiler. Kontakt din administrator for at få flere oplysninger.</translation>
+<translation id="5520229639206813572">Din administrator har fjernet alle eSIM-kortprofiler. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="5520909879404821039">Hej på fransk</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> opretter forbindelse.</translation>
 <translation id="5529587891732734495">Sæt casting på pause</translation>
@@ -1716,7 +1716,7 @@ Installeret for nylig</translation>
 <translation id="6559158502366839560">Find flere apps og spil</translation>
 <translation id="6559976592393364813">Spørg din administrator</translation>
 <translation id="6562447480759345110">Afslut fokus</translation>
-<translation id="6565007273808762236">eSIM-forbindelse er ikke tilgængelig</translation>
+<translation id="6565007273808762236">eSIM-kortforbindelse er ikke tilgængelig</translation>
 <translation id="6570831796530454248">{0,plural, =1{Genstart enheden inden for en time}one{Genstart enheden inden for # time}other{Genstart enheden inden for # timer}}</translation>
 <translation id="6570902864550063460">Oplader via USB</translation>
 <translation id="6571006437522772306">Søg i Filer</translation>
@@ -1927,7 +1927,7 @@ Installeret for nylig</translation>
 <translation id="7303365578352795231">Besvares på en anden enhed</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
-<translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM. Dette kan tage et par minutter.</translation>
+<translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM-kort. Dette kan tage et par minutter.</translation>
 <translation id="7312761820869643657">Opdater enheden til en tidligere version</translation>
 <translation id="7313193732017069507">Udvid kameraet</translation>
 <translation id="73289266812733869">Ikke valgt</translation>
@@ -2404,7 +2404,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8858369206579825206">Privatlivsindstillinger</translation>
-<translation id="8860366331836346216">Tilføj eSIM</translation>
+<translation id="8860366331836346216">Tilføj eSIM-kort</translation>
 <translation id="8869149849311827122">Er du sikker på, at du vil deaktivere styring via musemarkøren?</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
 <translation id="8873203135446552888">Bekræft, at du vil deaktivere den indbyggede touchplade</translation>
