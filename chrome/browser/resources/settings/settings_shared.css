@@ -22,13 +22,16 @@ a[is=action-link] {
 /* Use <h2> as the "sub-header" mentioned in the UX design docs. */
 h2 {
   align-items: center;
+  /* TODO(crbug.com/454617005): consider changing to auto */
   align-self: flex-start;
   color: var(--cr-secondary-text-color);
   display: flex;
   font-size: inherit;
   font-weight: 500;
   margin: 0;
+  /* TODO(crbug.com/454617005): consider changing to 0 */
   padding-bottom: 12px;
+  /* TODO(crbug.com/454617005): consider changing to 12px */
   padding-top: 32px;
 }
 
