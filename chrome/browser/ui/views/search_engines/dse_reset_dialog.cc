@@ -40,8 +40,7 @@ const char kDefaultSearchEngineResetNotificationShown[] =
 
 void OpenLearnMoreLink(Browser* browser, const ui::Event& event) {
   const GURL kLearnMoreUrl(
-      "https://support.google.com/chrome/answer/"
-      "3296214#zippy=%2Cchrome-reset-my-browser-settings");
+      "https://support.google.com/chrome?p=chrome_reset_settings");
   browser->OpenURL(
       content::OpenURLParams(kLearnMoreUrl, content::Referrer(),
                              WindowOpenDisposition::NEW_FOREGROUND_TAB,

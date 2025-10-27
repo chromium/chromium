@@ -158,8 +158,7 @@ IN_PROC_BROWSER_TEST_F(DseResetDialogBrowserTest, LearnMoreButtonOpensNewTab) {
   content::WebContents* new_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   const GURL kExpectedLearnMoreUrl(
-      "https://support.google.com/chrome/answer/"
-      "3296214#zippy=%2Cchrome-reset-my-browser-settings");
+      "https://support.google.com/chrome?p=chrome_reset_settings");
   EXPECT_EQ(kExpectedLearnMoreUrl, new_tab->GetVisibleURL());
   EXPECT_FALSE(
       default_search_manager()->GetUnacknowledgedDefaultSearchEngineReset());
