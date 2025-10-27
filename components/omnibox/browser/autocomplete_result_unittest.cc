@@ -2797,9 +2797,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
   {
     SCOPED_TRACE("Query from omnibox");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
+    feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2822,34 +2820,6 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     // Verify that the secondary zero-prefix suggestions were not triggered.
     VerifyTriggeredFeatures(triggered_feature_service(), {});
   }
-  {
-    SCOPED_TRACE("Query from WebUI omnibox");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{omnibox::kWebUIOmniboxPopup, {}}},
-        {omnibox::kGroupingFrameworkForNonZPS});
-    AutocompleteResult result;
-    result.MergeSuggestionGroupsMap(suggestion_groups_map);
-    result.AppendMatches(matches);
-    result.SortAndCull(omnibox_zps_input, &template_url_service(),
-                       triggered_feature_service(), /*is_lens_active=*/false,
-                       /*can_show_contextual_suggestions=*/false,
-                       /*mia_enabled=*/false, /*is_incognito=*/false);
-
-    const std::array<TestData, 5> expected_data{{
-        // Previous search related suggestion chips are permitted in the omnibox
-        // when the WebUI omnibox popup feature is enabled.
-        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
-        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group2},
-    }};
-    AssertResultMatches(result, expected_data);
-
-    // Verify that the secondary zero-prefix suggestions were not triggered.
-    VerifyTriggeredFeatures(triggered_feature_service(), {});
-  }
 
   // Set up input for zero-prefix suggestions from the realbox.
   AutocompleteInput realbox_zps_input(
@@ -2860,9 +2830,7 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
   {
     SCOPED_TRACE("Query from realbox");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
+    feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2887,12 +2855,11 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
     VerifyTriggeredFeatures(triggered_feature_service(),
                             {remote_secondary_zps_feature});
   }
+
   {
     SCOPED_TRACE("Query from realbox - no secondary matches");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {},
-        {omnibox::kGroupingFrameworkForNonZPS, omnibox::kWebUIOmniboxPopup});
+    feature_list.InitAndDisableFeature(omnibox::kGroupingFrameworkForNonZPS);
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     // Clear the SideType_SECONDARY from the 3rd group.
@@ -3768,7 +3735,8 @@ TEST_F(AutocompleteResultTest, AttachAimAction_AimNotEligible) {
 
   FakeAutocompleteProviderClient client;
   MockAimEligibilityService* mock_aim_eligibility_service =
-      static_cast<MockAimEligibilityService*>(client.GetAimEligibilityService());
+      static_cast<MockAimEligibilityService*>(
+          client.GetAimEligibilityService());
   EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
@@ -3805,7 +3773,8 @@ TEST_F(AutocompleteResultTest, AttachAimAction_AimNotLocallyEligible) {
 
   FakeAutocompleteProviderClient client;
   MockAimEligibilityService* mock_aim_eligibility_service =
-      static_cast<MockAimEligibilityService*>(client.GetAimEligibilityService());
+      static_cast<MockAimEligibilityService*>(
+          client.GetAimEligibilityService());
   EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
       .WillRepeatedly(testing::Return(false));
   EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())

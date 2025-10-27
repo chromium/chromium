@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/feature_map.h"
@@ -170,21 +169,6 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 // prefixes. Will also adjust the location bar UI and omnibox text selection to
 // accommodate the autocompletions.
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
-
-// If enabled, Omnibox popup will transition to AI-Mode with the compose-box
-// panel taking up the whole of the popup, covering the location bar
-// completely.
-BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
-// If enabled, removes the cutout for the location bar and fills the entire
-// popup content with the WebUI WebView.
-BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
-// If enabled, shows the omnibox suggestions in the popup in WebUI.
-BASE_FEATURE(kWebUIOmniboxPopup, DISABLED);
-// Enables the WebUI for omnibox suggestions without modifying the popup UI.
-BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
-// Enables side-by-side comparison omnibox suggestions in WebUI and Views.
-const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam{
-    &kWebUIOmniboxPopupDebug, "SxS", false};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
