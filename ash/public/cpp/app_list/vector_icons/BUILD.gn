@@ -10,25 +10,17 @@ aggregate_vector_icons("app_list_vector_icons") {
   icon_directory = "."
 
   sources = [
-    "arrow_up.icon",
     "badge_instant.icon",
     "badge_play.icon",
     "badge_rating.icon",
     "bookmark.icon",
-    "equal.icon",
-    "game_generic.icon",
     "google_black.icon",
     "history.icon",
-    "mic_black.icon",
     "omnibox_generic.icon",
     "release_notes_chip.icon",
     "search.icon",
     "search_engine_not_google.icon",
     "search_result_remove.icon",
-    "vertical_bar_end.icon",
-    "vertical_bar_middle.icon",
-    "vertical_bar_single.icon",
-    "vertical_bar_start.icon",
   ]
 }
 

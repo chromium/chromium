@@ -40,19 +40,11 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_translation.icon",
     "answer_translation_chrome_refresh.icon",
     "answer_when_is.icon",
-    "answer_when_is_chrome_refresh.icon",
-    "arrow_down_chrome_refresh.icon",
-    "arrow_up_chrome_refresh.icon",
     "bookmark.icon",
     "bookmark_chrome_refresh.icon",
     "calculator.icon",
     "calculator_chrome_refresh.icon",
-    "chevron.icon",
     "clear.icon",
-    "clock.icon",
-    "clock_chrome_refresh.icon",
-    "cookie_chrome_refresh.icon",
-    "dino.icon",
     "dino_cr2023.icon",
     "drive_docs.icon",
     "drive_folder.icon",
@@ -68,16 +60,12 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "find_in_page_chrome_refresh.icon",
     "http.icon",
     "http_chrome_refresh.icon",
-    "incognito.icon",
     "incognito_cr2023.icon",
     "install_desktop.icon",
     "journeys.icon",
     "journeys_chrome_refresh.icon",
     "offline_pin.icon",
-    "page.icon",
     "page_chrome_refresh.icon",
-    "page_spark.icon",
-    "pedal.icon",
     "price_tracking_disabled.icon",
     "price_tracking_disabled_refresh.icon",
     "price_tracking_enabled_refresh.icon",
@@ -87,34 +75,23 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "product_specifications_added.icon",
     "search_spark.icon",
     "secure_page_info_chrome_refresh.icon",
-    "share.icon",
     "share_chrome_refresh.icon",
     "spark.icon",
-    "star.icon",
-    "star_active.icon",
     "star_active_chrome_refresh.icon",
     "star_chrome_refresh.icon",
     "subdirectory_arrow_right.icon",
     "summarize_auto.icon",
     "switch.icon",
     "switch_cr2023.icon",
-    "tab.icon",
-    "trending_up.icon",
     "trending_up_chrome_refresh.icon",
   ]
 
   if (is_mac) {
-    sources += [
-      "share_mac.icon",
-      "share_mac_chrome_refresh.icon",
-    ]
+    sources += [ "share_mac_chrome_refresh.icon" ]
   }
 
   if (is_win) {
-    sources += [
-      "share_win.icon",
-      "share_win_chrome_refresh.icon",
-    ]
+    sources += [ "share_win_chrome_refresh.icon" ]
   }
 
   if (is_linux) {
