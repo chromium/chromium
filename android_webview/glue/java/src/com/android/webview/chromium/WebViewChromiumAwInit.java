@@ -724,11 +724,7 @@ public class WebViewChromiumAwInit {
                     mStartupFinished.countDown();
                     // This runs all the pending tasks queued for after Chromium init is
                     // finished, so should run after `mInitState` is `INIT_FINISHED`.
-                    long startTime = SystemClock.uptimeMillis();
                     mFactory.getRunQueue().notifyChromiumStarted();
-                    RecordHistogram.recordTimesHistogram(
-                            "Android.WebView.Startup.ChromiumInitTime.DrainRunQueueDuration",
-                            SystemClock.uptimeMillis() - startTime);
                     if (anyStartupTaskExperimentIsEnabled()) {
                         // Re-enables the taskrunners
                         PostTask.disablePreNativeUiTasks(false);
