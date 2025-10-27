@@ -60,19 +60,23 @@ PageAnchorsMetricsObserver::OnFencedFramesStart(
 void PageAnchorsMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming&) {
   // Do not report Ukm while prerendering.
-  if (is_in_prerendered_page_)
+  if (is_in_prerendered_page_) {
     return;
-  // Resetting the source so that no more data is recorded to UKM, until a new
-  // source is set.
-  RecordDataToUkm(/*reset_source=*/false);
+  }
+  // Resetting the source so that no more data is recorded to UKM when
+  // OnComplete is shortly followed by
+  // ~NavigationPredictorMetricsDocumentData(). The source can be set again,
+  // namely, when a RFH is restored from the BFCache.
+  RecordDataToUkm(/*reset_source=*/true);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming&) {
   // Do not report Ukm while prerendering.
-  if (is_in_prerendered_page_)
+  if (is_in_prerendered_page_) {
     return CONTINUE_OBSERVING;
+  }
 
   RecordDataToUkm(/*reset_source=*/false);
   return STOP_OBSERVING;
