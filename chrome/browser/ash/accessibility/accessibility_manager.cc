@@ -2395,9 +2395,13 @@ bool AccessibilityManager::ToggleDictation() {
 }
 
 std::string AccessibilityManager::GetDictationDefaultLocale(bool new_user) {
+  auto* active_profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(
+          user_manager::UserManager::Get()->GetActiveUser()));
+  CHECK(active_profile);
+
   return Dictation::DetermineDefaultSupportedLocale(
-      ProfileManager::GetActiveUserProfile(), new_user,
-      application_locale_storage_->Get());
+      active_profile, new_user, application_locale_storage_->Get());
 }
 
 void AccessibilityManager::OpenSettingsSubpage(const std::string& subpage) {
