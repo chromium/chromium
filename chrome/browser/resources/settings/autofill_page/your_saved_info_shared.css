@@ -14,6 +14,10 @@
   margin-top: var(--cr-section-vertical-margin);
 }
 
+.multi-card > .card:first-of-type {
+  margin-top: 0;
+}
+
 /* TODO(crbug.com/454617005): this is a quick fix, remove */
 .card h2 {
   align-self: auto;
