@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/events/gesture_detection/gesture_detector.h"
 
 #include <stddef.h>
@@ -12,6 +11,7 @@
 #include <cmath>
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/timer/timer.h"
@@ -98,8 +98,14 @@ class GestureDetector::TimeoutGestureHandler {
         }
       }
       compensate_timeouts =
-          has_only_positive_compensated_delays ||
-          kCompensateGestureTimeoutsForLongDelayedSequences.Get();
+          event_processing_delay.is_positive() &&
+          (has_only_positive_compensated_delays ||
+           kCompensateGestureTimeoutsForLongDelayedSequences.Get());
+      if (!event_processing_delay.is_positive()) {
+        // TODO(crbug.com/450845471): Cleanup after investigation. Convert to
+        // a CHECK if it doesn't occur in field.
+        base::debug::DumpWithoutCrashing();
+      }
     }
 
     for (TimeoutEvent event : timeouts_to_start_) {
