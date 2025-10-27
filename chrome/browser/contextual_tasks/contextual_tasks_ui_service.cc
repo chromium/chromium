@@ -241,7 +241,7 @@ void ContextualTasksUiService::OnWebUiInnerFrameNavigation(
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS() ||
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       !base::EndsWith(url.host(), ai_page_host_.host())) {
     return false;
   }

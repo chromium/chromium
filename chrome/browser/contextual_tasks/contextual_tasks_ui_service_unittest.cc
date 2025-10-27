@@ -82,6 +82,12 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<MockContextualTasksContextController> context_controller_;
 };
 
+TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
+  GURL url("http://?a=12345");
+  EXPECT_FALSE(url.is_valid());
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(url));
+}
+
 TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   std::string webui_url = "chrome://" + std::string(kContextualTasksUiHost);
   GURL navigated_url(kTestUrl);

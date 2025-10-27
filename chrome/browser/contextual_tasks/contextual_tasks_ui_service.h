@@ -75,10 +75,10 @@ class ContextualTasksUiService : public KeyedService {
       const GURL& url,
       std::optional<std::string> current_title);
 
- private:
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
+ private:
   raw_ptr<contextual_tasks::ContextualTasksContextController>
       context_controller_;
 
