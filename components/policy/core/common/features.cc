@@ -46,4 +46,8 @@ BASE_FEATURE(kFuturePoliciesOnDesktopAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 
+// Used to enable extension install policy support.
+BASE_FEATURE(kEnableExtensionInstallPolicyFetching,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace policy::features
