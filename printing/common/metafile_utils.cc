@@ -305,9 +305,9 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   return valid;
 }
 
-sk_sp<SkData> GetImageData(SkImage* img) {
+sk_sp<const SkData> GetImageData(SkImage* img) {
   // Skip the encoding step if the image is already encoded
-  if (sk_sp<SkData> data = img->refEncodedData()) {
+  if (auto data = img->refEncodedData()) {
     return data;
   }
 
@@ -463,7 +463,7 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void* ctx) {
     return SkData::MakeWithCopy(&img_id, sizeof(img_id));
   }
 
-  sk_sp<SkData> img_data = GetImageData(img);
+  sk_sp<const SkData> img_data = GetImageData(img);
   if (!img_data) {
     return nullptr;
   }

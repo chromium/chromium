@@ -33,7 +33,7 @@ base::span<uint8_t> SkPixmapToWritableSpan(const SkPixmap& pixmap) {
       base::span(static_cast<uint8_t*>(pixmap.writable_addr()), size_in_bytes));
 }
 
-base::span<const uint8_t> SkDataToSpan(sk_sp<SkData> data) {
+base::span<const uint8_t> SkDataToSpan(sk_sp<const SkData> data) {
   if (!data) {
     return {};
   }

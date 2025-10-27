@@ -131,7 +131,7 @@ static sk_sp<SkTypeface> DeserializeTypeface(const void* data,
   return SkTypeface::MakeDeserialize(stream, skia::DefaultFontMgr());
 }
 
-static bool is_supported_codec(sk_sp<SkData> data) {
+static bool is_supported_codec(sk_sp<const SkData> data) {
   CHECK(data);
   return SkBmpDecoder::IsBmp(data->data(), data->size()) ||
          SkGifDecoder::IsGif(data->data(), data->size()) ||
@@ -161,7 +161,7 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   }
 
   // If there already exists encoded data use it directly.
-  sk_sp<SkData> encoded_data = image->refEncodedData();
+  auto encoded_data = image->refEncodedData();
   if (!encoded_data || !is_supported_codec(encoded_data)) {
     // Use the default PNG at quality 100 as it is safe.
     // TODO(crbug.com/40177283): Investigate supporting JPEG at quality 100 for
