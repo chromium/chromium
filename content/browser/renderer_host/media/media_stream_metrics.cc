@@ -36,7 +36,8 @@ enum class MediaStreamRequestResult2 {
   kRequestCancelled = 17,
   kStartTimeout = 18,
   kPermissionDeniedByUser = 19,
-  kMaxValue = kPermissionDeniedByUser
+  kAudioDeviceSocketError = 20,
+  kMaxValue = kAudioDeviceSocketError
 };
 
 MediaStreamRequestResult2 MapResultToResult2(
@@ -83,6 +84,8 @@ MediaStreamRequestResult2 MapResultToResult2(
       return MediaStreamRequestResult2::kStartTimeout;
     case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
       return MediaStreamRequestResult2::kPermissionDeniedByUser;
+    case MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
+      return MediaStreamRequestResult2::kAudioDeviceSocketError;
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

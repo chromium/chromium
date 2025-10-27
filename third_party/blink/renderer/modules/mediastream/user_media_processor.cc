@@ -148,6 +148,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "START_TIMEOUT";
     case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
       return "PERMISSION_DENIED_BY_USER";
+    case MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
+      return "AUDIO_DEVICE_SOCKET_ERROR";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -341,6 +343,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Constraint not satisfied";
     case MediaStreamRequestResult::PERMISSION_DENIED_BY_USER:
       return "Permission denied by user";
+    case MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
+      return "Audio device socket error";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }
@@ -2296,9 +2300,14 @@ bool UserMediaProcessor::RemoveLocalSource(MediaStreamSource* source) {
         result = MediaStreamRequestResult::DEVICE_IN_USE;
         message = "Audio capture device already in use";
         break;
-      default:
+      case AudioSourceErrorCode::kSocketError:
+        result = MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR;
+        message = "Socket for audio capture device closed";
+        break;
+      case AudioSourceErrorCode::kUnknown:
         result = MediaStreamRequestResult::TRACK_START_FAILURE_AUDIO;
         message = "Failed to access audio capture device";
+        break;
     }
   } else {
     result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;
