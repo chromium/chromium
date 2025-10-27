@@ -88,14 +88,17 @@ void FlipVertically(base::span<uint8_t> framebuffer,
                     size_t num_rows,
                     size_t row_bytes) {
   DCHECK_EQ(framebuffer.size(), num_rows * row_bytes);
-  std::vector<uint8_t> scanline(row_bytes);
-  for (size_t i = 0; i < num_rows / 2; i++) {
-    uint8_t* row_a = UNSAFE_TODO(framebuffer.data() + i * row_bytes);
-    uint8_t* row_b =
-        UNSAFE_TODO(framebuffer.data() + (num_rows - i - 1) * row_bytes);
-    UNSAFE_TODO(memcpy(scanline.data(), row_b, row_bytes));
-    UNSAFE_TODO(memcpy(row_b, row_a, row_bytes));
-    UNSAFE_TODO(memcpy(row_a, scanline.data(), row_bytes));
+  std::vector<uint8_t> swap_storage(row_bytes);
+  base::span<uint8_t> row_c(swap_storage);
+  for (size_t a = 0; a < num_rows / 2; a++) {
+    const size_t b = num_rows - a - 1;
+    auto row_a = framebuffer.subspan(a * row_bytes, row_bytes);
+    auto row_b = framebuffer.subspan(b * row_bytes, row_bytes);
+
+    // Swap vertically opposite rows.
+    row_c.copy_from(row_b);
+    row_b.copy_from(row_a);
+    row_a.copy_from(row_c);
   }
 }
 
