@@ -20,8 +20,8 @@ class WebContents;
 class SadTab {
  public:
   enum class Action {
-    BUTTON,
-    HELP_LINK,
+    kButton,
+    kHelpLink,
   };
 
   // Factory function to create the platform specific implementations.

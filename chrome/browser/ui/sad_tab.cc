@@ -207,7 +207,7 @@ void SadTab::RecordFirstPaint() {
 void SadTab::PerformAction(SadTab::Action action) {
   DCHECK(recorded_paint_);
   switch (action) {
-    case Action::BUTTON:
+    case Action::kButton:
       RecordEvent(show_feedback_button_,
                   ui_metrics::SadTabEvent::BUTTON_CLICKED);
       if (show_feedback_button_) {
@@ -224,7 +224,7 @@ void SadTab::PerformAction(SadTab::Action action) {
                                               true);
       }
       break;
-    case Action::HELP_LINK:
+    case Action::kHelpLink:
       RecordEvent(show_feedback_button_,
                   ui_metrics::SadTabEvent::HELP_LINK_CLICKED);
       content::OpenURLParams params(GURL(GetHelpLinkURL()), content::Referrer(),

@@ -165,7 +165,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   action_button_ =
       actions_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(&SadTabView::PerformAction,
-                              base::Unretained(this), Action::BUTTON),
+                              base::Unretained(this), Action::kButton),
           l10n_util::GetStringUTF16(GetButtonTitle())));
   action_button_->SetStyle(ui::ButtonStyle::kProminent);
   action_button_->SetProperty(
@@ -274,7 +274,7 @@ void SadTabView::EnableHelpLink(views::FlexLayoutView* actions_container) {
       actions_container->AddChildView(std::make_unique<views::Link>(
           l10n_util::GetStringUTF16(GetHelpLinkTitle())));
   help_link->SetCallback(base::BindRepeating(
-      &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
+      &SadTab::PerformAction, base::Unretained(this), Action::kHelpLink));
   help_link->SetProperty(views::kTableVertAlignKey,
                          views::LayoutAlignment::kCenter);
 }
