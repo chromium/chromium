@@ -8,6 +8,8 @@
     SecureContext,
     ImplementedAs=StorageBucketManager,
     RuntimeEnabled=StorageBuckets
-] partial interface Navigator {
-    readonly attribute StorageBucketManager storageBuckets;
+] interface mixin NavigatorStorageBuckets {
+    [SameObject] readonly attribute StorageBucketManager storageBuckets;
 };
+Navigator includes NavigatorStorageBuckets;
+WorkerNavigator includes NavigatorStorageBuckets;
