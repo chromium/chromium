@@ -81,8 +81,8 @@ gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
                                : gfx::ProtectedVideoType::kSoftwareProtected;
 }
 
-VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
-                                                       GLuint target) {
+VideoFrameResourceType ExternalResourceTypeForHardware(
+    const VideoFrame& frame) {
   bool si_prefers_external_sampler =
       frame.shared_image()->format().PrefersExternalSampler();
   if (si_prefers_external_sampler) {
@@ -96,7 +96,7 @@ VideoFrameResourceType ExternalResourceTypeForHardware(const VideoFrame& frame,
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
-      switch (target) {
+      switch (frame.shared_image()->GetTextureTarget()) {
         case GL_TEXTURE_EXTERNAL_OES:
 #if BUILDFLAG(IS_ANDROID)
           return VideoFrameResourceType::RGB;
@@ -722,13 +722,7 @@ VideoResourceUpdater::FrameResource* VideoResourceUpdater::AllocateResource(
 VideoFrameExternalResource VideoResourceUpdater::CopyHardwareResource(
     VideoFrame* video_frame) {
   VideoFrameExternalResource external_resource;
-  external_resource.type =
-      ExternalResourceTypeForHardware(*video_frame, GL_TEXTURE_2D);
-  if (external_resource.type == VideoFrameResourceType::NONE) {
-    DLOG(ERROR) << "Unsupported Texture format"
-                << VideoPixelFormatToString(video_frame->format());
-    return external_resource;
-  }
+  external_resource.type = VideoFrameResourceType::RGBA_PREMULTIPLIED;
 
   const gfx::Size output_resource_size = video_frame->coded_size();
   auto shared_image = video_frame->shared_image();
@@ -739,10 +733,7 @@ VideoFrameExternalResource VideoResourceUpdater::CopyHardwareResource(
 
   // We copy to RGBA image, so we need only RGBA portion of the color space.
   const auto copy_color_space = video_frame->ColorSpace().GetAsFullRangeRGB();
-  SkAlphaType copy_alpha_type =
-      (external_resource.type == VideoFrameResourceType::RGBA_PREMULTIPLIED)
-          ? kPremul_SkAlphaType
-          : kUnpremul_SkAlphaType;
+  const SkAlphaType copy_alpha_type = kPremul_SkAlphaType;
 
   const VideoFrame::ID no_unique_id;  // Do not recycle referenced textures.
   FrameResource* hardware_resource = RecycleOrAllocateResource(
@@ -807,8 +798,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
   VideoFrameExternalResource external_resource;
   auto shared_image = video_frame->shared_image();
 
-  external_resource.type = ExternalResourceTypeForHardware(
-      *video_frame, shared_image->GetTextureTarget());
+  external_resource.type = ExternalResourceTypeForHardware(*video_frame);
   if (external_resource.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"
                 << VideoPixelFormatToString(video_frame->format());
