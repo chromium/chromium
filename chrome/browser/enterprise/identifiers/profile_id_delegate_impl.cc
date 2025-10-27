@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/hash/sha1.h"
 #include "base/uuid.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"

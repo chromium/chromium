@@ -15,7 +15,6 @@
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/hash/sha1.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"

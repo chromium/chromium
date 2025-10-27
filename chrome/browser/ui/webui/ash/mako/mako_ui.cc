@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/hash/sha1.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
