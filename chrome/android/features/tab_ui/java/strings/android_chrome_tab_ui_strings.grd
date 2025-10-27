@@ -353,6 +353,30 @@
           other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
       </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_PIN_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Pin' is a verb. When the user taps the menu item, Chrome pins the selected tabs. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Pin tab}
+          other {Pin tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_PIN_TABS" desc="The accessibility text to read when the 'Pin tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be pinned.">
+        {TABS_COUNT, plural,
+          =1 {Pin <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Pin <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_UNPIN_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Unpin' is a verb. When the user taps the menu item, Chrome unpins the selected tabs. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Unpin tab}
+          other {Unpin tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_UNPIN_TABS" desc="The accessibility text to read when the 'Unpin tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be unpinned.">
+        {TABS_COUNT, plural,
+          =1 {Unpin <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Unpin <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
       <message name="IDS_TAB_SELECTION_EDITOR_ADD_BOOKMARKS_FOLDER_NAME" desc="File name for a new folder containing all selected bookmarks to add from the Tab Selection Editor menu, followed by a timestamp">
         New Folder - <ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
       </message>
