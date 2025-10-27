@@ -750,7 +750,7 @@ bool IsAndroidSurfaceControlEnabled() {
           switches::kDisableAndroidNativeFenceSyncForTesting)) {
     return false;
   }
-  // LINT.ThenChange(//gpu/config/gpu_finch_features.cc:AndroidSurfaceControlCondition)
+  // LINT.ThenChange(//ui/gl/gl_display.cc:AndroidSurfaceControlCondition)
 
   // On WebView we require thread-safe media to use SurfaceControl
   if (IsUsingThreadSafeMediaForWebView()) {
