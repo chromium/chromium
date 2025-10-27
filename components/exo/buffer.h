@@ -83,9 +83,7 @@ class Buffer {
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
       gfx::ColorSpace color_space,
-      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-      viz::TransferableResource::SynchronizationType prev_synchronization_type);
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query);
 
   // This should be called when the buffer is attached to a Surface.
   void OnAttach();
@@ -248,11 +246,6 @@ class Buffer {
   // releases to specific commits. Identify commits via a incrementing counter.
   uint64_t next_commit_id_ = 0;
 
-  // Maps commit count to the callback to call when we receive a release from
-  // viz.
-  base::flat_map<uint64_t, PerCommitExplicitReleaseCallback>
-      pending_explicit_releases_;
-
   // Maps commit count to information required to send regular buffer releases.
   // Even if we send explicit synchronization release information, Wayland
   // protocol requires us to send regular buffer release events.
@@ -281,9 +274,7 @@ class SolidColorBuffer : public Buffer {
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
       gfx::ColorSpace color_space,
-      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-      viz::TransferableResource::SynchronizationType prev_synchronization_type)
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query)
       override;
 
   base::WeakPtr<Buffer> AsWeakPtr() override;

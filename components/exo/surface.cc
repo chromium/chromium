@@ -1494,18 +1494,12 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
     if (!buffer_color_space.IsValid()) {
       buffer_color_space = gfx::ColorSpace::CreateSRGB();
     }
-    // TODO(crbug.com/421207623): These only one field that might be preserved
-    // across calls and it's likely a bug.
-    auto prev_synchronization_type =
-        current_resource_.value_or(viz::TransferableResource())
-            .synchronization_type;
 
     current_resource_ = state_.buffer->buffer()->ProduceTransferableResource(
         resource_manager, std::move(state_.acquire_fence),
         state_.basic_state.only_visible_on_secure_output, buffer_color_space,
         window_->GetToplevelWindow()->GetProperty(
-            kProtectedNativePixmapQueryDelegate),
-        Buffer::PerCommitExplicitReleaseCallback(), prev_synchronization_type);
+            kProtectedNativePixmapQueryDelegate));
 
     if (current_resource_) {
       current_resource_has_alpha_ =
