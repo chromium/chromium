@@ -6,10 +6,11 @@
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_MANIFEST_DOWNLOADER_ANDROID_H_
 
 #include <jni.h>
+
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 

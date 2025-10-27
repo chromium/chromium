@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
 #define COMPONENTS_VALUE_STORE_VALUE_STORE_TASK_RUNNER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace base {
 class SequencedTaskRunner;

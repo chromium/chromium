@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/web_app_manifest.h"
 #include "components/webdata/common/web_data_service_base.h"

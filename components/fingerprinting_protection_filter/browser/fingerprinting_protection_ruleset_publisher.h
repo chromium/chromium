@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"

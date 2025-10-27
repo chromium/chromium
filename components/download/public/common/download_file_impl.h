@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_IMPL_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FILE_IMPL_H_
 
-#include "components/download/public/common/download_file.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -17,7 +15,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/download/public/common/base_file.h"
+#include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/rate_estimator.h"

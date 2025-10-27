@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/policy_export.h"

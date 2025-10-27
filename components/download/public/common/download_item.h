@@ -25,7 +25,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"

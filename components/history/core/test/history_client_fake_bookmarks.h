@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/history/core/browser/history_client.h"
 
 class GURL;

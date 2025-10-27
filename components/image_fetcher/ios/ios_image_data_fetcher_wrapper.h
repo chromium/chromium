@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/image_fetcher/core/image_data_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
 #include "net/url_request/referrer_policy.h"

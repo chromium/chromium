@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 
 class ShortcutsBackend;

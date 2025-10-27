@@ -14,7 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/network_handle.h"
 #include "net/http/bidirectional_stream.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"

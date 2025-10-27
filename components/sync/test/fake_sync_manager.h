@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/sync_manager.h"

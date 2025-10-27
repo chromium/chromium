@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"

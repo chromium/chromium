@@ -9,7 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/network_handle.h"
 #include "net/quic/quic_context.h"

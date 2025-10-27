@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"

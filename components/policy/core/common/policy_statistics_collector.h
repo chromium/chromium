@@ -7,7 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/schema.h"

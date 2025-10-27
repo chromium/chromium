@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_CLIENT_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
 

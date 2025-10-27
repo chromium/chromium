@@ -6,7 +6,7 @@
 #define COMPONENTS_DBUS_THREAD_LINUX_DBUS_THREAD_LINUX_H_
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

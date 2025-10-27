@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/external_use_client.h"

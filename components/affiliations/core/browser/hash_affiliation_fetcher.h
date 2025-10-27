@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 

@@ -6,7 +6,7 @@
 #define COMPONENTS_GCM_DRIVER_FAKE_GCM_DRIVER_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/gcm_driver/gcm_driver.h"
 
 namespace base {

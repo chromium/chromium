@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/external_policy_data_updater.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_export.h"

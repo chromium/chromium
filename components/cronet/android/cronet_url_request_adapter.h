@@ -15,7 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/cronet/cronet_url_request.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"

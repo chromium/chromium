@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_factory.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
