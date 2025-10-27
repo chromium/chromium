@@ -19,6 +19,8 @@
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "media/base/media_switches.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -493,9 +495,9 @@ void MediaItemUIDetailedView::UpdateWithMediaArtwork(
     artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Draw the image with rounded corners.
-    auto path = SkPath().addRoundRect(
+    const SkPath path = SkPath::RRect(SkRRect::MakeRectXY(
         RectToSkRect(gfx::Rect(kArtworkSize.width(), kArtworkSize.height())),
-        kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius);
+        kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius));
     artwork_view_->SetClipPath(path);
   }
   SchedulePaint();

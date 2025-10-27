@@ -62,9 +62,7 @@ SkBitmap GenerateExpectedImage(
       // `SoftwareRenderer` draws debug borders as a path with a miter join.
       paint.setStyle(SkPaint::kStroke_Style);
       paint.setStrokeJoin(SkPaint::kMiter_Join);
-      SkPath path;
-      path.addRect(gfx::RectToSkRect(filled_rect.rect));
-      canvas.drawPath(path, paint);
+      canvas.drawPath(SkPath::Rect(gfx::RectToSkRect(filled_rect.rect)), paint);
     } else {
       canvas.drawRect(gfx::RectToSkRect(filled_rect.rect), paint);
     }

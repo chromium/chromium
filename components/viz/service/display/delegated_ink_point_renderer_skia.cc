@@ -40,11 +40,11 @@ void DelegatedInkPointRendererSkia::DrawDelegatedInkTrail(
     paint.setStrokeWidth(SkScalar(metadata_->diameter()));
     paint.setStyle(SkPaint::kStroke_Style);
 
-    canvas->drawPath(path_, paint);
+    // detach() also rewinds the path builder such that the already allocated
+    // storage can be reused.
+    canvas->drawPath(path_.detach(), paint);
 
     canvas->restore();
-
-    path_.rewind();
   }
 
   // Always reset `metadata_` regardless of if the draw occurred or not so that
@@ -90,8 +90,8 @@ std::vector<SkPoint> DelegatedInkPointRendererSkia::GetPointsToDraw() {
 }
 
 void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
-  // Always rewind the path first so that a path isn't drawn twice.
-  path_.rewind();
+  // Always reset the path first so that a path isn't drawn twice.
+  path_.reset();
 
   // Setting the damage rect to empty ensures that the damage rect is cleared
   // when trails are not being drawn so that extra drawing doesn't occur. If
@@ -145,7 +145,8 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   // the stroke sometimes existing outside of the damage_rect. Therefore, expand
   // it here to ensure that the stroke is included, then intersect with the
   // presentation area so that is can't extend beyond the drawable area.
-  gfx::RectF damage_rect = gfx::SkRectToRectF(path_.computeTightBounds());
+  gfx::RectF damage_rect = gfx::SkRectToRectF(
+      path_.computeTightBounds().value_or(SkRect::MakeEmpty()));
   const float kRadius = metadata_->diameter() / 2.f;
   damage_rect.Inset(-kRadius);
   damage_rect.Intersect(metadata_->presentation_area());

@@ -45,6 +45,7 @@
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
@@ -316,14 +317,12 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
 
   if (draw_region) {
     gfx::QuadF local_draw_region(*draw_region);
-    SkPath draw_region_clip_path;
     local_draw_region -= quad->visible_rect.OffsetFromOrigin();
 
     SkPoint clip_points[4];
     QuadFToSkPoints(local_draw_region, clip_points);
-    draw_region_clip_path.addPoly(clip_points, true);
 
-    current_canvas_->clipPath(draw_region_clip_path);
+    current_canvas_->clipPath(SkPath::Polygon(clip_points, true));
   }
 
   switch (quad->material) {
@@ -374,9 +373,10 @@ void SoftwareRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad) {
   SkMatrix m = current_canvas_->getTotalMatrix();
   current_canvas_->resetMatrix();
 
-  SkPath path;
-  path.addRect(gfx::RectToSkRect(quad->rect));
-  path.transform(m);
+  const SkPath path = SkPathBuilder()
+                          .addRect(gfx::RectToSkRect(quad->rect))
+                          .transform(m)
+                          .detach();
 
   current_paint_.setColor(quad->color);
   current_paint_.setAlphaf(quad->shared_quad_state->opacity * quad->color.fA);
@@ -913,7 +913,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
 
   gfx::Rect content_backdrop_rect;
   if (backdrop_filter_bounds.has_value()) {
-    backdrop_filter_bounds->transform(local_matrix);
+    backdrop_filter_bounds =
+        backdrop_filter_bounds->makeTransform(local_matrix);
     content_backdrop_rect =
         gfx::SkIRectToRect(backdrop_filter_bounds->getBounds().roundOut());
   } else {

@@ -8,6 +8,7 @@
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -39,18 +40,16 @@ void AppShortcutImage::Draw(gfx::Canvas* canvas) {
   flags.setColor(color_);
 
   // Draw the icon background
-  const SkScalar kRadius[8] = {SkIntToScalar(main_icon_radius_),
-                               SkIntToScalar(main_icon_radius_),
-                               SkIntToScalar(main_icon_radius_),
-                               SkIntToScalar(main_icon_radius_),
-                               SkIntToScalar(teardrop_corner_radius_),
-                               SkIntToScalar(teardrop_corner_radius_),
-                               SkIntToScalar(main_icon_radius_),
-                               SkIntToScalar(main_icon_radius_)};
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(gfx::Rect(gfx::Size(
-                        2 * main_icon_radius_, 2 * main_icon_radius_))),
-                    kRadius);
+  const SkVector kRadius[4] = {
+      SkVector(main_icon_radius_, main_icon_radius_),
+      SkVector(main_icon_radius_, main_icon_radius_),
+      SkVector(teardrop_corner_radius_, teardrop_corner_radius_),
+      SkVector(main_icon_radius_, main_icon_radius_)};
+
+  const SkPath path = SkPath::RRect(SkRRect::MakeRectRadii(
+      gfx::RectToSkRect(
+          gfx::Rect(gfx::Size(2 * main_icon_radius_, 2 * main_icon_radius_))),
+      kRadius));
   canvas->DrawPath(path, flags);
 
   // Draw the icon image

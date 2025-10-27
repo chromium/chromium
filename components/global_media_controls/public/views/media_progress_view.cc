@@ -11,6 +11,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -202,7 +203,7 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
     // Create a foreground squiggly progress path longer than the required
     // length and truncate it later in canvas. If the media is paused, this will
     // become a straight line.
-    SkPath progress_path;
+    SkPathBuilder progress_path;
     int current_x = -phase_offset_ - kProgressWavelength / 2;
     int current_amp =
         static_cast<int>(kProgressAmplitude * progress_amp_fraction_);
@@ -220,7 +221,7 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
 
     // Paint the foreground squiggly progress in a clipped rect.
     canvas->ClipRect(gfx::Rect(0, 0, progress_width, view_height));
-    canvas->DrawPath(progress_path, flags);
+    canvas->DrawPath(progress_path.detach(), flags);
   } else {
     // Paint the foreground straight progress line with rounded corners.
     flags.setStyle(cc::PaintFlags::kFill_Style);

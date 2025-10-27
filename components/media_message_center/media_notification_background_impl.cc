@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/color/color_id.h"
@@ -269,12 +270,15 @@ void MediaNotificationBackgroundImpl::Paint(gfx::Canvas* canvas,
     const SkScalar top_radius = SkIntToScalar(top_radius_);
     const SkScalar bottom_radius = SkIntToScalar(bottom_radius_);
 
-    const SkScalar radii[8] = {top_radius,    top_radius,    top_radius,
-                               top_radius,    bottom_radius, bottom_radius,
-                               bottom_radius, bottom_radius};
+    const SkVector radii[4] = {
+        {top_radius, top_radius},
+        {top_radius, top_radius},
+        {bottom_radius, bottom_radius},
+        {bottom_radius, bottom_radius},
+    };
 
-    SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(bounds), radii, SkPathDirection::kCW);
+    const SkPath path =
+        SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds), radii));
     canvas->ClipPath(path, true);
   }
 

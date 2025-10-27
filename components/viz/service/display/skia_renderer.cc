@@ -2501,7 +2501,7 @@ void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
   SkPath path = params->draw_region
                     ? params->draw_region_in_path()
                     : SkPath::Rect(gfx::RectFToSkRect(params->visible_rect));
-  path.transform(cdt);
+  path = path.makeTransform(cdt);
 
   SkPaint paint = params->paint(nullptr /* color_filter */);
   paint.setColor(quad->color);  // Must correct alpha afterwards
@@ -3151,10 +3151,8 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
           }
         }
       } else {
-        SkPath transformed_path;
-        transformed_path.addPath(*pass_bounds, local_matrix);
-        backdrop_rect = transformed_path.getBounds();
-        backdrop_filter_bounds = transformed_path;
+        backdrop_filter_bounds = pass_bounds->makeTransform(local_matrix);
+        backdrop_rect = backdrop_filter_bounds->getBounds();
       }
     } else {
       // NOTE: This code is never hit during rendering of an ordinary webpage.

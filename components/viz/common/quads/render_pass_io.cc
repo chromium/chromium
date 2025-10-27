@@ -357,7 +357,11 @@ base::Value::BlobStorage SkPathToBlob(const SkPath& path) {
 }
 
 bool SkPathFromBlob(const base::Value::BlobStorage& blob, SkPath* out) {
-  return out->readFromMemory(blob.data(), blob.size());
+  if (auto path = SkPath::ReadFromMemory(blob.data(), blob.size())) {
+    *out = std::move(*path);
+    return true;
+  }
+  return false;
 }
 
 base::Value::Dict LinearGradientToDict(
