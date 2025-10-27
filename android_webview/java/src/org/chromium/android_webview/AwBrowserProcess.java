@@ -725,6 +725,22 @@ public final class AwBrowserProcess {
             if (componentPolicies.length == 0) {
                 return;
             }
+
+            // The origin trial component was the only component we were
+            // fetching, and we're in the process of disabling the component
+            // updater entirely. So, if fetching the origin trial component is
+            // disabled, we expect there to be no components to fetch, as no
+            // new ones should be being added to WebView.
+            // If we get here there was at least one component registered:
+            // crash on debug builds, otherwise no-op.
+            boolean componentLoadingAllowed =
+                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_FETCH_ORIGIN_TRIALS_COMPONENT);
+            assert componentLoadingAllowed;
+            if (!componentLoadingAllowed) {
+                Log.w(TAG, "Components were registered but component loading is disabled!");
+                return;
+            }
+
             EmbeddedComponentLoader loader =
                     new EmbeddedComponentLoader(Arrays.asList(componentPolicies));
             final Intent intent = new Intent();

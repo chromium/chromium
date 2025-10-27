@@ -412,10 +412,12 @@ public class MainActivity extends FragmentActivity {
                     new Intent(Intent.ACTION_VIEW, uri),
                     SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
             return true;
-        } else if (item.getItemId() == R.id.options_menu_components) {
-            logMenuSelection(MenuChoice.COMPONENTS_UI);
-            switchFragment(FRAGMENT_ID_COMPONENTS, false);
-            return true;
+            // Component updater is disabled and the menu option is hidden for now;
+            // see crbug.com/438310407
+            // } else if (item.getItemId() == R.id.options_menu_components) {
+            //     logMenuSelection(MenuChoice.COMPONENTS_UI);
+            //     switchFragment(FRAGMENT_ID_COMPONENTS, false);
+            //     return true;
         } else if (item.getItemId() == R.id.options_menu_safe_mode) {
             logMenuSelection(MenuChoice.SAFEMODE_UI);
             switchFragment(FRAGMENT_ID_SAFEMODE, false);

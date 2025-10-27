@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "android_webview/browser/component_updater/loader_policies/origin_trials_component_loader_policy.h"
+#include "android_webview/common/aw_features.h"
+#include "base/feature_list.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
 
@@ -14,6 +16,11 @@ namespace android_webview {
 
 void LoadOriginTrialsComponent(
     component_updater::ComponentLoaderPolicyVector& policies) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewFetchOriginTrialsComponent)) {
+    return;
+  }
+
   policies.push_back(std::make_unique<OriginTrialsComponentLoaderPolicy>());
 }
 

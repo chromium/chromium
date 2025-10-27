@@ -317,4 +317,9 @@ BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
 BASE_FEATURE(kPrerender2WarmUpCompositorForWebView,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables fetching the Origin Trials configuration update component in the
+// embedded WebView.
+BASE_FEATURE(kWebViewFetchOriginTrialsComponent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

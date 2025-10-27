@@ -77,6 +77,7 @@ BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);
 BASE_DECLARE_FEATURE(kWebViewBypassProvisionalCookieManager);
 BASE_DECLARE_FEATURE(kWebViewPersistentMetricsInNoBackupDir);
 BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForWebView);
+BASE_DECLARE_FEATURE(kWebViewFetchOriginTrialsComponent);
 
 }  // namespace android_webview::features
 

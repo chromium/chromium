@@ -49,6 +49,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewEarlyPerfettoInit,
     &features::kWebViewEarlyStartupTracing,
     &features::kWebViewEnableCrash,
+    &features::kWebViewFetchOriginTrialsComponent,
     &features::kWebViewFileSystemAccess,
     &features::kWebViewHyperlinkContextMenu,
     &features::kWebViewInvokeZoomPickerOnGSU,
