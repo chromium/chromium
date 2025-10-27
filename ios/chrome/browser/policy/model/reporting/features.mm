@@ -6,6 +6,10 @@
 
 namespace enterprise_reporting {
 
+// Kill-switch for stripping the "/var/mobile/.../Library/Application Support/"
+// prefix from profile paths in reports.
+BASE_FEATURE(kSanitizeProfilePaths, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables Cloud Profile Reporting on iOS.
 BASE_FEATURE(kCloudProfileReporting, base::FEATURE_DISABLED_BY_DEFAULT);
 

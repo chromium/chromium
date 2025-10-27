@@ -9,6 +9,12 @@
 
 namespace enterprise_reporting {
 
+// Kill-switch for stripping the "/var/mobile/.../Library/Application Support/"
+// prefix from profile paths in reports.
+//
+// TODO(crbug.com/385175028): Clean up after January 2026.
+BASE_DECLARE_FEATURE(kSanitizeProfilePaths);
+
 // Enables Cloud Profile Reporting on iOS.
 BASE_DECLARE_FEATURE(kCloudProfileReporting);
 

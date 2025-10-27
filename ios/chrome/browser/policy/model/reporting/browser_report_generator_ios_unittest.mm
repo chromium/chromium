@@ -33,11 +33,13 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
 
   void GenerateAndVerify() {
     base::RunLoop run_loop;
-    const base::FilePath path = profile_->GetStatePath();
+    const base::FilePath profile_path = profile_->GetStatePath();
+    const std::string profile_name = profile_->GetProfileName();
     generator_.Generate(
         ReportType::kFull,
         base::BindLambdaForTesting(
-            [&run_loop, &path](std::unique_ptr<em::BrowserReport> report) {
+            [&run_loop, &profile_path,
+             &profile_name](std::unique_ptr<em::BrowserReport> report) {
               ASSERT_TRUE(report.get());
 
               EXPECT_NE(std::string(), report->browser_version());
@@ -48,8 +50,9 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
               ASSERT_EQ(1, report->chrome_user_profile_infos_size());
               em::ChromeUserProfileInfo profile =
                   report->chrome_user_profile_infos(0);
-              EXPECT_EQ(path.AsUTF8Unsafe(), profile.id());
-              EXPECT_EQ(path.BaseName().AsUTF8Unsafe(), profile.name());
+              EXPECT_EQ(base::StrCat({"/Profile/", profile_name}),
+                        profile.id());
+              EXPECT_EQ(profile_path.BaseName().AsUTF8Unsafe(), profile.name());
 
               EXPECT_FALSE(profile.is_detail_available());
 

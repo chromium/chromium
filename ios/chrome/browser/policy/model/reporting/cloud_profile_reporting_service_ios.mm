@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/reporting_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -57,7 +58,8 @@ void CloudProfileReportingServiceIOS::CreateReportScheduler() {
 
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
-          profile_->GetStatePath(), &delegate_factory,
+          base::FilePath(SanitizeProfilePath(profile_->GetProfileName())),
+          &delegate_factory,
           /*signals_aggregator=*/nullptr);
   report_scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
 }

@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
+#import "ios/chrome/browser/policy/model/reporting/reporting_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -39,12 +40,12 @@ std::vector<std::string> GetKnownProfilesNames(ProfileManagerIOS* manager) {
 std::vector<BrowserReportGenerator::ReportedProfileData>
 GetReportDataForKnownProfiles(ProfileManagerIOS* manager) {
   std::vector<BrowserReportGenerator::ReportedProfileData> result;
-  std::ranges::transform(
-      GetKnownProfilesNames(manager), std::back_inserter(result),
-      [manager](const std::string& name) {
-        return BrowserReportGenerator::ReportedProfileData(
-            manager->GetProfilePath(name).AsUTF8Unsafe(), name);
-      });
+  std::ranges::transform(GetKnownProfilesNames(manager),
+                         std::back_inserter(result),
+                         [](const std::string& name) {
+                           return BrowserReportGenerator::ReportedProfileData(
+                               SanitizeProfilePath(name), name);
+                         });
   return result;
 }
 
@@ -55,7 +56,7 @@ GetReportDataForLoadedProfiles(ProfileManagerIOS* manager) {
                          std::back_inserter(result), [](ProfileIOS* profile) {
                            CHECK(!profile->IsOffTheRecord());
                            return BrowserReportGenerator::ReportedProfileData(
-                               profile->GetStatePath().AsUTF8Unsafe(),
+                               SanitizeProfilePath(profile->GetProfileName()),
                                profile->GetProfileName());
                          });
   return result;
