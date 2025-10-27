@@ -15,6 +15,7 @@ import android.view.ViewGroup.LayoutParams;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
@@ -301,6 +302,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         public void onFragmentStarted(@NonNull FragmentManager fm, @NonNull Fragment f) {
             if (f instanceof MainSettings) {
                 // Skip main settings which is visible in the header pane.
+                return;
+            }
+
+            if (f instanceof DialogFragment dialogFragment && dialogFragment.getShowsDialog()) {
+                // Skip on showing a dialog UI.
                 return;
             }
 
