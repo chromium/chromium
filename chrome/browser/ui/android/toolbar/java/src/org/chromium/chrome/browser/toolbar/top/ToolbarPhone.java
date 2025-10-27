@@ -463,7 +463,7 @@ public class ToolbarPhone extends ToolbarLayout
                         /* cornerRadiusPx= */ resources.getDimensionPixelSize(
                                 R.dimen.modern_toolbar_background_corner_radius),
                         /* strokePx= */ resources.getDimensionPixelSize(R.dimen.chip_border_width),
-                        ContextCompat.getColor(context, R.color.color_on_surface_with_alpha_20));
+                        ContextCompat.getColor(context, R.color.color_on_surface_with_alpha_12));
         drawable.setBackgroundColor(
                 ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color));
         return drawable;
@@ -910,6 +910,14 @@ public class ToolbarPhone extends ToolbarLayout
         int leftViewPosition = getLeftPositionOfLocationBarBackground(visualState);
         int rightViewPosition = getRightPositionOfLocationBarBackground(visualState);
         int verticalInset = mLocationBarBackgroundVerticalInset - calculateOnFocusHeightIncrease();
+        int horizontalInset = 0;
+
+        if (urlHasFocus() && ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
+            int strokePx =
+                    getContext().getResources().getDimensionPixelSize(R.dimen.chip_border_width);
+            verticalInset += strokePx;
+            horizontalInset = strokePx;
+        }
 
         // The bounds are set by the following:
         // - The left most visible location bar child view.
@@ -918,9 +926,9 @@ public class ToolbarPhone extends ToolbarLayout
         // - The bottom of the viewport is aligned with the bottom of the location bar.
         // Additional padding can be applied for use during animations.
         out.set(
-                leftViewPosition,
+                leftViewPosition - horizontalInset,
                 mLocationBar.getPhoneCoordinator().getTop() + verticalInset,
-                rightViewPosition,
+                rightViewPosition + horizontalInset,
                 mLocationBar.getPhoneCoordinator().getBottom() - verticalInset);
     }
 
