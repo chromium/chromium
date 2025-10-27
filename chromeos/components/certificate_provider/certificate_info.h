@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 

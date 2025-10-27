@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_SYNCHRONIZER_BASE_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"

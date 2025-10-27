@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"

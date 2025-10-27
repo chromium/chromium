@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"

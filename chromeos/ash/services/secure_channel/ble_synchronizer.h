@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_BLE_SYNCHRONIZER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"

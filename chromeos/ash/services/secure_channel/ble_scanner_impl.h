@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner.h"
 #include "chromeos/ash/services/secure_channel/bluetooth_helper.h"
