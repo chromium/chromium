@@ -141,6 +141,101 @@ public class EdgeToEdgeLayoutUnitTest {
                 mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
     }
 
+    // ┌───────┐
+    // │       │
+    // │       │
+    // │       │
+    // │-------│
+    // │ X X X │
+    // └───────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    public void testPortrait_Fullscreen_TappableInsetsNotUsed() {
+        initializePortraitLayout();
+
+        WindowInsetsCompat topBottomInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(STATUS_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsetsIgnoringVisibility(
+                                STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsetsIgnoringVisibility(
+                                NAVIGATION_BARS, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(TAPPABLE_ELEMENT, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(SYSTEM_GESTURES, Insets.of(STATUS_BAR_SIZE, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                MANDATORY_SYSTEM_GESTURES,
+                                Insets.of(STATUS_BAR_SIZE, 0, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, topBottomInsets);
+        assertInsetsConsumed(newInsets, STATUS_BARS + NAVIGATION_BARS);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
+
+        assertEquals(
+                "Status bar insets don't exist.",
+                new Rect(),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        assertEquals(
+                "Nav bar insets don't exist.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        assertEquals(
+                "Nav bar divider doesn't exist.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌───────┐
+    // │       │
+    // │       │
+    // │       │
+    // │-------│
+    // │ X X X │
+    // └───────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    public void testPortrait_Fullscreen_GestureInsetsNotUsed() {
+        initializePortraitLayout();
+
+        WindowInsetsCompat topBottomInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(STATUS_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsetsIgnoringVisibility(
+                                STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsetsIgnoringVisibility(
+                                NAVIGATION_BARS, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(SYSTEM_GESTURES, Insets.of(STATUS_BAR_SIZE, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                MANDATORY_SYSTEM_GESTURES,
+                                Insets.of(STATUS_BAR_SIZE, 0, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, topBottomInsets);
+        assertInsetsConsumed(newInsets, STATUS_BARS + NAVIGATION_BARS);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
+
+        assertEquals(
+                "Status bar insets don't exist.",
+                new Rect(),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        assertEquals(
+                "Nav bar insets don't exist.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        assertEquals(
+                "Nav bar divider doesn't exist.",
+                new Rect(),
+                mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
     // ┌────────┐
     // ├────────┤
     // │        │

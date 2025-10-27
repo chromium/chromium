@@ -196,6 +196,14 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
 
     private Insets getNavigationBarInsets(WindowInsetsCompat windowInsets) {
         Insets navBarInsets = windowInsets.getInsets(Type.navigationBars());
+        Insets navBarInsetsIgnoringViz =
+                windowInsets.getInsetsIgnoringVisibility(Type.navigationBars());
+        // crbug.com/454781974 - if the navbar insets have been hidden, the device is in fullscreen
+        // mode. tappableElement() insets should not be used, and are actively misleading as the OS
+        // will continue to report non-zero tappable insets even if the system bars have been
+        // hidden.
+        if (!navBarInsets.equals(navBarInsetsIgnoringViz)) return navBarInsets;
+
         Insets tappableInsets = windowInsets.getInsets(WindowInsetsCompat.Type.tappableElement());
         Insets nonTopTappableInsets =
                 Insets.of(tappableInsets.left, 0, tappableInsets.right, tappableInsets.bottom);
