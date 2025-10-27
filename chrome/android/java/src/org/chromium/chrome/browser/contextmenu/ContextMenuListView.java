@@ -63,9 +63,10 @@ public class ContextMenuListView extends ListView {
         final View frame = ((View) getParent().getParent());
         assert frame.getId() == R.id.context_menu_frame;
         final int frameWidth = frame.getMeasuredWidth();
-        final int parentLateralPadding = frame.getPaddingLeft();
+        final int parentLateralPadding = frame.getPaddingLeft() + frame.getPaddingRight();
         final int maxWidth =
-                frameWidth == 0 ? maxWidthFromRes : Math.min(maxWidthFromRes, frameWidth);
+                (frameWidth == 0 ? maxWidthFromRes : Math.min(maxWidthFromRes, frameWidth))
+                        - parentLateralPadding;
 
         // When context menu is a popup, the max width with windowWidth - 2 * lateralMargin does not
         // apply since it is presented in a popup window. See https://crbug.com/1314675.
@@ -73,7 +74,8 @@ public class ContextMenuListView extends ListView {
         if (mLimitedByScreenWidth) {
             if (mIsFlyout) {
                 int maxFlyoutWidth =
-                        getResources().getDimensionPixelSize(R.dimen.context_menu_small_width);
+                        getResources().getDimensionPixelSize(R.dimen.context_menu_small_width)
+                                - parentLateralPadding;
                 int contentWidth =
                         UiUtils.computeListAdapterContentDimensions(getAdapter(), this)[0];
                 calculatedWidth = Math.min(maxFlyoutWidth, contentWidth);
@@ -81,9 +83,9 @@ public class ContextMenuListView extends ListView {
                 calculatedWidth = maxWidth;
             }
         } else {
-            calculatedWidth = windowWidthPx - 2 * lateralMargin;
+            calculatedWidth = windowWidthPx - 2 * lateralMargin - parentLateralPadding;
         }
 
-        return Math.min(calculatedWidth, maxWidth) - 2 * parentLateralPadding;
+        return Math.min(calculatedWidth, maxWidth);
     }
 }
