@@ -11,13 +11,22 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "google_apis/gaia/gaia_urls.h"
 
 namespace webauthn {
 PasskeyUnlockManager::PasskeyUnlockManager(Profile* profile) {
+  EnclaveManager* enclave_manager = static_cast<EnclaveManager*>(
+      EnclaveManagerFactory::GetForProfile(profile));
+  enclave_manager_observation_.Observe(enclave_manager);
   passkey_model_observation_.Observe(
       PasskeyModelFactory::GetForProfile(profile));
+  if (enclave_manager->is_loaded()) {
+    enclave_ready_ = enclave_manager->is_ready();
+  } else {
+    AsynchronouslyLoadEnclaveManager();
+  }
   UpdateHasPasskeys();
   NotifyObservers();
 }
@@ -50,6 +59,10 @@ PasskeyModel* PasskeyUnlockManager::passkey_model() {
   return passkey_model_observation_.GetSource();
 }
 
+EnclaveManager* PasskeyUnlockManager::enclave_manager() {
+  return enclave_manager_observation_.GetSource();
+}
+
 void PasskeyUnlockManager::UpdateHasPasskeys() {
   has_passkeys_ = !passkey_model()->GetAllPasskeys().empty();
 }
@@ -71,21 +84,32 @@ void PasskeyUnlockManager::AsynchronouslyCheckSystemUVAvailability() {
 }
 
 void PasskeyUnlockManager::AsynchronouslyLoadEnclaveManager() {
-  // TODO(crbug.com/449949272): Implement and call in the constructor.
-  NOTIMPLEMENTED();
+  auto callback = base::BindOnce(&PasskeyUnlockManager::OnStateUpdated,
+                                 weak_ptr_factory_.GetWeakPtr());
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  auto delayed_task =
+      base::BindOnce(&EnclaveManager::Load, enclave_manager()->GetWeakPtr(),
+                     std::move(callback));
+  task_runner->PostDelayedTask(FROM_HERE, std::move(delayed_task),
+                               base::Minutes(4));
 }
 
-// webauthn::PasskeyModel::Observer
+void PasskeyUnlockManager::OnKeysStored() {}
+
+void PasskeyUnlockManager::OnStateUpdated() {
+  enclave_ready_ = enclave_manager()->is_ready();
+  NotifyObservers();
+}
+
 void PasskeyUnlockManager::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
   UpdateHasPasskeys();
   NotifyObservers();
 }
 
-// webauthn::PasskeyModel::Observer
 void PasskeyUnlockManager::OnPasskeyModelShuttingDown() {}
 
-// webauthn::PasskeyModel::Observer
 void PasskeyUnlockManager::OnPasskeyModelIsReady(bool is_ready) {
   UpdateHasPasskeys();
   NotifyObservers();

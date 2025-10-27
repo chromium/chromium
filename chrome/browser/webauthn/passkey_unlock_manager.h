@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -22,7 +23,8 @@ namespace webauthn {
 // passkeys. It asynchronously determines if passkeys are locked, but can be
 // unlocked. Once the final state is known, it notifies observers.
 class PasskeyUnlockManager : public KeyedService,
-                             public PasskeyModel::Observer {
+                             public PasskeyModel::Observer,
+                             public EnclaveManager::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -55,6 +57,10 @@ class PasskeyUnlockManager : public KeyedService,
   // constructor.
   PasskeyModel* passkey_model();
 
+  // Returns the EnclaveManager associated with the profile passed to the
+  // constructor.
+  EnclaveManager* enclave_manager();
+
   // Updates the cached value of `has_passkeys_`.
   void UpdateHasPasskeys();
 
@@ -68,12 +74,16 @@ class PasskeyUnlockManager : public KeyedService,
   // Caches `enclave_ready_`.
   void AsynchronouslyLoadEnclaveManager();
 
-  // TODO(crbug.com/449949272): Implement EnclaveManager::Observer.
+  void OnEnclaveManagerLoaded();
+
+  // EnclaveManager::Observer
+  void OnKeysStored() override;
+  void OnStateUpdated() override;
 
   // webauthn::PasskeyModel::Observer
   // After getting notified - update the cached value of `has_passkeys_`
   void OnPasskeysChanged(
-      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+      const std::vector<PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
   void OnPasskeyModelIsReady(bool is_ready) override;
 
@@ -88,8 +98,9 @@ class PasskeyUnlockManager : public KeyedService,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::ScopedObservation<webauthn::PasskeyModel,
-                          webauthn::PasskeyModel::Observer>
+  base::ScopedObservation<EnclaveManager, EnclaveManager::Observer>
+      enclave_manager_observation_{this};
+  base::ScopedObservation<PasskeyModel, PasskeyModel::Observer>
       passkey_model_observation_{this};
   base::WeakPtrFactory<PasskeyUnlockManager> weak_ptr_factory_{this};
 };
