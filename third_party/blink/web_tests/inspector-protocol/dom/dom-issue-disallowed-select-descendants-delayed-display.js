@@ -5,12 +5,12 @@
   await dp.Audits.enable();
 
   const audits = [];
-  let first = true;
+  let count = 0;
+  let expected_count = 5;
   dp.Audits.onIssueAdded(issue => {
     if (issue.params.issue.code === 'ElementAccessibilityIssue') {
       audits.push(issue)
-      if (first) {
-        first = false;
+      if (++count == expected_count) {
         requestAnimationFrame(() => {
           testRunner.log(audits);
           testRunner.completeTest();

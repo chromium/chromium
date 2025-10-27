@@ -9674,9 +9674,6 @@ crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-eleme
 crbug.com/429394126 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
 crbug.com/429440406 [ Win11-arm64 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/device/forget/getDevices.https.window.html [ Failure Pass ]
 
-# Gardener 2025-07-04
-crbug.com/429413927 [ Linux ] inspector-protocol/dom/dom-issue-disallowed-select-descendants-delayed-display.js [ Failure Pass ]
-
 # Flaky Soft Navigation Heuristics tests
 crbug.com/1455262 virtual/threaded/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
 crbug.com/1455262 virtual/view-transition-mpa-serialization/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
