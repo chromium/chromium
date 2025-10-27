@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util_win.h"
 #include "services/webnn/webnn_switches.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/runtime/WindowsAppSDK-VersionInfo.h"
 
 namespace webnn::ort {
 
@@ -20,18 +21,13 @@ namespace {
 
 using OrtGetApiBaseProc = decltype(OrtGetApiBase)*;
 
-// Family name of the WinAppRuntime Chromium binds to in order to run WinML.
-// https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads
-constexpr base::wcstring_view kWinAppRuntimePackageFamilyName =
-    L"Microsoft.WindowsAppRuntime.1.8_8wekyb3d8bbwe";
-
 constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 
 constexpr PACKAGE_VERSION kWinAppRuntimePackageVersion = {
-    .Major = 0,
-    .Minor = 0,
-    .Build = 0,
-    .Revision = 0,
+    .Major = WINDOWSAPPSDK_RUNTIME_VERSION_MAJOR,
+    .Minor = WINDOWSAPPSDK_RUNTIME_VERSION_MINOR,
+    .Build = WINDOWSAPPSDK_RUNTIME_VERSION_BUILD,
+    .Revision = WINDOWSAPPSDK_RUNTIME_VERSION_REVISION,
 };
 
 struct ScopedWcharTypeTraits {
@@ -113,8 +109,9 @@ PlatformFunctions::PlatformFunctions() {
   } else {
     // Initialize Windows ML.
     std::optional<base::FilePath> windows_ml_package_path =
-        InitializePackageDependency(kWinAppRuntimePackageFamilyName,
-                                    kWinAppRuntimePackageVersion);
+        InitializePackageDependency(
+            WINDOWSAPPSDK_RUNTIME_PACKAGE_FRAMEWORK_PACKAGEFAMILYNAME_W,
+            kWinAppRuntimePackageVersion);
     if (!windows_ml_package_path) {
       LOG(ERROR) << "[WebNN] Failed to initialize Windows ML and get the "
                     "package path.";

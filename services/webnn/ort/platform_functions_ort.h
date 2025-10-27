@@ -16,7 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/cstring_view.h"
-#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 

@@ -6,7 +6,7 @@
 #define SERVICES_WEBNN_ORT_ORT_DATA_TYPE_H_
 
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 

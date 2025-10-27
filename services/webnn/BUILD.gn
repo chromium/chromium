@@ -200,7 +200,7 @@ component("webnn_service") {
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
     ]
-    deps += [ "//third_party/onnxruntime_headers" ]
+    deps += [ "//third_party/windows_app_sdk_headers" ]
 
     libs += [ "runtimeobject.lib" ]
 
