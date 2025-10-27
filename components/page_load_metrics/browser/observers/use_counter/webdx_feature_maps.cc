@@ -605,6 +605,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kLineBreak, WebDXFeature::kLineBreak},
           {CSSSampleId::kFontLanguageOverride,
            WebDXFeature::kFontLanguageOverride},
+          {CSSSampleId::kTextJustify, WebDXFeature::kTextJustify},
           // Add new features above this line.
       }};
 
