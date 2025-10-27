@@ -38,6 +38,10 @@ namespace optimization_guide {
 class OptimizationGuideGlobalFeature;
 }  // namespace optimization_guide
 
+namespace safe_browsing {
+class ApplicationAdvancedProtectionStatusDetector;
+}  // namespace safe_browsing
+
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
@@ -103,6 +107,11 @@ class GlobalFeatures {
     return optimization_guide_global_feature_.get();
   }
 
+  safe_browsing::ApplicationAdvancedProtectionStatusDetector*
+  application_advanced_protection_status_detector() {
+    return application_advanced_protection_status_detector_.get();
+  }
+
  protected:
   GlobalFeatures();
 
@@ -142,6 +151,9 @@ class GlobalFeatures {
 
   std::unique_ptr<optimization_guide::OptimizationGuideGlobalFeature>
       optimization_guide_global_feature_;
+
+  std::unique_ptr<safe_browsing::ApplicationAdvancedProtectionStatusDetector>
+      application_advanced_protection_status_detector_;
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

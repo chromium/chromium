@@ -293,6 +293,9 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
+BASE_FEATURE(kRelaunchNotificationForAdvancedProtection,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReportNotificationContentDetectionData,
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr base::FeatureParam<int> kReportNotificationContentDetectionDataRate{

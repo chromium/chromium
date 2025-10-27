@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -61,19 +62,25 @@ class ApplicationAdvancedProtectionStatusDetectorTest : public testing::Test {
 
   void SetUp() override { EXPECT_TRUE(profile_manager_.SetUp()); }
 
-  void TearDown() override { profile_manager_.DeleteAllTestingProfiles(); }
+  void TearDown() override {
+    // Necessary to prevent unexpected mock called from test teardown.
+    observation_.Reset();
+    profile_manager_.DeleteAllTestingProfiles();
+  }
 
   ProfileManager* profile_manager() {
     return profile_manager_.profile_manager();
   }
 
-  std::unique_ptr<ApplicationAdvancedProtectionStatusDetector>
-  CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver() {
-    auto application_ap_detector =
+  // Returns an instance of ApplicationAdvancedProtectionStatusDetector for
+  // testing with `observer_` installed. The instance will be cleaned up on test
+  // destruction. May only be used once per test.
+  ApplicationAdvancedProtectionStatusDetector* MakeTestDetectorWithObserver() {
+    application_ap_detector_ =
         std::make_unique<ApplicationAdvancedProtectionStatusDetector>(
             profile_manager());
-    application_ap_detector->AddObserver(&observer_);
-    return application_ap_detector;
+    observation_.Observe(application_ap_detector_.get());
+    return application_ap_detector_.get();
   }
 
  protected:
@@ -95,12 +102,16 @@ class ApplicationAdvancedProtectionStatusDetectorTest : public testing::Test {
   TestingProfileManager profile_manager_;
   testing::StrictMock<MockApplicationAdvancedProtectionStatusDetectorObserver>
       observer_;
+  std::unique_ptr<ApplicationAdvancedProtectionStatusDetector>
+      application_ap_detector_;
+  base::ScopedObservation<
+      ApplicationAdvancedProtectionStatusDetector,
+      ApplicationAdvancedProtectionStatusDetector::StatusObserver>
+      observation_{&observer_};
 };
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, NoProfiles) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
-  EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
+  EXPECT_FALSE(MakeTestDetectorWithObserver()->IsUnderAdvancedProtection());
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
@@ -108,9 +119,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
   CreateProfile("profile1");
   CreateProfile("profile2");
 
-  auto detector = std::make_unique<ApplicationAdvancedProtectionStatusDetector>(
-      profile_manager());
-  EXPECT_FALSE(detector->IsUnderAdvancedProtection());
+  EXPECT_FALSE(MakeTestDetectorWithObserver()->IsUnderAdvancedProtection());
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
@@ -122,13 +131,11 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
   auto detector = std::make_unique<ApplicationAdvancedProtectionStatusDetector>(
       profile_manager());
   EXPECT_TRUE(detector->IsUnderAdvancedProtection());
-  testing::Mock::VerifyAndClearExpectations(&observer_);
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        ProfileAddedWithAPDisabled) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile = CreateProfile("profile1");
 
   // AdvancedProtectionStatusManager notify observer with false on non-APP
@@ -139,8 +146,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        ProfileAddedWithAPEnabled) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(true));
   TestingProfile* profile = CreateProfile("profile1");
   GetAPManager(profile)->SetAdvancedProtectionStatusForTesting(true);
@@ -153,8 +159,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        MultipleAdvancedProtectionStatusChangedNotifiedWithSameValue) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(_))
       .Times(0);
   TestingProfile* profile = CreateProfile("profile1");
@@ -180,8 +185,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, APEnabledThenDisabled) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile = CreateProfile("profile1");
 
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(true));
@@ -196,8 +200,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, APEnabledThenDisabled) {
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, MultipleProfiles) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile1 = CreateProfile("profile1");
   TestingProfile* profile2 = CreateProfile("profile2");
 
@@ -221,8 +224,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, MultipleProfiles) {
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, ProfileRemoved) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   TestingProfile* profile1 = CreateProfile("profile1");
   TestingProfile* profile2 = CreateProfile("profile2");
 
@@ -243,8 +245,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, ProfileRemoved) {
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        MultipleProfilesAddRemove) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   // 1. Create profile1 (non-AP). Status should be false.
   TestingProfile* profile1 = CreateProfile("profile1");
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
@@ -277,12 +278,12 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
   profile_manager_.DeleteTestingProfile("profile3");
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
 }
+
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, IsOffTheRecordProfile) {
   TestingProfile* ap_profile = CreateProfile("profile1");
   GetAPManager(ap_profile)->SetAdvancedProtectionStatusForTesting(true);
   TestingProfile* non_ap_profile = CreateProfile("profile2");
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   EXPECT_TRUE(application_ap_detector->IsUnderAdvancedProtection());
 
   // Add Off the Record Profiles.
@@ -306,8 +307,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, IsOffTheRecordProfile) {
 }
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, IsGuestSessionProfile) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   // Guest profiles should not be considered for Advanced Protection status.
   profile_manager_.CreateGuestProfile();
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
@@ -331,8 +331,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, IsGuestSessionProfile) {
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, IsSystemProfile) {
-  auto application_ap_detector =
-      CreateApplicationAdvancedProtectionStatusDetectorAndRegisterObserver();
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
   // System profiles should not be considered for Advanced Protection status.
   profile_manager_.CreateSystemProfile();
   EXPECT_FALSE(application_ap_detector->IsUnderAdvancedProtection());
@@ -381,10 +380,7 @@ TEST_F(ApplicationAdvancedProtectionStatusDetectorTest, RemoveObserver) {
 
 TEST_F(ApplicationAdvancedProtectionStatusDetectorTest,
        OnProfileManagerDestroyingResetsStatus) {
-  auto application_ap_detector =
-      std::make_unique<ApplicationAdvancedProtectionStatusDetector>(
-          profile_manager());
-  application_ap_detector->AddObserver(&observer_);
+  auto* application_ap_detector = MakeTestDetectorWithObserver();
 
   TestingProfile* profile = CreateProfile("profile1");
   EXPECT_CALL(observer_, OnApplicationAdvancedProtectionStatusChanged(true));

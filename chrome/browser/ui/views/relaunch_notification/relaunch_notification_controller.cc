@@ -12,9 +12,12 @@
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace {
 
@@ -80,12 +83,16 @@ RelaunchNotificationController::RelaunchNotificationController(
         prefs::kRelaunchNotification,
         base::BindRepeating(&RelaunchNotificationController::HandleCurrentStyle,
                             base::Unretained(this)));
-    // Synchronize the instance with the current state of the preference.
-    HandleCurrentStyle();
   }
   // Need to register with the UpgradeDetector right at the start to observe any
   // calls to override the preference value controlling the notification style.
   StartObservingUpgrades();
+#if !BUILDFLAG(IS_CHROMEOS)
+  StartObservingAPStatus();
+#endif
+  // Synchronize the instance with the current state of the preference and
+  // Advanced Protection status.
+  HandleCurrentStyle();
 }
 
 void RelaunchNotificationController::OnUpgradeRecommended() {
@@ -143,6 +150,11 @@ void RelaunchNotificationController::OnRelaunchOverriddenToRequired(
   HandleCurrentStyle();
 }
 
+void RelaunchNotificationController::
+    OnApplicationAdvancedProtectionStatusChanged(bool enabled) {
+  HandleCurrentStyle();
+}
+
 void RelaunchNotificationController::HandleCurrentStyle() {
   NotificationStyle notification_style = NotificationStyle::kNone;
 
@@ -160,6 +172,18 @@ void RelaunchNotificationController::HandleCurrentStyle() {
         notification_style = NotificationStyle::kRequired;
         break;
     }
+  }
+
+  // Force the style to `kRequired` if Advanced Protection is enabled and the
+  // relaunch required policy is not already in effect.
+  if (notification_style != NotificationStyle::kRequired &&
+      advanced_protection_observation_.IsObserving() &&
+      advanced_protection_observation_.GetSource()
+          ->IsUnderAdvancedProtection()) {
+    notification_style_overridden_for_advanced_protection_ = true;
+    notification_style = NotificationStyle::kRequired;
+  } else {
+    notification_style_overridden_for_advanced_protection_ = false;
   }
 
   // Nothing to do if there has been no change in the notification style.
@@ -193,6 +217,16 @@ void RelaunchNotificationController::StartObservingUpgrades() {
 
 void RelaunchNotificationController::StopObservingUpgrades() {
   upgrade_detector_->RemoveObserver(this);
+}
+
+void RelaunchNotificationController::StartObservingAPStatus() {
+  // advanced_protection_detector is available when
+  // `safe_browsing::kRelaunchNotificationForAdvancedProtection` is enabled.
+  if (auto* advanced_protection_detector =
+          g_browser_process->GetFeatures()
+              ->application_advanced_protection_status_detector()) {
+    advanced_protection_observation_.Observe(advanced_protection_detector);
+  }
 }
 
 void RelaunchNotificationController::ShowRelaunchNotification(
@@ -340,6 +374,7 @@ void RelaunchNotificationController::NotifyRelaunchRequired() {
   DCHECK(timer_.IsRunning());
   DCHECK(!timer_.desired_run_time().is_null());
   DoNotifyRelaunchRequired(
+      notification_style_overridden_for_advanced_protection_,
       timer_.desired_run_time(),
       base::BindOnce(
           &RelaunchNotificationController::IncreaseRelaunchDeadlineOnShow,
@@ -347,11 +382,14 @@ void RelaunchNotificationController::NotifyRelaunchRequired() {
 }
 
 void RelaunchNotificationController::DoNotifyRelaunchRequired(
+    bool is_notification_style_ap_required,
     base::Time relaunch_deadline,
     base::OnceCallback<base::Time()> on_visible) {
   platform_impl_.NotifyRelaunchRequired(relaunch_deadline,
 #if BUILDFLAG(IS_CHROMEOS)
                                         notification_type_required_overridden_,
+#else
+                                        is_notification_style_ap_required,
 #endif
                                         std::move(on_visible));
 }

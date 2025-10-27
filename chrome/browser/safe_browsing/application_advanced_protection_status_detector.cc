@@ -52,7 +52,11 @@ class ApplicationAdvancedProtectionStatusDetector::
 
   bool latest_status() const { return latest_status_; }
 
-  void Reset() { observation_.Reset(); }
+  void Reset() {
+    observation_.Reset();
+    profile_ = nullptr;
+    detector_ = nullptr;
+  }
 
  private:
   bool latest_status_ = false;
@@ -101,9 +105,10 @@ void ApplicationAdvancedProtectionStatusDetector::OnProfileAdded(
 }
 
 void ApplicationAdvancedProtectionStatusDetector::OnProfileManagerDestroying() {
+  profile_ap_observers_.clear();
   profile_manager_observation_.Reset();
+  profile_manager_ = nullptr;
   profile_observations_.RemoveAllObservations();
-  // application_advanced_protection_status_ = false;
   advanced_protection_profile_count_ = 0;
   NotifyObservers();
 }
@@ -128,6 +133,12 @@ void ApplicationAdvancedProtectionStatusDetector::OnProfileWillBeDestroyed(
   }
   profile_ap_observer->Reset();
   profile_observations_.RemoveObservation(profile);
+}
+
+void ApplicationAdvancedProtectionStatusDetector::
+    SetIsUnderAdvancedProtectionForTesting(bool enable) {
+  advanced_protection_profile_count_ = enable ? 1 : 0;
+  NotifyObservers();
 }
 
 void ApplicationAdvancedProtectionStatusDetector::

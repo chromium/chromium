@@ -7,8 +7,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -48,7 +50,10 @@ class TickClock;
 // In certain conditions, the preference value could be overridden by the
 // UpgradeDetector which then takes priority over the original value and any
 // further changes to the preference have no effect.
-class RelaunchNotificationController : public UpgradeObserver {
+class RelaunchNotificationController
+    : public UpgradeObserver,
+      public safe_browsing::ApplicationAdvancedProtectionStatusDetector::
+          StatusObserver {
  public:
   // |upgrade_detector| is expected to be the process-wide detector, and must
   // outlive the controller.
@@ -79,6 +84,9 @@ class RelaunchNotificationController : public UpgradeObserver {
   void OnUpgradeRecommended() override;
   void OnRelaunchOverriddenToRequired(bool overridden) override;
 
+  // ApplicationAdvancedProtectionStatusDetector::StatusObserver:
+  void OnApplicationAdvancedProtectionStatusChanged(bool enabled) override;
+
  private:
   enum class NotificationStyle {
     kNone,         // No notifications are shown.
@@ -95,6 +103,8 @@ class RelaunchNotificationController : public UpgradeObserver {
   // Bring the instance out of or back to dormant mode.
   void StartObservingUpgrades();
   void StopObservingUpgrades();
+  // Observe BrowserAdvanceProtectionStatus.
+  void StartObservingAPStatus();
 
   // Shows the proper notification based on the preference setting and starts
   // the timer to either reshow the bubble or restart the browser/device as
@@ -149,7 +159,10 @@ class RelaunchNotificationController : public UpgradeObserver {
   // |on_visible| is a callback to be run when the notification is potentially
   // seen by the user to push back the relaunch deadline if the remaining time
   // is less than the grace period.
+  // If |is_notification_style_ap_required|, the relaunch notification is shown
+  // with Advanced Protection string and icon.
   virtual void DoNotifyRelaunchRequired(
+      bool is_notification_style_ap_required,
       base::Time relaunch_deadline,
       base::OnceCallback<base::Time()> on_visible);
 
@@ -201,6 +214,18 @@ class RelaunchNotificationController : public UpgradeObserver {
   // overridden to required. Changes to the policy value will not affect the
   // notification type.
   bool notification_type_required_overridden_ = false;
+  // A flag to denote that relaunch notification should be required for Advanced
+  // Protection Program. This is true when there is at least a profile with
+  // Advanced Protection and relaunch notification is not already required by
+  // other override or the enterprise policy.
+  bool notification_style_overridden_for_advanced_protection_ = false;
+
+  // Observes changes to application Advanced Protection status.
+  base::ScopedObservation<
+      safe_browsing::ApplicationAdvancedProtectionStatusDetector,
+      safe_browsing::ApplicationAdvancedProtectionStatusDetector::
+          StatusObserver>
+      advanced_protection_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_H_

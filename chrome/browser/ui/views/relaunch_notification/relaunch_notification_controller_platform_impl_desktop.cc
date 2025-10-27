@@ -71,6 +71,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
     base::Time deadline,
+    bool is_notification_style_ap_required,
     base::OnceCallback<base::Time()> on_visible) {
   // Nothing to do if the dialog is visible.
   if (widget_) {
@@ -81,7 +82,8 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   if (browser && browser->is_type_normal()) {
     DCHECK(!on_visible_);
-    ShowRequiredNotification(browser, deadline);
+    ShowRequiredNotification(browser, deadline,
+                             is_notification_style_ap_required);
     return;
   }
 
@@ -91,6 +93,7 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
     BrowserList::AddObserver(this);
   }
 
+  is_notification_style_ap_required_ = is_notification_style_ap_required;
   // Hold on to the callback until an active tabbed browser is found.
   on_visible_ = std::move(on_visible);
 
@@ -156,15 +159,18 @@ void RelaunchNotificationControllerPlatformImpl::OnBrowserSetLastActive(
 
   on_visible_.Reset();
   last_relaunch_deadline_ = base::Time();
-
-  ShowRequiredNotification(browser, new_deadline);
+  bool ap_style = is_notification_style_ap_required_;
+  is_notification_style_ap_required_ = false;
+  ShowRequiredNotification(browser, new_deadline, ap_style);
 }
 
 void RelaunchNotificationControllerPlatformImpl::ShowRequiredNotification(
     Browser* browser,
-    base::Time deadline) {
+    base::Time deadline,
+    bool is_notification_style_ap_required) {
   widget_ = RelaunchRequiredDialogView::Show(
-      browser, deadline, base::BindRepeating(&chrome::AttemptRelaunch));
+      browser, deadline, is_notification_style_ap_required,
+      base::BindRepeating(&chrome::AttemptRelaunch));
   has_shown_ = true;
 
   // Monitor the widget so that |widget_| can be cleared on close/destruction.

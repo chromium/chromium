@@ -2237,6 +2237,12 @@ Google Chrome is unable to recover your settings.
               =1 {Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}
               other {Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}
           </message>
+          <message name="IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY" desc="The body text of a dialog that tells Advanced Protection users the browser must be relaunched with Incognito counter">
+          {COUNT, plural,
+              =0 {Advanced Protection requires that you relaunch Chrome to apply an update}
+              =1 {Advanced Protection requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}
+              other {Advanced Protection requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}
+          </message>
         </if>
       </if>
 

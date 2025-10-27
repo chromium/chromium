@@ -47,16 +47,29 @@ IN_PROC_BROWSER_TEST_F(
   third_destroyed_waiter.Wait();
 
   // Switch to a relaunch required notification.
-  impl.NotifyRelaunchRequired(deadline, base::OnceCallback<base::Time()>());
+  impl.NotifyRelaunchRequired(deadline,
+                              /*is_notification_style_ap_required=*/false,
+                              base::OnceCallback<base::Time()>());
   views::test::WidgetDestroyedWaiter fourth_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();
   fourth_destroyed_waiter.Wait();
-  impl.NotifyRelaunchRequired(deadline, base::OnceCallback<base::Time()>());
+  impl.NotifyRelaunchRequired(deadline,
+                              /*is_notification_style_ap_required=*/false,
+                              base::OnceCallback<base::Time()>());
   views::test::WidgetDestroyedWaiter fifth_destroyed_waiter(
       impl.GetWidgetForTesting());
   impl.CloseRelaunchNotification();
-  // Wait for the notification to be closed before exiting the test and
-  // destroying  RelaunchNotificationControllerPlatformImpl.
   fifth_destroyed_waiter.Wait();
+
+  // Switch to a relaunch required notification with Advanced Protection style.
+  impl.NotifyRelaunchRequired(deadline,
+                              /*is_notification_style_ap_required=*/true,
+                              base::OnceCallback<base::Time()>());
+  views::test::WidgetDestroyedWaiter sixth_destroyed_waiter(
+      impl.GetWidgetForTesting());
+  impl.CloseRelaunchNotification();
+  // Wait for the notification to be closed before exiting the test and
+  // destroying RelaunchNotificationControllerPlatformImpl.
+  sixth_destroyed_waiter.Wait();
 }

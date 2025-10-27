@@ -58,19 +58,14 @@ class ApplicationAdvancedProtectionStatusDetector
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  void SetIsUnderAdvancedProtectionForTesting(bool enabled);
+
  private:
   class ProfileAdvancedProtectionObserver;
 
   void AddProfile(Profile* profile);
   void OnAdvancedProtectionStatusChangedForSingleProfile(bool status);
   void NotifyObservers();
-
-  // The number of profiles under advanced protection.
-  int advanced_protection_profile_count_ = 0;
-
-  // Maps each Profile to its corresponding ProfileAdvancedProtectionObserver.
-  std::map<Profile*, std::unique_ptr<ProfileAdvancedProtectionObserver>>
-      profile_ap_observers_;
 
   // Observes the ProfileManager for profile additions and removals.
   raw_ptr<ProfileManager> profile_manager_;
@@ -79,10 +74,16 @@ class ApplicationAdvancedProtectionStatusDetector
   // Observes all Profiles for their destruction.
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};
+  // Maps each Profile to its corresponding ProfileAdvancedProtectionObserver.
+  std::map<Profile*, std::unique_ptr<ProfileAdvancedProtectionObserver>>
+      profile_ap_observers_;
+
+  // The number of profiles under advanced protection.
+  int advanced_protection_profile_count_ = 0;
 
   // List of observers to be notified when the overall advanced protection
   // status changes.
-  base::ObserverList<StatusObserver> observers_;
+  base::ObserverList<StatusObserver, /*check_empty=*/true> observers_;
 };
 
 }  // namespace safe_browsing
