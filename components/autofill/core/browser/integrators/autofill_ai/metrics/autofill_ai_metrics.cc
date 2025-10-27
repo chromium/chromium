@@ -34,7 +34,8 @@ void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event) {
 void LogStoredEntitiesCount(base::span<const EntityInstance> entities) {
   static constexpr std::string_view kHistogramPrefix =
       "Autofill.Ai.StoredEntitiesCount";
-  std::map<EntityType, std::vector<const EntityInstance*>> entities_by_type;
+  base::flat_map<EntityType, std::vector<const EntityInstance*>>
+      entities_by_type;
   for (const EntityInstance& entity : entities) {
     entities_by_type[entity.type()].push_back(&entity);
   }
