@@ -836,12 +836,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 // HttpNoVarySearchData::AreEquivalent().
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent);
 
-// Whether to check the result against the old implementation and
-// DumpWithoutCrashing() if they differ.
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kHttpNoVarySearchDataAreEquivalentCheckResult);
-
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);

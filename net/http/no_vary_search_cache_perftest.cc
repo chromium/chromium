@@ -132,7 +132,7 @@ std::optional<NoVarySearchCache>& Cache() {
 struct FeatureState {
   base::test::ScopedFeatureList scoped_feature_list;
   ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting
-      equivalent_override{true, false};
+      equivalent_override{true};
 };
 
 std::optional<FeatureState>& GetFeatureState() {

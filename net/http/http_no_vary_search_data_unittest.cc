@@ -868,12 +868,10 @@ constexpr std::pair<std::string_view, std::string_view>
 enum class AreEquivalentImplementation {
   kOld,
   kNew,
-  kNewWithCheck,
 };
 
 // Configures the ImplementationOverrideForTesting object to simulate
-// enabling/disabling feature "HttpNoVarySearchDataUseNewAreEquivalent" and
-// parameter "check_result" according to `implementation`.
+// enabling/disabling feature "HttpNoVarySearchDataUseNewAreEquivalent".
 std::unique_ptr<
     ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
 ConfigureAreEquivalentImplementation(
@@ -882,17 +880,12 @@ ConfigureAreEquivalentImplementation(
     case AreEquivalentImplementation::kOld:
       return std::make_unique<
           ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
-          false, false);
+          false);
 
     case AreEquivalentImplementation::kNew:
       return std::make_unique<
           ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
-          true, false);
-
-    case AreEquivalentImplementation::kNewWithCheck:
-      return std::make_unique<
-          ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
-          true, true);
+          true);
   }
 }
 
@@ -914,8 +907,7 @@ class HttpNoVarySearchAreEquivalentTest
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchAreEquivalentTest,
                          HttpNoVarySearchAreEquivalentTest,
                          Values(AreEquivalentImplementation::kOld,
-                                AreEquivalentImplementation::kNew,
-                                AreEquivalentImplementation::kNewWithCheck));
+                                AreEquivalentImplementation::kNew));
 
 TEST_P(HttpNoVarySearchAreEquivalentTest,
        CheckUrlEqualityWithPercentEncodedNonASCIICharactersExcept) {
@@ -1221,13 +1213,11 @@ const NoVarySearchCompareTestData no_vary_search_compare_tests[] = {
      false},
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    HttpNoVarySearchAreEquivalentParameterizedTest,
-    HttpNoVarySearchAreEquivalentParameterizedTest,
-    Combine(ValuesIn(no_vary_search_compare_tests),
-            Values(AreEquivalentImplementation::kOld,
-                   AreEquivalentImplementation::kNew,
-                   AreEquivalentImplementation::kNewWithCheck)));
+INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchAreEquivalentParameterizedTest,
+                         HttpNoVarySearchAreEquivalentParameterizedTest,
+                         Combine(ValuesIn(no_vary_search_compare_tests),
+                                 Values(AreEquivalentImplementation::kOld,
+                                        AreEquivalentImplementation::kNew)));
 
 // AreEquivalent() needs to operate on a URL that has a scheme that has a query
 // and fragment. Rather than forcing the fuzzer to work that it needs to start

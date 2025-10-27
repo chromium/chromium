@@ -155,9 +155,8 @@ struct NET_EXPORT_PRIVATE PickleTraits<HttpNoVarySearchData> {
 class
     NET_EXPORT_PRIVATE ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting {
  public:
-  ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting(
-      bool use_new_implementation,
-      bool check_result);
+  explicit ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting(
+      bool use_new_implementation);
   ~ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting();
 };
 

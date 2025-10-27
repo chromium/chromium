@@ -82,11 +82,6 @@ std::optional<bool>& GetHttpNoVarySearchDataUseNewAreEquivalentOverride() {
   return override_value;
 }
 
-std::optional<bool>& GetHttpNoVarySearchDataAreEquivalentCheckResultOverride() {
-  static constinit std::optional<bool> override_value;
-  return override_value;
-}
-
 bool IsHttpNoVarySearchDataUseNewAreEquivalentEnabled() {
   if (GetHttpNoVarySearchDataUseNewAreEquivalentOverride().has_value()) {
     return *GetHttpNoVarySearchDataUseNewAreEquivalentOverride();
@@ -98,31 +93,17 @@ bool IsHttpNoVarySearchDataUseNewAreEquivalentEnabled() {
   return kEnabled;
 }
 
-bool IsHttpNoVarySearchDataAreEquivalentCheckResultEnabled() {
-  if (GetHttpNoVarySearchDataAreEquivalentCheckResultOverride().has_value()) {
-    return *GetHttpNoVarySearchDataAreEquivalentCheckResultOverride();
-  }
-
-  static const bool kEnabled =
-      features::kHttpNoVarySearchDataAreEquivalentCheckResult.Get();
-
-  return kEnabled;
-}
-
 }  // namespace
 
 ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting::
     ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting(
-        bool use_new_implementation,
-        bool check_result) {
+        bool use_new_implementation) {
   GetHttpNoVarySearchDataUseNewAreEquivalentOverride() = use_new_implementation;
-  GetHttpNoVarySearchDataAreEquivalentCheckResultOverride() = check_result;
 }
 
 ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting::
     ~ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting() {
   GetHttpNoVarySearchDataUseNewAreEquivalentOverride() = std::nullopt;
-  GetHttpNoVarySearchDataAreEquivalentCheckResultOverride() = std::nullopt;
 }
 
 HttpNoVarySearchData::HttpNoVarySearchData() = default;
@@ -139,29 +120,7 @@ bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
   CHECK(a.is_valid());
   CHECK(b.is_valid());
   if (IsHttpNoVarySearchDataUseNewAreEquivalentEnabled()) {
-    const bool result = AreEquivalentNewImpl(a, b);
-    if (IsHttpNoVarySearchDataAreEquivalentCheckResultEnabled()) {
-      const bool old_result = AreEquivalentOldImpl(a, b);
-      if (old_result != result) {
-        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "old_result", old_result);
-        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "new_result", result);
-        // The full URLs are necessary to debug issues if they occur. This
-        // debugging code will be removed as quickly as possible once the old
-        // and new implementations are proved to have identical behavior.
-        SCOPED_CRASH_KEY_STRING1024("NoVarySearch", "url_a",
-                                    a.possibly_invalid_spec());
-        SCOPED_CRASH_KEY_STRING1024("NoVarySearch", "url_b",
-                                    b.possibly_invalid_spec());
-        SCOPED_CRASH_KEY_STRING256("NoVarySearch", "nv_params",
-                                   base::JoinString(no_vary_params_, ","));
-        SCOPED_CRASH_KEY_STRING256("NoVarySearch", "v_params",
-                                   base::JoinString(vary_params_, ","));
-        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "key_order", vary_on_key_order_);
-        SCOPED_CRASH_KEY_BOOL("NoVarySearch", "by_default", vary_by_default_);
-        base::debug::DumpWithoutCrashing();
-      }
-    }
-    return result;
+    return AreEquivalentNewImpl(a, b);
   }
 
   return AreEquivalentOldImpl(a, b);
