@@ -10,13 +10,20 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -101,18 +108,54 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     content::WebContents* source_contents) {
   CHECK(source_contents);
 
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(source_contents);
   auto* profile =
       Profile::FromBrowserContext(source_contents->GetBrowserContext());
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.opener = source_contents->GetPrimaryMainFrame();
-  params.source_contents = source_contents;
-  params.tabstrip_add_types = AddTabTypes::ADD_INHERIT_OPENER;
 
-  // TODO(crbug.com/453025914): Consider moving the newly created tab next to
-  //    the tab that is responsible for creating it if the AI page is in tab
-  //    mode.
-  Navigate(&params);
+  // If the source contents is the panel, open the AI page in a new foreground
+  // tab.
+  if (!tab_interface) {
+    NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
+    params.opener = source_contents->GetPrimaryMainFrame();
+    params.source_contents = source_contents;
+    params.tabstrip_add_types = AddTabTypes::ADD_INHERIT_OPENER;
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+    // TODO(crbug.com/453025914): Consider moving the newly created tab next to
+    //    the tab that is responsible for creating it if the AI page is in tab
+    //    mode.
+    Navigate(&params);
+    return;
+  }
+
+  BrowserWindowInterface* browser_window_interface =
+      tab_interface->GetBrowserWindowInterface();
+  TabStripModel* tab_strip_model = browser_window_interface->GetTabStripModel();
+
+  // Get the index of the web contents.
+  const int current_index = tab_strip_model->GetIndexOfTab(tab_interface);
+
+  // Open the linked page in a tab directly after this one.
+  std::unique_ptr<content::WebContents> new_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+  new_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(url));
+  tab_strip_model->InsertWebContentsAt(
+      current_index + 1, std::move(new_contents), AddTabTypes::ADD_ACTIVE);
+
+  // Detach the WebContents for and put it in the cache.
+  std::unique_ptr<content::WebContents> detached_contents =
+      tab_strip_model->DetachWebContentsAtForInsertion(current_index);
+
+  // TODO: Add the detached WebContents to the cache.
+
+  // Open the side panel.
+  // TODO: This currently should be passed the bounds of the
+  // contents_container_view from BrowserView, though the view is not accessible
+  // from here. This API could be changed to simply accept the web_contents.
+  browser_window_interface->GetFeatures().side_panel_coordinator()->ShowFrom(
+      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks), gfx::Rect());
 }
 
 bool ContextualTasksUiService::HandleNavigation(
