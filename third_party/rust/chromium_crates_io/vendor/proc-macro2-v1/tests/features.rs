@@ -1,4 +1,4 @@
-#![allow(clippy::ignore_without_reason)]
+#![allow(clippy::assertions_on_constants, clippy::ignore_without_reason)]
 
 #[test]
 #[ignore]

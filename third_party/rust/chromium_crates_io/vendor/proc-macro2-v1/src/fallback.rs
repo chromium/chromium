@@ -222,13 +222,13 @@ impl Display for TokenStream {
             }
             joint = false;
             match tt {
-                TokenTree::Group(tt) => Display::fmt(tt, f),
-                TokenTree::Ident(tt) => Display::fmt(tt, f),
+                TokenTree::Group(tt) => write!(f, "{}", tt),
+                TokenTree::Ident(tt) => write!(f, "{}", tt),
                 TokenTree::Punct(tt) => {
                     joint = tt.spacing() == Spacing::Joint;
-                    Display::fmt(tt, f)
+                    write!(f, "{}", tt)
                 }
-                TokenTree::Literal(tt) => Display::fmt(tt, f),
+                TokenTree::Literal(tt) => write!(f, "{}", tt),
             }?;
         }
 
@@ -889,7 +889,7 @@ impl Display for Ident {
         if self.raw {
             f.write_str("r#")?;
         }
-        Display::fmt(&self.sym, f)
+        f.write_str(&self.sym)
     }
 }
 

@@ -21,12 +21,14 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/location.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/num.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/parse.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/probe.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/probe/proc_macro_span.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/probe/proc_macro_span_file.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/probe/proc_macro_span_location.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/rcvec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/rustc_literal_escaper.rs",
     "//third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/src/wrapper.rs",
   ]
   inputs = []
@@ -38,7 +40,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "proc-macro2"
   cargo_pkg_description = "A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case."
   cargo_pkg_repository = "https://github.com/dtolnay/proc-macro2"
-  cargo_pkg_version = "1.0.101"
+  cargo_pkg_version = "1.0.103"
 
   allow_unsafe = true
 

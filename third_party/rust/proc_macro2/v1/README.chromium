@@ -1,7 +1,7 @@
 Name: proc-macro2
 URL: https://crates.io/crates/proc-macro2
-Version: 1.0.101
-Revision: d3188ea889e55be0433326695b2773c717b39bb9
+Version: 1.0.103
+Revision: d1bf13ac1d90c3b65c1b7fc131a26f37a8e2d0db
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/LICENSE-APACHE

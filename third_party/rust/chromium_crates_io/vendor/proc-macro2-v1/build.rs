@@ -1,5 +1,6 @@
 #![allow(unknown_lints)]
 #![allow(unexpected_cfgs)]
+#![allow(clippy::uninlined_format_args)]
 
 use std::env;
 use std::ffi::OsString;
@@ -200,7 +201,6 @@ fn do_compile_probe(feature: &str, rustc_bootstrap: bool) -> bool {
         .arg("--crate-type=lib")
         .arg("--cap-lints=allow")
         .arg("--emit=dep-info,metadata")
-        .arg("--cap-lints=allow")
         .arg("--out-dir")
         .arg(&out_subdir)
         .arg(probefile);
