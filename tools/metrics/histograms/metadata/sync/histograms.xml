@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AssociateWindowsType">
+  <variant name="SessionRestore"
+      summary="Recorded during session restore. This should only happen on
+               start up."/>
+  <variant name="TabModification"
+      summary="Recorded on tab modification, such as a when a new WebContents
+               is shown."/>
+</variants>
+
 <!-- LINT.IfChange(DataTypeHistogramSuffix) -->
 
 <variants name="SyncDataType">
@@ -224,15 +233,7 @@ chromium-metrics-reviews@google.com.
     multiple situations, which this histogram is emitted separately for. Ideally
     as little time is spent as possible doing this.
   </summary>
-  <token key="Type">
-    <variant name="SessionRestore"
-        summary="Triggered during session restore. This should only happen on
-                 start up. Slower times here may be acceptable."/>
-    <variant name="TabModification"
-        summary="Triggered on tab modification, such as a when a new
-                 WebContents is shown. This should almost always be very
-                 fast."/>
-  </token>
+  <token key="Type" variants="AssociateWindowsType"/>
 </histogram>
 
 <histogram name="Sync.BackedOffDataType" enum="SyncDataTypes"
@@ -1649,15 +1650,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.PlaceholderTabResyncResult"
-    enum="SyncPlaceholderTabResyncResult" expires_after="2026-04-08">
-  <owner>bjfong@google.com</owner>
+<histogram name="Sync.PlaceholderResync.On{Type}"
+    enum="SyncPlaceholderTabResyncResult" expires_after="2026-10-01">
+  <owner>skym@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <summary>
     Records the result of whether the placeholder tab had its local session
-    found, had its data resynced successfully, or remained unsynced. Recorded
-    once for each placeholder tab during session restore.
+    found, had its data resynced successfully, or remained unsynced.
   </summary>
+  <token key="Type" variants="AssociateWindowsType"/>
 </histogram>
 
 <histogram name="Sync.PostedClientToServerMessage"

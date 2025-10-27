@@ -96,12 +96,24 @@ sync_pb::SyncEnums_BrowserType BrowserTypeFromWindowDelegate(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void RecordPlaceholderTabResyncResult(
-    PlaceholderTabResyncResultHistogramValue result_value) {
-  base::UmaHistogramEnumeration("Sync.PlaceholderTabResyncResult",
-                                result_value);
+void RecordPlaceholderResync(
+    PlaceholderTabResyncResultHistogramValue result_value,
+    bool is_session_restore) {
+  const char* name = is_session_restore
+                         ? "Sync.PlaceholderResync.OnSessionRestore"
+                         : "Sync.PlaceholderResync.OnTabModification";
+  base::UmaHistogramEnumeration(name, result_value);
 }
+
 #endif  // BUILDFLAG(IS_ANDROID)
+
+void RecordAssociateWindowsTime(const base::ElapsedTimer& timer,
+                                bool is_session_restore) {
+  const char* name = is_session_restore
+                         ? "Sync.AssociateWindowsTime.OnSessionRestore"
+                         : "Sync.AssociateWindowsTime.OnTabModification";
+  UmaHistogramMediumTimes(name, timer.Elapsed());
+}
 
 }  // namespace
 
@@ -298,13 +310,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
                                   *invalid_reason);
   }
 
-  if (is_session_restore) {
-    UmaHistogramMediumTimes("Sync.AssociateWindowsTime.OnSessionRestore",
-                            timer.Elapsed());
-  } else {
-    UmaHistogramMediumTimes("Sync.AssociateWindowsTime.OnTabModification",
-                            timer.Elapsed());
-  }
+  RecordAssociateWindowsTime(timer, is_session_restore);
 }
 
 void LocalSessionEventHandlerImpl::AssociateTab(
@@ -475,31 +481,29 @@ void LocalSessionEventHandlerImpl::HandlePlaceholderTabForAssociate(
     SyncedTabDelegate* synced_tab,
     const sessions::SessionTab** tab,
     WriteBatch* batch) {
-  // Metrics recording will only occur if AssociateWindows is called through a
-  // session restore, denoted by is_session_restore.
-  if (*tab && is_session_restore) {
-    RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_FOUND);
-  } else if (!*tab) {
-    // The placeholder tab doesn't have a tracked counterpart. This is
-    // possible, for example, if the tab was created as a placeholder tab.
-    SessionID tab_id = synced_tab->GetSessionId();
-    bool was_tab_resynced = AssociatePlaceholderTab(
-        synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(sessions_client_),
-        batch);
-
-    if (was_tab_resynced) {
-      // If the tab was presumed to have resynced successfully, perform another
-      // lookup.
-      *tab = session_tracker_->LookupSessionTab(current_session_tag_, tab_id);
-
-      if (is_session_restore) {
-        RecordPlaceholderTabResyncResult(
-            *tab ? PLACEHOLDER_TAB_RESYNCED : PLACEHOLDER_TAB_RESYNC_FAILED);
-      }
-    } else if (is_session_restore) {
-      RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_RESYNC_FAILED);
-    }
+  if (*tab) {
+    RecordPlaceholderResync(PLACEHOLDER_TAB_FOUND, is_session_restore);
+    return;
   }
+
+  // The placeholder tab doesn't have a tracked counterpart. This is
+  // possible, for example, if the tab was created as a placeholder tab.
+  SessionID tab_id = synced_tab->GetSessionId();
+  bool was_tab_resynced = AssociatePlaceholderTab(
+      synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(sessions_client_),
+      batch);
+
+  if (!was_tab_resynced) {
+    RecordPlaceholderResync(PLACEHOLDER_TAB_RESYNC_FAILED, is_session_restore);
+    return;
+  }
+
+  // If the tab was presumed to have resynced successfully, perform another
+  // lookup.
+  *tab = session_tracker_->LookupSessionTab(current_session_tag_, tab_id);
+  RecordPlaceholderResync(
+      *tab ? PLACEHOLDER_TAB_RESYNCED : PLACEHOLDER_TAB_RESYNC_FAILED,
+      is_session_restore);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
