@@ -8,6 +8,7 @@
 #import "base/logging.h"
 #import "base/time/time.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #import "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #import "components/policy/core/common/policy_logger.h"
@@ -84,6 +85,14 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     ShutdownCloudPolicyManager();
   } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
     TryInitialize();
+  }
+}
+
+void UserPolicySigninService::OnPolicyFetched(CloudPolicyClient* client) {
+  std::optional<std::string> profile_id = client->profile_id();
+  if (profile_id.has_value() && !profile_id.value().empty()) {
+    pref_service_->SetBoolean(
+        enterprise_reporting::kPoliciesEverFetchedWithProfileId, true);
   }
 }
 

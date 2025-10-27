@@ -904,6 +904,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       enterprise_reporting::kLastUploadSucceededTimestamp, base::Time());
   registry->RegisterTimeDeltaPref(
       enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
+  registry->RegisterBooleanPref(
+      enterprise_reporting::kPoliciesEverFetchedWithProfileId, false);
 
   // Preferences related to parcel tracking.
   // Deprecated 03/2025.

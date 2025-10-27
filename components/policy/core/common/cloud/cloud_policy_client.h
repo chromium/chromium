@@ -599,6 +599,10 @@ class POLICY_EXPORT CloudPolicyClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return user_affiliation_ids_;
   }
+  std::optional<std::string>& profile_id() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return profile_id_;
+  }
 
   void set_last_policy_timestamp(const base::Time& timestamp) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

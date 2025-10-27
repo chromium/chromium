@@ -89,6 +89,7 @@ class ReportScheduler {
     std::unique_ptr<RealTimeReportController> real_time_report_controller;
     std::unique_ptr<ChromeProfileRequestGenerator> profile_request_generator;
     std::unique_ptr<ReportScheduler::Delegate> delegate;
+    bool require_policy_fetch_with_profile_id = false;
   };
 
   explicit ReportScheduler(CreateParams params);
@@ -120,7 +121,7 @@ class ReportScheduler {
 
  private:
   // Observes CloudReportingEnabled policy.
-  void RegisterPrefObserver();
+  void RegisterPrefObservers();
 
   // Handles policy value changes for both kCloudReportingEnabled and
   // kUserSecuritySignalsReporting, including the first policy value check
@@ -190,6 +191,11 @@ class ReportScheduler {
   uint32_t pending_triggers_ = 0;
 
   std::string reporting_pref_name_;
+
+  // If true, only schedule reports if the kPoliciesEverFetchedWithProfileId
+  // pref is true.
+  bool require_policy_fetch_with_profile_id_;
+
   ReportType full_report_type_;
 
   std::vector<std::unique_ptr<ReportUploader>> report_uploaders_for_test_;

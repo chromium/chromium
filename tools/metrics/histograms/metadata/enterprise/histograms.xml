@@ -2885,6 +2885,16 @@ chromium-metrics-reviews@google.com.
   <token key="PolicyLevel" variants="PolicyLevel"/>
 </histogram>
 
+<histogram name="Enterprise.PoliciesEverFetchedWithProfileId" enum="Boolean"
+    expires_after="2026-05-01">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Record whether profile has successfully fetched policy with profile id once
+    before uploading reporting. Recorded during profile creation. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PolicyInvalidations"
     enum="EnterprisePolicyInvalidations" expires_after="2026-04-12">
   <owner>asumaneev@google.com</owner>

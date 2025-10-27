@@ -41,6 +41,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
+  // CloudPolicyClient::Observer implementation:
+  void OnPolicyFetched(CloudPolicyClient* client) override;
+
   // KeyedService implementation:
   void Shutdown() override;
 

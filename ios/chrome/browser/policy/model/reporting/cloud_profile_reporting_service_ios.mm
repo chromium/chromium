@@ -10,6 +10,7 @@
 #import "base/feature_list.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/report_scheduler.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
@@ -49,6 +50,10 @@ void CloudProfileReportingServiceIOS::CreateReportScheduler() {
   ReportScheduler::CreateParams params;
   params.client = cloud_policy_client_.get();
   params.delegate = delegate_factory.GetReportSchedulerDelegate(profile_);
+
+  // Only start scheduling reports if kPoliciesEverFetchedWithProfileId is true
+  // or when it flips to true.
+  params.require_policy_fetch_with_profile_id = true;
 
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
