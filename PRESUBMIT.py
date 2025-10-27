@@ -2523,7 +2523,7 @@ def CheckNoProductionCodeUsingTestOnlyFunctions(input_api, output_api):
     comment_pattern = input_api.re.compile(r'//.*(%s)' % base_function_pattern)
     allowlist_pattern = input_api.re.compile(r'// IN-TEST$')
     exclusion_pattern = input_api.re.compile(
-        r'::[A-Za-z0-9_]+(%s)|(%s)[^;]+\{' %
+        r'(::[A-Za-z0-9_]+(%s)|(%s))[^;]+\{' %
         (base_function_pattern, base_function_pattern))
     # Avoid a false positive in this case, where the method name, the ::, and
     # the closing { are all on different lines due to line wrapping.

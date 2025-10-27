@@ -3248,12 +3248,15 @@ class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
             MockFile('some/path/foo.mm', ['FooForTesting();']),
             MockFile('some/path/foo.cxx', ['FooForTests();']),
             MockFile('some/path/foo.cpp', ['foo_for_test();']),
+            MockFile('some/path/foo.cc', ['::FooForTesting();']),
+            MockFile('some/path/foo.cc', ['FooForTesting());']),
+            MockFile('some/path/foo.cc', ['::FooForTesting());']),
         ]
 
         results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctions(
             mock_input_api, MockOutputApi())
         self.assertEqual(1, len(results))
-        self.assertEqual(4, len(results[0].items))
+        self.assertEqual(7, len(results[0].items))
         self.assertTrue('foo.cc' in results[0].items[0])
         self.assertTrue('foo.mm' in results[0].items[1])
         self.assertTrue('foo.cxx' in results[0].items[2])
@@ -3264,7 +3267,7 @@ class NoProductionCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
         mock_input_api.files = [
             MockFile('some/path/foo.h', ['foo_for_testing();']),
             MockFile('some/path/foo.mm', ['FooForTesting() {']),
-            MockFile('some/path/foo.cc', ['::FooForTests();']),
+            MockFile('some/path/foo.cc', ['::FooForTesting() {']),
             MockFile('some/path/foo.cpp', ['// foo_for_test();']),
             MockFile('some/path/foo.cxx', ['foo_for_test(); // IN-TEST']),
         ]
