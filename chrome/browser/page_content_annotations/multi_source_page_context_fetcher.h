@@ -166,9 +166,6 @@ extern const base::FeatureParam<std::string> kScreenshotImageType;
 
 extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
 
-// Enables page context eligibility checks.
-BASE_DECLARE_FEATURE(kGlicPageContextEligibility);
-
 // Callback used for relaying progress.
 class FetchPageProgressListener {
  public:

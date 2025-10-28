@@ -641,8 +641,6 @@ const base::FeatureParam<std::string> kScreenshotImageType{
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};
 
-BASE_FEATURE(kGlicPageContextEligibility, base::FEATURE_DISABLED_BY_DEFAULT);
-
 FetchPageContextOptions::FetchPageContextOptions() = default;
 
 FetchPageContextOptions::~FetchPageContextOptions() = default;
