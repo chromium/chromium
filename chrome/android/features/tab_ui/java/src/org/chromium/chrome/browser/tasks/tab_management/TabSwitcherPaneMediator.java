@@ -156,6 +156,7 @@ public class TabSwitcherPaneMediator
     private final Callback<Integer> mOnTabClickCallback;
     private final TabIndexLookup mTabIndexLookup;
     private final BottomSheetController mBottomSheetController;
+    private final Runnable mAddOnLayoutChangedAfterInitialScrollListener;
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
             mCurrentTabListEditorControllerBackSupplier;
@@ -189,7 +190,8 @@ public class TabSwitcherPaneMediator
             ObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             TabIndexLookup tabIndexLookup,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            Runnable addOnLayoutChangedAfterInitialScrollListener) {
         mResetHandler = resetHandler;
         mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
@@ -222,6 +224,8 @@ public class TabSwitcherPaneMediator
         isAnimatingSupplier.addObserver(mOnAnimatingChanged);
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(mBottomSheetObserver);
+        mAddOnLayoutChangedAfterInitialScrollListener =
+                addOnLayoutChangedAfterInitialScrollListener;
 
         notifyBackPressStateChangedInternal();
     }
@@ -328,6 +332,7 @@ public class TabSwitcherPaneMediator
 
     @Override
     public void scrollToTab(int tabIndexInModel) {
+        mAddOnLayoutChangedAfterInitialScrollListener.run();
         mContainerViewModel.set(INITIAL_SCROLL_INDEX, tabIndexInModel);
     }
 
