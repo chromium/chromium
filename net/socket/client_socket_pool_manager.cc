@@ -150,7 +150,7 @@ int ClientSocketPoolManager::max_sockets_per_pool(
 }
 
 // static
-void ClientSocketPoolManager::set_max_sockets_per_pool(
+void ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
     HttpNetworkSession::SocketPoolType pool_type,
     int socket_count) {
   DCHECK_LT(0, socket_count);     // At least one socket must be allowed.
@@ -169,7 +169,7 @@ int ClientSocketPoolManager::max_sockets_per_group(
 }
 
 // static
-void ClientSocketPoolManager::set_max_sockets_per_group(
+void ClientSocketPoolManager::set_max_sockets_per_group_for_test(
     HttpNetworkSession::SocketPoolType pool_type,
     int socket_count) {
   DCHECK_LT(0, socket_count);    // At least one socket must be allowed.

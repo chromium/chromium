@@ -8279,12 +8279,12 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
   int original_max_sockets_per_group =
       ClientSocketPoolManager::max_sockets_per_group(
           HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL);
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL, 1);
   int original_max_sockets_per_pool =
       ClientSocketPoolManager::max_sockets_per_pool(
           HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL, 1);
   CreateSession();
 
@@ -8309,10 +8309,10 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyMultipleRequestsError) {
 
   EXPECT_EQ(ERR_FAILED, callback2.WaitForResult());
 
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
       original_max_sockets_per_pool);
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
       original_max_sockets_per_group);
 }

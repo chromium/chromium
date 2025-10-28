@@ -438,9 +438,9 @@ class HttpNetworkTransactionTestBase : public PlatformTest,
   ~HttpNetworkTransactionTestBase() override {
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
-    ClientSocketPoolManager::set_max_sockets_per_pool(
+    ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_pool_sockets_);
-    ClientSocketPoolManager::set_max_sockets_per_group(
+    ClientSocketPoolManager::set_max_sockets_per_group_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
   }
 
@@ -22723,9 +22723,9 @@ TEST_P(HttpNetworkTransactionTest, ErrorSocketNotConnected) {
 }
 
 TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   // Use two different hosts with different IPs so they don't get pooled.
@@ -23091,9 +23091,9 @@ TEST_P(HttpNetworkTransactionTest, HttpAsyncReadError) {
 // Tests that when a used socket is returned to the SSL socket pool, it's closed
 // if the transport socket pool is stalled on the global socket limit.
 TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   // Set up SSL request.
@@ -23189,9 +23189,9 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
 // request that needs it, the new socket is closed if the transport socket pool
 // is stalled on the global socket limit.
 TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   // Set up an ssl request.

@@ -198,9 +198,9 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   ~SpdySessionTest() override {
     // Important to restore the per-pool limit first, since the pool limit must
     // always be greater than group limit, and the tests reduce both limits.
-    ClientSocketPoolManager::set_max_sockets_per_pool(
+    ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_pool_sockets_);
-    ClientSocketPoolManager::set_max_sockets_per_group(
+    ClientSocketPoolManager::set_max_sockets_per_group_for_test(
         HttpNetworkSession::NORMAL_SOCKET_POOL, old_max_group_sockets_);
   }
 
@@ -3306,9 +3306,9 @@ TEST_F(SpdySessionTest, ProtocolNegotiation) {
 // Tests the case of a non-SPDY request closing an idle SPDY session when no
 // pointers to the idle session are currently held.
 TEST_F(SpdySessionTest, CloseOneIdleConnection) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -3359,9 +3359,9 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
 // pointers to the idle session are currently held, in the case the SPDY session
 // has an alias.
 TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {
@@ -3473,9 +3473,9 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
 // Tests that when a SPDY session becomes idle, it closes itself if there is
 // a lower layer pool stalled on the per-pool socket limit.
 TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
-  ClientSocketPoolManager::set_max_sockets_per_group(
+  ClientSocketPoolManager::set_max_sockets_per_group_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
-  ClientSocketPoolManager::set_max_sockets_per_pool(
+  ClientSocketPoolManager::set_max_sockets_per_pool_for_test(
       HttpNetworkSession::NORMAL_SOCKET_POOL, 1);
 
   MockRead reads[] = {

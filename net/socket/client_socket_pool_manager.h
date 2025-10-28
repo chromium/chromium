@@ -40,18 +40,20 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
   // methods are called. Normally they should be called at program startup
   // before any ClientSocketPoolManagerImpl is created.
   static int max_sockets_per_pool(HttpNetworkSession::SocketPoolType pool_type);
-  static void set_max_sockets_per_pool(
+  static void set_max_sockets_per_pool_for_test(
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
 
   static int max_sockets_per_group(
       HttpNetworkSession::SocketPoolType pool_type);
-  static void set_max_sockets_per_group(
+  static void set_max_sockets_per_group_for_test(
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
 
   static int max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type);
+  // Unlike the other `set_` methods, this one is used in production code and
+  // thus cannot be marked as `_for_test`. Usage should be carefully audited.
   static void set_max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
