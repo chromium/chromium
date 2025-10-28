@@ -16,9 +16,13 @@ component("local_auth_factors") {
     "local_auth_factors_complexity_checker.cc",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/prefs",
+  ]
 
   deps = [
+    "//ash/constants",
   ]
 }
 

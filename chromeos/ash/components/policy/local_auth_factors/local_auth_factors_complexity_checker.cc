@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace policy {
@@ -62,6 +64,13 @@ bool LocalAuthFactorsComplexityChecker::CheckPinComplexity(
     case LocalAuthFactorsComplexity::kHigh:
       return pin.length() >= 8 && !ContainsOrderedOrRepeatingSequence(pin);
   }
+}
+
+// static
+void LocalAuthFactorsComplexityChecker::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  // TODO(b/445625494): Introduce an enum to map the policy value to.
+  registry->RegisterIntegerPref(ash::prefs::kLocalAuthFactorsComplexity, 1);
 }
 
 }  // namespace policy

@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 
+class PrefRegistrySimple;
+
 namespace policy {
 
 // Maps the values of the same-named policy located in
@@ -36,6 +38,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   // true if the pin passes the complexity check and false otherwise.
   static bool CheckPinComplexity(std::string_view pin,
                                  LocalAuthFactorsComplexity complexity);
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 };
 
 }  // namespace policy
