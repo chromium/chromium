@@ -201,6 +201,10 @@ void ExtensionActionPlatformDelegateViews::ShowContextMenuAsFallback() {
   extensions_container_->ShowContextMenuAsFallback(controller_->GetId());
 }
 
+bool ExtensionActionPlatformDelegateViews::CloseOverflowMenuIfOpen() {
+  return extensions_container_->CloseOverflowMenuIfOpen();
+}
+
 bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   DCHECK(controller_->CanHandleAccelerators());

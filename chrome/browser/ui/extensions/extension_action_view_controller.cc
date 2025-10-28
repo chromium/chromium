@@ -408,7 +408,7 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
 
   RecordInvocationSource(source);
 
-  extensions_container_->CloseOverflowMenuIfOpen();
+  platform_delegate_->CloseOverflowMenuIfOpen();
 
   // This method is only called to execute an action by the user, so we can
   // always grant tab permissions.

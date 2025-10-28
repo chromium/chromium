@@ -56,6 +56,10 @@ class ExtensionActionPlatformDelegate {
   // Shows the context menu for the action as a fallback for performing another
   // action.
   virtual void ShowContextMenuAsFallback() = 0;
+
+  // Closes the overflow menu, if it was open. Returns whether or not the
+  // overflow menu was closed.
+  virtual bool CloseOverflowMenuIfOpen() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_
