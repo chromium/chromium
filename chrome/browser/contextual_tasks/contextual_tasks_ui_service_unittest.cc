@@ -242,7 +242,7 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
                                           false);
 
   GURL expected_initial_url(
-      "https://www.google.com/search?udm=50&aep=11&igu=1&q=test+query");
+      "https://www.google.com/search?udm=50&aep=11&igu=1&gsc=2&q=test+query");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
 }

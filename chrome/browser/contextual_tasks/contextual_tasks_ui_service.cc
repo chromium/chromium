@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -36,12 +37,17 @@ namespace contextual_tasks {
 
 namespace {
 constexpr char kAiPageHost[] = "https://google.com";
-constexpr char kAiDefaultPageUrl[] =
-    "https://www.google.com/search?udm=50&aep=11&igu=1";
 
 bool IsContextualTasksHost(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == kContextualTasksUiHost;
+}
+
+GURL AppendCommonUrlParams(GURL url) {
+  url = net::AppendQueryParameter(url, "aep", "11");
+  url = net::AppendQueryParameter(url, "igu", "1");
+  url = net::AppendQueryParameter(url, "gsc", "2");
+  return url;
 }
 }  // namespace
 
@@ -67,7 +73,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // which URL to load initially in the embedded frame.
   std::string query;
   net::GetValueForKeyInQuery(url, "q", &query);
-  GURL stripped_query_url(kAiDefaultPageUrl);
+  GURL stripped_query_url = GetDefaultAiPageUrl();
   if (!query.empty()) {
     stripped_query_url =
         net::AppendQueryParameter(stripped_query_url, "q", query);
@@ -213,7 +219,7 @@ GURL ContextualTasksUiService::GetInitialUrlForTask(const base::Uuid& uuid) {
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
-  return GURL(kAiDefaultPageUrl);
+  return AppendCommonUrlParams(GURL(GetContextualTasksAiPageUrl()));
 }
 
 void ContextualTasksUiService::OnWebUiInnerFrameNavigation(

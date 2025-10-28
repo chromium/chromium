@@ -18,6 +18,9 @@ extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
 
+// Returns the base URL for the AI page.
+extern std::string GetContextualTasksAiPageUrl();
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksName[];

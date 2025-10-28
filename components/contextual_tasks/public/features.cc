@@ -4,6 +4,8 @@
 
 #include "components/contextual_tasks/public/features.h"
 
+#include "base/metrics/field_trial_params.h"
+
 namespace contextual_tasks {
 
 // Enables the contextual tasks side panel while browsing.
@@ -11,6 +13,11 @@ BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The base URL for the AI page.
+const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
+    &kContextualTasksContext, "ai-page-url",
+    "https://www.google.com/search?udm=50"};
 
 const base::FeatureParam<double> kMinEmbeddingSimilarityScore{
     &kContextualTasksContext, "ContextualTasksContextEmbeddingSimilarityScore",
@@ -20,6 +27,10 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
     "ContextualTasksContextOnlyUseTitles",
     false);
+
+std::string GetContextualTasksAiPageUrl() {
+  return kContextualTasksAiPageUrl.Get();
+}
 
 namespace flag_descriptions {
 
