@@ -27,11 +27,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -72,12 +69,6 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     public void setLearnMoreOnclickListener(OnClickListener listener) {
         mLearnMore.setOnClickListener(listener);
-    }
-
-    private void showIncognitoTrackingProtectionSettings() {
-        SettingsNavigation settingsNavigation =
-                SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(getContext(), IncognitoTrackingProtectionsFragment.class);
     }
 
     @Override
@@ -132,22 +123,6 @@ public class IncognitoDescriptionView extends LinearLayout {
                     new ChromeAsyncTabLauncher(/* incognito= */ true)
                             .launchUrl(TRACKING_PROTECTION_URL, TabLaunchType.FROM_CHROME_UI);
                 };
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)) {
-            TextView title = layout.findViewById(R.id.tracking_protection_card_title);
-            title.setText(
-                    context.getString(
-                            R.string.incognito_ntp_incognito_tracking_protections_header));
-            text =
-                    context.getString(
-                            R.string
-                                    .incognito_ntp_incognito_tracking_protections_description_android);
-            spanOnClickCallback =
-                    (unused) -> {
-                        showIncognitoTrackingProtectionSettings();
-                    };
-        }
         ChromeClickableSpan span =
                 new ChromeClickableSpan(view.getSpanColor(), spanOnClickCallback);
         view.setText(

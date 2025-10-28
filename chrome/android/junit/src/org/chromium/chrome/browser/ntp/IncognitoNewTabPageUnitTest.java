@@ -28,8 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -39,11 +37,6 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Unit test for {@link org.chromium.chrome.browser.ntp.IncognitoNewTabPage} */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    ChromeFeatureList.IP_PROTECTION_UX,
-    ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
-})
 public class IncognitoNewTabPageUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mScenarioRule =
