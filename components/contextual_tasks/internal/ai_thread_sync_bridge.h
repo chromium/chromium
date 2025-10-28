@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "components/contextual_tasks/internal/proto/ai_thread_entity.pb.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
