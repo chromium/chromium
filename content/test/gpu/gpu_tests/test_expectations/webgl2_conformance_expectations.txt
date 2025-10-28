@@ -546,6 +546,9 @@ crbug.com/365680830 [ mac arch-arm64 angle-metal ] deqp/functional/gles3/occlusi
 # Win failures     #
 ####################
 
+# Flaky across the board on Windows; implementation likely isn't sufficiently parallelized and async
+crbug.com/438691606 [ win ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 
