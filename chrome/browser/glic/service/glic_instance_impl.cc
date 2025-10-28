@@ -603,7 +603,17 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
     return;
   }
 
-  auto it = embedders_.find(active_embedder_key_.value());
+  EmbedderKey key = active_embedder_key_.value();
+  // If SidePanel has focus when it's being closed, focus tab's webcontents.
+  if (old_embedder->HasFocus() &&
+      std::holds_alternative<tabs::TabInterface*>(key)) {
+    auto* tab = std::get<tabs::TabInterface*>(key);
+    if (auto* web_contents = (tab ? tab->GetContents() : nullptr)) {
+      web_contents->Focus();
+    }
+  }
+
+  auto it = embedders_.find(key);
   CHECK(it != embedders_.end());
   // Avoid use-after-free.
   host_.SetDelegate(&empty_embedder_delegate_);
