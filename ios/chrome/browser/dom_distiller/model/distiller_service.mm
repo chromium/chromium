@@ -31,4 +31,6 @@ dom_distiller::DistilledPagePrefs* DistillerService::GetDistilledPagePrefs() {
   return distilled_page_prefs_.get();
 }
 
-void DistillerService::Shutdown() {}
+void DistillerService::Shutdown() {
+  distiller_.reset();
+}
