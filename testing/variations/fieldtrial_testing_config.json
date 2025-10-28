@@ -27532,24 +27532,6 @@
             ]
         }
     ],
-    "WebRTC-TimestampExtrapolatorConfig": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled,outlier_rejection_stddev:2,_v20250825_CANARY_DEV"
-                }
-            ]
-        }
-    ],
     "WebRTC-UseAbsCapTimeForG2gMetric": [
         {
             "platforms": [
