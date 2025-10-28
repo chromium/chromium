@@ -197,7 +197,8 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
 
   v8::LocalVector<v8::Value> args(isolate());
   event_emitter->Fire(context, &args, /*filter=*/nullptr,
-                      /*on_dispatched_callback=*/v8::Local<v8::Function>());
+                      /*on_dispatched_callback=*/v8::Local<v8::Function>(),
+                      /*listener_error_callback=*/v8::Local<v8::Function>());
 
   EXPECT_TRUE(closure_data.did_invalidate_context);
 }

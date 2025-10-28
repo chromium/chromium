@@ -52,12 +52,18 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   void Dispose();
 
   // Fires the event to any listeners.
+  // `on_dispatched_callback` allows the caller to specify a `v8::Function` to
+  // be called with the results of the listener event dispatch.
+  // `listener_error_callback` is an optional callback that is invoked
+  // immediately when a listener throws an exception. The exception is passed as
+  // the single argument to the callback.
   // Warning: This can run arbitrary JS code, so the `context` may be
   // invalidated after this!
   void Fire(v8::Local<v8::Context> context,
             v8::LocalVector<v8::Value>* args,
             mojom::EventFilteringInfoPtr filter,
-            v8::Local<v8::Function> on_dispatched_callback);
+            v8::Local<v8::Function> on_dispatched_callback,
+            v8::Local<v8::Function> listener_error_callback);
 
   // Fires the event to any listeners synchronously, and returns the result.
   // This should only be used if the caller is certain that JS is already
@@ -99,18 +105,28 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
 
   // Dispatches an event synchronously to listeners, returning the result.
   // The result is an object containing a 'results' property with any values
-  // returned by listeners. If no listeners return a value or throw, returns
-  // undefined. If the `kRuntimeOnMessageWebExtensionPolyfillSupport` feature is
+  // returned by listeners.
+  // `listener_error_callback` is an optional callback that is invoked
+  // immediately when a listener throws an exception. The exception is passed as
+  // the single argument to the callback.
+  // If no listeners return a value or throw, returns `v8::Undefined`.
+  // If the `kRuntimeOnMessageWebExtensionPolyfillSupport` feature is
   // enabled, it will also include any errors thrown under an 'errors' key.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,
                                     v8::LocalVector<v8::Value>* args,
                                     mojom::EventFilteringInfoPtr filter);
+  v8::Local<v8::Value> DispatchSync(
+      v8::Local<v8::Context> context,
+      v8::LocalVector<v8::Value>* args,
+      mojom::EventFilteringInfoPtr filter,
+      v8::Local<v8::Function> listener_error_callback_function);
 
   // Dispatches an event asynchronously to listeners.
   void DispatchAsync(v8::Local<v8::Context> context,
                      v8::LocalVector<v8::Value>* args,
                      mojom::EventFilteringInfoPtr filter,
-                     v8::Local<v8::Function> on_dispatched_callback);
+                     v8::Local<v8::Function> on_dispatched_callback,
+                     v8::Local<v8::Function> listener_error_callback);
   static void DispatchAsyncHelper(
       const v8::FunctionCallbackInfo<v8::Value>& info);
 

@@ -688,6 +688,7 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
         isolate, {v8_message, v8_sender, message_response_function});
 
     v8::Local<v8::Function> message_dispatched_function;
+    v8::Local<v8::Function> listener_throws_error_function;
     // For runtime.onMessage, we require that the listener indicate if they
     // intend to respond asynchronously. `message_dispatched_callback` will
     // check the results of the listeners to determine if a listener indicated
@@ -695,13 +696,18 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
     if (port.event_name == messaging_util::kOnMessageEvent) {
       auto message_dispatched_callback =
           CreateEventDispatchCallback(target_port_id);
+      if (OnMessagePolyfillSupportEnabled()) {
+        // TODO(crbug.com/439644930): Implement
+        // `listener_throws_error_function`.
+      }
       message_dispatched_function =
           callback_manager_->CreateEventDispatchFunction(
               *script_context, target_port_id,
               std::move(message_dispatched_callback));
     }
     bindings_system_->api_system()->event_handler()->FireEventInContext(
-        port.event_name, context, &args, nullptr, message_dispatched_function);
+        port.event_name, context, &args, nullptr, message_dispatched_function,
+        listener_throws_error_function);
   } else {
     console::AddMessage(script_context,
                         blink::mojom::ConsoleMessageLevel::kError, error);

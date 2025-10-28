@@ -265,7 +265,8 @@ void APIEventHandler::FireEventInContext(const std::string& event_name,
   }
 
   FireEventInContext(event_name, context, &v8_args, std::move(filter),
-                     /*on_dispatched_callback=*/v8::Local<v8::Function>());
+                     /*on_dispatched_callback=*/v8::Local<v8::Function>(),
+                     /*listener_error_callback=*/v8::Local<v8::Function>());
 }
 
 void APIEventHandler::FireEventInContext(
@@ -273,7 +274,8 @@ void APIEventHandler::FireEventInContext(
     v8::Local<v8::Context> context,
     v8::LocalVector<v8::Value>* arguments,
     mojom::EventFilteringInfoPtr filter,
-    v8::Local<v8::Function> on_dispatched_callback) {
+    v8::Local<v8::Function> on_dispatched_callback,
+    v8::Local<v8::Function> listener_error_callback) {
   APIEventPerContextData* data =
       APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
   if (!data) {
@@ -303,11 +305,13 @@ void APIEventHandler::FireEventInContext(
       api_response_validator_->ValidateEvent(context, event_name, *arguments);
     }
 
-    emitter->Fire(context, arguments, std::move(filter),
-                  on_dispatched_callback);
+    emitter->Fire(context, arguments, std::move(filter), on_dispatched_callback,
+                  listener_error_callback);
   } else {
     DCHECK(on_dispatched_callback.IsEmpty())
         << "Can't use an event on dispatched callback with argument massagers.";
+    DCHECK(listener_error_callback.IsEmpty())
+        << "Can't use a listener error callback with argument massagers.";
 
     v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Function> massager = massager_iter->second.Get(isolate);
