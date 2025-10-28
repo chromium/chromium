@@ -15,6 +15,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -943,4 +944,12 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
         navigation_handle.get());
   }
   return navigation_handle;
+}
+
+void Navigate(NavigateParams* params,
+              base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
+                  callback) {
+  base::WeakPtr<content::NavigationHandle> handle = Navigate(params);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), handle));
 }

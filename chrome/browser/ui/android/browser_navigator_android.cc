@@ -95,3 +95,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   return params->source_contents->GetController().LoadURLWithParams(
       load_url_params);
 }
+
+void Navigate(NavigateParams* params,
+              base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
+                  callback) {
+  NOTIMPLEMENTED();
+}

@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
@@ -2851,6 +2852,35 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
     EXPECT_TRUE(display2.work_area().Contains(
         params.browser->GetWindow()->GetBounds()));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateWithCallback) {
+  // Set up navigation parameters.
+  NavigateParams params = MakeNavigateParams();  // Uses GetGoogleURL()
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+
+  // Set up an observer to wait for the navigation to complete.
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Call the new Navigate function overload.
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+
+  // Wait for the NavigationHandle
+  base::WeakPtr<content::NavigationHandle> navigation_handle = future.Get();
+
+  // Verify the handle from the callback matches the completed navigation.
+  ASSERT_TRUE(navigation_handle);
+  EXPECT_EQ(GetGoogleURL(), navigation_handle->GetURL());
+
+  // Wait for "async". Observer checks NavigationHandle properties.
+  navigation_observer.Wait();
+
+  // Verify the navigation completed successfully.
+  EXPECT_EQ(GetGoogleURL(),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
 }  // namespace
