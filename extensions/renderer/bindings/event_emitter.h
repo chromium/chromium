@@ -110,8 +110,6 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // immediately when a listener throws an exception. The exception is passed as
   // the single argument to the callback.
   // If no listeners return a value or throw, returns `v8::Undefined`.
-  // If the `kRuntimeOnMessageWebExtensionPolyfillSupport` feature is
-  // enabled, it will also include any errors thrown under an 'errors' key.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,
                                     v8::LocalVector<v8::Value>* args,
                                     mojom::EventFilteringInfoPtr filter);
