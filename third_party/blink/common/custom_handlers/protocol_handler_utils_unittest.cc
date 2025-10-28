@@ -340,6 +340,11 @@ TEST(ProtocolHandlerUtilTest, IsolatedAppFeaturesValidCustomScheme) {
           true,
       },
       {
+          "Valid scheme: ASCII alphas + dashes",
+          "iwa-scheme",
+          true,
+      },
+      {
           "Invalid scheme: numbers",
           "myproto3",
           false,
@@ -362,6 +367,26 @@ TEST(ProtocolHandlerUtilTest, IsolatedAppFeaturesValidCustomScheme) {
       {
           "Invalid scheme: empty after web+",
           "web+",
+          false,
+      },
+      {
+          "Invalid scheme: empty chunk after dash",
+          "meow-",
+          false,
+      },
+      {
+          "Invalid scheme: empty chunk between dashes",
+          "meow--meow",
+          false,
+      },
+      {
+          "Invalid scheme: empty chunk before dash",
+          "-meow",
+          false,
+      },
+      {
+          "Invalid scheme: two dashes and no ASCII alphas",
+          "--",
           false,
       },
   };

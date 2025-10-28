@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -89,10 +90,19 @@ bool IsValidCustomHandlerScheme(std::string_view scheme,
   }
 
   if (security_level == ProtocolHandlerSecurityLevel::kIsolatedAppFeatures) {
-    // Isolated Apps are allowed to claim any scheme that consists of ascii
-    // characters of length at least 2.
-    return scheme.length() >= 2 &&
-           std::ranges::all_of(scheme, &base::IsAsciiAlpha<char>);
+    // Isolated Apps are allowed to claim any scheme that consists of non-empty
+    // blocks of ASCII alpha characters possibly separated by dashes with a
+    // total length of at least 2.
+    if (scheme.length() < 2) {
+      return false;
+    }
+    return std::ranges::all_of(
+        base::SplitStringPiece(scheme, "-", base::KEEP_WHITESPACE,
+                               base::SPLIT_WANT_ALL),
+        [](std::string_view chunk) {
+          return !chunk.empty() &&
+                 std::ranges::all_of(chunk, &base::IsAsciiAlpha<char>);
+        });
   }
 
   static constexpr const char* const kProtocolSafelist[] = {
