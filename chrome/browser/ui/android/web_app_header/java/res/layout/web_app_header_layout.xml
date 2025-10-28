@@ -39,8 +39,7 @@ found in the LICENSE file.
 
     <FrameLayout
         android:id="@+id/web_app_menu_button_wrapper"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/HeaderButton"
         android:layout_gravity="end|center_vertical"
         android:visibility="gone">
         <include
