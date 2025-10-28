@@ -665,10 +665,6 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
               {144, ::gfx::test::CreateBitmap(
                         FakeWebContentsManager::kBasicInstallIconSize,
                         SK_ColorGREEN)}};
-          info->trusted_icon_bitmaps.any = {
-              {144, ::gfx::test::CreateBitmap(
-                        FakeWebContentsManager::kBasicInstallIconSize,
-                        SK_ColorGREEN)}};
           return info;
         },
         manifest_id, start_url, scope, install_url);

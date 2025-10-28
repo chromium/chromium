@@ -177,21 +177,23 @@ class ExternalAppResolutionCommandTest : public WebAppTest {
   void LoadIconsFromDB(const webapps::AppId& app_id,
                        const std::vector<SquareSizePx>& sizes_px) {
     BitmapData icon_bitmaps;
-    base::test::TestFuture<IconMetadataFromDisk> future;
     WebAppIconManager& icon_manager = provider()->icon_manager();
 
     // We can use this to test if icons of a specific size do not exist in the
     // DB. This is to ensure we do not trigger the same condition as a DCHECK
-    // inside WebAppIconManager when calling
-    // ReadTrustedIconsWithFallbackToManifestIcons().
+    // inside WebAppIconManager when calling ReadAllIcons().
     if (!icon_manager.HasIcons(app_id, IconPurpose::ANY, sizes_px)) {
       app_to_icons_data_[app_id] = icon_bitmaps;
       return;
     }
 
-    icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
-        app_id, sizes_px, IconPurpose::ANY, future.GetCallback());
-    app_to_icons_data_[app_id] = std::move(future.Take().icons_map);
+    base::test::TestFuture<WebAppIconManager::WebAppBitmaps> future;
+    icon_manager.ReadAllIcons(app_id, future.GetCallback());
+    IconBitmaps trusted_bitmaps = future.Take().trusted_icons;
+    for (const auto& size : sizes_px) {
+      icon_bitmaps[size] = trusted_bitmaps.any[size];
+    }
+    app_to_icons_data_[app_id] = icon_bitmaps;
   }
 
   std::vector<SquareSizePx> GetIconSizesForApp(const webapps::AppId& app_id) {

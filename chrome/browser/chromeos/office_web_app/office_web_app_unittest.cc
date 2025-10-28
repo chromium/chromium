@@ -11,11 +11,18 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/grit/office_web_app_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/test/sk_gmock_support.h"
 
 namespace chromeos {
 namespace {
@@ -64,14 +71,43 @@ class OfficeWebAppUnitTest : public WebAppTest {
         /*overwrite_existing_manifest_fields=*/false, install_source);
   }
 
+  SkBitmap GetInstalledIconForMicrosoft365FromDisk() {
+    base::test::TestFuture<web_app::WebAppIconManager::WebAppBitmaps>
+        test_future;
+    provider().icon_manager().ReadAllIcons(GetAppIdForMicrosoft365(),
+                                           test_future.GetCallback());
+    web_app::IconBitmaps trusted_icons = test_future.Take().trusted_icons;
+    auto it = trusted_icons.any.find(kMicrosoft365WebAppIconSize);
+    CHECK(it != trusted_icons.any.end());
+    return it->second;
+  }
+
+  SkBitmap ExpectedIconForMicrosoft365() {
+    return ui::ResourceBundle::GetSharedInstance()
+        .GetImageNamed(IDR_OFFICE_WEB_APP_ICONS_OFFICE_192_PNG)
+        .AsBitmap();
+  }
+
+  webapps::AppId GetAppIdForMicrosoft365() {
+    GURL start_url = GURL(kMicrosoft365WebAppUrl);
+    return web_app::GenerateAppIdFromManifestId(
+        web_app::GenerateManifestIdFromStartUrlOnly(start_url));
+  }
+
   std::unique_ptr<TestingProfile> profile_;
 };
 
+// Only compare icons in the offline test because the icon is parsed from the
+// configs only in this case. For the online install case, the manifest has to
+// be mimicked and set in the FakeWebContentsManager, which is not possible
+// because the Microsoft install url does not have a manifest.
 TEST_F(OfficeWebAppUnitTest, InstallMicrosoft365WhenOffline) {
   TestFuture<webapps::InstallResultCode> future;
   InstallMicrosoft365(profile(), future.GetCallback());
   EXPECT_EQ(future.Get(),
             webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
+  EXPECT_THAT(GetInstalledIconForMicrosoft365FromDisk(),
+              gfx::test::EqualsBitmap(ExpectedIconForMicrosoft365()));
 }
 
 TEST_F(OfficeWebAppUnitTest, InstallMicrosoft365WhenOnline) {
