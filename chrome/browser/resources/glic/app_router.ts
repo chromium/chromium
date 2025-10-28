@@ -53,7 +53,8 @@ export class AppRouter implements PageInterface {
     switch (this.currentView) {
       case AppView.GLIC:
         if (!this.glicController) {
-          this.glicController = new GlicAppController(this.browserProxy);
+          this.glicController = new GlicAppController(
+              this.browserProxy, previousView === AppView.FRE);
           if (this.currentPanelStateKind !== undefined) {
             this.glicController.updatePageState(this.currentPanelStateKind);
           }
