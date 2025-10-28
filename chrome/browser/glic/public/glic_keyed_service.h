@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
@@ -37,7 +38,6 @@ class ProfileManager;
 
 namespace actor {
 class ActorKeyedService;
-class ActorTaskDelegate;
 }  // namespace actor
 
 namespace contextual_cueing {
@@ -59,6 +59,7 @@ class GlicProfileManager;
 class GlicRegionCaptureController;
 class GlicScreenshotCapturer;
 class GlicShareImageHandler;
+class GlicTabDataObserver;
 class GlicWindowController;
 class HostManager;
 class GlicActorTaskManager;
@@ -85,7 +86,8 @@ enum class GlicPrewarmingFreSource {
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
                          public Host::InstanceDelegate,
-                         public base::MemoryPressureListener {
+                         public base::MemoryPressureListener,
+                         public actor::ActorTaskDelegate {
  public:
   explicit GlicKeyedService(
       Profile* profile,
@@ -266,6 +268,10 @@ class GlicKeyedService : public KeyedService,
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
+  // ActorTaskDelegate:
+  void OnTabAddedToTask(actor::TaskId task_id,
+                        const tabs::TabInterface::Handle& tab_handle) override;
+
   HostManager& host_manager();
 
   // Null in multi-instance mode.
@@ -293,6 +299,14 @@ class GlicKeyedService : public KeyedService,
   // calling this method.
   void SendAdditionalContext(tabs::TabHandle tab_handle,
                              mojom::AdditionalContextPtr context);
+
+  // Registers a callback to be invoked when the TabData for an explicitly
+  // observed tab changes. Note that currently, only tabs observed via
+  // `OnTabAddedToTask` trigger updates.
+  using TabDataChangedCallback =
+      base::RepeatingCallback<void(const TabDataChange&)>;
+  base::CallbackListSubscription AddTabDataChangedCallback(
+      TabDataChangedCallback callback);
 
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
@@ -336,6 +350,7 @@ class GlicKeyedService : public KeyedService,
       zero_state_suggestions_manager_;
   base::OnceCallback<void()> preload_callback_;
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
+  std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
 
   // Unowned
   raw_ptr<contextual_cueing::ContextualCueingService>

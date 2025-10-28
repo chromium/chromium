@@ -325,6 +325,10 @@ struct WebClientInitialState {
   bool actuation_on_web_setting_enabled;
   // Whether the host has the capability to act on web.
   bool can_act_on_web;
+  // Whether kGlicActivateTabApi is enabled.
+  bool enable_activate_tab;
+  // Whether kGlicGetTabByIdApi is enabled.
+  bool enable_get_tab_by_id;
 };
 
 // Options for getting tab context.
@@ -656,6 +660,10 @@ interface WebClientHandler {
   // No-op if a task with the given id does not exist.
   // No-op if the task is not in the interrupted state.
   UninterruptActorTask(int32 task_id);
+
+  // Foregrounds the given tab.
+  // No-op if the tab doesn't exist or is already in the foreground.
+  ActivateTab(int32 task_id);
 
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
@@ -1151,6 +1159,9 @@ interface WebClient {
   // state.
   NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
 
+  // Notify that state relating to the tab has changed.
+  NotifyTabDataChanged(TabData tab_data);
+
   // Called when the browser wants the web client to change its view to match
   // the requested change (e.g., because the user clicked a UI element to toggle
   // to a different view).
@@ -1274,6 +1285,12 @@ struct TabData {
   // This is a best effort signal, and may not be accurate/stale due to not
   // observing tab content capture events directly.
   bool? is_tab_content_captured;
+  // Whether the tab is the active tab in its browser window. Note that this
+  // does not consider the state of the window.
+  bool? is_active_in_window;
+  // Whether the tab's browser window is active. Note that this does not
+  // consider whether the tab is active in the window.
+  bool? is_window_active;
 };
 
 // Data about the focused tab state.

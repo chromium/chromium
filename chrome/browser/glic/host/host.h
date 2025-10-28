@@ -88,6 +88,7 @@ class Host : public GlicSharingManagerProvider {
         bool open_in_background,
         const std::optional<int32_t>& window_id,
         glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
+    // TODO(mcnee): `delegate` appears unused.
     virtual void CreateTask(
         base::WeakPtr<actor::ActorTaskDelegate> delegate,
         actor::webui::mojom::TaskOptionsPtr options,

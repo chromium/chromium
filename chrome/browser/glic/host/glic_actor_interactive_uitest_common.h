@@ -165,6 +165,14 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   // change to stopped.
   MultiStep WaitForActorTaskStateChangeToStopped();
 
+  // Foregrounds the last acted on tab by calling the glic
+  // activateTab API.
+  MultiStep ActivateTaskTab();
+
+  // Waits for the glic getTabById for the task tab to satisfy the expected
+  // foreground value.
+  MultiStep WaitForTaskTabForground(bool expected_foreground);
+
   // Returns a callback that returns the given string as the action proto. Meant
   // for testing error handling since this allows providing an invalid proto.
   ActionProtoProvider ArbitraryStringProvider(std::string_view str);

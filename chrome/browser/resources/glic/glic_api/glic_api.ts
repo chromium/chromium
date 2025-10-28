@@ -362,6 +362,25 @@ export declare interface GlicBrowserHost {
   getActorTaskState?(taskId: number): ObservableValue<ActorTaskState>;
 
   /**
+   * Returns the observable state of TabData for the given tab.
+   * Note that updates are only sent for a subset of changes to the tab.
+   *
+   * WARNING: The current implementation within Chrome makes this unsuitable for
+   * general use. Only tabs involved with actor tasks are supported.
+   * The observable remains open even if there's no tab.
+   * @todo Generalize this to work with non-actor tabs.
+   * @todo Complete the observable when tabs are removed.
+   */
+  getTabById?(tabId: string): ObservableValue<TabData>;
+
+  /**
+   * Makes the given tab the active tab in its window and activates its window.
+   *
+   * No-op if the tab doesn't exist or is already in the foreground.
+   */
+  activateTab?(tabId: string): void;
+
+  /**
    * Requests the host to capture a screenshot. The choice of the screenshot
    * target is made by the host, possibly allowing the user to choose between a
    * desktop, window or arbitrary region.
@@ -1399,6 +1418,18 @@ export declare interface TabData {
    * b/433995475
    */
   isTabContentCaptured?: boolean;
+
+  /**
+   * Whether the tab is the active tab in its browser window. Note that this
+   * does not consider the state of the window.
+   */
+  isActiveInWindow?: boolean;
+
+  /**
+   * Whether the tab's browser window is active. Note that this does not
+   * consider whether the tab is active in the window.
+   */
+  isWindowActive?: boolean;
 }
 
 /** A candidate for pinning. */

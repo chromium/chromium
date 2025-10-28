@@ -21,7 +21,6 @@ source_set("actor") {
     "actor_switches.h",
     "actor_tab_data.h",
     "actor_task.h",
-    "actor_task_delegate.h",
     "actor_task_metadata.h",
     "aggregated_journal.h",
     "aggregated_journal_file_serializer.h",
@@ -197,6 +196,7 @@ source_set("variants") {
 # This avoids dependency cycles.
 source_set("types") {
   sources = [
+    "actor_task_delegate.h",
     "shared_types.cc",
     "shared_types.h",
   ]
@@ -205,7 +205,11 @@ source_set("types") {
     "//chrome/common:mojo_bindings",
     "//ui/gfx/geometry",
   ]
-  deps = [ "//third_party/abseil-cpp:absl" ]
+  deps = [
+    "//chrome/common",
+    "//components/tabs:public",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
 
 source_set("impl_test_support") {

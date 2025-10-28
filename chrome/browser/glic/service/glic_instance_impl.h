@@ -151,7 +151,6 @@ class GlicInstanceImpl : public GlicInstance,
   void StopActorTask(actor::TaskId task_id,
                      mojom::ActorTaskStopReason stop_reason) override;
   void PauseActorTask(actor::TaskId task_id,
-
                       mojom::ActorTaskPauseReason pause_reason,
                       tabs::TabInterface::Handle tab_handle) override;
   void ResumeActorTask(

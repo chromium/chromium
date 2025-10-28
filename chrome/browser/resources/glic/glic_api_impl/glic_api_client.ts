@@ -207,6 +207,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.setActorTaskState(payload.taskId, payload.state);
   }
 
+  glicWebClientNotifyTabDataChanged(payload: {tabData: TabDataPrivate}): void {
+    this.host.setTabData(payload.tabData);
+  }
+
   glicWebClientPageMetadataChanged(
       payload: {tabId: string, pageMetadata: PageMetadata|null}): void {
     const observable = this.host.pageMetadataObservers.get(payload.tabId);
@@ -417,6 +421,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private hostCapabilities: Set<HostCapability> = new Set();
   private actorTaskState =
       new Map<number, ObservableValueImpl<ActorTaskState>>();
+  private observedTabData = new Map<string, ObservableValueImpl<TabData>>();
   readonly viewChangeRequestsSubject = new Subject<ViewChangeRequest>();
   readonly additionalContextSubject = new Subject<AdditionalContext>();
   pageMetadataObservers: Map<string, ObservableValueImpl<PageMetadata>> =
@@ -576,6 +581,14 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableCaptureRegion) {
       this.captureRegion = undefined;
     }
+
+    if (!state.enableActivateTab) {
+      this.activateTab = undefined;
+    }
+
+    if (!state.enableGetTabById) {
+      this.getTabById = undefined;
+    }
   }
 
   webClientInitialized(
@@ -604,6 +617,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (state === ActorTaskState.STOPPED) {
       this.actorTaskState.delete(taskId);
     }
+  }
+
+  setTabData(tabData: TabDataPrivate): void {
+    const data = convertTabDataFromPrivate(tabData);
+    this.getTabById?.(data.tabId).assignAndSignal(data);
   }
 
   onRequestReceived(_type: string): void {}
@@ -759,6 +777,29 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const newObs = ObservableValueImpl.withNoValue<ActorTaskState>();
     this.actorTaskState.set(taskId, newObs);
     return newObs;
+  }
+
+  getTabById?(tabId: string): ObservableValueImpl<TabData> {
+    const tabObs = this.observedTabData.get(tabId);
+    if (tabObs) {
+      return tabObs;
+    }
+
+    // TODO(mcnee): We don't communicate to the browser that we want to start
+    // observing this tab. This is done implicitly by it being a tab associated
+    // with an actor task. We need to properly notify the browser for this API
+    // to actually be generic.
+    // TODO(mcnee): Handle the closing of an observed tab.
+    // TODO(mcnee): The client could pass an id that will never have updates.
+    // Consider removing these cases from the map when all subscribers are
+    // removed.
+    const newObs = ObservableValueImpl.withNoValue<TabData>();
+    this.observedTabData.set(tabId, newObs);
+    return newObs;
+  }
+
+  activateTab?(tabId: string): void {
+    this.sender.requestNoResponse('glicBrowserActivateTab', {tabId});
   }
 
   onModeChange?(newMode: WebClientMode): void {

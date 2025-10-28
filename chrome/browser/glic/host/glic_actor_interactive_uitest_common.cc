@@ -492,6 +492,37 @@ MultiStep GlicActorUiTest::WaitForActorTaskStateChangeToStopped() {
       }));
 }
 
+MultiStep GlicActorUiTest::ActivateTaskTab() {
+  return Steps(InAnyContext(WithElement(
+                   kGlicContentsElementId,
+                   [&tab_handle = tab_handle_](ui::TrackedElement* el) {
+                     content::WebContents* glic_contents =
+                         AsInstrumentedWebContents(el)->web_contents();
+                     std::string script =
+                         content::JsReplace("client.browser.activateTab('$1');",
+                                            tab_handle.raw_value());
+                     ASSERT_TRUE(content::ExecJs(glic_contents, script));
+                   })),
+               RoundTrip());
+}
+
+MultiStep GlicActorUiTest::WaitForTaskTabForground(bool expected_foreground) {
+  return InAnyContext(WithElement(
+      kGlicContentsElementId,
+      [&tab_handle = tab_handle_, expected_foreground](ui::TrackedElement* el) {
+        content::WebContents* glic_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        std::string script = content::JsReplace(
+            R"js(
+            client.browser.getTabById('$1').waitUntil((tabData) => {
+              return tabData.isActiveInWindow == $2;
+            });
+            )js",
+            tab_handle.raw_value(), expected_foreground);
+        ASSERT_TRUE(content::ExecJs(glic_contents, script));
+      }));
+}
+
 GlicActorUiTest::ActionProtoProvider GlicActorUiTest::ArbitraryStringProvider(
     std::string_view str) {
   return base::BindLambdaForTesting([str]() { return std::string(str); });

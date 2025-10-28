@@ -658,6 +658,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnPinnedTabDataChanged,
                                 base::Unretained(this)));
 
+    if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
+      tab_data_changed_subscription_ =
+          glic_service_->AddTabDataChangedCallback(base::BindRepeating(
+              &GlicWebClientHandler::OnTabDataChanged, base::Unretained(this)));
+    }
+
     focus_data_changed_subscription_ =
         sharing_manager().AddFocusedTabDataChangedCallback(
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
@@ -802,6 +808,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             actor_service->GetPolicyChecker().can_act_on_web();
       }
     }
+    state->enable_activate_tab =
+        base::FeatureList::IsEnabled(features::kGlicActivateTabApi);
+    state->enable_get_tab_by_id =
+        base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi);
 
     std::move(callback).Run(std::move(state));
   }
@@ -1071,6 +1081,23 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     host().instance_delegate().UninterruptActorTask(actor::TaskId(task_id));
+  }
+
+  void ActivateTab(int32_t tab_id) override {
+    if (!base::FeatureList::IsEnabled(features::kGlicActivateTabApi)) {
+      return;
+    }
+
+    tabs::TabInterface* tab = tabs::TabHandle(tab_id).Get();
+    if (!tab) {
+      return;
+    }
+    content::WebContents* contents = tab->GetContents();
+    if (!contents) {
+      return;
+    }
+
+    contents->GetDelegate()->ActivateContents(contents);
   }
 
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
@@ -1552,6 +1579,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyPinnedTabDataChanged(change.tab_data->Clone());
   }
 
+  void OnTabDataChanged(const TabDataChange& change) {
+    if (!change.tab_data) {
+      return;
+    }
+    web_client_->NotifyTabDataChanged(change.tab_data->Clone());
+  }
+
   void NotifyZeroStateSuggestionsChanged(
       glic::mojom::ZeroStateSuggestionsV2Ptr suggestions,
       mojom::ZeroStateSuggestionsOptionsPtr options) {
@@ -1735,6 +1769,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription focus_changed_subscription_;
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription pinned_tab_data_changed_subscription_;
+  base::CallbackListSubscription tab_data_changed_subscription_;
   base::CallbackListSubscription focus_data_changed_subscription_;
   base::CallbackListSubscription focused_browser_changed_subscription_;
   base::CallbackListSubscription active_browser_changed_subscription_;

@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -773,6 +774,9 @@ void GlicInstanceImpl::OnTabAddedToTask(
     instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                    /*success=*/false);
     return;
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
+    service_->OnTabAddedToTask(task_id, tab_handle);
   }
   Show(ShowOptions::ForSidePanel(*tab));
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,

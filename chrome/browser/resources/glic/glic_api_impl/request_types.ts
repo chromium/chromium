@@ -198,6 +198,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserActivateTab: {
+    request: {
+      tabId: string,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
@@ -657,6 +663,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyTabDataChanged: {
+    request: {
+      tabData: TabDataPrivate,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientPageMetadataChanged: {
     request: {
       tabId: string,
@@ -797,6 +809,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OnRecordUseCounter: 73,
         InterruptActorTask: 74,
         UninterruptActorTask: 75,
+        ActivateTab: 76,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

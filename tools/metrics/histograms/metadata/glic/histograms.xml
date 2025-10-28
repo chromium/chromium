@@ -113,6 +113,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ApiRequestType) -->
 
   <token key="ApiRequestType">
+    <variant name="ActivateTab"/>
     <variant name="AttachPanel"/>
     <variant name="CaptureScreenshot"/>
     <variant name="ClosePanel"/>

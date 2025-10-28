@@ -40,6 +40,7 @@
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_region_capture_controller.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -162,6 +163,7 @@ GlicKeyedService::GlicKeyedService(
                               : nullptr),
       actor_task_manager_(
           std::make_unique<GlicActorTaskManager>(profile, actor_keyed_service)),
+      tab_data_observer_(std::make_unique<GlicTabDataObserver>()),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   CHECK(actor_keyed_service);
@@ -476,8 +478,8 @@ void GlicKeyedService::CreateTask(
     base::WeakPtr<actor::ActorTaskDelegate> delegate,
     actor::webui::mojom::TaskOptionsPtr options,
     mojom::WebClientHandler::CreateTaskCallback callback) {
-  actor_task_manager_->CreateTask(std::move(delegate), std::move(options),
-                                  std::move(callback));
+  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(options), std::move(callback));
 }
 
 void GlicKeyedService::PerformActions(
@@ -511,6 +513,17 @@ void GlicKeyedService::InterruptActorTask(actor::TaskId task_id) {
 
 void GlicKeyedService::UninterruptActorTask(actor::TaskId task_id) {
   actor_task_manager_->UninterruptActorTask(task_id);
+}
+
+base::CallbackListSubscription GlicKeyedService::AddTabDataChangedCallback(
+    TabDataChangedCallback callback) {
+  return tab_data_observer_->AddTabDataChangedCallback(std::move(callback));
+}
+
+void GlicKeyedService::OnTabAddedToTask(
+    actor::TaskId task_id,
+    const tabs::TabInterface::Handle& tab_handle) {
+  tab_data_observer_->ObserveTabData(tab_handle);
 }
 
 void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {

@@ -334,6 +334,15 @@ class WebClientImpl implements WebClientInterface {
         {taskId, state: clientState});
   }
 
+  notifyTabDataChanged(tabData: TabDataMojo): void {
+    const extras = new ResponseExtras();
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyTabDataChanged', {
+          tabData: tabDataToClient(tabData, extras),
+        },
+        extras.transfers);
+  }
+
   requestViewChange(requestMojo: ViewChangeRequestMojo): void {
     let request: ViewChangeRequest|undefined;
     if (requestMojo.details.actuation) {
@@ -847,6 +856,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     taskId: number,
   }): void {
     this.handler.uninterruptActorTask(request.taskId);
+  }
+
+  glicBrowserActivateTab(request: {tabId: string}): void {
+    this.handler.activateTab(tabIdFromClient(request.tabId));
   }
 
   async glicBrowserResizeWindow(request: {
@@ -2022,6 +2035,8 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
   const isObservable = optionalToClient(tabData.isObservable);
   const isMediaActive = optionalToClient(tabData.isMediaActive);
   const isTabContentCaptured = optionalToClient(tabData.isTabContentCaptured);
+  const isActiveInWindow = optionalToClient(tabData.isActiveInWindow);
+  const isWindowActive = optionalToClient(tabData.isWindowActive);
   return {
     tabId: tabIdToClient(tabData.tabId),
     windowId: windowIdToClient(tabData.windowId),
@@ -2033,6 +2048,8 @@ function tabDataToClient(tabData: TabDataMojo|null, extras: ResponseExtras):
     isObservable,
     isMediaActive,
     isTabContentCaptured,
+    isActiveInWindow,
+    isWindowActive,
   };
 }
 
