@@ -332,13 +332,16 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
         item_view->GetViewByID(MenuViewID::kDeleteButtonViewID);
     ASSERT_FALSE(delete_button->GetVisible());
 
+    // MoveMouseTo() may dispatch events right away, so the ViewBoundsWaiter
+    // should be created before the mouse move so ensure it observes the event.
+    ui_test_utils::ViewBoundsWaiter delete_button_waiter(delete_button);
+
     // Hover the mouse on `item_view` to show the delete button.
     GetEventGenerator()->MoveMouseTo(
         item_view->GetBoundsInScreen().CenterPoint(), /*count=*/5);
 
     // Wait until `delete_button` has meaningful bounds. Note that the bounds
     // are set by the layout manager asynchronously.
-    ui_test_utils::ViewBoundsWaiter delete_button_waiter(delete_button);
     delete_button_waiter.WaitForNonEmptyBounds();
 
     EXPECT_TRUE(delete_button->GetVisible());

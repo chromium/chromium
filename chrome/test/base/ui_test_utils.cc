@@ -1071,7 +1071,7 @@ ViewBoundsWaiter::~ViewBoundsWaiter() {
 }
 
 void ViewBoundsWaiter::WaitForNonEmptyBounds() {
-  if (!observed_view_->bounds().IsEmpty()) {
+  if (observed_non_empty_bounds_ || !observed_view_->bounds().IsEmpty()) {
     return;
   }
   run_loop_.Run();
@@ -1079,6 +1079,10 @@ void ViewBoundsWaiter::WaitForNonEmptyBounds() {
 
 void ViewBoundsWaiter::OnViewBoundsChanged(views::View* observed_view) {
   if (!observed_view_->bounds().IsEmpty()) {
+    // Record bounds changes that may occur before the RunLoop is started.
+    // This is necessary to avoid deadlock in case a view's bounds change
+    // to nonempty and then empty before the RunLoop is started.
+    observed_non_empty_bounds_ = true;
     run_loop_.Quit();
   }
 }

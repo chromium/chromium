@@ -43,6 +43,8 @@ namespace {
 
 constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 
+constexpr float kMaxAnimationScale = 10.0f;
+
 }  // namespace
 
 class FocusModeTrayTest : public AshTestBase {
@@ -251,8 +253,7 @@ TEST_F(FocusModeTrayTest, ClickActivateDeactivate) {
 // view.
 TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ui::ScopedAnimationDurationScaleMode duration(kMaxAnimationScale);
 
   FocusModeTask task;
   task.task_id = {.list_id = "default", .id = "task1"};

@@ -674,6 +674,7 @@ class ViewBoundsWaiter : public views::ViewObserver {
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  bool observed_non_empty_bounds_ = false;
   const raw_ptr<views::View> observed_view_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
