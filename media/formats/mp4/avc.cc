@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/types/to_address.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/avc.h"
 
 #include <algorithm>
@@ -15,10 +9,17 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/types/to_address.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/media_switches.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
 #include "media/parsers/h264_parser.h"
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 namespace media {
 namespace mp4 {
@@ -231,7 +232,41 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
             order_state = kBeforeFirstVCL;
             break;
 
-          case H264NALU::kSEIMessage:
+          case H264NALU::kSEIMessage: {
+            if (order_state > kBeforeFirstVCL) {
+              DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
+                       << " in order_state " << order_state;
+              return result;
+            }
+
+            order_state = kBeforeFirstVCL;
+
+            if (base::FeatureList::IsEnabled(
+                    kTreatSEIRecoveryPointAsKeyframe)) {
+              H264SEI sei;
+              if (parser.ParseSEI(&sei) != H264Parser::kOk) {
+                // This is non-fatal for historical compliance.
+                break;
+              }
+
+              const bool is_sei_recovery_point =
+                  std::ranges::any_of(sei.msgs, [](const auto& msg) {
+                    auto sei_recovery_msg =
+                        std::get_if<H264SEIRecoveryPoint>(&msg);
+                    return sei_recovery_msg &&
+                           sei_recovery_msg->recovery_frame_cnt == 0;
+                  });
+
+              // Treat SEI recovery points with a recovery_frame_cnt of zero as
+              // key frames. This is generally well supported by our decoders.
+              if (is_sei_recovery_point) {
+                result.is_keyframe = true;
+              }
+            }
+
+            break;
+          }
+
           case H264NALU::kPrefix:
           case H264NALU::kSubsetSPS:
           case H264NALU::kDPS:

@@ -953,6 +953,10 @@ BASE_FEATURE(kAutoPictureInPicturePageInfoDetails,
 BASE_FEATURE(kUsePostBodyForUrlProvisionFetcher,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Treats H.264 SEI recovery points with a `recovery_frame_cnt=0` as keyframes.
+BASE_FEATURE(kTreatSEIRecoveryPointAsKeyframe,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether we should show a setting to disable autoplay policy.
 BASE_FEATURE(kAutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 

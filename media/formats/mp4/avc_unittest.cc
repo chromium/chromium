@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -255,6 +257,74 @@ TEST_P(AVCConversionTest, ParseEmpty) {
 INSTANTIATE_TEST_SUITE_P(AVCConversionTestValues,
                          AVCConversionTest,
                          ::testing::Values(1, 2, 4));
+
+TEST_F(AVCConversionTest, AnalyzeSEI) {
+  base::test::ScopedFeatureList scoped_sei_flag(
+      kTreatSEIRecoveryPointAsKeyframe);
+  constexpr auto kStream = std::to_array<const uint8_t>({
+      // First NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 6 (recovery_point).
+      0x06,
+      // SEI payload size = 1.
+      0x01,
+      // SEI payload.
+      0x84,
+      // RBSP trailing bits.
+      0x80,
+      // Second NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 1 (pic_timing).
+      0x01,
+      // SEI payload size = 1.
+      0x01,
+      // SEI payload.
+      0x04,
+      // RBSP trailing bits.
+      0x80,
+  });
+
+  auto result = AVC::AnalyzeAnnexB(kStream.data(), kStream.size(), {});
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(result.is_keyframe.has_value());
+  EXPECT_TRUE(result.is_keyframe.value());
+}
+
+TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
+  base::test::ScopedFeatureList scoped_sei_flag(
+      kTreatSEIRecoveryPointAsKeyframe);
+  constexpr auto kStream = std::to_array<const uint8_t>({
+      // First NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 6 (recovery_point).
+      0x06,
+      // SEI payload size = 255 to trigger an error.
+      0xFF,
+      // SEI payload.
+      0x84,
+      // RBSP trailing bits.
+      0x80,
+  });
+
+  auto result = AVC::AnalyzeAnnexB(kStream.data(), kStream.size(), {});
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_FALSE(result.is_keyframe.has_value());
+}
 
 TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
   AVCDecoderConfigurationRecord avc_config;
