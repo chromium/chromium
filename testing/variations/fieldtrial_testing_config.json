@@ -15018,17 +15018,15 @@
                         "length": "65536"
                     },
                     "enable_features": [
-                        "LibraryPrefetcherMadvise"
+                        "LibraryPrefetcherMadvise",
+                        "WebViewPrefetchNativeLibrary"
                     ]
                 },
                 {
-                    "name": "Enabled_1",
-                    "params": {
-                        "fallback": "true",
-                        "length": "1"
-                    },
-                    "enable_features": [
-                        "LibraryPrefetcherMadvise"
+                    "name": "AblatePrefetch",
+                    "disable_features": [
+                        "LibraryPrefetcherMadvise",
+                        "WebViewPrefetchNativeLibrary"
                     ]
                 }
             ]
@@ -28048,24 +28046,6 @@
                     },
                     "enable_features": [
                         "WebViewPrefetchHighestPrefetchPriority"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewPrefetchNativeLibrary": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "WebViewPrefetchFromRenderer": "true"
-                    },
-                    "enable_features": [
-                        "WebViewPrefetchNativeLibrary"
                     ]
                 }
             ]
