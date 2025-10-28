@@ -21,6 +21,7 @@
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ntp_tiles/features.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -44,6 +45,16 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 }
 
 const char kSampleUserEmail[] = "user@gmail.com";
+
+base::Value::List CreatePolicyList(const std::string& name,
+                                   const std::string& url) {
+  base::Value::Dict shortcut_item;
+  shortcut_item.Set("name", name);
+  shortcut_item.Set("url", url);
+  base::Value::List policy_list;
+  policy_list.Append(std::move(shortcut_item));
+  return policy_list;
+}
 
 }  // namespace
 
@@ -379,6 +390,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 
+  // Set enterprise shortcuts policy.
+  browser()->profile()->GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      CreatePolicyList("work name", "https://work.com/"));
+
   // If custom links are explicitly disabled, it falls back to Top Sites.
   browser()->profile()->GetPrefs()->SetBoolean(
       ntp_prefs::kNtpCustomLinksVisible, false);
@@ -412,6 +428,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 
+  // Set enterprise shortcuts policy.
+  browser()->profile()->GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      CreatePolicyList("work name", "https://work.com/"));
+
   // If enterprise shortcuts are enabled and mixing is DISABLED,
   // personal shortcuts (Custom Links) should disappear.
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -419,6 +440,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
             std::set<ntp_tiles::TileType>(
                 {ntp_tiles::TileType::kEnterpriseShortcuts}));
+
+  // Remove enterprise shortcuts policy, personal shortcuts should be visible.
+  browser()->profile()->GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList, base::Value::List());
+  EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
+            std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 }
 
 class NewTabPageUtilTileTypesEnterpriseShortcutsEnabledAllowMixingBrowserTest
@@ -439,6 +466,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
             std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 
+  // Set enterprise shortcuts policy.
+  browser()->profile()->GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      CreatePolicyList("work name", "https://work.com/"));
+
   // If enterprise shortcuts are also visible AND mixing is ALLOWED,
   // both should be enabled.
   browser()->profile()->GetPrefs()->SetBoolean(
@@ -455,6 +487,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
             std::set<ntp_tiles::TileType>(
                 {ntp_tiles::TileType::kEnterpriseShortcuts}));
+
+  // Remove enterprise shortcuts policy, personal shortcuts should be visible.
+  browser()->profile()->GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList, base::Value::List());
+  EXPECT_EQ(GetEnabledTileTypes(browser()->profile()),
+            std::set<ntp_tiles::TileType>({ntp_tiles::TileType::kCustomLinks}));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, NewTabPageUtilBrowserTest, testing::Bool());

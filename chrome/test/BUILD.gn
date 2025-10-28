@@ -2744,6 +2744,7 @@ if (!is_android) {
       "//components/no_state_prefetch/browser",
       "//components/no_state_prefetch/common",
       "//components/no_state_prefetch/renderer",
+      "//components/ntp_tiles:pref_names",
       "//components/offline_items_collection/core/test_support",
       "//components/omnibox/browser:vector_icons",
       "//components/optimization_guide/content/browser",
