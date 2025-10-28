@@ -424,6 +424,10 @@ void BoxPainterBase::PaintInsetBoxShadow(const PaintInfo& info,
         FloatRoundedRect(inner_rect, bounds.GetRadii()),
         bounds.GetCornerCurvature());
     ApplySpreadToShadowShape(inner_contoured_rect, -shadow.Spread());
+    if (RuntimeEnabledFeatures::
+            CSSCornerShapeInsetBoxShadowFollowsContourEnabled()) {
+      inner_contoured_rect.SetOriginRect(bounds.GetOriginRect());
+    }
     if (inner_contoured_rect.IsEmpty()) {
       // |AutoDarkMode::Disabled()| is used because |shadow_color| has already
       // been adjusted for dark mode.
