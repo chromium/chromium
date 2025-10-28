@@ -163,8 +163,7 @@ void InstallFromSyncCommand::SetFallbackTriggeredForTesting(
 
 void InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
     webapps::WebAppUrlLoaderResult result) {
-  GetMutableDebugValue().Set("WebAppUrlLoader::Result",
-                             ConvertUrlLoaderResultToString(result));
+  GetMutableDebugValue().Set("WebAppUrlLoader::Result", base::ToString(result));
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError(
         "OnWebAppUrlLoaded", params_.start_url.spec(), result);

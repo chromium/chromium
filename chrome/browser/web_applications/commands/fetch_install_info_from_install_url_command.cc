@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -107,8 +108,7 @@ void FetchInstallInfoFromInstallUrlCommand::StartWithLock(
 void FetchInstallInfoFromInstallUrlCommand::
     OnWebAppUrlLoadedGetWebAppInstallInfo(
         webapps::WebAppUrlLoaderResult result) {
-  GetMutableDebugValue().Set("url_loading_result",
-                             ConvertUrlLoaderResultToString(result));
+  GetMutableDebugValue().Set("url_loading_result", base::ToString(result));
 
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError(

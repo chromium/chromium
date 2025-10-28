@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_WEB_CONTENTS_WEB_APP_URL_LOADER_H_
 
+#include <iosfwd>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -35,6 +37,8 @@ enum class WebAppUrlLoaderResult {
   kMaxValue = kFailedErrorPageLoaded,
 };
 
+std::ostream& operator<<(std::ostream& os, WebAppUrlLoaderResult result);
+
 // Callback-based wrapper around NavigationController::LoadUrl.
 class WebAppUrlLoader {
  public:
@@ -52,7 +56,7 @@ class WebAppUrlLoader {
 
   using Result = WebAppUrlLoaderResult;
 
-  using ResultCallback = base::OnceCallback<void(Result)>;
+  using ResultCallback = base::OnceCallback<void(WebAppUrlLoaderResult)>;
 
   WebAppUrlLoader();
   virtual ~WebAppUrlLoader();
@@ -89,11 +93,16 @@ class WebAppUrlLoader {
       UrlComparison url_comparison,
       ResultCallback callback);
 
+  // Callers assume that destroying this object will avoid any callback given to
+  // it from being called. This is done by intercepting the callback here bound
+  // with a weak pointer.
+  void OnUrlLoaded(std::string_view metrics_name,
+                   ResultCallback callback,
+                   WebAppUrlLoaderResult result);
+
   base::WeakPtrFactory<WebAppUrlLoader> weak_factory_{this};
 };
 
-const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result);
-
-}  // namespace web_app
+}  // namespace webapps
 
 #endif  // COMPONENTS_WEBAPPS_BROWSER_WEB_CONTENTS_WEB_APP_URL_LOADER_H_

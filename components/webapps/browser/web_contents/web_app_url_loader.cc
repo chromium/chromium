@@ -200,6 +200,23 @@ class LoaderTask : public content::WebContentsObserver {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& os, WebAppUrlLoaderResult result) {
+  switch (result) {
+    case WebAppUrlLoaderResult::kUrlLoaded:
+      return os << "kUrlLoaded";
+    case WebAppUrlLoaderResult::kRedirectedUrlLoaded:
+      return os << "kRedirectedUrlLoaded";
+    case WebAppUrlLoaderResult::kFailedUnknownReason:
+      return os << "kFailedUnknownReason";
+    case WebAppUrlLoaderResult::kFailedPageTookTooLong:
+      return os << "kFailedPageTookTooLong";
+    case WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
+      return os << "kFailedWebContentsDestroyed";
+    case WebAppUrlLoaderResult::kFailedErrorPageLoaded:
+      return os << "kFailedErrorPageLoaded";
+  }
+}
+
 WebAppUrlLoader::WebAppUrlLoader() = default;
 
 WebAppUrlLoader::~WebAppUrlLoader() = default;
@@ -212,10 +229,13 @@ void WebAppUrlLoader::LoadUrl(
   CHECK(web_contents);
   PrepareForLoad(
       web_contents,
-      base::BindOnce(&WebAppUrlLoader::LoadUrlInternal,
-                     weak_factory_.GetWeakPtr(), std::move(load_url_params),
-                     web_contents->GetWeakPtr(), url_comparison,
-                     std::move(callback)));
+      base::BindOnce(
+          &WebAppUrlLoader::LoadUrlInternal, weak_factory_.GetWeakPtr(),
+          std::move(load_url_params), web_contents->GetWeakPtr(),
+          url_comparison,
+          base::BindOnce(&WebAppUrlLoader::OnUrlLoaded,
+                         weak_factory_.GetWeakPtr(),
+                         "Webapp.WebAppUrlLoaderResult", std::move(callback))));
 }
 
 void WebAppUrlLoader::LoadUrl(const GURL& url,
@@ -240,12 +260,11 @@ void WebAppUrlLoader::PrepareForLoad(content::WebContents* web_contents,
   content::NavigationController::LoadURLParams load_params{
       GURL(url::kAboutBlankURL)};
   load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
-  LoadUrlInternal(load_params, web_contents->GetWeakPtr(),
-                  UrlComparison::kExact,
-                  base::BindOnce([](Result result) {
-                    base::UmaHistogramEnumeration(
-                        "Webapp.WebAppUrlLoaderPrepareForLoadResult", result);
-                  }).Then(std::move(complete)));
+  LoadUrlInternal(
+      load_params, web_contents->GetWeakPtr(), UrlComparison::kExact,
+      base::BindOnce(&WebAppUrlLoader::OnUrlLoaded, weak_factory_.GetWeakPtr(),
+                     "Webapp.WebAppUrlLoaderPrepareForLoadResult",
+                     base::IgnoreArgs<Result>(std::move(complete))));
 }
 
 void WebAppUrlLoader::LoadUrlInternal(
@@ -273,22 +292,11 @@ void WebAppUrlLoader::LoadUrlInternal(
           .Then(std::move(callback)));
 }
 
-const char* ConvertUrlLoaderResultToString(WebAppUrlLoader::Result result) {
-  using Result = WebAppUrlLoader::Result;
-  switch (result) {
-    case Result::kUrlLoaded:
-      return "UrlLoaded";
-    case Result::kRedirectedUrlLoaded:
-      return "RedirectedUrlLoaded";
-    case Result::kFailedUnknownReason:
-      return "FailedUnknownReason";
-    case Result::kFailedPageTookTooLong:
-      return "FailedPageTookTooLong";
-    case Result::kFailedWebContentsDestroyed:
-      return "FailedWebContentsDestroyed";
-    case Result::kFailedErrorPageLoaded:
-      return "FailedErrorPageLoaded";
-  }
+void WebAppUrlLoader::OnUrlLoaded(std::string_view metrics_name,
+                                  ResultCallback callback,
+                                  WebAppUrlLoaderResult result) {
+  base::UmaHistogramEnumeration(metrics_name, result);
+  std::move(callback).Run(result);
 }
 
-}  // namespace web_app
+}  // namespace webapps
