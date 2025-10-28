@@ -20,8 +20,7 @@ class GaiaId;
 @property(nonatomic, readonly) AccountErrorUIInfo* accountErrorUIInfo;
 
 // The gaia ids of the secondary accounts.
-@property(nonatomic, readonly) const std::vector<GaiaId>
-    secondaryAccountsGaiaIDs;
+@property(nonatomic, readonly) std::vector<GaiaId> secondaryAccountsGaiaIDs;
 
 // The email of the primary account. Not nil.
 @property(nonatomic, readonly) NSString* primaryAccountEmail;

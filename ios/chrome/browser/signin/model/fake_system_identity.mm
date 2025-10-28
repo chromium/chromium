@@ -125,12 +125,8 @@ NSString* const kCoderHasValidAuthKey = @"HasValidAuth";
 
 #pragma mark - Properties
 
-- (NSString*)gaiaID {
-  return _gaiaID.ToNSString();
-}
-
-- (const GaiaId)gaiaId {
-  return GaiaId(_gaiaID);
+- (GaiaId)gaiaId {
+  return _gaiaID;
 }
 
 - (NSString*)hashedGaiaID {

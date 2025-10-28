@@ -145,7 +145,7 @@
 
 #pragma mark - AccountMenuDataSource
 
-- (const std::vector<GaiaId>)secondaryAccountsGaiaIDs {
+- (std::vector<GaiaId>)secondaryAccountsGaiaIDs {
   std::vector<GaiaId> gaiaIDs;
   for (id<SystemIdentity> identity : _identities) {
     gaiaIDs.push_back(identity.gaiaId);

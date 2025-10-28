@@ -73,15 +73,15 @@ using base::test::ios::WaitUntilConditionOrTimeout;
                                            accountId.ToString())];
 }
 
-- (const GaiaId)primaryAccountGaiaID {
-  return GaiaId([SigninEarlGreyAppInterface primaryAccountGaiaID]);
+- (GaiaId)primaryAccountGaiaID {
+  return GaiaId([SigninEarlGreyAppInterface primaryAccountGaiaIDString]);
 }
 
 - (const base::flat_set<GaiaId>)accountsInProfileGaiaIDs {
   base::flat_set<GaiaId> set;
-  for (NSString* gaiaId :
+  for (NSString* gaiaIDString :
        [SigninEarlGreyAppInterface accountsInProfileGaiaIDs]) {
-    set.insert(GaiaId(gaiaId));
+    set.insert(GaiaId(gaiaIDString));
   }
   return set;
 }
@@ -153,22 +153,22 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   GREYAssert(WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForActionTimeout,
                  ^bool {
-                   NSString* primaryAccountGaiaID =
-                       [SigninEarlGreyAppInterface primaryAccountGaiaID];
-                   return primaryAccountGaiaID.length > 0;
+                   NSString* primaryAccountGaiaIDString =
+                       [SigninEarlGreyAppInterface primaryAccountGaiaIDString];
+                   return primaryAccountGaiaIDString.length > 0;
                  }),
              @"Sign in did not complete.");
   GREYWaitForAppToIdle(@"App failed to idle");
 
-  NSString* primaryAccountGaiaID =
-      [SigninEarlGreyAppInterface primaryAccountGaiaID];
+  GaiaId primaryAccountGaiaID = [self primaryAccountGaiaID];
 
   NSString* errorStr = [NSString
       stringWithFormat:@"Unexpected Gaia ID of the signed in user [expected = "
                        @"\"%@\", actual = \"%@\"]",
-                       fakeIdentity.gaiaID, primaryAccountGaiaID];
-  EG_TEST_HELPER_ASSERT_TRUE(
-      [fakeIdentity.gaiaID isEqualToString:primaryAccountGaiaID], errorStr);
+                       fakeIdentity.gaiaId.ToNSString(),
+                       primaryAccountGaiaID.ToNSString()];
+  EG_TEST_HELPER_ASSERT_TRUE(fakeIdentity.gaiaId == primaryAccountGaiaID,
+                             errorStr);
 }
 
 - (void)verifyPrimaryAccountWithEmail:(NSString*)expectedEmail {

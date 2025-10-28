@@ -16,6 +16,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "crypto/obsolete/md5.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -281,9 +282,10 @@ void WriteSavedMostVisited(
   // Update stored info for all identities in the current profile.
   for (id<SystemIdentity> identity in account_manager_service
            ->GetAllIdentities()) {
-    NSString* gaia_id = identity.gaiaID;
-    [suggested_items setObject:data forKey:gaia_id];
-    [last_modification_dates setObject:last_modification_date forKey:gaia_id];
+    NSString* gaia_id_string = identity.gaiaId.ToNSString();
+    [suggested_items setObject:data forKey:gaia_id_string];
+    [last_modification_dates setObject:last_modification_date
+                                forKey:gaia_id_string];
   }
 
   // Update NSUserDefaults keys.

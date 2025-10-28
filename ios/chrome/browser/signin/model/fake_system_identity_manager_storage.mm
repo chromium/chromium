@@ -91,7 +91,7 @@
   NSUInteger start = state->extra[0];
   NSUInteger count = _orderedKeys.size();
   for (index = 0; index < len && start + index < count; ++index) {
-    GaiaId key = _orderedKeys[start + index];
+    const GaiaId& key = _orderedKeys[start + index];
     buffer[index] = _details[key];
   }
 

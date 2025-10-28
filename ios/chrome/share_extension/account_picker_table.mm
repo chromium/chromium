@@ -75,7 +75,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 
 #pragma mark - UITableViewDelegate
 - (void)setSelectedAccount:(AccountInfo*)selectedAccount {
-  if ([selectedAccount.gaiaID isEqual:_selectedAccount.gaiaID]) {
+  if ([selectedAccount.gaiaIDString isEqual:_selectedAccount.gaiaIDString]) {
     return;
   }
   _selectedAccount = selectedAccount;
@@ -103,7 +103,7 @@ CGFloat const kAvatarImageDimension = 30.0;
 - (UITableViewCell*)configureAccountCell:(UITableViewCell*)cell
                              accountInfo:(AccountInfo*)accountInfo {
   UIListContentConfiguration* content = cell.defaultContentConfiguration;
-  if ([accountInfo.gaiaID isEqual:app_group::kNoAccount]) {
+  if ([accountInfo.gaiaIDString isEqual:app_group::kNoAccount]) {
     content.text = NSLocalizedString(
         @"IDS_IOS_SIGNED_OUT_USER_TITLE_SHARE_EXTENSION",
         @"The title of the item representing a signed out user.");
@@ -124,9 +124,10 @@ CGFloat const kAvatarImageDimension = 30.0;
   }
   cell.contentConfiguration = content;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.accessoryType = (_selectedAccount.gaiaID == accountInfo.gaiaID)
-                           ? UITableViewCellAccessoryCheckmark
-                           : UITableViewCellAccessoryNone;
+  cell.accessoryType =
+      (_selectedAccount.gaiaIDString == accountInfo.gaiaIDString)
+          ? UITableViewCellAccessoryCheckmark
+          : UITableViewCellAccessoryNone;
   return cell;
 }
 

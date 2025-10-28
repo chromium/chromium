@@ -28,9 +28,9 @@ using WebViewDeviceAccountsProviderImplTest = PlatformTest;
 
 namespace {
 
-id MatchIdentityByGaiaID(NSString* gaia_id) {
+id MatchIdentityByGaiaID(NSString* gaia_id_string) {
   return [OCMArg checkWithBlock:^BOOL(CWVIdentity* identity) {
-    return [identity.gaiaID isEqualToString:gaia_id];
+    return [identity.gaiaID isEqualToString:gaia_id_string];
   }];
 }
 

@@ -22,7 +22,7 @@ namespace {
 
 // Helper to create AccountPickerSelectionScreenIdentityItemConfigurator.
 AccountPickerSelectionScreenIdentityItemConfigurator* CreateConfigurator(
-    GaiaId gaiaID,
+    const GaiaId& gaiaID,
     NSString* name,
     NSString* email,
     UIImage* avatar,

@@ -1011,7 +1011,7 @@ void OnListFamilyMembersResponse(
   } else {
     profileName = GetApplicationContext()
                       ->GetAccountProfileMapper()
-                      ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
+                      ->FindProfileNameForGaiaID(context.gaiaID);
   }
 
   if (!profileName.has_value()) {

@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @interface AccountInfo : NSObject
-@property(nonatomic, copy) NSString* gaiaID;
+@property(nonatomic, copy) NSString* gaiaIDString;
 @property(nonatomic, copy) NSString* fullName;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, copy) UIImage* avatar;

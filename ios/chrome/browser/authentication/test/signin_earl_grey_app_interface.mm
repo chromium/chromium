@@ -102,7 +102,7 @@
   systemIdentityManager->SetPersistentAuthErrorForAccount(accountId);
 }
 
-+ (NSString*)primaryAccountGaiaID {
++ (NSString*)primaryAccountGaiaIDString {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(

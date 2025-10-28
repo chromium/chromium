@@ -100,6 +100,7 @@ source_set("utils") {
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public",
     "//components/variations/service",
+    "//google_apis",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",

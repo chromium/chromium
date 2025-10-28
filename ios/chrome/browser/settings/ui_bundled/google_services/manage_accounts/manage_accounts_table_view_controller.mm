@@ -259,9 +259,9 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   // from ManageAccountsConsumer
 }
 
-#pragma mark - ManageAccountsConsumer
+#pragma mark - Private
 
-- (const GaiaId)gaiaIDWithAccountItem:(TableViewItem*)accountItem {
+- (GaiaId)gaiaIDWithAccountItem:(TableViewItem*)accountItem {
   for (const std::pair<GaiaId, TableViewItem*>& id_item : _identityMap) {
     if (id_item.second == accountItem) {
       return id_item.first;

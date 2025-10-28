@@ -72,7 +72,7 @@ class GURL;
 
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.
-- (const GaiaId)primaryAccountGaiaID;
+- (GaiaId)primaryAccountGaiaID;
 
 // Returns the gaia IDs of all accounts in the current profile.
 - (const base::flat_set<GaiaId>)accountsInProfileGaiaIDs;

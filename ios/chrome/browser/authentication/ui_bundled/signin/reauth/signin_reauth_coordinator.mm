@@ -119,8 +119,7 @@
 
   ReauthResult result;
   if (!error) {
-    GaiaId gaia_id = identity.gaiaId;
-    if (gaia_id == _account.gaia) {
+    if (identity.gaiaId == _account.gaia) {
       result = ReauthResult::kSuccess;
       [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kCompleted];
     } else {

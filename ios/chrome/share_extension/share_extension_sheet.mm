@@ -255,7 +255,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 }
 
 - (void)confirmationAlertPrimaryAction {
-  NSString* gaiaID = self.selectedAccountInfo.gaiaID;
+  NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
   switch (_sharedItemType) {
     case kURL:
       [self.delegate didTapOpenInChromeShareExtensionSheet:self gaiaID:gaiaID];
@@ -269,7 +269,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 }
 
 - (void)confirmationAlertSecondaryAction {
-  NSString* gaiaID = self.selectedAccountInfo.gaiaID;
+  NSString* gaiaID = self.selectedAccountInfo.gaiaIDString;
   switch (_sharedItemType) {
     case kURL:
       [self.delegate didTapMoreOptionsShareExtensionSheet:self gaiaID:gaiaID];
@@ -290,7 +290,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   CHECK(self.selectedAccountInfo);
 
   UIListContentConfiguration* content = cell.defaultContentConfiguration;
-  if ([self.selectedAccountInfo.gaiaID isEqual:app_group::kNoAccount]) {
+  if ([self.selectedAccountInfo.gaiaIDString isEqual:app_group::kNoAccount]) {
     content.text = NSLocalizedString(
         @"IDS_IOS_SIGNED_OUT_USER_TITLE_SHARE_EXTENSION",
         @"The title of the item representing a signed out user.");

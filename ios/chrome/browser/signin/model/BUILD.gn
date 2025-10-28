@@ -379,6 +379,7 @@ source_set("trusted_vault") {
   deps = [
     "//base",
     "//components/trusted_vault",
+    "//google_apis",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   frameworks = [

@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/task_environment.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
@@ -67,11 +68,12 @@ TEST_F(SystemAccountUpdaterTest, OnIdentityListChanged) {
     NSDictionary* accounts_on_device =
         [shared_defaults objectForKey:app_group::kAccountsOnDevice];
     EXPECT_EQ([accounts_on_device count], 1u);
-    EXPECT_TRUE(
-        [[accounts_on_device allKeys] containsObject:fake_identity.gaiaID]);
-    EXPECT_EQ([[accounts_on_device valueForKey:fake_identity.gaiaID]
-                  valueForKey:@"email"],
-              fake_identity.userEmail);
+    EXPECT_TRUE([[accounts_on_device allKeys]
+        containsObject:fake_identity.gaiaId.ToNSString()]);
+    EXPECT_EQ(
+        [[accounts_on_device valueForKey:fake_identity.gaiaId.ToNSString()]
+            valueForKey:@"email"],
+        fake_identity.userEmail);
   }
 
   // Add 'fakeIdentity2' to the identity list.
@@ -82,11 +84,12 @@ TEST_F(SystemAccountUpdaterTest, OnIdentityListChanged) {
     NSDictionary* accounts_on_device =
         [shared_defaults objectForKey:app_group::kAccountsOnDevice];
     EXPECT_EQ([accounts_on_device count], 2u);
-    EXPECT_TRUE(
-        [[accounts_on_device allKeys] containsObject:fake_identity_2.gaiaID]);
-    EXPECT_EQ([[accounts_on_device valueForKey:fake_identity_2.gaiaID]
-                  valueForKey:@"email"],
-              fake_identity_2.userEmail);
+    EXPECT_TRUE([[accounts_on_device allKeys]
+        containsObject:fake_identity_2.gaiaId.ToNSString()]);
+    EXPECT_EQ(
+        [[accounts_on_device valueForKey:fake_identity_2.gaiaId.ToNSString()]
+            valueForKey:@"email"],
+        fake_identity_2.userEmail);
   }
 
   // Remove 'fakeIdentity' from the identity list.
@@ -112,7 +115,7 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItems) {
 
   // Add fake data about fakeIdentity1 to kSuggestedItemsForMultiprofile.
   NSMutableDictionary* fake_info = [NSMutableDictionary dictionary];
-  [fake_info setObject:@"test_info" forKey:fake_identity.gaiaID];
+  [fake_info setObject:@"test_info" forKey:fake_identity.gaiaId.ToNSString()];
   [fake_info setObject:@"test_info" forKey:app_group::kDefault];
   [fake_info setObject:@"test_info" forKey:app_group::kNoAccount];
 
@@ -127,7 +130,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItems) {
   {
     NSDictionary* items = [shared_defaults
         objectForKey:app_group::kSuggestedItemsForMultiprofile];
-    EXPECT_TRUE([[items allKeys] containsObject:fake_identity.gaiaID]);
+    EXPECT_TRUE(
+        [[items allKeys] containsObject:fake_identity.gaiaId.ToNSString()]);
   }
   // Remove 'fakeIdentity' from the identity list.
   system_identity_manager_->ForgetIdentity(fake_identity, base::DoNothing());
@@ -138,7 +142,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItems) {
         objectForKey:app_group::kSuggestedItemsForMultiprofile];
     EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefault]);
     EXPECT_TRUE([[items allKeys] containsObject:app_group::kNoAccount]);
-    EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
+    EXPECT_FALSE(
+        [[items allKeys] containsObject:fake_identity.gaiaId.ToNSString()]);
   }
 }
 
@@ -157,7 +162,7 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
 
   // Add fake data about fakeIdentity1 to kSuggestedItemsForMultiprofile.
   NSMutableDictionary* fake_info = [NSMutableDictionary dictionary];
-  [fake_info setObject:@"test_info" forKey:fake_identity.gaiaID];
+  [fake_info setObject:@"test_info" forKey:fake_identity.gaiaId.ToNSString()];
   [fake_info setObject:@"test_info" forKey:app_group::kDefault];
   [fake_info setObject:@"test_info" forKey:app_group::kNoAccount];
 
@@ -173,7 +178,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
     NSDictionary* items = [shared_defaults
         objectForKey:app_group::
                          kSuggestedItemsLastModificationDateForMultiprofile];
-    EXPECT_TRUE([[items allKeys] containsObject:fake_identity.gaiaID]);
+    EXPECT_TRUE(
+        [[items allKeys] containsObject:fake_identity.gaiaId.ToNSString()]);
   }
   // Remove 'fakeIdentity' from the identity list.
   system_identity_manager_->ForgetIdentity(fake_identity, base::DoNothing());
@@ -185,7 +191,8 @@ TEST_F(SystemAccountUpdaterTest, TestSuggestedItemsLastModificationDate) {
                          kSuggestedItemsLastModificationDateForMultiprofile];
     EXPECT_TRUE([[items allKeys] containsObject:app_group::kDefault]);
     EXPECT_TRUE([[items allKeys] containsObject:app_group::kNoAccount]);
-    EXPECT_FALSE([[items allKeys] containsObject:fake_identity.gaiaID]);
+    EXPECT_FALSE(
+        [[items allKeys] containsObject:fake_identity.gaiaId.ToNSString()]);
   }
 }
 

@@ -342,10 +342,10 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(id)itemIdentifier {
-  NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
-  if (gaiaID) {
+  NSString* gaiaIDString = base::apple::ObjCCast<NSString>(itemIdentifier);
+  if (gaiaIDString) {
     return [self cellForTableView:tableView
-                           gaiaID:GaiaId(gaiaID)
+                           gaiaID:GaiaId(gaiaIDString)
                         indexPath:indexPath];
   }
 
@@ -584,14 +584,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   id itemIdentifier =
       [_accountMenuDataSource itemIdentifierForIndexPath:indexPath];
-  NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
-  if (gaiaID) {
+  NSString* gaiaIDString = base::apple::ObjCCast<NSString>(itemIdentifier);
+  if (gaiaIDString) {
     // `itemIdentifier` is a gaiaID.
     base::RecordAction(
         base::UserMetricsAction("Signin_AccountMenu_SelectAccount"));
     CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
     _selectedIndexPath = indexPath;
-    GaiaId gaiaId(gaiaID);
+    GaiaId gaiaId(gaiaIDString);
     [self.mutator accountTappedWithGaiaID:&gaiaId targetRect:cellRect];
   } else {
     // Otherwise `itemIdentifier` is a `RowIdentifier`.
@@ -728,15 +728,15 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
 
   NSMutableArray* accountsIdentifiersToAdd = [[NSMutableArray alloc] init];
-  for (NSString* gaiaID in gaiaIDsToAdd) {
-    [accountsIdentifiersToAdd addObject:gaiaID];
+  for (NSString* gaiaIDString in gaiaIDsToAdd) {
+    [accountsIdentifiersToAdd addObject:gaiaIDString];
   }
   [snapshot insertItemsWithIdentifiers:accountsIdentifiersToAdd
               beforeItemWithIdentifier:@(RowIdentifierAddAccount)];
 
   NSMutableArray* accountsIdentifiersToRemove = [[NSMutableArray alloc] init];
-  for (NSString* gaiaID in gaiaIDsToRemove) {
-    [accountsIdentifiersToRemove addObject:gaiaID];
+  for (NSString* gaiaIDString in gaiaIDsToRemove) {
+    [accountsIdentifiersToRemove addObject:gaiaIDString];
   }
   [snapshot deleteItemsWithIdentifiers:accountsIdentifiersToRemove];
 

@@ -317,7 +317,7 @@ class AccountProfileMapper::Assigner
   // and should not be attempted again until the next browser restart. (As
   // opposed to `system_identities_to_fetch_`, this stores Gaia IDs instead of
   // the actual SystemIdentity objects, to avoid retaining them.)
-  NSMutableArray<NSString*>* gaia_ids_failed_fetching_ = [NSMutableArray array];
+  base::flat_set<GaiaId> gaia_ids_failed_fetching_;
 
   // Number of time we try to fetch an identity’s hosted domain before stopping
   // all tries.
@@ -544,7 +544,7 @@ void AccountProfileMapper::Assigner::UpdateIdentityProfileMappings() {
             DeleteProfileNamed(profile_name);
           }
 
-          [gaia_ids_failed_fetching_ removeObject:gaia_id.ToNSString()];
+          gaia_ids_failed_fetching_.erase(gaia_id);
         }
       }
     }
@@ -707,7 +707,7 @@ AccountProfileMapper::Assigner::ProcessIdentityForAssignmentToProfile(
     // assigned to a profile yet. Query it, and assign once available.
 
     if (![system_identities_to_fetch_ containsObject:identity] &&
-        ![gaia_ids_failed_fetching_ containsObject:identity.gaiaID]) {
+        !gaia_ids_failed_fetching_.contains(identity.gaiaId)) {
       // If we have not yet planned to fetch this identity, let’s add it to the
       // list of identities to fetch and reset the total number of tries.
       [system_identities_to_fetch_ addObject:identity];
@@ -792,7 +792,7 @@ HostedDomainFetchEvent AccountProfileMapper::Assigner::HostedDomainFetchedImpl(
     // We had kMinimalNumberOfRetry consecutive fetch failures.
     // Let’s stop trying (until the next browser restart).
     for (id<SystemIdentity> identity : system_identities_to_fetch_) {
-      [gaia_ids_failed_fetching_ addObject:identity.gaiaID];
+      gaia_ids_failed_fetching_.insert(identity.gaiaId);
     }
     [system_identities_to_fetch_ removeAllObjects];
 
@@ -820,7 +820,7 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     bool is_managed_account) {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
-  const GaiaId gaia_id(identity.gaiaID);
+  const GaiaId gaia_id(identity.gaiaId);
   const std::optional<std::string> profile_name =
       FindProfileNameForGaiaID(gaia_id);
 

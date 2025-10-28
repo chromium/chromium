@@ -122,8 +122,6 @@ class PriceTrackingPromoMediatorTest : public PlatformTest {
     return push_notification_service_.get();
   }
 
-  NSString* gaia_id() { return identity_.gaiaID; }
-
   bookmarks::BookmarkModel* bookmark_model() { return bookmark_model_.get(); }
 
  protected:

@@ -11,6 +11,7 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
@@ -41,14 +42,14 @@ void ReloadAllTimelines() {
 class SystemIdentityInfo {
  public:
   SystemIdentityInfo(id<SystemIdentity> identity, UIImage* cached_avatar)
-      : gaia_id_(identity.gaiaID),
+      : gaia_id_(identity.gaiaId),
         full_name_(identity.userFullName ?: @""),
         user_email_(identity.userEmail),
         cached_avatar_(cached_avatar) {}
 
   ~SystemIdentityInfo() = default;
 
-  NSString* gaia_id() const { return gaia_id_; }
+  const GaiaId& gaia_id() const { return gaia_id_; }
   NSString* full_name() const { return full_name_; }
   NSString* user_email() const { return user_email_; }
   UIImage* cached_avatar() const { return cached_avatar_; }
@@ -61,7 +62,7 @@ class SystemIdentityInfo {
   }
 
  private:
-  NSString* gaia_id_;
+  GaiaId gaia_id_;
   NSString* full_name_;
   NSString* user_email_;
   UIImage* cached_avatar_;
@@ -84,16 +85,16 @@ class SystemIdentityInfoData {
 
   ~SystemIdentityInfoData() = default;
 
-  NSString* gaia_id() const { return gaia_id_; }
+  const GaiaId& gaia_id() const { return gaia_id_; }
   NSData* avatar_data() const { return avatar_data_; }
   NSURL* avatar_path(NSURL* directory) const {
     return [directory
-        URLByAppendingPathComponent:[gaia_id_
+        URLByAppendingPathComponent:[gaia_id_.ToNSString()
                                         stringByAppendingPathExtension:@"png"]];
   }
 
  private:
-  NSString* gaia_id_;
+  GaiaId gaia_id_;
   NSData* avatar_data_;
 };
 
@@ -201,14 +202,14 @@ void RemoveUnknownAccounts(NSUserDefaults* defaults,
   }
 
   NSMutableDictionary* copy = [value mutableCopy];
-  for (NSString* gaia_id in value) {
-    if ([accounts objectForKey:gaia_id] ||
-        [gaia_id isEqualToString:app_group::kDefault] ||
-        [gaia_id isEqualToString:app_group::kNoAccount]) {
+  for (NSString* gaia_id_string in value) {
+    if ([accounts objectForKey:gaia_id_string] ||
+        [gaia_id_string isEqualToString:app_group::kDefault] ||
+        [gaia_id_string isEqualToString:app_group::kNoAccount]) {
       continue;
     }
 
-    [copy removeObjectForKey:gaia_id];
+    [copy removeObjectForKey:gaia_id_string];
   }
   [defaults setObject:copy forKey:key];
 }
@@ -251,9 +252,10 @@ void SystemAccountUpdater::UpdateLoadedAccounts() {
       list.size(),
       base::BindPostTask(task_runner_, base::BindOnce(&WriteAvatars)));
 
-  NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary<NSString*, NSDictionary*>* accounts =
+      [[NSMutableDictionary alloc] init];
   for (auto& info : list) {
-    [accounts setObject:info.AsDictionary() forKey:info.gaia_id()];
+    [accounts setObject:info.AsDictionary() forKey:info.gaia_id().ToNSString()];
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ConvertSystemIdentityInfo, std::move(info))
                        .Then(callback));

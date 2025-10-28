@@ -60,8 +60,8 @@
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (identity.gaiaID) {
-    [shared_defaults setObject:identity.gaiaID
+  if (!identity.gaiaId.empty()) {
+    [shared_defaults setObject:identity.gaiaId.ToNSString()
                         forKey:app_group::kPrimaryAccount];
   } else {
     [shared_defaults removeObjectForKey:app_group::kPrimaryAccount];

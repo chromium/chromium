@@ -54,7 +54,7 @@ enum class UserSelectableType;
 
 // Returns the gaia ID of the primary account.
 // If there is no primary account returns an empty string.
-+ (NSString*)primaryAccountGaiaID;
++ (NSString*)primaryAccountGaiaIDString;
 
 // Returns the email of the primary account.
 // If there is no signed-in account returns an empty string.

@@ -104,9 +104,8 @@ void FakeSystemIdentityManager::AddIdentity(id<SystemIdentity> identity) {
 void FakeSystemIdentityManager::AddIdentityWithUnknownCapabilities(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GaiaId gaiaID = identity.gaiaId;
-  DCHECK(![storage_ containsIdentityWithGaiaID:gaiaID]);
-  gaia_ids_removed_by_user_.erase(gaiaID);
+  DCHECK(![storage_ containsIdentityWithGaiaID:identity.gaiaId]);
+  gaia_ids_removed_by_user_.erase(identity.gaiaId);
   FakeSystemIdentity* fake_identity =
       base::apple::ObjCCast<FakeSystemIdentity>(identity);
   [storage_ addFakeIdentity:fake_identity];
@@ -117,9 +116,8 @@ void FakeSystemIdentityManager::AddIdentityWithCapabilities(
     id<SystemIdentity> identity,
     NSDictionary<NSString*, NSNumber*>* capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GaiaId gaiaID = identity.gaiaId;
-  DCHECK(![storage_ containsIdentityWithGaiaID:gaiaID]);
-  gaia_ids_removed_by_user_.erase(gaiaID);
+  DCHECK(![storage_ containsIdentityWithGaiaID:identity.gaiaId]);
+  gaia_ids_removed_by_user_.erase(identity.gaiaId);
   FakeSystemIdentity* fake_identity =
       base::apple::ObjCCast<FakeSystemIdentity>(identity);
   [storage_ addFakeIdentity:fake_identity];

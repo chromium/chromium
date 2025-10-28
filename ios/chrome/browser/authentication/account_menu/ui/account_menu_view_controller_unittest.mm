@@ -93,7 +93,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 
 #pragma mark - AccountMenuDataSource
 
-- (const std::vector<GaiaId>)secondaryAccountsGaiaIDs {
+- (std::vector<GaiaId>)secondaryAccountsGaiaIDs {
   return _secondaryAccountsGaiaIDs;
 }
 

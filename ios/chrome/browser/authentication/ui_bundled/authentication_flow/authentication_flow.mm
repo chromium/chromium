@@ -110,7 +110,7 @@ enum class IOSIdentityAvailableInProfile : int {
 // * there is already a profile that has been fully initialized for gaia_id, or
 // * a policy forces the browsing data to stay separated.
 bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
-                                     GaiaId gaia_id,
+                                     const GaiaId& gaia_id,
                                      PrefService* pref_service) {
   bool always_separate_browsing_data_per_policy =
       pref_service->GetInteger(
@@ -120,14 +120,14 @@ bool ShouldSkipBrowsingDataMigration(signin_metrics::AccessPoint access_point,
          access_point == signin_metrics::AccessPoint::kStartPage ||
          GetApplicationContext()
              ->GetAccountProfileMapper()
-             ->IsProfileForGaiaIDFullyInitialized(GaiaId(gaia_id));
+             ->IsProfileForGaiaIDFullyInitialized(gaia_id);
 }
 
 // Returns `true` if the browsing data migration is not available because it is
 // disabled by policy and not because of another reason.
 bool IsBrowsingDataMigrationDisabledByPolicy(
     signin_metrics::AccessPoint access_point,
-    GaiaId gaia_id,
+    const GaiaId& gaia_id,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     policy::ProfileSeparationDataMigrationSettings
@@ -148,7 +148,7 @@ bool IsBrowsingDataMigrationDisabledByPolicy(
 // Returns if `identity` is available by AccountProfileMapper and if it is
 // available by IdentityManager.
 IOSIdentityAvailableInProfile IdentityAvailableInProfileStatus(
-    GaiaId gaia_id,
+    const GaiaId& gaia_id,
     signin::IdentityManager* identity_manager,
     std::string_view profile_name) {
   bool is_identity_available_in_profile_mapper = false;
@@ -187,7 +187,7 @@ IOSIdentityAvailableInProfile IdentityAvailableInProfileStatus(
 
 // Records `Signin.IOSIdentityAvailableInProfile` histogram.
 void RecordIOSIdentityAvailableInProfile(
-    GaiaId gaia_id,
+    const GaiaId& gaia_id,
     signin::IdentityManager* identity_manager,
     std::string_view profile_name) {
   IOSIdentityAvailableInProfile identity_available =

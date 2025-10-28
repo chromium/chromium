@@ -15,7 +15,6 @@ class GaiaId;
 
 // The unique GAIA user identifier for this identity. Can be used as a
 // unique and stable identifier to remember a particular identity.
-@property(nonatomic, readonly) NSString* gaiaID;
 @property(nonatomic, readonly) GaiaId gaiaId;
 
 // The identity email address. This can be shown to the user, but is
