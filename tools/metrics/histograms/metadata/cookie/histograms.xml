@@ -1105,28 +1105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.TimeDatabaseMigrationToV20" units="ms"
-    expires_after="2025-11-14">
-  <owner>arichiv@chromium.org</owner>
-  <owner>cfredric@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The amount of time (ms) to migrate a v19 cookie database to v20. Migration
-    occurs upon first startup of a browser version with v19 database code.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.TimeDatabaseMigrationToV21" units="ms"
-    expires_after="2025-11-22">
-  <owner>arichiv@chromium.org</owner>
-  <owner>cfredric@chromium.org</owner>
-  <owner>src/net/cookies/OWNERS</owner>
-  <summary>
-    The amount of time (ms) to migrate a v20 cookie database to v21. Migration
-    occurs upon first startup of a browser version with v20 database code.
-  </summary>
-</histogram>
-
 <histogram name="Cookie.TimeDatabaseMigrationToV22" units="ms"
     expires_after="2026-03-22">
   <owner>arichiv@chromium.org</owner>

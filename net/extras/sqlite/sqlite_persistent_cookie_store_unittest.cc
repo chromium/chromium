@@ -371,7 +371,7 @@ TEST_F(SQLitePersistentCookieStoreTest, TestInvalidVersionRecovery) {
     ASSERT_TRUE(meta_table.Init(&db, 1, 1));
     // Keep in sync with latest unsupported version from:
     // net/extras/sqlite/sqlite_persistent_cookie_store.cc
-    ASSERT_TRUE(meta_table.SetVersionNumber(18));
+    ASSERT_TRUE(meta_table.SetVersionNumber(20));
   }
 
   // Upon loading, the database should be reset to a good, blank state.
@@ -1695,82 +1695,6 @@ TEST_F(SQLitePersistentCookieStoreTest, CorruptStore) {
                                 sql::SqliteLoggedResultCode::kNotADatabase, 1);
 }
 
-bool CreateV19Schema(sql::Database* db) {
-  sql::MetaTable meta_table;
-  if (!meta_table.Init(db, 19, 19)) {
-    return false;
-  }
-
-  // Version 19 schema
-  static constexpr char kCreateSql[] =
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "top_frame_site_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "encrypted_value BLOB NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL,"
-      "is_persistent INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "samesite INTEGER NOT NULL,"
-      "source_scheme INTEGER NOT NULL,"
-      "source_port INTEGER NOT NULL,"
-      "is_same_party INTEGER NOT NULL,"
-      "last_update_utc INTEGER NOT NULL,"
-      "UNIQUE (host_key, top_frame_site_key, name, path))";
-
-  static constexpr char kCreateIndexSql[] =
-      "CREATE UNIQUE INDEX cookies_unique_index "
-      "ON cookies(host_key, top_frame_site_key, name, path)";
-
-  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
-}
-
-bool CreateV20Schema(sql::Database* db) {
-  sql::MetaTable meta_table;
-  if (!meta_table.Init(db, 20, 20)) {
-    return false;
-  }
-
-  // Version 20 schema
-  static constexpr char kCreateSql[] =
-      "CREATE TABLE cookies("
-      "creation_utc INTEGER NOT NULL,"
-      "host_key TEXT NOT NULL,"
-      "top_frame_site_key TEXT NOT NULL,"
-      "name TEXT NOT NULL,"
-      "value TEXT NOT NULL,"
-      "encrypted_value BLOB NOT NULL,"
-      "path TEXT NOT NULL,"
-      "expires_utc INTEGER NOT NULL,"
-      "is_secure INTEGER NOT NULL,"
-      "is_httponly INTEGER NOT NULL,"
-      "last_access_utc INTEGER NOT NULL,"
-      "has_expires INTEGER NOT NULL,"
-      "is_persistent INTEGER NOT NULL,"
-      "priority INTEGER NOT NULL,"
-      "samesite INTEGER NOT NULL,"
-      "source_scheme INTEGER NOT NULL,"
-      "source_port INTEGER NOT NULL,"
-      "is_same_party INTEGER NOT NULL,"
-      "last_update_utc INTEGER NOT NULL,"
-      "UNIQUE (host_key, top_frame_site_key, name, path, source_scheme, "
-      "source_port))";
-
-  static constexpr char kCreateIndexSql[] =
-      "CREATE UNIQUE INDEX cookies_unique_index "
-      "ON cookies(host_key, top_frame_site_key, name, path, source_scheme, "
-      "source_port)";
-
-  return db->Execute(kCreateSql) && db->Execute(kCreateIndexSql);
-}
-
 bool CreateV21Schema(sql::Database* db) {
   sql::MetaTable meta_table;
   if (!meta_table.Init(db, 21, 21)) {
@@ -1937,64 +1861,6 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
       /*httponly=*/false, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_DEFAULT));
   return cookies;
-}
-
-bool AddV19or20CookiesToDB(sql::Database* db) {
-  std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
-  sql::Statement statement(db->GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT INTO cookies (creation_utc, top_frame_site_key, host_key, name, "
-      "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
-      "samesite, last_access_utc, has_expires, is_persistent, priority, "
-      "source_scheme, source_port, is_same_party, last_update_utc) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!statement.is_valid()) {
-    return false;
-  }
-  sql::Transaction transaction(db);
-  if (!transaction.Begin()) {
-    return false;
-  }
-  for (const CanonicalCookie& cookie : cookies) {
-    base::Time max_expiration(cookie.CreationDate() + base::Days(400));
-
-    statement.Reset(true);
-    statement.BindTime(0, cookie.CreationDate());
-
-    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
-                   std::string>
-        serialized_partition_key =
-            CookiePartitionKey::Serialize(cookie.PartitionKey());
-    EXPECT_TRUE(serialized_partition_key.has_value());
-
-    statement.BindString(1, serialized_partition_key->TopLevelSite());
-    statement.BindString(2, cookie.Domain());
-    statement.BindString(3, cookie.Name());
-    statement.BindString(4, cookie.Value());
-    statement.BindBlob(5, base::span<uint8_t>());  // encrypted_value
-    statement.BindString(6, cookie.Path());
-    statement.BindTime(7, std::min(cookie.ExpiryDate(), max_expiration));
-    statement.BindInt(8, cookie.SecureAttribute());
-    statement.BindInt(9, cookie.IsHttpOnly());
-    // Note that this, Priority(), and SourceScheme() below nominally rely on
-    // the enums in sqlite_persistent_cookie_store.cc having the same values as
-    // the ones in ../../cookies/cookie_constants.h.  But nothing in this test
-    // relies on that equivalence, so it's not worth the hassle to guarantee
-    // that.
-    statement.BindInt(10, static_cast<int>(cookie.SameSite()));
-    statement.BindTime(11, cookie.LastAccessDate());
-    statement.BindInt(12, cookie.IsPersistent());
-    statement.BindInt(13, cookie.IsPersistent());
-    statement.BindInt(14, static_cast<int>(cookie.Priority()));
-    statement.BindInt(15, static_cast<int>(cookie.SourceScheme()));
-    statement.BindInt(16, cookie.SourcePort());
-    statement.BindInt(17, /*is_same_party=*/false);
-    statement.BindTime(18, cookie.LastUpdateDate());
-    if (!statement.Run()) {
-      return false;
-    }
-  }
-  return transaction.Commit();
 }
 
 bool AddV21CookiesToDB(sql::Database* db) {
@@ -2311,52 +2177,6 @@ void ConfirmDatabaseVersionAfterMigration(const base::FilePath path,
   sql::Database connection(sql::test::kTestTag);
   ASSERT_TRUE(connection.Open(path));
   ASSERT_GE(GetDBCurrentVersionNumber(&connection), version);
-}
-
-TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion20) {
-  // Open db.
-  const base::FilePath database_path =
-      temp_dir_.GetPath().Append(kCookieFilename);
-  {
-    sql::Database connection(sql::test::kTestTag);
-    ASSERT_TRUE(connection.Open(database_path));
-    ASSERT_TRUE(CreateV19Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 19);
-    ASSERT_TRUE(AddV19or20CookiesToDB(&connection));
-  }
-
-  CanonicalCookieVector read_in_cookies = CreateAndLoad(
-      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                       /*expect_last_update_date=*/true));
-  DestroyStore();
-
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmDatabaseVersionAfterMigration(database_path, 20));
-}
-
-TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion21) {
-  // Open db.
-  const base::FilePath database_path =
-      temp_dir_.GetPath().Append(kCookieFilename);
-  {
-    sql::Database connection(sql::test::kTestTag);
-    ASSERT_TRUE(connection.Open(database_path));
-    ASSERT_TRUE(CreateV20Schema(&connection));
-    ASSERT_EQ(GetDBCurrentVersionNumber(&connection), 20);
-    ASSERT_TRUE(AddV19or20CookiesToDB(&connection));
-  }
-
-  CanonicalCookieVector read_in_cookies = CreateAndLoad(
-      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmCookiesAfterMigrationTest(std::move(read_in_cookies),
-                                       /*expect_last_update_date=*/true));
-  DestroyStore();
-
-  ASSERT_NO_FATAL_FAILURE(
-      ConfirmDatabaseVersionAfterMigration(database_path, 21));
 }
 
 TEST_F(SQLitePersistentCookieStoreTest, UpgradeToSchemaVersion22) {
