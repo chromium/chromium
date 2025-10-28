@@ -100,7 +100,8 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
     base::test::TestFuture<bool> allowed;
     auto* actor_service = ActorKeyedService::Get(browser()->profile());
     MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
-                actor_service->GetJournal(), TaskId(), allowed.GetCallback());
+                actor_service->GetJournal(), TaskId(),
+                absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
     EXPECT_EQ(expected_allowed, allowed.Get());
@@ -173,7 +174,8 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
   base::test::TestFuture<bool> allowed;
   auto* actor_service = ActorKeyedService::Get(browser()->profile());
   MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
-              actor_service->GetJournal(), TaskId(), allowed.GetCallback());
+              actor_service->GetJournal(), TaskId(),
+              absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
   EXPECT_TRUE(allowed.Get());
 }
 

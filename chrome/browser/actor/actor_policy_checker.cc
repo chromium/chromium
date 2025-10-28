@@ -91,10 +91,12 @@ ActorPolicyChecker::ActorPolicyChecker(ActorKeyedService& service)
 
 ActorPolicyChecker::~ActorPolicyChecker() = default;
 
-void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
-                                     AggregatedJournal& journal,
-                                     TaskId task_id,
-                                     DecisionCallback callback) {
+void ActorPolicyChecker::MayActOnTab(
+    const tabs::TabInterface& tab,
+    AggregatedJournal& journal,
+    TaskId task_id,
+    const absl::flat_hash_set<url::Origin>& allowed_origins,
+    DecisionCallback callback) {
   if (!can_act_on_web_) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
                 "MayActOnTab",
@@ -105,7 +107,8 @@ void ActorPolicyChecker::MayActOnTab(const tabs::TabInterface& tab,
         FROM_HERE, base::BindOnce(std::move(callback), /*decision=*/false));
     return;
   }
-  ::actor::MayActOnTab(tab, journal, task_id, std::move(callback));
+  ::actor::MayActOnTab(tab, journal, task_id, allowed_origins,
+                       std::move(callback));
 }
 
 void ActorPolicyChecker::MayActOnUrl(const GURL& url,
