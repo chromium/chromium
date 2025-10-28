@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -584,7 +584,8 @@ class JSONParsingTest(unittest.TestCase):
             actual_error = PRESUBMIT._GetJSONParseError(input_api, filename)
             self.assertTrue(
                 expected_error in str(actual_error),
-                "'%s' not found in '%s'" % (expected_error, actual_error))
+                f'{filename}: "{expected_error}" not found in "{actual_error}"'
+            )
 
     def testNoEatComments(self):
         input_api = MockInputApi()
