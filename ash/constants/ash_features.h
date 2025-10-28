@@ -361,13 +361,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFjordOobeForceEnabled);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFlexAutoEnrollment);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingSso);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFloatingWorkspaceV2);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceV2PeriodicJobIntervalInSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEcheLauncher);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEcheLauncherListView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1161,8 +1154,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFjordOobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFjordOobeForceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFlexAutoEnrollmentEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingSsoAllowed();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFloatingWorkspaceV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool ShouldForceEnableServerSideSpeechRecognition();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheLauncherEnabled();

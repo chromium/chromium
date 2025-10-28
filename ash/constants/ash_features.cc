@@ -843,22 +843,6 @@ BASE_FEATURE(kFlexFirmwareUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 // and if we show the user selectable UI when the policy is enabled.
 BASE_FEATURE(kFloatingSso, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables Floating Workspace V2 feature on ChromeOS
-BASE_FEATURE(kFloatingWorkspaceV2, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Maximum delay to wait for restoring Floating Workspace V2 after login.
-constexpr base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin{
-        &kFloatingWorkspaceV2, "MaxTimeAvailableForRestoreAfterLoginV2",
-        base::Seconds(30)};
-
-// Time interval to capture current desk as desk template and upload template to
-// server.
-constexpr base::FeatureParam<base::TimeDelta>
-    kFloatingWorkspaceV2PeriodicJobIntervalInSeconds{
-        &kFloatingWorkspaceV2, "PeriodicJobIntervalInSeconds",
-        base::Seconds(30)};
-
 // If enabled, makes the Projector app use server side speech
 // recognition instead of on-device speech recognition.
 BASE_FEATURE(kForceEnableServerSideSpeechRecognition,
@@ -2839,10 +2823,6 @@ bool IsFlexFirmwareUpdateEnabled() {
 
 bool IsFloatingSsoAllowed() {
   return base::FeatureList::IsEnabled(kFloatingSso);
-}
-
-bool IsFloatingWorkspaceV2Enabled() {
-  return base::FeatureList::IsEnabled(kFloatingWorkspaceV2);
 }
 
 bool ShouldForceEnableServerSideSpeechRecognition() {
