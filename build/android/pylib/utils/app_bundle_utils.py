@@ -35,7 +35,8 @@ def _BundleMinSdkVersion(bundle_path):
 
 def _CreateDeviceSpec(bundle_path, sdk_version, locales):
   if not sdk_version:
-    sdk_version = _BundleMinSdkVersion(bundle_path)
+    # Target 32 by default since it supports sparse configs in resources.arsc.
+    sdk_version = max(_BundleMinSdkVersion(bundle_path), 32)
 
   # Setting sdkVersion=minSdkVersion prevents multiple per-minSdkVersion .apk
   # files from being created within the .apks file.
@@ -163,6 +164,9 @@ def GenerateBundleApks(bundle_path,
         spec_file = pathlib.Path(tmp_dir) / 'device.json'
         spec_file.write_text(data)
         cmd_args += ['--device-spec=' + str(spec_file)]
+
+      if minimal:
+        cmd_args += ['--enable-sparse-encoding']
 
       bundletool.RunBundleTool(cmd_args)
 
