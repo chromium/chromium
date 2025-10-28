@@ -312,7 +312,9 @@ public class SpannableAutocompleteEditTextModel
         // and reset the states.
         mCurrentState.set(text.toString(), null, null, text.length(), text.length());
         mSpanCursorController.reset();
-        mPreviouslyNotifiedState.copyFrom(mCurrentState);
+        if (mIgnoreTextChangeFromAutocomplete) {
+            mPreviouslyNotifiedState.copyFrom(mCurrentState);
+        }
         mPreviouslySetState.copyFrom(mCurrentState);
         if (mBatchEditNestCount == 0) updateSelectionForTesting();
     }
