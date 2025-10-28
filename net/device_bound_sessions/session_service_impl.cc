@@ -936,12 +936,9 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
     return false;
   }
 
-  it->second.erase(std::remove_if(it->second.begin(), it->second.end(),
-                                  [](base::TimeTicks time) {
-                                    return base::TimeTicks::Now() - time >=
-                                           kRefreshQuotaInterval;
-                                  }),
-                   it->second.end());
+  std::erase_if(it->second, [](base::TimeTicks time) {
+    return base::TimeTicks::Now() - time >= kRefreshQuotaInterval;
+  });
 
   size_t refresh_count = it->second.size();
   if (refresh_count == 0) {
