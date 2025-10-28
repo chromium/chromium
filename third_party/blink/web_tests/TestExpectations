@@ -9867,8 +9867,6 @@ crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification
 crbug.com/444170116 [ Linux ] external/wpt/uievents/mouse/mouseenter-mouseleave-on-drag.html [ Failure ]
 
 # Gardener 2025-10-28
-crbug.com/455664816 virtual/threaded/external/wpt/css/css-view-transitions/scoped/display-change-during-transition.html [ Failure Pass ]
-crbug.com/455664816 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/scoped/display-change-during-transition.html [ Failure Pass ]
 crbug.com/364315665 media/controls/closed-captions-single-track.html [ Failure Pass ]
 crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html [ Pass Failure ]
 crbug.com/455803699 [ Mac ] http/tests/accessibility/slow-document-load.html [ Pass Failure ]
