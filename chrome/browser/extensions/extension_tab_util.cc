@@ -655,14 +655,14 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
   api::tabs::MutedInfo info;
   info.muted = contents->IsAudioMuted();
   switch (GetTabAudioMutedReason(contents)) {
-    case TabMutedReason::NONE:
+    case TabMutedReason::kNone:
       break;
-    case TabMutedReason::AUDIO_INDICATOR:
-    case TabMutedReason::CONTENT_SETTING:
-    case TabMutedReason::CONTENT_SETTING_CHROME:
+    case TabMutedReason::kAudioIndicator:
+    case TabMutedReason::kContentSetting:
+    case TabMutedReason::kContentSettingChrome:
       info.reason = api::tabs::MutedInfoReason::kUser;
       break;
-    case TabMutedReason::EXTENSION:
+    case TabMutedReason::kExtension:
       info.reason = api::tabs::MutedInfoReason::kExtension;
       info.extension_id =
           LastMuteMetadata::FromWebContents(contents)->extension_id;

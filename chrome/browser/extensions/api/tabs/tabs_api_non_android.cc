@@ -903,7 +903,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 
   if (params->update_properties.muted &&
       !SetTabAudioMuted(contents, *params->update_properties.muted,
-                        TabMutedReason::EXTENSION, extension()->id())) {
+                        TabMutedReason::kExtension, extension()->id())) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         kCannotUpdateMuteCaptured, base::NumberToString(tab_id))));
   }

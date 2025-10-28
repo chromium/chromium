@@ -27,7 +27,7 @@ bool SetTabAudioMuted(content::WebContents* contents,
                       TabMutedReason reason,
                       const std::string& extension_id) {
   DCHECK(contents);
-  DCHECK(TabMutedReason::NONE != reason);
+  DCHECK(TabMutedReason::kNone != reason);
 
   contents->SetAudioMuted(mute);
 
@@ -35,7 +35,7 @@ bool SetTabAudioMuted(content::WebContents* contents,
   LastMuteMetadata* const metadata =
       LastMuteMetadata::FromWebContents(contents);
   metadata->reason = reason;
-  if (reason == TabMutedReason::EXTENSION) {
+  if (reason == TabMutedReason::kExtension) {
     DCHECK(!extension_id.empty());
     metadata->extension_id = extension_id;
   } else {
@@ -60,7 +60,7 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
   if (url.SchemeIs(content::kChromeUIScheme)) {
     return web_contents->IsAudioMuted() &&
            GetTabAudioMutedReason(web_contents) ==
-               TabMutedReason::CONTENT_SETTING_CHROME;
+               TabMutedReason::kContentSettingChrome;
   }
 
   Profile* profile =

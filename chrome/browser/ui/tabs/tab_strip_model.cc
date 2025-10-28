@@ -4853,7 +4853,7 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
       // chrome:// URLs don't have content settings but can be muted, so just
       // mute the WebContents.
       SetTabAudioMuted(web_contents, mute,
-                       TabMutedReason::CONTENT_SETTING_CHROME, std::string());
+                       TabMutedReason::kContentSettingChrome, std::string());
     } else {
       Profile* profile =
           Profile::FromBrowserContext(web_contents->GetBrowserContext());

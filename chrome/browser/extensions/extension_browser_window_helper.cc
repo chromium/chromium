@@ -63,9 +63,9 @@ void UnmuteIfMutedByExtension(content::WebContents* contents,
   LastMuteMetadata::CreateForWebContents(contents);  // Ensures metadata exists.
   LastMuteMetadata* const metadata =
       LastMuteMetadata::FromWebContents(contents);
-  if (metadata->reason == TabMutedReason::EXTENSION &&
+  if (metadata->reason == TabMutedReason::kExtension &&
       metadata->extension_id == extension_id) {
-    SetTabAudioMuted(contents, false, TabMutedReason::EXTENSION, extension_id);
+    SetTabAudioMuted(contents, false, TabMutedReason::kExtension, extension_id);
   }
 }
 

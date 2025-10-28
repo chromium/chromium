@@ -15,11 +15,11 @@ enum class TabWebFeedFollowState {
 
 // The Service, UI, or Setting which muted the tab.
 enum class TabMutedReason {
-  NONE,                    // The tab has never been muted or unmuted.
-  EXTENSION,               // Mute state changed via extension API.
-  AUDIO_INDICATOR,         // Mute toggled via tab-strip audio icon.
-  CONTENT_SETTING,         // The sound content setting was set to BLOCK.
-  CONTENT_SETTING_CHROME,  // Mute toggled on chrome:// URL.
+  kNone,                  // The tab has never been muted or unmuted.
+  kExtension,             // Mute state changed via extension API.
+  kAudioIndicator,        // Mute toggled via tab-strip audio icon.
+  kContentSetting,        // The sound content setting was set to BLOCK.
+  kContentSettingChrome,  // Mute toggled on chrome:// URL.
 };
 
 // A BitField used to specify what should happen when the tab is closed.

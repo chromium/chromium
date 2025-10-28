@@ -177,7 +177,7 @@ TEST_F(SoundContentSettingObserverTest, DontMuteWhenUnmutedByExtension) {
   EXPECT_TRUE(web_contents()->IsAudioMuted());
 
   // Unmute by extension.
-  SetMuteStateForReason(false, TabMutedReason::EXTENSION);
+  SetMuteStateForReason(false, TabMutedReason::kExtension);
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 
   // Navigating to a new URL and back to kURL1 should not mute the tab unmuted
@@ -191,7 +191,7 @@ TEST_F(SoundContentSettingObserverTest, DontMuteWhenUnmutedByExtension) {
 TEST_F(SoundContentSettingObserverTest, DontUnmuteWhenMutedByExtension) {
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 
-  SetMuteStateForReason(true, TabMutedReason::EXTENSION);
+  SetMuteStateForReason(true, TabMutedReason::kExtension);
   EXPECT_TRUE(web_contents()->IsAudioMuted());
 
   // Navigating to a new URL should not unmute the tab muted by an extension.
@@ -202,7 +202,7 @@ TEST_F(SoundContentSettingObserverTest, DontUnmuteWhenMutedByExtension) {
 TEST_F(SoundContentSettingObserverTest, DontUnmuteWhenMutedByAudioIndicator) {
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 
-  SetMuteStateForReason(true, TabMutedReason::AUDIO_INDICATOR);
+  SetMuteStateForReason(true, TabMutedReason::kAudioIndicator);
   EXPECT_TRUE(web_contents()->IsAudioMuted());
 
   // Navigating to a new URL should not unmute the tab muted by audio indicator.
@@ -214,7 +214,7 @@ TEST_F(SoundContentSettingObserverTest, DontUnmuteChromeTabWhenMuted) {
   NavigateAndCommit(GURL(kChromeURL));
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 
-  SetMuteStateForReason(true, TabMutedReason::CONTENT_SETTING_CHROME);
+  SetMuteStateForReason(true, TabMutedReason::kContentSettingChrome);
   EXPECT_TRUE(web_contents()->IsAudioMuted());
 
   NavigateAndCommit(GURL(kChromeURL));
@@ -226,7 +226,7 @@ TEST_F(SoundContentSettingObserverTest,
   NavigateAndCommit(GURL(kChromeURL));
   EXPECT_FALSE(web_contents()->IsAudioMuted());
 
-  SetMuteStateForReason(true, TabMutedReason::CONTENT_SETTING_CHROME);
+  SetMuteStateForReason(true, TabMutedReason::kContentSettingChrome);
   EXPECT_TRUE(web_contents()->IsAudioMuted());
 
   NavigateAndCommit(GURL(kURL1));

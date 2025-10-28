@@ -128,22 +128,24 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   TabMutedReason reason = GetTabAudioMutedReason(web_contents());
 
   // Do not override the decisions of an extension.
-  if (reason == TabMutedReason::EXTENSION)
+  if (reason == TabMutedReason::kExtension) {
     return;
+  }
 
   // Don't unmute a chrome:// URL if the tab has been explicitly muted on a
   // chrome:// URL.
-  if (reason == TabMutedReason::CONTENT_SETTING_CHROME &&
+  if (reason == TabMutedReason::kContentSettingChrome &&
       web_contents()->GetLastCommittedURL().SchemeIs(
           content::kChromeUIScheme)) {
     return;
   }
 
   // Do not unmute if we're muted due to audio indicator.
-  if (!mute && reason == TabMutedReason::AUDIO_INDICATOR)
+  if (!mute && reason == TabMutedReason::kAudioIndicator) {
     return;
+  }
 
-  SetTabAudioMuted(web_contents(), mute, TabMutedReason::CONTENT_SETTING,
+  SetTabAudioMuted(web_contents(), mute, TabMutedReason::kContentSetting,
                    std::string());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
