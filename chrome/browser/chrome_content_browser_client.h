@@ -1206,6 +1206,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldDisallowCredentialRequest(
       content::WebContents* web_contents) override;
 #endif  //! BUILDFLAG(IS_ANDROID)
+  void ModifyRequestHeadersForPrefetch(
+      const GURL& url,
+      bool is_redirect,
+      net::HttpRequestHeaders& headers,
+      net::HttpRequestHeaders& cors_exempt_headers) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

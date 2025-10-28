@@ -768,6 +768,13 @@ BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
 BASE_FEATURE(kPrewarmServiceWorkerRegistrationForDSE,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+// Kill-switch for the request integrity headers support for prefetches
+// initiated by `content::PrefetchContainer`.
+BASE_FEATURE(kPrefetchRequestIntegrityHeaders,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Cached version of the locale so we can return the locale on the I/O
 // thread.
 std::string& GetIOThreadApplicationLocale() {
@@ -8806,4 +8813,19 @@ bool ChromeContentBrowserClient::IsFileSystemAccessApiFilePickerAllowed(
   }
 #endif
   return true;
+}
+
+void ChromeContentBrowserClient::ModifyRequestHeadersForPrefetch(
+    const GURL& url,
+    bool is_redirect,
+    net::HttpRequestHeaders& headers,
+    net::HttpRequestHeaders& cors_exempt_headers) {
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
+  if (base::FeatureList::IsEnabled(kPrefetchRequestIntegrityHeaders) &&
+      request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+          IsFeatureEnabled()) {
+    request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
+        ModifyRequestIntegrityHeaders(url, is_redirect, cors_exempt_headers);
+  }
+#endif
 }

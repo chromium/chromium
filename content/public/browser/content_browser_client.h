@@ -3372,6 +3372,21 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Whether to animate back-forward transition gestures with a screenshot of
   // the destination.
   virtual bool ShouldAnimateBackForwardTransitions();
+
+  // Allows the embedder to modify the request headers for a prefetch request
+  // initiated by `content::PrefetchContainer` (not by other prefetches).
+  //
+  // This performs a part of the operations that would be done by
+  // `URLLoaderThrottle`s of `CreateURLLoaderThrottles()`. Currently,
+  // `CreateURLLoaderThrottles()` is not applied to
+  // `content::PrefetchContainer`. As a workaround, this function applies some
+  // necessary operations until the prefetch supports
+  // `CreateURLLoaderThrottles()`.
+  virtual void ModifyRequestHeadersForPrefetch(
+      const GURL& url,
+      bool is_redirect,
+      net::HttpRequestHeaders& headers,
+      net::HttpRequestHeaders& cors_exempt_headers);
 };
 
 }  // namespace content

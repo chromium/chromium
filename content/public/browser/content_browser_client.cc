@@ -2029,4 +2029,10 @@ bool ContentBrowserClient::ShouldAnimateBackForwardTransitions() {
 #endif
 }
 
+void ContentBrowserClient::ModifyRequestHeadersForPrefetch(
+    const GURL& url,
+    bool is_redirect,
+    net::HttpRequestHeaders& headers,
+    net::HttpRequestHeaders& cors_exempt_headers) {}
+
 }  // namespace content

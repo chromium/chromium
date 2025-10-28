@@ -790,6 +790,10 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
 
   AddXClientDataHeader(*resource_request_.get());
 
+  GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
+      resource_request_->url, /*is_redirect=*/true, resource_request_->headers,
+      resource_request_->cors_exempt_headers);
+
   redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
       *this, redirect_info.new_url,
       IsCrossSiteRequest(url::Origin::Create(redirect_info.new_url))));
@@ -1513,6 +1517,10 @@ void PrefetchContainer::MakeResourceRequest() {
   if (request().should_append_variations_header()) {
     AddXClientDataHeader(*resource_request.get());
   }
+
+  GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
+      resource_request->url, /*is_redirect=*/false, resource_request->headers,
+      resource_request->cors_exempt_headers);
 
   // `URLLoaderNetworkServiceObserver`
   // (`resource_request->trusted_params->url_loader_network_observer`) is NOT
