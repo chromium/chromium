@@ -66,7 +66,6 @@ TextRecord* CreateTextRecordForTest(Node* node,
   return MakeGarbageCollected<TextRecord>(
       node, width * height, gfx::RectF(width, height), gfx::Rect(width, height),
       gfx::RectF(width, height),
-      /* frame_index=*/0,
       /* is_needed_for_timing=*/false, context);
 }
 

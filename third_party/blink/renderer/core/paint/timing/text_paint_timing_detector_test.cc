@@ -8,9 +8,11 @@
 #include "base/test/trace_event_analyzer.h"
 #include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
@@ -18,6 +20,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -63,8 +66,13 @@ class TextPaintTimingDetectorTest : public testing::Test {
   LocalFrameView& GetChildFrameView() {
     return *To<LocalFrame>(GetFrame()->Tree().FirstChild())->View();
   }
+
   Document* GetChildDocument() {
     return To<LocalFrame>(GetFrame()->Tree().FirstChild())->GetDocument();
+  }
+
+  Element* GetElement(const char* name) {
+    return GetDocument().getElementById(AtomicString(name));
   }
 
   TextPaintTimingDetector* GetTextPaintTimingDetector() {
@@ -885,6 +893,37 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
                                                 AtomicString("opacity: 1"));
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+}
+
+TEST_F(TextPaintTimingDetectorTest,
+       QueuedRecordsWaitForCorrectPresentationFeedback) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target1"></div>
+    <div id="target2"></div>
+  )HTML");
+
+  // Simulate painting one of the two text nodes. This should queue up a
+  // presentation callback for this frame.
+  Element* target1 = GetElement("target1");
+  To<HTMLElement>(target1)->setInnerText("text 1");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1);
+
+  // Simulate a second text paint, before getting presentation for the first.
+  // This should queue up another presentation callback, for this frame.
+  Element* target2 = GetElement("target2");
+  To<HTMLElement>(target2)->setInnerText("text 2");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 2);
+
+  // Invoking the first presentation callback should only dequeue one text
+  // record, since only `target1` was painted in the first frame.
+  InvokeCallback();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1);
+  // And this should dequeue the record associated with `target2`, painted in
+  // the second frame.
+  InvokeCallback();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 0);
 }
 
 }  // namespace blink

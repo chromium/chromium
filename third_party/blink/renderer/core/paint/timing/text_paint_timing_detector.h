@@ -137,8 +137,10 @@ class CORE_EXPORT TextPaintTimingDetector final
       const gfx::RectF& root_visual_rect,
       SoftNavigationContext* context,
       bool is_repaint);
+
   inline void QueueToMeasurePaintTime(const LayoutObject& object,
                                       TextRecord* record) {
+    record->SetFrameIndex(frame_index_);
     texts_queued_for_paint_time_.insert(&object, record);
     added_entry_in_latest_frame_ = true;
   }
