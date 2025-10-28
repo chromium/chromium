@@ -26,7 +26,6 @@ source_set("content_configuration") {
     "table_view_cell_content_view.mm",
   ]
   deps = [
-    ":generic_content",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -36,6 +35,7 @@ source_set("content_configuration") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+  public_deps = [ ":generic_content" ]
 }
 
 source_set("generic_content") {

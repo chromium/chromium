@@ -570,7 +570,7 @@ using CategorizationResult =
       fileExists = base::PathExists(absolutePath);
     }
 
-    if (fileExists) {
+    if (record.state == web::DownloadTask::State::kInProgress || fileExists) {
       existingFiles.push_back(record);
     } else {
       missingFiles.push_back(record);

@@ -46,6 +46,12 @@ typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
 /// Whether this download item can be canceled.
 @property(nonatomic, assign, readonly) BOOL cancelable;
 
+/// Whether this download item should show progress view.
+@property(nonatomic, assign, readonly) BOOL shouldShowProgressView;
+
+/// Returns the download progress for this download item (0.0 to 1.0).
+@property(nonatomic, assign, readonly) CGFloat downloadProgress;
+
 /// Initializes a download list item with the given download record.
 - (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord
     NS_DESIGNATED_INITIALIZER;
