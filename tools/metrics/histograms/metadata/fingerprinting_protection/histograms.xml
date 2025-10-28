@@ -315,37 +315,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FingerprintingProtection.IOSDryRun.SkippedRules" units="rules"
-    expires_after="2026-08-12">
-  <owner>rsailer@google.com</owner>
-  <owner>rizvis@google.com</owner>
-  <summary>
-    The number of rules skipped during transformation for the AFP blocklist
-    dry-run experiment. Logged each time the component is registered or updated.
-  </summary>
-</histogram>
-
-<histogram name="FingerprintingProtection.IOSDryRun.TotalRules" units="rules"
-    expires_after="2026-08-12">
-  <owner>rsailer@google.com</owner>
-  <owner>rizvis@google.com</owner>
-  <summary>
-    The total number of rules in the AFP blocklist before transformation for the
-    dry-run experiment. Logged each time the component is registered or updated.
-  </summary>
-</histogram>
-
-<histogram name="FingerprintingProtection.IOSDryRun.TransformResult"
-    enum="FingerprintingProtectionIOSDryRunTransformResult"
-    expires_after="2026-08-12">
-  <owner>rsailer@google.com</owner>
-  <owner>rizvis@google.com</owner>
-  <summary>
-    Records the result of transforming the AFP blocklist for the dry-run
-    experiment. Logged each time the component is registered or updated.
-  </summary>
-</histogram>
-
 <histogram name="FingerprintingProtection.PageLoad.ActivationDecision"
     enum="FingerprintingProtectionActivationDecision"
     expires_after="2026-03-01">
@@ -743,20 +712,6 @@ chromium-metrics-reviews@google.com.
 
     This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to account for
     clients with low-resolution clocks.
-  </summary>
-</histogram>
-
-<histogram
-    name="FingerprintingProtection.WKContentRuleListComponent.InstallationResult"
-    enum="FingerprintingProtectionWKComponentInstallationResult"
-    expires_after="2026-03-08">
-  <owner>rsailer@google.com</owner>
-  <owner>rizvis@google.com</owner>
-  <owner>thesalsa@google.com</owner>
-  <summary>
-    The result of the installation of the Anti-Fingerprinting WebKit Content
-    Rule List component. Logged whenever a new component is installed via the
-    component updater.
   </summary>
 </histogram>
 
