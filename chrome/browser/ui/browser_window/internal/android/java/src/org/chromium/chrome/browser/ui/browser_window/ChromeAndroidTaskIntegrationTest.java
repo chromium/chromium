@@ -31,8 +31,10 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -401,6 +403,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
     public void show_activateVisibleInactiveTask() {
         // Arrange
@@ -436,6 +439,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
     public void showInactive_activateVisibleInactiveTask() {
         // Arrange
@@ -471,6 +475,7 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
     public void deactivate_activateVisibleInactiveTask() {
         // Arrange

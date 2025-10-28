@@ -24406,6 +24406,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "open_adjacently": "false"
+                    },
                     "enable_features": [
                         "RobustWindowManagementExperimental"
                     ]
