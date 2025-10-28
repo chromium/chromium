@@ -31,6 +31,7 @@
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -224,6 +225,14 @@ class LensOverlayQueryController {
   // an existing query URL. Will not affect the state of this controller's
   // request id generator or analytics id.
   std::string GetVsridForNewTab();
+
+  // Returns the latest visual search interaction data sent to the server.
+  // This does not take into account whether the selection was cleared by the
+  // user.
+  std::optional<lens::LensOverlayVisualSearchInteractionData>
+  GetVisualSearchInteractionData() {
+    return visual_search_interaction_data_;
+  }
 
   base::TimeTicks partial_page_contents_request_start_time_for_testing() const {
     return partial_page_contents_request_start_time_;
@@ -643,11 +652,17 @@ class LensOverlayQueryController {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
   CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
 
-  // Gets the visual search interaction log data param as a base64url
-  // encoded string.
-  std::string GetEncodedVisualSearchInteractionLogData(
+  // Builds the LensOverlayVisualSearchInteractionData proto from the given
+  // parameters.
+  lens::LensOverlayVisualSearchInteractionData
+  BuildVisualSearchInteractionLogData(
       const std::optional<std::string>& selected_text,
       lens::LensOverlaySelectionType selection_type);
+
+  // Encodes the LensOverlayVisualSearchInteractionData proto to a base64url
+  // encoded string.
+  std::string EncodeVisualSearchInteractionLogData(
+      const lens::LensOverlayVisualSearchInteractionData& interaction_data);
 
   // Creates the metadata for an interaction request using the latest
   // interaction and image crop data.
@@ -874,6 +889,11 @@ class LensOverlayQueryController {
   // response is received) and the overlay controller notified via the
   // suggest inputs callback.
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
+
+  // The current visual search interaction data. This is used to send the vsint
+  // param with the interaction request.
+  std::optional<lens::LensOverlayVisualSearchInteractionData>
+      visual_search_interaction_data_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<variations::VariationsClient> variations_client_;

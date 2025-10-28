@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
 
+#include "base/base64url.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_composebox_handler.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -18,6 +19,7 @@
 #include "components/lens/lens_payload_construction.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 
 namespace {
 lens::LensOverlayVisualInputType LensMimeTypeToVisualInputType(
@@ -292,6 +294,16 @@ lens::ClientToAimMessage LensComposeboxController::BuildSubmitQueryMessage(
                                           media_type));
   lens_image_query_data->set_visual_input_type(
       LensMimeTypeToVisualInputType(primary_content_type));
+
+  // Add the latest visual search interaction data to the query if it exists.
+  std::optional<lens::LensOverlayVisualSearchInteractionData>
+      visual_search_interaction_data =
+          query_controller->GetVisualSearchInteractionData();
+  if (visual_search_interaction_data &&
+      overlay_controller->HasRegionSelection()) {
+    lens_image_query_data->mutable_visual_search_interaction_data()->CopyFrom(
+        visual_search_interaction_data.value());
+  }
   return client_to_aim_message;
 }
 

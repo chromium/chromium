@@ -9644,3 +9644,77 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
       fake_query_controller->last_sent_page_content_payload();
   EXPECT_EQ(fake_query_controller->num_page_content_update_requests_sent(), 1);
 }
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
+                       AimQueryRegionSearchDoesNotLoadInSidePanel) {
+  WaitForPaint();
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Issue a search box request with a vsqid to simulate being in an AIM query.
+  // This will set the side_panel_new_tab_url_ in the coordinator after the
+  // navigation in the side panel finishes.
+  controller->IssueSearchBoxRequestForTesting(
+      base::Time::Now(), "first query",
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false, {{"vsqid", "fake_vsqid"}});
+
+  // Wait for the side panel to open and load.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kHidden; }));
+  auto* side_panel_web_contents =
+      controller->GetSidePanelWebContentsForTesting();
+  ASSERT_TRUE(side_panel_web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(side_panel_web_contents));
+  GURL url_before_region_search =
+      side_panel_web_contents->GetLastCommittedURL();
+
+  auto* query_controller = static_cast<lens::TestLensOverlayQueryController*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  std::optional<lens::LensOverlayVisualSearchInteractionData> vsint_before;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    vsint_before = query_controller->GetVisualSearchInteractionData();
+    return vsint_before.has_value();
+  }));
+  const std::string vsint_before_string = vsint_before->SerializeAsString();
+  query_controller->ResetTestingState();
+
+  // Reshow the overlay to perform a region search.
+  GetLensSearchController()->OpenLensOverlayInCurrentSession();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // We need to flush the mojo receiver calls to make sure the screenshot was
+  // passed back to the WebUI or else the region selection UI will not render.
+  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
+  ASSERT_TRUE(fake_controller);
+  fake_controller->FlushForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  // Simulate a region search.
+  content::TestNavigationObserver search_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  search_observer.WaitForNavigationFinished();
+
+  // Wait for the region search to be processed.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !query_controller->last_queried_region().is_null(); }));
+
+  // Verify that no navigation occurred and the URL is unchanged.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    auto vsint_after = query_controller->GetVisualSearchInteractionData();
+    return url_before_region_search ==
+               side_panel_web_contents->GetLastCommittedURL() &&
+           vsint_after.has_value() &&
+           vsint_before_string != vsint_after->SerializeAsString();
+  }));
+  EXPECT_EQ(url_before_region_search,
+            side_panel_web_contents->GetLastCommittedURL());
+}

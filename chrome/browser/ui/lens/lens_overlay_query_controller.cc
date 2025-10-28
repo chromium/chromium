@@ -609,13 +609,16 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // interactions in quick succession.
   if (lens::features::SendVisualSearchInteractionParamForLensTextQueries() &&
       IsLensTextSelectionType(lens_selection_type)) {
-    std::string encoded_vsint = GetEncodedVisualSearchInteractionLogData(
-        query_text, lens_selection_type);
+    visual_search_interaction_data_ =
+        BuildVisualSearchInteractionLogData(query_text, lens_selection_type);
+    std::string encoded_vsint = EncodeVisualSearchInteractionLogData(
+        visual_search_interaction_data_.value());
     suggest_inputs_.set_encoded_visual_search_interaction_log_data(
         encoded_vsint);
     additional_search_query_params.insert(
         {kVisualSearchInteractionDataQueryParameterKey, encoded_vsint});
   } else {
+    visual_search_interaction_data_.reset();
     suggest_inputs_.clear_encoded_visual_search_interaction_log_data();
   }
   suggest_inputs_.clear_encoded_image_signals();
@@ -1165,6 +1168,7 @@ void LensOverlayQueryController::FullImageFetchResponseHandler(
       translate_options_.has_value(), kImageVisualInputTypeQueryParameterValue);
 
   // Image signals and vsint are only valid after an interaction request.
+  visual_search_interaction_data_.reset();
   suggest_inputs_.clear_encoded_image_signals();
   suggest_inputs_.clear_encoded_visual_search_interaction_log_data();
   RunSuggestInputsCallback();
@@ -1895,8 +1899,10 @@ void LensOverlayQueryController::CreateSearchUrlAndSendToCallback(
   // The visual search interaction log data should be added as late as possible,
   // so that is_parent_query can be accurately set if the user issues multiple
   // interactions in quick succession.
-  std::string encoded_vsint =
-      GetEncodedVisualSearchInteractionLogData(query_text, selection_type);
+  visual_search_interaction_data_ =
+      BuildVisualSearchInteractionLogData(query_text, selection_type);
+  std::string encoded_vsint = EncodeVisualSearchInteractionLogData(
+      visual_search_interaction_data_.value());
   additional_search_query_params.insert(
       {kVisualSearchInteractionDataQueryParameterKey, encoded_vsint});
   suggest_inputs_.set_encoded_visual_search_interaction_log_data(encoded_vsint);
@@ -2151,8 +2157,8 @@ LensOverlayQueryController::CreateOAuthHeadersAndContinue(
   return nullptr;
 }
 
-std::string
-LensOverlayQueryController::GetEncodedVisualSearchInteractionLogData(
+lens::LensOverlayVisualSearchInteractionData
+LensOverlayQueryController::BuildVisualSearchInteractionLogData(
     const std::optional<std::string>& selected_text,
     lens::LensOverlaySelectionType selection_type) {
   lens::LensOverlayVisualSearchInteractionData interaction_data;
@@ -2201,8 +2207,15 @@ LensOverlayQueryController::GetEncodedVisualSearchInteractionLogData(
         selected_text.value());
   }
 
-  parent_query_sent_ = true;
+  return interaction_data;
+}
 
+std::string LensOverlayQueryController::EncodeVisualSearchInteractionLogData(
+    const lens::LensOverlayVisualSearchInteractionData& interaction_data) {
+  // Set this to true to indicate that the initial parent query has been sent.
+  // This ensures that subsequent interactions will correctly report
+  // is_parent_query as false.
+  parent_query_sent_ = true;
   std::string serialized_proto;
   CHECK(interaction_data.SerializeToString(&serialized_proto));
   std::string encoded_proto;
@@ -2284,6 +2297,7 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
   query_controller_state_ = QueryControllerState::kClusterInfoExpired;
   request_id_generator_->ResetRequestId();
   suggest_inputs_.Clear();
+  visual_search_interaction_data_.reset();
   RunSuggestInputsCallback();
   parent_query_sent_ = false;
   is_first_page_contents_request_ = true;
