@@ -480,9 +480,14 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
     profile_->GetPrefs()->SetBoolean(
         ntp_prefs::kNtpCustomLinksVisible,
         base::Contains(types_set, ntp_tiles::TileType::kCustomLinks));
-    profile_->GetPrefs()->SetBoolean(
-        ntp_prefs::kNtpEnterpriseShortcutsVisible,
-        base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts));
+    // If enterprise shortcuts are disabled or the policy is not set, skip this
+    // update.
+    if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+        !IsEnterpriseShortcutsEmpty()) {
+      profile_->GetPrefs()->SetBoolean(
+          ntp_prefs::kNtpEnterpriseShortcutsVisible,
+          base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts));
+    }
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
@@ -498,8 +503,6 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
   }
 }
 
-// TODO(crbug.com/441766227): Update so that when the user has not selected a
-// tile type to view, admin-set shortcuts should be shown by default.
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   std::vector<ntp_tiles::TileType> disabled_shortcuts;
   // If feature is not enabled or no enterprise shortcuts are set by policy,

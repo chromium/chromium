@@ -430,6 +430,7 @@ struct SetMostVisitedSettingsTestCase {
   bool initial_enterprise_shortcuts_visible;
   bool initial_shortcuts_visible;
   bool initial_personal_shortcuts_visible;
+  bool has_enterprise_policy;
   // Action
   std::vector<ntp_tiles::TileType> types_to_set;
   bool visible_to_set;
@@ -458,7 +459,8 @@ TEST_P(CustomizeChromePageHandlerSetMostVisitedTest, SetMostVisitedSettings) {
                             SaveArg<2>(&personal_shortcuts_visible),
                             SaveArg<3>(&disabled_shortcuts)));
 
-  // Set initial prefs state.
+  // Set initial enterprise shortcuts policy and prefs state.
+  SetEnterpriseShortcutsPolicy(test_case.has_enterprise_policy);
   SetMostVisitedPrefs(test_case.initial_custom_links_visible,
                       test_case.initial_enterprise_shortcuts_visible,
                       test_case.initial_shortcuts_visible,
@@ -489,9 +491,10 @@ TEST_P(CustomizeChromePageHandlerSetMostVisitedTest, SetMostVisitedSettings) {
 const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
     {.test_name = "SetSingleType",
      .initial_custom_links_visible = true,
-     .initial_enterprise_shortcuts_visible = false,
+     .initial_enterprise_shortcuts_visible = true,
      .initial_shortcuts_visible = true,
      .initial_personal_shortcuts_visible = true,
+     .has_enterprise_policy = true,
      .types_to_set = {ntp_tiles::TileType::kTopSites},
      .visible_to_set = true,
      .personal_shortcuts_visible_to_set = true,
@@ -500,11 +503,26 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
      .expected_histogram_count = 1},
+    {.test_name = "SetSingleType_EnterprisePolicyEmpty",
+     .initial_custom_links_visible = true,
+     .initial_enterprise_shortcuts_visible = true,
+     .initial_shortcuts_visible = true,
+     .initial_personal_shortcuts_visible = true,
+     .has_enterprise_policy = false,
+     .types_to_set = {ntp_tiles::TileType::kTopSites},
+     .visible_to_set = true,
+     .personal_shortcuts_visible_to_set = true,
+     .expected_custom_links_visible = false,
+     .expected_enterprise_shortcuts_visible = true,
+     .expected_shortcuts_visible = true,
+     .expected_personal_shortcuts_visible = true,
+     .expected_histogram_count = 1},
     {.test_name = "SetMultipleTypes",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = false,
      .initial_shortcuts_visible = true,
      .initial_personal_shortcuts_visible = true,
+     .has_enterprise_policy = true,
      .types_to_set = {ntp_tiles::TileType::kTopSites,
                       ntp_tiles::TileType::kEnterpriseShortcuts},
      .visible_to_set = true,
@@ -514,11 +532,27 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
      .expected_histogram_count = 1},
+    {.test_name = "SetMultipleTypes_EnterprisePolicyEmpty",
+     .initial_custom_links_visible = true,
+     .initial_enterprise_shortcuts_visible = false,
+     .initial_shortcuts_visible = true,
+     .initial_personal_shortcuts_visible = true,
+     .has_enterprise_policy = false,
+     .types_to_set = {ntp_tiles::TileType::kTopSites,
+                      ntp_tiles::TileType::kEnterpriseShortcuts},
+     .visible_to_set = true,
+     .personal_shortcuts_visible_to_set = true,
+     .expected_custom_links_visible = false,
+     .expected_enterprise_shortcuts_visible = false,
+     .expected_shortcuts_visible = true,
+     .expected_personal_shortcuts_visible = true,
+     .expected_histogram_count = 1},
     {.test_name = "SetShortcutsVisible",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = false,
      .initial_shortcuts_visible = false,
      .initial_personal_shortcuts_visible = true,
+     .has_enterprise_policy = true,
      .types_to_set = {ntp_tiles::TileType::kCustomLinks},
      .visible_to_set = true,
      .personal_shortcuts_visible_to_set = true,
@@ -532,6 +566,7 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .initial_enterprise_shortcuts_visible = false,
      .initial_shortcuts_visible = true,
      .initial_personal_shortcuts_visible = true,
+     .has_enterprise_policy = true,
      .types_to_set = {ntp_tiles::TileType::kCustomLinks},
      .visible_to_set = true,
      .personal_shortcuts_visible_to_set = false,

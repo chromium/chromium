@@ -92,6 +92,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -767,6 +768,10 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       ntp_prefs::kNtpShortcutsVisible,
       base::BindRepeating(&NewTabPageUI::OnTilesVisibilityPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+  pref_change_registrar_.Add(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      base::BindRepeating(&NewTabPageUI::OnEnterpriseShortcutsPolicyChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // Store basic theme info in load time data to make the background color and
   // background image available as soon as the page loads to prevent a potential
@@ -1246,7 +1251,27 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
   }
 }
 
+void NewTabPageUI::OnEnterpriseShortcutsPolicyChanged() {
+  // If enterprise shortcuts feature or mixing is disabled, do nothing.
+  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
+      !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
+    return;
+  }
+  // If enterprise shortcuts are available by policy and the user
+  // has not previously set the visibility preference, then enable enterprise
+  // shortcuts by default.
+  if (!profile_->GetPrefs()
+           ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
+           .empty() &&
+      !profile_->GetPrefs()->HasPrefPath(
+          ntp_prefs::kNtpEnterpriseShortcutsVisible)) {
+    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
+                                     true);
+  }
+}
+
 void NewTabPageUI::OnLoad() {
+  OnEnterpriseShortcutsPolicyChanged();
   base::Value::Dict update;
   update.Set("navigationStartTime",
              navigation_start_time_.InMillisecondsFSinceUnixEpoch());
