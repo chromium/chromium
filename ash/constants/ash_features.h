@@ -16,7 +16,6 @@ namespace ash::features {
 // alongside the definition of their values in the .cc file. If a feature is
 // being rolled out via Finch, add a comment in the .cc file.
 
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAdaptiveCharging);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOnDeviceAppControls);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAllowAmbientEQ);
