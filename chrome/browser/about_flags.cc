@@ -10455,11 +10455,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCompressionDictionaryTTLDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kCompressionDictionaryTTL)},
 
-    {"enable-container-type-no-layout-containment",
-     flag_descriptions::kContainerTypeNoLayoutContainmentName,
-     flag_descriptions::kContainerTypeNoLayoutContainmentDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kContainerTypeNoLayoutContainment)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"deprecated-external-picker-function",
      flag_descriptions::kDeprecatedExternalPickerFunctionName,

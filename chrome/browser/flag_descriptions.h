@@ -347,12 +347,6 @@ inline constexpr char kConnectionAllowlistsDescription[] =
     "Enables a prototype implementation of `Connection-Allowlist` header "
     "parsing and enforcement. See https://github.com/mikewest/anti-exfil/";
 
-inline constexpr char kContainerTypeNoLayoutContainmentName[] =
-    "Enables the container-type property to have no layout containment";
-inline constexpr char kContainerTypeNoLayoutContainmentDescription[] =
-    "The container-type property was recently changed to not add layout "
-    "containment, this allows users to temporarily disable this change.";
-
 inline constexpr char kCrosSwitcherName[] = "ChromeOS Switcher feature.";
 inline constexpr char kCrosSwitcherDescription[] =
     "Enable/Disable ChromeOS Switcher feature.";

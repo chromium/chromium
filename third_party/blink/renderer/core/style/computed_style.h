@@ -1614,16 +1614,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
     if (container_type & kContainerTypeInlineSize) {
       effective |= kContainsStyle;
-      if (!RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
-        effective |= kContainsLayout;
-      }
       effective |= kContainsInlineSize;
     }
     if (container_type & kContainerTypeBlockSize) {
       effective |= kContainsStyle;
-      if (!RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
-        effective |= kContainsLayout;
-      }
       effective |= kContainsBlockSize;
     }
     if (container_type & kContainerTypeAnchored) {

@@ -1192,10 +1192,6 @@
       status: "experimental",
     },
     {
-      name: "ContainerTypeNoLayoutContainment",
-      status: "stable",
-    },
-    {
       name: "ContentIndex",
       status:  {"Android": "stable", "default": "experimental"},
     },
