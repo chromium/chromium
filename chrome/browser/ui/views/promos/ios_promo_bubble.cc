@@ -214,6 +214,8 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpBubble(
 }
 }  // namespace
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kIOSPromoBubbleElementId);
+
 // Pointer to BubbleDialogDelegate instance.
 views::BubbleDialogDelegate* IOSPromoBubble::ios_promo_delegate_ = nullptr;
 IOSPromoType IOSPromoBubble::current_promo_type_;
@@ -484,6 +486,8 @@ void IOSPromoBubble::ShowPromoBubble(Anchor anchor,
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(promo_bubble));
   widget->Show();
+  widget->GetContentsView()->SetProperty(views::kElementIdentifierKey,
+                                         kIOSPromoBubbleElementId);
 
   // `highlighted_button` can be null when the promo_bubble's page action is
   // anchored to the right hand side/RHS of the omnibox.

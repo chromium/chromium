@@ -75,6 +75,7 @@ IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
+*IOSPromoBubbleBrowserTest.*
 IsolatedWebAppInstallerViewUiPixelTest.*
 *LensSidePanel*PixelTest*
 LHSIndicatorsUiBrowserTest.*

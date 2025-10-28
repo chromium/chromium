@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace views {
@@ -24,6 +25,8 @@ class Profile;
 
 enum class IOSPromoBubbleType;
 enum class IOSPromoType;
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kIOSPromoBubbleElementId);
 
 // A view for the bubble promo that encourages feature usage on iOS.
 class IOSPromoBubble {

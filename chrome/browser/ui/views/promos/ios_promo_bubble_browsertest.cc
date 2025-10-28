@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 
+#include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
+#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -18,137 +20,150 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/prefs/pref_service.h"
+#include "components/sharing_message/features.h"
+#include "components/sync_preferences/features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/interaction/interaction_sequence.h"
 
-class IOSPasswordPromoBubbleTest : public DialogBrowserTest {
+// Test suite for the desktop-to-iOS promo bubbles.
+class IOSPromoBubbleBrowserTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<IOSPromoType> {
  public:
-  IOSPasswordPromoBubbleTest() = default;
+  IOSPromoBubbleBrowserTest() = default;
+  ~IOSPromoBubbleBrowserTest() override = default;
 
-  IOSPasswordPromoBubbleTest(const IOSPasswordPromoBubbleTest&) = delete;
+  void SetUp() override {
+    // Enable the non-IPH features.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
+         {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
+        {});
 
-  IOSPasswordPromoBubbleTest& operator=(const IOSPasswordPromoBubbleTest&) =
-      delete;
+    // Enable the IPH features.
+    scoped_iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHiOSLensPromoDesktopFeature,
+         feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature,
+         feature_engagement::kIPHiOSPasswordPromoDesktopFeature,
+         feature_engagement::kIPHiOSAddressPromoDesktopFeature,
+         feature_engagement::kIPHiOSPaymentPromoDesktopFeature});
 
-  // DialogBrowserTest
-  void ShowUi(const std::string& name) override {
-    ToolbarButtonProvider* button_provider =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-    // Test for iOS Promo Bubble for Desktop Passwords promo.
-    IOSPromoBubble::ShowPromoBubble(
-        {button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage)},
-        button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage),
-        browser()->profile(), IOSPromoType::kPassword,
-        IOSPromoBubbleType::kQRCode);
+    InteractiveBrowserTest::SetUp();
   }
+
+  static constexpr char kScreenshotBaselineCL[] = "7064212";
+
+  auto ShowPromoBubble(IOSPromoBubbleType bubble_type) {
+    return base::BindLambdaForTesting([=, this]() {
+      BrowserView* browser_view =
+          BrowserView::GetBrowserViewForBrowser(browser());
+      ToolbarButtonProvider* button_provider =
+          browser_view->toolbar_button_provider();
+
+      IOSPromoType promo_type = GetParam();
+      views::View* anchor_view = nullptr;
+      views::Button* highlighted_button = nullptr;
+
+      // Explicitly set impression count to 0 before showing the promo.
+      // This ensures that the first impression is recorded as 1.
+      promos_utils::IOSPromoPrefsConfig promo_prefs(promo_type);
+      browser()->profile()->GetPrefs()->SetInteger(
+          promo_prefs.promo_impressions_counter_pref_name, 0);
+
+      switch (promo_type) {
+        case IOSPromoType::kPassword:
+          anchor_view =
+              button_provider->GetAnchorView(kActionShowPasswordsBubbleOrPage);
+          highlighted_button = button_provider->GetPageActionView(
+              kActionShowPasswordsBubbleOrPage);
+          break;
+        case IOSPromoType::kAddress:
+          anchor_view =
+              button_provider->GetAnchorView(kActionShowAddressesBubbleOrPage);
+          highlighted_button = button_provider->GetPageActionIconView(
+              PageActionIconType::kAutofillAddress);
+          break;
+        case IOSPromoType::kPayment:
+          anchor_view =
+              button_provider->GetAnchorView(kActionShowPaymentsBubbleOrPage);
+          highlighted_button = button_provider->GetPageActionIconView(
+              PageActionIconType::kSaveCard);
+          break;
+        case IOSPromoType::kEnhancedBrowsing:
+        case IOSPromoType::kLens:
+          anchor_view = browser_view->toolbar()->app_menu_button();
+          break;
+        default:
+          NOTREACHED();
+      }
+
+      promos_utils::IOSDesktopPromoShown(browser()->profile(), promo_type);
+      IOSPromoBubble::ShowPromoBubble(IOSPromoBubble::Anchor{anchor_view},
+                                      highlighted_button, browser()->profile(),
+                                      promo_type, bubble_type);
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  feature_engagement::test::ScopedIphFeatureList scoped_iph_feature_list_;
 };
 
-class IOSAddressPromoBubbleTest : public DialogBrowserTest {
- public:
-  IOSAddressPromoBubbleTest() = default;
-
-  IOSAddressPromoBubbleTest(const IOSAddressPromoBubbleTest&) = delete;
-
-  IOSAddressPromoBubbleTest& operator=(const IOSAddressPromoBubbleTest&) =
-      delete;
-
-  // DialogBrowserTest
-  void ShowUi(const std::string& name) override {
-    ToolbarButtonProvider* button_provider =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-
-    // Test for iOS Promo Bubble for Desktop Address promo.
-    IOSPromoBubble::ShowPromoBubble(
-        {button_provider->GetAnchorView(kActionShowAddressesBubbleOrPage)},
-        button_provider->GetPageActionView(kActionShowAddressesBubbleOrPage),
-        browser()->profile(), IOSPromoType::kAddress,
-        IOSPromoBubbleType::kQRCode);
+IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode) {
+  if (GetParam() == IOSPromoType::kAddress) {
+    if (IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
+      GTEST_SKIP() << "This test is for the non-migrated state.";
+    }
   }
-};
 
-class IOSPaymentPromoBubbleTest : public DialogBrowserTest {
- public:
-  IOSPaymentPromoBubbleTest() = default;
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Kombucha screenshots not supported on all bots"),
+      Do(ShowPromoBubble(IOSPromoBubbleType::kQRCode)),
+      WaitForShow(kIOSPromoBubbleElementId),
+      Screenshot(kIOSPromoBubbleElementId, "QRCode", kScreenshotBaselineCL));
+}
 
-  IOSPaymentPromoBubbleTest(const IOSPaymentPromoBubbleTest&) = delete;
-
-  IOSPaymentPromoBubbleTest& operator=(const IOSPaymentPromoBubbleTest&) =
-      delete;
-
-  // DialogBrowserTest
-  void ShowUi(const std::string& name) override {
-    ToolbarButtonProvider* button_provider =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider();
-    // Test for iOS Promo Bubble for Desktop Payment promo.
-    IOSPromoBubble::ShowPromoBubble(
-        {button_provider->GetAnchorView(kActionShowPaymentsBubbleOrPage)},
-        button_provider->GetPageActionIconView(PageActionIconType::kSaveCard),
-        browser()->profile(), IOSPromoType::kPayment,
-        IOSPromoBubbleType::kQRCode);
+IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowQRCode_NoPageAction) {
+  if (GetParam() != IOSPromoType::kAddress) {
+    GTEST_SKIP() << "Test is only for IOSPromoType::kAddress.";
   }
-};
 
-class IOSEnhancedBrowsingPromoBubbleTest : public DialogBrowserTest {
- public:
-  IOSEnhancedBrowsingPromoBubbleTest() = default;
-
-  IOSEnhancedBrowsingPromoBubbleTest(
-      const IOSEnhancedBrowsingPromoBubbleTest&) = delete;
-
-  IOSEnhancedBrowsingPromoBubbleTest& operator=(
-      const IOSEnhancedBrowsingPromoBubbleTest&) = delete;
-
-  // DialogBrowserTest
-  void ShowUi(const std::string& name) override {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    // Test for iOS Promo Bubble for Enhanced Browsing promo.
-    IOSPromoBubble::ShowPromoBubble(
-        {browser_view->toolbar()->app_menu_button()},
-        /*highlighted_button=*/nullptr, browser()->profile(),
-        IOSPromoType::kEnhancedBrowsing, IOSPromoBubbleType::kReminder);
+  if (!IsPageActionMigrated(PageActionIconType::kAutofillAddress)) {
+    GTEST_SKIP() << "This test is for the migrated state.";
   }
-};
 
-class IOSLensPromoBubbleTest : public DialogBrowserTest {
- public:
-  IOSLensPromoBubbleTest() = default;
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Kombucha screenshots not supported on all bots"),
+      Do(ShowPromoBubble(IOSPromoBubbleType::kQRCode)),
+      WaitForShow(kIOSPromoBubbleElementId),
+      Screenshot(kIOSPromoBubbleElementId, "QRCode_NoPageAction",
+                 kScreenshotBaselineCL));
+}
 
-  IOSLensPromoBubbleTest(const IOSLensPromoBubbleTest&) = delete;
-
-  IOSLensPromoBubbleTest& operator=(const IOSLensPromoBubbleTest&) = delete;
-
-  // DialogBrowserTest
-  void ShowUi(const std::string& name) override {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    // Test for iOS Promo Bubble for Lens promo.
-    IOSPromoBubble::ShowPromoBubble(
-        {browser_view->toolbar()->app_menu_button()},
-        /*highlighted_button=*/nullptr, browser()->profile(),
-        IOSPromoType::kLens, IOSPromoBubbleType::kReminder);
+IN_PROC_BROWSER_TEST_P(IOSPromoBubbleBrowserTest, ShowReminder) {
+  if (GetParam() == IOSPromoType::kAddress ||
+      GetParam() == IOSPromoType::kPayment) {
+    GTEST_SKIP() << "Reminder bubble not supported for this promo type.";
   }
-};
 
-IN_PROC_BROWSER_TEST_F(IOSPasswordPromoBubbleTest, InvokeUi_default) {
-  ShowAndVerifyUi();
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Kombucha screenshots not supported on all bots"),
+      Do(ShowPromoBubble(IOSPromoBubbleType::kReminder)),
+      WaitForShow(kIOSPromoBubbleElementId),
+      Screenshot(kIOSPromoBubbleElementId, "Reminder", kScreenshotBaselineCL));
 }
 
-IN_PROC_BROWSER_TEST_F(IOSAddressPromoBubbleTest, InvokeUi_default) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(IOSPaymentPromoBubbleTest, InvokeUi_default) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(IOSEnhancedBrowsingPromoBubbleTest, InvokeUi_default) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(IOSLensPromoBubbleTest, InvokeUi_default) {
-  ShowAndVerifyUi();
-}
+INSTANTIATE_TEST_SUITE_P(All,
+                         IOSPromoBubbleBrowserTest,
+                         testing::Values(IOSPromoType::kPassword,
+                                         IOSPromoType::kAddress,
+                                         IOSPromoType::kPayment,
+                                         IOSPromoType::kEnhancedBrowsing,
+                                         IOSPromoType::kLens));
