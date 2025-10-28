@@ -138,7 +138,7 @@ using base::UserMetricsAction;
 
   OverflowMenuOrderer* _overflowMenuOrderer;
 
-  // Stores whether certain events occured during an overflow menu session for
+  // Stores whether certain events occurred during an overflow menu session for
   // logs.
   OverflowMenuVisitedEvent _event;
 }
