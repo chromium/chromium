@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 25
+version_major: 26
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
@@ -71,15 +71,23 @@ trust_anchors {
 }
 
 # CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO
+# Constraint date and time (GMT): Friday, October 31, 2025 11:59:59 PM
 trust_anchors {
   sha256_hex: "9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48"
+  constraints: {
+    sct_not_after_sec: 1761955199
+  }
 }
 
 # CN=Buypass Class 3 Root CA, O=Buypass AS-983163327, C=NO
 # https://valid.evident.ca23.ssl.buypass.no/
+# Constraint date and time (GMT): Friday, October 31, 2025 11:59:59 PM
 trust_anchors {
   sha256_hex: "edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d"
   ev_policy_oids: "2.23.140.1.1"
+  constraints: {
+    sct_not_after_sec: 1761955199
+  }
 }
 
 # OU=certSIGN ROOT CA G2, O=CERTSIGN SA, C=RO
@@ -269,21 +277,6 @@ trust_anchors {
 # Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c"
-  ev_policy_oids: "2.23.140.1.1"
-  constraints: {
-    sct_not_after_sec: 1731369599
-    min_version: "131"
-  }
-  constraints: {
-    max_version_exclusive: "131"
-  }
-}
-
-# CN=Entrust Root Certification Authority - G4, OU=(c) 2015 Entrust, Inc. - for authorized use only, OU=See www.entrust.net/legal-terms, O=Entrust, Inc., C=US
-# https://validg4.entrust.net
-# Constraint date: Mon Nov 11, 2024 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88"
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1731369599
@@ -604,13 +597,17 @@ trust_anchors {
 }
 
 # CN=Certum EC-384 CA, OU=Certum Certification Authority, O=Asseco Data Systems S.A., C=PL
+# https://valid-cec384ca.certificates.certum.pl/
 trust_anchors {
   sha256_hex: "6b328085625318aa50d173c98d8bda09d57e27413d114cf787a0f5d06c030cf6"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Certum Trusted Root CA, OU=Certum Certification Authority, O=Asseco Data Systems S.A., C=PL
+# https://valid-ctrca.certificates.certum.pl/
 trust_anchors {
   sha256_hex: "fe7696573855773e37a95e7ad4d9cc96c30157c15d31765ba9b15704e1ae78fd"
+  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=D-TRUST BR Root CA 1 2020, O=D-Trust GmbH, C=DE
