@@ -1502,6 +1502,47 @@ chromium-metrics-reviews@google.com.
     calendar day; it simply may not be on the day the metric was computed.
     (Exception: on Android before M-91, sometimes these emitted histograms were
     lost due to lack of robust &quot;background logging&quot;.)
+
+    Note: This histogram attempts to emit every 24 hours that the device is on,
+    but the timer does not increment while the machine is suspended. Prefer the
+    V4 version of this metric which accounts for suspended time.
+  </summary>
+</histogram>
+
+<histogram name="History.DomainCount1Day_V4" units="domains"
+    expires_after="2026-03-01">
+  <owner>mpearson@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <component>1456716</component>
+  <improvement direction="HIGHER_IS_BETTER"/>
+  <summary>
+    Number of unique domains visited by the user within a calendar day in user's
+    local timezone, excluding domains that have only ever had visits with a
+    4XX/5XX HTTP response code. For each regular profile (not incognito, guest,
+    system, etc.), reported at profile open (which usually happens at startup)
+    for each unreported day (up to 7 days) prior to the current date, and also
+    reported once every 24 hours thereafter for the latest unreported day, while
+    the profile remains open. If no domains are visited in a given day, a count
+    of 0 will be reported for that day.
+
+    Warning about Android activity types (custom tabs, browser app, etc.): Do
+    not look at this data using an activity type filter; when looking at data
+    from Android, use &quot;Android Chrome (All)&quot;. Why? This histogram
+    reflects all usage of the browser. Using a filter such as &quot;Browser
+    App&quot; is not appropriate because it doesn't make sense to ask &quot;how
+    many web sites were visited in Chrome (in any mode) the last week but only
+    tell me if the answer if this current launch was in browser app mode.&quot;
+
+    Warning about delayed data: Chrome may upload logs on a given day without
+    uploading this histogram. This can happen because Chrome uploads logs
+    initially upon startup. This histogram is emitted shortly _after_ startup.
+    In the case of short sessions, it's possible the log with this histogram did
+    not have time to be uploaded. Generally the log will be cached and uploaded
+    the next time the user starts Chrome. We should still get one count per
+    calendar day; it simply may not be on the day the metric was computed.
+    (Exception: on Android before M-91, sometimes these emitted histograms were
+    lost due to lack of robust &quot;background logging&quot;.)
   </summary>
 </histogram>
 
@@ -1582,6 +1623,47 @@ chromium-metrics-reviews@google.com.
     calendar day; it simply may not be on the day the metric was computed.
     (Exception: on Android before M-91, sometimes these emitted histograms were
     lost due to lack of robust &quot;background logging&quot;.)
+
+    Note: This histogram attempts to emit every 24 hours that the device is on,
+    but the timer does not increment while the machine is suspended. Prefer the
+    V4 version of this metric which accounts for suspended time.
+  </summary>
+</histogram>
+
+<histogram name="History.DomainCount28Day_V4" units="domains"
+    expires_after="2026-03-22">
+  <owner>mpearson@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    Number of unique domains visited by the user within a 28 calendar day period
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 28-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 28-day period, a count of 0
+    will be reported for that period.
+
+    Warning about Android activity types (custom tabs, browser app, etc.): Do
+    not look at this data using an activity type filter; when looking at data
+    from Android, use &quot;Android Chrome (All)&quot;. Why? This histogram
+    reflects all usage of the browser. Using a filter such as &quot;Browser
+    App&quot; is not appropriate because it doesn't make sense to ask &quot;how
+    many web sites were visited in Chrome (in any mode) the last week but only
+    tell me if the answer if this current launch was in browser app mode.&quot;
+
+    Warning about delayed data: Chrome may upload logs on a given day without
+    uploading this histogram. This can happen because Chrome uploads logs
+    initially upon startup. This histogram is emitted shortly _after_ startup.
+    In the case of short sessions, it's possible the log with this histogram did
+    not have time to be uploaded. Generally the log will be cached and uploaded
+    the next time the user starts Chrome. We should still get one count per
+    calendar day; it simply may not be on the day the metric was computed.
+    (Exception: on Android before M-91, sometimes these emitted histograms were
+    lost due to lack of robust &quot;background logging&quot;.)
   </summary>
 </histogram>
 
@@ -1629,6 +1711,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DomainCount7Day_V3" units="domains"
+    expires_after="2026-03-22">
+  <owner>mpearson@chromium.org</owner>
+  <owner>mjzhang@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <component>1456716</component>
+  <summary>
+    Number of unique domains visited by the user within a 7 calendar day period
+    in user's local timezone, excluding domains that have only ever had visits
+    with a 4XX/5XX HTTP response code. For each regular profile (not incognito,
+    guest, system, etc.), reported at profile open (which usually happens at
+    startup) for each unreported 7-day period (up to 7 periods) ending on the
+    current day, current day - 1, current day - 2, etc. Also reported once every
+    24 hours thereafter for the latest unreported period, while the profile
+    remains open. If no domains are visited during a 7-day period, a count 0
+    will be reported for that period.
+
+    Warning about Android activity types (custom tabs, browser app, etc.): Do
+    not look at this data using an activity type filter; when looking at data
+    from Android, use &quot;Android Chrome (All)&quot;. Why? This histogram
+    reflects all usage of the browser. Using a filter such as &quot;Browser
+    App&quot; is not appropriate because it doesn't make sense to ask &quot;how
+    many web sites were visited in Chrome (in any mode) the last week but only
+    tell me if the answer if this current launch was in browser app mode.&quot;
+
+    Warning about delayed data: Chrome may upload logs on a given day without
+    uploading this histogram. This can happen because Chrome uploads logs
+    initially upon startup. This histogram is emitted shortly _after_ startup.
+    In the case of short sessions, it's possible the log with this histogram did
+    not have time to be uploaded. Generally the log will be cached and uploaded
+    the next time the user starts Chrome. We should still get one count per
+    calendar day; it simply may not be on the day the metric was computed.
+    (Exception: on Android before M-91, sometimes these emitted histograms were
+    lost due to lack of robust &quot;background logging&quot;.)
+
+    Note: This histogram attempts to emit every 24 hours that the device is on,
+    but the timer does not increment while the machine is suspended. Prefer the
+    V4 version of this metric which accounts for suspended time.
+  </summary>
+</histogram>
+
+<histogram name="History.DomainCount7Day_V4" units="domains"
     expires_after="2026-03-22">
   <owner>mpearson@chromium.org</owner>
   <owner>mjzhang@chromium.org</owner>
