@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -312,8 +313,9 @@ V8SlotAssignmentMode ShadowRoot::slotAssignment() const {
                                   : V8SlotAssignmentMode::Enum::kNamed);
 }
 
-CSSStyleSheet* ShadowRoot::GetFetchedStyleSheetFromModuleMap(
-    const AtomicString& specifier) {
+HeapVector<Member<CSSStyleSheet>>
+ShadowRoot::GetFetchedStyleSheetsFromModuleMap(
+    const AtomicString& shadowrootadoptedstylesheets_attribute_value) {
   CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
 
   LocalDOMWindow* window = GetDocument().domWindow();
@@ -325,53 +327,51 @@ CSSStyleSheet* ShadowRoot::GetFetchedStyleSheetFromModuleMap(
   // Several operations below require a HandleScope.
   v8::HandleScope handle_scope(isolate);
 
-  // Resolve the specifier to ensure import maps are accounted for.
-  const KURL resolved_url = modulator->ResolveModuleSpecifier(
-      specifier, window->BaseURL(), /*failure_reason=*/nullptr);
-  if (resolved_url.IsValid()) {
-    // TODO(crbug.com/448174611) - should RequestContextType and
-    // RequestDestination be script or style?
-    ModuleScriptFetchRequest module_request(
-        resolved_url, ModuleType::kCSS,
-        mojom::blink::RequestContextType::SCRIPT,
-        network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
-        Referrer::ClientReferrerString(), TextPosition::MinimumPosition(),
-        ModuleImportPhase::kEvaluation);
-    modulator->FetchSingle(module_request, window->Fetcher(),
-                           ModuleGraphLevel::kTopLevelModuleFetch,
-                           ModuleScriptCustomFetchType::kNone, nullptr);
+  HeapVector<Member<CSSStyleSheet>> sheets;
+  SpaceSplitString specifiers(shadowrootadoptedstylesheets_attribute_value);
+  sheets.ReserveInitialCapacity(specifiers.size());
 
-    // We can fetch and immediately (synchronously) get a result, since the
-    // current design doesn't support initiating a fetch. This means a dataURI
-    // will always be available (due to the fetch above), and so will external
-    // files that have already been added to the module map.
-    const ModuleScript* module_script =
-        modulator->GetFetchedModuleScript(resolved_url, ModuleType::kCSS);
-    if (module_script) {
-      CSSStyleSheet* sheet = V8CSSStyleSheet::ToWrappable(
-          isolate,
-          static_cast<const ValueWrapperSyntheticModuleScript*>(module_script)
-              ->GetExport(isolate));
-      // There shouldn't be a module script without an associated CSSStyleSheet.
-      CHECK(sheet);
-      return sheet;
+  for (const auto& specifier : specifiers) {
+    // Resolve the specifier to ensure import maps are accounted for.
+    const KURL resolved_url = modulator->ResolveModuleSpecifier(
+        specifier, window->BaseURL(), /*failure_reason=*/nullptr);
+    if (resolved_url.IsValid()) {
+      // TODO(crbug.com/448174611) - should RequestContextType and
+      // RequestDestination be script or style?
+      ModuleScriptFetchRequest module_request(
+          resolved_url, ModuleType::kCSS,
+          mojom::blink::RequestContextType::SCRIPT,
+          network::mojom::RequestDestination::kScript, ScriptFetchOptions(),
+          Referrer::ClientReferrerString(), TextPosition::MinimumPosition(),
+          ModuleImportPhase::kEvaluation);
+      modulator->FetchSingle(module_request, window->Fetcher(),
+                             ModuleGraphLevel::kTopLevelModuleFetch,
+                             ModuleScriptCustomFetchType::kNone, nullptr);
+
+      // We can fetch and immediately (synchronously) get a result, since the
+      // current design doesn't support initiating a fetch. This means a dataURI
+      // will always be available (due to the fetch above), and so will external
+      // files that have already been added to the module map.
+      const ModuleScript* module_script =
+          modulator->GetFetchedModuleScript(resolved_url, ModuleType::kCSS);
+      if (module_script) {
+        CSSStyleSheet* sheet = V8CSSStyleSheet::ToWrappable(
+            isolate,
+            static_cast<const ValueWrapperSyntheticModuleScript*>(module_script)
+                ->GetExport(isolate));
+        sheets.push_back(*sheet);
+      }
     }
   }
-  return nullptr;
+  return sheets;
 }
 
 void ShadowRoot::ProcessAdoptedStylesheetAttribute(
     AtomicString value) {
   CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
-  if (value.empty()) {
-    return;
-  }
-
-  // TODO(crbug.com/448174611) - support a space-separated list of
-  // specifiers to allow importing multiple stylesheets.
-  if (CSSStyleSheet* sheet = GetFetchedStyleSheetFromModuleMap(value)) {
-    HeapVector<Member<CSSStyleSheet>> adopted_sheets{*sheet};
-    AppendAdoptedStyleSheets(adopted_sheets);
+  if (!value.empty()) {
+    auto sheets = GetFetchedStyleSheetsFromModuleMap(value);
+    AppendAdoptedStyleSheets(sheets);
   }
 }
 

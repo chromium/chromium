@@ -190,8 +190,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
  private:
   friend class ReferenceTargetIdObserver;
 
-  CSSStyleSheet* GetFetchedStyleSheetFromModuleMap(
-      const AtomicString& specifier);
+  HeapVector<Member<CSSStyleSheet>> GetFetchedStyleSheetsFromModuleMap(
+      const AtomicString& shadowrootadoptedstylesheets_attribute_value);
 
   void ChildrenChanged(const ChildrenChange&) override;
 
