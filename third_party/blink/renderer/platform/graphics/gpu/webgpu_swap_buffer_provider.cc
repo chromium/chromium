@@ -355,16 +355,17 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
   // need to release WebGPU/Dawn's context's access to the texture.
   ReleaseWGPUTextureAccessIfNeeded();
 
-  if (frame_pool->CopyRGBATextureToVideoFrame(
+  std::optional<gpu::SyncToken> optional_sync_token =
+      frame_pool->CopyRGBATextureToVideoFrame(
           current_swap_buffer_->GetSharedImage()->size(),
           current_swap_buffer_->GetSharedImage(),
           current_swap_buffer_->GetSyncToken(), dst_color_space,
-          std::move(callback))) {
+          std::move(callback));
+  if (optional_sync_token.has_value()) {
     // Subsequent access to this swap buffer (either webgpu or compositor) must
     // wait for the copy operation to finish.
-    gpu::SyncToken sync_token;
-    frame_pool_ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    current_swap_buffer_->SetReleaseSyncToken(std::move(sync_token));
+    current_swap_buffer_->SetReleaseSyncToken(
+        std::move(optional_sync_token.value()));
     return true;
   }
   return false;
