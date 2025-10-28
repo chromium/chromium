@@ -17,7 +17,6 @@
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
@@ -55,6 +54,7 @@
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/remote_cocoa.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -520,7 +520,8 @@ void AppShimController::PollForChromeReady(
     const std::string server_name = base::StringPrintf(
         "%s.%s.%s", base::SysNSStringToUTF8(browser_bundle_id).c_str(),
         app_mode::kAppShimBootstrapNameFragment,
-        base::MD5String(params_.user_data_dir.value()).c_str());
+        base::HexEncode(crypto::hash::Sha256(params_.user_data_dir.value()))
+            .c_str());
     endpoint = ConnectToBrowser(server_name);
     if (endpoint.is_valid()) {
       LOG(INFO) << "Connected to " << server_name;

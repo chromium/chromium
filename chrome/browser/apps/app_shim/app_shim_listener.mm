@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -24,6 +24,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "components/variations/net/variations_command_line.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "crypto/hash.h"
 
 AppShimListener::AppShimListener() = default;
 
@@ -77,7 +78,7 @@ void AppShimListener::InitOnBackgroundThread() {
 
   std::string name_fragment =
       std::string(app_mode::kAppShimBootstrapNameFragment) + "." +
-      base::MD5String(user_data_dir.value());
+      base::HexEncode(crypto::hash::Sha256(user_data_dir.value()));
   mach_acceptor_ =
       std::make_unique<apps::MachBootstrapAcceptor>(name_fragment, this);
   mach_acceptor_->Start();
