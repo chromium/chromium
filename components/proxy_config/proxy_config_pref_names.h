@@ -28,6 +28,13 @@ inline constexpr char kProxyOverrideRules[] = "proxy_override_rules";
 inline constexpr char kProxyOverrideRulesScope[] = "proxy_override_rules_scope";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Preference to store the value of the "EnableProxyOverrideRulesForAllUsers"
+// policy.
+inline constexpr char kEnableProxyOverrideRulesForAllUsers[] =
+    "enable_proxy_override_rules_for_users";
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 }  // namespace proxy_config::prefs
 
 #endif  // COMPONENTS_PROXY_CONFIG_PROXY_CONFIG_PREF_NAMES_H_

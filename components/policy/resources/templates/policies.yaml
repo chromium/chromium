@@ -1404,6 +1404,7 @@ policies:
   1403: LocalAuthFactorsComplexity
   1404: ProxyOverrideRules
   1405: LocalAuthFactors
+  1406: EnableProxyOverrideRulesForAllUsers
 
 atomic_groups:
   1: Homepage

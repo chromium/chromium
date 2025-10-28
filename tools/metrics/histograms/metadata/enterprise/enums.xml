@@ -2326,6 +2326,7 @@ chromium-metrics-reviews@google.com.
   <int value="1403" label="LocalAuthFactorsComplexity"/>
   <int value="1404" label="ProxyOverrideRules"/>
   <int value="1405" label="LocalAuthFactors"/>
+  <int value="1406" label="EnableProxyOverrideRulesForAllUsers"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

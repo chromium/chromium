@@ -254,6 +254,7 @@
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
 #include "components/device_signals/core/browser/pref_names.h"  // nogncheck due to crbug.com/1125897
+#include "components/proxy_config/proxy_config_pref_names.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
@@ -2455,6 +2456,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     glic::prefs::kGlicActuationOnWeb,
     base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  { key::kEnableProxyOverrideRulesForAllUsers,
+    proxy_config::prefs::kEnableProxyOverrideRulesForAllUsers,
+    base::Value::Type::INTEGER },
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 };
 // clang-format on
 
