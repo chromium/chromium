@@ -106,9 +106,9 @@ void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
             }
             CHECK(eic.type() == EntityInstanceChange::ADD ||
                   eic.type() == EntityInstanceChange::UPDATE);
-            auto [it, inserted] = self->entities_.insert(*eic.data_model());
+            auto [it, inserted] = self->entities_.insert(eic.data_model());
             if (!inserted) {
-              *it = *eic.data_model();
+              *it = eic.data_model();
             }
             self->NotifyEntityInstancesChanged();
           },

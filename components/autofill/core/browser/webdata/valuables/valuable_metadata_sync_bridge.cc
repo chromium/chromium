@@ -31,7 +31,7 @@ static const int kAutofillValuableMetadataSyncBridgeUserDataKey = 0;
 // AUTOFILL_VALUABLE_METADATA. Only metadata entries related to server entities
 // should be uploaded.
 bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
-  switch (change.data_model()->record_type()) {
+  switch (change.data_model().record_type()) {
     case EntityInstance::RecordType::kLocal:
       // Local entities are not uploaded as AUTOFILL_VALUABLE.
       return false;
@@ -318,10 +318,9 @@ void ValuableMetadataSyncBridge::EntityInstanceChanged(
   switch (change.type()) {
     case EntityInstanceChange::ADD:
     case EntityInstanceChange::UPDATE:
-      CHECK(change.data_model());
       change_processor()->Put(
           *change.key(),
-          CreateEntityDataFromEntityMetadata(change.data_model()->metadata()),
+          CreateEntityDataFromEntityMetadata(change.data_model().metadata()),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:

@@ -67,7 +67,7 @@ bool IsSyncWalletVehicleRegistrationsEnabled() {
 
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
 bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
-  switch (change.data_model()->record_type()) {
+  switch (change.data_model().record_type()) {
     case EntityInstance::RecordType::kLocal:
       // Local entities are not uploaded as AUTOFILL_VALUABLE.
       return false;
@@ -613,10 +613,9 @@ void ValuableSyncBridge::EntityInstanceChanged(
   switch (change.type()) {
     case EntityInstanceChange::ADD:
     case EntityInstanceChange::UPDATE:
-      CHECK(change.data_model());
       change_processor()->Put(
           *change.key(),
-          CreateEntityDataFromEntityInstance(*change.data_model()),
+          CreateEntityDataFromEntityInstance(change.data_model()),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:

@@ -42,7 +42,7 @@ using AutocompleteChangeList = std::vector<AutocompleteChange>;
 // Change notification details for Autofill related changes.
 template <typename DataType, typename KeyType>
   requires std::same_as<DataType, AutofillProfile> ||
-           std::same_as<DataType, std::optional<EntityInstance>> ||
+           std::same_as<DataType, EntityInstance> ||
            std::same_as<DataType, CreditCard> || std::same_as<DataType, Iban> ||
            std::same_as<DataType, ServerCvc>
 class AutofillDataModelChange {
@@ -119,11 +119,9 @@ class AutofillDataModelChange {
 using AutofillProfileChange =
     AutofillDataModelChange<AutofillProfile, std::string>;
 
-// Identified by `EntityInstance::guid()`. The EntityInstance is present for
-// `ADD` and `UPDATE` operations but absent for `REMOVE` operations.
+// Identified by `EntityInstance::guid()`.
 using EntityInstanceChange =
-    AutofillDataModelChange<std::optional<EntityInstance>,
-                            EntityInstance::EntityId>;
+    AutofillDataModelChange<EntityInstance, EntityInstance::EntityId>;
 
 // Identified by `CreditCard::guid()` for local cards and
 // `CreditCard::server_id()` for server cards.
