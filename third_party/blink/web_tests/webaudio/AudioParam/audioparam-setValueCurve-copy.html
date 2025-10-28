@@ -7,41 +7,38 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/panner-formulas.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let sampleRate = 48000;
-      let renderFrames = 1024;
-      let renderDuration = renderFrames / sampleRate;
-
-      let audit = Audit.createTaskRunner();
+    <script>
+      const sampleRate = 48000;
+      const renderFrames = 1024;
+      const renderDuration = renderFrames / sampleRate;
 
       // Test that changing the curve array to setValueCurveAtTime doesn't
       // change the automation output.
-      audit.define('test-copy', (task, should) => {
-        // Two-channel context; channel 0 is the test result, and channel 1 is
-        // the expected result.
-        let context = new OfflineAudioContext(2, renderFrames, sampleRate);
-
-        let source = context.createBufferSource();
-        source.buffer = createConstantBuffer(context, 1, 1);
-        source.loop = true;
+      promise_test(async () => {
+        // Two-channel context; channel 0 is the test result, and channel 1
+        // is the expected result.
+        const context = new OfflineAudioContext(2, renderFrames, sampleRate);
+        const source = new AudioBufferSourceNode(context, {
+          buffer: createConstantBuffer(context, 1, 1),
+          loop: true,
+        });
 
         // Create two gain nodes.  gainRef is the reference with the expected
         // automation results.  gainTest is the test which will have the curve
         // modified.
-        let gainTest = context.createGain();
-        let gainRef = context.createGain();
+        const gainTest = new GainNode(context);
+        const gainRef = new GainNode(context);
 
-        let merger = context.createChannelMerger(2);
+        const merger = new ChannelMergerNode(context, {numberOfInputs: 2});
 
         // The actual curve data can be anything, but we use this for
         // simplicity.
-        let curveData = [1, 0];
-        let curveRef = Float32Array.from(curveData);
-        let curveTest = Float32Array.from(curveData);
+        const curveData = [1, 0];
+        const curveRef = Float32Array.from(curveData);
+        const curveTest = Float32Array.from(curveData);
 
         // Create the graph.
         source.connect(gainTest);
@@ -60,32 +57,32 @@
         gainRef.gain.setValueCurveAtTime(curveRef, 0, renderDuration);
 
         // After rendering has started, modify curveTest.
-        context.suspend(128 / sampleRate)
-            .then(function() {
-              // Change the values of curve now.  Any transformation is ok as
-              // long as curveTest changes.  We do this to make it really
-              // obvious.
-              for (let k = 0; k < curveTest.length; ++k)
-                curveTest[k] = 100 * curveTest[k] + 1;
-            })
-            .then(context.resume.bind(context));
+        context.suspend(128 / sampleRate).then(() => {
+          // Change the values of curve now.  Any transformation is ok as
+          // long as curveTest changes.  We do this to make it really
+          // obvious.
+          for (let k = 0; k < curveTest.length; ++k) {
+            curveTest[k] = 100 * curveTest[k] + 1;
+          }
+          context.resume();
+        });
 
         // Start the test!
         source.start();
 
-        context.startRendering()
-            .then(function(resultBuffer) {
-              let testData = resultBuffer.getChannelData(0);
-              let refData = resultBuffer.getChannelData(1);
+        const resultBuffer = await context.startRendering();
 
-              // The test result and the reference should be identical since
-              // changing the curve data should not affect the automation.
-              should(testData, 'setValueCurve output').beEqualToArray(refData);
-            })
-            .then(() => task.done());
-      });
+        const testData = resultBuffer.getChannelData(0);
+        const refData = resultBuffer.getChannelData(1);
 
-      audit.run();
+        // The test result and the reference should be identical since
+        // changing the curve data should not affect the automation.
+        assert_array_equals(
+            testData,
+            refData,
+            'setValueCurve output should not be affected by ' +
+                'modifying the curve array');
+      }, 'setValueCurveAtTime must copy the curve data');
     </script>
   </body>
 </html>
