@@ -5,9 +5,6 @@
 #ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_
 #define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_
 
-#include <memory>
-#include <unordered_set>
-
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -23,22 +20,6 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
-using GpuMemoryBufferConfigurationKey = gfx::BufferUsageAndFormat;
-using GpuMemoryBufferConfigurationSet =
-    std::unordered_set<GpuMemoryBufferConfigurationKey>;
-}  // namespace gpu
-
-namespace std {
-template <>
-struct hash<gpu::GpuMemoryBufferConfigurationKey> {
-  size_t operator()(const gpu::GpuMemoryBufferConfigurationKey& key) const {
-    return base::HashInts(static_cast<int>(key.format),
-                          static_cast<int>(key.usage));
-  }
-};
-}  // namespace std
-
-namespace gpu {
 
 // Provides a common factory for GPU memory buffer implementations.
 class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
@@ -49,10 +30,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferSupport {
   GpuMemoryBufferSupport& operator=(const GpuMemoryBufferSupport&) = delete;
 
   virtual ~GpuMemoryBufferSupport();
-
-  // Returns the set of supported configurations.
-  static GpuMemoryBufferConfigurationSet
-  GetNativeGpuMemoryBufferConfigurations();
 
   // Returns whether the provided buffer format is supported.
   static bool IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
