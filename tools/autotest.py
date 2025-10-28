@@ -405,7 +405,7 @@ def IsProbablyFile(name):
   return TEST_FILE_NAME_REGEX.match(name) or os.path.exists(name)
 
 
-def FindMatchingTestFiles(target, remote_search=False):
+def FindMatchingTestFiles(target, remote_search=False, path_index=None):
   # Return early if there's an exact file match.
   if os.path.isfile(target):
     if test_file := _FindTestForFile(target):
@@ -456,14 +456,10 @@ def FindMatchingTestFiles(target, remote_search=False):
     test_files = close
 
   if len(test_files) > 1:
-    if len(test_files) < 10:
-      test_files = [HaveUserPickFile(test_files)]
+    if path_index is not None and 0 <= path_index < len(test_files):
+      test_files = [test_files[path_index]]
     else:
-      # Arbitrarily capping at 10 results so we don't print the name of every
-      # file in the repo if the target is poorly specified.
-      test_files = test_files[:10]
-      ExitWithMessage(f'Target "{target}" is ambiguous. Matching files: '
-                      f'{test_files}')
+      test_files = [HaveUserPickFile(test_files)]
   if not test_files:
     ExitWithMessage(f'Target "{target}" did not match any files.')
   return test_files
@@ -495,33 +491,41 @@ def _FindTestForFile(target: os.PathLike) -> str | None:
   return maybe_valid[0] if maybe_valid else None
 
 
+def _ChooseByIndex(msg, options):
+  while True:
+    user_input = input(msg)
+    try:
+      return options[int(user_input)]
+    except (ValueError, IndexError):
+      msg = 'Invalid index. Try again: '
+
+
 def HaveUserPickFile(paths):
-  paths = sorted(paths, key=lambda p: (len(p), p))
+  paths = sorted(paths, key=lambda p: (len(p), p))[:20]
   path_list = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
 
-  while True:
-    user_input = input(f'Please choose the path you mean.\n{path_list}\n')
-    try:
-      value = int(user_input)
-      return paths[value]
-    except (ValueError, IndexError):
-      print('Try again')
+  msg = f"""\
+Found multiple paths with that name.
+Hint: Avoid this in subsequent runs using --path-index=$INDEX, or --all.
+
+{path_list}
+
+Pick the path that you want by its index: """
+  return _ChooseByIndex(msg, paths)
 
 
 def HaveUserPickTarget(paths, targets):
-  # Cap to 10 targets for convenience [0-9].
-  targets = targets[:10]
+  targets = targets[:20]
   target_list = '\n'.join(f'{i}. {t}' for i, t in enumerate(targets))
 
-  user_input = input(f'Target "{paths}" is used by multiple test targets.\n' +
-                     target_list + '\nPlease pick a target by its numeric index'
-                     'listed below: ')
-  try:
-    value = int(user_input)
-    return targets[value]
-  except (ValueError, IndexError):
-    print('Value entered was not a numeric index listed above. Trying again.')
-    return HaveUserPickTarget(paths, targets)
+  msg = f"""\
+Path(s) belong to multiple test targets.
+Hint: Avoid this in subsequent runs using --target-index=$INDEX, or --all.
+
+{target_list}
+
+Pick a target by its index: """
+  return _ChooseByIndex(msg, targets)
 
 
 # A persistent cache to avoid running gn on repeated runs of autotest.
@@ -591,7 +595,10 @@ def _ParseRefsOutput(output):
   return targets
 
 
-def FindTestTargets(target_cache, out_dir, paths, run_all):
+def FindTestTargets(target_cache, out_dir, paths, args):
+  run_all = args.run_all or args.run_changed
+  target_index = args.target_index
+
   # Normalize paths, so they can be cached.
   paths = [os.path.realpath(p) for p in paths]
   test_targets = target_cache.Find(paths)
@@ -630,6 +637,8 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
       if len(test_targets) > 10:
         ExitWithMessage('Your query likely involves non-test sources.')
       print('Trying to run all of them!', file=sys.stderr)
+    elif target_index is not None and 0 <= target_index < len(test_targets):
+      test_targets = [test_targets[target_index]]
     else:
       test_targets = [HaveUserPickTarget(paths, test_targets)]
 
@@ -757,6 +766,16 @@ def main():
       action='store_true',
       help='Run all tests for the file or directory, instead of just one')
   parser.add_argument(
+      '--target-index',
+      '--target_index',
+      type=int,
+      help='When the target is ambiguous, choose the one with this index.')
+  parser.add_argument(
+      '--path-index',
+      '--path_index',
+      type=int,
+      help='When the test path is ambiguous, choose the one with this index.')
+  parser.add_argument(
       '--run-changed',
       '--run_changed',
       action='store_true',
@@ -842,13 +861,12 @@ def main():
 
   filenames = []
   for file in files_to_test:
-    filenames.extend(FindMatchingTestFiles(file, args.remote_search))
+    filenames.extend(FindMatchingTestFiles(file, args.remote_search, args.path_index))
 
   if not filenames:
     ExitWithMessage('No associated test files found.')
 
-  targets, used_cache = FindTestTargets(target_cache, out_dir, filenames,
-                                        args.run_all or args.run_changed)
+  targets, used_cache = FindTestTargets(target_cache, out_dir, filenames, args)
 
   if not gtest_filter:
     gtest_filter = BuildTestFilter(filenames, args.line)
@@ -869,8 +887,7 @@ def main():
   # valid.
   if used_cache and not target_cache.IsStillValid():
     target_cache = TargetCache(out_dir)
-    new_targets, _ = FindTestTargets(target_cache, out_dir, filenames,
-                                     args.run_all or args.run_changed)
+    new_targets, _ = FindTestTargets(target_cache, out_dir, filenames, args)
     if targets != new_targets:
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
