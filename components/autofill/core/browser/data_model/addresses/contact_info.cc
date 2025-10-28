@@ -664,7 +664,8 @@ std::u16string EmailInfo::GetRawInfo(FieldType type) const {
 void EmailInfo::SetRawInfoWithVerificationStatus(FieldType type,
                                                  std::u16string_view value,
                                                  VerificationStatus status) {
-  DCHECK_EQ(EMAIL_ADDRESS, type);
+  CHECK(type == EMAIL_ADDRESS || type == EMAIL_OR_LOYALTY_MEMBERSHIP_ID,
+        base::NotFatalUntil::M145);
   email_ = value;
 }
 
