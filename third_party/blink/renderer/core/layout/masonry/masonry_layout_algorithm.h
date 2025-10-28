@@ -40,7 +40,6 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       const ComputedStyle& masonry_style,
       const BoxStrut& borders,
       const LogicalSize& border_box_size,
-      const BoxStrut& border_scrollbar_padding,
       GridItemData* out_of_flow_item);
 
  private:

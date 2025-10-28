@@ -910,8 +910,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     } else {
       rect = MasonryLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
           To<LayoutMasonry>(containing_box).CachedPlacementData(), layout_data,
-          style, borders, size, container_builder_->BorderScrollbarPadding(),
-          item);
+          style, borders, size, item);
     }
 
     return {.writing_direction = style.GetWritingDirection(),

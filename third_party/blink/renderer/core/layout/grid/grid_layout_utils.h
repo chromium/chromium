@@ -51,13 +51,17 @@ wtf_size_t CalculateAutomaticRepetitions(
 
 // Computes the start offset and size for an out-of-flow item in a single
 // direction (either inline or block).
+//
+// `is_masonry_axis` indicates whether this is for masonry's stacking axis,
+// which ignores grid placement and uses the full container size.
 void ComputeOutOfFlowOffsetAndSize(
     const GridItemData& out_of_flow_item,
     const GridLayoutTrackCollection& track_collection,
     const BoxStrut& borders,
     const LogicalSize& border_box_size,
     LayoutUnit* start_offset,
-    LayoutUnit* size);
+    LayoutUnit* size,
+    bool is_masonry_axis = false);
 
 // Computes alignment offset for out-of-flow items.
 void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,

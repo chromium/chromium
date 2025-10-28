@@ -529,8 +529,7 @@ void MasonryLayoutAlgorithm::PlaceOutOfFlowItems(
         (node.IsFixedContainer() && position == EPosition::kFixed)) {
       containing_block_rect.emplace(ComputeOutOfFlowItemContainingRect(
           placement_data, layout_data, container_style,
-          container_builder_.Borders(), total_fragment_size,
-          BorderScrollbarPadding(), out_of_flow_item));
+          container_builder_.Borders(), total_fragment_size, out_of_flow_item));
     }
 
     auto child_offset = containing_block_rect
@@ -1223,17 +1222,8 @@ LogicalRect MasonryLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
     const ComputedStyle& masonry_style,
     const BoxStrut& borders,
     const LogicalSize& border_box_size,
-    const BoxStrut& border_scrollbar_padding,
     GridItemData* out_of_flow_item) {
   DCHECK(out_of_flow_item && out_of_flow_item->IsOutOfFlow());
-
-  // Compute the containing rect for out-of-flow items in masonry:
-  // - Grid axis: Use the item's grid-area placement (similar to CSS Grid)
-  // - Stacking axis: Use the full container size minus
-  // border/scrollbar/padding, since items flow and stack naturally in this
-  // direction and out-of-flow items should have access to the entire available
-  // space.
-
   const bool is_for_columns =
       masonry_style.MasonryTrackSizingDirection() == kForColumns;
 
@@ -1241,26 +1231,23 @@ LogicalRect MasonryLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
       is_for_columns ? layout_data.Columns() : layout_data.Rows(),
       placement_data, masonry_style);
   LogicalRect containing_rect;
+  const auto& track_collection =
+      is_for_columns ? layout_data.Columns() : layout_data.Rows();
 
-  if (is_for_columns) {
-    ComputeOutOfFlowOffsetAndSize(*out_of_flow_item, layout_data.Columns(),
-                                  borders, border_box_size,
-                                  &containing_rect.offset.inline_offset,
-                                  &containing_rect.size.inline_size);
+  // Compute the containing rect for out-of-flow items in masonry:
+  // - Grid axis: Use normal grid placement
+  // - Stacking axis: Ignore grid placement and use the full container size,
+  // since items flow and stack naturally in this direction and OOF items should
+  // have access to the entire space.
+  ComputeOutOfFlowOffsetAndSize(
+      *out_of_flow_item, track_collection, borders, border_box_size,
+      &containing_rect.offset.inline_offset, &containing_rect.size.inline_size,
+      /*is_masonry_axis=*/!is_for_columns);
 
-    containing_rect.offset.block_offset = border_scrollbar_padding.block_start;
-    containing_rect.size.block_size =
-        border_box_size.block_size - border_scrollbar_padding.BlockSum();
-  } else {
-    ComputeOutOfFlowOffsetAndSize(
-        *out_of_flow_item, layout_data.Rows(), borders, border_box_size,
-        &containing_rect.offset.block_offset, &containing_rect.size.block_size);
-
-    containing_rect.offset.inline_offset =
-        border_scrollbar_padding.inline_start;
-    containing_rect.size.inline_size =
-        border_box_size.inline_size - border_scrollbar_padding.InlineSum();
-  }
+  ComputeOutOfFlowOffsetAndSize(
+      *out_of_flow_item, track_collection, borders, border_box_size,
+      &containing_rect.offset.block_offset, &containing_rect.size.block_size,
+      /*is_masonry_axis=*/is_for_columns);
 
   return containing_rect;
 }
