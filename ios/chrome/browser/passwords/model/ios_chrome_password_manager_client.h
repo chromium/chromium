@@ -135,6 +135,8 @@ class IOSChromePasswordManagerClient
   void NotifyKeychainError() override;
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
   bool IsFillingEnabled(const GURL& url) const override;
+  bool IsFieldFilledWithOtp(autofill::FormGlobalId form_id,
+                            autofill::FieldGlobalId field_id) override;
   bool IsCommittedMainFrameSecure() const override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;

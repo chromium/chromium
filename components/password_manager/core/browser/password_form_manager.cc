@@ -1085,6 +1085,21 @@ bool PasswordFormManager::ProvisionallySave(
   }
   HandleForgotPasswordFormData();
 
+  // Check if the password field was filled by the OTP product.
+  const auto it = std::ranges::find_if(
+      submitted_form.fields(), [&](const autofill::FormFieldData& field) {
+        return field.renderer_id() ==
+               parsed_submitted_form_->password_element_renderer_id;
+      });
+
+  if (it != submitted_form.fields().end()) {
+    const autofill::FormFieldData& password_field = *it;
+    if (client_->IsFieldFilledWithOtp(submitted_form.global_id(),
+                                      password_field.global_id())) {
+      return false;
+    }
+  }
+
   CreatePendingCredentials();
   return true;
 }

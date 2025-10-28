@@ -31,6 +31,10 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   ~StubPasswordManagerClient() override;
 
   // PasswordManagerClient:
+  bool IsSavingAndFillingEnabled(const GURL& url) const override;
+  bool IsFillingEnabled(const GURL& url) const override;
+  bool IsFieldFilledWithOtp(autofill::FormGlobalId form_id,
+                            autofill::FieldGlobalId field_id) override;
   bool PromptUserToSaveOrUpdatePassword(
       std::unique_ptr<PasswordFormManagerForUI> form_to_save,
       bool update_password) override;

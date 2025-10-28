@@ -53,6 +53,7 @@ source_set("model") {
     "//base",
     "//base:i18n",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser/integrators/password_manager",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",

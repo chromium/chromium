@@ -139,6 +139,8 @@ class ChromePasswordManagerClient
   // PasswordManagerClient implementation.
   bool IsSavingAndFillingEnabled(const GURL& url) const override;
   bool IsFillingEnabled(const GURL& url) const override;
+  bool IsFieldFilledWithOtp(autofill::FormGlobalId form_id,
+                            autofill::FieldGlobalId field_id) override;
   bool IsAutoSignInEnabled() const override;
   bool PromptUserToSaveOrUpdatePassword(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,

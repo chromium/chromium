@@ -152,6 +152,10 @@ class PasswordManagerClient {
   // determines whether saving prompts should be shown.
   virtual bool IsFillingEnabled(const GURL& url) const;
 
+  // Checks if the field was last filled with an OTP.
+  virtual bool IsFieldFilledWithOtp(autofill::FormGlobalId form_id,
+                                    autofill::FieldGlobalId field_id);
+
   // Checks if the auto sign-in functionality is enabled.
   virtual bool IsAutoSignInEnabled() const;
 

@@ -20,6 +20,21 @@ StubPasswordManagerClient::StubPasswordManagerClient()
 
 StubPasswordManagerClient::~StubPasswordManagerClient() = default;
 
+bool StubPasswordManagerClient::IsSavingAndFillingEnabled(
+    const GURL& url) const {
+  return true;
+}
+
+bool StubPasswordManagerClient::IsFillingEnabled(const GURL& url) const {
+  return true;
+}
+
+bool StubPasswordManagerClient::IsFieldFilledWithOtp(
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  return false;
+}
+
 bool StubPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool update_password) {
