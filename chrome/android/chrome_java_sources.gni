@@ -151,7 +151,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetViewBinder.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppPreference.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppsFragment.java",
-  "java/src/org/chromium/chrome/browser/autofill/settings/AutofillBuyNowPayLaterFragment.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AutofillCardBenefitsFragment.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AutofillCreditCardEditor.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AutofillDeletePaymentMethodConfirmationDialog.java",

@@ -251,9 +251,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // benefits.
   jboolean IsCardEligibleForBenefits(JNIEnv* env, const std::string& guid);
 
-  // Returns whether the BNPL preference should be shown on the settings page.
-  jboolean ShouldShowBnplSettings(JNIEnv* env);
-
  private:
   ~PersonalDataManagerAndroid() override;
 
