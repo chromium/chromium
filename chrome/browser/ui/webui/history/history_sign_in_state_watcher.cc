@@ -39,6 +39,12 @@ HistorySignInState GetHistorySignInState(
                    : HistorySignInState::kSignInPendingNotSyncingTabs;
 
       case signin_util::SignedInState::kSignedIn:
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+        if (signin_util::HasExplicitlyDisabledHistorySync(sync_service,
+                                                          identity_manager)) {
+          return HistorySignInState::kSyncDisabled;
+        }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         return sync_service &&
                        sync_service->GetUserSettings()->GetSelectedTypes().Has(
                            syncer::UserSelectableType::kTabs)
