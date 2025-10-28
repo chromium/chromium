@@ -294,6 +294,11 @@ ci.thin_tester(
                     shards = 20,
                 ),
             ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
+                ],
+            ),
             "chrome_public_test_apk_desktop": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.chrome_public_test_apk_desktop.filter",
