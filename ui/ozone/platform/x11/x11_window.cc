@@ -773,6 +773,8 @@ void X11Window::Restore() {
   if (IsMinimized()) {
     SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_HIDDEN"),
                    x11::Atom::None);
+  } else if (IsFullscreen()) {
+    SetFullscreen(false, display::kInvalidDisplayId);
   } else if (IsMaximized()) {
     should_maximize_after_map_ = false;
     SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
