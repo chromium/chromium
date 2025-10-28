@@ -71,6 +71,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
+#include "components/update_client/utils.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -264,12 +265,8 @@ struct TestApp {
   }
 
   std::string GetInstallCommandLineArgs(bool install_v1) const {
-#if BUILDFLAG(IS_WIN)
-    return base::WideToUTF8(
+    return update_client::StringTypeToUTF8(
         GetInstallCommandSwitches(install_v1).GetCommandLineString());
-#else
-    return GetInstallCommandSwitches(install_v1).GetCommandLineString();
-#endif
   }
 
   base::CommandLine GetInstallCommandLine(bool install_v1) const {

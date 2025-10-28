@@ -34,13 +34,7 @@ UrlFetcherDownloader::UrlFetcherDownloader(
     const std::string& prod_id)
     : CrxDownloader(std::move(successor)),
       network_fetcher_factory_(network_fetcher_factory),
-#if BUILDFLAG(IS_WIN)
-      prod_id_(base::UTF8ToWide(prod_id))
-#else   // BUILDFLAG(IS_WIN)
-      prod_id_(prod_id)
-#endif  // BUILDFLAG(IS_WIN)
-{
-}
+      prod_id_(update_client::UTF8ToStringType(prod_id)) {}
 
 UrlFetcherDownloader::~UrlFetcherDownloader() = default;
 

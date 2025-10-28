@@ -76,6 +76,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/update_client/utils.h"
 #include "crypto/sha2.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1097,16 +1098,10 @@ void GetAppStates(UpdaterScope updater_scope,
           EXPECT_EQ(it->version, *expected->FindString("version"));
           EXPECT_EQ(it->ap, *expected->FindString("ap"));
           EXPECT_EQ(it->brand_code, *expected->FindString("brand_code"));
-#if BUILDFLAG(IS_WIN)
-          EXPECT_EQ(base::WideToUTF8(it->brand_path.value()),
+          EXPECT_EQ(update_client::StringTypeToUTF8(it->brand_path.value()),
                     *expected->FindString("brand_path"));
-          EXPECT_EQ(base::WideToUTF8(it->ecp.value()),
+          EXPECT_EQ(update_client::StringTypeToUTF8(it->ecp.value()),
                     *expected->FindString("ecp"));
-#else
-          EXPECT_EQ(it->brand_path.value(),
-                    *expected->FindString("brand_path"));
-          EXPECT_EQ(it->ecp.value(), *expected->FindString("ecp"));
-#endif  // BUILDFLAG(IS_WIN)
         }
         loop.Quit();
       }));

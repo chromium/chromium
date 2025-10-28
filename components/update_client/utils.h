@@ -16,6 +16,7 @@
 #include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/update_client/update_client.h"
 
 class GURL;
@@ -110,6 +111,21 @@ bool CreateTempDirectory(const base::FilePath::StringType& prefix,
 // Creates a temporary directory with a ScopedTempDir, with platform specific
 // overrides for ChromeOS where `/tmp` can have insufficient space.
 bool CreateScopedTempDirectory(base::ScopedTempDir& dir);
+
+// UTF8 conversions between `std::string` and the `StringType` type found in
+// the `base::FilePath` and `base::CommandLine` classes.
+#if BUILDFLAG(IS_WIN)
+base::FilePath::StringType UTF8ToStringType(const std::string& utf8);
+std::string StringTypeToUTF8(const base::FilePath::StringType& stringtype);
+#else   // BUILDFLAG(IS_WIN)
+constexpr base::FilePath::StringType UTF8ToStringType(const std::string& utf8) {
+  return utf8;
+}
+constexpr std::string StringTypeToUTF8(
+    const base::FilePath::StringType& stringtype) {
+  return stringtype;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace update_client
 

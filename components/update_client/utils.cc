@@ -29,11 +29,13 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
@@ -226,5 +228,15 @@ bool CreateScopedTempDirectory(base::ScopedTempDir& dir) {
 #endif
   return dir.CreateUniqueTempDir();
 }
+
+#if BUILDFLAG(IS_WIN)
+base::FilePath::StringType UTF8ToStringType(const std::string& utf8) {
+  return base::UTF8ToWide(utf8);
+}
+
+std::string StringTypeToUTF8(const base::FilePath::StringType& stringtype) {
+  return base::WideToUTF8(stringtype);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace update_client

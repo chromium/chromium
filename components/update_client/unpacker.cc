@@ -51,15 +51,10 @@ Unpacker::Unpacker(const std::string& app_id,
                    std::unique_ptr<Unzipper> unzipper,
                    base::OnceCallback<void(const Result& result)> callback)
     : app_id_(app_id),
-#if BUILDFLAG(IS_WIN)
-      prod_id_(base::UTF8ToWide(prod_id)),
-#else   // BUILDFLAG(IS_WIN)
-      prod_id_(prod_id),
-#endif  // BUILDFLAG(IS_WIN)
+      prod_id_(update_client::UTF8ToStringType(prod_id)),
       path_(path),
       unzipper_(std::move(unzipper)),
-      callback_(std::move(callback)) {
-}
+      callback_(std::move(callback)) {}
 
 Unpacker::~Unpacker() = default;
 
