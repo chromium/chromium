@@ -5,21 +5,26 @@
 #include "components/persistent_cache/persistent_cache_collection.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/debug/alias.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace persistent_cache {
@@ -39,10 +44,10 @@ TEST_F(PersistentCacheCollectionTest, CreateAndUse) {
 
   std::string cache_id("cache_id");
   std::string key("key");
-  collection.Insert(cache_id, key, base::as_byte_span(key));
-  auto entry = collection.Find(cache_id, key);
-  ASSERT_NE(entry, nullptr);
-  ASSERT_EQ(entry->GetContentSpan(), base::as_byte_span(key));
+  EXPECT_THAT(collection.Insert(cache_id, key, base::as_byte_span(key)),
+              base::test::HasValue());
+  ASSERT_THAT(collection.Find(cache_id, key),
+              base::test::ValueIs(HasContents(base::as_byte_span(key))));
 }
 
 TEST_F(PersistentCacheCollectionTest, DeleteAllFiles) {
@@ -50,7 +55,8 @@ TEST_F(PersistentCacheCollectionTest, DeleteAllFiles) {
 
   std::string cache_id("cache_id");
   std::string key("key");
-  collection.Insert(cache_id, key, base::as_byte_span(key));
+  EXPECT_THAT(collection.Insert(cache_id, key, base::as_byte_span(key)),
+              base::test::HasValue());
 
   // Inserting an entry should have created at least one file.
   EXPECT_FALSE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
@@ -73,20 +79,26 @@ TEST_F(PersistentCacheCollectionTest, Retrieval) {
   constexpr const char first_content[] = "first_content";
 
   // At first there is nothing in the collection.
-  EXPECT_EQ(collection.Find(first_cache_id, first_key), nullptr);
-  EXPECT_EQ(collection.Find(first_cache_id, second_key), nullptr);
-  EXPECT_EQ(collection.Find(second_cache_id, first_key), nullptr);
-  EXPECT_EQ(collection.Find(second_cache_id, second_key), nullptr);
+  EXPECT_THAT(collection.Find(first_cache_id, first_key),
+              base::test::ValueIs(testing::IsNull()));
+  EXPECT_THAT(collection.Find(first_cache_id, second_key),
+              base::test::ValueIs(testing::IsNull()));
+  EXPECT_THAT(collection.Find(second_cache_id, first_key),
+              base::test::ValueIs(testing::IsNull()));
+  EXPECT_THAT(collection.Find(second_cache_id, second_key),
+              base::test::ValueIs(testing::IsNull()));
 
   // Inserting for a certain cache id allows retrieval for this id and this id
   // only.
-  collection.Insert(first_cache_id, first_key,
-                    base::byte_span_from_cstring(first_content));
-  auto entry = collection.Find(first_cache_id, first_key);
-  ASSERT_NE(entry, nullptr);
-  EXPECT_EQ(entry->GetContentSpan(),
-            base::byte_span_from_cstring(first_content));
-  EXPECT_EQ(collection.Find(second_cache_id, first_key), nullptr);
+  EXPECT_THAT(collection.Insert(first_cache_id, first_key,
+                                base::byte_span_from_cstring(first_content)),
+              base::test::HasValue());
+  ASSERT_THAT(collection.Find(first_cache_id, first_key),
+              base::test::ValueIs(
+                  HasContents(base::byte_span_from_cstring(first_content))));
+
+  EXPECT_THAT(collection.Find(second_cache_id, first_key),
+              base::test::ValueIs(testing::IsNull()));
 }
 
 TEST_F(PersistentCacheCollectionTest, RetrievalAfterClear) {
@@ -97,15 +109,22 @@ TEST_F(PersistentCacheCollectionTest, RetrievalAfterClear) {
   constexpr const char first_content[] = "first_content";
 
   // Test basic retrieval.
-  EXPECT_EQ(collection.Find(first_cache_id, first_key), nullptr);
-  collection.Insert(first_cache_id, first_key,
-                    base::byte_span_from_cstring(first_content));
-  EXPECT_NE(collection.Find(first_cache_id, first_key), nullptr);
+  EXPECT_THAT(collection.Find(first_cache_id, first_key),
+              base::test::ValueIs(testing::IsNull()));
 
-  // Retrieval still works after clear because data persistence is unnafected by
-  // lifetime of PersistentCache instances.
+  EXPECT_THAT(collection.Insert(first_cache_id, first_key,
+                                base::byte_span_from_cstring(first_content)),
+              base::test::HasValue());
+
+  EXPECT_THAT(collection.Find(first_cache_id, first_key),
+              base::test::ValueIs(testing::NotNull()));
+
   collection.ClearForTesting();
-  EXPECT_NE(collection.Find(first_cache_id, first_key), nullptr);
+
+  // Retrieval still works after clear because data persistence is unaffected by
+  // lifetime of PersistentCache instances.
+  EXPECT_THAT(collection.Find(first_cache_id, first_key),
+              base::test::ValueIs(testing::NotNull()));
 }
 
 TEST_F(PersistentCacheCollectionTest, ContinuousFootPrintReduction) {
@@ -127,7 +146,8 @@ TEST_F(PersistentCacheCollectionTest, ContinuousFootPrintReduction) {
       int64_t directory_size_before =
           base::ComputeDirectorySize(temp_dir_.GetPath());
 
-      collection.Insert(number, number, base::as_byte_span(number));
+      EXPECT_THAT(collection.Insert(number, number, base::as_byte_span(number)),
+                  base::test::HasValue());
 
       int64_t directory_size_after =
           base::ComputeDirectorySize(temp_dir_.GetPath());
@@ -152,12 +172,14 @@ TEST_F(PersistentCacheCollectionTest, ContinuousFootPrintReduction) {
   // should still be available.
   for (int j = 0; j < i - 1; ++j) {
     std::string number = base::NumberToString(j);
-    EXPECT_NE(collection.Find(number, number), nullptr);
+    EXPECT_THAT(collection.Find(number, number),
+                base::test::ValueIs(testing::NotNull()));
   }
 
   // Add one more item which should bring things over the limit.
   std::string number = base::NumberToString(i + 1);
-  collection.Insert(number, number, base::as_byte_span(number));
+  EXPECT_THAT(collection.Insert(number, number, base::as_byte_span(number)),
+              base::test::HasValue());
 
   int64_t directory_size_after =
       base::ComputeDirectorySize(temp_dir_.GetPath());
@@ -193,8 +215,67 @@ TEST_F(PersistentCacheCollectionTest, FullAllowedCharacterSetHandled) {
   std::string all_chars_key =
       PersistentCacheCollection::GetAllAllowedCharactersInCacheIds();
   std::string number("number");
-  collection.Insert(all_chars_key, number, base::as_byte_span(number));
-  ASSERT_NE(collection.Find(all_chars_key, number), nullptr);
+  EXPECT_THAT(
+      collection.Insert(all_chars_key, number, base::as_byte_span(number)),
+      base::test::HasValue());
+  EXPECT_THAT(collection.Find(all_chars_key, number),
+              base::test::ValueIs(testing::NotNull()));
+}
+
+TEST_F(PersistentCacheCollectionTest, PermanentErrorCausesDeletion) {
+  PersistentCacheCollection collection(temp_dir_.GetPath(), kOneHundredMiB);
+
+  std::string first_cache_id = "first_cache_id";
+  std::string first_key = "first_key";
+  static constexpr char first_content[] = "first_content";
+
+  // Insert into a cache which will cause the creation of exactly two files.
+  EXPECT_THAT(collection.Insert(first_cache_id, first_key,
+                                base::byte_span_from_cstring(first_content)),
+              base::test::HasValue());
+  {
+    int file_count = 0;
+    base::FileEnumerator(temp_dir_.GetPath(), /*recursive=*/false,
+                         base::FileEnumerator::FILES)
+        .ForEach(
+            [&file_count](const base::FilePath& file_path) { ++file_count; });
+    ASSERT_EQ(file_count, 2);
+  }
+
+  // TODO(https://crbug.com/377475540): Instead of triggering an error in a
+  // backend specific way PersistentCacheCollection should have a way to inject
+  // mock BackendStorage::Delegate.
+  base::FileEnumerator(temp_dir_.GetPath(), /*recursive=*/false,
+                       base::FileEnumerator::FILES)
+      .ForEach([](const base::FilePath& file_path) {
+        base::File file;
+        file.Initialize(file_path, base::File::FLAG_WRITE |
+                                       base::File::FLAG_OPEN |
+                                       base::File::FLAG_CAN_DELETE_ON_CLOSE |
+                                       base::File::FLAG_WIN_SHARE_DELETE);
+
+        // Truncate which will cause future requests to start failing.
+        CHECK(file.IsValid());
+        file.SetLength(0);
+      });
+
+  // Permanent error because there are no more valid files.
+  EXPECT_THAT(collection.Find(first_cache_id, first_key),
+              base::test::ErrorIs(TransactionError::kPermanent));
+
+  // TODO(https://crbug.com/377475540): As in previous item once we use mocking
+  // to trigger failures we should validate that transient errors are handled
+  // properly in a backend agnostic way.
+
+  // Files got deleted on permanent error.
+  {
+    int file_count = 0;
+    base::FileEnumerator(temp_dir_.GetPath(), /*recursive=*/false,
+                         base::FileEnumerator::FILES)
+        .ForEach(
+            [&file_count](const base::FilePath& file_path) { ++file_count; });
+    ASSERT_EQ(file_count, 0);
+  }
 }
 
 using PersistentCacheCollectionDeathTest = PersistentCacheCollectionTest;
@@ -203,9 +284,11 @@ using PersistentCacheCollectionDeathTest = PersistentCacheCollectionTest;
 // invalid cache_id is used.
 TEST_F(PersistentCacheCollectionDeathTest, BadKeysCrash) {
   EXPECT_CHECK_DEATH({
-    PersistentCacheCollection(temp_dir_.GetPath(), kOneHundredMiB)
-        .Insert(std::string("BADKEY"), "key",
-                base::byte_span_from_cstring("value"));
+    // There is no expectation for the return value we can test since death is
+    // expected
+    std::ignore = PersistentCacheCollection(temp_dir_.GetPath(), kOneHundredMiB)
+                      .Insert(std::string("BADKEY"), "key",
+                              base::byte_span_from_cstring("value"));
   });
 }
 

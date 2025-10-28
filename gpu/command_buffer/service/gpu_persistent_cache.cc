@@ -13,6 +13,7 @@
 #include "base/synchronization/lock_subtle.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected_macros.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache.h"
 
@@ -104,8 +105,15 @@ std::unique_ptr<persistent_cache::Entry> GpuPersistentCache::LoadEntry(
     return nullptr;
   }
 
-  return persistent_cache_->Find(key);
+  ASSIGN_OR_RETURN(auto entry, persistent_cache_->Find(key),
+                   [](persistent_cache::TransactionError error)
+                       -> std::unique_ptr<persistent_cache::Entry> {
+                     // TODO(crbug.com/377475540): Handle or at least address
+                     // permanent errors.
+                     return nullptr;
+                   });
 
+  return entry;
 }
 
 void GpuPersistentCache::StoreData(const void* key,
@@ -130,9 +138,15 @@ void GpuPersistentCache::StoreData(const void* key,
   }
 
   std::string_view key_str(static_cast<const char*>(key), key_size);
-  persistent_cache_->Insert(
-      key_str,
-      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(value), value_size)));
+  RETURN_IF_ERROR(
+      persistent_cache_->Insert(
+          key_str, UNSAFE_TODO(base::span(static_cast<const uint8_t*>(value),
+                                          value_size))),
+      [](persistent_cache::TransactionError error) {
+        // TODO(crbug.com/377475540): Handle or at least address
+        // permanent errors.
+        return;
+      });
 }
 
 std::string GpuPersistentCache::GetHistogramName(

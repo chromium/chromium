@@ -4,6 +4,7 @@
 
 #include "components/persistent_cache/persistent_cache.h"
 
+#include "base/test/gmock_expected_support.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/buildflag.h"
@@ -28,9 +29,10 @@ TEST_F(PersistentCachePerftest, OpenClose) {
 
   // Ensures there are entries in the cache.
   const char* kKey = "foo";
-  persistent_cache.Insert(kKey, base::byte_span_from_cstring("1"));
-  auto entry = persistent_cache.Find(kKey);
-  ASSERT_TRUE(entry);
+  ASSERT_THAT(persistent_cache.Insert(kKey, base::byte_span_from_cstring("1")),
+              base::test::HasValue());
+  ASSERT_THAT(persistent_cache.Find(kKey),
+              base::test::ValueIs(testing::NotNull()));
 
   base::ElapsedTimer timer;
   const int kAmountOfIteration = 16 * 1024;

@@ -76,6 +76,12 @@ void BackendStorage::DeleteAllFiles() {
   }
 }
 
+void BackendStorage::DeleteFiles(const base::FilePath& base_name) {
+  if (is_valid_) {
+    delegate_->DeleteFiles(directory_, base_name);
+  }
+}
+
 BackendStorage::FootprintReductionResult
 BackendStorage::BringDownTotalFootprintOfFiles(int64_t target_footprint) {
   if (!is_valid_) {

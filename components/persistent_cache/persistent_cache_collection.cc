@@ -4,6 +4,9 @@
 
 #include "components/persistent_cache/persistent_cache_collection.h"
 
+#include <stddef.h>
+
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -11,10 +14,12 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/strings/string_util.h"
-#include "components/persistent_cache/backend.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache.h"
+#include "components/persistent_cache/transaction_error.h"
 
 namespace {
 
@@ -35,21 +40,28 @@ PersistentCacheCollection::PersistentCacheCollection(
 
 PersistentCacheCollection::~PersistentCacheCollection() = default;
 
-std::unique_ptr<Entry> PersistentCacheCollection::Find(
-    const std::string& cache_id,
-    std::string_view key) {
+base::expected<std::unique_ptr<Entry>, TransactionError>
+PersistentCacheCollection::Find(const std::string& cache_id,
+                                std::string_view key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto* cache = GetOrCreateCache(cache_id); cache) {
-    return cache->Find(key);
+  auto* cache = GetOrCreateCache(cache_id);
+  if (!cache) {
+    return base::unexpected(TransactionError::kPermanent);
   }
-  return nullptr;
+
+  ASSIGN_OR_RETURN(auto entry, cache->Find(key),
+                   [&cache_id, this](TransactionError error) {
+                     return HandleTransactionError(cache_id, error);
+                   });
+  return entry;
 }
 
-void PersistentCacheCollection::Insert(const std::string& cache_id,
-                                       std::string_view key,
-                                       base::span<const uint8_t> content,
-                                       EntryMetadata metadata) {
+base::expected<void, TransactionError> PersistentCacheCollection::Insert(
+    const std::string& cache_id,
+    std::string_view key,
+    base::span<const uint8_t> content,
+    EntryMetadata metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Approximate the footprint of this insert to the size of the key and value
@@ -61,9 +73,17 @@ void PersistentCacheCollection::Insert(const std::string& cache_id,
     ReduceFootPrint();
   }
 
-  if (auto* cache = GetOrCreateCache(cache_id); cache) {
-    cache->Insert(key, content, metadata);
+  auto* cache = GetOrCreateCache(cache_id);
+  if (!cache) {
+    return base::unexpected(TransactionError::kPermanent);
   }
+
+  RETURN_IF_ERROR(cache->Insert(key, content, metadata),
+                  [&cache_id, this](TransactionError error) {
+                    return HandleTransactionError(cache_id, error);
+                  });
+
+  return base::ok();
 }
 
 void PersistentCacheCollection::DeleteAllFiles() {
@@ -100,6 +120,37 @@ PersistentCacheCollection::ExportReadWriteBackendParams(
     return cache->ExportReadWriteBackendParams();
   }
   return std::nullopt;
+}
+
+TransactionError PersistentCacheCollection::HandleTransactionError(
+    const std::string& cache_id,
+    TransactionError error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = persistent_caches_.Get(cache_id);
+  CHECK(it != persistent_caches_.end());
+
+  switch (error) {
+    case TransactionError::kTransient:
+      // Nothing to do in the case of transient errors but report them.
+      break;
+    case TransactionError::kConnectionError:
+      // Remove from opened caches to force re-opening since the files are
+      // presumed still valid.
+      persistent_caches_.Erase(it);
+      break;
+    case TransactionError::kPermanent:
+      // Delete files as they cannot be used again. Purposefully done before
+      // erasing the instance to avoid races. See `DeleteAllFiles()` for
+      // details.
+      backend_storage_.DeleteFiles(BaseNameFromCacheId(cache_id));
+
+      // Remove from opened caches since the backing files don't exist anymore.
+      persistent_caches_.Erase(it);
+      break;
+  }
+
+  return error;
 }
 
 void PersistentCacheCollection::ReduceFootPrint() {
@@ -145,10 +196,6 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
   }
 
   // Create the cache
-  // TODO(crbug.com/377475540): Currently this class is deeply tied to the
-  // sqlite implementation. Once the conversion to and from mojo types is
-  // implemented this class should get a way to select the desired backend type.
-  // TODO: Allow choosing the desired access rights.
   auto inserted_it = persistent_caches_.Put(
       cache_id, std::make_unique<PersistentCache>(std::move(backend)));
   return inserted_it->second.get();

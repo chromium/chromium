@@ -11,11 +11,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
 
@@ -57,9 +60,10 @@ PersistentCache::PersistentCache(std::unique_ptr<Backend> backend) {
 
 PersistentCache::~PersistentCache() = default;
 
-std::unique_ptr<Entry> PersistentCache::Find(std::string_view key) {
+base::expected<std::unique_ptr<Entry>, TransactionError> PersistentCache::Find(
+    std::string_view key) {
   if (!backend_) {
-    return nullptr;
+    return base::unexpected(TransactionError::kPermanent);
   }
 
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
@@ -74,21 +78,23 @@ std::unique_ptr<Entry> PersistentCache::Find(std::string_view key) {
   return entry;
 }
 
-void PersistentCache::Insert(std::string_view key,
-                             base::span<const uint8_t> content,
-                             EntryMetadata metadata) {
+base::expected<void, TransactionError> PersistentCache::Insert(
+    std::string_view key,
+    base::span<const uint8_t> content,
+    EntryMetadata metadata) {
   if (!backend_) {
-    return;
+    return base::unexpected(TransactionError::kPermanent);
   }
 
   std::optional<base::ElapsedTimer> timer = MaybeGetTimerForHistogram();
 
-  backend_->Insert(key, content, metadata);
-
+  auto result = backend_->Insert(key, content, metadata);
   if (timer.has_value()) {
     base::UmaHistogramMicrosecondsTimes(GetFullHistogramName("Insert"),
                                         timer->Elapsed());
   }
+
+  return result;
 }
 
 std::optional<BackendParams> PersistentCache::ExportReadOnlyBackendParams() {
@@ -114,6 +120,7 @@ Backend* PersistentCache::GetBackendForTesting() {
 std::optional<base::ElapsedTimer> PersistentCache::MaybeGetTimerForHistogram() {
   std::optional<base::ElapsedTimer> timer;
 
+  base::AutoLock lock(metrics_subsampler_lock_);
   if (metrics_subsampler_.ShouldSample(kTimingLoggingProbability)) {
     timer.emplace();
   }

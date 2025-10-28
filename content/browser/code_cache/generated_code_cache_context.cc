@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "components/persistent_cache/entry.h"
 #include "components/persistent_cache/persistent_cache_collection.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -177,14 +178,28 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
   //
   // TODO(crbug.com/377475540): Make an explicit copy here once PersistentCache
   // handles taking ownership of the memory passed in.
-  persistent_cache_collection_->Insert(context_key, url, content, metadata);
+  RETURN_IF_ERROR(
+      persistent_cache_collection_->Insert(context_key, url, content, metadata),
+      [](persistent_cache::TransactionError error) {
+        // TODO(crbug.com/377475540): Handle or at least address
+        // permanent errors.
+        return;
+      });
 }
 
 std::unique_ptr<persistent_cache::Entry>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
     std::string_view url) {
-  return persistent_cache_collection_->Find(context_key, url);
+  ASSIGN_OR_RETURN(auto entry,
+                   persistent_cache_collection_->Find(context_key, url),
+                   [](persistent_cache::TransactionError error)
+                       -> std::unique_ptr<persistent_cache::Entry> {
+                     // TODO(crbug.com/377475540): Handle or at least address
+                     // permanent errors.
+                     return nullptr;
+                   });
+  return entry;
 }
 
 void GeneratedCodeCacheContext::ShutdownOnThread() {

@@ -4,6 +4,8 @@
 
 #include "components/persistent_cache/backend_storage.h"
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -11,8 +13,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/transaction_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,8 +49,11 @@ class MockBackendStorageDelegate : public BackendStorage::Delegate {
 class MockBackend : public Backend {
  public:
   MOCK_METHOD(bool, Initialize, (), (override));
-  MOCK_METHOD(std::unique_ptr<Entry>, Find, (std::string_view key), (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD((base::expected<std::unique_ptr<Entry>, TransactionError>),
+              Find,
+              (std::string_view),
+              (override));
+  MOCK_METHOD((base::expected<void, TransactionError>),
               Insert,
               (std::string_view key,
                base::span<const uint8_t> content,

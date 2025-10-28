@@ -5,11 +5,12 @@
 #include "components/persistent_cache/persistent_cache.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/notreached.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
-#include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 
 namespace persistent_cache {
 
@@ -30,13 +31,15 @@ PersistentCache::~PersistentCache() {
   NOTREACHED();
 }
 
-std::unique_ptr<Entry> PersistentCache::Find(std::string_view key) {
+base::expected<std::unique_ptr<Entry>, TransactionError> PersistentCache::Find(
+    std::string_view key) {
   NOTREACHED();
 }
 
-void PersistentCache::Insert(std::string_view key,
-                             base::span<const uint8_t> content,
-                             EntryMetadata metadata) {
+base::expected<void, TransactionError> PersistentCache::Insert(
+    std::string_view key,
+    base::span<const uint8_t> content,
+    EntryMetadata metadata) {
   NOTREACHED();
 }
 

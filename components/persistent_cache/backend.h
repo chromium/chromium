@@ -5,12 +5,17 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_BACKEND_H_
 #define COMPONENTS_PERSISTENT_CACHE_BACKEND_H_
 
+#include <stdint.h>
+
 #include <optional>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry_metadata.h"
+#include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
 
@@ -31,28 +36,19 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   // method. No further method can be called if this fails.
   virtual bool Initialize() = 0;
 
-  // Used to get a handle to entry associated with `key`. Returns `nullptr` if
-  // `key` is not found. Returned entry will remain valid and its contents will
-  // be accessible for its entire lifetime. Note: Backends have to outlive
-  // entries they vend.
+  // See `PersistentCache::Find()`.
+  // Note: Backends have to outlive entries they vend.
   //
   // Thread-safe.
-  virtual std::unique_ptr<Entry> Find(std::string_view key) = 0;
+  virtual base::expected<std::unique_ptr<Entry>, TransactionError> Find(
+      std::string_view key) = 0;
 
-  // Used to add an entry containing `content` and associated with `key`.
-  // Metadata associated with the entry can be provided in `metadata` or the
-  // object can be default initialized to signify no metadata.
-  //
-  // This call will never report failure and `content` is expected (but not
-  // guaranteed) to be resident upon return.
-  //
-  // Implementations are allowed to free other unused entries on demand to make
-  // room or fail when full.
-  //
+  // See `PersistentCache::Insert()`.
   // Thread-safe.
-  virtual void Insert(std::string_view key,
-                      base::span<const uint8_t> content,
-                      EntryMetadata metadata) = 0;
+  virtual base::expected<void, TransactionError> Insert(
+      std::string_view key,
+      base::span<const uint8_t> content,
+      EntryMetadata metadata) = 0;
 
   // Used to get type of instance. Intended for things like metrics recording.
   // Externally behavior of all backend types should be equivalent and control

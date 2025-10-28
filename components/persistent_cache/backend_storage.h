@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
   // backends are destroyed before creating new ones in the managed directory.
   void DeleteAllFiles();
 
+  // Delete files associated with `base_name` within the instance's directory.
+  // The conditions apply as in `DeleteAllFiles`.
+  void DeleteFiles(const base::FilePath& base_name);
+
   struct FootprintReductionResult {
     int64_t current_footprint;
     int64_t number_of_bytes_deleted;

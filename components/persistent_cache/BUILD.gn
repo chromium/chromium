@@ -11,6 +11,7 @@ component("persistent_cache") {
     "entry_metadata.h",
     "persistent_cache.h",
     "persistent_cache_collection.h",
+    "transaction_error.h",
   ]
 
   sources = [
@@ -73,6 +74,7 @@ static_library("test_support") {
     "mock/mock_entry_impl.h",
     "sqlite/test_utils.cc",
     "sqlite/test_utils.h",
+    "test_utils.h",
   ]
 
   deps = [

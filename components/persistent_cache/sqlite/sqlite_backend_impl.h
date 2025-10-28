@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_params.h"
@@ -36,16 +37,20 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
 
   // `Backend`:
   [[nodiscard]] bool Initialize() override;
-  [[nodiscard]] std::unique_ptr<Entry> Find(std::string_view key) override;
-  void Insert(std::string_view key,
-              base::span<const uint8_t> content,
-              EntryMetadata metadata) override;
+  [[nodiscard]] base::expected<std::unique_ptr<Entry>, TransactionError> Find(
+      std::string_view key) override;
+  base::expected<void, TransactionError> Insert(
+      std::string_view key,
+      base::span<const uint8_t> content,
+      EntryMetadata metadata) override;
   BackendType GetType() const override;
   bool IsReadOnly() const override;
   std::optional<BackendParams> ExportReadOnlyParams() override;
   std::optional<BackendParams> ExportReadWriteParams() override;
 
  private:
+  TransactionError HandleError(int sqlite_error);
+
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
 
   std::optional<BackendParams> ExportParams(bool read_write);

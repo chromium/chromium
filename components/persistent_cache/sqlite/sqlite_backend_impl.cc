@@ -5,6 +5,7 @@
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -13,10 +14,12 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/sqlite/sqlite_entry_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
+#include "components/persistent_cache/transaction_error.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 
@@ -65,7 +68,6 @@ SqliteBackendImpl::SqliteBackendImpl(SqliteVfsFileSet vfs_file_set)
               vfs_file_set_)),
       db_(std::in_place,
           sql::DatabaseOptions()
-              .set_read_only(vfs_file_set_.read_only())
               .set_exclusive_locking(false)
               .set_vfs_name_discouraged(
                   SqliteSandboxedVfsDelegate::kSqliteVfsName)
@@ -109,9 +111,9 @@ bool SqliteBackendImpl::Initialize() {
   return true;
 }
 
-std::unique_ptr<Entry> SqliteBackendImpl::Find(std::string_view key) {
+base::expected<std::unique_ptr<Entry>, TransactionError>
+SqliteBackendImpl::Find(std::string_view key) {
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
-
   CHECK(initialized_);
   CHECK_GT(key.length(), 0ull);
   TRACE_EVENT0("persistent_cache", "Find");
@@ -123,27 +125,31 @@ std::unique_ptr<Entry> SqliteBackendImpl::Find(std::string_view key) {
   stm.BindString(0, key);
 
   DCHECK(stm.is_valid());
-  if (!stm.Step()) {
-    const int error_code = db_->GetErrorCode();
-    // If the last error code is SQLITE_DONE then `Step()` failed because the
-    // row was not found which is not a reportable error.
-    if (error_code != SQLITE_DONE) {
-      TRACE_EVENT_INSTANT1("persistent_cache", "find_failed",
-                           TRACE_EVENT_SCOPE_THREAD, "error_code", error_code);
-    }
-    return nullptr;
+
+  // Cache hit.
+  if (stm.Step()) {
+    return SqliteEntryImpl::MakeUnique(
+        Passkey(), stm.ColumnString(0),
+        EntryMetadata{.input_signature = stm.ColumnInt64(1),
+                      .write_timestamp = stm.ColumnInt64(2)});
   }
 
-  EntryMetadata metadata;
-  metadata.input_signature = stm.ColumnInt64(1);
-  metadata.write_timestamp = stm.ColumnInt64(2);
+  // Cache miss.
+  if (stm.Succeeded()) {
+    return base::ok(nullptr);
+  }
 
-  return SqliteEntryImpl::MakeUnique(Passkey(), stm.ColumnString(0), metadata);
+  // Error handling.
+  const int error_code = db_->GetErrorCode();
+  TRACE_EVENT_INSTANT1("persistent_cache", "find_failed",
+                       TRACE_EVENT_SCOPE_THREAD, "error_code", error_code);
+  return base::unexpected(HandleError(error_code));
 }
 
-void SqliteBackendImpl::Insert(std::string_view key,
-                               base::span<const uint8_t> content,
-                               EntryMetadata metadata) {
+base::expected<void, TransactionError> SqliteBackendImpl::Insert(
+    std::string_view key,
+    base::span<const uint8_t> content,
+    EntryMetadata metadata) {
   base::AutoLock lock(lock_, base::subtle::LockTracking::kEnabled);
 
   CHECK(initialized_);
@@ -165,10 +171,38 @@ void SqliteBackendImpl::Insert(std::string_view key,
 
   DCHECK(stm.is_valid());
   if (!stm.Run()) {
+    const int error_code = db_->GetErrorCode();
     TRACE_EVENT_INSTANT1("persistent_cache", "insert_failed",
-                         TRACE_EVENT_SCOPE_THREAD, "error_code",
-                         db_->GetErrorCode());
+                         TRACE_EVENT_SCOPE_THREAD, "error_code", error_code);
+    return base::unexpected(HandleError(error_code));
   }
+
+  return base::ok();
+}
+
+TransactionError SqliteBackendImpl::HandleError(int sqlite_error) {
+  switch (sqlite_error) {
+    case SQLITE_BUSY:
+    case SQLITE_NOMEM:
+      return TransactionError::kTransient;
+    case SQLITE_CANTOPEN:
+    case SQLITE_IOERR_LOCK:  // Lock abandonment.
+      return TransactionError::kConnectionError;
+    case SQLITE_CORRUPT:
+    case SQLITE_ERROR:
+    case SQLITE_FULL:
+    case SQLITE_IOERR_FSTAT:
+    case SQLITE_IOERR_FSYNC:
+    case SQLITE_IOERR_READ:
+    case SQLITE_IOERR_WRITE:
+      return TransactionError::kPermanent;
+  }
+
+  // Remaining errors are treasted as transient.
+  // `Sql.Database.Statement.Error.PersistentCache` should be monitored to
+  // ensure that there are no surprising permanent errors wrongly handled here
+  // as this will mean unusable databases that keep being used.
+  return TransactionError::kTransient;
 }
 
 BackendType SqliteBackendImpl::GetType() const {
@@ -180,10 +214,12 @@ bool SqliteBackendImpl::IsReadOnly() const {
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportReadOnlyParams() {
+  // TODO(https://crbug.com/377475540): Disallow export after permanent error.
   return ExportParams(/*read_write=*/false);
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportReadWriteParams() {
+  // TODO(https://crbug.com/377475540): Disallow export after permanent error.
   return ExportParams(/*read_write=*/true);
 }
 
