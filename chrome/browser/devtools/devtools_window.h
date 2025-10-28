@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
@@ -503,6 +504,10 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   void MaybeShowSharedProcessInfobar();
 
+#if !BUILDFLAG(IS_ANDROID)
+  void ActivateInspectedTab();
+#endif
+
   FrontendType frontend_type_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> main_web_contents_;
@@ -578,6 +583,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   base::ScopedClosureRunner capture_handle_;
 
   friend class DevToolsEventForwarder;
+
+  base::WeakPtrFactory<DevToolsWindow> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_WINDOW_H_

@@ -1028,14 +1028,12 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     BrowserWindow* inspected_window = inspected_browser->window();
     main_web_contents_->SetDelegate(this);
 
-    TabStripModel* tab_strip_model = inspected_browser->tab_strip_model();
-    int inspected_tab_index =
-        tab_strip_model->GetIndexOfWebContents(inspected_web_contents);
-    DCHECK_NE(TabStripModel::kNoTab, inspected_tab_index);
-    tab_strip_model->ActivateTabAt(
-        inspected_tab_index,
-        TabStripUserGestureDetails(
-            TabStripUserGestureDetails::GestureType::kOther));
+    // Inspected tab needs to be activated, however, this cannot be done from
+    // here because TabStripModel does not allow reentrancy for its public
+    // methods, see http://crbug.com/452538043.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&DevToolsWindow::ActivateInspectedTab,
+                                  weak_factory_.GetWeakPtr()));
 
     inspected_window->UpdateDevTools(inspected_web_contents);
     main_web_contents_->SetInitialFocus();
@@ -1081,6 +1079,33 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
 #endif
   DoAction(action);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void DevToolsWindow::ActivateInspectedTab() {
+  content::WebContents* inspected_web_contents = GetInspectedWebContents();
+  if (!inspected_web_contents) {
+    return;
+  }
+
+  Browser* inspected_browser =
+      chrome::FindBrowserWithTab(inspected_web_contents);
+  if (!inspected_browser) {
+    return;
+  }
+
+  TabStripModel* tab_strip_model = inspected_browser->tab_strip_model();
+  if (tab_strip_model->GetActiveWebContents() != inspected_web_contents) {
+    int inspected_tab_index =
+        tab_strip_model->GetIndexOfWebContents(inspected_web_contents);
+    CHECK_NE(TabStripModel::kNoTab, inspected_tab_index);
+
+    tab_strip_model->ActivateTabAt(
+        inspected_tab_index,
+        TabStripUserGestureDetails(
+            TabStripUserGestureDetails::GestureType::kOther));
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 bool DevToolsWindow::HandleBeforeUnload(WebContents* frontend_contents,
