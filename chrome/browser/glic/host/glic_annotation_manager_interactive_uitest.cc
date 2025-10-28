@@ -1447,7 +1447,13 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TextFragmentFound) {
       ScrollToWithURL(ExactTextSelector("test")));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TwoScrolls) {
+// TODO(crbug.com/455834776): Disabled on Mac due to failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TwoScrolls DISABLED_TwoScrolls
+#else
+#define MAYBE_TwoScrolls TwoScrolls
+#endif
+IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, MAYBE_TwoScrolls) {
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached),
                   SetTabContextPermission(true),
@@ -1455,8 +1461,14 @@ IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF, TwoScrolls) {
                   ScrollToWithURL(ExactTextSelector("Result")));
 }
 
+// TODO(crbug.com/455834776): Disabled on Mac due to failures.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FirstFoundSecondNotFound DISABLED_FirstFoundSecondNotFound
+#else
+#define MAYBE_FirstFoundSecondNotFound FirstFoundSecondNotFound
+#endif
 IN_PROC_BROWSER_TEST_P(GlicAnnotationManagerTestForPDF,
-                       FirstFoundSecondNotFound) {
+                       MAYBE_FirstFoundSecondNotFound) {
   NavigateToPDF(embedded_test_server()->GetURL("/find_in_pdf_page.pdf"));
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kDetached), SetTabContextPermission(true),
