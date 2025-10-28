@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
@@ -178,8 +179,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                 (model, view) -> {
                     int menuId = model.get(ListMenuItemProperties.MENU_ITEM_ID);
                     if (menuId == R.id.close_all_incognito_windows_menu_id) {
-                        // TODO(crbug.com/435491652): Add functionality to close all Incognito
-                        // windows.
+                        IncognitoTabHostUtils.closeAllIncognitoTabs();
                     }
                     if (mMenuWindow != null) {
                         mMenuWindow.dismiss();
@@ -201,6 +201,8 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                         new ColorDrawable(Color.TRANSPARENT),
                         menu.getContentView(),
                         new ViewRectProvider(mIncognitoIndicator));
+        mMenuWindow.setDismissOnTouchInteraction(true);
+        mMenuWindow.setDismissOnScreenSizeChange(true);
         mMenuWindow.setFocusable(true);
         mMenuWindow.setHorizontalOverlapAnchor(true);
         mMenuWindow.setVerticalOverlapAnchor(false);
