@@ -1195,11 +1195,6 @@
         "version": "1.1.0"
     },
     {
-        "name": "support-annotations",
-        "group": "com.android.support",
-        "version": "28.0.0"
-    },
-    {
         "name": "layoutlib-api",
         "group": "com.android.tools.layoutlib",
         "version": "30.2.0-beta01"
