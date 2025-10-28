@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
@@ -32,6 +31,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -270,7 +270,7 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
         .GetTaskRunner(TaskType::kInternalDefault)
         ->PostTask(
             FROM_HERE,
-            base::BindOnce(
+            blink::BindOnce(
                 [](HTMLGeolocationElement* element, const String& expected_text,
                    base::RepeatingClosure quit_closure) {
                   EXPECT_EQ(
