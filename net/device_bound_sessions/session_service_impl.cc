@@ -408,7 +408,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
 
   SessionKey session_key{SchemefulSite(request->url()), *deferral.session_id};
   // For the first deferring request, create a new vector and add the request.
-  auto [it, inserted] = deferred_requests_.try_emplace(session_key.id);
+  auto [it, inserted] = deferred_requests_.try_emplace(session_key);
   // Add the request callback to the deferred list.
   it->second.emplace_back(std::move(callback));
 
@@ -481,13 +481,13 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
 }
 
 // Continue or restart all deferred requests for the session and remove the
-// session_id key in the map.
+// session key in the map.
 void SessionServiceImpl::UnblockDeferredRequests(
     const SessionKey& session_key,
     RefreshResult result,
     std::optional<bool> is_proactive_refresh_candidate,
     std::optional<base::TimeDelta> minimum_proactive_refresh_threshold) {
-  auto it = deferred_requests_.find(session_key.id);
+  auto it = deferred_requests_.find(session_key);
   if (it == deferred_requests_.end()) {
     return;
   }
