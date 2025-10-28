@@ -1072,7 +1072,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingImageEmbeddingResult{RequestType}"
-    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2026-02-22">
+    enum="ClientSidePhishingImageEmbeddingResult" expires_after="2026-04-26">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
