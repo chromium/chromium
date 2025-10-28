@@ -57,6 +57,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -125,7 +126,6 @@
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
-#include "chrome/browser/omnibox/contextual_session_service_factory.h"
 #include "chrome/browser/optimization_guide/model_validator_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
@@ -856,7 +856,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   contextual_cueing::ContextualCueingServiceFactory::GetInstance();
 #endif
-  ContextualSessionServiceFactory::GetInstance();
+  ContextualSearchServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
   CrossDevicePrefTrackerFactory::GetInstance();
   DataTypeStoreServiceFactory::GetInstance();

@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "test_composebox_query_controller.h"
+#include "components/contextual_search/internal/test_composebox_query_controller.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
 #include "google_apis/common/api_error_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 
 using endpoint_fetcher::EndpointFetcher;
 using endpoint_fetcher::EndpointFetcherCallback;
@@ -42,6 +46,8 @@ FakeVariationsClient::GetVariationsHeaders() const {
   return variations::mojom::VariationsHeaders::New(headers);
 }
 
+namespace contextual_search {
+
 TestComposeboxQueryController::TestComposeboxQueryController(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -49,7 +55,8 @@ TestComposeboxQueryController::TestComposeboxQueryController(
     std::string locale,
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
-    std::unique_ptr<QueryControllerConfigParams> config_params)
+    std::unique_ptr<ContextualSearchContextController::ConfigParams>
+        config_params)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
@@ -122,3 +129,5 @@ void TestComposeboxQueryController::ResetRequestClusterInfoState(
   }
   ComposeboxQueryController::ResetRequestClusterInfoState(session_id);
 }
+
+}  // namespace contextual_search

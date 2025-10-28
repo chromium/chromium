@@ -13,8 +13,8 @@ source_set("ios") {
   ]
   deps = [
     "//base",
+    "//components/contextual_search/internal",
     "//components/lens",
-    "//components/omnibox/composebox",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/gfx",
   ]
@@ -28,7 +28,6 @@ source_set("unit_tests") {
     ":ios",
     "//base",
     "//components/lens",
-    "//components/omnibox/composebox",
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//ui/gfx",

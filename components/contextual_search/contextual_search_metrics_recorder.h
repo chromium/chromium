@@ -2,17 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_METRICS_RECORDER_H_
-#define COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_METRICS_RECORDER_H_
+#ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_METRICS_RECORDER_H_
+#define COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_METRICS_RECORDER_H_
 
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
-#include <vector>
 
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
-#include "components/omnibox/composebox/composebox_query.mojom.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/contextual_search/contextual_search_types.h"
+
+namespace base {
+class ElapsedTimer;
+}  // namespace base
+
+namespace lens {
+enum class MimeType;
+}  // namespace lens
+
+namespace contextual_search {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -23,10 +31,6 @@ enum class NtpComposeboxMultimodalState {
   kTextAndFile = 2,
   kMaxValue = kTextAndFile,
 };
-
-using FileUploadStatus = composebox_query::mojom::FileUploadStatus;
-
-namespace composebox {
 
 enum class SessionState {
   kNone = 0,
@@ -56,17 +60,14 @@ struct SessionMetrics {
   int num_query_submissions = 0;
 };
 
-}  // namespace composebox
-
-class ComposeboxMetricsRecorder {
+class ContextualSearchMetricsRecorder {
  public:
-  explicit ComposeboxMetricsRecorder(std::string metric_component_name);
-  virtual ~ComposeboxMetricsRecorder();
+  explicit ContextualSearchMetricsRecorder(std::string metric_component_name);
+  virtual ~ContextualSearchMetricsRecorder();
 
   // Should be called when there are session state changes to keep track of
   // session state metrics. Virtual for testing.
-  virtual void NotifySessionStateChanged(
-      composebox::SessionState session_state);
+  virtual void NotifySessionStateChanged(SessionState session_state);
 
   void OnFileUploadStatusChanged(
       lens::MimeType file_mime_type,
@@ -111,8 +112,10 @@ class ComposeboxMetricsRecorder {
   // Resets all session metrics at the end of a session.
   void ResetSessionMetrics();
   std::string metric_category_name_;
-  std::unique_ptr<composebox::SessionMetrics> session_metrics_;
-  composebox::SessionState session_state_ = composebox::SessionState::kNone;
+  std::unique_ptr<SessionMetrics> session_metrics_;
+  SessionState session_state_ = SessionState::kNone;
 };
 
-#endif  // COMPONENTS_OMNIBOX_COMPOSEBOX_COMPOSEBOX_METRICS_RECORDER_H_
+}  // namespace contextual_search
+
+#endif  // COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_METRICS_RECORDER_H_

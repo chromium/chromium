@@ -32,7 +32,6 @@
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/omnibox/composebox/contextual_session_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/composebox/composebox_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using composebox::SessionState;
+namespace contextual_search {
 
 namespace {
 const char kTestMetricName[] = "Test.";
@@ -67,30 +67,30 @@ std::string UploadStatusToString(FileUploadStatus status) {
 }
 }  // namespace
 
-class ComposeboxMetricsRecorderTest : public testing::Test {
+class ContextualSearchMetricsRecorderTest : public testing::Test {
  public:
-  ComposeboxMetricsRecorderTest() = default;
-  ~ComposeboxMetricsRecorderTest() override = default;
+  ContextualSearchMetricsRecorderTest() = default;
+  ~ContextualSearchMetricsRecorderTest() override = default;
 
   void SetUp() override {
     metrics_recorder_ =
-        std::make_unique<ComposeboxMetricsRecorder>(kTestMetricName);
+        std::make_unique<ContextualSearchMetricsRecorder>(kTestMetricName);
   }
 
-  ComposeboxMetricsRecorder& metrics() { return *metrics_recorder_; }
+  ContextualSearchMetricsRecorder& metrics() { return *metrics_recorder_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void DestructMetricsRecorder() { metrics_recorder_.reset(); }
 
  private:
-  std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder_;
+  std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder_;
   base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(ComposeboxMetricsRecorderTest, SessionAbandoned) {
+TEST_F(ContextualSearchMetricsRecorderTest, SessionAbandoned) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(60));
@@ -105,7 +105,7 @@ TEST_F(ComposeboxMetricsRecorderTest, SessionAbandoned) {
                                             base::Seconds(60), 1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, SessionCompleted) {
+TEST_F(ContextualSearchMetricsRecorderTest, SessionCompleted) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(10));
@@ -127,7 +127,7 @@ TEST_F(ComposeboxMetricsRecorderTest, SessionCompleted) {
                                             base::Seconds(10), 1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, MultiQuerySubmissionSession) {
+TEST_F(ContextualSearchMetricsRecorderTest, MultiQuerySubmissionSession) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
@@ -160,7 +160,7 @@ TEST_F(ComposeboxMetricsRecorderTest, MultiQuerySubmissionSession) {
   histogram_tester().ExpectBucketCount(kComposeboxQueryCount, 2, 1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
+TEST_F(ContextualSearchMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   int text_length = 1000;
@@ -175,7 +175,7 @@ TEST_F(ComposeboxMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
                                        1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
+TEST_F(ContextualSearchMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   int text_length = 0;
@@ -190,7 +190,7 @@ TEST_F(ComposeboxMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
                                        1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, MultimodalQuerySubmissionSession) {
+TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   int text_length = 1000;
@@ -205,7 +205,7 @@ TEST_F(ComposeboxMetricsRecorderTest, MultimodalQuerySubmissionSession) {
                                        1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, FileUploadSuccess) {
+TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
@@ -224,7 +224,7 @@ TEST_F(ComposeboxMetricsRecorderTest, FileUploadSuccess) {
   histogram_tester().ExpectTotalCount(kComposeboxFileUploadSuccessPdf, 1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, FileUploadError) {
+TEST_F(ContextualSearchMetricsRecorderTest, FileUploadError) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
@@ -243,7 +243,7 @@ TEST_F(ComposeboxMetricsRecorderTest, FileUploadError) {
   histogram_tester().ExpectTotalCount(kComposeboxFileUploadServerErrorPdf, 1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, FileValidationError) {
+TEST_F(ContextualSearchMetricsRecorderTest, FileValidationError) {
   // Setup user flow.
   FileUploadErrorType error = FileUploadErrorType::kBrowserProcessingError;
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
@@ -273,7 +273,7 @@ TEST_F(ComposeboxMetricsRecorderTest, FileValidationError) {
   histogram_tester().ExpectBucketCount(kComposeboxFileSizePdf, file_size, 1);
 }
 
-TEST_F(ComposeboxMetricsRecorderTest, MultiFileUpload) {
+TEST_F(ContextualSearchMetricsRecorderTest, MultiFileUpload) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
@@ -301,12 +301,12 @@ TEST_F(ComposeboxMetricsRecorderTest, MultiFileUpload) {
 }
 
 class MetricsRecorderFileTest
-    : public ComposeboxMetricsRecorderTest,
+    : public ContextualSearchMetricsRecorderTest,
       public testing::WithParamInterface<
           std::tuple<FileUploadStatus, lens::MimeType>> {
  public:
   void SetUp() override {
-    ComposeboxMetricsRecorderTest::SetUp();
+    ContextualSearchMetricsRecorderTest::SetUp();
     metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
     metrics().OnFileUploadStatusChanged(
         mime_type_param(), FileUploadStatus::kProcessing, std::nullopt);
@@ -359,12 +359,12 @@ INSTANTIATE_TEST_SUITE_P(
                                      lens::MimeType::kUnknown)));
 
 class MetricsRecorderFileValidationTest
-    : public ComposeboxMetricsRecorderTest,
+    : public ContextualSearchMetricsRecorderTest,
       public testing::WithParamInterface<
           std::tuple<FileUploadErrorType, lens::MimeType>> {
  public:
   void SetUp() override {
-    ComposeboxMetricsRecorderTest::SetUp();
+    ContextualSearchMetricsRecorderTest::SetUp();
     metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
     metrics().OnFileUploadStatusChanged(
         mime_type_param(), FileUploadStatus::kProcessing, std::nullopt);
@@ -412,12 +412,12 @@ INSTANTIATE_TEST_SUITE_P(
                         lens::MimeType::kUnknown)));
 
 class MetricsRecorderFileDeletionTest
-    : public ComposeboxMetricsRecorderTest,
+    : public ContextualSearchMetricsRecorderTest,
       public testing::WithParamInterface<
           std::tuple<lens::MimeType, FileUploadStatus>> {
  public:
   void SetUp() override {
-    ComposeboxMetricsRecorderTest::SetUp();
+    ContextualSearchMetricsRecorderTest::SetUp();
     mime_type_string_ = metrics().MimeTypeToString(mime_type_param());
     status_string_ = UploadStatusToString(status_param());
   }
@@ -457,3 +457,5 @@ INSTANTIATE_TEST_SUITE_P(
                                      FileUploadStatus::kUploadSuccessful,
                                      FileUploadStatus::kUploadFailed,
                                      FileUploadStatus::kUploadExpired)));
+
+}  // namespace contextual_search

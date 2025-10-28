@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/composebox/composebox_query_controller.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 
 #include <memory>
 #include <optional>
@@ -17,10 +17,11 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
+#include "components/contextual_search/internal/test_composebox_query_controller.h"
+#include "components/lens/contextual_input.h"
 #include "components/lens/lens_bitmap_processing.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
-#include "components/omnibox/composebox/test_composebox_query_controller.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -83,6 +84,8 @@ constexpr lens::CompressionType kExpectedPdfCompressionType =
 base::Time kTestQueryStartTime =
     base::Time::FromMillisecondsSinceUnixEpoch(1000);
 
+namespace contextual_search {
+
 using FileUploadStatusTuple = std::tuple<base::UnguessableToken,
                                          lens::MimeType,
                                          FileUploadStatus,
@@ -96,6 +99,9 @@ class ComposeboxQueryControllerTest
     : public testing::Test,
       public ComposeboxQueryController::FileUploadStatusObserver {
  public:
+  using QueryControllerState =
+      TestComposeboxQueryController::QueryControllerState;
+
   ComposeboxQueryControllerTest() = default;
   ~ComposeboxQueryControllerTest() override = default;
 
@@ -107,8 +113,8 @@ class ComposeboxQueryControllerTest
       bool use_separate_request_ids_for_multi_context_viewport_images = true,
       bool clear_previous_state_on_session_start = false) {
     // Create the config params.
-    auto config_params = std::make_unique<
-        ComposeboxQueryController::QueryControllerConfigParams>();
+    auto config_params =
+        std::make_unique<ContextualSearchContextController::ConfigParams>();
     config_params->send_lns_surface = send_lns_surface;
     config_params->suppress_lns_surface_param_if_no_image =
         suppress_lns_surface_param_if_no_image;
@@ -466,13 +472,13 @@ TEST_F(ComposeboxQueryControllerTest, NotifySessionStartedClearPreviousState) {
   WaitForFileUpload(file_token, lens::MimeType::kPdf);
 
   // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfo(file_token));
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
 
   // Act: Restart the session, but clear state on session start.
   controller().NotifySessionStarted();
 
   // Assert: Validate state is cleared, and re-fetched.
-  EXPECT_FALSE(controller().GetFileInfo(file_token));
+  EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
 
   WaitForClusterInfo(
       /*expected_state=*/QueryControllerState::kClusterInfoReceived,
@@ -495,13 +501,13 @@ TEST_F(ComposeboxQueryControllerTest, NotifySessionAbandoned) {
   WaitForFileUpload(file_token, lens::MimeType::kPdf);
 
   // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfo(file_token));
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
 
   // Act: End the session.
   controller().NotifySessionAbandoned();
 
   // Check that file is no longer in cache.
-  EXPECT_FALSE(controller().GetFileInfo(file_token));
+  EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
   EXPECT_EQ(QueryControllerState::kOff, controller().query_controller_state());
 }
 
@@ -615,29 +621,29 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageFileRequestSuccess) {
             lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
   // Check that the vsrid matches that for an image upload.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             0);
   // Check that the routing info is in the vsrid.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->routing_info()
                 .cell_address(),
             kTestCellAddress);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->routing_info()
                 .server_address(),
@@ -706,17 +712,17 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
             kExpectedPdfCompressionType);
   // Check that the vsrid matches that for a pdf upload.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             0);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             1);
@@ -750,13 +756,13 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
             lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
   // Check that the routing info is in the vsrid.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->routing_info()
                 .cell_address(),
             kTestCellAddress);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->routing_info()
                 .server_address(),
@@ -839,17 +845,17 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
             page_url.spec());
   // Check that the vsrid matches that for a pdf upload.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             0);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             1);
@@ -883,13 +889,13 @@ TEST_F(ComposeboxQueryControllerTest, UploadPageContextPdfFileRequestSuccess) {
             lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
   // Check that the routing info is in the vsrid.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->routing_info()
                 .cell_address(),
             kTestCellAddress);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->routing_info()
                 .server_address(),
@@ -1117,17 +1123,17 @@ TEST_F(ComposeboxQueryControllerTest,
             1);
   // Check that the vsrid matches that for a pdf upload with viewport.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             1);
@@ -1286,17 +1292,17 @@ TEST_F(ComposeboxQueryControllerTest,
   // Check that the vsrid matches that for a webpage content upload with
   // viewport.
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(file_token)
+                .GetFileInfoForTesting(file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             1);
@@ -2119,13 +2125,13 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
   WaitForFileUpload(file_token, lens::MimeType::kPdf);
 
   // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfo(file_token));
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
 
   // Check that the request id is set correctly in the suggest inputs.
-  EXPECT_EQ(
-      controller().suggest_inputs().encoded_request_id(),
-      lens::Base64EncodeRequestId(
-          *controller().GetFileInfo(file_token)->GetRequestIdForTesting()));
+  EXPECT_EQ(controller().suggest_inputs().encoded_request_id(),
+            lens::Base64EncodeRequestId(*controller()
+                                             .GetFileInfoForTesting(file_token)
+                                             ->GetRequestIdForTesting()));
   EXPECT_EQ(controller().suggest_inputs().contextual_visual_input_type(),
             "pdf");
 
@@ -2138,11 +2144,11 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(second_file_token, lens::MimeType::kPdf,
                     FileUploadStatus::kUploadSuccessful,
-                    /*error_type=*/std::nullopt,
+                    /*expected_error_type=*/std::nullopt,
                     /*expect_suggest_signals_ready=*/false);
 
   // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfo(second_file_token));
+  EXPECT_TRUE(controller().GetFileInfoForTesting(second_file_token));
 
   // Check that the suggest inputs are clearned now that there are two files in
   // the request.
@@ -2155,14 +2161,14 @@ TEST_F(ComposeboxQueryControllerTest, DeleteFile_Success) {
 
   // Check that file is no longer in cache.
   EXPECT_TRUE(deleted);
-  EXPECT_FALSE(controller().GetFileInfo(second_file_token));
+  EXPECT_FALSE(controller().GetFileInfoForTesting(second_file_token));
 
   // Check that the request id in the suggest inputs is set correctly to the
   // first file's request id.
-  EXPECT_EQ(
-      controller().suggest_inputs().encoded_request_id(),
-      lens::Base64EncodeRequestId(
-          *controller().GetFileInfo(file_token)->GetRequestIdForTesting()));
+  EXPECT_EQ(controller().suggest_inputs().encoded_request_id(),
+            lens::Base64EncodeRequestId(*controller()
+                                             .GetFileInfoForTesting(file_token)
+                                             ->GetRequestIdForTesting()));
   EXPECT_EQ(controller().suggest_inputs().contextual_visual_input_type(),
             "pdf");
 }
@@ -2206,13 +2212,13 @@ TEST_F(ComposeboxQueryControllerTest, ClearFiles) {
   WaitForFileUpload(file_token, lens::MimeType::kPdf);
 
   // Check that file is in cache.
-  EXPECT_TRUE(controller().GetFileInfo(file_token));
+  EXPECT_TRUE(controller().GetFileInfoForTesting(file_token));
 
   // Clear files.
   controller().ClearFiles();
 
   // Check that file is no longer in cache.
-  EXPECT_FALSE(controller().GetFileInfo(file_token));
+  EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -2316,7 +2322,7 @@ TEST_F(ComposeboxQueryControllerTest,
   // Assert: Validate file upload request and status changes.
   WaitForFileUpload(second_file_token, lens::MimeType::kPdf,
                     FileUploadStatus::kUploadSuccessful,
-                    /*error_type=*/std::nullopt,
+                    /*expected_error_type=*/std::nullopt,
                     /*expect_suggest_signals_ready=*/false);
 
   auto second_file_upload_request =
@@ -2337,32 +2343,32 @@ TEST_F(ComposeboxQueryControllerTest,
             lens::ContentData::CONTENT_TYPE_PDF);
   // Check that the vsrid matches that for the multi context flow.
   EXPECT_EQ(controller()
-                .GetFileInfo(first_file_token)
+                .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(second_file_token)
+                .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
                 ->sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(first_file_token)
+                .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(second_file_token)
+                .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
                 ->image_sequence_id(),
             1);
   EXPECT_EQ(controller()
-                .GetFileInfo(first_file_token)
+                .GetFileInfoForTesting(first_file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             0);
   EXPECT_EQ(controller()
-                .GetFileInfo(second_file_token)
+                .GetFileInfoForTesting(second_file_token)
                 ->GetRequestIdForTesting()
                 ->long_context_id(),
             0);
@@ -2456,19 +2462,20 @@ TEST_F(ComposeboxQueryControllerTest,
   bool first_contextual_input_is_first_file =
       contextual_inputs.inputs(0).request_id().uuid() ==
       controller()
-          .GetFileInfo(first_file_token)
+          .GetFileInfoForTesting(first_file_token)
           ->GetRequestIdForTesting()
           ->uuid();
   auto first_file_request_id =
       *controller()
-           .GetFileInfo(first_contextual_input_is_first_file
-                            ? first_file_token
-                            : second_file_token)
+           .GetFileInfoForTesting(first_contextual_input_is_first_file
+                                      ? first_file_token
+                                      : second_file_token)
            ->GetRequestIdForTesting();
   auto second_file_request_id =
       *controller()
-           .GetFileInfo(first_contextual_input_is_first_file ? second_file_token
-                                                             : first_file_token)
+           .GetFileInfoForTesting(first_contextual_input_is_first_file
+                                      ? second_file_token
+                                      : first_file_token)
            ->GetRequestIdForTesting();
 
   EXPECT_THAT(contextual_inputs.inputs(0).request_id(),
@@ -2476,3 +2483,5 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_THAT(contextual_inputs.inputs(1).request_id(),
               EqualsProto(second_file_request_id));
 }
+
+}  // namespace contextual_search

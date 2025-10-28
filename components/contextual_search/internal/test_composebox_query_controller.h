@@ -2,23 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_COMPOSEBOX_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_
-#define COMPONENTS_OMNIBOX_COMPOSEBOX_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_
+#ifndef COMPONENTS_CONTEXTUAL_SEARCH_INTERNAL_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_
+#define COMPONENTS_CONTEXTUAL_SEARCH_INTERNAL_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_
 
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/variations/variations_client.h"
-#include "composebox_query_controller.h"
-#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
+
+class GURL;
+
+namespace endpoint_fetcher {
+class EndpointFetcher;
+enum class HttpMethod;
+struct EndpointResponse;
+}  // namespace endpoint_fetcher
 
 namespace lens {
 class LensOverlayClientContext;
+class LensOverlayServerClusterInfoResponse;
 }  // namespace lens
 
 class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
@@ -44,6 +54,8 @@ class FakeVariationsClient : public variations::VariationsClient {
   variations::mojom::VariationsHeadersPtr GetVariationsHeaders() const override;
 };
 
+namespace contextual_search {
+
 // Helper for testing features that use the ComposeboxQueryController.
 // The only logic in this class should be for setting up fake network responses
 // and tracking sent request data to maximize testing coverage.
@@ -56,7 +68,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       std::string locale,
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
-      std::unique_ptr<QueryControllerConfigParams> config_params);
+      std::unique_ptr<ContextualSearchContextController::ConfigParams>
+          config_params);
   ~TestComposeboxQueryController() override;
 
   // Mutators.
@@ -82,7 +95,7 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   }
 
   void set_on_query_controller_state_changed_callback(
-      QueryControllerStateChangedCallback callback) {
+      base::RepeatingCallback<void(QueryControllerState state)> callback) {
     on_query_controller_state_changed_callback_ = std::move(callback);
   }
 
@@ -128,6 +141,13 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     return ComposeboxQueryController::CreateClientContext();
   }
 
+  // Gets the FileInfo with type cast for testing.
+  const ComposeboxQueryController::FileInfo* GetFileInfoForTesting(
+      const base::UnguessableToken& file_token) {
+    return static_cast<const ComposeboxQueryController::FileInfo*>(
+        ComposeboxQueryController::GetFileInfo(file_token));
+  }
+
  protected:
   std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
       std::string request_string,
@@ -170,4 +190,6 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   std::vector<std::string> last_sent_cors_exempt_headers_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_COMPOSEBOX_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_
+}  // namespace contextual_search
+
+#endif  // COMPONENTS_CONTEXTUAL_SEARCH_INTERNAL_TEST_COMPOSEBOX_QUERY_CONTROLLER_H_

@@ -3,3 +3,6 @@ mfacey@chromium.org
 niharm@google.com
 file://components/omnibox/OWNERS
 file://components/search/OWNERS
+
+per-file *_type_converter*.*=set noparent
+per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

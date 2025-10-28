@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/omnibox/composebox/composebox_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/lens/lens_overlay_mime_type.h"
-#include "components/omnibox/composebox/composebox_query.mojom.h"
-#include "components/omnibox/composebox/composebox_query_controller.h"
 
-using composebox::SessionMetrics;
-using composebox::SessionState;
+namespace contextual_search {
 
 namespace {
 const char kComposeboxFileDeleted[] = "Composebox.Session.File.DeletedCount";
@@ -60,12 +58,12 @@ std::string UploadStatusToString(FileUploadStatus status) {
 SessionMetrics::SessionMetrics() = default;
 SessionMetrics::~SessionMetrics() = default;
 
-ComposeboxMetricsRecorder::ComposeboxMetricsRecorder(
+ContextualSearchMetricsRecorder::ContextualSearchMetricsRecorder(
     std::string metric_category_name)
     : metric_category_name_(metric_category_name),
       session_metrics_{std::make_unique<SessionMetrics>()} {}
 
-ComposeboxMetricsRecorder::~ComposeboxMetricsRecorder() {
+ContextualSearchMetricsRecorder::~ContextualSearchMetricsRecorder() {
   // Record session abandonments and completions.
   if (session_state_ == SessionState::kSessionStarted) {
     RecordSessionAbandonedMetrics();
@@ -74,7 +72,7 @@ ComposeboxMetricsRecorder::~ComposeboxMetricsRecorder() {
   }
 }
 
-void ComposeboxMetricsRecorder::NotifySessionStateChanged(
+void ContextualSearchMetricsRecorder::NotifySessionStateChanged(
     SessionState session_state) {
   session_state_ = session_state;
   switch (session_state) {
@@ -98,7 +96,7 @@ void ComposeboxMetricsRecorder::NotifySessionStateChanged(
   }
 }
 
-void ComposeboxMetricsRecorder::OnFileUploadStatusChanged(
+void ContextualSearchMetricsRecorder::OnFileUploadStatusChanged(
     lens::MimeType file_mime_type,
     FileUploadStatus file_upload_status,
     const std::optional<FileUploadErrorType>& error_type) {
@@ -129,8 +127,8 @@ void ComposeboxMetricsRecorder::OnFileUploadStatusChanged(
       break;
   }
 }
-void ComposeboxMetricsRecorder::RecordQueryMetrics(int text_length,
-                                                   int file_count) {
+void ContextualSearchMetricsRecorder::RecordQueryMetrics(int text_length,
+                                                         int file_count) {
   base::UmaHistogramCounts1M(metric_category_name_ + kComposeboxQueryTextLength,
                              text_length);
   bool has_text = text_length != 0;
@@ -147,15 +145,16 @@ void ComposeboxMetricsRecorder::RecordQueryMetrics(int text_length,
                               file_count);
 }
 
-void ComposeboxMetricsRecorder::RecordFileSizeMetric(lens::MimeType mime_type,
-                                                     uint64_t file_size_bytes) {
+void ContextualSearchMetricsRecorder::RecordFileSizeMetric(
+    lens::MimeType mime_type,
+    uint64_t file_size_bytes) {
   base::UmaHistogramCounts10M(metric_category_name_ +
                                   kComposeboxFileSizePerType +
                                   MimeTypeToString(mime_type),
                               file_size_bytes);
 }
 
-void ComposeboxMetricsRecorder::RecordFileDeletedMetrics(
+void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
     bool success,
     lens::MimeType file_type,
     FileUploadStatus file_status) {
@@ -165,12 +164,12 @@ void ComposeboxMetricsRecorder::RecordFileDeletedMetrics(
                             success);
 }
 
-void ComposeboxMetricsRecorder::NotifySessionStarted() {
+void ContextualSearchMetricsRecorder::NotifySessionStarted() {
   session_metrics_->session_elapsed_timer =
       std::make_unique<base::ElapsedTimer>();
 }
 
-void ComposeboxMetricsRecorder::NotifyQuerySubmitted() {
+void ContextualSearchMetricsRecorder::NotifyQuerySubmitted() {
   base::TimeDelta time_to_query_submission =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
@@ -179,7 +178,7 @@ void ComposeboxMetricsRecorder::NotifyQuerySubmitted() {
   session_metrics_->num_query_submissions++;
 }
 
-void ComposeboxMetricsRecorder::RecordSessionAbandonedMetrics() {
+void ContextualSearchMetricsRecorder::RecordSessionAbandonedMetrics() {
   // In the case that the user has submitted a query in a new tab and abandons
   // the composebox session record the session as completed.
   if (session_metrics_->num_query_submissions > 0) {
@@ -195,7 +194,7 @@ void ComposeboxMetricsRecorder::RecordSessionAbandonedMetrics() {
   FinalizeSessionMetrics();
 }
 
-void ComposeboxMetricsRecorder::RecordSessionCompletedMetrics() {
+void ContextualSearchMetricsRecorder::RecordSessionCompletedMetrics() {
   base::TimeDelta session_duration =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
@@ -207,13 +206,13 @@ void ComposeboxMetricsRecorder::RecordSessionCompletedMetrics() {
   FinalizeSessionMetrics();
 }
 
-void ComposeboxMetricsRecorder::RecordTotalSessionDuration(
+void ContextualSearchMetricsRecorder::RecordTotalSessionDuration(
     base::TimeDelta session_duration) {
   base::UmaHistogramMediumTimes(
       metric_category_name_ + kComposeboxSessionDuration, session_duration);
 }
 
-void ComposeboxMetricsRecorder::FinalizeSessionMetrics() {
+void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
   // Log upload attempt metrics.
   for (const auto& file_info :
        session_metrics_->file_upload_attempt_count_per_type) {
@@ -258,7 +257,7 @@ void ComposeboxMetricsRecorder::FinalizeSessionMetrics() {
   ResetSessionMetrics();
 }
 
-void ComposeboxMetricsRecorder::ResetSessionMetrics() {
+void ContextualSearchMetricsRecorder::ResetSessionMetrics() {
   session_metrics_->session_elapsed_timer.reset();
   session_metrics_->file_upload_attempt_count_per_type.clear();
   session_metrics_->file_upload_success_count_per_type.clear();
@@ -267,7 +266,7 @@ void ComposeboxMetricsRecorder::ResetSessionMetrics() {
   session_metrics_->num_query_submissions = 0;
 }
 
-std::string ComposeboxMetricsRecorder::FileErrorToString(
+std::string ContextualSearchMetricsRecorder::FileErrorToString(
     FileUploadErrorType error) {
   switch (error) {
     case FileUploadErrorType::kUnknown:
@@ -287,7 +286,7 @@ std::string ComposeboxMetricsRecorder::FileErrorToString(
   }
 }
 
-std::string ComposeboxMetricsRecorder::MimeTypeToString(
+std::string ContextualSearchMetricsRecorder::MimeTypeToString(
     lens::MimeType mime_type) {
   switch (mime_type) {
     case lens::MimeType::kPdf:
@@ -298,3 +297,5 @@ std::string ComposeboxMetricsRecorder::MimeTypeToString(
       return "Other";
   }
 }
+
+}  // namespace contextual_search

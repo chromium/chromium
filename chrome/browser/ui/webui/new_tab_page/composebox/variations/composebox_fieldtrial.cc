@@ -180,10 +180,11 @@ bool IsCreateImagesEnabled(Profile* profile) {
          aim_eligibility_service->IsCreateImagesEligible();
 }
 
-std::unique_ptr<ComposeboxQueryController::QueryControllerConfigParams>
+std::unique_ptr<
+    contextual_search::ContextualSearchContextController::ConfigParams>
 CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
-      ComposeboxQueryController::QueryControllerConfigParams>();
+      contextual_search::ContextualSearchContextController::ConfigParams>();
   config_params->send_lns_surface = kSendLnsSurfaceParam.Get();
   config_params->suppress_lns_surface_param_if_no_image =
       kSuppressLnsSurfaceParamIfNoImage.Get();

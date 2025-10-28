@@ -116,7 +116,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
   auto query_contoller_config_params = std::make_unique<
-      ComposeboxQueryController::QueryControllerConfigParams>();
+      contextual_search::ContextualSearchContextController::ConfigParams>();
   query_contoller_config_params->send_lns_surface = false;
   query_contoller_config_params->enable_multi_context_input_flow = false;
   query_contoller_config_params->enable_viewport_images = true;
