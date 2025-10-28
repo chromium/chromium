@@ -455,44 +455,6 @@ TEST_F(VideoOverlayWindowViewsTest, IgnoreInvalidMaximumSize) {
   EXPECT_EQ(gfx::Size(800, 800), overlay_window().GetMaximumSize());
 }
 
-// Tests that Next Track button bounds are updated right away when window
-// controls are hidden.
-TEST_F(VideoOverlayWindowViewsTest, NextTrackButtonAddedWhenControlsHidden) {
-  ASSERT_FALSE(overlay_window().AreControlsVisible());
-  ASSERT_TRUE(overlay_window()
-                  .next_track_controls_view_for_testing()
-                  ->size()
-                  .IsEmpty());
-
-  const auto origin_before_layout =
-      overlay_window().next_track_controls_view_for_testing()->origin();
-
-  overlay_window().SetNextTrackButtonVisibility(true);
-  EXPECT_NE(overlay_window().next_track_controls_view_for_testing()->origin(),
-            origin_before_layout);
-  EXPECT_FALSE(overlay_window().IsLayoutPendingForTesting());
-}
-
-// Tests that Previous Track button bounds are updated right away when window
-// controls are hidden.
-TEST_F(VideoOverlayWindowViewsTest,
-       PreviousTrackButtonAddedWhenControlsHidden) {
-  ASSERT_FALSE(overlay_window().AreControlsVisible());
-  ASSERT_TRUE(overlay_window()
-                  .previous_track_controls_view_for_testing()
-                  ->size()
-                  .IsEmpty());
-
-  const auto origin_before_layout =
-      overlay_window().previous_track_controls_view_for_testing()->origin();
-
-  overlay_window().SetPreviousTrackButtonVisibility(true);
-  EXPECT_NE(
-      overlay_window().previous_track_controls_view_for_testing()->origin(),
-      origin_before_layout);
-  EXPECT_FALSE(overlay_window().IsLayoutPendingForTesting());
-}
-
 TEST_F(VideoOverlayWindowViewsTest, UpdateNaturalSizeDoesNotMoveWindow) {
   // Enter PiP.
   overlay_window().UpdateNaturalSize({300, 200});
@@ -787,31 +749,6 @@ TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
   EXPECT_EQ(0u, tracker->GetPictureInPictureWidgetsForTesting().size());
 }
 
-TEST_F(VideoOverlayWindowViewsTest, ProgressBarNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  global_media_controls::MediaProgressView* progress_view =
-      overlay_window().progress_view_for_testing();
-  ASSERT_EQ(nullptr, progress_view);
-}
-
-TEST_F(VideoOverlayWindowViewsTest, TimestampNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  views::Label* timestamp = overlay_window().timestamp_for_testing();
-  ASSERT_EQ(nullptr, timestamp);
-}
-
-TEST_F(VideoOverlayWindowViewsTest, LiveStatusNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  media_session::MediaPosition media_position(
-      /*playback_rate=*/0,
-      /*duration=*/base::TimeDelta::Max(),
-      /*position=*/base::Seconds(42),
-      /*end_of_media=*/false);
-  overlay_window().SetMediaPosition(media_position);
-  views::Label* live_status = overlay_window().live_status_for_testing();
-  ASSERT_EQ(nullptr, live_status);
-}
-
 TEST_F(VideoOverlayWindowViewsTest, CanBeTuckedToTheSideOfTheScreen) {
   // Place the window on the left side of the screen.
   SetDisplayWorkArea({0, 0, 2000, 2000});
@@ -853,45 +790,6 @@ TEST_F(VideoOverlayWindowViewsTest, UntucksWhenReshownIfNecessary) {
   overlay_window().ShowInactive();
   overlay_window().FinishTuckAnimationForTesting();
   EXPECT_EQ(overlay_window().GetWindowBoundsInScreen().x(), 400);
-}
-
-TEST_F(VideoOverlayWindowViewsTest,
-       ReplayAndForward10SecondsNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  SimpleOverlayWindowImageButton* replay_10_seconds_button =
-      overlay_window().replay_10_seconds_button_for_testing();
-  SimpleOverlayWindowImageButton* forward_10_seconds_button =
-      overlay_window().forward_10_seconds_button_for_testing();
-  ASSERT_EQ(nullptr, replay_10_seconds_button);
-  ASSERT_EQ(nullptr, forward_10_seconds_button);
-}
-
-TEST_F(VideoOverlayWindowViewsTest, FaviconNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  views::ImageView* favicon = overlay_window().favicon_view_for_testing();
-  ASSERT_EQ(nullptr, favicon);
-}
-
-TEST_F(VideoOverlayWindowViewsTest, OriginNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  views::Label* origin = overlay_window().origin_for_testing();
-  ASSERT_EQ(nullptr, origin);
-}
-
-TEST_F(VideoOverlayWindowViewsTest,
-       LiveCaptionButtonNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  OverlayWindowLiveCaptionButton* live_caption_button =
-      overlay_window().live_caption_button_for_testing();
-  ASSERT_EQ(nullptr, live_caption_button);
-}
-
-TEST_F(VideoOverlayWindowViewsTest,
-       LiveCaptionDialogNotDrawnWhen2024UIIsDisabled) {
-  overlay_window().ForceControlsVisibleForTesting(true);
-  OverlayWindowLiveCaptionDialog* live_caption_dialog =
-      overlay_window().live_caption_dialog_for_testing();
-  ASSERT_EQ(nullptr, live_caption_dialog);
 }
 
 class VideoOverlayWindowViewsWith2024UITest

@@ -736,7 +736,7 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
 
 // Displays new video picture-in-picture controls for the 2024 UI update.
 BASE_FEATURE(kVideoPictureInPictureControlsUpdate2024,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A video encoder is allowed to drop a frame in cast mirroring.
 BASE_FEATURE(kCastVideoEncoderFrameDrop, base::FEATURE_DISABLED_BY_DEFAULT);
