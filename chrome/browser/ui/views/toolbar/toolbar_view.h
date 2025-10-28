@@ -80,10 +80,10 @@ class ToolbarView : public views::AccessiblePaneView,
  public:
   // Types of display mode this toolbar can have.
   enum class DisplayMode {
-    NORMAL,     // Normal toolbar with buttons, etc.
-    LOCATION,   // Slimline toolbar showing only compact location
+    kNormal,    // Normal toolbar with buttons, etc.
+    kLocation,  // Slimline toolbar showing only compact location
                 // bar, used for popups.
-    CUSTOM_TAB  // Custom tab bar, used in PWAs when a location
+    kCustomTab  // Custom tab bar, used in PWAs when a location
                 // needs to be displayed.
   };
 
