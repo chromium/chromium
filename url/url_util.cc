@@ -278,8 +278,8 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   // doing so.
   if (DoesBeginUNCPath(spec.data(), 0, spec.length(), false) ||
       DoesBeginWindowsDriveSpec(spec.data(), 0, spec.length())) {
-    return CanonicalizeFileURL(spec.data(), spec.length(), ParseFileURL(spec),
-                               charset_converter, output, output_parsed);
+    return CanonicalizeFileUrl(spec, ParseFileURL(spec), charset_converter,
+                               output, output_parsed);
   }
 #endif
 
@@ -294,9 +294,8 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
     // File URLs are special.
-    success =
-        CanonicalizeFileURL(spec.data(), spec.length(), ParseFileURL(spec),
-                            charset_converter, output, output_parsed);
+    success = CanonicalizeFileUrl(spec, ParseFileURL(spec), charset_converter,
+                                  output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
     // Filesystem URLs are special.
     success =
@@ -474,19 +473,19 @@ bool DoReplaceComponents(std::string_view spec,
   // be changed.
   output->ReserveSizeIfNeeded(spec.length());
 
-  // TODO(crbug.com/350788890): We should not use spec.data().
-  const char* spec_ptr = spec.data();
   // If we get here, then we know the scheme doesn't need to be replaced, so can
   // just key off the scheme in the spec to know how to do the replacements.
   if (DoCompareSchemeComponent(spec, parsed.scheme, url::kFileScheme)) {
-    return ReplaceFileURL(spec_ptr, parsed, replacements, charset_converter,
-                          output, out_parsed);
+    return ReplaceFileUrl(spec, parsed, replacements, charset_converter, output,
+                          out_parsed);
   }
   if (DoCompareSchemeComponent(spec, parsed.scheme, url::kFileSystemScheme)) {
     return ReplaceFileSystemUrl(spec, parsed, replacements, charset_converter,
                                 output, out_parsed);
   }
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+  // TODO(crbug.com/350788890): We should not use spec.data().
+  const char* spec_ptr = spec.data();
   if (DoIsStandard(parsed.scheme.maybe_as_string_view_on(spec_ptr),
                    &scheme_type)) {
     return ReplaceStandardUrl(spec, parsed, replacements, scheme_type,

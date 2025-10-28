@@ -769,15 +769,13 @@ bool CanonicalizeNonSpecialUrl(std::u16string_view spec,
 
 // Use for file URLs.
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileURL(const char* spec,
-                         int spec_len,
+bool CanonicalizeFileUrl(std::string_view spec,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
                          Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizeFileURL(const char16_t* spec,
-                         int spec_len,
+bool CanonicalizeFileUrl(std::u16string_view spec,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
@@ -1077,14 +1075,14 @@ bool ReplaceFileSystemUrl(std::string_view base,
 // Replacing some parts of a file URL is not permitted. Everything except
 // the host, path, query, and ref will be ignored.
 COMPONENT_EXPORT(URL)
-bool ReplaceFileURL(const char* base,
+bool ReplaceFileUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char>& replacements,
                     CharsetConverter* query_converter,
                     CanonOutput* output,
                     Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceFileURL(const char* base,
+bool ReplaceFileUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char16_t>& replacements,
                     CharsetConverter* query_converter,

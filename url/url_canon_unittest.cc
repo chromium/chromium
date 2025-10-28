@@ -2056,7 +2056,7 @@ TEST_F(URLCanonTest, ReplaceFileURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceFileURL(cur.base, parsed, r, nullptr, &output, &out_parsed);
+    ReplaceFileUrl(cur.base, parsed, r, nullptr, &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(replace_case.expected, out_str);
@@ -2323,8 +2323,7 @@ TEST_F(URLCanonTest, CanonicalizeFileURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     bool success =
-        CanonicalizeFileURL(i.input, static_cast<int>(strlen(i.input)), parsed,
-                            nullptr, &output, &out_parsed);
+        CanonicalizeFileUrl(i.input, parsed, nullptr, &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(i.expected_success, success);
@@ -2902,7 +2901,7 @@ TEST_F(URLCanonTest, ReplacementOverflow) {
   Parsed repl_parsed;
   std::string repl_str;
   StdStringCanonOutput repl_output(&repl_str);
-  ReplaceFileURL(src, parsed, repl, nullptr, &repl_output, &repl_parsed);
+  ReplaceFileUrl(src, parsed, repl, nullptr, &repl_output, &repl_parsed);
   repl_output.Complete();
 
   // Generate the expected string and check.

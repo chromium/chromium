@@ -127,8 +127,8 @@ bool DoFileCanonicalizePath(std::optional<std::basic_string_view<CHAR>> path,
   return success;
 }
 
-template<typename CHAR, typename UCHAR>
-bool DoCanonicalizeFileURL(const URLComponentSource<CHAR>& source,
+template <typename CHAR, typename UCHAR>
+bool DoCanonicalizeFileUrl(const URLComponentSource<CHAR>& source,
                            const Parsed& parsed,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
@@ -192,26 +192,24 @@ int FindWindowsDriveLetter(const char16_t* spec, int begin, int end) {
   return DoFindWindowsDriveLetter(spec, begin, end);
 }
 
-bool CanonicalizeFileURL(const char* spec,
-                         int spec_len,
+bool CanonicalizeFileUrl(std::string_view spec,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
                          Parsed* new_parsed) {
-  return DoCanonicalizeFileURL<char, unsigned char>(
-      URLComponentSource<char>(spec), parsed, query_converter,
-      output, new_parsed);
+  return DoCanonicalizeFileUrl<char, unsigned char>(
+      URLComponentSource<char>(spec.data()), parsed, query_converter, output,
+      new_parsed);
 }
 
-bool CanonicalizeFileURL(const char16_t* spec,
-                         int spec_len,
+bool CanonicalizeFileUrl(std::u16string_view spec,
                          const Parsed& parsed,
                          CharsetConverter* query_converter,
                          CanonOutput* output,
                          Parsed* new_parsed) {
-  return DoCanonicalizeFileURL<char16_t, char16_t>(
-      URLComponentSource<char16_t>(spec), parsed, query_converter, output,
-      new_parsed);
+  return DoCanonicalizeFileUrl<char16_t, char16_t>(
+      URLComponentSource<char16_t>(spec.data()), parsed, query_converter,
+      output, new_parsed);
 }
 
 bool FileCanonicalizePath(std::optional<std::string_view> path,
@@ -226,30 +224,31 @@ bool FileCanonicalizePath(std::optional<std::u16string_view> path,
   return DoFileCanonicalizePath<char16_t, char16_t>(path, output, out_path);
 }
 
-bool ReplaceFileURL(const char* base,
+bool ReplaceFileUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char>& replacements,
                     CharsetConverter* query_converter,
                     CanonOutput* output,
                     Parsed* new_parsed) {
-  URLComponentSource<char> source(base);
+  URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupOverrideComponents(base, replacements, &source, &parsed);
-  return DoCanonicalizeFileURL<char, unsigned char>(
+  SetupOverrideComponents(base.data(), replacements, &source, &parsed);
+  return DoCanonicalizeFileUrl<char, unsigned char>(
       source, parsed, query_converter, output, new_parsed);
 }
 
-bool ReplaceFileURL(const char* base,
+bool ReplaceFileUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char16_t>& replacements,
                     CharsetConverter* query_converter,
                     CanonOutput* output,
                     Parsed* new_parsed) {
   RawCanonOutput<1024> utf8;
-  URLComponentSource<char> source(base);
+  URLComponentSource<char> source(base.data());
   Parsed parsed(base_parsed);
-  SetupUTF16OverrideComponents(base, replacements, &utf8, &source, &parsed);
-  return DoCanonicalizeFileURL<char, unsigned char>(
+  SetupUTF16OverrideComponents(base.data(), replacements, &utf8, &source,
+                               &parsed);
+  return DoCanonicalizeFileUrl<char, unsigned char>(
       source, parsed, query_converter, output, new_parsed);
 }
 
