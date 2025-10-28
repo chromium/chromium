@@ -23,6 +23,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -195,7 +196,7 @@ void AnimationSpeedSlider::OnPaint(gfx::Canvas* canvas) {
   const gfx::Insets insets = GetInsets();
   const int y = insets.top() + content.height() / 2 - kTickHeight / 2;
 
-  SkPath path;
+  SkPathBuilder path;
   for (const float v : allowed_values()) {
     const float x = insets.left() + content.width() * v;
     path.moveTo(x, y);
@@ -208,7 +209,7 @@ void AnimationSpeedSlider::OnPaint(gfx::Canvas* canvas) {
   flags.setColor(GetThumbColor());
   flags.setStrokeWidth(1);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
 }
 
 // Checkbox group for setting UI animation speed.

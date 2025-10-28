@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -102,29 +103,22 @@ void LegendEntry::OnPaint(gfx::Canvas* canvas) {
 
   constexpr int kBoxBorderWidth = 1;
 
-  gfx::Rect box = bounds;
-  box.ClampToCenteredSize(gfx::Size(kBoxSize, kBoxSize));
-
-  const SkRect border =
-      SkRect::MakeXYWH(box.x(), box.y(), box.width(), box.height());
-
-  SkPath box_border;
-  box_border.addRect(border);
-
-  SkPath box_filled;
-  box_filled.addRect(border.makeInset(kBoxBorderWidth, kBoxBorderWidth));
+  gfx::Rect box_border = bounds;
+  box_border.ClampToCenteredSize(gfx::Size(kBoxSize, kBoxSize));
+  gfx::Rect box_filled = box_border;
+  box_filled.Inset(kBoxBorderWidth);
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(color_);
-  canvas->DrawPath(box_filled, flags);
+  canvas->DrawRect(box_filled, flags);
 
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kBoxBorderWidth);
   flags.setColor(kHUDDefaultColor);
-  canvas->DrawPath(box_border, flags);
+  canvas->DrawRect(box_border, flags);
 
   views::View::OnPaint(canvas);
 }

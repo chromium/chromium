@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
@@ -137,15 +138,13 @@ void ReferenceLines::Layout(PassKey) {
 }
 
 void ReferenceLines::OnPaint(gfx::Canvas* canvas) {
-  SkPath dotted_path;
-  SkPath solid_path;
-
   // Draw dashed line at 50%.
-  dotted_path.moveTo({0, bounds().height() / 2.0f});
-  dotted_path.lineTo(
+  const SkPath dotted_path = SkPath::Line(
+      {0, bounds().height() / 2.0f},
       {static_cast<SkScalar>(bounds().width()), bounds().height() / 2.0f});
 
   // Draw border and ticks.
+  SkPathBuilder solid_path;
   solid_path.addRect(SkRect::MakeXYWH(bounds().x(), bounds().y(),
                                       bounds().width(), bounds().height()));
 
@@ -194,7 +193,7 @@ void ReferenceLines::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kHUDGraphReferenceLineWidth);
   flags.setColor(color_);
-  canvas->DrawPath(solid_path, flags);
+  canvas->DrawPath(solid_path.detach(), flags);
 
   const SkScalar intervals[] = {5, 3};
   flags.setPathEffect(cc::PathEffect::MakeDash(
