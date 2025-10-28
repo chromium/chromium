@@ -127,7 +127,7 @@
 - (void)startPasswordSharing {
   [self.delegate startPasswordSharing];
   // Notify Welcome Back to remove Share Passwords from the eligible features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kSharePasswordsWithFamily);
   }
 }

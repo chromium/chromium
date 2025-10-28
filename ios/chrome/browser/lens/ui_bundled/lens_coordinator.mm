@@ -338,7 +338,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
 
   // Notify Welcome Back to remove Lens from the eligible features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLensSearch);
   }
 }

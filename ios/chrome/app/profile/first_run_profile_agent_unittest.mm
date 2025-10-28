@@ -48,7 +48,7 @@ class FirstRunProfileAgentTest : public PlatformTest {
 // promo.
 TEST_F(FirstRunProfileAgentTest, GuidedTourPromoMetrics) {
   enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{kWelcomeBackInFirstRunParam, "4"}});
+      kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
   base::HistogramTester tester;
   [profile_agent_ dismissGuidedTourPromo];
   tester.ExpectTotalCount("IOS.GuidedTour.Promo.DidAccept", 1);
@@ -58,7 +58,7 @@ TEST_F(FirstRunProfileAgentTest, GuidedTourPromoMetrics) {
 // finishes.
 TEST_F(FirstRunProfileAgentTest, GuidedTourStepMetrics) {
   enabled_feature_list_.InitAndEnableFeatureWithParameters(
-      kBestOfAppFRE, {{kWelcomeBackInFirstRunParam, "4"}});
+      kBestOfAppFRE, {{kWelcomeBackParam, "4"}});
   base::HistogramTester tester;
   [profile_agent_ nextTappedForStep:GuidedTourStep::kTabGridIncognito];
   tester.ExpectBucketCount("IOS.GuidedTour.DidFinishStep", 1, 1);

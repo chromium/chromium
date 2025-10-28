@@ -1235,25 +1235,24 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillVcnEnrollStrikeExpiryTime_30Days), nullptr}};
 // LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollStrikeExpiryTime)
 
-const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm1[] = {
-    {kWelcomeBackInFirstRunParam, "1"}};
-const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm2[] = {
-    {kWelcomeBackInFirstRunParam, "2"}};
-const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm3[] = {
-    {kWelcomeBackInFirstRunParam, "3"}};
-const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm4[] = {
-    {kWelcomeBackInFirstRunParam, "4"}};
+const FeatureEntry::FeatureParam kWelcomeBackArm1[] = {
+    {kWelcomeBackParam, "1"}};
+const FeatureEntry::FeatureParam kWelcomeBackArm2[] = {
+    {kWelcomeBackParam, "2"}};
+const FeatureEntry::FeatureParam kWelcomeBackArm3[] = {
+    {kWelcomeBackParam, "3"}};
+const FeatureEntry::FeatureParam kWelcomeBackArm4[] = {
+    {kWelcomeBackParam, "4"}};
 
-const FeatureEntry::FeatureVariation kWelcomeBackInFirstRunVariations[] = {
-    {" - Variant A: Basics with Locked Incognito", kWelcomeBackInFirstRunArm1,
-     std::size(kWelcomeBackInFirstRunArm1), nullptr},
-    {" - Variant B: Basics with Save & Autofill Passwords",
-     kWelcomeBackInFirstRunArm2, std::size(kWelcomeBackInFirstRunArm2),
-     nullptr},
-    {" - Variant C: Productivity & Shopping", kWelcomeBackInFirstRunArm3,
-     std::size(kWelcomeBackInFirstRunArm3), nullptr},
-    {" - Variant D: Sign-in Benefits", kWelcomeBackInFirstRunArm4,
-     std::size(kWelcomeBackInFirstRunArm4), nullptr},
+const FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
+    {" - Variant A: Basics with Locked Incognito", kWelcomeBackArm1,
+     std::size(kWelcomeBackArm1), nullptr},
+    {" - Variant B: Basics with Save & Autofill Passwords", kWelcomeBackArm2,
+     std::size(kWelcomeBackArm2), nullptr},
+    {" - Variant C: Productivity & Shopping", kWelcomeBackArm3,
+     std::size(kWelcomeBackArm3), nullptr},
+    {" - Variant D: Sign-in Benefits", kWelcomeBackArm4,
+     std::size(kWelcomeBackArm4), nullptr},
 };
 
 const FeatureEntry::FeatureParam kBestOfAppFREArm1[] = {{"variant", "1"}};
@@ -2464,11 +2463,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          autofill::features::kAutofillVcnEnrollStrikeExpiryTime,
          kAutofillVcnEnrollStrikeExpiryTimeOptions,
          "AutofillVcnEnrollStrikeExpiryTime")},
-    {"ios-welcome-back-screen", flag_descriptions::kWelcomeBackInFirstRunName,
-     flag_descriptions::kWelcomeBackInFirstRunDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kWelcomeBackInFirstRun,
-                                    kWelcomeBackInFirstRunVariations,
-                                    "WelcomeBackInFirstRun")},
+    {"ios-welcome-back-screen", flag_descriptions::kWelcomeBackName,
+     flag_descriptions::kWelcomeBackDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kWelcomeBack,
+                                    kWelcomeBackVariations,
+                                    "WelcomeBack")},
     {"autofill-enable-flat-rate-card-benefits-from-curinos",
      flag_descriptions::kAutofillEnableFlatRateCardBenefitsFromCurinosName,
      flag_descriptions::

@@ -244,7 +244,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
   // Notify Welcome Back to remove Save and Autofill Passwords from the eligible
   // features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kSaveAndAutofillPasswords);
   }
 }

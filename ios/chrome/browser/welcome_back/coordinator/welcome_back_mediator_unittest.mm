@@ -84,7 +84,7 @@ class WelcomeBackMediatorTest : public PlatformTest {
 TEST_F(WelcomeBackMediatorTest, ConfirmEligiblePreferredItemsSet) {
   // Enable Variant A: Bling’s Basics with Locked Incognito Tabs.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "1"}});
+      kWelcomeBack, {{kWelcomeBackParam, "1"}});
 
   // Expect Lens, Enhanced Safe Browsing, and Locked Incognito Tabs and the
   // default title.
@@ -109,7 +109,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmEligiblePreferredItemsSet) {
 TEST_F(WelcomeBackMediatorTest, ConfirmIneligibleItemReplaced) {
   // Enable Variant B: Bling’s Basics with Save & Autofill Passwords.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "2"}});
+      kWelcomeBack, {{kWelcomeBackParam, "2"}});
 
   // Mark Lens as used.
   MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLensSearch);
@@ -136,7 +136,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmIneligibleItemReplaced) {
 TEST_F(WelcomeBackMediatorTest, ConfirmAllPreferredItemsReplaced) {
   // Enable Variant C: Productivity and Shopping.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "3"}});
+      kWelcomeBack, {{kWelcomeBackParam, "3"}});
 
   // Mark all the preferred features as used.
   MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kTabGroups);
@@ -166,7 +166,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmAllPreferredItemsReplaced) {
 TEST_F(WelcomeBackMediatorTest, ConfirmLowPriorityItemReplacement) {
   // Enable Variant A: Bling’s Basics with Locked Incognito Tabs.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "1"}});
+      kWelcomeBack, {{kWelcomeBackParam, "1"}});
 
   // Mark half of the features as used.
   MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLockedIncognitoTabs);
@@ -197,7 +197,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmLowPriorityItemReplacement) {
 TEST_F(WelcomeBackMediatorTest, ConfirmOnlyTwoItemsSet) {
   // Enable Variant A: Bling’s Basics with Locked Incognito Tabs.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "1"}});
+      kWelcomeBack, {{kWelcomeBackParam, "1"}});
 
   // Mark 6 out of 8 features as used.
   MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kEnhancedSafeBrowsing);
@@ -229,7 +229,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmOnlyTwoItemsSet) {
 TEST_F(WelcomeBackMediatorTest, ConfirmOnlyThreeEligibleItemsSet) {
   // Enable Variant A: Bling’s Basics with Locked Incognito Tabs.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "1"}});
+      kWelcomeBack, {{kWelcomeBackParam, "1"}});
 
   // Mark 5 out of 8 features as used.
   MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLensSearch);
@@ -261,7 +261,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmOnlyThreeEligibleItemsSet) {
 TEST_F(WelcomeBackMediatorTest, ConfirmUserInformationRetrieved) {
   // Enable Variant D: Sign In Benefits.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kWelcomeBackInFirstRun, {{kWelcomeBackInFirstRunParam, "4"}});
+      kWelcomeBack, {{kWelcomeBackParam, "4"}});
 
   // Sign in to a fake account.
   AuthenticationService* auth_service_ =

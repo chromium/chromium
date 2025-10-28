@@ -71,10 +71,10 @@
           [PreviousSessionInfo sharedInstance].sessionEndTime);
 
   // Only register the promo if a user has been away for >28 days,
-  // `kWelcomeBackInFirstRun` is enabled, `kBestFeaturesScreenInFirstRun` is
+  // `kWelcomeBack` is enabled, `kBestFeaturesScreenInFirstRun` is
   // disabled, and there are at least two features eligible for display.
   size_t number_of_items = GetWelcomeBackEligibleItems().size();
-  if (timeSinceActive > base::Days(28) && IsWelcomeBackInFirstRunEnabled() &&
+  if (timeSinceActive > base::Days(28) && IsWelcomeBackEnabled() &&
       !base::FeatureList::IsEnabled(first_run::kBestFeaturesScreenInFirstRun) &&
       number_of_items >= 2) {
     PromosManagerFactory::GetForProfile(self.profileState.profile)

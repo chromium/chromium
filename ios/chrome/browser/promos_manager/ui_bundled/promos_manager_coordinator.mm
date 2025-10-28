@@ -629,7 +629,7 @@
   }
 
   // Welcome Back promo handler.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::WelcomeBack] =
         [[WelcomeBackDisplayHandler alloc] init];
   }

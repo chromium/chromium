@@ -122,7 +122,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       safeBrowsingState = safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION;
       // Notify Welcome Back to remove Enhanced Safe Browsing from the eligible
       // features.
-      if (IsWelcomeBackInFirstRunEnabled()) {
+      if (IsWelcomeBackEnabled()) {
         MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kEnhancedSafeBrowsing);
       }
       break;

@@ -96,7 +96,7 @@ void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
                     kConsentedAndFlowEnabled);
     // Notify Welcome Back to remove Enhanced Safe Browsing from the eligible
     // features.
-    if (IsWelcomeBackInFirstRunEnabled()) {
+    if (IsWelcomeBackEnabled()) {
       MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kEnhancedSafeBrowsing);
     }
   } else {

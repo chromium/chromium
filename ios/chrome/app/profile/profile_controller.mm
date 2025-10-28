@@ -685,7 +685,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     }
   }
 
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
   }
 

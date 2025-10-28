@@ -1009,8 +1009,8 @@ extern const char kWebPageDefaultZoomFromDynamicTypeDescription[];
 extern const char kWebPageTextZoomIPadName[];
 extern const char kWebPageTextZoomIPadDescription[];
 
-extern const char kWelcomeBackInFirstRunName[];
-extern const char kWelcomeBackInFirstRunDescription[];
+extern const char kWelcomeBackName[];
+extern const char kWelcomeBackDescription[];
 
 extern const char kYoutubeIncognitoName[];
 extern const char kYoutubeIncognitoDescription[];

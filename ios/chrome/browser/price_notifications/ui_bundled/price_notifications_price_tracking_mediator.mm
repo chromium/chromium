@@ -336,7 +336,7 @@ using PriceNotificationItems =
 
   // Notify Welcome Back to remove Price Tracking and Insights from the eligible
   // features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kPriceTrackingAndInsights);
   }
 }

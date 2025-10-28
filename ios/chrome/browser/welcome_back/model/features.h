@@ -9,7 +9,7 @@
 
 enum class BestFeaturesItemType;
 
-// Enum to represent the arms of feature kWelcomeBackInFirstRun.
+// Enum to represent the arms of feature kWelcomeBack.
 enum class WelcomeBackScreenVariationType {
   kDisabled,
   // Show the Search with Lens, Enhanced Safe Browsing, and Locked Incognito
@@ -27,25 +27,21 @@ enum class WelcomeBackScreenVariationType {
 };
 
 // Feature to enable the Welcome Back screen.
-BASE_DECLARE_FEATURE(kWelcomeBackInFirstRun);
+BASE_DECLARE_FEATURE(kWelcomeBack);
 
 // Name of the param that indicates which variation of the
-// kWelcomeBackInFirstRun is enabled.
-extern const char kWelcomeBackInFirstRunParam[];
+// kWelcomeBack is enabled.
+extern const char kWelcomeBackParam[];
 
-// Whether `kWelcomeBackInFirstRun` is enabled. This experiment is disabled
+// Whether `kWelcomeBack` is enabled. This experiment is disabled
 // when `kBestFeaturesScreenInFirstRun` is enabled.
-bool IsWelcomeBackInFirstRunEnabled();
+bool IsWelcomeBackEnabled();
 
 // Erases an item from `kWelcomeBackEligibleItems`.
 void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type);
 
-// Returns which variation of the kWelcomeBackInFirstRun feature is enabled or
+// Returns which variation of the kWelcomeBack feature is enabled or
 // `kDisabled` if the feature is disabled.
 WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType();
-
-// Whether `kWelcomeBackInFirstRun` is enabled. This experiment is disabled when
-// `kBestFeaturesScreenInFirstRun` is enabled.
-bool IsWelcomeBackInFirstRunEnabled();
 
 #endif  // IOS_CHROME_BROWSER_WELCOME_BACK_MODEL_FEATURES_H_

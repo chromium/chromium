@@ -108,7 +108,7 @@ bool TailoredSecurityServiceInfobarDelegate::Accept() {
             /*is_esb_enabled_by_account_integration=*/false);
         // Notify Welcome Back to remove Enhanced Safe Browsing from the
         // eligible features.
-        if (IsWelcomeBackInFirstRunEnabled()) {
+        if (IsWelcomeBackEnabled()) {
           MarkWelcomeBackFeatureUsed(
               BestFeaturesItemType::kEnhancedSafeBrowsing);
         }

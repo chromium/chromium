@@ -78,7 +78,7 @@
           base::UserMetricsAction("IOS.Settings.IncognitoLock.HideWithReauth"));
       // Notify Welcome Back to remove Locked Incognito from the eligible
       // features.
-      if (IsWelcomeBackInFirstRunEnabled()) {
+      if (IsWelcomeBackEnabled()) {
         MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kLockedIncognitoTabs);
       }
       break;

@@ -120,7 +120,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
 
   // Notify Welcome Back to remove Tab Groups from the eligible
   // features.
-  if (IsWelcomeBackInFirstRunEnabled()) {
+  if (IsWelcomeBackEnabled()) {
     MarkWelcomeBackFeatureUsed(BestFeaturesItemType::kTabGroups);
   }
 

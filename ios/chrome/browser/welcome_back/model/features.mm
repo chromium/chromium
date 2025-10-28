@@ -11,12 +11,12 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 
-BASE_FEATURE(kWelcomeBackInFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWelcomeBack, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kWelcomeBackInFirstRunParam[] = "WelcomeBackInFirstRunParam";
+const char kWelcomeBackParam[] = "WelcomeBackParam";
 
-bool IsWelcomeBackInFirstRunEnabled() {
-  return base::FeatureList::IsEnabled(kWelcomeBackInFirstRun) &&
+bool IsWelcomeBackEnabled() {
+  return base::FeatureList::IsEnabled(kWelcomeBack) &&
          !base::FeatureList::IsEnabled(
              first_run::kBestFeaturesScreenInFirstRun);
 }
@@ -29,10 +29,10 @@ void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type) {
 }
 
 WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType() {
-  if (!base::FeatureList::IsEnabled(kWelcomeBackInFirstRun)) {
+  if (!base::FeatureList::IsEnabled(kWelcomeBack)) {
     return WelcomeBackScreenVariationType::kDisabled;
   }
   return static_cast<WelcomeBackScreenVariationType>(
-      base::GetFieldTrialParamByFeatureAsInt(kWelcomeBackInFirstRun,
-                                             kWelcomeBackInFirstRunParam, 1));
+      base::GetFieldTrialParamByFeatureAsInt(kWelcomeBack, kWelcomeBackParam,
+                                             1));
 }
