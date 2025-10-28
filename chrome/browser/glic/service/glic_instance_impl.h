@@ -262,7 +262,7 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
           callback,
       std::vector<std::string> returned_suggestions);
-  void MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key);
+  void MaybeDeactivateEmbedder(EmbedderKey key);
 
   void MaybeActivateForegroundEmbedder();
   EmbedderEntry& BindTab(tabs::TabInterface* tab);

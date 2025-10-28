@@ -267,7 +267,7 @@ void GlicInstanceImpl::Close(EmbedderKey key) {
   }
   instance_metrics_.OnClose();
   embedder->Close();
-  MaybeDeactivateEmbedderAndCloseHostUi(key);
+  MaybeDeactivateEmbedder(key);
 }
 
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
@@ -452,7 +452,6 @@ void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   instance_metrics_.OnUnbindEmbedder(key);
-  MaybeDeactivateEmbedderAndCloseHostUi(key);
   if ((base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs) ||
        base::FeatureList::IsEnabled(
            features::kGlicDefaultToLastActiveConversation)) &&
@@ -460,6 +459,8 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
     auto* tab = std::get<tabs::TabInterface*>(key);
     sharing_manager().UnpinTabs({tab->GetHandle()});
   }
+
+  Close(key);
   embedders_.erase(key);
 }
 
@@ -697,7 +698,7 @@ void GlicInstanceImpl::SwitchConversation(
   }
 }
 
-void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key) {
+void GlicInstanceImpl::MaybeDeactivateEmbedder(EmbedderKey key) {
   if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
     // TODO: Figure out what else should go into host_.PanelWasClosed() and
     // maybe call it here.
@@ -752,7 +753,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
 }
 
 void GlicInstanceImpl::WillCloseFor(EmbedderKey key) {
-  MaybeDeactivateEmbedderAndCloseHostUi(key);
+  MaybeDeactivateEmbedder(key);
 }
 
 void GlicInstanceImpl::WebUiStateChanged(mojom::WebUiState state) {
