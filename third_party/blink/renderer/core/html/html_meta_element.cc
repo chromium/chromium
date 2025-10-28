@@ -674,7 +674,7 @@ void HTMLMetaElement::ProcessContent() {
 
   if (RuntimeEnabledFeatures::ResponsiveIframesEnabled() &&
       EqualIgnoringASCIICase(name_value, keywords::kResponsiveEmbeddedSizing)) {
-    GetDocument().ResponsiveEmbeddedSizingChanged();
+    GetDocument().SetResponsiveEmbeddedSizing();
   }
 
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
