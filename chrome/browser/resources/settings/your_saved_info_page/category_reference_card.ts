@@ -16,12 +16,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './category_reference_card.html.js';
-
-export interface ChipData {
-  label: string;
-  icon: string;
-  counter?: number;
-}
+import type {DataChip} from './your_saved_info_page.js';
 
 export class CategoryReferenceCardElement extends PolymerElement {
   static get is() {
@@ -46,7 +41,7 @@ export class CategoryReferenceCardElement extends PolymerElement {
   }
 
   declare cardTitle: string;
-  declare chips: ChipData[];
+  declare chips: DataChip[];
   declare isExternal: boolean;
 
   override focus() {

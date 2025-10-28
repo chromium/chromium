@@ -32,9 +32,54 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-import type {ChipData} from './category_reference_card.js';
 import {SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 import {getTemplate} from './your_saved_info_page.html.js';
+
+/**
+ * A complete set of data chips, organized into categories, with presentation
+ * order in the UI.
+ */
+interface DataTypeHierarchy {
+  passwordManager: DataChip[];
+  payments: DataChip[];
+  contactInfo: DataChip[];
+  identityDocs: DataChip[];
+  travel: DataChip[];
+}
+
+/**
+ * Represents a single chip for a saved data type, showing a label, icon,
+ * and the number of items.
+ */
+export interface DataChip {
+  type: DataType;
+  label: string;
+  icon: string;
+  // A value of 0 indicates a loaded count of no items,
+  // while `undefined` indicates a "not yet loaded" state.
+  count?: number;
+  // An `undefined` availability indicates it has not yet been determined
+  isAvailable?: boolean;
+}
+
+/**
+ * A specific kind of saved user's information.
+ */
+enum DataType {
+  PASSWORD = 'password',
+  PASSKEY = 'passkey',
+  CREDIT_CARD = 'creditCard',
+  IBAN = 'iban',
+  PAY_OVER_TIME_ISSUER = 'payOverTimeIssuer',
+  LOYALTY_CARD = 'loyaltyCard',
+  ADDRESS = 'address',
+  DRIVERS_LICENSE = 'driversLicense',
+  NATIONAL_ID_CARD = 'nationalIdCard',
+  PASSPORT = 'passport',
+  FLIGHT_RESERVATION = 'flightReservation',
+  TRAVEL_INFO = 'travelInfo',
+  VEHICLE = 'vehicle',
+}
 
 const SettingsYourSavedInfoPageElementBase =
     WebUiListenerMixin(SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
@@ -53,85 +98,17 @@ export class SettingsYourSavedInfoPageElement extends
     return {
       prefs: Object,
 
-      passwordsCardData_: {
-        type: Array,
-        computed: 'computePasswordsCardData_(passwordsCount, passkeysCount)',
+      hierarchy_: {
+        type: Object,
       },
-      paymentsCardData_: {
-        type: Array,
-        computed:
-            'computePaymentsCardData_(creditCardsCount, ibansCount, payOverTimeIssuersCount, loyaltyCardsCount, enableIbans_, enablePayOverTime_)',
-      },
-      addressesCardData_: {
-        type: Array,
-        computed: 'computeAddressesCardData_(addressesCount)',
-      },
-      identityCardData_: {
-        type: Array,
-        computed: 'computeIdentityCardData_(driversLicensesCount, nationalIdCardsCount, passportsCount)',
-      },
-      travelCardData_: {
-        type: Array,
-        computed:
-            'computeTravelCardData_(flightReservationsCount, travelInfoCount, vehiclesCount)',
-      },
-
-      enableIbans_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showIbansSettings');
-        },
-      },
-
-      enablePayOverTime_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('shouldShowPayOverTimeSettings');
-        },
-      },
-
-      passwordsCount: Number,
-      passkeysCount: Number,
-      addressesCount: Number,
-      creditCardsCount: Number,
-      ibansCount: Number,
-      payOverTimeIssuersCount: Number,
-      passportsCount: Number,
-      driversLicensesCount: Number,
-      vehiclesCount: Number,
-      nationalIdCardsCount: Number,
-      travelInfoCount: Number,
-      flightReservationsCount: Number,
-      loyaltyCardsCount: Number,
     };
   }
 
   declare prefs: {[key: string]: any};
-  // The counts are initialized to undefined to indicate that the data is not
-  // yet loaded. 0 means that the user has no items of that type, while
-  // undefined means that we don't know yet.
-  declare passwordsCount: number|undefined;
-  declare passkeysCount: number|undefined;
-  declare addressesCount: number|undefined;
-  declare creditCardsCount: number|undefined;
-  declare ibansCount: number|undefined;
-  declare payOverTimeIssuersCount: number|undefined;
-  declare passportsCount: number|undefined;
-  declare driversLicensesCount: number|undefined;
-  declare vehiclesCount: number|undefined;
-  declare nationalIdCardsCount: number|undefined;
-  declare travelInfoCount: number|undefined;
-  declare flightReservationsCount: number|undefined;
-  declare loyaltyCardsCount: number|undefined;
+  declare private hierarchy_: DataTypeHierarchy;
 
-  declare private passwordsCardData_: ChipData[];
-  declare private paymentsCardData_: ChipData[];
-  declare private addressesCardData_: ChipData[];
-  declare private identityCardData_: ChipData[];
-  declare private travelCardData_: ChipData[];
-
-  declare private enableIbans_: boolean;
-  declare private enablePayOverTime_: boolean;
+  private dataTypeToChip_: Map<DataType, DataChip> = new Map();
+  private dataTypeToCategory_: Map<DataType, string> = new Map();
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -145,15 +122,116 @@ export class SettingsYourSavedInfoPageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+    this.initializeDataTypeHierarchy_();
     this.setupDataTypeCounters();
+  }
+
+  private initializeDataTypeHierarchy_() {
+    this.hierarchy_ = {
+      passwordManager: [
+        {
+          type: DataType.PASSWORD,
+          label: this.i18n('passwordsLabel'),
+          icon: 'cr20:password',
+          isAvailable: true,
+        },
+        {
+          type: DataType.PASSKEY,
+          label: this.i18n('passkeysLabel'),
+          icon: 'settings20:passkey',
+          isAvailable: true,
+        },
+      ],
+      payments: [
+        {
+          type: DataType.CREDIT_CARD,
+          label: this.i18n('creditAndDebitCardTitle'),
+          icon: 'settings20:credit-card',
+          isAvailable: true,
+        },
+        {
+          type: DataType.IBAN,
+          label: this.i18n('ibanTitle'),
+          icon: 'settings20:iban',
+          isAvailable: loadTimeData.getBoolean('showIbansSettings'),
+        },
+        {
+          type: DataType.PAY_OVER_TIME_ISSUER,
+          label: this.i18n('autofillPayOverTimeSettingsLabel'),
+          icon: 'settings20:hourglass',
+          isAvailable: loadTimeData.getBoolean('shouldShowPayOverTimeSettings'),
+        },
+        {
+          type: DataType.LOYALTY_CARD,
+          label: this.i18n('loyaltyCardsTitle'),
+          icon: 'settings20:loyalty-programs',
+          isAvailable: true,
+        },
+      ],
+      contactInfo: [
+        {
+          type: DataType.ADDRESS,
+          label: this.i18n('addresses'),
+          icon: 'settings:email',
+          isAvailable: true,
+        },
+      ],
+      identityDocs: [
+        {
+          type: DataType.DRIVERS_LICENSE,
+          label: this.i18n('yourSavedInfoDriverLicenseChip'),
+          icon: 'settings20:id-card',
+          isAvailable: true,
+        },
+        {
+          type: DataType.NATIONAL_ID_CARD,
+          label: this.i18n('yourSavedInfoNationalIdChip'),
+          icon: 'settings20:id-card',
+          isAvailable: true,
+        },
+        {
+          type: DataType.PASSPORT,
+          label: this.i18n('yourSavedInfoPassportChip'),
+          icon: 'settings20:passport',
+          isAvailable: true,
+        },
+      ],
+      travel: [
+        {
+          type: DataType.FLIGHT_RESERVATION,
+          label: this.i18n('yourSavedInfoFlightReservationsChip'),
+          icon: 'firstLevelTopics20:travel',
+          isAvailable: true,
+        },
+        {
+          type: DataType.TRAVEL_INFO,
+          label: this.i18n('yourSavedInfoTravelInfoChip'),
+          icon: 'privacy20:person-check',
+          isAvailable: true,
+        },
+        {
+          type: DataType.VEHICLE,
+          label: this.i18n('yourSavedInfoVehiclesChip'),
+          icon: 'firstLevelTopics20:directions-car',
+          isAvailable: true,
+        },
+      ],
+    };
+
+    for (const [categoryName, category] of Object.entries(this.hierarchy_)) {
+      for (const chip of category) {
+        this.dataTypeToChip_.set(chip.type, chip);
+        this.dataTypeToCategory_.set(chip.type, categoryName);
+      }
+    }
   }
 
   private setupDataTypeCounters() {
     // Password and passkey counts.
     const setPasswordCount =
         (count: {passwordCount: number, passkeyCount: number}) => {
-          this.passwordsCount = count.passwordCount;
-          this.passkeysCount = count.passkeyCount;
+          this.setChipCount_(DataType.PASSWORD, count.passwordCount);
+          this.setChipCount_(DataType.PASSKEY, count.passkeyCount);
         };
     this.addWebUiListener('password-count-changed', setPasswordCount);
     SavedInfoHandlerImpl.getInstance().getPasswordCount().then(
@@ -162,22 +240,23 @@ export class SettingsYourSavedInfoPageElement extends
     // Addresses: Request initial data.
     const setAddressesListener =
         (addresses: chrome.autofillPrivate.AddressEntry[]) => {
-          this.addressesCount = addresses.length;
+          this.setChipCount_(DataType.ADDRESS, addresses.length);
         };
     this.autofillManager_.getAddressList().then(setAddressesListener);
 
     // Payments: Request initial data.
     const setCreditCardsListener =
         (creditCards: chrome.autofillPrivate.CreditCardEntry[]) => {
-          this.creditCardsCount = creditCards.length;
+          this.setChipCount_(DataType.CREDIT_CARD, creditCards.length);
         };
     const setIbansListener = (ibans: chrome.autofillPrivate.IbanEntry[]) => {
-      this.ibansCount = ibans.length;
+      this.setChipCount_(DataType.IBAN, ibans.length);
     };
     const setPayOverTimeListener =
         (payOverTimeIssuers:
              chrome.autofillPrivate.PayOverTimeIssuerEntry[]) => {
-          this.payOverTimeIssuersCount = payOverTimeIssuers.length;
+          this.setChipCount_(
+              DataType.PAY_OVER_TIME_ISSUER, payOverTimeIssuers.length);
         };
     this.paymentsManager_.getCreditCardList().then(setCreditCardsListener);
     this.paymentsManager_.getIbanList().then(setIbansListener);
@@ -191,10 +270,11 @@ export class SettingsYourSavedInfoPageElement extends
          ibans: chrome.autofillPrivate.IbanEntry[],
          payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
          _accountInfo?: chrome.autofillPrivate.AccountInfo) => {
-          this.addressesCount = addresses.length;
-          this.creditCardsCount = creditCards.length;
-          this.ibansCount = ibans.length;
-          this.payOverTimeIssuersCount = payOverTimeIssuers.length;
+          this.setChipCount_(DataType.ADDRESS, addresses.length);
+          this.setChipCount_(DataType.CREDIT_CARD, creditCards.length);
+          this.setChipCount_(DataType.IBAN, ibans.length);
+          this.setChipCount_(
+              DataType.PAY_OVER_TIME_ISSUER, payOverTimeIssuers.length);
         };
     this.setPersonalDataListener_ = setPersonalDataListener;
     this.autofillManager_.setPersonalDataManagerListener(
@@ -210,7 +290,7 @@ export class SettingsYourSavedInfoPageElement extends
 
     // Wallet: Loyalty cards count.
     const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
-      this.loyaltyCardsCount = loyaltyCardsCount;
+      this.setChipCount_(DataType.LOYALTY_CARD, loyaltyCardsCount);
     };
     this.addWebUiListener('loyalty-cards-count-changed', setLoyaltyCardsCount);
     SavedInfoHandlerImpl.getInstance().getLoyaltyCardsCount().then(
@@ -224,17 +304,23 @@ export class SettingsYourSavedInfoPageElement extends
       const newCount = (entityCounts.get(entity.type.typeName) || 0) + 1;
       entityCounts.set(entity.type.typeName, newCount);
     }
-    this.passportsCount = entityCounts.get(EntityTypeName.kPassport) ?? 0;
-    this.driversLicensesCount =
-        entityCounts.get(EntityTypeName.kDriversLicense) ?? 0;
-    this.vehiclesCount = entityCounts.get(EntityTypeName.kVehicle) ?? 0;
-    this.nationalIdCardsCount =
-        entityCounts.get(EntityTypeName.kNationalIdCard) ?? 0;
-    this.travelInfoCount =
+    this.setChipCount_(
+        DataType.PASSPORT, entityCounts.get(EntityTypeName.kPassport) ?? 0);
+    this.setChipCount_(
+        DataType.DRIVERS_LICENSE,
+        entityCounts.get(EntityTypeName.kDriversLicense) ?? 0);
+    this.setChipCount_(
+        DataType.VEHICLE, entityCounts.get(EntityTypeName.kVehicle) ?? 0);
+    this.setChipCount_(
+        DataType.NATIONAL_ID_CARD,
+        entityCounts.get(EntityTypeName.kNationalIdCard) ?? 0);
+    this.setChipCount_(
+        DataType.TRAVEL_INFO,
         (entityCounts.get(EntityTypeName.kKnownTravelerNumber) ?? 0) +
-        (entityCounts.get(EntityTypeName.kRedressNumber) ?? 0);
-    this.flightReservationsCount =
-        entityCounts.get(EntityTypeName.kFlightReservation) ?? 0;
+            (entityCounts.get(EntityTypeName.kRedressNumber) ?? 0));
+    this.setChipCount_(
+        DataType.FLIGHT_RESERVATION,
+        entityCounts.get(EntityTypeName.kFlightReservation) ?? 0);
   }
 
   override disconnectedCallback() {
@@ -302,97 +388,15 @@ export class SettingsYourSavedInfoPageElement extends
     return control;
   }
 
-  private computePasswordsCardData_(): ChipData[] {
-    return [
-      {
-        label: this.i18n('passwordsLabel'),
-        icon: 'cr20:password',
-        counter: this.passwordsCount,
-      },
-      {
-        label: this.i18n('passkeysLabel'),
-        icon: 'settings20:passkey',
-        counter: this.passkeysCount,
-      },
-    ];
+  private setChipCount_(dataType: DataType, count?: number) {
+    const chip: DataChip = this.dataTypeToChip_.get(dataType)!;
+    const categoryName = this.dataTypeToCategory_.get(dataType)!;
+    chip.count = count;
+    this.notifyPath(`hierarchy_.${categoryName}`);
   }
 
-  private computePaymentsCardData_(): ChipData[] {
-    const cardData: ChipData[] = [
-      {
-        label: this.i18n('creditAndDebitCardTitle'),
-        icon: 'settings20:credit-card',
-        counter: this.creditCardsCount,
-      },
-    ];
-
-    if (this.enableIbans_) {
-      cardData.push({
-        label: this.i18n('ibanTitle'),
-        icon: 'settings20:iban',
-        counter: this.ibansCount,
-      });
-    }
-    if (this.enablePayOverTime_) {
-      cardData.push({
-        label: this.i18n('autofillPayOverTimeSettingsLabel'),
-        icon: 'settings20:hourglass',
-        counter: this.payOverTimeIssuersCount,
-      });
-    }
-
-    cardData.push({
-      label: this.i18n('loyaltyCardsTitle'),
-      icon: 'settings20:loyalty-programs',
-      counter: this.loyaltyCardsCount,
-    });
-    return cardData;
-  }
-
-  private computeAddressesCardData_(): ChipData[] {
-    return [
-      {
-        label: this.i18n('addresses'),
-        icon: 'settings:email',
-        counter: this.addressesCount,
-      },
-    ];
-  }
-
-  private computeIdentityCardData_(): ChipData[] {
-    return [{
-      label: this.i18n('yourSavedInfoDriverLicenseChip'),
-      icon: 'settings20:id-card',
-      counter: this.driversLicensesCount,
-    },
-    {
-      label: this.i18n('yourSavedInfoNationalIdChip'),
-      icon: 'settings20:id-card',
-      counter: this.nationalIdCardsCount,
-    },
-    {
-      label: this.i18n('yourSavedInfoPassportChip'),
-      icon: 'settings20:passport',
-      counter: this.passportsCount,
-    }];
-  }
-
-  private computeTravelCardData_(): ChipData[] {
-    return [{
-      label: this.i18n('yourSavedInfoFlightReservationsChip'),
-      icon: 'firstLevelTopics20:travel',
-      counter: this.flightReservationsCount,
-    },
-    {
-      label: this.i18n('yourSavedInfoTravelInfoChip'),
-      icon: 'privacy20:person-check',
-      counter: this.travelInfoCount,
-    },
-    {
-      label: this.i18n('yourSavedInfoVehiclesChip'),
-      icon: 'firstLevelTopics20:directions-car',
-      counter: this.vehiclesCount,
-    }];
+  private getVisibleChips_(chips: DataChip[]): DataChip[] {
+    return chips.filter(chip => chip.isAvailable).map(chip => ({...chip}));
   }
 
   /**

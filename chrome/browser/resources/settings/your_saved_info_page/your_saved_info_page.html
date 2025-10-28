@@ -47,23 +47,28 @@
 </h2>
 <div class="card-container">
   <category-reference-card card-title="$i18n{localPasswordManager}"
-      is-external chips="[[passwordsCardData_]]"
+      is-external
+      chips="[[getVisibleChips_(hierarchy_.passwordManager)]]"
       on-click="onPasswordManagerExternalLinkClick_">
   </category-reference-card>
   <category-reference-card id="paymentManagerButton"
-      card-title="$i18n{paymentsTitle}" chips="[[paymentsCardData_]]"
+      card-title="$i18n{paymentsTitle}"
+      chips="[[getVisibleChips_(hierarchy_.payments)]]"
       on-click="onPaymentManagerClick_">
   </category-reference-card>
   <category-reference-card id="addressesManagerButton"
-      card-title="$i18n{contactInfoTitle}" chips="[[addressesCardData_]]"
+      card-title="$i18n{contactInfoTitle}"
+      chips="[[getVisibleChips_(hierarchy_.contactInfo)]]"
       on-click="onAddressesManagerClick_">
   </category-reference-card>
   <category-reference-card id="identityManagerButton"
       card-title="$i18n{identityDocsCardTitle}"
-      chips="[[identityCardData_]]" on-click="onIdentityManagerClick_">
+      chips="[[getVisibleChips_(hierarchy_.identityDocs)]]"
+      on-click="onIdentityManagerClick_">
   </category-reference-card>
   <category-reference-card id="travelManagerButton"
-      card-title="$i18n{travelCardTitle}" chips="[[travelCardData_]]"
+      card-title="$i18n{travelCardTitle}"
+      chips="[[getVisibleChips_(hierarchy_.travel)]]"
       on-click="onTravelManagerClick_">
   </category-reference-card>
 </div>
