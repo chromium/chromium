@@ -4543,6 +4543,12 @@
       settable_from_internals: true,
     },
     {
+      // Enables skipping user-select: none content
+      // in DOMSelection::toString()
+      name: "SelectionToStringSkipsUserSelectNone",
+      status: "stable",
+    },
+    {
       // See https://crbug.com/395544401
       name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",

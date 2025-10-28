@@ -885,9 +885,15 @@ String DOMSelection::toString() {
   const EphemeralRange range = Selection()
                                    .ComputeVisibleSelectionInDOMTree()
                                    .ToNormalizedEphemeralRange();
-  return PlainText(
-      range,
-      TextIteratorBehavior::Builder().SetForSelectionToString(true).Build());
+
+  TextIteratorBehavior::Builder behavior_builder;
+  behavior_builder.SetForSelectionToString(true);
+
+  if (RuntimeEnabledFeatures::SelectionToStringSkipsUserSelectNoneEnabled()) {
+    behavior_builder.SetSkipsUnselectableContent(true);
+  }
+
+  return PlainText(range, behavior_builder.Build());
 }
 
 Node* DOMSelection::ShadowAdjustedNode(const Position& position) const {
