@@ -184,6 +184,8 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   static int GetErrorAssistantProtoVersionIdForTesting();
   static void SetOSReportsCaptivePortalForTesting(
       bool os_reports_captive_portal);
+  static void SetIsMultiNetworkCCTWorkflowForTesting(
+      bool is_multi_network_cct_workflow);
   bool IsTimerRunningForTesting() const;
 
  protected:

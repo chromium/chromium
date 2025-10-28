@@ -199,6 +199,10 @@ class ConfigSingleton {
   void SetOSReportsCaptivePortalForTesting(bool os_reports_captive_portal);
   bool DoesOSReportCaptivePortalForTesting() const;
 
+  void SetIsMultiNetworkCCTWorkflowForTesting(  // IN-TEST
+      bool is_multi_network_cct_workflow);
+  bool IsMultiNetworkCCTWorkflowForTesting() const;  // IN-TEST
+
   base::OnceClosure report_network_connectivity_callback() {
     return std::move(report_network_connectivity_callback_);
   }
@@ -225,6 +229,8 @@ class ConfigSingleton {
     OS_CAPTIVE_PORTAL_STATUS_NOT_BEHIND_PORTAL,
   };
   OSCaptivePortalStatus os_captive_portal_status_for_testing_;
+
+  bool is_multi_network_cct_workflow_for_testing_ = false;
 
   std::unique_ptr<SSLErrorAssistant> ssl_error_assistant_;
 };
@@ -260,6 +266,7 @@ void ConfigSingleton::ResetForTesting() {
   testing_clock_ = nullptr;
   ssl_error_assistant_->ResetForTesting();
   os_captive_portal_status_for_testing_ = OS_CAPTIVE_PORTAL_STATUS_NOT_SET;
+  is_multi_network_cct_workflow_for_testing_ = false;
 }
 
 void ConfigSingleton::SetInterstitialDelayForTesting(
@@ -296,6 +303,15 @@ void ConfigSingleton::SetOSReportsCaptivePortalForTesting(
 bool ConfigSingleton::DoesOSReportCaptivePortalForTesting() const {
   return os_captive_portal_status_for_testing_ ==
          OS_CAPTIVE_PORTAL_STATUS_BEHIND_PORTAL;
+}
+
+void ConfigSingleton::SetIsMultiNetworkCCTWorkflowForTesting(
+    bool is_multi_network_cct_workflow) {
+  is_multi_network_cct_workflow_for_testing_ = is_multi_network_cct_workflow;
+}
+
+bool ConfigSingleton::IsMultiNetworkCCTWorkflowForTesting() const {
+  return is_multi_network_cct_workflow_for_testing_;
 }
 
 void ConfigSingleton::SetErrorAssistantProto(
@@ -602,6 +618,13 @@ void SSLErrorHandler::SetOSReportsCaptivePortalForTesting(
   GetConfig().SetOSReportsCaptivePortalForTesting(os_reports_captive_portal);
 }
 
+// static
+void SSLErrorHandler::SetIsMultiNetworkCCTWorkflowForTesting(
+    bool is_multi_network_cct_workflow) {
+  GetConfig().SetIsMultiNetworkCCTWorkflowForTesting(  // IN-TEST
+      is_multi_network_cct_workflow);
+}
+
 bool SSLErrorHandler::IsTimerRunningForTesting() const {
   return timer_.IsRunning();
 }
@@ -674,16 +697,35 @@ void SSLErrorHandler::StartHandlingError() {
     is_captive_portal_login_tab = true;
 #endif
 
+  bool does_os_report_captive_portal = delegate_->DoesOSReportCaptivePortal();
   // Ideally, a captive portal interstitial should only be displayed if the only
   // SSL error is a name mismatch error. However, captive portal detector always
   // opens a new tab if it detects a portal ignoring the types of SSL errors. To
   // be consistent with captive portal detector, use the result of OS detection
   // without checking only_error_is_name_mismatch.
   if ((GetConfig().DoesOSReportCaptivePortalForTesting() ||  // IN-TEST
-       delegate_->DoesOSReportCaptivePortal())) {
+       does_os_report_captive_portal)) {
     delegate_->ReportNetworkConnectivity(
         GetConfig().report_network_connectivity_callback());
     RecordUMA(OS_REPORTS_CAPTIVE_PORTAL);
+    bool is_multi_network_cct_workflow =
+        GetConfig().IsMultiNetworkCCTWorkflowForTesting() ||  // IN-TEST
+        (web_contents()->GetTargetNetwork() !=
+         net::handles::kInvalidNetworkHandle);
+    // On Android the OS CaptivePortalLoginApp may open a CCT for captive portal
+    // login. If is_multi_network_cct_workflow is true, it is very likely that
+    // the OS has already detected a captive portal and launched a CCT. In that
+    // case, do not show Chromium's captive portal interstitial and display the
+    // SSL interstitial instead. Note that is_multi_network_cct_workflow can
+    // also be true if other apps use multi-networking APIs. In this case,
+    // showing the captive portal login page in that app is not ideal because
+    // those apps don't have the privilege to bypass VPN and private DNS
+    // restrictions, and therefore the in-browser captive portal login won't
+    // work well.
+    if (is_multi_network_cct_workflow) {
+      ShowSSLInterstitial();
+      return;
+    }
 
     if (!is_captive_portal_login_tab) {
       ShowCaptivePortalInterstitial(GURL());
@@ -755,6 +797,17 @@ void SSLErrorHandler::StartHandlingError() {
   }
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the OS may not detect a captive portal due to portal
+  // misconfiguration. In that situation we should not also run Chromium's
+  // captive portal detection — it can fail because of VPNs or private DNS.
+  // Prefer the OS-level detection so the portal operator can fix the portal and
+  // allow the OS to handle the login flow.
+  if (!does_os_report_captive_portal) {
+    ShowSSLInterstitial();
+    return;
+  }
+#endif
   subscription_ = captive_portal_service_->RegisterCallback(
       base::BindRepeating(&SSLErrorHandler::Observe, base::Unretained(this)));
 
