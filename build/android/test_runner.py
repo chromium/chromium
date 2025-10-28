@@ -1088,7 +1088,7 @@ def _CreateStructuredTestDict(test_instance, test_result):
 
   test_id = test_result.GetNameForResultSink()
 
-  if test_instance.TestType() in ['instrumentation', 'junit']:
+  if test_instance.TestType() in ['hostside', 'instrumentation', 'junit']:
     re_match = re.search(r'(.*)\.(\w+\$?\w+)#(.*)', test_id)
     if not re_match:
       logging.error(
