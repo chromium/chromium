@@ -62,6 +62,7 @@ public class BrowserControlsPTTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "Flaky, see crbug.com/455947814")
     public void topControlsScroll() {
         waitForControlsVisibility(true);
 
