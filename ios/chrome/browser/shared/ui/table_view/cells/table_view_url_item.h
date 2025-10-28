@@ -24,13 +24,8 @@
 // Custom third row text. This is not shown if it is empty or if the second row
 // is empty.
 @property(nonatomic, readwrite, copy) NSString* thirdRowText;
-// Third row text color, if it is shown. If nil, ChromeTableViewStyler's
-// `detailTextColor` is used, otherwise a default color is used.
-@property(nonatomic, strong) UIColor* thirdRowTextColor;
 // Detail text to be displayed instead of the URL.
 @property(nonatomic, copy) NSString* detailText;
-// Metadata text displayed at the trailing edge of the cell.
-@property(nonatomic, readwrite, copy) NSString* metadata;
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
@@ -78,14 +73,6 @@
 // configured. This must be called at the end of configureCell: for all items
 // that use TableViewURLCell.
 - (void)configureUILayout;
-
-// Starts the animation of the activity indicator replacing the favicon. NO-OP
-// if it is already running.
-- (void)startAnimatingActivityIndicator;
-
-// Stops the animation of the activity indicator and puts favicon back in place.
-// NO-OP if it is already stopped.
-- (void)stopAnimatingActivityIndicator;
 
 // Sets the background color for the favicon container view.
 - (void)setFaviconContainerBackgroundColor:(UIColor*)backgroundColor;

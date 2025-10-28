@@ -29,7 +29,7 @@
                                             UILayoutConstraintAxisHorizontal];
     [self addSubview:_switchView];
 
-    _configuration = configuration;
+    _configuration = [configuration copy];
     [self applyConfiguration];
 
     AddSameConstraints(_switchView, self);

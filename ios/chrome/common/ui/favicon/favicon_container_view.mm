@@ -29,7 +29,7 @@ const CGFloat kFaviconContainerWidth = 30;
 @implementation FaviconContainerView
 
 - (instancetype)init {
-  self = [super init];
+  self = [super initWithFrame:CGRectZero];
   if (self) {
     [self.traitCollection performAsCurrentTraitCollection:^{
       [self resetColor];

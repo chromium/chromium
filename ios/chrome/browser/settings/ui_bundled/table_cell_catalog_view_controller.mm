@@ -66,8 +66,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTextAccessoryNoImage,
   ItemTypeTextEditItem,
   ItemTypeTextMultiLineEditItem,
-  ItemTypeURLWithActivityIndicator,
-  ItemTypeURLWithActivityIndicatorStopped,
   ItemTypeURLWithTimestamp,
   ItemTypeURLWithSize,
   ItemTypeURLWithSupplementalText,
@@ -700,13 +698,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithTimestamp];
   item.title = @"Google";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://www.google.com")];
-  item.metadata = @"3:42 PM";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSize];
   item.title = @"World Series 2017: Houston Astros Defeat Someone Else";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://m.bbc.com")];
-  item.metadata = @"176 KB";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item =
@@ -721,18 +717,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
-  item =
-      [[TableViewURLItem alloc] initWithType:ItemTypeURLWithActivityIndicator];
-  item.title = @"Sent Request to Server";
-  item.URL = [[CrURL alloc] initWithGURL:GURL("https://started.spinner.com/")];
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
-  item = [[TableViewURLItem alloc]
-      initWithType:ItemTypeURLWithActivityIndicatorStopped];
-  item.title = @"Received Response from Server";
-  item.URL = [[CrURL alloc] initWithGURL:GURL("https://stopped.spinner.com/")];
-  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
-
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
   item.title = @"Web Channel with 3rd Row Text";
   item.URL =
@@ -745,14 +729,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.URL =
       [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   item.thirdRowText = @"Unavailable";
-  item.thirdRowTextColor = UIColor.redColor;
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadata];
   item.title = @"Web Channel with metadata image and label";
   item.URL =
       [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
-  item.metadata = @"176 KB";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadataImage];
@@ -824,18 +806,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [checkCell.infoButton addTarget:self
                              action:@selector(didTapCheckInfoButton:)
                    forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeURLWithActivityIndicator) {
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    [URLCell startAnimatingActivityIndicator];
-  } else if (itemType == ItemTypeURLWithActivityIndicatorStopped) {
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    [URLCell startAnimatingActivityIndicator];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC),
-                   dispatch_get_main_queue(), ^{
-                     [URLCell stopAnimatingActivityIndicator];
-                   });
   }
   return cell;
 }

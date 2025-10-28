@@ -32,7 +32,7 @@
     [self setContentHuggingPriority:UILayoutPriorityRequired - 1
                             forAxis:UILayoutConstraintAxisHorizontal];
 
-    _configuration = configuration;
+    _configuration = [configuration copy];
 
     [self applyConfiguration];
   }
@@ -53,7 +53,8 @@
 
 - (void)setConfiguration:(id<UIContentConfiguration>)configuration {
   _configuration =
-      base::apple::ObjCCastStrict<ImageContentConfiguration>(configuration);
+      [base::apple::ObjCCastStrict<ImageContentConfiguration>(configuration)
+          copy];
   [self applyConfiguration];
 }
 

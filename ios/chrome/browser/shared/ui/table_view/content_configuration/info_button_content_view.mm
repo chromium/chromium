@@ -44,7 +44,7 @@ const CGFloat kInfoSymbolSize = 22;
                                             UILayoutConstraintAxisHorizontal];
     [self addSubview:_infoButton];
 
-    _configuration = configuration;
+    _configuration = [configuration copy];
     [self applyConfiguration];
 
     AddSameConstraints(_infoButton, self);

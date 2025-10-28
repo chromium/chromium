@@ -46,15 +46,11 @@ const int kMaxNumberOfLinesForCellTitleLabel = 2;
   cell.titleLabel.text = [self titleLabelText];
   cell.URLLabel.text = [self URLLabelText];
   cell.thirdRowLabel.text = self.thirdRowText;
-  cell.metadataLabel.text = self.metadata;
   cell.cellUniqueIdentifier = self.uniqueIdentifier;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
 
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
-  }
-  if (self.thirdRowTextColor) {
-    cell.thirdRowLabel.textColor = self.thirdRowTextColor;
   }
 
   [cell configureUILayout];

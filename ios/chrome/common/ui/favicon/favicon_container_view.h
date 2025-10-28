@@ -15,6 +15,11 @@
 // the `faviconView` to to display.
 @property(nonatomic, readonly, strong) FaviconView* faviconView;
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
 // Sets the favicon's background color. Can be nil to reset to original value.
 - (void)setFaviconBackgroundColor:(UIColor*)color;
 

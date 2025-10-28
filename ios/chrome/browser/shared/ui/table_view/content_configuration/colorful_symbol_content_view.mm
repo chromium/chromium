@@ -15,15 +15,9 @@ const CGFloat kSymbolPointSize = 18;
 const CGFloat kSymbolContainerCornerRadius = 7;
 }  // namespace
 
-@interface ColorfulSymbolContentView ()
-
-// The content configuration.
-@property(nonatomic, copy)
-    ColorfulSymbolContentConfiguration* contentConfiguration;
-
-@end
 
 @implementation ColorfulSymbolContentView {
+  ColorfulSymbolContentConfiguration* _configuration;
   // The symbol image view.
   UIImageView* _symbolImageView;
 }
@@ -32,7 +26,7 @@ const CGFloat kSymbolContainerCornerRadius = 7;
     (ColorfulSymbolContentConfiguration*)configuration {
   self = [super initWithFrame:CGRectZero];
   if (self) {
-    _contentConfiguration = [configuration copy];
+    _configuration = [configuration copy];
 
     _symbolImageView = [[UIImageView alloc] init];
     _symbolImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -64,13 +58,13 @@ const CGFloat kSymbolContainerCornerRadius = 7;
 #pragma mark - UIContentView
 
 - (id<UIContentConfiguration>)configuration {
-  return self.contentConfiguration;
+  return _configuration;
 }
 
 - (void)setConfiguration:(id<UIContentConfiguration>)configuration {
-  self.contentConfiguration =
-      base::apple::ObjCCastStrict<ColorfulSymbolContentConfiguration>(
-          configuration);
+  _configuration =
+      [base::apple::ObjCCastStrict<ColorfulSymbolContentConfiguration>(
+          configuration) copy];
   [self applyConfiguration];
 }
 
@@ -83,9 +77,9 @@ const CGFloat kSymbolContainerCornerRadius = 7;
 
 // Updates the content view with the current configuration.
 - (void)applyConfiguration {
-  _symbolImageView.image = self.contentConfiguration.symbolImage;
-  _symbolImageView.tintColor = self.contentConfiguration.symbolTintColor;
-  self.backgroundColor = self.contentConfiguration.symbolBackgroundColor;
+  _symbolImageView.image = _configuration.symbolImage;
+  _symbolImageView.tintColor = _configuration.symbolTintColor;
+  self.backgroundColor = _configuration.symbolBackgroundColor;
 }
 
 @end
