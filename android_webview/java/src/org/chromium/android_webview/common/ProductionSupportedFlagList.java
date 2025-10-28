@@ -670,9 +670,6 @@ public final class ProductionSupportedFlagList {
                 "Register, unregister Battery Status Manager broadcast receiver on a background"
                         + " thread."),
         Flag.baseFeature(
-                BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
-                "If enabled, not perceptible binding put processes to the background cpu cgroup"),
-        Flag.baseFeature(
                 BaseFeatures.PARTITION_ALLOC_WITH_ADVANCED_CHECKS,
                 "Enables PartitionAlloc with advanced safety checks"),
         Flag.baseFeature(
@@ -1054,9 +1051,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 VizFeatures.NO_LATE_BEGIN_FRAMES,
                 "Enables not sending BeginFrameArgs late when a client begins observing them."),
-        Flag.baseFeature(
-                BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
-                "Enable boosting the importance of renderers without boosting their CPU priority."),
         Flag.baseFeature(
                 "KeepChildProcessAfterIPCReset",
                 "When enabled, child process will not terminate itself when IPC is reset."),

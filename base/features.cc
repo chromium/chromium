@@ -138,7 +138,7 @@ BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
 
 #if BUILDFLAG(IS_ANDROID)
 // Enable not perceptible binding without cpu priority boosting.
-BASE_FEATURE(kBackgroundNotPerceptibleBinding, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBackgroundNotPerceptibleBinding, FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether to use effective binding state to manage child process bindings.
 // ChildProcessConnection will binds at most 2 service connections only,

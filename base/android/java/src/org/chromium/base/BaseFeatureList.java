@@ -15,7 +15,7 @@ public class BaseFeatureList {
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),
                     BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
-                    false);
+                    true);
 
     public static final MutableFlagWithSafeDefault sEffectiveBindingState =
             new MutableFlagWithSafeDefault(

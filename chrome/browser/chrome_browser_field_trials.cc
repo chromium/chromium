@@ -158,9 +158,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(features::kUserMediaScreenCapturing);
 
   // Enable desktop tab management features.
-  // TODO(crbug.com/422902940): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(
-      base::features::kBackgroundNotPerceptibleBinding);
   // TODO(crbug.com/422902625): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(chrome::android::kProcessRankPolicyAndroid);
