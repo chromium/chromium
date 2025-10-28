@@ -91,7 +91,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandleInternal(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle);
 
   std::unique_ptr<GLOzone> egl_implementation_;
