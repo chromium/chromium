@@ -130,12 +130,16 @@
                  grey_accessibilityID(
                      first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
-  NSString* title = nil;
+  id<GREYMatcher> titleMatcher = nil;
   NSString* subtitle = nil;
   NSArray* disclaimerStrings = nil;
   switch (FRESigninIntent) {
     case FRESigninIntentRegular:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -146,8 +150,8 @@
       ];
       break;
     case FRESigninIntentSigninForcedByPolicy:
-      title =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
+      titleMatcher = grey_text(
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED));
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
       disclaimerStrings = @[
@@ -161,11 +165,11 @@
       break;
     case FRESigninIntentSigninDisabledByPolicy:
       if ([ChromeEarlGrey isIPadIdiom]) {
-        title =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD);
+        titleMatcher = grey_text(l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD));
       } else {
-        title = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
+        titleMatcher = grey_text(l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE));
       }
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
@@ -179,7 +183,11 @@
       ];
       break;
     case FRESigninIntentSigninWithSyncDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       // Note: With SyncDisabled, the "benefits" string is not used.
       subtitle =
           l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
@@ -193,7 +201,11 @@
       ];
       break;
     case FRESigninIntentSigninWithPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -206,7 +218,11 @@
       ];
       break;
     case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0);
+      titleMatcher = grey_anyOf(
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_0)),
+          grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_1)),
+          nil);
       subtitle = l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
       disclaimerStrings = @[
@@ -219,7 +235,7 @@
   }
   // Validate the Title text.
   [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(title),
+                                               titleMatcher,
                                                grey_sufficientlyVisible(), nil)
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
