@@ -7,6 +7,8 @@ import("//testing/test.gni")
 source_set("legion") {
   sources = [
     "attestation_handler.h",
+    "attestation_handler_impl.cc",
+    "attestation_handler_impl.h",
     "client.cc",
     "client.h",
     "crypter.cc",
@@ -43,6 +45,7 @@ source_set("legion") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "attestation_handler_impl_unittest.cc",
     "client_unittest.cc",
     "crypter_unittest.cc",
     "secure_channel_impl_unittest.cc",
