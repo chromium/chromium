@@ -20,8 +20,20 @@ namespace blink {
 
 namespace {
 // The minimum time that the spinning icon should be displayed.
-constexpr base::TimeDelta kMinimumSpinningIconTime = base::Seconds(2);
+constexpr base::TimeDelta kMinimumSpinningIconTime = base::Seconds(1.5);
 const char kAccuracyModePrecise[] = "precise";
+
+// Timeout for querying location (in milliseconds).
+constexpr uint16_t kDefaultQueryLocationTimeoutMs = 10000;
+
+PositionOptions* CreateDefaultLocationOptions() {
+  PositionOptions* options = PositionOptions::Create();
+  options->setTimeout(kDefaultQueryLocationTimeoutMs);
+  options->setMaximumAge(0);
+  options->setEnableHighAccuracy(false);
+  return options;
+}
+
 }  // namespace
 
 HTMLGeolocationElement::HTMLGeolocationElement(Document& document)
@@ -171,7 +183,8 @@ void HTMLGeolocationElement::GetCurrentPosition() {
   if (!WebTestSupport::IsRunningWebTest()) {
     geolocation->GetCurrentPosition(
         blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
-                             WrapWeakPersistent(this)));
+                             WrapWeakPersistent(this)),
+        CreateDefaultLocationOptions());
   }
 }
 
@@ -189,7 +202,8 @@ void HTMLGeolocationElement::WatchPosition() {
     }
     watch_id_ = geolocation->WatchPosition(
         blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
-                             WrapWeakPersistent(this)));
+                             WrapWeakPersistent(this)),
+        CreateDefaultLocationOptions());
   } else {
     // In web tests, we don't have a real geolocation service.
     // Set a dummy watch_id to simulate success.

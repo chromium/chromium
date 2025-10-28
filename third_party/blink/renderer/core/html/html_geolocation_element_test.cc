@@ -45,6 +45,9 @@ using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
 namespace {
 
+// Time to bypass the spinning time `kMinimumSpinningIconTime`
+constexpr base::TimeDelta kTimeToSimulateCallback = base::Seconds(2);
+
 constexpr char16_t kGeolocationStringPt[] = u"Usar localização";
 constexpr char16_t kGeolocationStringBr[] = u"Usar local";
 constexpr char16_t kGeolocationStringTa[] = u"இருப்பிடத்தைப் பயன்படுத்து";
@@ -326,7 +329,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationTranslateInnerText) {
     permission_service()->NotifyPermissionStatusChange(
         PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
     // Simulate success response
-    task_environment().FastForwardBy(base::Seconds(3));
+    task_environment().FastForwardBy(kTimeToSimulateCallback);
     geolocation_element->CurrentPositionCallback(base::ok(nullptr));
 
     // Text should NOT change to the "allowed" string.
@@ -450,7 +453,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
                   /*is_spinning*/ true);
 
   // Simulate success response
-  task_environment().FastForwardBy(base::Seconds(3));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
@@ -461,13 +464,13 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
                   /*is_spinning*/ true);
 
   // Simulate error response
-  task_environment().FastForwardBy(base::Seconds(3));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::unexpected(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
 
   // 3. Test that the spinning icon and "using" text are displayed for at
-  // least 2 seconds, even if the response is received earlier.
+  // least 1.5 seconds, even if the response is received earlier.
   geolocation_element->GetCurrentPosition();
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
@@ -482,9 +485,9 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
 
-  // Fast forward time by another 1.1 seconds, making the total time > 2
-  // seconds.
-  task_environment().FastForwardBy(base::Seconds(1.1));
+  // Fast forward time by another 0.6 seconds, making the total time >
+  // kTestMinimumSpinningIconTime seconds.
+  task_environment().FastForwardBy(base::Seconds(0.6));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
 
@@ -494,12 +497,12 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
 
-  // Fast forward time by 2.1 seconds.
-  task_environment().FastForwardBy(base::Seconds(2.1));
+  // Fast forward time by kTimeToSimulateCallback.
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ false);
 
-  // Simulate receiving a response after 2.1 seconds.
+  // Simulate receiving a response.
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
@@ -510,7 +513,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationUsingLocationAppearance) {
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
 
-  task_environment().FastForwardBy(base::Seconds(3));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
@@ -528,15 +531,15 @@ TEST_F(HTMLGeolocationElementTest, GeolocationWatchPositionAppearance) {
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
 
-  // 2. After 1s, simulate a position update. Spinning should continue because
-  // it's re-triggered.
-  task_environment().FastForwardBy(base::Seconds(1));
+  // 2. After `kTimeToSimulateCallback`, simulate a position update. Spinning
+  // should continue because it's re-triggered.
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
 
-  // 3. After another 2.1s, spinning should stop.
-  task_environment().FastForwardBy(base::Seconds(2.1));
+  // 3. After another `kTimeToSimulateCallback`, spinning should stop.
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
 
@@ -548,7 +551,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationWatchPositionAppearance) {
   // 5. Remove watch attribute.
   geolocation_element->removeAttribute(html_names::kWatchAttr);
   // Let the current spinning finish.
-  task_environment().FastForwardBy(base::Seconds(2.1));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
 
@@ -595,7 +598,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAutolocate) {
                   /*is_spinning*/ true);
 
   // Fast forward time to let the spinning stop.
-  task_environment().FastForwardBy(base::Seconds(2.1));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
@@ -607,9 +610,9 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAutolocateWatch) {
                                  MojoPermissionStatus::GRANTED}});
 
   auto* geolocation_element = CreateGeolocationElement();
+  geolocation_element->setAttribute(html_names::kWatchAttr, AtomicString(""));
   geolocation_element->setAttribute(html_names::kAutolocateAttr,
                                     AtomicString(""));
-  geolocation_element->setAttribute(html_names::kWatchAttr, AtomicString(""));
 
   // Should trigger WatchPosition automatically.
   CheckAppearance(geolocation_element, kUsingLocationString,
@@ -617,7 +620,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAutolocateWatch) {
 
   // With watch, it should re-trigger spinning.
   // Let's simulate a position update.
-  task_environment().FastForwardBy(base::Seconds(1));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kUsingLocationString,
                   /*is_spinning*/ true);
@@ -637,7 +640,7 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAutolocateTriggersOnce) {
                   /*is_spinning*/ true);
 
   // Let it finish.
-  task_environment().FastForwardBy(base::Seconds(2.1));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
@@ -670,7 +673,7 @@ TEST_F(HTMLGeolocationElementTest,
                   /*is_spinning*/ true);
 
   // Let it finish.
-  task_environment().FastForwardBy(base::Seconds(2.1));
+  task_environment().FastForwardBy(kTimeToSimulateCallback);
   geolocation_element->CurrentPositionCallback(base::ok(nullptr));
   CheckAppearance(geolocation_element, kGeolocationString,
                   /*is_spinning*/ false);
