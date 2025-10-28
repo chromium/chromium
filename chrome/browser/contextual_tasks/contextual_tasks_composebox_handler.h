@@ -8,7 +8,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/base_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -20,10 +19,8 @@
 
 class Profile;
 
-class ContextualTasksComposeboxHandler
-    : public composebox::mojom::PageHandler,
-      public SearchboxHandler,
-      public composebox::BaseComposeboxHandler {
+class ContextualTasksComposeboxHandler : public composebox::mojom::PageHandler,
+                                         public SearchboxHandler {
  public:
   ContextualTasksComposeboxHandler(
       Profile* profile,
@@ -33,12 +30,6 @@ class ContextualTasksComposeboxHandler
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler);
   ~ContextualTasksComposeboxHandler() override;
-
-  // BaseComposeboxHandler:
-  void SubmitQuery(
-      const std::string& query_text,
-      WindowOpenDisposition disposition,
-      std::map<std::string, std::string> additional_params) override;
 
   // composebox::mojom::PageHandler:
   void NotifySessionStarted() override;

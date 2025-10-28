@@ -134,24 +134,13 @@ LensComposeboxHandler::LensComposeboxHandler(
 
 LensComposeboxHandler::~LensComposeboxHandler() = default;
 
-void LensComposeboxHandler::SubmitQuery(
-    const std::string& query_text,
-    WindowOpenDisposition disposition,
-    std::map<std::string, std::string> additional_params) {
-  lens_composebox_controller_->IssueComposeboxQuery(query_text);
-}
-
 void LensComposeboxHandler::SubmitQuery(const std::string& query_text,
                                         uint8_t mouse_button,
                                         bool alt_key,
                                         bool ctrl_key,
                                         bool meta_key,
                                         bool shift_key) {
-  SubmitQuery(query_text,
-              ui::DispositionFromClick(
-                  /*middle_button=*/mouse_button == 1, alt_key, ctrl_key,
-                  meta_key, shift_key),
-              /*additional_params=*/{});
+  lens_composebox_controller_->IssueComposeboxQuery(query_text);
 }
 
 void LensComposeboxHandler::FocusChanged(bool focused) {
