@@ -11,7 +11,7 @@ if (is_android) {
 }
 
 grit_strings("strings") {
-  if (is_internal_chrome_branded) {
+  if (is_chrome_branded) {
     source = "../internal/strings/plus_addresses_internal_strings.grd"
   } else {
     source = "plus_addresses_strings.grd"

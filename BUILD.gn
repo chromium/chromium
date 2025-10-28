@@ -10,7 +10,6 @@
 
 import("//build/config/c++/modules.gni")
 import("//build/config/cast.gni")
-import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
@@ -826,7 +825,7 @@ group("gn_all") {
     deps += [ "//chrome/browser/chrome_for_testing" ]
   }
 
-  if (enable_src_internal) {
+  if (checkout_src_internal) {
     deps += [ "//internal:all" ]
   }
 

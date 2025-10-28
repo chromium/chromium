@@ -87,7 +87,7 @@ template("chrome_repack_locales") {
         "//remoting/resources",
         "//ui/chromeos/strings",
       ]
-      if (is_internal_chrome_branded) {
+      if (is_chrome_branded) {
         source_patterns += [
           "${root_gen_dir}/chrome/app/theme/google_chrome/chromeos/strings/chromeos_chrome_internal_strings_",
           "${root_gen_dir}/chromeos/ash/resources/internal/strings/ash_internal_strings_",
@@ -112,7 +112,7 @@ template("chrome_repack_locales") {
     }
 
     # src-internal strings only available on Chrome branded builds.
-    if (is_internal_chrome_branded) {
+    if (is_chrome_branded) {
       source_patterns += [ "${root_gen_dir}/chrome/browser/nearby_sharing/internal/resources/nearby_share_internal_strings_" ]
       deps += [ "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings" ]
     }

@@ -736,7 +736,7 @@ if (!is_cronet_build) {
 }
 
 grit("server_urls_grd") {
-  if (enable_src_internal) {
+  if (is_chrome_branded) {
     source = "internal/server_urls.grd"
   } else {
     source = "server_urls.grd"
