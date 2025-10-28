@@ -25,6 +25,7 @@
 }
 
 #composeboxContainer {
+  background-color: var(--google-grey-50);
   height: 64px;
   inset-block-end: 0;
   min-height: var(--composebox-collapsed-height);

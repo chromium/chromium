@@ -55,7 +55,9 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
               std::make_unique<ContextualTasksOmniboxClient>(profile,
                                                              web_contents))),
       page_{std::move(pending_page)},
-      handler_(this, std::move(pending_handler)) {}
+      handler_(this, std::move(pending_handler)) {
+  autocomplete_controller_observation_.Observe(autocomplete_controller());
+}
 
 ContextualTasksComposeboxHandler::~ContextualTasksComposeboxHandler() = default;
 

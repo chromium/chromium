@@ -33,6 +33,8 @@ class ContextualTasksUiService;
 inline constexpr char kContextualTasksUiHost[] = "contextual-tasks";
 inline constexpr char kContextualTasksUiUrl[] = "chrome://contextual-tasks/";
 
+class ContextualTasksComposeboxHandler;
+
 class ContextualTasksUI : public TopChromeWebUIController,
                           public contextual_tasks::mojom::PageHandlerFactory,
                           public composebox::mojom::PageHandlerFactory {
@@ -95,6 +97,7 @@ class ContextualTasksUI : public TopChromeWebUIController,
     raw_ref<ContextualTasksUI> ui_handle_;
   };
 
+  std::unique_ptr<ContextualTasksComposeboxHandler> composebox_handler_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
 
   mojo::Receiver<composebox::mojom::PageHandlerFactory>

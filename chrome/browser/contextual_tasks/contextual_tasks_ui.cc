@@ -55,8 +55,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddString("composeboxAttachmentFileTypes", "");
   source->AddInteger("composeboxFileMaxSize", 0);
   source->AddInteger("composeboxFileMaxCount", 0);
-  // Disable typed suggest.
-  source->AddBoolean("composeboxShowTypedSuggest", false);
+  // Enable typed suggest.
+  source->AddBoolean("composeboxShowTypedSuggest", true);
   // Disable ZPS.
   source->AddBoolean("composeboxShowZps", false);
   // Disable image context suggestions.
@@ -80,11 +80,13 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableThumbnailSizingTweaks",
       lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
-  source->AddString("searchboxComposePlaceholder", "Placeholder Text");
+  source->AddString("searchboxComposePlaceholder", "[i18n] Ask Google...");
   source->AddBoolean("composeboxShowPdfUpload", false);
   source->AddBoolean("composeboxSmartComposeEnabled", false);
   source->AddBoolean("composeboxShowDeepSearchButton", false);
   source->AddBoolean("composeboxShowCreateImageButton", false);
+  source->AddBoolean("composeboxShowRecentTabChip", false);
+  source->AddBoolean("composeboxShowSubmit", true);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
@@ -143,10 +145,11 @@ void ContextualTasksUI::CreatePageHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
-  auto handler = std::make_unique<ContextualTasksComposeboxHandler>(
+  composebox_handler_ = std::make_unique<ContextualTasksComposeboxHandler>(
       Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
       std::move(pending_page_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
+  composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
