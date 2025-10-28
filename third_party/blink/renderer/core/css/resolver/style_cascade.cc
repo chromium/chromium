@@ -1227,8 +1227,7 @@ const CSSValue* StyleCascade::ResolveSubstitutions(
     const MixinParameterBindings* mixin_parameter_bindings,
     CascadeResolver& resolver) {
   HeapVector<Member<const MixinParameterBindings>, 4> binding_chain;
-  if (mixin_parameter_bindings && !IsA<CSSUnparsedDeclarationValue>(value) &&
-      !IsA<cssvalue::CSSPendingSubstitutionValue>(value)) {
+  if (mixin_parameter_bindings) {
     // Even though we are within a mixin, it's not given that we
     // actually need the mixin bindings to compute a value;
     // there's no need to use CPU cycles to set up the entire stack
@@ -1236,7 +1235,17 @@ const CSSValue* StyleCascade::ResolveSubstitutions(
     // a CSSUnparsedDeclarationValue, we don't have a parser context
     // to resolve all of these values against. So in these cases,
     // we just ignore the entire mixin context.
-    mixin_parameter_bindings = nullptr;
+    if (const auto* v1 = DynamicTo<CSSUnparsedDeclarationValue>(value)) {
+      if (!v1->VariableDataValue()->NeedsVariableResolution()) {
+        mixin_parameter_bindings = nullptr;
+      }
+    } else if (const auto* v2 =
+                   DynamicTo<cssvalue::CSSPendingSubstitutionValue>(value)) {
+      DCHECK(
+          v2->ShorthandValue()->VariableDataValue()->NeedsVariableResolution());
+    } else {
+      mixin_parameter_bindings = nullptr;
+    }
   }
 
   for (const MixinParameterBindings* cur_bindings = mixin_parameter_bindings;
