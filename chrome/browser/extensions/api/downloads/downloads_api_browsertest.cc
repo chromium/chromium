@@ -2013,8 +2013,6 @@ class CustomResponse : public net::test_server::HttpResponse {
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_InterruptAndResume) {
   LoadExtension("downloads_split");
@@ -2083,7 +2081,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                                          "    \"previous\": \"in_progress\"}}]",
                                          result_id)));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that we disallow certain headers case-insensitively.
 // TODO(crbug.com/335421977): Flaky on "Linux ChromiumOS MSan Tests"
@@ -2273,10 +2270,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test various failure modes for downloading invalid URLs.
-// TODO(crbug.com/405219117): Fails on desktop Android, possible due to
-// networking differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_InvalidURLs2) {
   LoadExtension("downloads_split");
@@ -2310,6 +2304,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       "  \"url\": \"javascript:return false;\"}]"));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Valid URLs plus fragments are still valid URLs.
 // TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
 // handling differences.
@@ -2543,13 +2538,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           "    \"current\": \"complete\"}}]",
                           result_id)));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that auth-basic-succeed would fail if the resource requires the
 // Authorization header and chrome fails to propagate it back to the server.
 // This tests both that testserver.py does not succeed when it should fail as
 // well as how the downloads extension API exposes the failure to extensions.
-// TODO(crbug.com/405219117): Fails on desktop Android, possibly due to path
-// handling differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_AuthBasic_Fail) {
   LoadExtension("downloads_split");
@@ -2580,6 +2574,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          download_url.c_str())));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that DownloadsDownloadFunction propagates |headers| to the URLRequest.
 // TODO(crbug.com/405219117): Fails on desktop Android, possibly due to path
 // handling differences.
@@ -2635,13 +2630,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           "    \"current\": \"complete\"}}]",
                           result_id)));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that headers-succeed would fail if the resource requires the headers and
 // chrome fails to propagate them back to the server.  This tests both that
 // testserver.py does not succeed when it should fail as well as how the
 // downloads extension api exposes the failure to extensions.
-// TODO(crbug.com/405219117): Fails on desktop Android, possible due to
-// networking differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_Headers_Fail) {
   LoadExtension("downloads_split");
@@ -2679,6 +2673,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          download_url.c_str())));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that DownloadsDownloadFunction propagates the Authorization header
 // correctly.
 // TODO(crbug.com/405219117): Fails on desktop Android, possibly due to
@@ -2781,14 +2776,13 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           "    \"current\": \"complete\"}}]",
                           result_id)));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that downloadPostSuccess would fail if the resource requires the POST
 // method, and chrome fails to propagate the |method| parameter back to the
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
-// TODO(crbug.com/405219117): Fails on desktop Android, possibly due to
-// networking differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_Post_Get) {
   LoadExtension("downloads_split");
@@ -2830,8 +2824,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
-// TODO(crbug.com/405219117): Fails on desktop Android, possibly due to
-// networking differences.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_Download_Post_NoBody) {
   LoadExtension("downloads_split");
@@ -2867,7 +2859,6 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          "  \"url\": \"%s\"}]",
                          result_id, download_url.c_str())));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that cancel()ing an in-progress download causes its state to transition
 // to interrupted, and test that that state transition is detectable by an
@@ -3182,6 +3173,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          "    \"current\": \"complete\"}}]",
                          result_id)));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests downloadsInternal.determineFilename.
 // Regression test for https://crbug.com/815362.
@@ -3228,6 +3220,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_FALSE(determine_result);  // No return value.
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that overriding a safe file extension to a dangerous extension will not
 // trigger the dangerous prompt and will not change the extension.
 // TODO(crbug.com/405219117): Fails on desktop Android, possible due to path
