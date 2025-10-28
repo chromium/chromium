@@ -51,6 +51,14 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // are used (e.g. to connect via ECH) may be controlled by separate features.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcb);
 
+// Enables partial support for Structured DNS Errors
+// (draft-ietf-dnsop-structured-dns-error). When enabled, the Chrome DNS
+// resolver will indicate support for structured extended errors in outgoing DNS
+// requests, render EDNS error codes on the error page, and populate filtering
+// details when provided as a structured error
+// (draft-nottingham-public-resolver-errors).
+NET_EXPORT BASE_DECLARE_FEATURE(kUseStructuredDnsErrors);
+
 // Param to control whether or not HostResolver, when using Secure DNS, will
 // fail the entire connection attempt when receiving an inconclusive response to
 // an HTTPS query (anything except transport error, timeout, or SERVFAIL). Used
@@ -947,12 +955,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicHintHostPortPairs);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                       kWildcardQuicHintHostPortPairs);
-
-// Enables support for Public Resolver Errors (PRE), based on Version 2 of the
-// https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/02/
-// When enabled, clients will attempt to parse structured error information
-// from the EXTRA-TEXT field of Extended DNS Errors.
-NET_EXPORT BASE_DECLARE_FEATURE(kDnsFilteringDetails);
 
 // When enabled, the browser checks if a navigation URL is in any navigation
 // entry. If so, it sets the

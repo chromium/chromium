@@ -30,6 +30,7 @@
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -368,6 +369,7 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
       ResolveContext* resolve_context) override;
 
   void AddEDNSOption(std::unique_ptr<OptRecordRdata::Opt> opt) override;
+  OptRecordRdata* GetOptRdataForTest() override;
 
   SecureDnsMode GetSecureDnsModeForTest() override;
 

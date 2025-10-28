@@ -72,6 +72,8 @@ const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
     base::Milliseconds(5)};
 
+BASE_FEATURE(kUseStructuredDnsErrors, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUseHostResolverCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHappyEyeballsV3, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -865,8 +867,6 @@ BASE_FEATURE_PARAM(std::string,
                    &kConfigureQuicHints,
                    /*name=*/"wildcard_quic_hints",
                    /*default_value=*/"");
-
-BASE_FEATURE(kDnsFilteringDetails, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUpdateIsMainFrameOriginRecentlyAccessed,
              base::FEATURE_DISABLED_BY_DEFAULT);

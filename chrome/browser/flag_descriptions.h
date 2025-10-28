@@ -7783,6 +7783,13 @@ inline constexpr char kSchedulerConfigurationConservative[] =
 inline constexpr char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
+inline constexpr char kStructuredDnsErrorsName[] = "Structured DNS Errors";
+inline constexpr char kStructuredDnsErrorsDescription[] =
+    "When enabled, signals support for Structured DNS Errors when sending DNS "
+    "requests, renders Extended DNS Error codes on the net error page when "
+    "applicable, and interprets filtering details provided via "
+    "draft-nottingham-public-resolver-errors-02";
+
 inline constexpr char kMediaDynamicCgroupName[] = "Media Dynamic Cgroup";
 inline constexpr char kMediaDynamicCgroupDescription[] =
     "Dynamic Cgroup allows tasks from media workload to be consolidated on "

@@ -9590,6 +9590,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "structured-dns-errors",
+    "owners": [
+      "net-dev@chromium.org"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "stylus-battery-status",
     "owners": ["amehfooz@chromium.org"],
     "expiry_milestone": 93

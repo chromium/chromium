@@ -12151,6 +12151,7 @@ from previous Chrome versions.
   <int value="-763730918" label="CCTTargetTranslateLanguage:disabled"/>
   <int value="-763640405" label="WebXRARModule:enabled"/>
   <int value="-763219650" label="OmniboxDefaultBrowserPedal:enabled"/>
+  <int value="-763163666" label="UseStructuredDnsErrors:disabled"/>
   <int value="-763000741" label="PriceChangeModule:disabled"/>
   <int value="-762787417" label="RestoreSyncedPlaceholderTabs:enabled"/>
   <int value="-762785269"
@@ -18457,6 +18458,7 @@ from previous Chrome versions.
   <int value="1455970119" label="MacCoreLocationBackend:disabled"/>
   <int value="1456045101" label="FullscreenAnimateTabs:enabled"/>
   <int value="1456108837" label="RealboxSecondaryZeroSuggest:disabled"/>
+  <int value="1456483593" label="UseStructuredDnsErrors:enabled"/>
   <int value="1457383851" label="NtpHistoryClustersModule:disabled"/>
   <int value="1457465866" label="TouchToFillPasswordSubmission:disabled"/>
   <int value="1458041527" label="ShowScrollableMVTOnNTPAndroid:enabled"/>

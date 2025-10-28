@@ -143,10 +143,15 @@ std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
   }
   auto ede = std::make_unique<EdeOpt>(
       info_code, std::string(base::as_string_view(extra_text)));
-  if (base::FeatureList::IsEnabled(net::features::kDnsFilteringDetails)) {
+  if (base::FeatureList::IsEnabled(net::features::kUseStructuredDnsErrors)) {
     ede->filtering_details_ = ParseFilteringDetails(ede->extra_text());
   }
   return ede;
+}
+
+std::unique_ptr<OptRecordRdata::EdeOpt>
+OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest() {
+  return std::make_unique<EdeOpt>(EdeInfoCode::kOtherError, /*extra_text=*/"");
 }
 
 uint16_t OptRecordRdata::EdeOpt::GetCode() const {

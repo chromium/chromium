@@ -4,16 +4,21 @@
 
 #include "net/dns/dns_client.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/resolve_context.h"
 #include "net/socket/socket_test_util.h"
@@ -398,6 +403,32 @@ TEST_F(DnsClientTest, ReplaceCurrentSession_NoSession) {
 
   EXPECT_FALSE(client_->GetCurrentSession());
 }
+
+class DnsClientFeatureTest : public base::test::WithFeatureOverride,
+                             public DnsClientTest {
+ public:
+  DnsClientFeatureTest()
+      : base::test::WithFeatureOverride(features::kUseStructuredDnsErrors) {}
+};
+
+TEST_P(DnsClientFeatureTest, EdnsOptions) {
+  // This forces a call to UpdateSession, which constructs a new factory, which
+  // should have the EDE option added when the feature is enabled.
+  client_->SetSystemConfig(BasicValidConfig());
+  OptRecordRdata* rdata =
+      client_->GetTransactionFactory()->GetOptRdataForTest();
+  if (IsParamFeatureEnabled()) {
+    ASSERT_THAT(rdata, testing::NotNull());
+    const auto& ede = rdata->GetEdeOpts();
+    ASSERT_EQ(1u, ede.size());
+    EXPECT_EQ(*OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest(),
+              *ede.front());
+  } else {
+    ASSERT_THAT(rdata, testing::IsNull());
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DnsClientFeatureTest);
 
 }  // namespace
 

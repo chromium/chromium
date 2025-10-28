@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -17,12 +18,14 @@
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
@@ -266,8 +269,9 @@ class DnsClientImpl : public DnsClient {
     // while still being able to fallback to system config for DoH.
     // For now, clear the nameservers for extra security if parts of the system
     // config are unhandled.
-    if (config.unhandled_options)
+    if (config.unhandled_options) {
       config.nameservers.clear();
+    }
 
     if (!config.IsValid())
       return std::nullopt;
@@ -303,7 +307,12 @@ class DnsClientImpl : public DnsClient {
       session_ = base::MakeRefCounted<DnsSession>(
           std::move(new_effective_config).value(), rand_int_callback_,
           net_log_);
+
       factory_ = DnsTransactionFactory::CreateFactory(session_.get());
+      if (base::FeatureList::IsEnabled(features::kUseStructuredDnsErrors)) {
+        factory_->AddEDNSOption(
+            OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest());
+      }
     }
   }
 

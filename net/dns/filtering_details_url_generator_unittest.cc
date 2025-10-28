@@ -27,7 +27,7 @@ using ::testing::SizeIs;
 class FilteringDetailsUrlGeneratorTest : public testing::Test {
  protected:
   FilteringDetailsUrlGeneratorTest() {
-    feature_list_.InitAndEnableFeature(net::features::kDnsFilteringDetails);
+    feature_list_.InitAndEnableFeature(net::features::kUseStructuredDnsErrors);
   }
 
  private:

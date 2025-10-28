@@ -6,18 +6,21 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/public/dns_protocol.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -197,10 +200,43 @@ TEST(OptRecordRdataTest, ParseEdeOptRecords) {
   ASSERT_EQ(rdata_obj->GetEdeOpts()[1]->info_code(), edeOpt1.info_code());
 }
 
+TEST(OptRecordRdataTest, SerializeEdeRequest) {
+  // This rdata indicates support for Structured EDNS Errors.
+  // clang-format off
+  const uint8_t rdata[] = {
+      // Single OPT (EDE request)
+      0x00, 0x0F,  // OPT code (15)
+      0x00, 0x02,  // OPT data size (2)
+      0x00, 0x00  // Info Code (0) [Other Error]
+      // No Extra Text
+  };
+  // clang-format on
+
+  auto request_rdata = OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest();
+  EXPECT_EQ(dns_protocol::kEdnsExtendedDnsError, request_rdata->GetCode());
+  EXPECT_EQ(OptRecordRdata::EdeOpt::EdeInfoCode::kOtherError,
+            request_rdata->GetEnumFromInfoCode());
+  EXPECT_TRUE(request_rdata->extra_text().empty());
+  OptRecordRdata opt_rdata;
+  opt_rdata.AddOpt(std::move(request_rdata));
+  EXPECT_THAT(opt_rdata.buf(), ElementsAreArray(rdata));
+
+  // Check that Create can parse itself.
+  const auto parsed_rdata =
+      OptRecordRdata::Create(base::as_byte_span(opt_rdata.buf()));
+  ASSERT_THAT(parsed_rdata, NotNull());
+  ASSERT_EQ(parsed_rdata->OptCount(), 1u);
+  const auto parsed_ede_opts = parsed_rdata->GetEdeOpts();
+  ASSERT_EQ(parsed_ede_opts.size(), 1u);
+  EXPECT_EQ(parsed_ede_opts.front()->GetEnumFromInfoCode(),
+            OptRecordRdata::EdeOpt::EdeInfoCode::kOtherError);
+  EXPECT_EQ(parsed_ede_opts.front()->extra_text(), "");
+}
+
 class FilteringDetailsParsingTest : public testing::Test {
  protected:
   FilteringDetailsParsingTest() {
-    feature_list_.InitAndEnableFeature(net::features::kDnsFilteringDetails);
+    feature_list_.InitAndEnableFeature(features::kUseStructuredDnsErrors);
   }
 
  private:
@@ -418,7 +454,7 @@ TEST_F(FilteringDetailsParsingTest, UnicodeNonCharacterFFFERejected) {
 TEST_F(FilteringDetailsParsingTest, FeatureDisabled) {
   // Disable the feature flag.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(net::features::kDnsFilteringDetails);
+  feature_list.InitAndDisableFeature(net::features::kUseStructuredDnsErrors);
 
   static constexpr std::string_view kJsonExtraText =
       R"({"fdbs":[{"db":"exampleResolver","id":"abc123"}]})";
