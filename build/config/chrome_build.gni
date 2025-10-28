@@ -2,11 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/gclient_args.gni")
+
 declare_args() {
   # Select the desired branding flavor. False means normal Chromium branding,
   # true means official Google Chrome branding (requires extra Google-internal
   # resources).
   is_chrome_branded = false
+
+  # Whether to enable Google internal-only sources.
+  enable_src_internal = checkout_src_internal
 
   # Whether to enable the Chrome for Testing (CfT) flavor. This arg is not
   # compatible with `is_chrome_branded`.
@@ -40,6 +45,10 @@ declare_args() {
     enable_new_standalone_webview_settings = true
   }
 }
+
+# Use this for is_chrome_branded things that live in src-internal.
+# See: b/452971335
+is_internal_chrome_branded = enable_src_internal && is_chrome_branded
 
 # Ensure !is_android implies !is_high_end_android.
 is_high_end_android = is_high_end_android && is_android
@@ -76,7 +85,7 @@ declare_args() {
       branding_path_component = "chromium"
     }
     branding_path_product = "chromium"
-  } else if (is_chrome_branded) {
+  } else if (is_internal_chrome_branded) {
     branding_path_component = "google_chrome"
     branding_path_product = "google_chrome"
   } else {
@@ -92,4 +101,4 @@ declare_args() {
 
 # Whether to enable built-in branding assets (logos & marketing snippets) for
 # search providers in choice UIs.
-enable_builtin_search_provider_assets = is_chrome_branded
+enable_builtin_search_provider_assets = is_internal_chrome_branded
