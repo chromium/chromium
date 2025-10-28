@@ -85,6 +85,7 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
+#include "media/base/sample_format.h"
 
 namespace media {
 
@@ -235,13 +236,18 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   HRESULT CreateFifoIfNeeded();
 
   // Sets up `input_format_` and `output_format_` based on `params_`.
-  void UpdateFormats();
+  bool UpdateFormats();
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
 
   // AudioParameters used to configure the stream formats in UpdateFormats().
   const AudioParameters params_;
+
+  // This is the SampleFormat we request from CoreAudio. Used to create
+  // WAVEFORMATs as well as for the fifo to know the format of the data being
+  // pushed. We choose a SampleFormat based on the SharedModeMixFormat.
+  SampleFormat sample_format_ = kUnknownSampleFormat;
 
   AmplitudePeakDetector peak_detector_;
 

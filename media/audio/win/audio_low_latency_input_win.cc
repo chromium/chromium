@@ -24,6 +24,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -68,7 +69,9 @@ namespace {
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
-constexpr SampleFormat kSampleFormat = kSampleFormatS16;
+// Feature flag for enabling usage of the device/engine sample format.
+BASE_FEATURE(kWasapiInputUseDeviceSampleFormat,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Max allowed absolute difference between a QPC-based timestamp and a default
 // base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
@@ -263,6 +266,27 @@ bool IsEndpointLoopbackCapture(std::string_view device_id,
                                bool is_process_loopback) {
   return AudioDeviceDescription::IsLoopbackDevice(device_id) &&
          !is_process_loopback;
+}
+
+SampleFormat GetSampleFormatFromWaveFormat(
+    const WAVEFORMATEXTENSIBLE& wave_format) {
+  switch (wave_format.Format.wBitsPerSample) {
+    case 8:
+      return kSampleFormatU8;
+    case 16:
+      return kSampleFormatS16;
+    case 24:
+      return kSampleFormatS24;
+    case 32:
+      if (IsEqualGUID(wave_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+        return kSampleFormatS32;
+      } else if (IsEqualGUID(wave_format.SubFormat,
+                             KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
+        return kSampleFormatF32;
+      }
+  }
+  // We do not support other formats, return unknown.
+  return kUnknownSampleFormat;
 }
 
 }  // namespace
@@ -673,8 +697,6 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   if (!avrt_init)
     SendLogMessage("%s => (WARNING: failed to load Avrt.dll)", __func__);
 
-  UpdateFormats();
-
   // All events are auto-reset events and non-signaled initially.
 
   // Create the event which the audio engine will signal each time
@@ -691,9 +713,48 @@ WASAPIAudioInputStream::~WASAPIAudioInputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void WASAPIAudioInputStream::UpdateFormats() {
+bool WASAPIAudioInputStream::UpdateFormats() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The clients asks for an input stream specified by |params|. Start by
+  if (base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat)) {
+    // Get the format the audio engine uses.
+    WAVEFORMATEXTENSIBLE mix_format;
+    HRESULT hr =
+        CoreAudioUtil::GetSharedModeMixFormat(audio_client_.Get(), &mix_format);
+    if (FAILED(hr)) {
+      ReportOpenResult(hr);
+      return false;
+    }
+    // Note that Windows Audio Engine could potentially be S32 or F32.
+    sample_format_ = GetSampleFormatFromWaveFormat(mix_format);
+    CHECK_NE(sample_format_, kUnknownSampleFormat);
+    // We are not sure if the Windows Audio Engine will ever choose 24bit over
+    // 32bit. Check if this is the case, and if so we choose S32 instead.
+    CHECK_NE(sample_format_, kSampleFormatS24, base::NotFatalUntil::M148);
+    if (sample_format_ == kSampleFormatS24) {
+      sample_format_ = kSampleFormatS32;
+    }
+
+    input_format_.SubFormat = mix_format.SubFormat;
+    // Set up the fixed output format based on the discovered format.
+    if (IsEqualGUID(mix_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+      CHECK_NE(sample_format_, kSampleFormatF32);
+      output_format_.wFormatTag = WAVE_FORMAT_PCM;
+    } else if (IsEqualGUID(mix_format.SubFormat,
+                           KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
+      CHECK_EQ(sample_format_, kSampleFormatF32);
+      output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+    } else {
+      // We don't support other wFormatTags, consider this as failed.
+      return false;
+    }
+  } else {
+    // Use the historical S16 settings if the flag is disabled.
+    sample_format_ = kSampleFormatS16;
+    input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+    output_format_.wFormatTag = WAVE_FORMAT_PCM;
+  }
+
+  // The clients asks for an input stream specified by `params`. Start by
   // setting up an input device format according to the same specification.
   // If all goes well during the upcoming initialization, this format will not
   // change. However, under some circumstances, minor changes can be required
@@ -704,7 +765,7 @@ void WASAPIAudioInputStream::UpdateFormats() {
   format->wFormatTag = WAVE_FORMAT_EXTENSIBLE;
   format->nChannels = params_.channels();
   format->nSamplesPerSec = params_.sample_rate();
-  format->wBitsPerSample = SampleFormatToBitsPerChannel(kSampleFormat);
+  format->wBitsPerSample = SampleFormatToBitsPerChannel(sample_format_);
   format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
   format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
 
@@ -714,14 +775,9 @@ void WASAPIAudioInputStream::UpdateFormats() {
   input_format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
   input_format_.dwChannelMask =
       ChannelLayoutToChannelConfig(params_.channel_layout());
-  input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
   SendLogMessage("%s => (audio engine format=[%s])", __func__,
                  CoreAudioUtil::WaveFormatToString(&input_format_).c_str());
 
-  // Set up the fixed output format based on |params|. Will not be changed and
-  // does not required an extended wave format structure since any multi-channel
-  // input will be converted to stereo.
-  output_format_.wFormatTag = WAVE_FORMAT_PCM;
   output_format_.nChannels = format->nChannels;
   output_format_.nSamplesPerSec = format->nSamplesPerSec;
   output_format_.wBitsPerSample = format->wBitsPerSample;
@@ -736,12 +792,13 @@ void WASAPIAudioInputStream::UpdateFormats() {
 
   // Store size of audio packets which we expect to get from the audio
   // endpoint device in each capture event.
-  packet_size_bytes_ = params_.GetBytesPerBuffer(kSampleFormat);
+  packet_size_bytes_ = params_.GetBytesPerBuffer(sample_format_);
   packet_size_frames_ = packet_size_bytes_ / format->nBlockAlign;
   SendLogMessage(
       "%s => (packet size=[%zu bytes/%zu audio frames/%.3f milliseconds])",
       __func__, packet_size_bytes_, packet_size_frames_,
       params_.GetBufferDuration().InMillisecondsF());
+  return true;
 }
 
 AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
@@ -773,6 +830,10 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   if (FAILED(hr)) {
     open_result_ = OPEN_RESULT_ACTIVATION_FAILED;
     ReportOpenResult(hr);
+    return OpenOutcome::kFailed;
+  }
+
+  if (!UpdateFormats()) {
     return OpenOutcome::kFailed;
   }
 
@@ -1422,11 +1483,8 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
           base::CheckMul<size_t>(num_frames_to_read,
                                  input_format_.Format.nBlockAlign)
               .ValueOrDie()));
-      peak_detector_.FindPeak(audio_frames, kSampleFormat);
-      // TODO(crbug.com/354625679): For now, our pipeline is set for only
-      // kSampleFormatS16 only. We plan to implement changes to take higher bit
-      // depths such as 24bit or 32bit float.
-      fifo_->Push(audio_frames, num_frames_to_read, kSampleFormat);
+      peak_detector_.FindPeak(audio_frames, sample_format_);
+      fifo_->Push(audio_frames, num_frames_to_read, sample_format_);
     }
 
     hr = audio_capture_client_->ReleaseBuffer(num_frames_to_read);
@@ -1761,6 +1819,11 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
                    __func__, ErrorToString(hresult).c_str());
   }
   if (hresult == S_FALSE) {
+    // Enabling this flag allows us to query the Audio Engine for its MixFormat,
+    // the MixFormat should in theory always be supported, and we should not hit
+    // this pathway.
+    CHECK(!base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat),
+          base::NotFatalUntil::M148);
     SendLogMessage(
         "%s => (WARNING: Format is not supported but a closest match exists)",
         __func__);

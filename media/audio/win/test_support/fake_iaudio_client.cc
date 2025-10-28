@@ -76,7 +76,26 @@ IFACEMETHODIMP FakeIAudioClient::GetDevicePeriod(
 }
 
 IFACEMETHODIMP FakeIAudioClient::GetMixFormat(WAVEFORMATEX** device_format) {
-  return E_NOTIMPL;
+  // For testing purposes, we default to Signed 16-bit integer.
+  WAVEFORMATEXTENSIBLE* pFormat =
+      (WAVEFORMATEXTENSIBLE*)CoTaskMemAlloc(sizeof(WAVEFORMATEXTENSIBLE));
+  pFormat->Format.wFormatTag = WAVE_FORMAT_PCM;
+  pFormat->Format.nChannels = 2;
+  pFormat->Format.nSamplesPerSec = 44100;
+  pFormat->Format.wBitsPerSample = 16;
+  pFormat->Format.nBlockAlign =
+      (pFormat->Format.nChannels * pFormat->Format.wBitsPerSample) / 8;
+  pFormat->Format.nAvgBytesPerSec =
+      pFormat->Format.nSamplesPerSec * pFormat->Format.nBlockAlign;
+  pFormat->Format.cbSize = 22;
+
+  pFormat->Samples.wValidBitsPerSample = 16;
+  pFormat->dwChannelMask = KSAUDIO_SPEAKER_STEREO;
+  pFormat->SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+
+  *device_format = (WAVEFORMATEX*)pFormat;
+
+  return S_OK;
 }
 
 IFACEMETHODIMP FakeIAudioClient::GetService(REFIID riid, void** service) {
