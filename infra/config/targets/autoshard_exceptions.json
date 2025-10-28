@@ -66,10 +66,6 @@
             "net_unittests": {
                 "shards": 4,
                 "try_builder": "chromeos-amd64-generic-rel-gtest"
-            },
-            "telemetry_unittests": {
-                "shards": 67,
-                "try_builder": "chromeos-amd64-generic-rel-gtest"
             }
         },
         "linux-chromeos-rel": {
