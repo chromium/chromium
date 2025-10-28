@@ -211,6 +211,41 @@ bool IsInternationalBankAccountNumber(std::u16string_view value) {
   return MatchesRegex<kInternationalBankAccountNumberValueRe>(no_spaces);
 }
 
+bool IsAchRoutingTransitNumber(std::u16string_view value) {
+  // For a 9-digit Routing Transit Number, multiply the first eight digits by
+  // [3,7,1,3,7,1,3,7], and total the results. The remaining ninth digit is the
+  // checksum necessary to make the total sum up to the nearest value that is
+  // evenly divisible by 10.
+  std::u16string trimmed_value;
+  base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
+
+  if (trimmed_value.length() != 9) {
+    return false;
+  }
+
+  auto kMultipliers = std::to_array<int>({3, 7, 1, 3, 7, 1, 3, 7});
+  int sum = 0;
+  for (int i = 0; i < 8; ++i) {
+    char16_t c = trimmed_value.at(i);
+    if (!base::IsAsciiDigit(c)) {
+      return false;
+    }
+    int digit = c - '0';
+    sum += digit * kMultipliers[i];
+  }
+
+  // Do an extra `% 10` at the end to turn 10 into 0 if necessary.
+  int expected_checksum_digit = (10 - (sum % 10)) % 10;
+
+  char16_t checksum_char = trimmed_value.at(8);
+  if (!base::IsAsciiDigit(checksum_char)) {
+    return false;
+  }
+  int checksum_digit = checksum_char - '0';
+
+  return checksum_digit == expected_checksum_digit;
+}
+
 bool IsPlausibleCreditCardCVCNumber(std::u16string_view value) {
   return MatchesRegex<kCreditCardCVCPattern>(value);
 }

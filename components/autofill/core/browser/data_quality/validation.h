@@ -80,6 +80,10 @@ bool IsUPIVirtualPaymentAddress(std::u16string_view value);
 // (IBAN). See https://en.wikipedia.org/wiki/International_Bank_Account_Number
 bool IsInternationalBankAccountNumber(std::u16string_view value);
 
+// Returns true if `value` appears to be a valid ABA Routing Transit Number,
+// generally used in the United States for ACH bank transfers.
+bool IsAchRoutingTransitNumber(std::u16string_view value);
+
 // Return true if `value` is a 3 or 4 digit number.
 bool IsPlausibleCreditCardCVCNumber(std::u16string_view value);
 

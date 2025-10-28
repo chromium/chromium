@@ -205,6 +205,9 @@ ValuePatternsMetric GetValuePattern(const std::u16string& value) {
   if (IsInternationalBankAccountNumber(value)) {
     return ValuePatternsMetric::kIban;
   }
+  if (IsAchRoutingTransitNumber(value)) {
+    return ValuePatternsMetric::kAchRoutingNumber;
+  }
   return ValuePatternsMetric::kNoPatternFound;
 }
 

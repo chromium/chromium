@@ -3158,6 +3158,7 @@ Called by update_autofill_enums.py.-->
   <int value="0" label="No pattern found"/>
   <int value="1" label="UPI VPA"/>
   <int value="2" label="IBAN"/>
+  <int value="3" label="ACH routing transit number"/>
 </enum>
 
 <enum name="AutofillVirtualCardDialogLinkClicked">

@@ -281,6 +281,20 @@ TEST_P(AutofillIsInternationalBankAccountNumber,
       GetParam() + u"0000000000000000000000000000000000000"));
 }
 
+TEST(AutofillValidation, IsValidAchRoutingTransitNumber) {
+  // Must be 9 digits, cannot have text:
+  EXPECT_FALSE(IsAchRoutingTransitNumber(u"12345678"));
+  EXPECT_FALSE(IsAchRoutingTransitNumber(u"1234567890"));
+  EXPECT_FALSE(IsAchRoutingTransitNumber(u"12345678x"));
+  EXPECT_FALSE(IsAchRoutingTransitNumber(u"x23456789"));
+  // Passes checksum:
+  EXPECT_TRUE(IsAchRoutingTransitNumber(u"111000025"));
+  EXPECT_TRUE(IsAchRoutingTransitNumber(u"321177722"));
+  EXPECT_TRUE(IsAchRoutingTransitNumber(u"323177720"));
+  EXPECT_FALSE(IsAchRoutingTransitNumber(u"321177721"));
+  EXPECT_FALSE(IsAchRoutingTransitNumber(u"321177723"));
+}
+
 TEST(AutofillValidation, IsValidNameOnCard) {
   const char16_t* const kValidNamesOnCard[] = {
       u"JOHN DOE",

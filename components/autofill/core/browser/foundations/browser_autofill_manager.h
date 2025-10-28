@@ -90,13 +90,14 @@ class AmountExtractionManager;
 class BnplManager;
 }  // namespace payments
 
-// Enum for the value patterns metric. Don't renumerate existing value. They are
-// used for metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ValuePatternsMetric {
   kNoPatternFound = 0,
-  kUpiVpa = 1,  // UPI virtual payment address.
-  kIban = 2,    // International Bank Account Number.
-  kMaxValue = kIban,
+  kUpiVpa = 1,            // UPI virtual payment address.
+  kIban = 2,              // International Bank Account Number.
+  kAchRoutingNumber = 3,  // U.S. ABA Routing Transit Number, used in ACH.
+  kMaxValue = kAchRoutingNumber,
 };
 
 class BrowserAutofillManager;
