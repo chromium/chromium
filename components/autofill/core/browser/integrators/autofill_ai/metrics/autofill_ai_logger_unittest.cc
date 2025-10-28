@@ -96,11 +96,14 @@ class BaseAutofillAiTest : public testing::Test {
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
-    manager_ = std::make_unique<AutofillAiManager>(&autofill_client_,
-                                                   &strike_database_);
+    RecreateManager();
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
   }
 
+  void RecreateManager() {
+    manager_ = std::make_unique<AutofillAiManager>(&autofill_client_,
+                                                   &strike_database_);
+  }
   AutofillAiManager& manager() { return *manager_; }
   std::unique_ptr<AutofillAiManager>& manager_ptr() { return manager_; }
 
@@ -306,32 +309,19 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 // Test that the funnel metrics are logged correctly given different scenarios.
 // This test is parameterized by a boolean representing whether the form was
 // submitted or abandoned, an `EntityType` representing the type of funnel we're
-// testing, the `RecordType` of the entity, and an integer representing the last
-// stage of the funnel that was reached:
-//
-// 0) A form was loaded
-// 1) The form was detected eligible for AutofillAi.
-// 2) The user had data stored to fill the loaded form.
-// 3) The user saw filling suggestions.
-// 4) The user accepted a filling suggestion.
-// 5) The user corrected the filled suggestion.
+// testing, and the `RecordType` of the entity.
 class AutofillAiFunnelMetricsTest
     : public BaseAutofillAiTest,
       public testing::WithParamInterface<
-          std::tuple<bool, EntityType, int, EntityInstance::RecordType>> {
+          std::tuple<bool, EntityType, EntityInstance::RecordType>> {
   static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s%s%s";
 
  public:
   AutofillAiFunnelMetricsTest() = default;
 
-  EntityInstance::RecordType record_type() { return std::get<3>(GetParam()); }
   bool submitted() { return std::get<0>(GetParam()); }
   EntityType entity_type() { return std::get<1>(GetParam()); }
-  bool is_form_eligible() { return std::get<2>(GetParam()) > 0; }
-  bool user_has_data() { return std::get<2>(GetParam()) > 1; }
-  bool user_saw_suggestions() { return std::get<2>(GetParam()) > 2; }
-  bool user_filled_suggestion() { return std::get<2>(GetParam()) > 3; }
-  bool user_corrected_filling() { return std::get<2>(GetParam()) > 4; }
+  EntityInstance::RecordType record_type() { return std::get<2>(GetParam()); }
 
   std::unique_ptr<FormStructure> CreateForm() {
     return BaseAutofillAiTest::CreateForm(entity_type());
@@ -341,55 +331,40 @@ class AutofillAiFunnelMetricsTest
     return BaseAutofillAiTest::CreateEntity(entity_type(), record_type());
   }
 
-  void ExpectCorrectFunnelRecording(
-      const base::HistogramTester& histogram_tester) {
-    for (bool use_entity_type : {false, true}) {
-      for (bool use_record_type : {false, true}) {
-        for (bool use_submitted : {false, true}) {
-          if (use_record_type && !use_entity_type) {
-            // Only entity-type-specific histograms are split by record type.
-            continue;
-          }
-
-          auto expect_correct_histogram = [&](std::string_view histogram_name,
-                                              bool precondition,
-                                              int bucket_value) {
+  void ExpectFunnelRecording(const base::HistogramTester& histogram_tester,
+                             std::string_view funnel_name,
+                             int sample) {
+    for (bool use_submitted : {false, true}) {
+      auto expect_correct_histogram =
+          [&](std::string_view histogram_name, bool use_entity_type,
+              bool use_record_type) {
             std::string histogram_name_str = GetFunnelHistogram(
                 histogram_name,
                 use_submitted ? std::optional(submitted()) : std::nullopt,
                 use_entity_type ? std::optional(entity_type()) : std::nullopt,
                 use_record_type ? std::optional(record_type()) : std::nullopt);
-            if (precondition) {
-              histogram_tester.ExpectUniqueSample(histogram_name_str,
-                                                  bucket_value, 1);
-            } else {
-              histogram_tester.ExpectTotalCount(histogram_name_str, 0);
-            }
+
+            histogram_tester.ExpectUniqueSample(histogram_name_str, sample, 1);
           };
 
-          // Expect that the aggregate and appropriate submission-specific
-          // histograms record the correct values.
-          if (!use_record_type && !use_entity_type) {
-            // Eligibility isn't split by entity and record type.
-            expect_correct_histogram("Eligibility2", is_form_eligible(),
-                                     base::to_underlying(entity_type().name()));
-          }
-          expect_correct_histogram("ReadinessAfterEligibility",
-                                   is_form_eligible(), user_has_data());
-          expect_correct_histogram("SuggestionAfterReadiness", user_has_data(),
-                                   user_saw_suggestions());
-          expect_correct_histogram("FillAfterSuggestion",
-                                   user_saw_suggestions(),
-                                   user_filled_suggestion());
-          expect_correct_histogram("CorrectionAfterFill",
-                                   user_filled_suggestion(),
-                                   user_corrected_filling());
-        }
-      }
+      expect_correct_histogram(funnel_name, /*use_entity_type=*/false,
+                               /*use_record_type=*/false);
+      expect_correct_histogram(funnel_name, /*use_entity_type=*/true,
+                               /*use_record_type=*/false);
+      expect_correct_histogram(funnel_name, /*use_entity_type=*/true,
+                               /*use_record_type=*/true);
     }
   }
 
- private:
+  void SubmitOrAbandonForm(const FormStructure& form) {
+    if (submitted()) {
+      manager().OnFormSubmitted(form, /*ukm_source_id=*/{});
+    } else {
+      // The destructor would trigger the logging of *Funnel*Abandoned* metrics.
+      RecreateManager();
+    }
+  }
+
   std::string GetFunnelHistogram(
       std::string_view funnel_state,
       std::optional<bool> submitted,
@@ -420,45 +395,132 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Bool(),
         testing::ValuesIn(DenseSet<EntityType>::all()),
-        testing::Values(0, 1, 2, 3, 4, 5),
         testing::ValuesIn(DenseSet<EntityInstance::RecordType>::all())));
 
-// Tests that appropriate calls in `AutofillAiManager`
-// result in correct metric logging.
-TEST_P(AutofillAiFunnelMetricsTest, Manager) {
-  // This will dictate whether the form will be eligible for filling or not.
-  std::unique_ptr<FormStructure> form =
-      is_form_eligible() ? CreateForm() : CreateIneligibleForm();
-  // This will dictate whether we consider the form ready to be filled or not.
-  EntityInstance entity = CreateEntity();
-  if (user_has_data()) {
-    AddOrUpdateEntityInstance(entity);
-  }
+// Tests Autofill.Ai.Funnel.*.Eligibility2.
+TEST_P(AutofillAiFunnelMetricsTest, Eligibility) {
+  std::unique_ptr<FormStructure> form = CreateForm();
   manager().OnFormSeen(*form);
 
-  if (user_saw_suggestions()) {
+  base::HistogramTester histogram_tester;
+  SubmitOrAbandonForm(*form);
+
+  histogram_tester.ExpectUniqueSample(
+      GetFunnelHistogram("Eligibility2", /*submitted=*/std::nullopt,
+                         /*entity_type=*/std::nullopt,
+                         /*record_type=*/std::nullopt),
+      base::to_underlying(entity_type().name()), 1);
+  histogram_tester.ExpectUniqueSample(
+      GetFunnelHistogram("Eligibility2", submitted(),
+                         /*entity_type=*/std::nullopt,
+                         /*record_type=*/std::nullopt),
+      base::to_underlying(entity_type().name()), 1);
+}
+
+// Tests Autofill.Ai.Funnel.*.ReadinessAfterEligibility.*.
+TEST_P(AutofillAiFunnelMetricsTest, ReadinessAfterEligibility) {
+  std::unique_ptr<FormStructure> form = CreateForm();
+  {  // The user has no entities stored.
+    manager().OnFormSeen(*form);
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "ReadinessAfterEligibility",
+                          /*sample=*/0);
+  }
+  {  // The user has entities stored.
+    AddOrUpdateEntityInstance(CreateEntity());
+    manager().OnFormSeen(*form);
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "ReadinessAfterEligibility",
+                          /*sample=*/1);
+  }
+}
+
+// Tests Autofill.Ai.Funnel.*.SuggestionAfterReadiness.*.
+TEST_P(AutofillAiFunnelMetricsTest, SuggestionAfterReadiness) {
+  std::unique_ptr<FormStructure> form = CreateForm();
+  EntityInstance entity = CreateEntity();
+  AddOrUpdateEntityInstance(entity);
+  {  // The user didn't trigger suggestions.
+    manager().OnFormSeen(*form);
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "SuggestionAfterReadiness",
+                          /*sample=*/0);
+  }
+  {  // The user triggered suggestions.
+    manager().OnFormSeen(*form);
     manager().OnSuggestionsShown(*form, *form->field(0),
                                  {GetSuggestion(entity)},
                                  /*ukm_source_id=*/{});
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "SuggestionAfterReadiness",
+                          /*sample=*/1);
   }
-  if (user_filled_suggestion()) {
+}
+
+// Tests Autofill.Ai.Funnel.*.FillAfterSuggestion.*.
+TEST_P(AutofillAiFunnelMetricsTest, FillAfterSuggestion) {
+  std::unique_ptr<FormStructure> form = CreateForm();
+  EntityInstance entity = CreateEntity();
+  AddOrUpdateEntityInstance(entity);
+  auto set_up_funnel = [&] {
+    manager().OnFormSeen(*form);
+    manager().OnSuggestionsShown(*form, *form->field(0),
+                                 {GetSuggestion(entity)},
+                                 /*ukm_source_id=*/{});
+  };
+  {  // The user didn't fill suggestions.
+    set_up_funnel();
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "FillAfterSuggestion",
+                          /*sample=*/0);
+  }
+  {  // The user filled suggestions.
+    set_up_funnel();
     manager().OnDidFillSuggestion(entity, *form, *form->field(0),
                                   {form->field(0)},
                                   /*ukm_source_id=*/{});
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "FillAfterSuggestion",
+                          /*sample=*/1);
   }
-  if (user_corrected_filling()) {
+}
+
+// Tests Autofill.Ai.Funnel.*.CorrectionAfterFill.*.
+TEST_P(AutofillAiFunnelMetricsTest, CorrectionAfterFill) {
+  std::unique_ptr<FormStructure> form = CreateForm();
+  EntityInstance entity = CreateEntity();
+  AddOrUpdateEntityInstance(entity);
+  auto set_up_funnel = [&] {
+    manager().OnFormSeen(*form);
+    manager().OnSuggestionsShown(*form, *form->field(0),
+                                 {GetSuggestion(entity)},
+                                 /*ukm_source_id=*/{});
+    manager().OnDidFillSuggestion(entity, *form, *form->field(0),
+                                  {form->field(0)},
+                                  /*ukm_source_id=*/{});
+  };
+  {  // The user didn't correct a filled field.
+    set_up_funnel();
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "CorrectionAfterFill",
+                          /*sample=*/0);
+  }
+  {  // The user corrected a filled field.
+    set_up_funnel();
     manager().OnEditedAutofilledField(*form, *form->field(0),
                                       /*ukm_source_id=*/{});
+    base::HistogramTester histogram_tester;
+    SubmitOrAbandonForm(*form);
+    ExpectFunnelRecording(histogram_tester, "CorrectionAfterFill",
+                          /*sample=*/1);
   }
-
-  base::HistogramTester histogram_tester;
-  if (submitted()) {
-    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-  } else {
-    // The destructor would trigger the logging of *Funnel*Abandoned* metrics.
-    manager_ptr().reset();
-  }
-  ExpectCorrectFunnelRecording(histogram_tester);
 }
 
 class AutofillAiKeyMetricsTest
@@ -483,8 +545,7 @@ class AutofillAiKeyMetricsTest
 
   void ExpectKeyMetricsRecording(const base::HistogramTester& histogram_tester,
                                  std::string_view key_metric_name,
-                                 int sample,
-                                 int expected_bucket_count) {
+                                 int sample) {
     auto expect_correct_histogram = [&](std::optional<EntityType> entity_type,
                                         std::optional<
                                             EntityInstance::RecordType>
@@ -500,7 +561,7 @@ class AutofillAiKeyMetricsTest
               record_type ? base::StrCat({".", EntityRecordTypeToMetricsString(
                                                    *record_type)})
                           : ""),
-          sample, expected_bucket_count);
+          sample, 1);
       return;
     };
 
@@ -524,14 +585,16 @@ TEST_P(AutofillAiKeyMetricsTest, FillingReadiness) {
     manager().OnFormSeen(*form);
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingReadiness", 0, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingReadiness",
+                              /*sample=*/0);
   }
   {
     AddOrUpdateEntityInstance(CreateEntity());
     manager().OnFormSeen(*form);
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingReadiness", 1, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingReadiness",
+                              /*sample=*/1);
   }
 }
 
@@ -543,7 +606,8 @@ TEST_P(AutofillAiKeyMetricsTest, FillingAssistance) {
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingAssistance", 0, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingAssistance",
+                              /*sample=*/0);
   }
   {
     manager().OnSuggestionsShown(*form, *form->field(0),
@@ -554,7 +618,8 @@ TEST_P(AutofillAiKeyMetricsTest, FillingAssistance) {
                                   /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingAssistance", 1, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingAssistance",
+                              /*sample=*/1);
   }
 }
 
@@ -568,7 +633,8 @@ TEST_P(AutofillAiKeyMetricsTest, FillingAcceptance) {
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingAcceptance", 0, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingAcceptance",
+                              /*sample=*/0);
   }
   {
     manager().OnDidFillSuggestion(entity, *form, *form->field(0),
@@ -576,7 +642,8 @@ TEST_P(AutofillAiKeyMetricsTest, FillingAcceptance) {
                                   /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingAcceptance", 1, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingAcceptance",
+                              /*sample=*/1);
   }
 }
 
@@ -593,14 +660,16 @@ TEST_P(AutofillAiKeyMetricsTest, FillingCorrectness) {
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness", 1, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness",
+                              /*sample=*/1);
   }
   {
     manager().OnEditedAutofilledField(*form, *form->field(0),
                                       /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
-    ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness", 0, 1);
+    ExpectKeyMetricsRecording(histogram_tester, "FillingCorrectness",
+                              /*sample=*/0);
   }
 }
 
