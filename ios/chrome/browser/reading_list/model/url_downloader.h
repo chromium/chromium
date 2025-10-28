@@ -41,7 +41,7 @@ class ReadingListDistillerPageFactory;
 // folders within an offline folder, using md5 hashing to create unique file
 // names. When a deletion is requested, all previous downloads for that URL are
 // cancelled as they would be deleted.
-class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
+class URLDownloader : public reading_list::ReadingListDistillerPageDelegate {
   friend class MockURLDownloader;
 
  public:
