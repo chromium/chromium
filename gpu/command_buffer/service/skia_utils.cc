@@ -479,6 +479,7 @@ CreateVulkanYcbcrConversionInfo(
                           : format_props.optimalTilingFeatures;
   }
 
+  uint64_t external_format = valid_ycbcr_info->external_format;
   // As per the spec here [1], if the format does not support
   // VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT,
   // chromaFilter must be VK_FILTER_NEAREST.
@@ -490,39 +491,45 @@ CreateVulkanYcbcrConversionInfo(
           ? VK_FILTER_LINEAR
           : VK_FILTER_NEAREST;
 
-  skgpu::VulkanYcbcrConversionInfo gr_ycbcr_info;
-  gr_ycbcr_info.fFormat = vk_format;
-  gr_ycbcr_info.fExternalFormat = valid_ycbcr_info->external_format;
-  gr_ycbcr_info.fYcbcrModel = static_cast<VkSamplerYcbcrModelConversion>(
-      valid_ycbcr_info->suggested_ycbcr_model);
-  gr_ycbcr_info.fYcbcrRange =
+  VkSamplerYcbcrModelConversion model =
+      static_cast<VkSamplerYcbcrModelConversion>(
+          valid_ycbcr_info->suggested_ycbcr_model);
+  VkSamplerYcbcrRange range =
       static_cast<VkSamplerYcbcrRange>(valid_ycbcr_info->suggested_ycbcr_range);
-  gr_ycbcr_info.fXChromaOffset =
-      static_cast<VkChromaLocation>(valid_ycbcr_info->suggested_xchroma_offset),
-  gr_ycbcr_info.fYChromaOffset =
-      static_cast<VkChromaLocation>(valid_ycbcr_info->suggested_ychroma_offset),
-  gr_ycbcr_info.fChromaFilter = chroma_filter;
-  gr_ycbcr_info.fForceExplicitReconstruction = false;
-  gr_ycbcr_info.fFormatFeatures = format_features;
+  VkChromaLocation x_offset =
+      static_cast<VkChromaLocation>(valid_ycbcr_info->suggested_xchroma_offset);
+  VkChromaLocation y_offset =
+      static_cast<VkChromaLocation>(valid_ycbcr_info->suggested_ychroma_offset);
+  bool force_explicit_reconstruction = false;
 
-  if (!gr_ycbcr_info.fExternalFormat &&
-      (si_format.is_multi_plane() &&
-       si_format.plane_config() ==
-           viz::SharedImageFormat::PlaneConfig::kY_V_U)) {
+  VkComponentMapping components = {
+      VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY,
+      VK_COMPONENT_SWIZZLE_IDENTITY, VK_COMPONENT_SWIZZLE_IDENTITY};
+  if (!external_format && (si_format.is_multi_plane() &&
+                           si_format.plane_config() ==
+                               viz::SharedImageFormat::PlaneConfig::kY_V_U)) {
     switch (vk_format) {
       case VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM:
       case VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16:
       case VK_FORMAT_G12X4_B12X4_R12X4_3PLANE_420_UNORM_3PACK16:
       case VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM:
-        gr_ycbcr_info.fComponents.r = VK_COMPONENT_SWIZZLE_B;
-        gr_ycbcr_info.fComponents.b = VK_COMPONENT_SWIZZLE_R;
+        components.r = VK_COMPONENT_SWIZZLE_B;
+        components.b = VK_COMPONENT_SWIZZLE_R;
         break;
       default:
         break;
     }
   }
 
-  return gr_ycbcr_info;
+  if (external_format) {
+    return skgpu::VulkanYcbcrConversionInfo(
+        external_format, model, range, x_offset, y_offset, chroma_filter,
+        force_explicit_reconstruction, components, format_features);
+  } else {
+    return skgpu::VulkanYcbcrConversionInfo(
+        vk_format, model, range, x_offset, y_offset, chroma_filter,
+        force_explicit_reconstruction, components, format_features);
+  }
 }
 
 #endif  // BUILDFLAG(ENABLE_VULKAN)
