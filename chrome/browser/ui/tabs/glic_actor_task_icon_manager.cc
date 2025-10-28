@@ -92,7 +92,7 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
   // TODO(crbug.com/431015299): Cache some of these values.
   auto completed_tasks =
       actor_service_->FindTaskIdsInInactive(&IsRecentlyCompletedTask);
-  auto paused_by_actor_tasks =
+  auto paused_or_yielded_actor_tasks =
       actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
         return (task.GetState() == ActorTask::State::kPausedByActor ||
                 task.GetState() == ActorTask::State::kWaitingOnUser);
@@ -114,7 +114,7 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
   current_actor_task_icon_state_.is_visible = true;
 
   // Apply text state change.
-  if (!paused_by_actor_tasks.empty()) {
+  if (!paused_or_yielded_actor_tasks.empty()) {
     current_actor_task_icon_state_.text =
         ActorTaskIconState::Text::kNeedsAttention;
   } else if (!completed_tasks.empty()) {
@@ -134,13 +134,13 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
   // TODO(crbug.com/431015299): Cache some of these values.
   auto completed_tasks =
       actor_service_->FindTaskIdsInInactive(&IsRecentlyCompletedTask);
-  auto paused_by_actor_tasks =
+  auto paused_or_yielded_actor_tasks =
       actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
         return (task.GetState() == ActorTask::State::kPausedByActor ||
                 task.GetState() == ActorTask::State::kWaitingOnUser);
       });
 
-  if (!paused_by_actor_tasks.empty()) {
+  if (!paused_or_yielded_actor_tasks.empty()) {
     current_actor_task_nudge_state_.text =
         ActorTaskNudgeState::Text::kNeedsAttention;
   } else if (!completed_tasks.empty()) {
