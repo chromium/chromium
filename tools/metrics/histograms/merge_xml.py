@@ -154,12 +154,6 @@ def MergeTrees(trees, should_expand_owners):
           # Sort the <histogram> and <histogram_suffixes> nodes by name and
           # return the combined nodes.
           CombineHistogramsSorted(doc, trees)))
-  # After using the unsafe version of appendChild, we see a regression when
-  # pretty-printing the merged |doc|. This might because the unsafe appendChild
-  # doesn't build indexes for later lookup. And thus, we need to convert the
-  # merged |doc| to a xml string and convert it back to force it to build
-  # indexes for the merged |doc|.
-  doc = xml.dom.minidom.parseString(doc.toxml().encode('utf-8'))
   # Only perform fancy operations after |doc| becomes stable. This helps improve
   # the runtime performance.
   if should_expand_owners:
