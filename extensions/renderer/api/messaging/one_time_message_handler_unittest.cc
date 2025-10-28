@@ -751,10 +751,24 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageInCallback) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host1);
 }
 
-// runtime.onMessage requires that a listener return `true` if they intend to
-// respond to the message asynchronously. Verify that we close the port if no
-// listener does so.
-TEST_F(OneTimeMessageHandlerTest, ChannelClosedIfTrueNotReturned) {
+class PolyfillSupportOneTimeMessageHandlerTest
+    : public base::test::WithFeatureOverride,
+      public OneTimeMessageHandlerTest {
+ public:
+  PolyfillSupportOneTimeMessageHandlerTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+  }
+};
+
+// runtime.onMessage requires that a listener indicate it will send an
+// asynchronous response to a message. It can do this by either by returning
+// `true` or returning a promise if
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// enabled. Verify that we close the port if the listeners don't indicate an
+// async response.
+TEST_P(PolyfillSupportOneTimeMessageHandlerTest,
+       ChannelClosedIfAsyncNotIndicated) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -766,12 +780,10 @@ TEST_F(OneTimeMessageHandlerTest, ChannelClosedIfTrueNotReturned) {
     RunFunctionOnGlobal(add_listener, context, 0, nullptr);
   };
 
+  // Add listeners that return truthy values, but not explicitly `true` (or a
+  // promise if the polyfill support feature is enabled).
   register_listener("function(message, reply, sender) { }");
-  // Add a listener that returns a truthy value, but not `true`.
   register_listener("function(message, reply, sender) { return {}; }");
-  // Add a listener that throws an error.
-  register_listener(
-      "function(message, reply, sender) { throw new Error('hi!'); }");
 
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
   const PortId port_id(other_context_id, 0, false,
@@ -833,6 +845,9 @@ TEST_F(OneTimeMessageHandlerTest, ChannelClosedIfTrueNotReturned) {
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   ::testing::Mock::VerifyAndClearExpectations(&mock_message_port_host);
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PolyfillSupportOneTimeMessageHandlerTest);
 
 class OneTimeMessageHandlerGarbageCollectionTest
     : public base::test::WithFeatureOverride,
