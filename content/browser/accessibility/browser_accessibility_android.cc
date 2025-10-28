@@ -715,7 +715,7 @@ const char* BrowserAccessibilityAndroid::GetClassName() const {
   // TODO(crbug.com/447360631): Once auditing role conversions is completed,
   // consider refactoring this function and `AXRoleToAndroidClassName` for
   // better readability of type conversions.
-  if (role == ax::mojom::Role::kImage && IsClickable()) {
+  if (ui::IsImage(role) && IsClickable()) {
     return ui::kAXImageButtonClassname;
   }
 
