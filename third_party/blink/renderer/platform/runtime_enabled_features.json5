@@ -1367,11 +1367,6 @@
     },
     {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
-      name: "CSSCornerShape",
-      status: "stable",
-    },
-    {
-      // https://drafts.csswg.org/css-borders-4/#corner-shaping
       name: "CSSCornerShapeInsetBoxShadowFollowsContour",
       status: "test",
     },
@@ -1379,7 +1374,6 @@
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
       name: "CSSCornersShorthand",
       status: "experimental",
-      depends_on: ["CSSCornerShape"],
     },
     {
       // Unprefixed cross-fade() (in addition to the existing -webkit-cross-fade()).
