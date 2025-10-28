@@ -38,10 +38,10 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void OnHostAccessRequestAddedOrUpdated(
       const extensions::ExtensionId& extension_id,
       content::WebContents* web_contents) override {}
-  void OnAccessRequestRemoved(
+  void OnHostAccessRequestRemoved(
       const extensions::ExtensionId& extension_id) override {}
-  void OnAccessRequestsCleared() override {}
-  void OnAccessRequestDismissedByUser(
+  void OnHostAccessRequestsCleared() override {}
+  void OnHostAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id) override {}
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,

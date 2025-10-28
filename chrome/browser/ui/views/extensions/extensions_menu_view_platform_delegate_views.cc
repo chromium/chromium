@@ -287,8 +287,6 @@ ExtensionsMenuViewPlatformDelegateViews::
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   browser_->tab_strip_model()->AddObserver(this);
   toolbar_model_observation_.Observe(toolbar_model_.get());
-  permissions_manager_observation_.Observe(
-      PermissionsManager::Get(browser_->profile()));
 }
 
 // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
@@ -327,7 +325,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestAddedOrUpdated(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestRemoved(
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id) {
   CHECK(current_page_);
 
@@ -341,7 +339,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestRemoved(
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestsCleared() {
+void ExtensionsMenuViewPlatformDelegateViews::OnHostAccessRequestsCleared() {
   // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
   if (!main_page) {
@@ -352,8 +350,9 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestsCleared() {
   main_page->MaybeShowRequestsSection();
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestDismissedByUser(
-    const extensions::ExtensionId& extension_id) {
+void ExtensionsMenuViewPlatformDelegateViews::
+    OnHostAccessRequestDismissedByUser(
+        const extensions::ExtensionId& extension_id) {
   CHECK(current_page_);
 
   // Site access requests only affect the main page.
