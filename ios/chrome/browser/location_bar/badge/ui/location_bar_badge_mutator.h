@@ -9,12 +9,13 @@
 // Usage is for parity with ContextualPanelEntryPointConsumer.
 // Mutator for LocationBarBadgeViewController.
 @protocol LocationBarBadgeMutator
+enum class LocationBarBadgeType;
 
 // Notify the mutator to dismiss the entrypoint's IPH.
 - (void)dismissIPHAnimated:(BOOL)animated;
 
-// Notify the mutator that the entrypoint was tapped.
-- (void)entrypointTapped;
+// Notify the mutator that the badge was tapped.
+- (void)badgeTapped:(LocationBarBadgeType)badgeType;
 
 // Sets the location label of the location bar centered relative to the content
 // around it when centered is passed as YES. Otherwise, resets it to the

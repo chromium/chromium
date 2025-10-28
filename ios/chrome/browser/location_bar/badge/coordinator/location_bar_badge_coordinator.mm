@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -55,6 +56,9 @@
   _locationBarBadgeMediator.consumer = _viewController;
   _locationBarBadgeMediator.delegate = self;
   _viewController.mutator = _locationBarBadgeMediator;
+  id<BWGCommands> BWGCommandHandler =
+      HandlerForProtocol(_dispatcher, BWGCommands);
+  _locationBarBadgeMediator.BWGCommandHandler = BWGCommandHandler;
   [_dispatcher startDispatchingToTarget:_locationBarBadgeMediator
                             forProtocol:@protocol(LocationBarBadgeCommands)];
 }

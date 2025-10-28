@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
 
 #import "base/timer/timer.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_consumer.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 
 namespace {
 
@@ -67,10 +69,14 @@ const int kTransitionTimeInSeconds = 2;
   [self.consumer highlightBadge:NO];
 }
 
-// TODO (crbug.com/452094170): Implement user tap.
-- (void)entrypointTapped {
+- (void)badgeTapped:(LocationBarBadgeType)badgeType {
   // Cancel any pending transition timers since user interacted with the badge.
   [self resetTimersAndUIStateAnimated:YES];
+
+  if (badgeType == LocationBarBadgeType::kAskGeminiChip) {
+    [self.BWGCommandHandler
+        startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+  }
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {

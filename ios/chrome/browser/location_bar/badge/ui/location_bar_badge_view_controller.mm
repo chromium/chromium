@@ -183,6 +183,8 @@
   }
 }
 
+// TODO(crbug.com/448422022): Trigger visibility refresh when a new badge comes
+// in and store the badge for multi-badge setup.
 - (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config {
   if (!config) {
     return;
@@ -294,7 +296,7 @@
   button.layer.masksToBounds = NO;
 
   [button addTarget:self
-                action:@selector(userTappedEntrypoint)
+                action:@selector(userTappedBadge)
       forControlEvents:UIControlEventTouchUpInside];
 
   return button;
@@ -546,15 +548,15 @@
                                   _buttonContainer);
 }
 
-// Notify that a user tapped the entrypoint.
-- (void)userTappedEntrypoint {
+// Notify that a user tapped the badge.
+- (void)userTappedBadge {
   _badgeTapped = YES;
   [self refreshEntrypointVisualElements];
   [self transitionToSmallEntrypoint];
   if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
     [self.contextualPanelEntryPointMutator entrypointTapped];
   } else {
-    [self.mutator entrypointTapped];
+    [self.mutator badgeTapped:_badgeConfig.badgeType];
   }
 }
 
@@ -582,6 +584,12 @@
 
 - (void)setEntrypointConfig:(ContextualPanelItemConfiguration*)config {
   if (IsAskGeminiChipEnabled()) {
+    // TODO(crbug.com/448422022): Store Contextual Panel Entrypoint badges
+    // instead of preventing them.
+    if (_locationBarBadgeShouldBeVisible) {
+      return;
+    }
+
     NSString* accessibilityLabel =
         base::SysUTF8ToNSString(config->accessibility_label);
 
@@ -651,11 +659,11 @@
 }
 
 - (void)showEntrypoint {
-  [self refreshEntrypointVisualElements];
-
   if (_locationBarBadgeShouldBeVisible) {
     return;
   }
+
+  [self refreshEntrypointVisualElements];
 
   _locationBarBadgeShouldBeVisible = YES;
 

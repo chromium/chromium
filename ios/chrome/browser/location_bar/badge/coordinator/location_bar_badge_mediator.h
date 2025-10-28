@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 
+@protocol BWGCommands;
 @protocol LocationBarBadgeConsumer;
 @protocol LocationBarBadgeMediatorDelegate;
 
@@ -28,6 +29,8 @@
 @property(nonatomic, weak) id<LocationBarBadgeConsumer> consumer;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<LocationBarBadgeMediatorDelegate> delegate;
+// The command handler for Gemini commands.
+@property(nonatomic, weak) id<BWGCommands> BWGCommandHandler;
 
 @end
 
