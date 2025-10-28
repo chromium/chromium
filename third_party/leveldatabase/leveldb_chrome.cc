@@ -4,12 +4,15 @@
 
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
+#include <cstddef>
 #include <memory>
 #include <set>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/byte_size.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -38,7 +41,25 @@ namespace leveldb_chrome {
 
 namespace {
 
+// Feature to override the size of LevelDB block caches.
+//
+// The SuppressMemoryListeners experiment shows that not purging LevelDB caches
+// on memory pressure causes a statistically significant memory regression
+// (which makes sense) with no obvious speed regression. Building on this, this
+// feature will allow measuring the speed/memory impact of always keeping the
+// caches smaller.
+BASE_FEATURE(kLevelDBCacheSize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kLevelDBCacheSize_SizeBytes,
+                   &kLevelDBCacheSize,
+                   "leveldb_cache_size_bytes",
+                   base::KiBU(256).InBytes());
+
 size_t DefaultBlockCacheSize() {
+  if (base::FeatureList::IsEnabled(kLevelDBCacheSize)) {
+    return kLevelDBCacheSize_SizeBytes.Get();
+  }
+
   if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     return 1 << 20;  // 1MB
   } else {
