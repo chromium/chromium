@@ -11396,6 +11396,26 @@
             ]
         }
     ],
+    "GlicActorEnterprisePrefDefault": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledByDefault_Dogfood",
+                    "params": {
+                        "glic_actor_enterprise_pref_default": "enabled_by_default"
+                    },
+                    "enable_features": [
+                        "GlicActor"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicAppendModelQualityClientId": [
         {
             "platforms": [
