@@ -116,7 +116,7 @@ class LanguageDetectorCreateTask
 
     if (!context->IsServiceWorkerGlobalScope() &&
         RequiresUserActivation(result) &&
-        !LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+        !MeetsUserActivationRequirements(window)) {
       GetResolver()->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
           kExceptionMessageUserActivationRequired);
