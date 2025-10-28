@@ -60,6 +60,9 @@ CompressionStream::CompressionStream(ScriptState* script_state,
                               MakeGarbageCollected<DeflateTransformer>(
                                   script_state, deflate_format, deflate_level),
                               exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
   CHECK(transform_);
   initialized_ = true;
   // TODO(427166012): remove once we're done with troubleshooting.
