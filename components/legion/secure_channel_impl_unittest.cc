@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
-#include "components/legion/oak_session.h"
+#include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +41,7 @@ class MockTransport : public Transport {
               (override));
 };
 
-class MockOakSession : public OakSession {
+class MockSecureSession : public SecureSession {
  public:
   MOCK_METHOD(std::optional<oak::session::v1::HandshakeRequest>,
               GetHandshakeMessage,
@@ -78,20 +78,20 @@ class SecureChannelImplTest : public ::testing::Test {
   SecureChannelImplTest() {
     auto transport = std::make_unique<StrictMock<MockTransport>>();
     transport_ = transport.get();
-    auto oak_session = std::make_unique<StrictMock<MockOakSession>>();
-    oak_session_ = oak_session.get();
+    auto secure_session = std::make_unique<StrictMock<MockSecureSession>>();
+    secure_session_ = secure_session.get();
     auto attestation_handler =
         std::make_unique<StrictMock<MockAttestationHandler>>();
     attestation_handler_ = attestation_handler.get();
 
     secure_channel_ = std::make_unique<SecureChannelImpl>(
-        std::move(transport), std::move(oak_session),
+        std::move(transport), std::move(secure_session),
         std::move(attestation_handler));
   }
 
   void TearDown() override {
     testing::Mock::VerifyAndClearExpectations(transport_);
-    testing::Mock::VerifyAndClearExpectations(oak_session_);
+    testing::Mock::VerifyAndClearExpectations(secure_session_);
     testing::Mock::VerifyAndClearExpectations(attestation_handler_);
   }
 
@@ -102,7 +102,7 @@ class SecureChannelImplTest : public ::testing::Test {
   std::unique_ptr<SecureChannelImpl> secure_channel_;
 
   raw_ptr<MockTransport> transport_;
-  raw_ptr<MockOakSession> oak_session_;
+  raw_ptr<MockSecureSession> secure_session_;
   raw_ptr<MockAttestationHandler> attestation_handler_;
 };
 
@@ -124,7 +124,7 @@ void SecureChannelImplTest::SetUpHandshakeAndAttestation() {
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*oak_session_, GetHandshakeMessage())
+  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(handshake_request.handshake_request()));
   EXPECT_CALL(*transport_, Send(EqualsSessionRequest(handshake_request), _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
@@ -134,7 +134,7 @@ void SecureChannelImplTest::SetUpHandshakeAndAttestation() {
         std::move(callback).Run(response);
       });
 
-  EXPECT_CALL(*oak_session_, ProcessHandshakeResponse(_))
+  EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
       .WillOnce(Return(true));
 }
 
@@ -151,7 +151,7 @@ TEST_F(SecureChannelImplTest, DISABLED_WriteAndEstablishSessionSuccess) {
 
   SetUpHandshakeAndAttestation();
 
-  EXPECT_CALL(*oak_session_, Encrypt(request_data))
+  EXPECT_CALL(*secure_session_, Encrypt(request_data))
       .WillOnce(Return(encrypted_request));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
@@ -162,7 +162,7 @@ TEST_F(SecureChannelImplTest, DISABLED_WriteAndEstablishSessionSuccess) {
                                                    // encrypted message for now
         std::move(callback).Run(response);
       });
-  EXPECT_CALL(*oak_session_, Decrypt(_)).WillOnce(Return(decrypted_response));
+  EXPECT_CALL(*secure_session_, Decrypt(_)).WillOnce(Return(decrypted_response));
 
   secure_channel_->Write(
       request_data,
@@ -195,24 +195,24 @@ TEST_F(SecureChannelImplTest, DISABLED_WriteQueuedDuringSessionEstablishment) {
   SetUpHandshakeAndAttestation();
 
   // First Request
-  EXPECT_CALL(*oak_session_, Encrypt(request_data1))
+  EXPECT_CALL(*secure_session_, Encrypt(request_data1))
       .WillOnce(Return(encrypted_request1));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
                     Transport::ResponseCallback callback) {
         std::move(callback).Run(session_response1);
       });
-  EXPECT_CALL(*oak_session_, Decrypt(_)).WillOnce(Return(decrypted_response1));
+  EXPECT_CALL(*secure_session_, Decrypt(_)).WillOnce(Return(decrypted_response1));
 
   // Second Request
-  EXPECT_CALL(*oak_session_, Encrypt(request_data2))
+  EXPECT_CALL(*secure_session_, Encrypt(request_data2))
       .WillOnce(Return(encrypted_request2));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
                     Transport::ResponseCallback callback) {
         std::move(callback).Run(session_response2);
       });
-  EXPECT_CALL(*oak_session_, Decrypt(_)).WillOnce(Return(decrypted_response2));
+  EXPECT_CALL(*secure_session_, Decrypt(_)).WillOnce(Return(decrypted_response2));
 
   secure_channel_->Write(
       request_data1,
@@ -277,7 +277,7 @@ TEST_F(SecureChannelImplTest, DISABLED_TransportErrorDuringHandshake) {
       });
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, GetHandshakeMessage())
+  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(handshake_request));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
@@ -327,7 +327,7 @@ TEST_F(SecureChannelImplTest, DISABLED_GetHandshakeMessageFails) {
       });
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, GetHandshakeMessage())
+  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(std::nullopt));
 
   secure_channel_->Write(
@@ -357,14 +357,14 @@ TEST_F(SecureChannelImplTest, DISABLED_ProcessHandshakeResponseFails) {
       });
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, GetHandshakeMessage())
+  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(handshake_request));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
                     Transport::ResponseCallback callback) {
         std::move(callback).Run(session_response);
       });
-  EXPECT_CALL(*oak_session_, ProcessHandshakeResponse(_))
+  EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
       .WillOnce(Return(false));
 
   secure_channel_->Write(
@@ -395,16 +395,16 @@ TEST_F(SecureChannelImplTest, DISABLED_EncryptRequestFails) {
       });
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, GetHandshakeMessage())
+  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(handshake_request));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
                     Transport::ResponseCallback callback) {
         std::move(callback).Run(session_response);
       });
-  EXPECT_CALL(*oak_session_, ProcessHandshakeResponse(_))
+  EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, Encrypt(request_data))
+  EXPECT_CALL(*secure_session_, Encrypt(request_data))
       .WillOnce(Return(std::nullopt));
 
   secure_channel_->Write(
@@ -438,24 +438,23 @@ TEST_F(SecureChannelImplTest, DISABLED_DecryptResponseFails) {
       });
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, GetHandshakeMessage())
+  EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(handshake_request));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
                     Transport::ResponseCallback callback) {
         std::move(callback).Run(session_response);
       });
-  EXPECT_CALL(*oak_session_, ProcessHandshakeResponse(_))
+  EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*oak_session_, Encrypt(request_data))
+  EXPECT_CALL(*secure_session_, Encrypt(request_data))
       .WillOnce(Return(encrypted_request));
   EXPECT_CALL(*transport_, Send(_, _))
       .WillOnce([&](const oak::session::v1::SessionRequest&,
                     Transport::ResponseCallback callback) {
         std::move(callback).Run(session_response);
       });
-  EXPECT_CALL(*oak_session_, Decrypt(_)).WillOnce(Return(std::nullopt));
-  EXPECT_CALL(*oak_session_, Decrypt(_)).WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*secure_session_, Decrypt(_)).WillOnce(Return(std::nullopt));
 
   secure_channel_->Write(
       request_data,

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LEGION_OAK_SESSION_H_
-#define COMPONENTS_LEGION_OAK_SESSION_H_
+#ifndef COMPONENTS_LEGION_SECURE_SESSION_H_
+#define COMPONENTS_LEGION_SECURE_SESSION_H_
 
 #include <cstdint>
 #include <optional>
@@ -19,11 +19,12 @@ class HandshakeResponse;
 
 namespace legion {
 
-// Interface for Oak session management.
-// Handles cryptographic operations, including handshake, encryption, and decryption.
-class OakSession {
+// Interface for secure session management.
+// Handles cryptographic operations, including handshake, encryption, and
+// decryption.
+class SecureSession {
  public:
-  virtual ~OakSession() = default;
+  virtual ~SecureSession() = default;
 
   // Generates the initial handshake message.
   // Returns std::nullopt on failure.
@@ -52,4 +53,4 @@ class OakSession {
 
 }  // namespace legion
 
-#endif  // COMPONENTS_LEGION_OAK_SESSION_H_
+#endif  // COMPONENTS_LEGION_SECURE_SESSION_H_

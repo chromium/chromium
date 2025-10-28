@@ -14,7 +14,7 @@
 #include "base/types/expected.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
-#include "components/legion/oak_session.h"
+#include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
@@ -34,13 +34,13 @@ SecureChannelImpl::PendingRequest& SecureChannelImpl::PendingRequest::operator=(
 
 SecureChannelImpl::SecureChannelImpl(
     std::unique_ptr<Transport> transport,
-    std::unique_ptr<OakSession> oak_session,
+    std::unique_ptr<SecureSession> secure_session,
     std::unique_ptr<AttestationHandler> attestation_handler)
     : transport_(std::move(transport)),
-      oak_session_(std::move(oak_session)),
+      secure_session_(std::move(secure_session)),
       attestation_handler_(std::move(attestation_handler)) {
   CHECK(transport_);
-  CHECK(oak_session_);
+  CHECK(secure_session_);
   CHECK(attestation_handler_);
 }
 
@@ -119,7 +119,7 @@ void SecureChannelImpl::OnAttestationResponse(
   state_ = SecureChannelImpl::State::kPerformingHandshake;
   // Step 3: Get and Send Handshake Request
   std::optional<oak::session::v1::HandshakeRequest> handshake_request =
-      oak_session_->GetHandshakeMessage();
+      secure_session_->GetHandshakeMessage();
   if (!handshake_request.has_value()) {
     DLOG(ERROR) << "Failed to get handshake request.";
     FailAllPendingRequests(ResultCode::kHandshakeFailed);
@@ -138,7 +138,7 @@ void SecureChannelImpl::OnHandshakeResponse(
   DCHECK_EQ(state_, State::kPerformingHandshake);
 
   // Step 4: Process Handshake Response
-  if (!oak_session_->ProcessHandshakeResponse(response)) {
+  if (!secure_session_->ProcessHandshakeResponse(response)) {
     DLOG(ERROR) << "Failed to handle handshake response.";
     FailAllPendingRequests(ResultCode::kHandshakeFailed);
     ResetState();
@@ -156,7 +156,8 @@ void SecureChannelImpl::OnEncryptedResponse(
   request_in_flight_ = false;
 
   // Step 6: Decrypt the response
-  std::optional<Request> decrypted_response = oak_session_->Decrypt(response);
+  std::optional<Request> decrypted_response =
+      secure_session_->Decrypt(response);
   if (!decrypted_response.has_value()) {
     DLOG(ERROR) << "Failed to decrypt response.";
     FailAllPendingRequests(ResultCode::kDecryptionFailed);
@@ -215,7 +216,7 @@ void SecureChannelImpl::ProcessNextRequest() {
 
   // Step 5: Encrypt and Send the original request
   std::optional<oak::session::v1::EncryptedMessage> encrypted_request =
-      oak_session_->Encrypt(pending_requests_.front().request);
+      secure_session_->Encrypt(pending_requests_.front().request);
   if (!encrypted_request.has_value()) {
     DLOG(ERROR) << "Failed to encrypt request.";
     FailAllPendingRequests(ResultCode::kEncryptionFailed);

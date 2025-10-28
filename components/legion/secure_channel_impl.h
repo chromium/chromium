@@ -16,8 +16,8 @@
 #include "base/types/expected.h"
 #include "components/legion/attestation_handler.h"
 #include "components/legion/legion_common.h"
-#include "components/legion/oak_session.h"
 #include "components/legion/secure_channel.h"
+#include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
 
@@ -27,7 +27,7 @@ class SecureChannelImpl : public SecureChannel {
  public:
   SecureChannelImpl(
       std::unique_ptr<Transport> transport,
-      std::unique_ptr<OakSession> oak_session,
+      std::unique_ptr<SecureSession> secure_session,
       std::unique_ptr<AttestationHandler> attestation_handler);
   ~SecureChannelImpl() override;
 
@@ -76,7 +76,7 @@ class SecureChannelImpl : public SecureChannel {
   void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
 
   std::unique_ptr<Transport> transport_;
-  std::unique_ptr<OakSession> oak_session_;
+  std::unique_ptr<SecureSession> secure_session_;
   std::unique_ptr<AttestationHandler> attestation_handler_;
 
   State state_ = State::kUninitialized;
