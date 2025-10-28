@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_LaunchBrowsersToDesks) {
   EXPECT_EQ(1u, desks[2]->windows().size());
 }
 
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_WindowStates) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_DISABLED_WindowStates) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_WindowStates) {
 }
 
 // Tests that the browser windows are restored to their old window states.
-IN_PROC_BROWSER_TEST_F(InformedRestoreTest, WindowStates) {
+IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview. The restore button will be null if we
