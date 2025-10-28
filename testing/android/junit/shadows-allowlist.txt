@@ -36,7 +36,6 @@
 +org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController$Delegate
 +org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory
 +org.chromium.chrome.browser.ui.hats.MessageSurveyUiDelegate
-+org.chromium.chrome.browser.util.AndroidTaskUtils
 +org.chromium.chrome.browser.webapps.WebApkShareTargetUtil
 +org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider
 +org.chromium.components.browser_ui.styles.SemanticColorUtils

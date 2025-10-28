@@ -20,8 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -36,18 +34,8 @@ import java.util.Map;
 
 /** Unit tests for {@link MultiInstanceState}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {MultiInstanceStateUnitTest.ShadowAndroidTaskUtils.class})
+@Config(manifest = Config.NONE)
 public class MultiInstanceStateUnitTest {
-    @Implements(AndroidTaskUtils.class)
-    static class ShadowAndroidTaskUtils {
-        @Implementation
-        public static RecentTaskInfo getTaskInfoFromTask(AppTask task) {
-            return sTasks.get(task);
-        }
-    }
-
     private static final Map<AppTask, RecentTaskInfo> sTasks = new HashMap<>();
 
     private MultiInstanceState mMultiInstanceState;
@@ -113,6 +101,7 @@ public class MultiInstanceStateUnitTest {
 
     @Before
     public void setUp() {
+        AndroidTaskUtils.setTaskInfosForTesting(sTasks);
         MultiInstanceState.maybeCreate(this::getChromeTasks, this::matchesBaseActivity);
         mMultiInstanceState = MultiInstanceState.getInstanceForTesting();
     }
@@ -122,7 +111,6 @@ public class MultiInstanceStateUnitTest {
         ApplicationStatus.destroyForJUnitTests();
         sTasks.clear();
         mMultiInstanceState.clear();
-        mMultiInstanceState = null;
     }
 
     private BaseActivity createTaskAndLaunchActivity(int taskId, BaseActivity activity) {
