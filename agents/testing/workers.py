@@ -20,9 +20,10 @@ import time
 
 import checkout_helpers
 import constants
+import eval_config
+import metrics
 import promptfoo_installation
 import results
-import eval_config
 
 sys.path.append(str(constants.CHROMIUM_SRC))
 from agents.common import tempfile_ext
@@ -211,6 +212,19 @@ class WorkerPool:
                     'Failed to gracefully shut down thread %s in a WorkerPool',
                     t.native_id)
 
+    def get_forwarded_metrics(self) -> list[metrics.IterationMetrics]:
+        """Gets all metrics that have been forwarded from the result thread.
+
+        Returns:
+            A list of IterationMetrics that were produced since the last time
+            this method was called.
+        """
+        forwarded_metrics = []
+        metrics_queue = self._result_thread.metrics_output_queue
+        while not metrics_queue.empty():
+            forwarded_metrics.append(metrics_queue.get())
+        return forwarded_metrics
+
 
 def _parse_test_log_results(results_json) -> str:
     """Extracts a summary of the test run for displaying
@@ -252,14 +266,14 @@ def _extract_metrics_from_promptfoo_results(
     if not results_json:
         return {}
 
-    metrics = {
+    extracted_metrics = {
         'token_usage':
         _extract_token_usage_from_promptfoo_results(results_json),
     }
     score = _extract_score_from_promptfoo_results(results_json)
     if score is not None:
-        metrics['score'] = score
-    return metrics
+        extracted_metrics['score'] = score
+    return extracted_metrics
 
 
 def _load_promptfoo_results(results_file: pathlib.Path) -> dict[str, any]:

@@ -42,6 +42,10 @@ class TestConfig:
             raise ValueError(f'runs_per_test in {self.test_file} must be >= '
                              'pass_k_threshold.')
 
+    @property
+    def src_relative_test_file(self) -> pathlib.Path:
+        return self.test_file.relative_to(constants.CHROMIUM_SRC)
+
     @classmethod
     def from_file(cls, test_file: pathlib.Path) -> Self:
         """Reads the test config from the test file."""
@@ -88,5 +92,5 @@ class TestConfig:
 
     def matches_filter(self, filters: list[str]) -> bool:
         """Checks if the test file path matches any of the given filters."""
-        relative_path = self.test_file.relative_to(constants.CHROMIUM_SRC)
+        relative_path = self.src_relative_test_file
         return any(fnmatch.fnmatch(str(relative_path), f) for f in filters)

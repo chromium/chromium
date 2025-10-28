@@ -594,6 +594,11 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.mock_fetch_sandbox_image = fetch_sandbox_image_patcher.start()
         self.addCleanup(fetch_sandbox_image_patcher.stop)
 
+        upload_metrics_patcher = mock.patch(
+            'eval_prompts.metrics.merge_and_upload_metrics')
+        self.mock_upload_metrics = upload_metrics_patcher.start()
+        self.addCleanup(upload_metrics_patcher.stop)
+
     def test_run_prompt_eval_tests_no_tests(self):
         """Tests that the function returns 1 if there are no tests to run."""
         self.mock_get_tests_to_run.return_value = []
@@ -620,8 +625,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertEqual(promptfoo, self.mock_from_cipd.return_value)
         self.assertEqual(worker_opts.verbose, False)
         self.assertEqual(result_opts.print_output_on_success, False)
-        self.assertEqual(result_opts.enable_perf_uploading, False)
-        self.assertEqual(result_opts.git_revision, None)
 
         self.mock_worker_pool.return_value.queue_tests.assert_called_once_with(
             [eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'))])
@@ -878,12 +881,17 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             return_value = []
 
         eval_prompts._run_prompt_eval_tests(self.args)
+        self.mock_upload_metrics.assert_called_once()
 
-        self.mock_worker_pool.assert_called_once()
-        result_opts = self.mock_worker_pool.call_args[0][3]
-        self.assertEqual(result_opts.enable_perf_uploading, True)
-        self.assertEqual(result_opts.git_revision, 'test_revision')
+    def test_run_prompt_eval_tests_perf_disabled(self):
+        """Tests that metrics are not uploaded when perf uploading is
+        disabled."""
+        self.args.enable_perf_uploading = False
+        self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
+            return_value = []
 
+        eval_prompts._run_prompt_eval_tests(self.args)
+        self.mock_upload_metrics.assert_not_called()
 
 
 class ParseArgsUnittest(unittest.TestCase):
@@ -941,12 +949,13 @@ class ParseArgsUnittest(unittest.TestCase):
         """Tests that all perf arguments are parsed correctly."""
         self.mock_argv[:] = [
             'eval_prompts.py', '--enable-perf-uploading', '--git-revision',
-            'my-revision'
+            'my-revision', '--gcs-bucket', 'my-bucket', '--build-id', '123'
         ]
         args = eval_prompts._parse_args()
         self.assertTrue(args.enable_perf_uploading)
         self.assertEqual(args.git_revision, 'my-revision')
-
+        self.assertEqual(args.gcs_bucket, 'my-bucket')
+        self.assertEqual(args.build_id, '123')
 
     def test_parse_args_all_test_selection_args(self):
         """Tests that all test selection arguments are parsed correctly."""
@@ -1098,13 +1107,25 @@ class ParseArgsUnittest(unittest.TestCase):
         with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
             eval_prompts._parse_args()
 
-    def test_parse_args_enable_perf_uploading_no_git_revision(self):
-        """Tests that providing --enable-perf-uploading without
-        --git-revision raises an error."""
-        self.mock_argv[:] = ['eval_prompts.py', '--enable-perf-uploading']
-        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
-            eval_prompts._parse_args()
+    def test_parse_args_enable_perf_uploading_missing_args(self):
+        """Tests --enable-perf-uploading w/o other required args."""
+        base_args = ['eval_prompts.py', '--enable-perf-uploading']
+        perf_args = {
+            '--git-revision': 'my-revision',
+            '--gcs-bucket': 'my-bucket',
+            '--build-id': '123',
+        }
 
+        for key_to_omit in perf_args:
+            with self.subTest(missing_arg=key_to_omit):
+                args_list = base_args[:]
+                for arg, value in perf_args.items():
+                    if arg != key_to_omit:
+                        args_list.extend([arg, value])
+
+                self.mock_argv[:] = args_list
+                with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+                    eval_prompts._parse_args()
 
 
 if __name__ == '__main__':

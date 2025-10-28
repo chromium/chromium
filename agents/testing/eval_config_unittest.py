@@ -133,6 +133,23 @@ tests:
             eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
 
 
+class TestConfigSrcRelativeTestFileTest(unittest.TestCase):
+
+    def setUp(self):
+        self.src_patcher = mock.patch('eval_config.constants.CHROMIUM_SRC',
+                                      pathlib.Path('/src'))
+        self.src_patcher.start()
+        self.addCleanup(self.src_patcher.stop)
+
+    def test_src_relative_test_file(self):
+        config = eval_config.TestConfig(
+            test_file=pathlib.Path('/src/path/to/test.yaml'),
+            runs_per_test=1,
+            pass_k_threshold=1)
+        self.assertEqual(config.src_relative_test_file,
+                         pathlib.Path('path/to/test.yaml'))
+
+
 class TestConfigMatchesFilterTest(unittest.TestCase):
 
     def setUp(self):

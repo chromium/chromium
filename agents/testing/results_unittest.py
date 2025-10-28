@@ -23,6 +23,9 @@ from lib.results import result_types
 _POLLING_INTERVAL = 100
 
 
+# pylint: disable=protected-access
+
+
 class TestResultTest(unittest.TestCase):
 
     def test_lt_less_than(self):
@@ -255,8 +258,6 @@ class ResultThreadTest(unittest.TestCase):
 
         self.result_options = results.ResultOptions(
             print_output_on_success=False,
-            enable_perf_uploading=False,
-            git_revision=None,
         )
 
     def _setUpPatches(self):
@@ -471,6 +472,27 @@ class ResultThreadTest(unittest.TestCase):
 
         self.mock_report_result.assert_called_once_with(
             mock_client, test_result)
+
+    def test_metrics_forwarded(self):
+        config = eval_config.TestConfig(test_file=pathlib.Path('test.yaml'))
+        test_result = results.TestResult(config=config,
+                                         success=True,
+                                         iteration_results=[
+                                             results.IterationResult(
+                                                 success=True,
+                                                 duration=1.0,
+                                                 test_log='log',
+                                                 metrics={
+                                                     'a': 1.0,
+                                                 },
+                                             ),
+                                         ])
+        thread = self._run_test_with_results([test_result])
+
+        self.assertEqual(thread.metrics_output_queue.qsize(), 1)
+        iteration_metrics = thread.metrics_output_queue.get()
+        self.assertEqual(iteration_metrics.config, config)
+        self.assertEqual(iteration_metrics.metrics, {'a': 1.0})
 
 
 if __name__ == '__main__':

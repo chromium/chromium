@@ -12,6 +12,7 @@ import threading
 
 import constants
 import eval_config
+import metrics
 
 sys.path.insert(0, str(constants.CHROMIUM_SRC / 'build' / 'util'))
 from lib.results import result_sink
@@ -29,14 +30,8 @@ class IterationResult:
     duration: float
     # Stdout/stderr of the iteration.
     test_log: str
-    # A mapping of metric name to value. Metric names can be nested, e.g.
-    # {
-    #   'token_usage': {
-    #     'input': 10,
-    #     'output': 20,
-    #   },
-    # }
-    metrics: dict[str, dict | float]
+    # Metrics collected from the iteration.
+    metrics: metrics.MetricsMapping
 
 
 @dataclasses.dataclass
@@ -82,10 +77,6 @@ class ResultOptions:
     """Options for configuring result reporting."""
     # Always print test logs to stdout instead of only for failed tests.
     print_output_on_success: bool
-    # Upload metrics to the perf dashboard.
-    enable_perf_uploading: bool
-    # The git revision to report to the perf dashboard.
-    git_revision: str | None
 
 
 class AtomicCounter:
@@ -140,6 +131,7 @@ class ResultThread(threading.Thread):
         super().__init__(daemon=True, **kwargs)
         self.result_input_queue = queue.Queue()
         self.failed_result_output_queue = queue.Queue()
+        self.metrics_output_queue = queue.Queue()
         self.total_results_reported = AtomicCounter()
         self._result_options = result_options
         self._shutdown_event = threading.Event()
@@ -160,12 +152,7 @@ class ResultThread(threading.Thread):
             except queue.Empty:
                 continue
 
-            # TODO(crbug.com/449818513): Actually report this to the perf
-            # dashboard or to ResultDB, whichever we end up using for tracking
-            # token usage and test scores.
-            pp = pprint.PrettyPrinter(indent=2)
-            logging.debug('Metrics: %s',
-                          pp.pformat(test_result.iteration_results[0].metrics))
+            self._forward_metrics_to_output_queue(test_result)
             if (not test_result.success
                     or self._result_options.print_output_on_success):
                 sys.stdout.write(test_result.combined_logs)
@@ -182,6 +169,19 @@ class ResultThread(threading.Thread):
                 self.failed_result_output_queue.put(test_result)
 
             self.total_results_reported.increment()
+
+    def _forward_metrics_to_output_queue(self, test_result: TestResult):
+        """Forwards on any collected metrics to the output queue.
+
+        Args:
+            test_result: The TestResult currently being processed.
+        """
+        pp = pprint.PrettyPrinter(indent=2)
+        for ir in test_result.iteration_results:
+            logging.debug('Forwarding metrics: %s', pp.pformat(ir.metrics))
+            self.metrics_output_queue.put(
+                metrics.IterationMetrics(config=test_result.config,
+                                         metrics=ir.metrics))
 
     def shutdown(self) -> None:
         """Tells the thread to shut down gracefully."""
