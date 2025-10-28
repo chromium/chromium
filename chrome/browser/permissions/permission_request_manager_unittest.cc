@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/permissions/permission_request_manager.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -31,7 +33,6 @@
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
@@ -56,11 +57,11 @@
 
 const double kTestEngagementScore = 29;
 
-class ChromePermissionRequestManagerTest
+class PermissionRequestManagerTest
     : public ChromeRenderViewHostTestHarness,
       public testing::WithParamInterface<std::pair<std::string, bool>> {
  public:
-  ChromePermissionRequestManagerTest()
+  PermissionRequestManagerTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         params_request1_(permissions::RequestType::kGeolocation,
@@ -189,7 +190,7 @@ class ChromePermissionRequestManagerTest
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
 };
 
-TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
+TEST_F(PermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -229,7 +230,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleAcceptedGestureBubble) {
                                 kTestEngagementScore, 1);
 }
 
-TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
+TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -269,7 +270,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForSimpleDeniedNoGestureBubble) {
       1);
 }
 
-TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
+TEST_F(PermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -302,7 +303,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedAcceptedBubble) {
       kTestEngagementScore, 1);
 }
 
-TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
+TEST_F(PermissionRequestManagerTest, UMAForMergedDeniedBubble) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -327,7 +328,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForMergedDeniedBubble) {
       kTestEngagementScore, 1);
 }
 
-TEST_F(ChromePermissionRequestManagerTest, UMAForIgnores) {
+TEST_F(PermissionRequestManagerTest, UMAForIgnores) {
   base::HistogramTester histograms;
 
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
@@ -351,8 +352,7 @@ TEST_F(ChromePermissionRequestManagerTest, UMAForIgnores) {
                                 0, 1);
 }
 
-TEST_F(ChromePermissionRequestManagerTest,
-       TestEmbargoForEmbeddedPermissionRequest) {
+TEST_F(PermissionRequestManagerTest, TestEmbargoForEmbeddedPermissionRequest) {
   GURL url(permissions::MockPermissionRequest::kDefaultOrigin);
   permissions::RequestType request_type =
       permissions::RequestType::kCameraStream;
@@ -413,7 +413,7 @@ TEST_F(ChromePermissionRequestManagerTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeSameOrigin) {
+TEST_F(PermissionRequestManagerTest, TestWebKioskModeSameOrigin) {
   auto request_state =
       MakeRequestInWebKioskMode(/*url*/ GURL("https://google.com/page"),
                                 /*app_url*/ GURL("https://google.com/launch"));
@@ -423,7 +423,7 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeSameOrigin) {
   EXPECT_TRUE(request_state->granted);
 }
 
-TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
+TEST_F(PermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   auto request_state =
       MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
                                 /*app_url*/ GURL("https://google.com/launch"));
@@ -434,7 +434,7 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   EXPECT_TRUE(request_state->finished);
 }
 
-TEST_F(ChromePermissionRequestManagerTest,
+TEST_F(PermissionRequestManagerTest,
        TestWebKioskModeDifferentOriginWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -452,7 +452,7 @@ TEST_F(ChromePermissionRequestManagerTest,
   EXPECT_TRUE(request_state->finished);
 }
 
-TEST_P(ChromePermissionRequestManagerTest,
+TEST_P(PermissionRequestManagerTest,
        TestWebKioskModeDifferentOriginWhenAllowedByFeature) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams feature_params;
@@ -474,7 +474,7 @@ TEST_P(ChromePermissionRequestManagerTest,
   EXPECT_TRUE(request_state->finished);
 }
 
-TEST_P(ChromePermissionRequestManagerTest,
+TEST_P(PermissionRequestManagerTest,
        TestWebKioskModeDifferentOriginAllowedByKioskBrowserPref) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -494,7 +494,7 @@ TEST_P(ChromePermissionRequestManagerTest,
 
 INSTANTIATE_TEST_SUITE_P(
     TestWebKioskModeDifferentOriginWhenAllowedByFeature,
-    ChromePermissionRequestManagerTest,
+    PermissionRequestManagerTest,
     testing::ValuesIn(
         {std::pair<std::string, bool>("*", false),
          std::pair<std::string, bool>(".example.com", false),
@@ -510,7 +510,7 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromePermissionRequestManagerAdaptiveQuietUiActivationTest
-    : public ChromePermissionRequestManagerTest {
+    : public PermissionRequestManagerTest {
  public:
   ChromePermissionRequestManagerAdaptiveQuietUiActivationTest() {
     feature_list_.InitWithFeaturesAndParameters(

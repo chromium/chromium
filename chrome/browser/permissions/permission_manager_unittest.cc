@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/permissions/permission_manager.h"
+
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/common/url_constants.h"
@@ -10,7 +12,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/permission_test_util.h"
@@ -25,7 +26,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class ChromePermissionManagerTest : public ChromeRenderViewHostTestHarness {
+class PermissionManagerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
@@ -96,7 +97,7 @@ class ChromePermissionManagerTest : public ChromeRenderViewHostTestHarness {
   base::OnceClosure quit_closure_;
 };
 
-TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
+TEST_F(PermissionManagerTest, GetCanonicalOriginSearch) {
   const GURL google_com("https://www.google.com");
   const GURL google_de("https://www.google.de");
   const GURL other_url("https://other.url");
@@ -140,7 +141,7 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
                 top_level_ntp));
 }
 
-TEST_F(ChromePermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
+TEST_F(PermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
   const GURL requesting_origin("https://www.requesting.com");
   const GURL embedding_origin("https://www.google.de");
 
@@ -162,7 +163,7 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
 #endif
 }
 
-TEST_F(ChromePermissionManagerTest, SubscribeWithPermissionDelegation) {
+TEST_F(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   const char* kOrigin1 = "https://example.com";
   const char* kOrigin2 = "https://google.com";
   const GURL url1 = GURL(kOrigin1);
@@ -185,7 +186,7 @@ TEST_F(ChromePermissionManagerTest, SubscribeWithPermissionDelegation) {
                   blink::PermissionType::GEOLOCATION),
           /*render_process_host=*/nullptr, child, url2,
           /*should_include_device_status=*/false,
-          base::BindRepeating(&ChromePermissionManagerTest::OnPermissionChange,
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
                               base::Unretained(this)));
   EXPECT_FALSE(callback_called());
 
