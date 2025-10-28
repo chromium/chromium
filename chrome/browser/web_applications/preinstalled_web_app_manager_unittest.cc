@@ -22,7 +22,9 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -41,6 +43,7 @@
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -804,6 +807,13 @@ class PreinstalledWebAppManagerChatUpdate
   GURL GetChatInstallUrl() const {
     return GURL(webapps::kMailGoogleChatInstallUrl);
   }
+
+  GURL GetChatInstallUrlFetchedForUpdate() const {
+    GURL::Replacements update_url_query_adder;
+    update_url_query_adder.SetQueryStr("usp=chrome_preinstall_update");
+    return GetChatInstallUrl().ReplaceComponents(update_url_query_adder);
+  }
+
   webapps::ManifestId GetChatManifestId() const {
     return webapps::ManifestId(webapps::kMailGoogleChatManifestId);
   }
@@ -880,14 +890,10 @@ TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateOccursForChat) {
 
   // Set up the manifest state to have scope extensions, and trigger the
   // post-startup task to update.
-  GURL::Replacements update_url_query_adder;
-  update_url_query_adder.SetQueryStr("usp=chrome_preinstall_update");
-  GURL update_install_url =
-      GetChatInstallUrl().ReplaceComponents(update_url_query_adder);
-  SetupPageState(GetChatManifestId(), update_install_url, GetChatStartUrl(),
-                 GetChatManifestUrl());
-  auto& page_state =
-      fake_web_contents_manager().GetOrCreatePageState(update_install_url);
+  SetupPageState(GetChatManifestId(), GetChatInstallUrlFetchedForUpdate(),
+                 GetChatStartUrl(), GetChatManifestUrl());
+  auto& page_state = fake_web_contents_manager().GetOrCreatePageState(
+      GetChatInstallUrlFetchedForUpdate());
   page_state.manifest_before_default_processing->scope_extensions.push_back(
       blink::mojom::ManifestScopeExtension::New(kOtherOrigin,
                                                 /*has_origin_wildcard=*/false));
@@ -901,6 +907,59 @@ TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateOccursForChat) {
                   ->validated_scope_extensions(),
               testing::ElementsAre(ScopeExtensionInfo::CreateForOrigin(
                   kOtherOrigin, /*has_origin_wildcard=*/false)));
+}
+
+TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateIsThrottled) {
+  const url::Origin kOtherOrigin =
+      url::Origin::Create(GURL("https://www.example.com"));
+  const std::u16string kNewAppName1 = u"New App Name 1";
+  const std::u16string kNewAppName2 = u"New App Name 2";
+
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  provider().SetClockForTesting(&clock);
+  auto clock_reset = WebAppPrefGuardrails::SetClockForTesting(&clock);
+
+  // Start up, and ensure the app is installed by default.
+  preinstalled_app_override_->apps = {GetInstallOptionsWithFactory(
+      GetChatManifestId(), GetChatInstallUrl(), GetChatStartUrl(),
+      GetChatManifestUrl(), GetChatStartUrl().GetWithoutFilename())};
+  base::RepeatingClosure post_startup_tasks =
+      provider().DisableDelayedPostStartupWorkForTesting();
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      GetChatAppId(), WebAppFilter::InstalledInChrome()));
+
+  // Set up the manifest state to have a new name for first update.
+  SetupPageState(GetChatManifestId(), GetChatInstallUrlFetchedForUpdate(),
+                 GetChatStartUrl(), GetChatManifestUrl());
+  auto& page_state = fake_web_contents_manager().GetOrCreatePageState(
+      GetChatInstallUrlFetchedForUpdate());
+  page_state.manifest_before_default_processing->name = kNewAppName1;
+  // Trigger the first update via startup task.
+  post_startup_tasks.Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(base::UTF16ToUTF8(kNewAppName1),
+            provider().registrar_unsafe().GetAppShortName(GetChatAppId()));
+
+  // Modify the manifest again to have a different name, and trigger update
+  // again, verify it doesn't work.
+  page_state.manifest_before_default_processing->name = kNewAppName2;
+  post_startup_tasks.Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(base::UTF16ToUTF8(kNewAppName1),
+            provider().registrar_unsafe().GetAppShortName(GetChatAppId()));
+
+  // Advance the clock more than 7 days, trigger update again, and it should
+  // work.
+  clock.Advance(base::Days(8));
+  post_startup_tasks.Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(base::UTF16ToUTF8(kNewAppName2),
+            provider().registrar_unsafe().GetAppShortName(GetChatAppId()));
+
+  // Reset the clock.
+  provider().SetClockForTesting(base::DefaultClock::GetInstance());
 }
 
 }  // namespace web_app

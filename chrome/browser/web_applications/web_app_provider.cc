@@ -17,6 +17,7 @@
 #include "base/functional/concurrent_closures.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/time/clock.h"
@@ -24,6 +25,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -44,10 +46,12 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -57,6 +61,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -355,11 +360,12 @@ FakeWebAppProvider* WebAppProvider::AsFakeWebAppProviderForTesting() {
   return nullptr;
 }
 
-base::OnceClosure WebAppProvider::DisableDelayedPostStartupWorkForTesting() {
+base::RepeatingClosure
+WebAppProvider::DisableDelayedPostStartupWorkForTesting() {
   CHECK(!started_);
   prevent_delayed_startup_tasks_for_testing_ = true;
-  return base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
-                        weak_ptr_factory_.GetWeakPtr());
+  return base::BindRepeating(&WebAppProvider::DoDelayedPostStartupWork,
+                             weak_ptr_factory_.GetWeakPtr());
 }
 
 void WebAppProvider::StartImpl() {
@@ -535,15 +541,22 @@ void WebAppProvider::CheckIsConnected() const {
 }
 
 void WebAppProvider::DoDelayedPostStartupWork() {
-  if (base::FeatureList::IsEnabled(features::kWebAppPeriodicPreinstallUpdate)) {
+  webapps::ManifestId old_chat_manifest_id =
+      webapps::ManifestId(webapps::kMailGoogleChatManifestId);
+  WebAppPrefGuardrails guardrails =
+      WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
+          *profile_->GetPrefs());
+  webapps::AppId app_id = GenerateAppIdFromManifestId(old_chat_manifest_id);
+  if (base::FeatureList::IsEnabled(features::kWebAppPeriodicPreinstallUpdate) &&
+      !guardrails.IsBlockedByGuardrails(app_id)) {
     GURL install_url = GURL(webapps::kMailGoogleChatInstallUrl);
     GURL::Replacements add_query;
     add_query.SetQueryStr("usp=chrome_preinstall_update");
     install_url = install_url.ReplaceComponents(add_query);
     scheduler().FetchManifestAndUpdate(
         install_url, webapps::ManifestId(webapps::kMailGoogleChatManifestId),
-        // TODO(http://crbug.com/452416687): Add metrics.
-        base::DoNothing());
+        base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
+                       weak_ptr_factory_.GetWeakPtr(), app_id));
   }
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
@@ -571,6 +584,16 @@ void WebAppProvider::DoDelayedPostStartupWork() {
     }
   }
 #endif
+}
+
+void WebAppProvider::OnDefaultAppUpdateComplete(
+    const webapps::AppId& app_id,
+    FetchManifestAndUpdateResult result) {
+  base::UmaHistogramEnumeration("WebApp.Preinstalled.UpdateOnStartup", result);
+  WebAppPrefGuardrails guardrails =
+      WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
+          *profile_->GetPrefs());
+  guardrails.RecordIgnore(app_id, clock().Now());
 }
 
 }  // namespace web_app
