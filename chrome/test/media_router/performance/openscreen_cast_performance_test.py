@@ -48,7 +48,6 @@ from repeating_log import RepeatingLog
 CHROMEDRIVER_PORT = int(os.environ.get('CHROMEDRIVER_PORT', '49573'))
 SENDER = os.environ.get('SENDER')
 USERNAME = os.environ.get('USERNAME')
-PASSWORD = os.environ.get('PASSWORD')
 RECEIVER = os.environ.get('RECEIVER')
 SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 
@@ -156,14 +155,13 @@ class StartProcess(AbstractContextManager):
         if not self._terminate:
             assert self._proc.exitcode == 0
 
-def send_ssh_command(hostname, username, password, command, blocking=False):
+def send_ssh_command(hostname, username, command, blocking=False):
     """
-    Sends a command to a remote host via SSH using a password.
+    Sends a command to a remote host via SSH.
 
     Args:
         hostname (str): The remote host to connect to.
         username (str): The username for the SSH connection.
-        password (str): The password for the SSH connection.
         command (str): The command to execute on the remote host.
         blocking (bool): If True, waits for the command to complete.
                          If False, runs the command in a non-blocking way.
@@ -201,10 +199,10 @@ def send_ssh_command(hostname, username, password, command, blocking=False):
 def terminate_old_chromedriver():
     """Tries to terminate any existing chromedriver processes."""
     logging.info("Attempting to terminate old chromedriver processes...")
-    send_ssh_command(SENDER, USERNAME, PASSWORD, SENDER_TERMINATE_DRIVER_CMD)
+    send_ssh_command(SENDER, USERNAME, SENDER_TERMINATE_DRIVER_CMD)
 
     for _ in range(5):
-        result = send_ssh_command(SENDER, USERNAME, PASSWORD,
+        result = send_ssh_command(SENDER, USERNAME,
                                   SENDER_CHROMEDRIVER_CHECK_CMD, blocking=True)
         if not result.stdout.strip():
             logging.info("Old chromedriver processes confirmed gone.")
@@ -215,7 +213,7 @@ def terminate_old_chromedriver():
 
 def start_new_chromedriver():
     """Starts a new chromedriver process on the remote machine."""
-    send_ssh_command(SENDER, USERNAME, PASSWORD, SENDER_CHROMEDRIVER_CMD)
+    send_ssh_command(SENDER, USERNAME, SENDER_CHROMEDRIVER_CMD)
     logging.info("Started new chromedriver.")
 
 def wait_for_chromedriver():
@@ -223,7 +221,7 @@ def wait_for_chromedriver():
     logging.info("Starting Chromedriver status check...")
     for _ in range(5):
         try:
-            result = send_ssh_command(SENDER, USERNAME, PASSWORD,
+            result = send_ssh_command(SENDER, USERNAME,
                                       SENDER_STATUS_CMD, blocking=True)
             stdout = result.stdout.strip()
             if result.returncode == 0 and stdout == '200':
