@@ -298,7 +298,8 @@ class LensSearchController {
   void CloseLensPart2(lens::LensOverlayDismissalSource dismissal_source);
 
   // Called on the UI thread with the processed thumbnail URI.
-  void OnThumbnailProcessed(const std::string& thumbnail_uri);
+  void OnThumbnailProcessed(bool is_region_selection,
+                            const std::string& thumbnail_uri);
 
   // The final step for closing the overlay. This is called after the lens
   // overlay has faded out.

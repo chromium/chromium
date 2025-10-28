@@ -722,11 +722,12 @@ void LensSearchController::NotifyOverlayOpened() {
 }
 
 void LensSearchController::OnThumbnailProcessed(
+    bool is_region_selection,
     const std::string& thumbnail_uri) {
   lens_searchbox_controller_->SetSearchboxThumbnail(thumbnail_uri);
-  lens_composebox_controller_->AddVisualSelectionContext(
-      thumbnail_uri,
-      /*is_deletable=*/false);
+  if (is_region_selection) {
+    lens_composebox_controller_->AddVisualSelectionContext(thumbnail_uri);
+  }
 }
 
 void LensSearchController::CloseLensPart2(
@@ -854,7 +855,8 @@ void LensSearchController::HandleThumbnailCreatedBitmap(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ScaleBitmapAndEncodeToDataUri, std::move(thumbnail_copy)),
       base::BindOnce(&LensSearchController::OnThumbnailProcessed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     /*is_region_selection=*/false));
 }
 
 void LensSearchController::HandleThumbnailCreated(
@@ -864,10 +866,7 @@ void LensSearchController::HandleThumbnailCreated(
 
   std::string thumbnail_uri =
       webui::MakeDataURIForImage(base::as_byte_span(thumbnail_bytes), "jpeg");
-  lens_searchbox_controller_->SetSearchboxThumbnail(thumbnail_uri);
-  lens_composebox_controller_->AddVisualSelectionContext(
-      thumbnail_uri,
-      /*is_deletable=*/false);
+  OnThumbnailProcessed(/*is_region_selection=*/true, thumbnail_uri);
 }
 
 void LensSearchController::TabForegrounded(tabs::TabInterface* tab) {

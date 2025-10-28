@@ -61,6 +61,8 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
                      bool meta_key,
                      bool shift_key) override;
   void OnThumbnailRemoved() override;
+  void DeleteContext(const base::UnguessableToken& file_token) override;
+  void ClearFiles() override;
 
  private:
   // Owns this.

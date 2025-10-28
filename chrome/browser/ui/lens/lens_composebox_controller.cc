@@ -200,8 +200,7 @@ void LensComposeboxController::ShowLensSelectionOverlay() {
 }
 
 void LensComposeboxController::AddVisualSelectionContext(
-    const std::string& image_data_url,
-    bool is_deletable) {
+    const std::string& image_data_url) {
   if (!lens::features::GetEnableLensButtonInSearchbox()) {
     return;
   }
@@ -219,13 +218,25 @@ void LensComposeboxController::AddVisualSelectionContext(
 
   vsc_image_data_.emplace(
       base::UnguessableToken::Create(),
-      BuildVisualSelectionFileInfo(image_data_url, is_deletable));
+      BuildVisualSelectionFileInfo(image_data_url, /*is_deletable=*/true));
   // If the composebox handler is not yet bound, the image will be added when
   // the composebox is bound.
   if (composebox_handler_) {
     composebox_handler_->AddFileContextFromBrowser(vsc_image_data_->id,
                                         vsc_image_data_->file_info.Clone());
   }
+}
+
+void LensComposeboxController::DeleteContext(const base::UnguessableToken& id) {
+  // If the id matches the visual selection context, delete it and notify
+  // the overlay to clear the visual selection.
+  if (vsc_image_data_ && vsc_image_data_->id == id) {
+    ClearVisualSelectionContext();
+  }
+}
+
+void LensComposeboxController::ClearFiles() {
+  ClearVisualSelectionContext();
 }
 
 lens::LensSessionMetricsLogger*
@@ -295,6 +306,11 @@ LensComposeboxController::BuildVisualSelectionFileInfo(
   file_info->image_data_url = image_data_url;
   file_info->is_deletable = is_deletable;
   return file_info;
+}
+
+void LensComposeboxController::ClearVisualSelectionContext() {
+  vsc_image_data_.reset();
+  lens_search_controller_->lens_overlay_controller()->ClearAllSelections();
 }
 
 }  // namespace lens
