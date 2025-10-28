@@ -288,6 +288,11 @@
       BWGTabHelper->SetSnackbarCommandsHandler(
           static_cast<id<SnackbarCommands>>(_commandDispatcher));
     }
+
+    if (IsAskGeminiChipEnabled()) {
+      BWGTabHelper->SetLocationBarBadgeCommandsHandler(
+          id<LocationBarBadgeCommands>(_commandDispatcher));
+    }
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
@@ -424,6 +429,9 @@
     BWGTabHelper->SetBwgCommandsHandler(nil);
     if (IsAskGeminiSnackbarEnabled()) {
       BWGTabHelper->SetSnackbarCommandsHandler(nil);
+    }
+    if (IsAskGeminiChipEnabled()) {
+      BWGTabHelper->SetLocationBarBadgeCommandsHandler(nil);
     }
   }
 

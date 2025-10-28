@@ -1,4 +1,6 @@
 include_rules = [
+  "+ios/chrome/browser/location_bar/badge/model",
+  "+ios/chrome/browser/location_bar/badge/ui",
   "+ios/chrome/browser/optimization_guide/model/optimization_guide_service.h",
   "+ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",

@@ -16,6 +16,9 @@
 // Creates the secondary button with the given title.
 + (UIButton*)createSecondaryButtonWithTitle:(NSString*)title;
 
+// Returns the branded version of the Gemini symbol with a `pointSize`.
++ (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_UI_UTILS_H_

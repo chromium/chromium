@@ -7,6 +7,7 @@
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_consumer.h"
 
 namespace {
@@ -50,6 +51,14 @@ const int kTransitionTimeInSeconds = 2;
   [self.consumer setBadgeConfig:config];
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
+
+  if (config.badgeText) {
+    [self startPromoTimer];
+  }
+}
+
+- (void)updateColorForIPH {
+  [self.consumer highlightBadge:YES];
 }
 
 #pragma mark - LocationBarBadgeMutator

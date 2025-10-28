@@ -35,6 +35,10 @@ enum class LocationBarBadgeType;
 // this string is not set, the badge will not expand into a chip.
 @property(nonatomic, strong) NSString* badgeText;
 
+// Whether to hide badge after chip collapse. Default is NO which allows the
+// badge to persist after the chip collapses.
+@property(nonatomic, assign) BOOL shouldHideBadgeAfterChipCollapse;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_MODEL_LOCATION_BAR_BADGE_CONFIGURATION_H_

@@ -22,6 +22,9 @@ enum class LocationBarBadgeType;
 // Notify the consumer to show the entrypoint.
 - (void)showEntrypoint;
 
+// Notify the consumer to hide the entrypoint.
+- (void)hideEntrypoint;
+
 // Notify the consumer to transition back to the small entrypoint.
 - (void)transitionToSmallEntrypoint;
 

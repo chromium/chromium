@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/buildflags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -39,6 +41,14 @@
   secondaryButton.configuration = buttonConfiguration;
 
   return secondaryButton;
+}
+
++ (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return CustomSymbolWithPointSize(kGeminiBrandedLogoImage, pointSize);
+#else
+  return CustomSymbolWithPointSize(kGeminiNonBrandedLogoImage, pointSize);
+#endif
 }
 
 @end

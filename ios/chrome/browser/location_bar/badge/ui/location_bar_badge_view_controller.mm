@@ -177,6 +177,9 @@
       // Reader chip coordinator isn't needed for setting visibility.
       [self readerModeChipCoordinator:nil didSetReaderModeChipHidden:hidden];
       break;
+    case LocationBarBadgeType::kAskGeminiChip:
+      [self setLocationBarBadgeHidden:hidden];
+      break;
   }
 }
 
@@ -465,8 +468,14 @@
 // that the animation to transition to a small entrypoint has completed.
 - (void)didCompleteTransitionToSmallEntrypoint {
   [self refreshVoiceOverBoundingBoxIfFocused];
-  [self.contextualPanelEntryPointMutator
-          didCompleteTransitionToSmallEntrypoint];
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+    [self.contextualPanelEntryPointMutator
+            didCompleteTransitionToSmallEntrypoint];
+  }
+
+  if (_badgeConfig.shouldHideBadgeAfterChipCollapse) {
+    [self hideEntrypoint];
+  }
 }
 
 // Sets the proper visual features depending on current infobar badges status

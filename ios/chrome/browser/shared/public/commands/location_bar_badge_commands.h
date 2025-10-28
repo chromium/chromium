@@ -15,6 +15,9 @@
 // Updates badge configuration for the location bar badge.
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config;
 
+// Updates badge with IPH related colors.
+- (void)updateColorForIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_LOCATION_BAR_BADGE_COMMANDS_H_

@@ -16,9 +16,13 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
+#import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
@@ -26,9 +30,11 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -282,6 +288,11 @@ void BwgTabHelper::SetSnackbarCommandsHandler(id<SnackbarCommands> handler) {
   snackbar_commands_handler_ = handler;
 }
 
+void BwgTabHelper::SetLocationBarBadgeCommandsHandler(
+    id<LocationBarBadgeCommands> handler) {
+  location_bar_badge_commands_handler_ = handler;
+}
+
 #pragma mark - WebStateObserver
 
 void BwgTabHelper::WasShown(web::WebState* web_state) {
@@ -457,15 +468,33 @@ void BwgTabHelper::OnOptimizationGuideDecision(
   latest_load_contextual_cueing_metadata_ = metadata.ParsedMetadata<
       optimization_guide::proto::GlicContextualCueingMetadata>();
   if (latest_load_contextual_cueing_metadata_) {
-    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
-    action.handler = ^{
-      [bwg_commands_handler_ startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
-    };
-    action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
-    SnackbarMessage* message =
-        [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
-    message.action = action;
+    if (IsAskGeminiSnackbarEnabled()) {
+      SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+      action.handler = ^{
+        [bwg_commands_handler_
+            startBWGFlowWithEntryPoint:bwg::EntryPoint::Promo];
+      };
+      action.title = [NSString stringWithFormat:@"✦ %@", @"Ask Gemini"];
+      SnackbarMessage* message =
+          [[SnackbarMessage alloc] initWithTitle:@"Ask about page?"];
+      message.action = action;
 
-    [snackbar_commands_handler_ showSnackbarMessage:message];
+      [snackbar_commands_handler_ showSnackbarMessage:message];
+    } else {
+      UIImage* badge_image =
+          [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+      NSString* cue_label = base::SysUTF8ToNSString(
+          latest_load_contextual_cueing_metadata_->cueing_configurations(0)
+              .cue_label());
+      LocationBarBadgeConfiguration* badge_config =
+          [[LocationBarBadgeConfiguration alloc]
+               initWithBadgeType:LocationBarBadgeType::kAskGeminiChip
+              accessibilityLabel:cue_label
+                      badgeImage:badge_image];
+
+      badge_config.badgeText = cue_label;
+      badge_config.shouldHideBadgeAfterChipCollapse = true;
+      [location_bar_badge_commands_handler_ updateBadgeConfig:badge_config];
+    }
   }
 }

@@ -16,6 +16,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol BWGCommands;
+@protocol LocationBarBadgeCommands;
 @protocol SnackbarCommands;
 
 // Tab helper controlling the BWG feature and its current state for a given tab.
@@ -72,6 +73,9 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Set the snackbar commands handler for presenting snackbars.
   void SetSnackbarCommandsHandler(id<SnackbarCommands> handler);
+
+  // Set the location bar badge commands handler.
+  void SetLocationBarBadgeCommandsHandler(id<LocationBarBadgeCommands> handler);
 
   // Sets the state of `is_first_run`.
   void SetIsFirstRun(bool is_first_run);
@@ -146,10 +150,14 @@ class BwgTabHelper : public web::WebStateObserver,
   bool is_bwg_session_active_in_background_ = false;
 
   // Commands handler for BWG commands.
-  __weak id<BWGCommands> bwg_commands_handler_ = nil;
+  __weak id<BWGCommands> bwg_commands_handler_ = nullptr;
 
   // Commands handler for snackbars.
-  __weak id<SnackbarCommands> snackbar_commands_handler_ = nil;
+  __weak id<SnackbarCommands> snackbar_commands_handler_ = nullptr;
+
+  // Commands handler for location bar badge.
+  __weak id<LocationBarBadgeCommands> location_bar_badge_commands_handler_ =
+      nullptr;
 
   // The observation of the Web State.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
