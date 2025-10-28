@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -107,6 +108,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_urls.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
@@ -1226,8 +1228,17 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
 
     case IDC_SHOW_READING_MODE_SIDE_PANEL: {
       // Yes. This is a separate feature from the reading list.
-      browser_->GetFeatures().side_panel_ui()->Show(
-          SidePanelEntryId::kReadAnything, SidePanelOpenTrigger::kAppMenu);
+      if (features::IsImmersiveReadAnythingEnabled()) {
+        if (tabs::TabInterface* tab =
+                browser_->tab_strip_model()->GetActiveTab()) {
+          auto* controller = ReadAnythingController::From(tab);
+          CHECK(controller);
+          controller->ShowUI(SidePanelOpenTrigger::kAppMenu);
+        }
+      } else {
+        browser_->GetFeatures().side_panel_ui()->Show(
+            SidePanelEntryId::kReadAnything, SidePanelOpenTrigger::kAppMenu);
+      }
       break;
     }
 

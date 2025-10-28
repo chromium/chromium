@@ -1,0 +1,76 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "ui/accessibility/accessibility_features.h"
+
+class ReadAnythingControllerBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ReadAnythingControllerBrowserTest()
+      : is_immersive_read_anything_enabled_(GetParam()) {}
+
+  void SetUp() override {
+    if (is_immersive_read_anything_enabled_) {
+      scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
+                                            {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({},
+                                            {features::kImmersiveReadAnything});
+    }
+    InProcessBrowserTest::SetUp();
+  }
+
+ protected:
+  const bool is_immersive_read_anything_enabled_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+                       ShowSidePanelFromAppMenu) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  auto* controller = ReadAnythingController::From(tab);
+
+  if (is_immersive_read_anything_enabled_) {
+    ASSERT_TRUE(controller);
+  } else {
+    ASSERT_FALSE(controller);
+  }
+
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  EXPECT_EQ(side_panel_ui->GetCurrentEntryId(),
+            SidePanelEntryId::kReadAnything);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReadAnythingControllerBrowserTest,
+                         ::testing::Bool());

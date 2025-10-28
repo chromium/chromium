@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/translate/translate_page_action_controller.h"
@@ -105,6 +106,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "net/base/features.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -358,7 +360,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   data_protection_tab_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
 
-  // TODO(https://crbug.com/355485153): Move this into the normal window block.
+  // Create the ReadAnythingController first to ensure it exists before
+  // any potential consumers, like the side panel controller.
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    read_anything_controller_ =
+        GetUserDataFactory().CreateInstance<ReadAnythingController>(tab, &tab);
+  }
+
+  // TODO(crbug.com/447418049): This will be removed in the future when
+  // ownership of this controller is migrated to ReadAnythingController.
   read_anything_side_panel_controller_ =
       std::make_unique<ReadAnythingSidePanelController>(
           &tab, side_panel_registry_.get());

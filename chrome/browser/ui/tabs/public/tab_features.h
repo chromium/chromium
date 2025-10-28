@@ -25,6 +25,7 @@ class MemorySaverChipTabHelper;
 class PinnedTranslateActionListener;
 class Profile;
 class PwaInstallPageActionController;
+class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RollBackModeBInfoBarController;
 class SidePanelRegistry;
@@ -178,6 +179,8 @@ class TabFeatures {
     return side_panel_registry_.get();
   }
 
+  // TODO(crbug.com/447418049): This will be removed in the future when
+  // ownership of this controller is migrated to ReadAnythingController.
   ReadAnythingSidePanelController* read_anything_side_panel_controller() {
     return read_anything_side_panel_controller_.get();
   }
@@ -326,6 +329,9 @@ class TabFeatures {
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
+
+  // Responsible for managing the read anything (Reading mode) feature.
+  std::unique_ptr<ReadAnythingController> read_anything_controller_;
 
   std::unique_ptr<ReadAnythingSidePanelController>
       read_anything_side_panel_controller_;
