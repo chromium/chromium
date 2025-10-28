@@ -92,10 +92,6 @@ class ExtensionActionViewController
   ui::MenuModel* GetContextMenu(
       extensions::ExtensionContextMenuModel::ContextMenuSource
           context_menu_source) override;
-  void OnContextMenuShown(
-      extensions::ExtensionContextMenuModel::ContextMenuSource source) override;
-  void OnContextMenuClosed(
-      extensions::ExtensionContextMenuModel::ContextMenuSource source) override;
   void ExecuteUserAction(InvocationSource source) override;
   void TriggerPopupForAPI(ShowPopupCallback callback) override;
   void UpdateHoverCard(ToolbarActionView* action_view,

@@ -53,6 +53,8 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
               MovePinnedActionBy,
               (const std::string& action_id, int move_by),
               (override));
+  void OnContextMenuShown(const std::string& action_id) override {}
+  void OnContextMenuClosed(const std::string& action_id) override {}
   void WriteDragDataForView(views::View* sender,
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override {}

@@ -25,9 +25,12 @@
 
 ExtensionContextMenuController::ExtensionContextMenuController(
     ToolbarActionViewController* controller,
+    Observer* observer,
     extensions::ExtensionContextMenuModel::ContextMenuSource
         context_menu_source)
-    : controller_(controller), context_menu_source_(context_menu_source) {}
+    : controller_(controller),
+      observer_(observer),
+      context_menu_source_(context_menu_source) {}
 
 ExtensionContextMenuController::~ExtensionContextMenuController() = default;
 
@@ -58,7 +61,7 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(menu), run_types);
 
-  controller_->OnContextMenuShown(context_menu_source_);
+  observer_->OnContextMenuShown();
   menu_runner_->RunMenuAt(
       parent,
       static_cast<views::MenuButtonController*>(
@@ -73,6 +76,6 @@ bool ExtensionContextMenuController::IsMenuRunning() const {
 
 void ExtensionContextMenuController::OnMenuClosed() {
   menu_runner_.reset();
-  controller_->OnContextMenuClosed(context_menu_source_);
+  observer_->OnContextMenuClosed();
   menu_adapter_.reset();
 }

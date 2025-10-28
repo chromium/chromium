@@ -389,22 +389,6 @@ ui::MenuModel* ExtensionActionViewController::GetContextMenu(
   return context_menu_model_.get();
 }
 
-void ExtensionActionViewController::OnContextMenuShown(
-    extensions::ExtensionContextMenuModel::ContextMenuSource source) {
-  if (source == extensions::ExtensionContextMenuModel::ContextMenuSource::
-                    kToolbarAction) {
-    extensions_container_->OnContextMenuShownFromToolbar(GetId());
-  }
-}
-
-void ExtensionActionViewController::OnContextMenuClosed(
-    extensions::ExtensionContextMenuModel::ContextMenuSource source) {
-  if (source == extensions::ExtensionContextMenuModel::ContextMenuSource::
-                    kToolbarAction) {
-    extensions_container_->OnContextMenuClosedFromToolbar();
-  }
-}
-
 void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   if (!ExtensionIsValid()) {
     return;

@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -31,7 +32,8 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionMenuItemViewElementId);
 // Single row inside the extensions menu for every installed extension. Includes
 // information about the extension, a button to pin the extension to the toolbar
 // and a button for accessing the associated context menu.
-class ExtensionMenuItemView : public views::FlexLayoutView {
+class ExtensionMenuItemView : public views::FlexLayoutView,
+                              public ExtensionContextMenuController::Observer {
   METADATA_HEADER(ExtensionMenuItemView, views::FlexLayoutView)
 
  public:
@@ -105,6 +107,10 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   HoverButton* site_permissions_button_for_testing();
 
  private:
+  // ExtensionContextMenuController::Observer:
+  void OnContextMenuShown() override;
+  void OnContextMenuClosed() override;
+
   // Sets ups the context menu button controllers. Must be called by the
   // constructor.
   void SetupContextMenuButton();

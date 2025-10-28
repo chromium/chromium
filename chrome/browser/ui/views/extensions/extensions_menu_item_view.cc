@@ -517,7 +517,7 @@ void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
 void ExtensionMenuItemView::SetupContextMenuButton() {
   // Add a controller to the context menu
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      controller_.get(),
+      controller_.get(), this,
       extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
 
   context_menu_button_->SetButtonController(
@@ -585,6 +585,14 @@ HoverButton* ExtensionMenuItemView::pin_button_for_testing() {
 
 HoverButton* ExtensionMenuItemView::site_permissions_button_for_testing() {
   return site_permissions_button_;
+}
+
+void ExtensionMenuItemView::OnContextMenuShown() {
+  // Nothing to do.
+}
+
+void ExtensionMenuItemView::OnContextMenuClosed() {
+  // Nothing to do.
 }
 
 BEGIN_METADATA(ExtensionMenuItemView)

@@ -566,27 +566,6 @@ ExtensionsToolbarContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
 }
 
-void ExtensionsToolbarContainer::OnContextMenuShownFromToolbar(
-    const std::string& action_id) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/40124221): Remove hiding active popup here once this bug is
-  // fixed.
-  HideActivePopup();
-#endif
-
-  extension_with_open_context_menu_id_ = action_id;
-  UpdateIconVisibility(extension_with_open_context_menu_id_.value());
-}
-
-void ExtensionsToolbarContainer::OnContextMenuClosedFromToolbar() {
-  CHECK(extension_with_open_context_menu_id_.has_value());
-
-  extensions::ExtensionId const extension_id =
-      extension_with_open_context_menu_id_.value();
-  extension_with_open_context_menu_id_.reset();
-  UpdateIconVisibility(extension_id);
-}
-
 bool ExtensionsToolbarContainer::IsActionVisibleOnToolbar(
     const std::string& action_id) const {
   return model_->IsActionPinned(action_id) || ShouldForceVisibility(action_id);
@@ -745,6 +724,28 @@ void ExtensionsToolbarContainer::MovePinnedActionBy(
     return;
   }
   model_->MovePinnedAction(action_id, new_index);
+}
+
+void ExtensionsToolbarContainer::OnContextMenuShown(
+    const std::string& action_id) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/40124221): Remove hiding active popup here once this bug is
+  // fixed.
+  HideActivePopup();
+#endif
+
+  extension_with_open_context_menu_id_ = action_id;
+  UpdateIconVisibility(extension_with_open_context_menu_id_.value());
+}
+
+void ExtensionsToolbarContainer::OnContextMenuClosed(
+    const std::string& action_id) {
+  CHECK(extension_with_open_context_menu_id_.has_value());
+
+  extensions::ExtensionId const extension_id =
+      extension_with_open_context_menu_id_.value();
+  extension_with_open_context_menu_id_.reset();
+  UpdateIconVisibility(extension_id);
 }
 
 void ExtensionsToolbarContainer::WriteDragDataForView(

@@ -110,7 +110,8 @@ class WebUIBrowserExtensionsContainer::ContextMenu {
       return nullptr;
     }
 
-    return base::WrapUnique(new ContextMenu(action_id, *it->second, model));
+    return base::WrapUnique(
+        new ContextMenu(action_id, *it->second, model, extensions_container));
   }
 
   // This is in two steps so that `context_menu_` in the container gets
@@ -123,9 +124,7 @@ class WebUIBrowserExtensionsContainer::ContextMenu {
     menu_runner_ =
         std::make_unique<views::MenuRunner>(std::move(menu), run_types);
 
-    action_info_->controller()->OnContextMenuShown(
-        extensions::ExtensionContextMenuModel::ContextMenuSource::
-            kToolbarAction);
+    extensions_container_->OnContextMenuShownFromToolbar(action_id_);
 
     menu_runner_->RunMenuAt(main_widget, nullptr,
                             action_info_->GetAnchor()->GetScreenBounds(),
@@ -137,8 +136,11 @@ class WebUIBrowserExtensionsContainer::ContextMenu {
  private:
   ContextMenu(const std::string& action_id,
               ActionInfo& action_info,
-              ui::MenuModel* model)
-      : action_id_(action_id), action_info_(action_info) {
+              ui::MenuModel* model,
+              WebUIBrowserExtensionsContainer& extensions_container)
+      : action_id_(action_id),
+        action_info_(action_info),
+        extensions_container_(extensions_container) {
     menu_adapter_ = std::make_unique<views::MenuModelAdapter>(
         model, base::BindRepeating(&ContextMenu::OnMenuClosed,
                                    weak_ptr_factory_.GetWeakPtr()));
@@ -149,13 +151,12 @@ class WebUIBrowserExtensionsContainer::ContextMenu {
     menu_adapter_.reset();
 
     // This will delete us.
-    action_info_->controller()->OnContextMenuClosed(
-        extensions::ExtensionContextMenuModel::ContextMenuSource::
-            kToolbarAction);
+    extensions_container_->OnContextMenuClosedFromToolbar();
   }
 
   std::string action_id_;
   const raw_ref<ActionInfo> action_info_;
+  const raw_ref<WebUIBrowserExtensionsContainer> extensions_container_;
   std::unique_ptr<views::MenuModelAdapter> menu_adapter_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 

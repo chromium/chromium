@@ -193,8 +193,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   ToolbarActionViewController* GetActionForId(
       const std::string& action_id) override;
   std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
-  void OnContextMenuShownFromToolbar(const std::string& action_id) override;
-  void OnContextMenuClosedFromToolbar() override;
   bool IsActionVisibleOnToolbar(const std::string& action_id) const override;
   void UndoPopOut() override;
   void SetPopupOwner(ToolbarActionViewController* popup_owner) override;
@@ -224,6 +222,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   views::LabelButton* GetOverflowReferenceView() const override;
   gfx::Size GetToolbarActionSize() override;
   void MovePinnedActionBy(const std::string& action_id, int move_by) override;
+  void OnContextMenuShown(const std::string& action_id) override;
+  void OnContextMenuClosed(const std::string& action_id) override;
   void WriteDragDataForView(View* sender,
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override;

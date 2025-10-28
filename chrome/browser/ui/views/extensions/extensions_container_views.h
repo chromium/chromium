@@ -35,14 +35,6 @@ class ExtensionsContainerViews : public ExtensionsContainer {
   virtual std::optional<extensions::ExtensionId> GetPoppedOutActionId()
       const = 0;
 
-  // Called when the context menu of a toolbar action with `action_id` is
-  // opened, so the container can perform any necessary setup.
-  virtual void OnContextMenuShownFromToolbar(const std::string& action_id) {}
-
-  // Called when the context menu of a toolbar action is closed, so the
-  // container can perform any necessary cleanup.
-  virtual void OnContextMenuClosedFromToolbar() {}
-
   // Returns true if the action pointed by `action_id` is visible on the
   // toolbar.
   virtual bool IsActionVisibleOnToolbar(const std::string& action_id) const = 0;

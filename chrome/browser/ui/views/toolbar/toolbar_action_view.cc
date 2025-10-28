@@ -77,7 +77,7 @@ ToolbarActionView::ToolbarActionView(
       views::ButtonController::NotifyAction::kOnRelease);
 
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(
-      view_controller,
+      view_controller, this,
       extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
   set_context_menu_controller(context_menu_controller_.get());
 
@@ -271,6 +271,14 @@ void ToolbarActionView::RemovedFromWidget() {
   view_controller_->UnregisterCommand();
 
   MenuButton::RemovedFromWidget();
+}
+
+void ToolbarActionView::OnContextMenuShown() {
+  delegate_->OnContextMenuShown(view_controller_->GetId());
+}
+
+void ToolbarActionView::OnContextMenuClosed() {
+  delegate_->OnContextMenuClosed(view_controller_->GetId());
 }
 
 views::Button* ToolbarActionView::GetReferenceButtonForPopupInternal() {
