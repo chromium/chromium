@@ -70,6 +70,7 @@
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
+#include "cc/trees/frame_data.h"
 #include "cc/trees/latency_info_swap_promise.h"
 #include "cc/trees/layer_tree_host_impl_client.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -143,7 +144,7 @@ viz::SurfaceId MakeSurfaceId(const viz::FrameSinkId& frame_sink_id,
                           base::UnguessableToken::CreateForTesting(0, 1u)));
 }
 
-struct TestFrameData : public LayerTreeHostImpl::FrameData {
+struct TestFrameData : public FrameData {
   TestFrameData() {
     // Set ack to something valid, so DCHECKs don't complain.
     begin_frame_ack = viz::BeginFrameAck::CreateManualAckWithDamage();

@@ -330,9 +330,9 @@ cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
 cc::TilingSetCoverageIterator::tilings_
 cc::PrioritizedTile::tile_
 cc::PrioritizedTile::source_tiling_
-cc::LayerTreeHostImpl::FrameData::render_surface_list
+cc::FrameData::render_surface_list
 cc::PropertyTree::property_trees_
-cc::LayerTreeHostImpl::FrameData::will_draw_layers
+cc::FrameData::will_draw_layers
 cc::LayerTreeImpl::render_surface_list_
 viz::(anonymous namespace)::BspTreePerfTest::base_list_
 

@@ -3591,7 +3591,7 @@ TEST_F(ScrollingSimTest, CompositedStickyTracksMainRepaintScroll) {
                               base::Seconds(0.016));
 
   // Update draw properties.
-  cc::LayerTreeHostImpl::FrameData frame;
+  cc::FrameData frame;
   auto* lthi = GetLayerTreeHostImpl();
   lthi->PrepareToDraw(&frame);
 

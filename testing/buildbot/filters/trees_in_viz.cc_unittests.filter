@@ -29,7 +29,7 @@
 -CommitToPendingTreeLayerTreeHostImplTest.CompositorFrameMetadataFrameIntervalInputs
 -CommitToPendingTreeLayerTreeHostImplTest.LatencyInfoPassedToCompositorFrameMetadata
 
-# These tests directly append quads to LayerTreeHostImpl::FrameData, which isn't
+# These tests directly append quads to FrameData, which isn't
 # a meaningful test for TreesInViz mode.
 -LayerTreeHostTestSubmitFrameResources.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestSubmitFrameResources.RunSingleThread_DelegatingRenderer

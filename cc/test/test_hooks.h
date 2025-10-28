@@ -57,10 +57,9 @@ class TestHooks : public AnimationDelegate {
   virtual void InitializedRendererOnThread(LayerTreeHostImpl* host_impl,
                                            bool success) {}
   virtual void WillPrepareToDrawOnThread(LayerTreeHostImpl* host_impl) {}
-  virtual DrawResult PrepareToDrawOnThread(
-      LayerTreeHostImpl* host_impl,
-      LayerTreeHostImpl::FrameData* frame_data,
-      DrawResult draw_result);
+  virtual DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                           FrameData* frame_data,
+                                           DrawResult draw_result);
   virtual void DrawLayersOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void WillSubmitCompositorFrame(LayerTreeHostImpl* host_impl,
                                          const viz::CompositorFrame& frame) {}

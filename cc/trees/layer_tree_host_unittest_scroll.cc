@@ -178,7 +178,7 @@ class LayerTreeHostScrollTestScrollSimple : public LayerTreeHostScrollTest {
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     EXPECT_TRUE(
         frame_data->damage_reasons.Has(DamageReason::kCompositorScroll));
@@ -2468,7 +2468,7 @@ class LayerTreeHostScrollTestElasticOverscroll
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     Mock::VerifyAndClearExpectations(&input_handler_client_);
     return draw_result;

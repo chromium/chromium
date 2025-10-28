@@ -398,6 +398,8 @@ cc_component("cc") {
     "trees/draw_property_utils.h",
     "trees/effect_node.cc",
     "trees/effect_node.h",
+    "trees/frame_data.cc",
+    "trees/frame_data.h",
     "trees/image_animation_controller.cc",
     "trees/image_animation_controller.h",
     "trees/latency_info_swap_promise.cc",

@@ -306,7 +306,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesNotStarveDraws
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame,
+                                   FrameData* frame,
                                    DrawResult draw_result) override {
     return DrawResult::kAbortedCheckerboardAnimations;
   }
@@ -748,7 +748,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     // Don't checkerboard when the first animation wants to start.
     if (host_impl->active_tree()->source_frame_number() < 2)
@@ -2202,7 +2202,7 @@ class LayerTreeHostAnimationTestSetPotentiallyAnimatingOnLacDestruction
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     const bool screen_space_transform_is_animating =
         host_impl->active_tree()

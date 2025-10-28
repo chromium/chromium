@@ -35,7 +35,7 @@ class FakeLayerTreeHostImpl : public LayerTreeHostImpl {
   ~FakeLayerTreeHostImpl() override;
 
   void ForcePrepareToDraw() {
-    LayerTreeHostImpl::FrameData frame_data;
+    FrameData frame_data;
     PrepareToDraw(&frame_data);
     DidDrawAllLayers(frame_data);
   }

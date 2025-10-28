@@ -202,7 +202,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DoPainting();
   void DoCommit(const viz::BeginFrameArgs& commit_args);
   void DoPostCommit();
-  DrawResult DoComposite(LayerTreeHostImpl::FrameData* frame);
+  DrawResult DoComposite(FrameData* frame);
   void DoSwap();
   void DidCommitAndDrawFrame(int source_frame_number);
   void CommitComplete();

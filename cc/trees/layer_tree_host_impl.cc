@@ -218,9 +218,8 @@ void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
                   perfetto::Track::FromPointer(id));
 }
 
-void PopulateMetadataContentColorUsage(
-    const LayerTreeHostImpl::FrameData* frame,
-    viz::CompositorFrameMetadata* metadata) {
+void PopulateMetadataContentColorUsage(const FrameData* frame,
+                                       viz::CompositorFrameMetadata* metadata) {
   metadata->content_color_usage = gfx::ContentColorUsage::kSRGB;
   for (const LayerImpl* layer : frame->will_draw_layers) {
     metadata->content_color_usage =
@@ -455,8 +454,6 @@ const LayerTreeHostImpl& LayerTreeHostImpl::GetImplDeprecated() const {
   return *this;
 }
 
-LayerTreeHostImpl::FrameData::FrameData() = default;
-LayerTreeHostImpl::FrameData::~FrameData() = default;
 LayerTreeHostImpl::UIResourceData::UIResourceData() = default;
 LayerTreeHostImpl::UIResourceData::~UIResourceData() = default;
 LayerTreeHostImpl::UIResourceData::UIResourceData(UIResourceData&&) noexcept =
@@ -1280,38 +1277,6 @@ void LayerTreeHostImpl::QueueSwapPromiseForMainThreadScrollUpdate(
     std::unique_ptr<SwapPromise> swap_promise) {
   swap_promises_for_main_thread_scroll_update_.push_back(
       std::move(swap_promise));
-}
-
-void LayerTreeHostImpl::FrameData::AsValueInto(
-    base::trace_event::TracedValue* value) const {
-  value->SetBoolean("has_no_damage", has_no_damage);
-
-  // Quad data can be quite large, so only dump render passes if we are
-  // logging verbosely or viz.quads tracing category is enabled.
-  bool quads_enabled = VerboseLogEnabled();
-  if (!quads_enabled) {
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
-                                       &quads_enabled);
-  }
-  if (quads_enabled) {
-    value->BeginArray("render_passes");
-    for (const auto& render_pass : render_passes) {
-      value->BeginDictionary();
-      render_pass->AsValueInto(value);
-      value->EndDictionary();
-    }
-    value->EndArray();
-  }
-}
-
-std::string LayerTreeHostImpl::FrameData::ToString() const {
-  base::trace_event::TracedValueJSON value;
-  AsValueInto(&value);
-  return value.ToFormattedJSON();
-}
-void LayerTreeHostImpl::FrameData::set_trees_in_viz_timestamps(
-    const viz::TreesInVizTiming& timing_details) {
-  trees_in_viz_timing_details = timing_details;
 }
 
 DrawMode LayerTreeHostImpl::GetDrawMode() const {

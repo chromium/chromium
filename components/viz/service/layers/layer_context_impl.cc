@@ -1985,7 +1985,7 @@ void LayerContextImpl::DoDrawInternal(
 
   host_impl_->WillBeginImplFrame(begin_frame_args);
 
-  cc::LayerTreeHostImpl::FrameData frame;
+  cc::FrameData frame;
   TreesInVizTiming stage_breakdown;
   stage_breakdown.start_update_display_tree = start_update_display_tree;
   // TODO(vmiura): Manage these flags properly.

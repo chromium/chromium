@@ -123,7 +123,7 @@ class LayerTreeHostContextTest : public LayerTreeTest {
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame,
+                                   FrameData* frame,
                                    DrawResult draw_result) override {
     if (draw_result == DrawResult::kAbortedMissingHighResContent) {
       // Only valid for single-threaded compositing, which activates
