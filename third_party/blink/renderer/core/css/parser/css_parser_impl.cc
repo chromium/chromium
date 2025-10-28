@@ -3170,8 +3170,10 @@ AllowedRules AllowedNestedRules(StyleRule::RuleType parent_rule_type,
       [[fallthrough]];
     case StyleRule::kStyle: {
       if (in_mixin) {
-        return CSSParserImpl::kNestedGroupRules |
-               AllowedRules{CSSAtRuleID::kCSSAtRuleContents};
+        AllowedRules allowed = CSSParserImpl::kNestedGroupRules |
+                               AllowedRules{CSSAtRuleID::kCSSAtRuleContents};
+        allowed.Remove(CSSAtRuleID::kCSSAtRuleLayer);
+        return allowed;
       } else {
         return CSSParserImpl::kNestedGroupRules;
       }
