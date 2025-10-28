@@ -133,7 +133,6 @@ GlicInstanceImpl::GlicInstanceImpl(
                        coordinator_delegate,
                        metrics,
                        contextual_cueing_service,
-                       new GlicFocusedBrowserManager(this, profile),
                        new GlicFocusedBrowserManager(this, profile)) {}
 
 GlicInstanceImpl::GlicInstanceImpl(
@@ -142,8 +141,7 @@ GlicInstanceImpl::GlicInstanceImpl(
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
     GlicMetrics* metrics,
     contextual_cueing::ContextualCueingService* contextual_cueing_service,
-    GlicFocusedBrowserManager* detached_mode_focused_browser_manager,
-    GlicFocusedBrowserManager* live_mode_focused_browser_manager)
+    GlicFocusedBrowserManager* focused_browser_manager)
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
@@ -153,19 +151,11 @@ GlicInstanceImpl::GlicInstanceImpl(
       detached_mode_sharing_manager_(
           std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
               &sharing_manager_,
-              detached_mode_focused_browser_manager),
-          base::WrapUnique<GlicFocusedBrowserManager>(
-              detached_mode_focused_browser_manager),
+              focused_browser_manager),
+          base::WrapUnique<GlicFocusedBrowserManager>(focused_browser_manager),
           &pinned_tab_manager_,
           profile,
           metrics),
-      live_mode_sharing_manager_(std::make_unique<GlicFocusedTabManager>(
-                                     live_mode_focused_browser_manager),
-                                 base::WrapUnique<GlicFocusedBrowserManager>(
-                                     live_mode_focused_browser_manager),
-                                 &pinned_tab_manager_,
-                                 profile,
-                                 metrics),
       attached_mode_sharing_manager_(
           std::make_unique<GlicActivePinnedFocusedTabManager>(
               profile,
@@ -452,23 +442,8 @@ void GlicInstanceImpl::PrepareForOpen() {
   }
 }
 
-void GlicInstanceImpl::UpdateSharingManagerDelegate() {
-  if (last_non_hidden_panel_state_kind_ == mojom::PanelStateKind::kAttached) {
-    sharing_manager_.SetDelegate(&attached_mode_sharing_manager_);
-    return;
-  }
-
-  if (interaction_mode_ == mojom::WebClientMode::kAudio) {
-    sharing_manager_.SetDelegate(&live_mode_sharing_manager_);
-    return;
-  }
-
-  sharing_manager_.SetDelegate(&detached_mode_sharing_manager_);
-}
-
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
-  UpdateSharingManagerDelegate();
 }
 
 void GlicInstanceImpl::AddStateObserver(PanelStateObserver* observer) {
@@ -668,7 +643,11 @@ void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
   if (last_non_hidden_panel_state_kind_ != panel_state_kind &&
       panel_state_kind != mojom::PanelStateKind::kHidden) {
     last_non_hidden_panel_state_kind_ = panel_state_kind;
-    UpdateSharingManagerDelegate();
+    if (panel_state_kind == mojom::PanelStateKind::kDetached) {
+      sharing_manager_.SetDelegate(&detached_mode_sharing_manager_);
+    } else if (panel_state_kind == mojom::PanelStateKind::kAttached) {
+      sharing_manager_.SetDelegate(&attached_mode_sharing_manager_);
+    }
   }
   NotifyStateChange();
   NotifyPanelStateChanged();
