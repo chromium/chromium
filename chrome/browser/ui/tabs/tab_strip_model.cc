@@ -1051,7 +1051,7 @@ void TabStripModel::MoveSplitTo(
     bool pinned,
     std::optional<tab_groups::TabGroupId> group_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  static const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
+  static const std::set<tabs::TabCollection::Type> retain_collection_types =
       std::set<tabs::TabCollection::Type>({tabs::TabCollection::Type::SPLIT});
 
   CHECK_NE(to_index, kNoTab);
@@ -1080,7 +1080,7 @@ void TabStripModel::MoveSplitTo(
       tab_indices, to_index,
       base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
                      base::Unretained(contents_data_.get()), tab_indices,
-                     to_index, group_id, pinned, kRetainCollectionTypes));
+                     to_index, group_id, pinned, retain_collection_types));
 }
 
 void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
@@ -1093,16 +1093,11 @@ void TabStripModel::MoveGroupToImpl(const tab_groups::TabGroupId& group,
     tab_indices.push_back(i);
   }
 
-  static const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
-      std::set<tabs::TabCollection::Type>(
-          {tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP});
-
   // Remove all the tabs from the model.
   MoveTabsWithNotifications(
       tab_indices, to_index,
-      base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
-                     base::Unretained(contents_data_.get()), tab_indices,
-                     to_index, std::nullopt, false, kRetainCollectionTypes));
+      base::BindOnce(&tabs::TabStripCollection::MoveTabGroupTo,
+                     base::Unretained(contents_data_.get()), group, to_index));
 
   NotifyTabGroupMoved(group);
 }
@@ -4215,7 +4210,7 @@ void TabStripModel::MoveTabsAndSetPropertiesImpl(
     return;
   }
 
-  static const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
+  static const std::set<tabs::TabCollection::Type> retain_collection_types =
       std::set<tabs::TabCollection::Type>({tabs::TabCollection::Type::SPLIT});
   // TabStripCollection::MoveTabsRecursive moves tabs to the destination index
   // after the tabs are removed, so adjust `destination_index` by subtracting
@@ -4233,7 +4228,8 @@ void TabStripModel::MoveTabsAndSetPropertiesImpl(
       indices, destination_index,
       base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
                      base::Unretained(contents_data_.get()), indices,
-                     destination_index, group, pinned, kRetainCollectionTypes));
+                     destination_index, group, pinned,
+                     retain_collection_types));
 }
 
 void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
@@ -4437,7 +4433,7 @@ void TabStripModel::MoveTabsToIndexImpl(
     return;
   }
 
-  static const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
+  static const std::set<tabs::TabCollection::Type> retain_collection_types =
       std::set<tabs::TabCollection::Type>(
           {tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP});
 
@@ -4458,7 +4454,7 @@ void TabStripModel::MoveTabsToIndexImpl(
       tab_indices, destination_index,
       base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
                      base::Unretained(contents_data_.get()), tab_indices,
-                     destination_index, group, pin, kRetainCollectionTypes));
+                     destination_index, group, pin, retain_collection_types));
 }
 
 void TabStripModel::TabGroupStateChanged(
@@ -4658,36 +4654,35 @@ std::pair<int, int> TabStripModel::GetSelectionRangeFromAnchorToIndex(
 std::vector<std::pair<int, int>> TabStripModel::CalculateIncrementalTabMoves(
     const std::vector<int>& tab_indices,
     int destination_index) const {
-  tabs::ChildrenPtrs tabs;
-  tabs.reserve(tab_indices.size());
-  for (const auto& index : tab_indices) {
-    tabs.push_back(GetTabAtIndex(index));
-  }
-  std::vector<tabs::NodeMovePosition> tab_to_destination_moves =
-      contents_data_->CalculateIncrementalChildMoves(tabs, destination_index);
+  std::vector<std::pair<int, int>> source_and_target_indices_to_move_left;
+  std::vector<std::pair<int, int>> source_and_target_indices_to_move_right;
 
-  std::vector<std::pair<int, int>> indices_moves;
-  indices_moves.reserve(tab_to_destination_moves.size());
-
-  for (const auto& move_tuple : tab_to_destination_moves) {
-    const tabs::ChildPtr& child_ptr = std::get<0>(move_tuple);
-    size_t destination_index_size_t = std::get<1>(move_tuple);
-
-    // We are guaranteed it will be TabInterface*, so we can use
-    // std::get<TabInterface*>() directly. CHECK() is often used in Chromium to
-    // assert invariants like this.
-    CHECK(std::holds_alternative<tabs::TabInterface*>(child_ptr));
-    tabs::TabInterface* tab_ptr = std::get<tabs::TabInterface*>(child_ptr);
-
-    // **Crucially**, find the initial index of the moving tab.
-    // This function provides the current global index of the tab object.
-    int initial_index = GetIndexOfTab(tab_ptr);
-
-    indices_moves.emplace_back(initial_index,
-                               static_cast<int>(destination_index_size_t));
+  // We want a sequence of moves that moves each tab directly from its
+  // initial index to its final index. This is possible if and only if
+  // every move maintains the same relative order of the moving tabs.
+  // We do this by splitting the tabs based on which direction they're
+  // moving, then moving them in the correct order within each group.
+  int tab_destination_index = destination_index;
+  for (int source_index : tab_indices) {
+    if (source_index < tab_destination_index) {
+      source_and_target_indices_to_move_right.emplace_back(
+          source_index, tab_destination_index++);
+    } else {
+      source_and_target_indices_to_move_left.emplace_back(
+          source_index, tab_destination_index++);
+    }
   }
 
-  return indices_moves;
+  std::vector<std::pair<int, int>> moved_indices;
+  std::copy(source_and_target_indices_to_move_right.rbegin(),
+            source_and_target_indices_to_move_right.rend(),
+            std::back_inserter(moved_indices));
+
+  std::copy(source_and_target_indices_to_move_left.begin(),
+            source_and_target_indices_to_move_left.end(),
+            std::back_inserter(moved_indices));
+
+  return moved_indices;
 }
 
 std::vector<TabStripModel::MoveNotification>
@@ -4781,7 +4776,7 @@ int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
 
 void TabStripModel::SetSplitPinnedImpl(tabs::SplitTabCollection* split,
                                        bool pinned) {
-  static const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
+  static const std::set<tabs::TabCollection::Type> retain_collection_types =
       std::set<tabs::TabCollection::Type>({tabs::TabCollection::Type::SPLIT});
   std::vector<tabs::TabInterface*> tabs = split->GetTabsRecursive();
   std::vector<int> tab_indices = {};
@@ -4797,7 +4792,7 @@ void TabStripModel::SetSplitPinnedImpl(tabs::SplitTabCollection* split,
       base::BindOnce(&tabs::TabStripCollection::MoveTabsRecursive,
                      base::Unretained(contents_data_.get()), tab_indices,
                      destination_index, std::nullopt, pinned,
-                     kRetainCollectionTypes));
+                     retain_collection_types));
 }
 
 void TabStripModel::MoveTabsWithNotifications(
