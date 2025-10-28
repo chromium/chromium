@@ -6,3 +6,5 @@ per-file *.mm=erikchen@chromium.org
 per-file *_mac.h=file://ui/base/cocoa/OWNERS
 per-file *_mac.h=ccameron@chromium.org
 per-file *_mac.h=erikchen@chromium.org
+per-file javascript_optimizer_feature_browsertest.cc=jacastro@chromium.org
+per-file javascript_optimizer_feature_browsertest.cc=pkotwicz@chromium.org
