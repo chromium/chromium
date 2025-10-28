@@ -1146,25 +1146,6 @@ public class PersonalDataManager implements Destroyable {
         return PersonalDataManagerJni.get().shouldShowBnplSettings(mPersonalDataManagerAndroid);
     }
 
-    /**
-     * @return Whether the buy now pay later feature {@code kAutofillEnableBuyNowPayLater}, which is
-     *     defined in {@code components/autofill/core/common/autofill_payments_features.cc}, is
-     *     enabled.
-     */
-    public boolean isBuyNowPayLaterEnabled() {
-        return mPrefService.getBoolean(Pref.AUTOFILL_BNPL_ENABLED);
-    }
-
-    /**
-     * Enables or disables the buy now pay later feature {@code kAutofillEnableBuyNowPayLater},
-     * which is defined in {@code components/autofill/core/common/autofill_payments_features.cc}.
-     *
-     * @param enable True to enable buy now pay later, false otherwise.
-     */
-    public void setBuyNowPayLater(boolean enable) {
-        mPrefService.setBoolean(Pref.AUTOFILL_BNPL_ENABLED, enable);
-    }
-
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
