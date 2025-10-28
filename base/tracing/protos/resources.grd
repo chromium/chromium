@@ -9,8 +9,8 @@
   <release seq="1">
     <includes>
       <include
-          name="chrome_track_event_descriptor"
-          file="${root_gen_dir}/base/tracing/protos/chrome_track_event.descriptor"
+          name="chrome_track_event_extension_descriptor"
+          file="${root_gen_dir}/base/tracing/protos/chrome_track_event_extension.descriptor"
           type="BINDATA"
           compress="gzip"
           use_base_dir="false" />

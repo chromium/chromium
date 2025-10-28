@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/perfetto/gn/proto_library.gni")
+import("//third_party/perfetto/gn/protozero_descriptor_diff.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 import("sources.gni")
@@ -42,11 +43,22 @@ protozero_library("chrome_track_event_zero") {
       [ "//third_party/perfetto/protos/perfetto/trace/track_event:source_set" ]
 }
 
+protozero_descriptor_diff("chrome_track_event_extension") {
+  minuend_descriptor_target = ":chrome_track_event_gen"
+  minuend_descriptor_name = "chrome_track_event.descriptor"
+
+  subtrahend_descriptor_target =
+      "//third_party/perfetto/protos/perfetto/trace:descriptor"
+  subtrahend_descriptor_name = "trace.descriptor"
+
+  generate_descriptor = "chrome_track_event_extension.descriptor"
+}
+
 grit("chrome_track_event_resources") {
   source = "resources.grd"
   outputs = [
     "grit/tracing_proto_resources.h",
     "tracing_proto_resources.pak",
   ]
-  deps = [ ":chrome_track_event_gen" ]
+  deps = [ ":chrome_track_event_extension_gen" ]
 }

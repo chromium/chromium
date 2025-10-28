@@ -191,7 +191,8 @@ void TracingControllerImpl::GenerateMetadataPacket(
   auto* extension_descriptor = handle->BeginNestedMessage<protozero::Message>(
       perfetto::protos::pbzero::TracePacket::kExtensionDescriptorFieldNumber);
   scoped_refptr<base::RefCountedMemory> descriptor_bytes(
-      GetContentClient()->GetDataResourceBytes(chrome_track_event_descriptor));
+      GetContentClient()->GetDataResourceBytes(
+          chrome_track_event_extension_descriptor));
   if (!descriptor_bytes)
     return;
   extension_descriptor->AppendBytes(
