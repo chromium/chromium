@@ -11655,6 +11655,24 @@
             ]
         }
     ],
+    "GlicShareImage": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20251023",
+                    "enable_features": [
+                        "GlicShareImage",
+                        "SvgFallBackToContainerSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicTieredRollout": [
         {
             "platforms": [
