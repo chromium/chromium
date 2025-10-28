@@ -50,7 +50,7 @@ constexpr int kPreconnectIntervalForLowPowerSec = 30;
 namespace features {
 // Feature to control preconnect to search.
 
-BASE_FEATURE(kPreconnectFromKeyedService, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPreconnectFromKeyedService, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPreconnectToSearch, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
@@ -103,7 +103,7 @@ bool SearchEnginePreconnector::ShouldBeEnabledAsKeyedService() {
 
 bool SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord() {
   static bool enabled_for_otr = base::GetFieldTrialParamByFeatureAsBool(
-      features::kPreconnectFromKeyedService, "run_on_otr", false);
+      features::kPreconnectFromKeyedService, "run_on_otr", true);
   return enabled_for_otr;
 }
 
