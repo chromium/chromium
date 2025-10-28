@@ -53,7 +53,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/service/gles2_command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
@@ -102,20 +101,6 @@ bool TryRegisterOverlayStateObserver(
       std::move(promotion_hint_observer), std::move(mailbox));
 }
 #endif  // BUILDFLAG(IS_WIN)
-
-bool WillGetGmbConfigFromGpu() {
-#if BUILDFLAG(IS_OZONE)
-  // Ozone/X11 requires gpu initialization to be done before it can determine
-  // what formats gmb can use. This limitation comes from the requirement to
-  // have GLX bindings initialized. The buffer formats will be passed through
-  // gpu extra info.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
-}
 
 }  // namespace
 
@@ -176,8 +161,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void FlushDeferredRequests(std::vector<mojom::DeferredRequestPtr> requests,
                              uint32_t flushed_deferred_message_id) override;
 
-  bool IsNativeBufferSupported(viz::SharedImageFormat format,
-                               gfx::BufferUsage buffer_usage);
   void CreateGpuMemoryBuffer(const gfx::Size& size,
                              const viz::SharedImageFormat& format,
                              gfx::BufferUsage buffer_usage,
@@ -252,8 +235,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
   const gfx::GpuExtraInfo gpu_extra_info_;
-  gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
-  bool supported_gmb_configurations_inited_ = false;
   base::ThreadChecker io_thread_checker_;
 
   bool allow_process_kill_for_testing_ = false;
@@ -398,32 +379,6 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
   }
 }
 
-bool GpuChannelMessageFilter::IsNativeBufferSupported(
-    viz::SharedImageFormat format,
-    gfx::BufferUsage buffer_usage) {
-  // Note that we are initializing the |supported_gmb_configurations_| here to
-  // make sure gpu service have already initialized and required metadata like
-  // supported buffer configurations have already been sent from browser
-  // process to GPU process for wayland.
-  if (!supported_gmb_configurations_inited_) {
-    supported_gmb_configurations_inited_ = true;
-    if (WillGetGmbConfigFromGpu()) {
-#if BUILDFLAG(IS_OZONE_X11)
-      for (const auto& config : gpu_extra_info_.gpu_memory_buffer_support_x11) {
-        supported_gmb_configurations_.emplace(config);
-      }
-#endif  // BUILDFLAG(IS_OZONE_X11)
-    } else {
-      supported_gmb_configurations_ =
-          gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
-    }
-  }
-  return base::Contains(
-      supported_gmb_configurations_,
-      gfx::BufferUsageAndFormat(buffer_usage,
-                                viz::SharedImageFormatToBufferFormat(format)));
-}
-
 void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
@@ -438,7 +393,8 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
   }
 
   gfx::GpuMemoryBufferHandle handle;
-  if (IsNativeBufferSupported(format, buffer_usage)) {
+  if (SharedImageFactory::IsNativeBufferSupported(format, buffer_usage,
+                                                  gpu_extra_info_)) {
 #if BUILDFLAG(IS_ANDROID)
     // Creation of native buffer handles is not supported on Android (the
     // only way that a non-null GpuMemoryBufferHandle can be created on
