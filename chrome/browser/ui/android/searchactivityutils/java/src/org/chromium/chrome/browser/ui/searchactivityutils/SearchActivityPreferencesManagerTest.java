@@ -32,8 +32,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -57,32 +55,19 @@ import java.util.function.Consumer;
 
 /** Tests for {@link SearchActivityPreferencesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        shadows = {
-            SearchActivityPreferencesManagerTest.ShadowLensController.class,
-        })
 public class SearchActivityPreferencesManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
     @Mock private TemplateUrl mTemplateUrlMock;
     @Mock private Profile mProfile;
+    @Mock private LensController mLensController;
 
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
-    @Implements(LensController.class)
-    public static class ShadowLensController {
-        public static boolean sIsAvailable = true;
-
-        public static LensController getInstance() {
-            var controller = mock(LensController.class);
-            doAnswer(i -> sIsAvailable).when(controller).isLensEnabled(any());
-            return controller;
-        }
-    }
-
     @Before
     public void setUp() {
+        LensController.setInstanceForTesting(mLensController);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
@@ -460,7 +445,7 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     public void updateFeatureAvailability() {
-        ShadowLensController.sIsAvailable = true;
+        doReturn(true).when(mLensController).isLensEnabled(any());
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         IncognitoUtils.setEnabledForTesting(true);
 
@@ -472,7 +457,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.incognitoAvailable);
 
         // Disable Lens.
-        ShadowLensController.sIsAvailable = false;
+        doReturn(false).when(mLensController).isLensEnabled(any());
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
         data = SearchActivityPreferencesManager.getCurrent();
