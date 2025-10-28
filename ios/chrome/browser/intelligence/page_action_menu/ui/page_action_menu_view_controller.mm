@@ -98,6 +98,9 @@ const CGFloat kFeatureRowVerticalPadding = 12;
 // The animation duration for permissions feature row change.
 const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
 
+// The width for the veritical feature row divider.
+const CGFloat kDividerWidth = 1.0;
+
 }  // namespace
 
 @interface PageActionMenuViewController ()
@@ -275,7 +278,7 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
   [horizontalStackView addArrangedSubview:hideReaderModeButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    [divider.widthAnchor constraintEqualToConstant:1],
+    [divider.widthAnchor constraintEqualToConstant:kDividerWidth],
     [horizontalStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
   ]];
@@ -374,10 +377,8 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
 - (UIButton*)createHideReaderModeButton {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
-  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-  UIFont* fontAttribute = [UIFont fontWithDescriptor:boldDescriptor size:0.0];
+  UIFont* fontAttribute =
+      PreferredFontForTextStyle(UIFontTextStyleSubheadline, UIFontWeightMedium);
   NSDictionary* attributes = @{
     NSFontAttributeName : fontAttribute,
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]
@@ -778,7 +779,8 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
   }
 
   if (lastView) {
-    UIView* divider = [self createDivider];
+    UIView* divider =
+        [self createDividerWithOrientation:UILayoutConstraintAxisHorizontal];
     [_featureRowsStackView addArrangedSubview:divider];
     [_featureRowsStackView setCustomSpacing:kStackViewMargins
                                   afterView:lastView];
@@ -792,14 +794,37 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
   }
 }
 
-// Adds horizontal divider line with spacing after the last view in the content
-// stack.
-- (UIView*)createDivider {
+// Creates a divider line with specified orientation.
+- (UIView*)createDividerWithOrientation:(UILayoutConstraintAxis)orientation {
   UIView* divider = [[UIView alloc] init];
   divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   divider.translatesAutoresizingMaskIntoConstraints = NO;
-  [divider.heightAnchor constraintEqualToConstant:1].active = YES;
+
+  if (orientation == UILayoutConstraintAxisHorizontal) {
+    // Horizontal divider.
+    [divider.heightAnchor constraintEqualToConstant:kDividerWidth].active = YES;
+  } else {
+    // Vertical divider.
+    [divider.widthAnchor constraintEqualToConstant:kDividerWidth].active = YES;
+  }
+
   return divider;
+}
+
+// Creates a navigation chevron icon.
+- (UIImageView*)createNavigationChevron {
+  UIImageView* chevronIcon = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kChevronRightSymbol,
+                                               kSmallButtonIconSize)];
+  chevronIcon.translatesAutoresizingMaskIntoConstraints = NO;
+  chevronIcon.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [chevronIcon.widthAnchor constraintEqualToConstant:kSmallButtonIconSize],
+    [chevronIcon.heightAnchor constraintEqualToConstant:kSmallButtonIconSize],
+  ]];
+
+  return chevronIcon;
 }
 
 // Registers for trait collection changes to handle device orientation updates.
@@ -824,7 +849,11 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
           colorWithAlphaComponent:kSmallButtonOpacity];
   containerView.layer.cornerRadius = kButtonsCornerRadius;
 
-  // Create horizontal stack.
+  // Handle split action.
+  if (feature.actionType == PageActionMenuSettingsAction) {
+    return [self createSplitActionRowWithData:feature
+                                containerView:containerView];
+  }
   UIStackView* stackView = [[UIStackView alloc] init];
   stackView.axis = UILayoutConstraintAxisHorizontal;
   stackView.alignment = UIStackViewAlignmentCenter;
@@ -859,7 +888,6 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
 
   [stackView addArrangedSubview:labelsStack];
 
-  // TODO(crbug.com/447649727):  Add action element based on feature type.
   switch (feature.actionType) {
     case PageActionMenuToggleAction: {
       UISwitch* toggleSwitch = [[UISwitch alloc] init];
@@ -889,7 +917,7 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
       break;
     }
     case PageActionMenuSettingsAction:
-      // TODO(crbug.com/447649727):  Implement settings action.
+      // Already handled above, should never reach here.
       break;
   }
 
@@ -978,6 +1006,203 @@ const CGFloat kPermissionsFeatureAnimationDuration = 0.3;
     default:
       break;
   }
+}
+
+// Handles taps on the left side of split action feature rows.
+- (void)handleFeatureRowTap:(UIButton*)sender {
+  CHECK(IsProactiveSuggestionsFrameworkEnabled());
+  PageActionMenuFeatureType featureType = (PageActionMenuFeatureType)sender.tag;
+
+  switch (featureType) {
+    case PageActionMenuTranslate: {
+      // Call modal first, then dismiss.
+      [self.mutator openTranslateOptions];
+      [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+// Creates the horizontal content stack with icon, labels, and chevron.
+- (UIStackView*)createFeatureRowContentStackWithFeature:
+    (PageActionMenuFeature*)feature {
+  UIStackView* contentStack = [[UIStackView alloc] init];
+  contentStack.translatesAutoresizingMaskIntoConstraints = NO;
+  contentStack.axis = UILayoutConstraintAxisHorizontal;
+  contentStack.alignment = UIStackViewAlignmentCenter;
+  contentStack.spacing = kFeatureRowContentSpacing;
+  contentStack.userInteractionEnabled = NO;
+
+  UIImageView* iconView = [[UIImageView alloc] initWithImage:feature.icon];
+  iconView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconView.tintColor = [UIColor colorNamed:kBlue600Color];
+  [NSLayoutConstraint activateConstraints:@[
+    [iconView.widthAnchor constraintEqualToConstant:kFeatureRowIconSize],
+    [iconView.heightAnchor constraintEqualToConstant:kFeatureRowIconSize],
+  ]];
+
+  [contentStack addArrangedSubview:iconView];
+
+  UIStackView* labelsStack =
+      [self createFeatureRowLabelsStackWithFeature:feature];
+  [contentStack addArrangedSubview:labelsStack];
+
+  UIImageView* chevronIcon = [self createNavigationChevron];
+  [contentStack addArrangedSubview:chevronIcon];
+
+  return contentStack;
+}
+
+// Creates the vertical stack containing labels for feature rows.
+- (UIStackView*)createFeatureRowLabelsStackWithFeature:
+    (PageActionMenuFeature*)feature {
+  UIStackView* labelsStack = [[UIStackView alloc] init];
+  labelsStack.axis = UILayoutConstraintAxisVertical;
+  labelsStack.alignment = UIStackViewAlignmentLeading;
+
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.text = feature.title;
+  titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                              UIFontWeightRegular);
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  [labelsStack addArrangedSubview:titleLabel];
+
+  if (feature.subtitle && feature.subtitle.length > 0) {
+    UILabel* subtitleLabel = [[UILabel alloc] init];
+    subtitleLabel.text = feature.subtitle;
+    subtitleLabel.font =
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
+    subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    [labelsStack addArrangedSubview:subtitleLabel];
+  }
+
+  return labelsStack;
+}
+
+// Creates the trailing action button for the right side of split feature rows.
+- (UIButton*)createTrailingButtonWithFeature:(PageActionMenuFeature*)feature {
+  if (!feature.actionText || feature.actionText.length == 0) {
+    return nil;
+  }
+
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  UIFont* fontAttribute =
+      PreferredFontForTextStyle(UIFontTextStyleSubheadline, UIFontWeightMedium);
+
+  NSDictionary* attributes = @{
+    NSFontAttributeName : fontAttribute,
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]
+  };
+
+  NSMutableAttributedString* attributedTitle =
+      [[NSMutableAttributedString alloc] initWithString:feature.actionText
+                                             attributes:attributes];
+  configuration.attributedTitle = attributedTitle;
+
+  UIButton* trailingButton = [UIButton buttonWithConfiguration:configuration
+                                                 primaryAction:nil];
+  trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
+  trailingButton.maximumContentSizeCategory =
+      UIContentSizeCategoryExtraExtraLarge;
+  trailingButton.tag = feature.featureType;
+
+  [trailingButton addTarget:self
+                     action:@selector(handleFeatureButton:)
+           forControlEvents:UIControlEventTouchUpInside];
+
+  [trailingButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [trailingButton setContentHuggingPriority:UILayoutPriorityRequired
+                                    forAxis:UILayoutConstraintAxisHorizontal];
+
+  return trailingButton;
+}
+
+// Creates a feature row with split actions (left tap area, divider, right
+// button).
+- (UIView*)createSplitActionRowWithData:(PageActionMenuFeature*)feature
+                          containerView:(UIView*)containerView {
+  // Create horizontal stack.
+  UIStackView* horizontalStackView = [[UIStackView alloc] init];
+  horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+  horizontalStackView.alignment = UIStackViewAlignmentFill;
+  horizontalStackView.distribution = UIStackViewDistributionFill;
+  horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [containerView addSubview:horizontalStackView];
+
+  // Create leading button.
+  UIButton* leadingButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  leadingButton.translatesAutoresizingMaskIntoConstraints = NO;
+  leadingButton.tag = feature.featureType;
+
+  [leadingButton addTarget:self
+                    action:@selector(handleFeatureRowTap:)
+          forControlEvents:UIControlEventTouchUpInside];
+
+  UIStackView* buttonContentStack =
+      [self createFeatureRowContentStackWithFeature:feature];
+  [leadingButton addSubview:buttonContentStack];
+  [horizontalStackView addArrangedSubview:leadingButton];
+
+  // Add divider.
+  UIView* divider =
+      [self createDividerWithOrientation:UILayoutConstraintAxisVertical];
+  [horizontalStackView addArrangedSubview:divider];
+
+  // Add trailing button if needed.
+  UIButton* trailingButton = [self createTrailingButtonWithFeature:feature];
+  if (trailingButton) {
+    [horizontalStackView addArrangedSubview:trailingButton];
+  }
+
+  // Set up constraints.
+  [self setupSplitRowConstraints:containerView
+             horizontalStackView:horizontalStackView
+              buttonContentStack:buttonContentStack
+                   leadingButton:leadingButton];
+
+  return containerView;
+}
+
+// Sets up Auto Layout constraints for split action row container and content.
+- (void)setupSplitRowConstraints:(UIView*)containerView
+             horizontalStackView:(UIStackView*)horizontalStackView
+              buttonContentStack:(UIStackView*)buttonContentStack
+                   leadingButton:(UIButton*)leadingButton {
+  [NSLayoutConstraint activateConstraints:@[
+    [buttonContentStack.leadingAnchor
+        constraintEqualToAnchor:leadingButton.leadingAnchor
+                       constant:kFeatureRowHorizontalPadding],
+    [buttonContentStack.trailingAnchor
+        constraintEqualToAnchor:leadingButton.trailingAnchor
+                       constant:-kFeatureRowHorizontalPadding],
+    [buttonContentStack.topAnchor
+        constraintEqualToAnchor:leadingButton.topAnchor
+                       constant:kFeatureRowVerticalPadding],
+    [buttonContentStack.bottomAnchor
+        constraintEqualToAnchor:leadingButton.bottomAnchor
+                       constant:-kFeatureRowVerticalPadding],
+
+    [horizontalStackView.leadingAnchor
+        constraintEqualToAnchor:containerView.leadingAnchor],
+    [horizontalStackView.trailingAnchor
+        constraintEqualToAnchor:containerView.trailingAnchor],
+    [horizontalStackView.topAnchor
+        constraintEqualToAnchor:containerView.topAnchor],
+    [horizontalStackView.bottomAnchor
+        constraintEqualToAnchor:containerView.bottomAnchor],
+
+    [containerView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kFeatureRowHeight],
+  ]];
+
+  UIStackView* labelsStack = buttonContentStack.arrangedSubviews[1];
+  [labelsStack setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                 forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 @end
