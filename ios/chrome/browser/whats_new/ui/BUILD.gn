@@ -28,6 +28,7 @@ source_set("ui") {
     "//ios/chrome/browser/whats_new/ui/cells",
     "//ios/chrome/browser/whats_new/ui/data_source:whats_new_item",
     "//ios/chrome/browser/whats_new/ui/strings",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/instruction_view",

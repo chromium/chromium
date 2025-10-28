@@ -7,6 +7,7 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -121,15 +122,18 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
                   primaryActionString:(NSString*)primaryActionString
                 secondaryActionString:(NSString*)secondaryActionString {
   DCHECK(!self.alertScreen);
-  ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
-  alertScreen.titleString = titleString;
-  alertScreen.subtitleString = subtitleString;
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
   if (!self.item.isIphoneOnly ||
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    alertScreen.primaryActionString = primaryActionString;
-    alertScreen.secondaryActionString = secondaryActionString;
+    configuration.primaryActionString = primaryActionString;
+    configuration.secondaryActionString = secondaryActionString;
   }
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:configuration];
+  alertScreen.titleString = titleString;
+  alertScreen.subtitleString = subtitleString;
   alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
 }

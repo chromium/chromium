@@ -7,6 +7,7 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
@@ -68,12 +69,15 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
   instructionView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  _alertScreen = [[ConfirmationAlertViewController alloc] init];
-  _alertScreen.primaryActionString = self.item.primaryActionTitle;
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = self.item.primaryActionTitle;
   if (self.item.learnMoreURL.is_valid()) {
-    _alertScreen.secondaryActionString =
+    configuration.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE);
   }
+  _alertScreen = [[ConfirmationAlertViewController alloc]
+      initWithConfiguration:configuration];
   _alertScreen.underTitleView = instructionView;
   _alertScreen.titleView = self.titleLabel;
   _alertScreen.actionHandler = self.actionHandler;
@@ -81,11 +85,12 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
 
   UIImage* xmarkSymbol;
   if (@available(iOS 26, *)) {
-    UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+    UIImageConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
         configurationWithPointSize:kDismissSymbolSizeIOS26
                             weight:UIImageSymbolWeightLight
                              scale:UIImageSymbolScaleUnspecified];
-    xmarkSymbol = DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+    xmarkSymbol =
+        DefaultSymbolWithConfiguration(kXMarkSymbol, symbolConfiguration);
   } else {
     xmarkSymbol =
         SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
