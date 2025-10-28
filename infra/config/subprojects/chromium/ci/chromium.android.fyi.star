@@ -1430,6 +1430,7 @@ ci.builder(
             "android_rel_isolated_scripts",
             "chromium_junit_tests_scripts",
             "gtests_once",
+            "webview_trichrome_64_cts_hostside_gtests",  # For hostside test type
         ],
         mixins = [
             "16-x64-emulator",
