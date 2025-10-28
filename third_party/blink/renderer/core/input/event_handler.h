@@ -298,6 +298,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   base::debug::CrashKeyString* CrashKeyForBug1519197() const;
 
+  // Testing helper: Returns the LocalFrame from a target node for drag/drop.
+  // This exposes the logic of LocalFrameFromTargetNode for testing purposes.
+  static LocalFrame* LocalFrameFromTargetNodeForTesting(Node* target);
+
  private:
   WebInputEventResult HandleMouseMoveOrLeaveEvent(
       const WebMouseEvent&,

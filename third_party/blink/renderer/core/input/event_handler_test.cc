@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -3603,6 +3604,54 @@ TEST_F(EventHandlerSimTest, GestureTapHoverState) {
   // #a is still hovered after scrolling away (crbug.com/366020097).
   EXPECT_EQ(rgb_red, ColorOf(a));
   EXPECT_EQ(rgb_white, ColorOf(b));
+}
+
+// Tests LocalFrameFromTargetNode for HTMLPlugInElement (object tag).
+// Verifies that when DragAndDropPluginElementSupport is enabled, the function
+// returns a non-null LocalFrame from an object element.
+TEST_F(EventHandlerSimTest, LocalFrameFromPluginElementForTesting) {
+  ScopedDragAndDropPluginElementSupportForTest feature_scope(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimRequest object_resource("https://example.com/object.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <object id="plugin-element" type="text/html" data="object.html"
+            style="width:200px;height:200px;"></object>
+  )HTML");
+
+  object_resource.Complete(R"HTML(
+    <!DOCTYPE html>
+    <div>Content</div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Node* target = GetDocument().getElementById(AtomicString("plugin-element"));
+  ASSERT_NE(target, nullptr);
+
+  // Call the actual LocalFrameFromTargetNode function (via testing wrapper)
+  LocalFrame* result = GetDocument()
+                           .GetFrame()
+                           ->GetEventHandler()
+                           .LocalFrameFromTargetNodeForTesting(target);
+
+  // With DragAndDropPluginElementSupport enabled, LocalFrameFromTargetNode
+  // should return a non-null LocalFrame for object elements
+  ASSERT_NE(result, nullptr)
+      << "LocalFrameFromTargetNode should return a LocalFrame for "
+      << "object elements";
+
+  // Verify that the returned LocalFrame actually contains the object.html
+  // document
+  ASSERT_NE(result->GetDocument(), nullptr);
+  EXPECT_EQ(result->GetDocument()->Url().GetString(),
+            "https://example.com/object.html")
+      << "The LocalFrame should contain the document loaded in the object "
+         "element";
 }
 
 }  // namespace blink
