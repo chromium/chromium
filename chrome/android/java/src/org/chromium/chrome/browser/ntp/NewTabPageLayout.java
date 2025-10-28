@@ -1236,9 +1236,14 @@ public class NewTabPageLayout extends LinearLayout
     private void unifyElementWidths() {
         View searchBoxView = getSearchBoxView();
         final int width = getMeasuredWidth();
-        measureExactly(
-                searchBoxView, width - mSearchBoxTwoSideMargin, searchBoxView.getMeasuredHeight());
+        int searchBoxWidth = width - mSearchBoxTwoSideMargin;
+        measureExactly(searchBoxView, searchBoxWidth, searchBoxView.getMeasuredHeight());
+
         if (mLogoCoordinator != null) mLogoCoordinator.measureExactlyLogoView(width);
+
+        if (mComposeplateCoordinator != null) {
+            mComposeplateCoordinator.measureExactlyComposeplateView(searchBoxWidth);
+        }
     }
 
     /**
