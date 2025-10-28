@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="NewTabPage.Count" units="count" expires_after="2026-02-22">
+<histogram name="NewTabPage.Count" units="count" expires_after="2026-04-26">
   <owner>kawasin@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -705,7 +705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.BottomSheet.Shown"
-    enum="NtpCustomizationBottomSheetType" expires_after="2026-02-22">
+    enum="NtpCustomizationBottomSheetType" expires_after="2026-04-26">
   <owner>hanxi@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
   <owner>clank-start@google.com</owner>
@@ -731,7 +731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Customization.OpenBottomSheetEntry"
-    enum="NtpCustomizationEntryPoint" expires_after="2026-02-22">
+    enum="NtpCustomizationEntryPoint" expires_after="2026-04-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <owner>yanlinghu@google.com</owner>
@@ -796,7 +796,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeSidePanelAction"
-    enum="NTPCustomizeChromeSidePanelAction" expires_after="2026-02-22">
+    enum="NTPCustomizeChromeSidePanelAction" expires_after="2026-04-26">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
@@ -2452,7 +2452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.Visit.ClickSource"
-    enum="NtpURLVisitAggregateTypes" expires_after="2026-02-22">
+    enum="NtpURLVisitAggregateTypes" expires_after="2026-04-26">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

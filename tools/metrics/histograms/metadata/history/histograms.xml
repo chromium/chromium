@@ -2622,7 +2622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InitializationFailureStep" enum="HistoryInitStep"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>sky@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <component>1456716</component>
@@ -2921,7 +2921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
-    units="entries" expires_after="2026-02-22">
+    units="entries" expires_after="2026-04-26">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2932,7 +2932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableSizeOnTableCreate" units="MB"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>
@@ -2942,7 +2942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.HashTableUsageOnLinkAdded"
-    units="fingerprints" expires_after="2026-02-22">
+    units="fingerprints" expires_after="2026-04-26">
   <owner>kyraseevers@chromium.org</owner>
   <owner>janiceliu@chromium.org</owner>
   <summary>

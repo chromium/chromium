@@ -762,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.DlcService.InstallResult"
-    enum="DlcService.InstallResult" expires_after="2026-02-22">
+    enum="DlcService.InstallResult" expires_after="2026-04-26">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -793,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Emmc.LifeUsed.{Type}" enum="EmmcLifeUsed"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>
@@ -1074,7 +1074,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexPartitionSize.{Partition}" units="MiB"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>nicholasbishop@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1841,7 +1841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1895,7 +1895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1920,7 +1920,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.UnavailableErrorReason"
-    enum="UnavailableErrorReason" expires_after="2026-02-22">
+    enum="UnavailableErrorReason" expires_after="2026-04-26">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>

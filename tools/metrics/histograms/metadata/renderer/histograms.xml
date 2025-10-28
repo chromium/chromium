@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
-    units="ms" expires_after="2026-02-22">
+    units="ms" expires_after="2026-04-26">
   <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -589,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Unresponsive.Reason{WidgetVisibility}"
-    enum="RendererIsUnresponsiveReason" expires_after="2026-02-22">
+    enum="RendererIsUnresponsiveReason" expires_after="2026-04-26">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Unresponsive.{UIElementVisible}.RenderProcessHostPriority"
-    enum="RenderProcessHostPriority" expires_after="2026-02-22">
+    enum="RenderProcessHostPriority" expires_after="2026-04-26">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -723,7 +723,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad6" units="%"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>lizeb@chromium.org</owner>
   <owner>shaseley@chromium.org</owner>
   <summary>

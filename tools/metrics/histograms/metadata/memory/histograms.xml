@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.Enabled{Process}"
-    enum="BooleanEnabled" expires_after="2026-02-22">
+    enum="BooleanEnabled" expires_after="2026-04-26">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -972,7 +972,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
-    units="samples" expires_after="2026-02-22">
+    units="samples" expires_after="2026-04-26">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-memory@google.com</owner>
   <summary>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.CommitPercentageUsed" units="%"
-    expires_after="2026-01-04">
+    expires_after="2026-04-26">
   <owner>aattar@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2429,7 +2429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.Latency" units="microseconds"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2507,7 +2507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PreFreeze2{Process}.PrivateMemoryFootprint.{Timing}"
-    units="MiB" expires_after="2026-02-22">
+    units="MiB" expires_after="2026-04-26">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
   <summary>
@@ -2727,7 +2727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Count2.All" units="processes"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -2805,7 +2805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.RenderProcessHost.Percent.OriginAgentClusterOverhead"
-    units="%" expires_after="2026-02-22">
+    units="%" expires_after="2026-04-26">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -2840,7 +2840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.StackSamplingProfiler.StackSampleSize2" units="KB"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>iby@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>

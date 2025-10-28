@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.IpProtection.CanFalloverToNextProxy2.Error.{Chain}"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-22">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-26">
   <owner>rsailer@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>
@@ -797,7 +797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.MaskedDomainList.Size2" units="KB"
-    expires_after="2026-02-22">
+    expires_after="2026-04-26">
   <owner>aakallam@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
   <summary>

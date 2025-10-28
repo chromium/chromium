@@ -1453,7 +1453,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSuggestions.Feed.UserJourney.{Surface}.{Status}Duration"
-    units="ms" expires_after="2026-02-22">
+    units="ms" expires_after="2026-04-26">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>

@@ -456,7 +456,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.DlcManagerStatus.ElapsedTimeHistogramOnFailure.{DlcType}"
-    units="seconds" expires_after="2026-02-22">
+    units="seconds" expires_after="2026-04-26">
   <owner>cranelw@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -1151,7 +1151,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamRuntime{Cras_Direction}" units="seconds"
-    expires_after="2026-01-18">
+    expires_after="2026-04-26">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" and

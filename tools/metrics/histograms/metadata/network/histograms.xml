@@ -1822,7 +1822,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.ContentDecodingInterceptor.CreateDataPipeSuccess.{ContentDecodingInterceptorClientType}"
-    enum="Boolean" expires_after="2026-02-22">
+    enum="Boolean" expires_after="2026-04-26">
   <owner>horo@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
