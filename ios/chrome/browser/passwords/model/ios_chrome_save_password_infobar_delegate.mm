@@ -49,7 +49,7 @@ enum class InfobarTearDownMoment {
 
 // Records Presentation Metrics for the Infobar Delegate.
 // `current_password_saved` is true if the Infobar is on read-only mode after a
-// Save/Update action has occured.
+// Save/Update action has occurred.
 // `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
 // `automatic` is YES the Infobar was presented automatically(e.g. The banner
