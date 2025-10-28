@@ -904,21 +904,25 @@ protocol::Response InspectorEmulationAgent::setLocaleOverride(
 
 protocol::Response InspectorEmulationAgent::setTimezoneOverride(
     const String& timezone_id) {
-  if (timezone_id == TimeZoneController::TimeZoneIdOverride()) {
-    // Do nothing.
-  } else if (timezone_id.empty()) {
+  if (timezone_id.empty()) {
     timezone_override_.reset();
   } else {
     if (timezone_override_) {
       timezone_override_->change(timezone_id);
     } else {
-      timezone_override_ = TimeZoneController::SetTimeZoneOverride(timezone_id);
-    }
-    if (!timezone_override_) {
-      return TimeZoneController::HasTimeZoneOverride()
-                 ? protocol::Response::ServerError(
-                       "Timezone override is already in effect")
-                 : protocol::Response::InvalidParams("Invalid timezone id");
+      auto result = TimeZoneController::SetTimeZoneOverride(timezone_id);
+      switch (result.status) {
+        case TimeZoneController::TimeZoneOverrideStatus::kSuccess:
+          if (result.handle) {
+            timezone_override_ = std::move(result.handle);
+          }
+          break;
+        case TimeZoneController::TimeZoneOverrideStatus::kAlreadyInEffect:
+          return protocol::Response::ServerError(
+              "Timezone override is already in effect");
+        case TimeZoneController::TimeZoneOverrideStatus::kInvalidTimezone:
+          return protocol::Response::InvalidParams("Invalid timezone id");
+      }
     }
   }
 

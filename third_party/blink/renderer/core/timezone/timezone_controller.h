@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -30,6 +31,12 @@ class CORE_EXPORT TimeZoneController final
 
   static void Init();
 
+  enum class TimeZoneOverrideStatus {
+    kSuccess,
+    kAlreadyInEffect,
+    kInvalidTimezone,
+  };
+
   class TimeZoneOverride {
     friend TimeZoneController;
     TimeZoneOverride() = default;
@@ -42,19 +49,23 @@ class CORE_EXPORT TimeZoneController final
     ~TimeZoneOverride() { ClearTimeZoneOverride(); }
   };
 
-  static std::unique_ptr<TimeZoneOverride> SetTimeZoneOverride(
-      const String& timezone_id);
+  struct TimeZoneOverrideResult {
+    TimeZoneOverrideStatus status;
+    std::unique_ptr<TimeZoneOverride> handle;
+  };
 
-  static bool HasTimeZoneOverride();
-  static const String& TimeZoneIdOverride();
+  static TimeZoneOverrideResult SetTimeZoneOverride(const String& timezone_id);
 
   static void ChangeTimeZoneForTesting(const String&);
 
  private:
   TimeZoneController();
   static TimeZoneController& instance();
+  static bool HasTimeZoneOverride();
+  static const String& TimeZoneIdOverride();
   static void ClearTimeZoneOverride();
   static void ChangeTimeZoneOverride(const String&);
+  static bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id);
 
   const String& GetHostTimezoneId();
 
@@ -65,8 +76,10 @@ class CORE_EXPORT TimeZoneController final
   // by Oilpan.
   mojo::Receiver<device::mojom::blink::TimeZoneMonitorClient> receiver_{this};
 
-  String host_timezone_id_;
-  String override_timezone_id_;
+  base::Lock lock_;
+
+  String host_timezone_id_ GUARDED_BY(lock_);
+  String override_timezone_id_ GUARDED_BY(lock_);
 };
 
 }  // namespace blink

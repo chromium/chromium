@@ -31,6 +31,7 @@ class MainThreadTaskRunnerRestricted {
   friend class SharedGpuContext;
   friend class SharedWorkerReportingProxy;
   friend class ThreadedIconLoader;
+  friend class TimeZoneController;
   friend class V8WorkerMemoryReporter;
   friend class WebGLWebCodecsVideoFrame;
   friend class WebRtcVideoFrameAdapter;

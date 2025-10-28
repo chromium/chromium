@@ -1,0 +1,11 @@
+Tests that Emulation.setTimezoneOverride works when sent to a shared worker target.
+
+Set timezone to Asia/Shanghai in shared worker
+Detected shared worker timezone: Asia/Shanghai
+
+Overwrite timezone with Europe/Paris in shared worker
+Detected shared worker timezone: Europe/Paris
+
+Reset timezone to default in shared worker
+Timezone correctly reset to initial value: true
+
