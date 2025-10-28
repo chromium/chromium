@@ -2400,8 +2400,12 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
 
     // Skipping one whitespace removes all collapsible spaces because
     // collapsible spaces are collapsed to single space in InlineItemBuilder.
+    // If these collapsible spaces follow preserved whitespace, we keep the
+    // trailing whitespace status as preserved.
     current_.text_offset++;
-    trailing_whitespace_ = WhitespaceState::kCollapsed;
+    if (trailing_whitespace_ != WhitespaceState::kPreserved) {
+      trailing_whitespace_ = WhitespaceState::kCollapsed;
+    }
 
     // Make the last item breakable after, even if it was nowrap.
     InlineItemResults* item_results = line_info->MutableResults();
