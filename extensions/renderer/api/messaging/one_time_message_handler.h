@@ -196,8 +196,8 @@ class OneTimeMessageHandler {
                                 gin::Arguments* arguments);
 
   // Triggered when a receiver's returned promise rejects.
-  void PromiseRejectedResponse(const PortId& port_id,
-                               gin::Arguments* arguments);
+  void OnPromiseRejectedResponse(const PortId& port_id,
+                                 gin::Arguments* arguments);
 
   // Called when the messaging event has been dispatched with the result of the
   // listeners.

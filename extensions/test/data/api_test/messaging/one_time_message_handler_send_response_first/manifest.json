@@ -1,5 +1,5 @@
 {
-  "name": "One Time Messaging: first listener responds before later listener throws",
+  "name": "One Time Messaging: first listener responds before later listener throws an error",
   "version": "1.0",
   "manifest_version": 3,
   "background": {
