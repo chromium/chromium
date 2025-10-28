@@ -289,8 +289,12 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Whether the window is active.
   // The definition of "active" aligns with the window being painted as active
   // instead of the top level widget having focus.
-  // Note that this does not work correctly for mac PWA windows, as those are
-  // hosted in a separate application with a stub in the browser process.
+  // Note that on platforms other than Windows, this might not reflect the
+  // actual OS level window activation status, as Chrome internally marks any
+  // browser window as "active" as soon as it starts the (asynchronous) process
+  // to activate the window. However there is no guarantee that the window will
+  // actually be activated on the OS level, so this field can easily get out of
+  // sync with reality.
   virtual bool IsActive() const = 0;
 
   // Register for these two callbacks to detect changes to IsActive().
