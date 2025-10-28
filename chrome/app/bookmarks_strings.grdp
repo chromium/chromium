@@ -205,22 +205,28 @@
   </message>
   <if expr="not is_android">
     <message name="IDS_BOOKMARK_BAR_ALREADY_CREATED_GROUP" desc="Message in the message box shown when user opens a bookmark folder as tab group if user already did that before">
-      You already created a group from this folder.
+      A tab group was already created with this bookmark folder. Do you want to create a new tab group or replace the existing one?
     </message>
     <if expr="not use_titlecase">
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE" desc="Title of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace or create new group?
+      </message>
       <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
-        Create new group
+        Create new tab group
       </message>
       <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
-        Replace old group
+        Replace existing tab group
       </message>
     </if>
     <if expr="use_titlecase">
+      <message name="IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE" desc="In title case: Title of the message box shown when user opens a bookmark folder as tab group if user already did that before">
+        Replace or Create New Group?
+      </message>
       <message name="IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON" desc="In title case: Create new group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
-        Create New Group
+        Create New Tab Group
       </message>
       <message name="IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON" desc="In title case: Replace old group button of the message box shown when user opens a bookmark folder as tab group if user already did that before">
-        Replace Old Group
+        Replace Existing Tab Group
       </message>
     </if>
   </if>
