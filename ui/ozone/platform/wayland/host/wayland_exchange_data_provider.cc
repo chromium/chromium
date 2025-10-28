@@ -276,7 +276,7 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   DCHECK(out_content);
   DCHECK(IsMimeTypeSupported(mime_type));
-  if (std::optional<ui::OSExchangeData::UrlInfo> url_info;
+  if (std::optional<ui::OSExchangeDataProvider::UrlInfo> url_info;
       mime_type == ui::kMimeTypeMozillaUrl &&
       (url_info = GetURLAndTitle(kFilenameToURLPolicy)).has_value()) {
     out_content->append(url_info->url.spec());

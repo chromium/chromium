@@ -747,11 +747,11 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
       EXPECT_FALSE(dropped_data->HasURL(kFilenameToURLPolicy));
     } else {
       EXPECT_TRUE(dropped_data->HasURL(kFilenameToURLPolicy));
-      std::optional<ui::OSExchangeData::UrlInfo> url_info =
-          dropped_data->GetURLAndTitle(kFilenameToURLPolicy);
-      EXPECT_TRUE(url_info.has_value());
-      EXPECT_EQ(url_info->url.spec(), kCase.expected_url);
-      EXPECT_EQ(url_info->title, kCase.expected_title);
+      const std::vector<ui::ClipboardUrlInfo> url_infos =
+          dropped_data->GetURLsAndTitles(kFilenameToURLPolicy);
+      EXPECT_FALSE(url_infos.empty());
+      EXPECT_EQ(url_infos.front().url.spec(), kCase.expected_url);
+      EXPECT_EQ(url_infos.front().title, kCase.expected_title);
     }
 
     EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(AtMost(1));

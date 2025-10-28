@@ -2169,7 +2169,7 @@ void OmniboxViewViews::OnWriteDragData(ui::OSExchangeData* data) {
   model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
                              &write_url);
   data->SetString(selected_text);
-  if (write_url) {
+  if (write_url && url.is_valid()) {
     gfx::Image favicon;
     std::u16string title = selected_text;
     if (IsSelectAll()) {
@@ -2347,11 +2347,11 @@ void OmniboxViewViews::PerformDrop(
 
   const ui::OSExchangeData& data = event.data();
   std::u16string text;
-  if (std::optional<ui::OSExchangeData::UrlInfo> url_result =
-          data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-      url_result.has_value()) {
+  const std::vector<ui::ClipboardUrlInfo> url_infos =
+      data.GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (!url_infos.empty()) {
     text = omnibox::StripJavascriptSchemas(
-        base::UTF8ToUTF16(url_result->url.spec()));
+        base::UTF8ToUTF16(url_infos.front().url.spec()));
   } else if (const std::optional<std::u16string> text_result = data.GetString();
              text_result.has_value()) {
     text = omnibox::StripJavascriptSchemas(

@@ -584,12 +584,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
           std::unique_ptr<ui::OSExchangeData> drag_data,
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
-        std::optional<ui::OSExchangeData::UrlInfo> url_info =
-            drag_data->GetURLAndTitle(
+        std::vector<ui::ClipboardUrlInfo> url_infos =
+            drag_data->GetURLsAndTitles(
                 ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-        ASSERT_TRUE(url_info.has_value());
-        EXPECT_EQ(page_url, url_info->url);
-        EXPECT_EQ(page_title, url_info->title);
+        ASSERT_FALSE(url_infos.empty());
+        EXPECT_EQ(page_url, url_infos.front().url);
+        EXPECT_EQ(page_title, url_infos.front().title);
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
@@ -668,33 +668,16 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
           std::unique_ptr<ui::OSExchangeData> drag_data,
           gfx::NativeView native_view, ui::mojom::DragEventSource source,
           gfx::Point point, int operation) {
-#if BUILDFLAG(IS_MAC)
-        // On the Mac, the clipboard can hold multiple items, each with
-        // different representations. Therefore, when the "write multiple URLs"
-        // call is made, a full-fledged array of objects and types are written
-        // to the clipboard, providing rich interoperability with the rest of
-        // the OS and other apps. Then, when `GetURLAndTitle` is called, it
-        // looks at the clipboard, sees URL and title data, and returns true.
-        std::optional<ui::OSExchangeData::UrlInfo> url_info =
-            drag_data->GetURLAndTitle(
+        const std::vector<ui::ClipboardUrlInfo> url_infos =
+            drag_data->GetURLsAndTitles(
                 ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-        ASSERT_TRUE(url_info.has_value());
+        ASSERT_FALSE(url_infos.empty());
 
         // The bookmarks are added in order, and the first is retrieved, so
         // expect the values from the first bookmark.
-        EXPECT_EQ(page_title, url_info->title);
-        EXPECT_EQ(page_url, url_info->url);
-#else
-        // On other platforms, because they don't have the concept of multiple
-        // items on the clipboard, single URLs are added as a URL, but multiple
-        // URLs are added as a data blob opaque to the outside world. Then, when
-        // `GetURLAndTitle` is called, it's unable to extract any single URL,
-        // and returns false.
-        EXPECT_FALSE(drag_data
-                         ->GetURLAndTitle(
-                             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES)
-                         .has_value());
-#endif
+        // TODO(http://crbug.com/41011768): test the bookmark folder.
+        EXPECT_EQ(page_title, url_infos.front().title);
+        EXPECT_EQ(page_url, url_infos.front().url);
 #if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS

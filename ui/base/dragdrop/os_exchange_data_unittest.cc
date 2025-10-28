@@ -44,10 +44,10 @@ TEST_F(OSExchangeDataTest, StringDataGetAndSet) {
   EXPECT_TRUE(copy.HasString());
   std::optional<std::u16string> string = copy.GetString();
   EXPECT_EQ(u"I can has cheezburger?", string);
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   // No URLs in `data` so no URLs should be read out.
-  EXPECT_FALSE(url_info.has_value());
+  EXPECT_TRUE(url_infos.empty());
 }
 
 TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
@@ -61,11 +61,11 @@ TEST_F(OSExchangeDataTest, TestURLExchangeFormats) {
 
   // URL spec and title should match
   EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  EXPECT_TRUE(url_info.has_value());
-  EXPECT_EQ("https://www.google.com/", url_info->url.spec());
-  EXPECT_EQ(u"www.google.com", url_info->title);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_FALSE(url_infos.empty());
+  EXPECT_EQ("https://www.google.com/", url_infos.front().url.spec());
+  EXPECT_EQ(u"www.google.com", url_infos.front().title);
 
   // URL should be the raw text response, even though no text was explicitly
   // set.
@@ -95,18 +95,18 @@ TEST_F(OSExchangeDataTest, URLFromString) {
   }());
 
   EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   if constexpr (kSupportsStringToUrlCoercion) {
-    EXPECT_TRUE(url_info.has_value());
-    EXPECT_EQ("https://www.google.com/", url_info->url.spec());
+    ASSERT_FALSE(url_infos.empty());
+    EXPECT_EQ("https://www.google.com/", url_infos.front().url.spec());
     if constexpr (kStringToUrlCoercionPopulatesTitle) {
-      EXPECT_EQ(u"www.google.com", url_info->title);
+      EXPECT_EQ(u"www.google.com", url_infos.front().title);
     } else {
-      EXPECT_EQ(u"", url_info->title);
+      EXPECT_EQ(u"", url_infos.front().title);
     }
   } else {
-    EXPECT_FALSE(url_info.has_value());
+    EXPECT_TRUE(url_infos.empty());
   }
 }
 
@@ -119,18 +119,18 @@ TEST_F(OSExchangeDataTest, URLFromRendererTaintedString) {
   }());
 
   EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   if constexpr (kSupportsStringToUrlCoercion) {
-    EXPECT_TRUE(url_info.has_value());
-    EXPECT_EQ("https://www.google.com/", url_info->url.spec());
+    ASSERT_FALSE(url_infos.empty());
+    EXPECT_EQ("https://www.google.com/", url_infos.front().url.spec());
     if constexpr (kStringToUrlCoercionPopulatesTitle) {
-      EXPECT_EQ(u"www.google.com", url_info->title);
+      EXPECT_EQ(u"www.google.com", url_infos.front().title);
     } else {
-      EXPECT_EQ(u"", url_info->title);
+      EXPECT_EQ(u"", url_infos.front().title);
     }
   } else {
-    EXPECT_FALSE(url_info.has_value());
+    EXPECT_TRUE(url_infos.empty());
   }
 }
 
@@ -142,18 +142,18 @@ TEST_F(OSExchangeDataTest, NonHttpAndNonHttpsURLFromString) {
   }());
 
   EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
   if constexpr (kSupportsStringToUrlCoercion) {
-    EXPECT_TRUE(url_info.has_value());
-    EXPECT_EQ("chrome://settings/", url_info->url.spec());
+    ASSERT_FALSE(url_infos.empty());
+    EXPECT_EQ("chrome://settings/", url_infos.front().url.spec());
     if constexpr (kStringToUrlCoercionPopulatesTitle) {
-      EXPECT_EQ(u"settings", url_info->title);
+      EXPECT_EQ(u"settings", url_infos.front().title);
     } else {
-      EXPECT_EQ(u"", url_info->title);
+      EXPECT_EQ(u"", url_infos.front().title);
     }
   } else {
-    EXPECT_FALSE(url_info.has_value());
+    EXPECT_TRUE(url_infos.empty());
   }
 }
 
@@ -166,9 +166,9 @@ TEST_F(OSExchangeDataTest, NonHttpAndNonHttpsURLFromRendererTaintedString) {
   }());
 
   EXPECT_FALSE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  EXPECT_FALSE(url_info.has_value());
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  EXPECT_TRUE(url_infos.empty());
 }
 
 // Test that setting the URL does not overwrite a previously set custom string
@@ -184,11 +184,11 @@ TEST_F(OSExchangeDataTest, URLStringFileContents) {
   std::optional<std::u16string> string = copy.GetString();
   EXPECT_EQ(u"I can has cheezburger?", string);
 
-  std::optional<OSExchangeData::UrlInfo> url_info =
-      copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  EXPECT_TRUE(url_info.has_value());
-  EXPECT_EQ("https://www.google.com/", url_info->url.spec());
-  EXPECT_EQ(u"www.google.com", url_info->title);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  ASSERT_FALSE(url_infos.empty());
+  EXPECT_EQ("https://www.google.com/", url_infos.front().url.spec());
+  EXPECT_EQ(u"www.google.com", url_infos.front().title);
 
   // HasFileContents() should be false, and GetFileContents() should be empty
   // (https://crbug.com/1274395).
@@ -215,18 +215,19 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
 
   {
     EXPECT_FALSE(copy.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
-    std::optional<OSExchangeData::UrlInfo> no_converted_filenames_url_info =
-        copy.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-    EXPECT_FALSE(no_converted_filenames_url_info.has_value());
+    std::vector<ClipboardUrlInfo> no_converted_filenames_url_infos =
+        copy.GetURLsAndTitles(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    EXPECT_TRUE(no_converted_filenames_url_infos.empty());
   }
 
   {
     EXPECT_TRUE(copy.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
-    std::optional<OSExchangeData::UrlInfo> converted_url_info =
-        copy.GetURLAndTitle(FilenameToURLPolicy::CONVERT_FILENAMES);
-    ASSERT_TRUE(converted_url_info.has_value());
-    EXPECT_EQ(net::FilePathToFileURL(file_path), converted_url_info->url);
-    EXPECT_EQ(std::u16string(), converted_url_info->title);
+    std::vector<ClipboardUrlInfo> converted_url_infos =
+        copy.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+    ASSERT_FALSE(converted_url_infos.empty());
+    EXPECT_EQ(net::FilePathToFileURL(file_path),
+              converted_url_infos.front().url);
+    EXPECT_EQ(std::u16string(), converted_url_infos.front().title);
   }
   EXPECT_TRUE(copy.HasFile());
   std::optional<std::vector<FileInfo>> actual_files = copy.GetFilenames();

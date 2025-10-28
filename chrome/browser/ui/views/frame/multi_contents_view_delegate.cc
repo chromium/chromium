@@ -68,16 +68,16 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
     MultiContentsDropTargetView::DropSide side,
     const ui::DropTargetEvent& event) {
   auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  CHECK(urls.has_value() && !urls.value().empty());
+  CHECK(!urls.empty());
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
   // Disallow javascript: URLs to prevent self-XSS.
   std::vector<GURL> filtered_urls;
-  for (const GURL& url : urls.value()) {
-    if (url.SchemeIs(url::kJavaScriptScheme)) {
+  for (const auto& url_info : urls) {
+    if (url_info.url.SchemeIs(url::kJavaScriptScheme)) {
       filtered_urls.emplace_back(content::kBlockedURL);
     } else {
-      filtered_urls.push_back(url);
+      filtered_urls.push_back(url_info.url);
     }
   }
 

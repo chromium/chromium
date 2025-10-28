@@ -118,7 +118,7 @@ bool MultiContentsViewDropTargetController::CanDrop(
     return false;
   }
   auto urls = data.GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  return urls.has_value() && !urls.value().empty();
+  return !urls.empty();
 }
 
 void MultiContentsViewDropTargetController::OnDragEntered(
