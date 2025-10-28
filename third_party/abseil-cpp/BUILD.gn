@@ -131,7 +131,7 @@ group("absl_component_deps") {
 }
 
 # Abseil testing utilities should only be included in test binaries.
-component("test_support") {
+source_set("test_support") {
   testonly = true
   public_deps = [ "//third_party/abseil-cpp/absl/hash:hash_testing" ]
   deps = [ ":absl" ]
