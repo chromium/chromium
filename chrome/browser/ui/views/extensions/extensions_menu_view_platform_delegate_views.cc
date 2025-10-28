@@ -366,6 +366,25 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAccessRequestDismissedByUser(
   main_page->MaybeShowRequestsSection();
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::
+    OnShowHostAccessRequestsInToolbarChanged(
+        const extensions::ExtensionId& extension_id,
+        bool can_show_requests) {
+  CHECK(current_page_);
+
+  // Changing whether an extension can show requests access in the toolbar only
+  // affects the site permissions page ...
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
+  if (!site_permissions_page) {
+    return;
+  }
+
+  // ... of that extension.
+  if (site_permissions_page->extension_id() == extension_id) {
+    site_permissions_page->UpdateShowRequestsToggle(can_show_requests);
+  }
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
@@ -787,21 +806,6 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   }
 }
 
-
-void ExtensionsMenuViewPlatformDelegateViews::
-    OnShowAccessRequestsInToolbarChanged(
-        const extensions::ExtensionId& extension_id,
-        bool can_show_requests) {
-  DCHECK(current_page_);
-
-  // Changing whether an extension can show requests access in the toolbar only
-  // affects the site permissions page for such extension.
-  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
-  if (site_permissions_page &&
-      site_permissions_page->extension_id() == extension_id) {
-    site_permissions_page->UpdateShowRequestsToggle(can_show_requests);
-  }
-}
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewPlatformDelegateViews::GetMainPageViewForTesting() {

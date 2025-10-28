@@ -57,6 +57,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void OnHostAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id,
       const url::Origin& origin) override;
+  void OnShowAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override;
   void OnUserPermissionsSettingsChanged(
       const extensions::PermissionsManager::UserPermissionsSettings& settings)
       override;

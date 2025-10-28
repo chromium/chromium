@@ -62,6 +62,9 @@ class ExtensionsMenuViewPlatformDelegateViews
   void OnAccessRequestsCleared() override;
   void OnAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id) override;
+  void OnShowHostAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override;
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
   void OnPermissionsSettingsChanged() override;
 
@@ -105,11 +108,6 @@ class ExtensionsMenuViewPlatformDelegateViews
       const ToolbarActionsModel::ActionId& action_id) override;
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
-
-  // PermissionsManager::Observer:
-  void OnShowAccessRequestsInToolbarChanged(
-      const extensions::ExtensionId& extension_id,
-      bool can_show_requests) override;
 
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.

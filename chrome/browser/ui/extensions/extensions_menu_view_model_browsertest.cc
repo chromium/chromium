@@ -43,6 +43,9 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void OnAccessRequestsCleared() override {}
   void OnAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id) override {}
+  void OnShowHostAccessRequestsInToolbarChanged(
+      const extensions::ExtensionId& extension_id,
+      bool can_show_requests) override {}
   void OnPermissionsSettingsChanged() override {}
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
 };
