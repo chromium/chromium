@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -263,16 +264,18 @@ InteractiveFeaturePromoTestApi::CheckPromoImpl(const base::Feature& iph_feature,
               ui::InteractionSequence* seq, ui::TrackedElement* browser_el) {
             bool actual = false;
             if (seq->IsCurrentStepInAnyContextForTesting()) {
-              for (const auto browser : *BrowserList::GetInstance()) {
-                if (BrowserUserEducationInterface::From(browser)
-                        ->IsFeaturePromoActive(iph_feature) ||
-                    (include_queued &&
-                     BrowserUserEducationInterface::From(browser)
-                         ->IsFeaturePromoQueued(iph_feature))) {
-                  actual = true;
-                  break;
-                }
-              }
+              ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+                  [&actual, &iph_feature,
+                   include_queued](BrowserWindowInterface* browser) {
+                    if (BrowserUserEducationInterface::From(browser)
+                            ->IsFeaturePromoActive(iph_feature) ||
+                        (include_queued &&
+                         BrowserUserEducationInterface::From(browser)
+                             ->IsFeaturePromoQueued(iph_feature))) {
+                      actual = true;
+                    }
+                    return !actual;
+                  });
             } else {
               auto* const browser = AsView<BrowserView>(browser_el);
               actual = BrowserUserEducationInterface::From(browser->browser())

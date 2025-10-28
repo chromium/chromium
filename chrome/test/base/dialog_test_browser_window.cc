@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
@@ -51,7 +52,7 @@ gfx::NativeView DialogTestBrowserWindow::GetHostView() const {
     return host_window_->GetNativeView();
 
   return FindBrowser()
-      ->tab_strip_model()
+      ->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetNativeView();
 }
@@ -76,11 +77,15 @@ void DialogTestBrowserWindow::RemoveObserver(
     ModalDialogHostObserver* observer) {
 }
 
-Browser* DialogTestBrowserWindow::FindBrowser() const {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->window() == this)
-      return browser;
-  }
-  NOTREACHED();
+BrowserWindowInterface* DialogTestBrowserWindow::FindBrowser() const {
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &result](BrowserWindowInterface* browser) {
+        if (browser->GetWindow() == this) {
+          result = browser;
+        }
+        return !result;
+      });
+  CHECK(result);
+  return result;
 }
-

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -95,11 +96,13 @@ IsolatedWebAppsOpenedTabsCounterService::
           &IsolatedWebAppsOpenedTabsCounterService::RetrieveNotificationStates,
           weak_ptr_factory_.GetWeakPtr()));
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile) {
-      browser->tab_strip_model()->AddObserver(this);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == this->profile()) {
+          browser->GetTabStripModel()->AddObserver(this);
+        }
+        return true;
+      });
   browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 

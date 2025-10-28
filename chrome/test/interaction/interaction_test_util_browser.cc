@@ -365,14 +365,17 @@ void InteractionTestUtilBrowser::PopulateSimulators(
 // static
 BrowserWindowInterface* InteractionTestUtilBrowser::GetBrowserFromContext(
     ui::ElementContext context) {
-  for (auto* const bwi : GetAllBrowserWindowInterfaces()) {
-    if (auto* elements = BrowserElements::From(bwi)) {
-      if (elements->GetContext() == context) {
-        return bwi;
-      }
-    }
-  }
-  return nullptr;
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (auto* elements = BrowserElements::From(browser)) {
+          if (elements->GetContext() == context) {
+            result = browser;
+          }
+        }
+        return !result;
+      });
+  return result;
 }
 
 // static

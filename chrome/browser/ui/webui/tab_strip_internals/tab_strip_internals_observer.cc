@@ -6,13 +6,17 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 TabStripInternalsObserver::TabStripInternalsObserver(UpdateCallback callback)
     : callback_(std::move(callback)) {
   BrowserList::AddObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    StartObservingBrowser(browser);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        StartObservingBrowser(browser);
+        return true;
+      });
 }
 
 TabStripInternalsObserver::~TabStripInternalsObserver() {
@@ -76,15 +80,17 @@ void TabStripInternalsObserver::TabGroupedStateChanged(
 }
 
 // Private methods
-void TabStripInternalsObserver::StartObservingBrowser(Browser* browser) {
-  if (browser && browser->tab_strip_model()) {
-    browser->tab_strip_model()->AddObserver(this);
+void TabStripInternalsObserver::StartObservingBrowser(
+    BrowserWindowInterface* browser) {
+  if (TabStripModel* const tab_strip_model = browser->GetTabStripModel()) {
+    tab_strip_model->AddObserver(this);
   }
 }
 
-void TabStripInternalsObserver::StopObservingBrowser(Browser* browser) {
-  if (browser && browser->tab_strip_model()) {
-    browser->tab_strip_model()->RemoveObserver(this);
+void TabStripInternalsObserver::StopObservingBrowser(
+    BrowserWindowInterface* browser) {
+  if (TabStripModel* const tab_strip_model = browser->GetTabStripModel()) {
+    tab_strip_model->RemoveObserver(this);
   }
 }
 

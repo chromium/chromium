@@ -10,6 +10,8 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
+class BrowserWindowInterface;
+
 namespace content {
 class WebContents;
 }
@@ -17,8 +19,6 @@ class WebContents;
 namespace views {
 class Widget;
 }
-
-class Browser;
 
 // Custom test browser window to provide a parent view to a modal dialog.
 class DialogTestBrowserWindow : public TestBrowserWindow,
@@ -44,7 +44,7 @@ class DialogTestBrowserWindow : public TestBrowserWindow,
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
  private:
-  Browser* FindBrowser() const;
+  BrowserWindowInterface* FindBrowser() const;
 
   // Dummy window for parenting dialogs.
   std::unique_ptr<views::Widget> host_window_;

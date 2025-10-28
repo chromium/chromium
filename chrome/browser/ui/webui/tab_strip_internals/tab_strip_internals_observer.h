@@ -11,6 +11,7 @@
 
 class TabStripModel;
 class Browser;
+class BrowserWindowInterface;
 
 // Observes tab strip–related events and notifies clients when something
 // changes.
@@ -53,9 +54,9 @@ class TabStripInternalsObserver : public BrowserListObserver,
 
  private:
   // Add this as an observer to a browser's TabStripModel.
-  void StartObservingBrowser(Browser* browser);
+  void StartObservingBrowser(BrowserWindowInterface* browser);
   // Remove this as an observer from a browser's TabStripModel.
-  void StopObservingBrowser(Browser* browser);
+  void StopObservingBrowser(BrowserWindowInterface* browser);
   // Notify the client that something has changed.
   void FireUpdate();
 

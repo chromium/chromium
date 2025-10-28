@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -1004,10 +1005,11 @@ class TabWebContentsInteractionTestUtil::NewTabWatcher
       browser_->GetTabStripModel()->AddObserver(this);
     } else {
       BrowserList::GetInstance()->AddObserver(this);
-      for (BrowserWindowInterface* const open_browser :
-           *BrowserList::GetInstance()) {
-        open_browser->GetTabStripModel()->AddObserver(this);
-      }
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [this](BrowserWindowInterface* browser) {
+            browser->GetTabStripModel()->AddObserver(this);
+            return true;
+          });
     }
   }
 
