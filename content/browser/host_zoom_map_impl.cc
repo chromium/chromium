@@ -809,7 +809,8 @@ void JNI_HostZoomMapImpl_RemoveZoomLevelObserver(
 
 void HostZoomMapImpl::RemoveJniZoomLevelObserver(jlong subscription_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(1u, jni_callbacks_.erase(subscription_key));
+  size_t erased_count = jni_callbacks_.erase(subscription_key);
+  DCHECK_EQ(1u, erased_count);
 }
 #endif
 
