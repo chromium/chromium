@@ -437,8 +437,9 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
       EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
-// TODO(crbug.com/409272227): Flaky on linux.*-rel.
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
+// TODO(crbug.com/409272227): Flaky on linux-rel and win-asan.
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_OpenUserBypassViaIph DISABLED_OpenUserBypassViaIph
 #else
 #define MAYBE_OpenUserBypassViaIph OpenUserBypassViaIph
