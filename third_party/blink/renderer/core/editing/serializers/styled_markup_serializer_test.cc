@@ -381,4 +381,55 @@ TEST_F(StyledMarkupSerializerTest, SkipUnselectableContentInShadowDOM) {
                 ShouldSkipUnselectableContentOptions()));
 }
 
+// Test for MathML <mtr> tag duplication bug(crbug.com/439305134) fix.
+// This test creates a selection range from the first text node to mimic
+// the real copy behavior where selection starts deep in the DOM tree.
+TEST_F(StyledMarkupSerializerTest, MathMLTableRowNotDuplicated) {
+  const char* body_content =
+      "<math><semantics>"
+      "<mtable>"
+      "<mtr><mtd id='first'>Cell 1</mtd><mtd>Cell 2</mtd></mtr>"
+      "<mtr><mtd>Cell 3</mtd><mtd id='last'>Cell 4</mtd></mtr>"
+      "</mtable>"
+      "</semantics></math>";
+
+  SetBodyContent(body_content);
+
+  Element* first_mtd = GetDocument().getElementById(AtomicString("first"));
+  Element* last_mtd = GetDocument().getElementById(AtomicString("last"));
+  ASSERT_TRUE(first_mtd);
+  ASSERT_TRUE(last_mtd);
+
+  Node* first_text = first_mtd->firstChild();
+  ASSERT_TRUE(first_text);
+
+  // Create range: start from first text node, end at the beginning of last mtd.
+  // This mimics the real copy scenario where end position is
+  // mtd@offsetInAnchor[0]. After traversal, last_closed will be an mtd element,
+  // and the ancestor wrapping loop will encounter mtr.
+  Position start_pos(first_text, 0);
+  Position end_pos(last_mtd, 0);
+
+  std::string serialized =
+      SerializePart<EditingStrategy>(start_pos, end_pos,
+                                     CreateMarkupOptions::Builder()
+                                         .SetShouldAnnotateForInterchange(true)
+                                         .Build());
+
+  size_t pos = 0;
+  int mtr_count = 0;
+  while ((pos = serialized.find("<mtr>", pos)) != std::string::npos) {
+    mtr_count++;
+    pos += 5;
+  }
+
+  // There are 2 <mtr> rows. Expect exactly 2 "<mtr>" tags.
+  EXPECT_EQ(2, mtr_count) << "Expected 2 <mtr> tags, found " << mtr_count
+                          << ". Full output: " << serialized;
+
+  // Verify no duplicate pattern exists
+  EXPECT_EQ(std::string::npos, serialized.find("<mtr><mtr>"))
+      << "Found duplicate <mtr><mtr> pattern. Full output: " << serialized;
+}
+
 }  // namespace blink

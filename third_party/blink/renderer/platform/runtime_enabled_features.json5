@@ -3176,6 +3176,12 @@
       status: "stable",
     },
     {
+      // Enables skipping <mtr> wrapping during ancestor wrapping in
+      // serialization. When enabled duplicate <mtr> wrapping are absent.
+      name: "MathMLSkipMtrTagInAncestorWrapping",
+      status: "stable",
+    },
+    {
       name:"MeasureMemory",
       status:"stable",
     },
