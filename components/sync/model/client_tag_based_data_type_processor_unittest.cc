@@ -2410,6 +2410,43 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
                              GeneratePrefSpecifics(kKey1, kValue1));
 }
 
+TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
+       ShouldClearMetadataIfHasUnsyncedEntities) {
+  ModelReadyToSync();
+  OnSyncStarting();
+
+  worker()->UpdateFromServer(GetPrefHash(kKey1),
+                             GeneratePrefSpecifics(kKey1, kValue1));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->metadata_count());
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
+
+  // Simulate a local update of the entity (e.g. due to a previous bug or
+  // corrupted data on the disk) and browser restart. `updated_metadata` is
+  // created before the ResetState() call so the processor still exists.
+  EntityMetadata updated_metadata = GetEntityForStorageKey(kKey1)->metadata();
+  updated_metadata.set_sequence_number(
+      updated_metadata.acked_sequence_number() + 1);
+  ResetState(/*keep_db=*/true);
+
+  std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
+
+  // First, remove all the metadata from the batch.
+  EntityMetadataMap metadata_map = metadata_batch->TakeAllMetadata();
+  ASSERT_TRUE(metadata_map.contains(kKey1));
+  ASSERT_EQ(metadata_batch->GetAllMetadata().size(), 0U);
+
+  // Update the metadata for kKey1 with an unsynced item.
+  metadata_batch->AddMetadata(
+      kKey1, std::make_unique<EntityMetadata>(updated_metadata));
+  type_processor()->ModelReadyToSync(std::move(metadata_batch));
+  OnSyncStarting();
+
+  // The processor should not be tracking metadata anymore as it contains
+  // unsynced entities.
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+}
+
 // Tests that a real local change wins over a remote encryption-only change.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldIgnoreRemoteEncryption) {
   InitializeToReadyState();
