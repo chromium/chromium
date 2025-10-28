@@ -34,10 +34,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kNotServedCookiesChanged"/>
   <int value="3" label="kNotServedPrefetchWillBeDestroyed"/>
   <int value="4" label="kNotServedIneligiblePrefetch"/>
-  <int value="5" label="kNotServedUnsatisfiedPrefetchServeableState"/>
+<!-- Deprecated -->
+
+<!-- <int value="5" label="kNotServedUnsatisfiedPrefetchServeableState"/> -->
+
   <int value="6" label="kNotServedPrefetchServiceWorkerStateMismatch"/>
   <int value="7" label="kNotServedDeterminedNVSHeaderMismatch"/>
   <int value="8" label="kNotServedBlockUntilHeadTimeout"/>
+  <int value="9"
+      label="kNotServedOnDeterminedHeadWithShouldBlockUntilHeadReceived"/>
+  <int value="10" label="kNotServedOnDeterminedHeadWithServableExpired"/>
+  <int value="11" label="kNotServedIneligibleRedirect"/>
+  <int value="12" label="kNotServedLoadFailed"/>
+  <int value="13" label="kNotServedOnDeterminedHeadWithNotServableUnknown"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prefetch/prefetch_match_resolver.h:PrefetchPotentialCandidateServingResult) -->
