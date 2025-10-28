@@ -88,12 +88,12 @@ std::u16string GetDialogTitle(
 }
 
 ui::DialogModelLabel GetDialogParagraph(
-    const std::optional<url::Origin>& initiator_origin) {
-  return initiator_origin
+    const std::optional<std::u16string>& initiator_display_name) {
+  return initiator_display_name
              ? ui::DialogModelLabel::CreateWithReplacement(
                    IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_WITH_ORIGIN,
                    ui::DialogModelLabel::CreatePlainText(
-                       base::UTF8ToUTF16(initiator_origin->Serialize())))
+                       *initiator_display_name))
              : ui::DialogModelLabel(
                    IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_GENERIC);
 }
@@ -348,7 +348,7 @@ END_METADATA
 std::unique_ptr<ui::DialogModel> CreateProtocolHandlerPickerDialog(
     const GURL& protocol_url,
     const ProtocolHandlerPickerDialogEntries& apps,
-    const std::optional<url::Origin>& initiator_origin,
+    const std::optional<std::u16string>& initiator_display_name,
     OnPreferredHandlerSelected callback) {
   CHECK(!apps.empty());
 
@@ -361,7 +361,7 @@ std::unique_ptr<ui::DialogModel> CreateProtocolHandlerPickerDialog(
           .SetInternalName("ProtocolHandlerPickerDialog")
           .SetTitle(GetDialogTitle(protocol_url, apps))
           .AddParagraph(
-              ui::DialogModelLabel(GetDialogParagraph(initiator_origin)))
+              ui::DialogModelLabel(GetDialogParagraph(initiator_display_name)))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   std::make_unique<SelectionView>(apps, *delegate_ptr),

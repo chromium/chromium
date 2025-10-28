@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -92,6 +93,20 @@ ProtocolHandlerPickerDialogClosedReason CloseReasonAsHistogramEnum(
 
 void RecordPickerAction(ProtocolHandlerPickerAction action) {
   base::UmaHistogramEnumeration("WebApp.ProtocolHandlerPicker.Action", action);
+}
+
+std::optional<std::u16string> SerializeInitiatorOriginWithUrlIdentity(
+    Profile* profile,
+    const std::optional<url::Origin>& initiator_origin) {
+  if (!initiator_origin) {
+    return std::nullopt;
+  }
+  return UrlIdentity::CreateFromUrl(
+             profile, initiator_origin->GetURL(),
+             {UrlIdentity::Type::kDefault, UrlIdentity::Type::kIsolatedWebApp,
+              UrlIdentity::Type::kChromeExtension},
+             {.default_options = {}})
+      .name;
 }
 
 }  // namespace
@@ -189,7 +204,11 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
 
   std::unique_ptr<ui::DialogModel> dialog_model =
       CreateProtocolHandlerPickerDialog(
-          protocol_url, app_entries, initiator_origin,
+          protocol_url, app_entries,
+          SerializeInitiatorOriginWithUrlIdentity(
+              Profile::FromBrowserContext(
+                  tab_->GetContents()->GetBrowserContext()),
+              initiator_origin),
           base::BindOnce(
               &ProtocolHandlerPickerCoordinator::OnPreferredHandlerSelected,
               weak_factory_.GetWeakPtr(), protocol_url));

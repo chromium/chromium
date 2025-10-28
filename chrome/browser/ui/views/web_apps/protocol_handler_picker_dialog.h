@@ -95,7 +95,7 @@ using OnPreferredHandlerSelected =
 std::unique_ptr<ui::DialogModel> CreateProtocolHandlerPickerDialog(
     const GURL& protocol_url,
     const ProtocolHandlerPickerDialogEntries& apps,
-    const std::optional<url::Origin>& initiator_origin,
+    const std::optional<std::u16string>& initiator_display_name,
     OnPreferredHandlerSelected callback);
 
 }  // namespace web_app

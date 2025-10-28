@@ -19295,7 +19295,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
 
         <message name="IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_WITH_ORIGIN" desc="Paragraph in the protocol handler picker dialog explaining that a specific website (the placeholder) initiated the request to open a link in an app.">
-          The site <ph name="ORIGIN">$1</ph> wants to open this link in an app.
+          <ph name="ORIGIN">$1</ph> wants to open this link in an app.
         </message>
 
         <message name="IDS_PROTOCOL_HANDLER_PICKER_PARAGRAPH_GENERIC" desc="Paragraph in the protocol handler picker dialog explaining that a website initiated the request to open a link in an app. Used when the specific website is not known.">
