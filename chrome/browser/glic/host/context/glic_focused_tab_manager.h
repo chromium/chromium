@@ -160,8 +160,6 @@ class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
     base::WeakPtr<content::WebContents> focused_tab;
   };
 
-  void Initialize();
-
   static FocusedTabDataImpl GetFocusedTabData(
       const GlicFocusedTabManager::FocusedTabState& focused_state);
 
