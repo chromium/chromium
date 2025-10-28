@@ -7,13 +7,11 @@
 #include <numeric>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "chrome/browser/ui/tab_sharing/mock_tab_sharing_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/tab_sharing/tab_sharing_test_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/capture/capture_switches.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
@@ -26,34 +24,6 @@ using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 const std::u16string kSharedTabName = u"example.com";
 const std::u16string kAppName = u"sharing.com";
 const std::u16string kSinkName = u"Living Room TV";
-
-// TODO(crbug.com/441128451): Eliminate the duplication of this mock
-// across multiple test suites.
-class MockTabSharingUIViews : public TabSharingUI {
- public:
-  MockTabSharingUIViews()
-      : uma_logger_(content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {}
-  ~MockTabSharingUIViews() override = default;
-
-  MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
-  MOCK_METHOD(void, StopSharing, ());
-
-  gfx::NativeViewId OnStarted(
-      base::OnceClosure stop_callback,
-      content::MediaStreamUI::SourceCallback source_callback,
-      const std::vector<content::DesktopMediaID>& media_ids) override {
-    return 0;
-  }
-
-  ScreensharingControlsHistogramLogger& GetUmaLogger() override {
-    return uma_logger_;
-  }
-
-  void OnRegionCaptureRectChanged(
-      const std::optional<gfx::Rect>& region_capture_rect) override {}
-
-  ScreensharingControlsHistogramLogger uma_logger_;
-};
 
 class TestInfoBarManager : public infobars::InfoBarManager {
  public:
@@ -177,7 +147,7 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
  private:
   ChromeLayoutProvider layout_provider_;
 
-  MockTabSharingUIViews mock_ui;
+  MockTabSharingUI mock_ui;
   std::unique_ptr<TestInfoBarManager> infobar_manager_;
 };
 
