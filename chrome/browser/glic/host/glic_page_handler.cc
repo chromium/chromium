@@ -55,6 +55,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
@@ -951,6 +952,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
 
     tabs::TabInterface* tab = ftd.focus();
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->DidRequestContextFromFocusedTab();
+    }
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
     sharing_manager().GetContextFromTab(
         tab_handle, *options,
@@ -1310,9 +1314,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     journal_handler_.RecordFeedback(positive, reason);
   }
 
+  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
+  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnUserInputSubmitted(mojom::WebClientMode mode) override {
     glic_service_->OnUserInputSubmitted(mode);
     glic_service_->metrics()->OnUserInputSubmitted(mode);
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->OnUserInputSubmitted(mode);
+    }
   }
 
   void OnContextUploadStarted() override {
@@ -1323,29 +1332,49 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnContextUploadCompleted();
   }
 
+  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
+  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
     glic_service_->metrics()->OnReaction(reaction_type);
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->OnReaction(reaction_type);
+    }
   }
 
+  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
+  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStarted() override {
     glic_service_->metrics()->OnResponseStarted();
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->OnResponseStarted();
+    }
   }
 
+  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
+  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStopped(mojom::OnResponseStoppedDetailsPtr details) override {
     mojom::ResponseStopCause cause = mojom::ResponseStopCause::kUnknown;
     if (details) {
       cause = details->cause;
     }
     glic_service_->metrics()->OnResponseStopped(cause);
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->OnResponseStopped(cause);
+    }
   }
 
   void OnSessionTerminated() override {
     glic_service_->metrics()->OnSessionTerminated();
   }
 
+  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
+  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnTurnCompleted(glic::mojom::WebClientModel model,
                        base::TimeDelta duration) override {
     glic_service_->metrics()->OnTurnCompleted(model, duration);
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->OnTurnCompleted(model, duration);
+    }
   }
 
   void OnModelChanged(glic::mojom::WebClientModel model) override {

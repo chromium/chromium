@@ -1475,4 +1475,8 @@ bool GlicWindowControllerImpl::InvocationSourceMatchesCurrentView(
           current_view == mojom::CurrentView::kConversation);
 }
 
+glic::GlicInstanceMetrics* GlicWindowControllerImpl::instance_metrics() {
+  return nullptr;
+}
+
 }  // namespace glic

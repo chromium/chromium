@@ -49,6 +49,7 @@ class GlicEnabling;
 class GlicView;
 class GlicWindowAnimator;
 class ScopedGlicButtonIndicator;
+class GlicInstanceMetrics;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -185,6 +186,8 @@ class GlicWindowControllerImpl
   // Testing functionality.
   GlicWindowAnimator* GetWindowAnimatorForTesting();
   GlicView* GetGlicViewForTesting() const { return GetGlicView(); }
+
+  glic::GlicInstanceMetrics* instance_metrics() override;
 
  private:
   void CloseWithReason(views::Widget::ClosedReason reason);

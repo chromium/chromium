@@ -177,6 +177,7 @@ class GlicInstanceImpl : public GlicInstance,
   void OnWebClientCleared() override;
   void PrepareForOpen() override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
+  glic::GlicInstanceMetrics* instance_metrics() override;
 
   // GlicUiEmbedder::Delegate:
   void OnEmbedderWindowActivationChanged(bool has_focus) override;

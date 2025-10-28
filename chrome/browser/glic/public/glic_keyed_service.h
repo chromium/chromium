@@ -224,6 +224,7 @@ class GlicKeyedService : public KeyedService,
   void OnWebClientCleared() override;
   void PrepareForOpen() override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
+  glic::GlicInstanceMetrics* instance_metrics() override;
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 

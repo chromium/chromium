@@ -309,6 +309,10 @@ void GlicKeyedService::PrepareForOpen() {
   }
 }
 
+glic::GlicInstanceMetrics* GlicKeyedService::instance_metrics() {
+  return nullptr;
+}
+
 GlicWindowController& GlicKeyedService::window_controller() const {
   CHECK(window_controller_);
   return *window_controller_.get();

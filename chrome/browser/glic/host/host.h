@@ -34,6 +34,7 @@ class GlicKeyedService;
 class GlicPageHandler;
 class GlicWindowController;
 class WebUIContentsContainer;
+class GlicInstanceMetrics;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
@@ -128,6 +129,7 @@ class Host : public GlicSharingManagerProvider {
     virtual void PrepareForOpen() = 0;
 
     virtual void OnInteractionModeChange(mojom::WebClientMode new_mode) = 0;
+    virtual GlicInstanceMetrics* instance_metrics() = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -212,6 +214,10 @@ class Host : public GlicSharingManagerProvider {
   GlicSharingManager& sharing_manager() override;
 
   Host::InstanceDelegate& instance_delegate();
+
+  GlicInstanceMetrics* instance_metrics() {
+    return instance_delegate().instance_metrics();
+  }
 
   WebUIContentsContainer* contents_container() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.

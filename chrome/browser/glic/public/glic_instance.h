@@ -20,6 +20,7 @@ class Widget;
 namespace glic {
 
 class Host;
+class GlicInstanceMetrics;
 
 // A type alias for the Glic instance identifier.
 using InstanceId = base::Uuid;
@@ -81,6 +82,8 @@ class GlicInstance : public glic_instance_internal::UIDelegate {
 
   // Get this instance's unique identifier.
   virtual const InstanceId& id() const = 0;
+
+  virtual GlicInstanceMetrics* instance_metrics() = 0;
 };
 
 }  // namespace glic

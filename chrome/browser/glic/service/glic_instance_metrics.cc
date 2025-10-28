@@ -4,17 +4,33 @@
 
 #include "chrome/browser/glic/service/glic_instance_metrics.h"
 
+#include <cmath>
 #include <string>
 #include <string_view>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
+
+namespace {
+
+std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
+  switch (input_mode) {
+    case mojom::WebClientMode::kText:
+      return "Text";
+    case mojom::WebClientMode::kAudio:
+      return "Audio";
+    case mojom::WebClientMode::kUnknown:
+      return "Unknown";
+  }
+}
 
 std::string GetDaisyChainSourceString(DaisyChainSource source) {
   switch (source) {
@@ -28,6 +44,8 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
       return "Unknown";
   }
 }
+
+}  // namespace
 
 GlicInstanceMetrics::GlicInstanceEventCounts::GlicInstanceEventCounts() =
     default;
@@ -84,6 +102,20 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
                               event_counts_.tab_bound);
   base::UmaHistogramCounts100("Glic.Instance.MaxConcurrentlyBoundTabs",
                               max_concurrently_bound_tabs_);
+  base::UmaHistogramCounts100("Glic.Instance.TurnCount",
+                              event_counts_.turn_count);
+
+  InputModesUsed modes_used = InputModesUsed::kNone;
+  if (!inputs_modes_used_.empty()) {
+    if (inputs_modes_used_.size() == 2) {
+      modes_used = InputModesUsed::kTextAndAudio;
+    } else {
+      modes_used = inputs_modes_used_.Has(mojom::WebClientMode::kAudio)
+                       ? InputModesUsed::kOnlyAudio
+                       : InputModesUsed::kOnlyText;
+    }
+  }
+  base::UmaHistogramEnumeration("Glic.Instance.InputModesUsed", modes_used);
 }
 
 void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
@@ -436,11 +468,123 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
 
 void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event,
                                    int& event_counter) {
-  base::UmaHistogramEnumeration("Glic.Instance.EventTotals", event);
+  base::UmaHistogramEnumeration("Glic.Instance.EventCounts", event);
   if (event_counter == 0) {
-    base::UmaHistogramEnumeration("Glic.Instance.EventCounts", event);
+    base::UmaHistogramEnumeration("Glic.Instance.HadEvent", event);
   }
   event_counter++;
+}
+
+void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+  LogEvent(GlicInstanceEvent::kUserInputSubmitted,
+           event_counts_.user_input_submitted);
+  turn_.input_submitted_time_ = base::TimeTicks::Now();
+  input_mode_ = mode;
+  inputs_modes_used_.Put(mode);
+}
+
+void GlicInstanceMetrics::DidRequestContextFromFocusedTab() {
+  LogEvent(GlicInstanceEvent::kContextRequested,
+           event_counts_.context_requested);
+  turn_.did_request_context_ = true;
+}
+
+void GlicInstanceMetrics::OnResponseStarted() {
+  LogEvent(GlicInstanceEvent::kResponseStarted, event_counts_.response_started);
+  turn_.response_started_ = true;
+
+  // It doesn't make sense to record response start without input submission.
+  if (turn_.input_submitted_time_.is_null()) {
+    return;
+  }
+
+  base::TimeDelta start_time =
+      base::TimeTicks::Now() - turn_.input_submitted_time_;
+  base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime", start_time);
+  std::string_view mode_string = GetInputModeString(input_mode_);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Glic.Turn.ResponseStartTime.InputMode.", mode_string}),
+      start_time);
+
+  if (turn_.did_request_context_) {
+    base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime.WithContext",
+                                  start_time);
+  } else {
+    base::UmaHistogramMediumTimes("Glic.Turn.ResponseStartTime.WithoutContext",
+                                  start_time);
+  }
+}
+
+void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
+  LogEvent(GlicInstanceEvent::kResponseStopped, event_counts_.response_stopped);
+  // The client may call "stopped" without "started" for very short responses.
+  // We synthetically call it ourselves in this case.
+  if (!turn_.input_submitted_time_.is_null() && !turn_.response_started_) {
+    OnResponseStarted();
+  }
+
+  std::string_view cause_suffix;
+  switch (cause) {
+    case mojom::ResponseStopCause::kUser:
+      cause_suffix = ".ByUser";
+      break;
+    case mojom::ResponseStopCause::kOther:
+      cause_suffix = ".Other";
+      break;
+    case mojom::ResponseStopCause::kUnknown:
+      cause_suffix = ".UnknownCause";
+      break;
+  }
+
+  if (!turn_.input_submitted_time_.is_null()) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Glic.Turn.ResponseStopTime", cause_suffix}),
+        now - turn_.input_submitted_time_);
+  }
+
+  // Reset the turn.
+  turn_ = {};
+}
+
+void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
+                                          base::TimeDelta duration) {
+  LogEvent(GlicInstanceEvent::kTurnCompleted, event_counts_.turn_completed);
+  event_counts_.turn_count++;
+  base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
+                                    ? "Glic.Turn.Duration.Actor"
+                                    : "Glic.Turn.Duration.Default",
+                                duration);
+}
+
+void GlicInstanceMetrics::OnReaction(
+    mojom::MetricUserInputReactionType reaction_type) {
+  LogEvent(GlicInstanceEvent::kReaction, event_counts_.reaction);
+  if (turn_.input_submitted_time_.is_null() ||
+      input_mode_ != mojom::WebClientMode::kText) {
+    return;
+  }
+
+  switch (reaction_type) {
+    case mojom::MetricUserInputReactionType::kUnknown:
+      return;
+    case mojom::MetricUserInputReactionType::kCanned:
+      if (!turn_.reported_reaction_time_canned_) {
+        base::UmaHistogramMediumTimes(
+            "Glic.Turn.FirstReaction.Text.Canned.Time",
+            base::TimeTicks::Now() - turn_.input_submitted_time_);
+        turn_.reported_reaction_time_canned_ = true;
+      }
+      return;
+    case mojom::MetricUserInputReactionType::kModel:
+      if (!turn_.reported_reaction_time_modelled_) {
+        base::UmaHistogramMediumTimes(
+            "Glic.Turn.FirstReaction.Text.Modelled.Time",
+            base::TimeTicks::Now() - turn_.input_submitted_time_);
+        turn_.reported_reaction_time_modelled_ = true;
+      }
+      return;
+  }
 }
 
 }  // namespace glic
