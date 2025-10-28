@@ -2300,8 +2300,6 @@ void LensOverlayQueryController::ResetRequestClusterInfoState() {
   visual_search_interaction_data_.reset();
   RunSuggestInputsCallback();
   parent_query_sent_ = false;
-  is_first_page_contents_request_ = true;
-  is_first_partial_page_contents_request_ = true;
 }
 
 void LensOverlayQueryController::OnFullImageEndpointFetcherCreated(

@@ -4705,7 +4705,7 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   auto page_content_request =
       query_controller.sent_page_content_objects_request();
   ASSERT_EQ(page_content_request.request_context().request_id().sequence_id(),
-            1);
+            2);
   ASSERT_EQ(
       page_content_request.request_context().request_id().image_sequence_id(),
       1);
@@ -4713,7 +4713,7 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   // Verify the interaction request has the correct request id.
   auto interaction_request = query_controller.sent_interaction_request();
   ASSERT_EQ(interaction_request.request_context().request_id().sequence_id(),
-            2);
+            3);
   ASSERT_EQ(
       interaction_request.request_context().request_id().image_sequence_id(),
       1);
