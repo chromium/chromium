@@ -16,7 +16,9 @@ namespace ash::cfm {
 // This class tracks the output of a particular command.
 class CommandSource : public LocalDataSource {
  public:
-  CommandSource(const std::string& command, base::TimeDelta poll_rate);
+  CommandSource(const std::string& command,
+                size_t data_buffer_size_limit,
+                base::TimeDelta poll_rate);
   CommandSource(const CommandSource&) = delete;
   CommandSource& operator=(const CommandSource&) = delete;
   ~CommandSource() override;

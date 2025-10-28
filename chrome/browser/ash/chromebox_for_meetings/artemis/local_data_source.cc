@@ -32,17 +32,14 @@ constexpr LazyRE2 kFullLogLineRegex = {
 // Number of characters to ingest per log line to create unique hash.
 constexpr size_t kLogMsgHashSize = 50;
 
-// Dangerous internal buffer size in bytes. In practice, we should never hit
-// this limit due to previous memory-related mitigations, but let's add safety
-// tracking just in case.
-constexpr size_t kDangerousBufferSize = 2 * 1000 * 1000;  // 2Mb
-
 }  // namespace
 
-LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
+LocalDataSource::LocalDataSource(size_t data_buffer_size_limit,
+                                 base::TimeDelta poll_rate,
                                  bool data_needs_redacting,
                                  bool is_incremental)
-    : poll_rate_(poll_rate),
+    : data_buffer_size_limit_(data_buffer_size_limit),
+      poll_rate_(poll_rate),
       data_needs_redacting_(data_needs_redacting),
       is_incremental_(is_incremental),
       redactor_(nullptr) {}
@@ -123,10 +120,6 @@ void LocalDataSource::FillDataBuffer() {
   // so there must be some kind of mojom hang-up. We'll resume when
   // the problem is corrected.
   if (IsDataBufferOverMaxLimit()) {
-    if (data_buffer_size_ >= kDangerousBufferSize) {
-      LOG(WARNING) << GetDisplayName() << " has reached a dangerously high "
-                   << "buffer allocation of " << data_buffer_size_ << " bytes.";
-    }
     return;
   }
 
@@ -185,7 +178,13 @@ void LocalDataSource::FillDataBuffer() {
 }
 
 bool LocalDataSource::IsDataBufferOverMaxLimit() {
-  return data_buffer_size_ > kMaxInternalBufferSize;
+  // In practice, we should never hit this limit due to previous memory-related
+  // mitigations, but let's add safety tracking just in case.
+  if (data_buffer_size_ >= data_buffer_size_limit_ * 2) {
+    LOG(WARNING) << GetDisplayName() << " has reached a dangerously high "
+                 << "buffer allocation of " << data_buffer_size_ << " bytes.";
+  }
+  return data_buffer_size_ > data_buffer_size_limit_;
 }
 
 void LocalDataSource::RedactDataBuffer(std::vector<std::string>& buffer) {

@@ -21,7 +21,9 @@ inline constexpr char kCfmVariationsListLogFile[] = ".variations-list.txt";
 // audit.log
 class AuditLogSource : public LogSource {
  public:
-  AuditLogSource(base::TimeDelta poll_rate, size_t batch_size);
+  AuditLogSource(size_t data_buffer_size_limit,
+                 base::TimeDelta poll_rate,
+                 size_t num_lines_per_batch);
   AuditLogSource(const AuditLogSource&) = delete;
   AuditLogSource& operator=(const AuditLogSource&) = delete;
   ~AuditLogSource() override;
@@ -35,7 +37,9 @@ class AuditLogSource : public LogSource {
 // bios_info.txt
 class BiosInfoLogSource : public LogSource {
  public:
-  BiosInfoLogSource(base::TimeDelta poll_rate, size_t batch_size);
+  BiosInfoLogSource(size_t data_buffer_size_limit,
+                    base::TimeDelta poll_rate,
+                    size_t num_lines_per_batch);
   BiosInfoLogSource(const BiosInfoLogSource&) = delete;
   BiosInfoLogSource& operator=(const BiosInfoLogSource&) = delete;
   ~BiosInfoLogSource() override;
@@ -48,7 +52,9 @@ class BiosInfoLogSource : public LogSource {
 // eventlog.txt
 class EventlogLogSource : public LogSource {
  public:
-  EventlogLogSource(base::TimeDelta poll_rate, size_t batch_size);
+  EventlogLogSource(size_t data_buffer_size_limit,
+                    base::TimeDelta poll_rate,
+                    size_t num_lines_per_batch);
   EventlogLogSource(const EventlogLogSource&) = delete;
   EventlogLogSource& operator=(const EventlogLogSource&) = delete;
   ~EventlogLogSource() override;
@@ -61,7 +67,9 @@ class EventlogLogSource : public LogSource {
 // .variations-list.txt
 class VariationsListLogSource : public LogSource {
  public:
-  VariationsListLogSource(base::TimeDelta poll_rate, size_t batch_size);
+  VariationsListLogSource(size_t data_buffer_size_limit,
+                          base::TimeDelta poll_rate,
+                          size_t num_lines_per_batch);
   VariationsListLogSource(const VariationsListLogSource&) = delete;
   VariationsListLogSource& operator=(const VariationsListLogSource&) = delete;
   ~VariationsListLogSource() override;

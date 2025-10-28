@@ -11,8 +11,10 @@
 namespace ash::cfm {
 
 CommandSource::CommandSource(const std::string& command,
+                             size_t data_buffer_size_limit,
                              base::TimeDelta poll_rate)
-    : LocalDataSource(poll_rate,
+    : LocalDataSource(data_buffer_size_limit,
+                      poll_rate,
                       /*data_needs_redacting=*/false,
                       /*is_incremental=*/false),
       command_(command) {
