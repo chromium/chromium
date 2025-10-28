@@ -24,7 +24,7 @@
 .spinner-circle {
   animation: spin 1.5s linear infinite;
   fill: none;
-  stroke: var(--color-new-tab-page-composebox-upload-button);
+  stroke: var(--color-composebox-upload-button);
   stroke-dasharray: 240;
   stroke-dashoffset: 60;
   stroke-linecap: round;
@@ -51,7 +51,7 @@
 }
 
 .img-overlay {
-  background-color: var(--color-new-tab-page-composebox-file-image-overlay);
+  background-color: var(--color-composebox-file-image-overlay);
   height: 100%;
   left: 0;
   opacity: 0;
@@ -97,10 +97,10 @@
 }
 
 .pdf-icon {
-  background-color: var(--color-new-tab-page-composebox-background);
+  background-color: var(--color-composebox-background);
   box-sizing: border-box;
   border-radius: 4px;
-  color: var(--color-new-tab-page-composebox-pdf-chip-icon);
+  color: var(--color-composebox-pdf-chip-icon);
   height: 100%;
   padding: 4px;
   width: 100%;
@@ -112,7 +112,7 @@
 }
 
 .chip-overlay {
-  background-color: var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+  background-color: var(--color-composebox-context-entrypoint-hover-background);
   border-radius: inherit;
   inset: 0;
   display: none;
@@ -137,9 +137,9 @@
   --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 0;
-  background-color: var(--color-new-tab-page-composebox-file-image-overlay);
+  background-color: var(--color-composebox-file-image-overlay);
   border-radius: 4px;
-  color: var(--color-new-tab-page-composebox-pdf-chip-icon);
+  color: var(--color-composebox-pdf-chip-icon);
   height: 100%;
   left: 0;
   position: absolute;
@@ -148,7 +148,7 @@
 }
 
 .title {
-  color: var(--color-new-tab-page-composebox-file-chip-text);
+  color: var(--color-composebox-file-chip-text);
   font-family: inherit;
   font-size: 12px;
   font-style: normal;

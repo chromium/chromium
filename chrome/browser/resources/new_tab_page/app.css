@@ -297,8 +297,8 @@ svg {
 
 cr-composebox {
   --cr-composebox-width: var(--ntp-search-box-width);
-  --ntp-composebox-background-color:
-      var(--color-new-tab-page-composebox-background);
+  --cr-composebox-background-color:
+      var(--color-composebox-background);
 }
 
 cr-composebox,
@@ -311,7 +311,7 @@ ntp-lens-upload-dialog {
 }
 
 #scrim {
-  background: var(--color-new-tab-page-composebox-scrim-background);
+  background: var(--color-composebox-scrim-background);
   inset: 0;
   opacity: var(--ntp-scrim-opacity_);
   position: fixed;

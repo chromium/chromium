@@ -23,7 +23,7 @@
 .container {
   border-start-end-radius: 24px;
   border-end-end-radius: 24px;
-  color: var(--color-new-tab-page-composebox-font);
+  color: var(--color-composebox-font);
   cursor: default;
   display: flex;
   font-size: 16px;
@@ -62,14 +62,14 @@
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
-  background-color: var(--color-new-tab-page-composebox-input-icon);
+  background-color: var(--color-composebox-input-icon);
   height: 20px;
   width: 20px;
 }
 
 #textContainer {
   align-content: center;
-  color: var(--color-new-tab-page-composebox-font-light);
+  color: var(--color-composebox-font-light);
   font-size: 16px;
   overflow: hidden;
   padding-inline: var(--input-inline-spacing) 64px;

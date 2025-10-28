@@ -23,12 +23,12 @@
   line-height: 18px;
   padding: 6px 8px;
   --cr-button-border-color:
-      var(--color-new-tab-page-composebox-recent-tab-chip-outline);
-  --cr-button-text-color: var(--color-new-tab-page-composebox-upload-button);
+      var(--color-composebox-recent-tab-chip-outline);
+  --cr-button-text-color: var(--color-composebox-upload-button);
   --cr-button-disabled-text-color:
-      var(--color-new-tab-page-composebox-context-entrypoint-text-disabled);
+      var(--color-composebox-context-entrypoint-text-disabled);
   --cr-hover-background-color:
-      var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+      var(--color-composebox-context-entrypoint-hover-background);
 }
 
 .favicon {

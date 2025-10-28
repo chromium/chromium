@@ -201,7 +201,7 @@
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
-  background-color: var(--color-new-tab-page-composebox-input-icon);
+  background-color: var(--color-composebox-input-icon);
   height: 24px;
   width: 24px;
 }
@@ -241,7 +241,7 @@
   background-color: inherit;
   border: none;
   caret-color: var(--google-blue-500);
-  color: var(--color-new-tab-page-composebox-font-light);
+  color: var(--color-composebox-font-light);
   field-sizing: content;
   mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
   height: calc-size(fit-content, min(size + 4px, 190px));
@@ -251,7 +251,7 @@
 }
 
 #input::placeholder {
-  color: var(--color-new-tab-page-composebox-type-ahead);
+  color: var(--color-composebox-type-ahead);
 }
 
 #smartCompose {
@@ -272,16 +272,16 @@
 }
 
 #ghostText {
-  color: var(--color-new-tab-page-composebox-type-ahead);
+  color: var(--color-composebox-type-ahead);
   white-space: pre-wrap;
 }
 
 #tabChip {
   align-items: center;
-  border: 1px solid var(--color-new-tab-page-composebox-type-ahead-chip);
+  border: 1px solid var(--color-composebox-type-ahead-chip);
   border-radius: 8px;
   box-sizing: border-box;
-  color: var(--color-new-tab-page-composebox-type-ahead-chip);
+  color: var(--color-composebox-type-ahead-chip);
   font-size: 12px;
   font-weight: 700;
   line-height: 28px;
@@ -334,7 +334,7 @@
 
 #cancelIcon {
   --cr-icon-button-fill-color:
-      var(--color-new-tab-page-composebox-cancel-button-light);
+      var(--color-composebox-cancel-button-light);
   /* SVG is size 20 with 5px of padding so actual size is 10px */
   --cr-icon-button-icon-size: 20px;
   position: absolute;
@@ -431,7 +431,7 @@
 #submitIcon {
   --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 16px;
-  background-color: var(--color-new-tab-page-composebox-submit-button);
+  background-color: var(--color-composebox-submit-button);
   bottom: 0;
   opacity: 30%; /* For Lens side panel. */
   right: 0;
@@ -468,7 +468,7 @@
 @media (forced-colors: active) {
   :host,
   .action-icon {
-    border: solid var(--color-new-tab-page-composebox-outline-hcm);
+    border: solid var(--color-composebox-outline-hcm);
   }
 }
 
@@ -583,7 +583,7 @@
 }
 
 .background:before {
-  background: var(--ntp-composebox-background-color);
+  background: var(--cr-composebox-background-color);
   border-radius: inherit;
   content: '';
   contain: paint;
@@ -615,10 +615,10 @@
 
 @keyframes color-pulse-on-expand {
     40% {
-        background: var(--color-new-tab-page-composebox-scrim-background);
+        background: var(--color-composebox-scrim-background);
     }
     58% {
-        background: var(--color-new-tab-page-composebox-scrim-background);
+        background: var(--color-composebox-scrim-background);
     }
 }
 
@@ -641,7 +641,7 @@
 }
 
 #suggestionActivity {
-  color: var(--color-new-tab-page-composebox-suggestion-activity);
+  color: var(--color-composebox-suggestion-activity);
   font-size: 12px;
   font-weight: 400;
   left: 50%;
@@ -658,7 +658,7 @@
 .carousel-divider {
   border-radius: 100px;
   border-top: 1px solid
-    var(--color-new-tab-page-composebox-file-carousel-divider);
+    var(--color-composebox-file-carousel-divider);
   margin-inline-end: 16px;
   margin-inline-start: var(--text-input-inline-start-spacing);
   margin-top: 8px;

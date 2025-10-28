@@ -767,7 +767,7 @@ window.CSS.registerProperty({
   initialValue: 'white',
 });
 window.CSS.registerProperty({
-  name: '--ntp-composebox-background-color',
+  name: '--cr-composebox-background-color',
   syntax: '<color>',
   inherits: true,
   initialValue: 'white',
