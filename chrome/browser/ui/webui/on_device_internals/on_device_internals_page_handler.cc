@@ -333,6 +333,7 @@ void PageHandler::OnLogMessageAdded(
 
 void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
   auto data = mojom::PageData::New();
+  data->base_model = mojom::BaseModelState::New();
 
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   auto& model_broker_state =
@@ -340,7 +341,6 @@ void PageHandler::GetPageData(PageHandler::GetPageDataCallback callback) {
   auto debug_state = model_broker_state.component_state_manager().GetDebugState(
       base::PassKey<PageHandler>());
 
-  data->base_model = mojom::BaseModelState::New();
   data->base_model->state =
       base::StrCat({base::ToString(debug_state.status_),
                     debug_state.has_override_ ? " (Overridden)" : ""});
