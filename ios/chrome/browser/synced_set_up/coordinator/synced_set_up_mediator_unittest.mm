@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/sync_device_info/fake_device_info_sync_service.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -26,6 +28,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -77,10 +80,20 @@ class SyncedSetUpMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
 
+    GURL gurl("http://www.google.com");
+    startup_params_ = [[AppStartupParameters alloc]
+         initWithExternalURL:gurl
+                 completeURL:gurl
+             applicationMode:ApplicationModeForTabOpening::NORMAL
+        forceApplicationMode:NO];
+
     mediator_ = [[SyncedSetUpMediator alloc]
           initWithPrefTracker:&pref_tracker_
         authenticationService:authentication_service_
         accountManagerService:account_manager_service_
+        deviceInfoSyncService:&device_info_sync_service_
+           profilePrefService:profile_->GetPrefs()
+            startupParameters:startup_params_
               identityManager:identity_manager_];
 
     consumer_mock_ = OCMStrictProtocolMock(@protocol(SyncedSetUpConsumer));
@@ -97,9 +110,11 @@ class SyncedSetUpMediatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   TestCrossDevicePrefTracker pref_tracker_;
+  syncer::FakeDeviceInfoSyncService device_info_sync_service_;
   raw_ptr<AuthenticationService> authentication_service_;
   raw_ptr<ChromeAccountManagerService> account_manager_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+  AppStartupParameters* startup_params_;
   SyncedSetUpMediator* mediator_;
   id consumer_mock_;
   FakeSystemIdentity* fake_identity_ = [FakeSystemIdentity fakeIdentity1];

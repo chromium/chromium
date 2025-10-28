@@ -7,15 +7,20 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -32,6 +37,13 @@
   // Bridge to observe `IdentityManager::Observer` events.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
+  // Service for retrieving device info.
+  raw_ptr<syncer::DeviceInfoSyncService> _deviceInfoSyncService;
+  // The profile Pref service.
+  raw_ptr<PrefService> _profilePrefService;
+  // Parameters relevant to understanding the app startup, used to determine
+  // how the Synced Set Up flow should be presented.
+  AppStartupParameters* _startupParameters;
   // The current primary signed-in identity.
   id<SystemIdentity> _primaryIdentity;
 }
@@ -42,16 +54,25 @@
       initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+    deviceInfoSyncService:(syncer::DeviceInfoSyncService*)deviceInfoSyncService
+       profilePrefService:(PrefService*)profilePrefService
+        startupParameters:(AppStartupParameters*)startupParameters
           identityManager:(signin::IdentityManager*)identityManager {
   if ((self = [super init])) {
     CHECK(tracker);
     CHECK(authenticationService);
     CHECK(accountManagerService);
+    CHECK(deviceInfoSyncService);
+    CHECK(profilePrefService);
+    CHECK(startupParameters, base::NotFatalUntil::M147);
     CHECK(identityManager);
 
     _prefTracker = tracker;
     _authenticationService = authenticationService;
     _accountManagerService = accountManagerService;
+    _deviceInfoSyncService = deviceInfoSyncService;
+    _profilePrefService = profilePrefService;
+    _startupParameters = startupParameters;
     _identityManager = identityManager;
 
     _identityManagerObserverBridge =
@@ -70,14 +91,13 @@
   _accountManagerService = nullptr;
   _identityManager = nullptr;
   _primaryIdentity = nil;
-  _consumer = nil;
+  self.consumer = nil;
 }
 
 - (void)setConsumer:(id<SyncedSetUpConsumer>)consumer {
   if (_consumer == consumer) {
     return;
   }
-
   _consumer = consumer;
 
   [self updateConsumer];

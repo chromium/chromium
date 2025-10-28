@@ -9,20 +9,25 @@ source_set("coordinator") {
     "synced_set_up_coordinator_delegate.h",
     "synced_set_up_mediator.h",
     "synced_set_up_mediator.mm",
+    "synced_set_up_mediator_delegate.h",
   ]
-
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
-
   deps = [
     "//base",
-    "//components/signin/public/identity_manager",
+    "//components/prefs",
     "//components/signin/public/identity_manager/objc",
+    "//components/sync_device_info",
     "//components/sync_preferences/cross_device_pref_tracker",
     "//ios/chrome/app",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:cross_device_pref_tracker_factory",
     "//ios/chrome/browser/synced_set_up/ui",
     "//ui/base",
   ]
@@ -36,7 +41,9 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//components/sync_device_info:test_support",
     "//components/sync_preferences/cross_device_pref_tracker",
+    "//ios/chrome/app",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",

@@ -13,9 +13,18 @@ class ChromeAccountManagerService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+
 namespace sync_preferences {
 class CrossDevicePrefTracker;
 }  // namespace sync_preferences
+
+namespace syncer {
+class DeviceInfoSyncService;
+}  // namespace syncer
+
+@class AppStartupParameters;
+class PrefService;
+@protocol SyncedSetUpMediatorDelegate;
 
 @protocol SyncedSetUpConsumer;
 
@@ -27,10 +36,16 @@ class CrossDevicePrefTracker;
 // screen.
 @property(nonatomic, weak) id<SyncedSetUpConsumer> consumer;
 
+// Delegate that receives events from this mediator.
+@property(nonatomic, weak) id<SyncedSetUpMediatorDelegate> delegate;
+
 - (instancetype)
       initWithPrefTracker:(sync_preferences::CrossDevicePrefTracker*)tracker
     authenticationService:(AuthenticationService*)authenticationService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+    deviceInfoSyncService:(syncer::DeviceInfoSyncService*)deviceInfoSyncService
+       profilePrefService:(PrefService*)profilePrefService
+        startupParameters:(AppStartupParameters*)startupParameters
           identityManager:(signin::IdentityManager*)identityManager;
 
 - (instancetype)init NS_UNAVAILABLE;
