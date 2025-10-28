@@ -713,6 +713,54 @@ IN_PROC_BROWSER_TEST_F(
       << message_;
 }
 
+// Tests that when there are multiple listener functions that are registered as
+// `async functions` the faster function (promise) to resolve is used as the
+// response to the sender.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_MultipleAsyncFunctionsRace) {
+  ExtensionTestMessageListener faster_async_function_called(
+      "faster async function called");
+  ExtensionTestMessageListener slower_async_function_called(
+      "slower async function called");
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_as_multiple_async_functions",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+
+  // Confirm that all async functions are called and can respond to the message.
+  {
+    SCOPED_TRACE("waiting to confirm that both async functions were called");
+    EXPECT_TRUE(faster_async_function_called.WaitUntilSatisfied());
+    EXPECT_TRUE(slower_async_function_called.WaitUntilSatisfied());
+  }
+}
+
+// Tests that when there are multiple listener functions that are registered as
+// `async functions` the faster function (promise) to resolve (even if it's not
+// the first registered function) is used as the response to the sender.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_LaterRegisteredAsyncFunctionsCanRespond) {
+  ExtensionTestMessageListener faster_async_function_called(
+      "faster async function called");
+  ExtensionTestMessageListener slower_async_function_called(
+      "slower async function called");
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_as_later_registered_async_function",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+
+  // Confirm that all async functions are called and can respond to the message.
+  {
+    SCOPED_TRACE("waiting to confirm that both async functions were called");
+    EXPECT_TRUE(faster_async_function_called.WaitUntilSatisfied());
+    EXPECT_TRUE(slower_async_function_called.WaitUntilSatisfied());
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnRejectsBehavior) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
