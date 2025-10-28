@@ -103,11 +103,8 @@ bool FakeMessagePipe::HasWrappers() const {
   auto* wrappers =
       const_cast<std::vector<base::WeakPtr<FakeMessagePipeWrapper>>*>(
           &wrappers_);
-  wrappers->erase(std::remove_if(wrappers->begin(), wrappers->end(),
-                                 [](const auto& weak_ptr) {
-                                   return weak_ptr.get() == nullptr;
-                                 }),
-                  wrappers->end());
+  std::erase_if(*wrappers,
+                [](const auto& weak_ptr) { return weak_ptr.get() == nullptr; });
   return !wrappers->empty();
 }
 
