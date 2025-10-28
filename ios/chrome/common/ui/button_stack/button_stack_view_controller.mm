@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 
 // Redefine properties as readwrite for internal use.
 @property(nonatomic, strong, readwrite) UIView* contentView;
+@property(nonatomic, strong, readwrite) ButtonStackConfiguration* configuration;
 @property(nonatomic, strong, readwrite) ChromeButton* primaryActionButton;
 @property(nonatomic, strong, readwrite) ChromeButton* secondaryActionButton;
 @property(nonatomic, strong, readwrite) ChromeButton* tertiaryActionButton;
@@ -45,8 +46,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 @end
 
 @implementation ButtonStackViewController {
-  // Configuration for the buttons.
-  ButtonStackConfiguration* _configuration;
   // Stack view for the action buttons.
   UIStackView* _actionStackView;
   // The bottom constraint for the action stack view against the safe area.
@@ -59,11 +58,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   UIScrollView* _scrollView;
   // The gradient mask for the scroll view.
   CAGradientLayer* _gradientMask;
-
-  // Whether the view is in the loading state.
-  BOOL _isLoading;
-  // Whether the view is in the confirmed state.
-  BOOL _isConfirmed;
   // Whether the gradient view is shown.
   BOOL _showsGradientView;
 }
@@ -72,8 +66,6 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _configuration = configuration;
-    _isLoading = configuration.isLoading;
-    _isConfirmed = configuration.isConfirmed;
     _scrollEnabled = YES;
     _showsVerticalScrollIndicator = YES;
     _showsGradientView = YES;
@@ -172,33 +164,35 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 #pragma mark - ButtonStackConsumer
 
 - (void)setLoading:(BOOL)loading {
-  if (_isLoading == loading) {
+  if (self.configuration.isLoading == loading) {
     return;
   }
-  _isLoading = loading;
-  if (_isLoading) {
+  self.configuration.loading = loading;
+  if (self.configuration.isLoading) {
     // isLoading and isConfirmed are mutually exclusive.
-    _isConfirmed = NO;
+    self.configuration.confirmed = NO;
   }
   [self updateButtonState];
 }
 
 - (void)setConfirmed:(BOOL)confirmed {
-  if (_isConfirmed == confirmed) {
+  if (self.configuration.isConfirmed == confirmed) {
     return;
   }
-  _isConfirmed = confirmed;
-  if (_isConfirmed) {
+  self.configuration.confirmed = confirmed;
+  if (self.configuration.isConfirmed) {
     // isLoading and isConfirmed are mutually exclusive.
-    _isLoading = NO;
+    self.configuration.loading = NO;
   }
   [self updateButtonState];
 }
 
 - (void)updateConfiguration:(ButtonStackConfiguration*)configuration {
-  _configuration = configuration;
-  _isLoading = configuration.isLoading;
-  _isConfirmed = configuration.isConfirmed;
+  self.configuration = configuration;
+  [self reloadConfiguration];
+}
+
+- (void)reloadConfiguration {
   [self reconfigureButtons];
   [self updateButtonState];
 }
@@ -443,16 +437,17 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 // Updates the buttons appearance and enabled state based on the current
 // `isLoading` and `isConfirmed` flags.
 - (void)updateButtonState {
-  const BOOL showingProgressState = _isLoading || _isConfirmed;
+  const BOOL showingProgressState =
+      self.configuration.isLoading || self.configuration.isConfirmed;
   _primaryActionButton.enabled = !showingProgressState;
   _secondaryActionButton.enabled = !showingProgressState;
   _tertiaryActionButton.enabled = !showingProgressState;
 
   _primaryActionButton.imageView.accessibilityIdentifier = nil;
-  _primaryActionButton.tunedDownStyle = _isConfirmed;
-  if (_isLoading) {
+  _primaryActionButton.tunedDownStyle = self.configuration.isConfirmed;
+  if (self.configuration.isLoading) {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageSpinner;
-  } else if (_isConfirmed) {
+  } else if (self.configuration.isConfirmed) {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageCheckmark;
     _primaryActionButton.imageView.accessibilityIdentifier =
         kButtonStackCheckmarkSymbolAccessibilityIdentifier;
@@ -461,7 +456,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   }
 
   _primaryActionButton.title =
-      showingProgressState ? @"" : _configuration.primaryActionString;
+      showingProgressState ? @"" : self.configuration.primaryActionString;
 }
 
 // Handles the tap event for the primary action button.

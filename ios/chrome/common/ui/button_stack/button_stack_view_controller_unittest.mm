@@ -190,3 +190,18 @@ TEST_F(ButtonStackViewControllerTest, TestUpdateConfigurationStyle) {
   EXPECT_EQ(ChromeButtonStylePrimaryDestructive,
             view_controller_.primaryActionButton.style);
 }
+
+// Tests that reloading the configuration correctly updates the buttons.
+TEST_F(ButtonStackViewControllerTest, TestReloadConfiguration) {
+  // All buttons should be visible initially.
+  EXPECT_NSEQ(@"Primary",
+              view_controller_.primaryActionButton.configuration.title);
+
+  // Update the configuration directly.
+  view_controller_.configuration.primaryActionString = @"New Primary";
+  [view_controller_ reloadConfiguration];
+
+  // Verify the button title has been updated.
+  EXPECT_NSEQ(@"New Primary",
+              view_controller_.primaryActionButton.configuration.title);
+}

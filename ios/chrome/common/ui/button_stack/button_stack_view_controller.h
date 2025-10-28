@@ -47,6 +47,9 @@
 // The delegate for button actions.
 @property(nonatomic, weak) id<ButtonStackActionDelegate> actionDelegate;
 
+// The configuration for the button stack.
+@property(nonatomic, strong, readonly) ButtonStackConfiguration* configuration;
+
 // A container view within the scroll view where subclasses should add their
 // custom content.
 @property(nonatomic, strong, readonly) UIView* contentView;

@@ -16,7 +16,10 @@
 // Updates the confirmed state of the button stack.
 - (void)setConfirmed:(BOOL)confirmed;
 
-// Updates the configuration of the button stack.
+// Reloads the configuration of the button stack.
+- (void)reloadConfiguration;
+
+// Updates and reloads the configuration of the button stack.
 - (void)updateConfiguration:(ButtonStackConfiguration*)configuration;
 
 @end

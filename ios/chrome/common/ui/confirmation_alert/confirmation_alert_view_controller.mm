@@ -60,12 +60,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
 @property(nonatomic, strong) NSLayoutConstraint* imageViewAspectRatioConstraint;
 @end
 
-@implementation ConfirmationAlertViewController {
-  ButtonStackConfiguration* _configuration;
-}
+@implementation ConfirmationAlertViewController
 
 - (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration {
-  _configuration = configuration;
   self = [super initWithConfiguration:configuration];
   if (self) {
     self.actionDelegate = self;
@@ -228,46 +225,44 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
 - (void)setPrimaryActionString:(NSString*)primaryActionString {
   _primaryActionString = primaryActionString;
-  _configuration.primaryActionString = primaryActionString;
-  [self updateConfiguration:_configuration];
+  self.configuration.primaryActionString = primaryActionString;
+  [self reloadConfiguration];
 }
 
 - (void)setSecondaryActionString:(NSString*)secondaryActionString {
   _secondaryActionString = secondaryActionString;
-  _configuration.secondaryActionString = secondaryActionString;
-  [self updateConfiguration:_configuration];
+  self.configuration.secondaryActionString = secondaryActionString;
+  [self reloadConfiguration];
 }
 
 - (void)setSecondaryActionImage:(UIImage*)secondaryActionImage {
   _secondaryActionImage = secondaryActionImage;
-  _configuration.secondaryActionImage = secondaryActionImage;
-  [self updateConfiguration:_configuration];
+  self.configuration.secondaryActionImage = secondaryActionImage;
+  [self reloadConfiguration];
 }
 
 - (void)setTertiaryActionString:(NSString*)tertiaryActionString {
   _tertiaryActionString = tertiaryActionString;
-  _configuration.tertiaryActionString = tertiaryActionString;
-  [self updateConfiguration:_configuration];
+  self.configuration.tertiaryActionString = tertiaryActionString;
+  [self reloadConfiguration];
 }
 
 - (void)setDestructiveAction:(BOOL)destructiveAction {
   _destructiveAction = destructiveAction;
-  _configuration.primaryButtonStyle = destructiveAction
-                                          ? ChromeButtonStylePrimaryDestructive
-                                          : ChromeButtonStylePrimary;
-  [self updateConfiguration:_configuration];
+  self.configuration.primaryButtonStyle =
+      destructiveAction ? ChromeButtonStylePrimaryDestructive
+                        : ChromeButtonStylePrimary;
+  [self reloadConfiguration];
 }
 
 - (void)setIsLoading:(BOOL)isLoading {
   _isLoading = isLoading;
-  _configuration.isLoading = isLoading;
-  [self updateConfiguration:_configuration];
+  [super setLoading:isLoading];
 }
 
 - (void)setIsConfirmed:(BOOL)isConfirmed {
   _isConfirmed = isConfirmed;
-  _configuration.isConfirmed = isConfirmed;
-  [self updateConfiguration:_configuration];
+  [super setConfirmed:isConfirmed];
 }
 
 - (void)viewSafeAreaInsetsDidChange {

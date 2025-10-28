@@ -30,14 +30,14 @@
 // place. The secondaryActionButton will also be disabled. When NO, the buttons
 // return to their default interactive state. This property is mutually
 // exclusive with `isConfirmed`.
-@property(nonatomic, assign) BOOL isLoading;
+@property(nonatomic, assign, getter=isLoading) BOOL loading;
 
 // When YES, the primaryActionButton will be disabled, its title text will be
 // hidden, and a checkmark icon will be displayed. This is to provide clear
 // visual feedback that the action was completed successfully. This state is
 // typically set after an action has completed and is mutually exclusive with
 // `isLoading`.
-@property(nonatomic, assign) BOOL isConfirmed;
+@property(nonatomic, assign, getter=isConfirmed) BOOL confirmed;
 
 @end
 
