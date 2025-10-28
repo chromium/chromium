@@ -79,9 +79,17 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle(boolean hasAccountsOnDevice) {
+        @SigninFeatureMap.SeamlessSigninStringType
+        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
             case PromoState.SIGNIN:
-                return mContext.getString(R.string.signin_promo_title_bookmarks);
+                if (seamlessSigninStringType
+                                == SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS
+                        || seamlessSigninStringType
+                                == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
+                    return mContext.getString(R.string.signin_promo_title_bookmarks);
+                }
+                return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
             case PromoState.ACCOUNT_SETTINGS:
                 return mContext.getString(R.string.sync_promo_title_bookmarks);
             case PromoState.NONE:
@@ -92,8 +100,40 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getDescription(@Nullable String accountEmail) {
+        @SigninFeatureMap.SeamlessSigninPromoType
+        int seamlessSigninPromoType = SigninFeatureMap.getInstance().getSeamlessSigninPromoType();
+        @SigninFeatureMap.SeamlessSigninStringType
+        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
             case PromoState.SIGNIN:
+                if (accountEmail == null) {
+                    // TODO(https://crbug.com/451095549): replace this with the correct string for
+                    // the case with no accounts on the device
+                    return mContext.getString(R.string.signin_promo_description_bookmarks);
+                }
+                if (seamlessSigninStringType
+                        == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
+                    if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_bookmarks_group1, accountEmail);
+                    } else if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_bookmarks_group2);
+                    }
+                } else if (seamlessSigninStringType
+                        == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
+                    if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_bookmarks_group3, accountEmail);
+                    } else if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_bookmarks_group4);
+                    }
+                }
                 return mContext.getString(R.string.signin_promo_description_bookmarks);
             case PromoState.ACCOUNT_SETTINGS:
                 return mContext.getString(R.string.account_settings_promo_description_bookmarks);

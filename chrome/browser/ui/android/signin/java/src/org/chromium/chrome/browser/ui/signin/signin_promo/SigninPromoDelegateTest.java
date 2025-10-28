@@ -267,6 +267,40 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/twoButtons"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    public void testBookmarkPromoShown_accountAvailableOnDevice() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        DisplayableProfileData profileData =
+                new DisplayableProfileData(
+                        TestAccounts.ACCOUNT1.getEmail(),
+                        mock(Drawable.class),
+                        TestAccounts.ACCOUNT1.getFullName(),
+                        TestAccounts.ACCOUNT1.getGivenName(),
+                        true);
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
+
+        assertTrue(mDelegate.canShowPromo());
+        assertEquals(
+                mDelegate.getTitle(/* hasAccountsOnDevice= */ true),
+                mContext.getString(R.string.signin_promo_title_bookmarks));
+        assertEquals(
+                mDelegate.getDescription(/* accountEmail= */ TestAccounts.ACCOUNT1.getEmail()),
+                mContext.getString(
+                        R.string.signin_promo_description_bookmarks_group3,
+                        TestAccounts.ACCOUNT1.getEmail()));
+        assertEquals(
+                mDelegate.getTextForPrimaryButton(/* profileData= */ profileData),
+                mContext.getString(
+                        R.string.signin_promo_sign_in_as, TestAccounts.ACCOUNT1.getGivenName()));
+    }
+
+    @Test
     public void testHistoryPagePromoHidden_signedOut() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         setupDelegate(SigninAccessPoint.HISTORY_PAGE, /* visibleAccount= */ null);
