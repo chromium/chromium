@@ -91,6 +91,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2039417478970545937">Inställningar.</translation>
 <translation id="2049376729098081731">Välj om du vill inkludera Chromium-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
 <translation id="2054039611381840095">Du behöver macOS 12 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 11.</translation>
+<translation id="2064856577282482477">Klicka på knappen Anpassa Chromium på sidan Ny flik för att ge Chromium ett nytt utseende</translation>
 <translation id="2086476982681781442">Den här nedladdningen blockerades av Chromium eftersom filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
 <translation id="208726765006323911">Du får en uppmaning om att testa <ph name="FEATURE_NAME" /> nästa gång du öppnar Chromium för iOS.</translation>
 <translation id="2099452623287920103">Dina lösenord och annan Chromium-data som du har sparat i Google-kontot tas bort från den här enheten. Logga in på nytt om du vill använda dem igen i Chromium.</translation>
@@ -173,6 +174,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2933336679234709858">Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chromium-data i ditt Google-konto.</translation>
 <translation id="2945997411976714835">Installationsfel: Det gick inte att starta installationsprocessen.</translation>
 <translation id="2948852018303413228">Logga in snabbare på webbplatser med sparade lösenord för Chromium på iOS</translation>
+<translation id="2966959524256557996">Lägg till en ny Chromium-profil för att hålla bokmärken, lösenord och inställningar åtskilda.</translation>
 <translation id="2970426615109535079">Organisationen hanterar Chromium</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="2977506796191543575">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
@@ -239,6 +241,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3788675262216168505">Hantera Chromium-profiler</translation>
 <translation id="3790262771324122253">Läs mer om varför vissa nedladdningar blockeras i Chromium</translation>
 <translation id="379589255253486813">Chromium meddelar dig om något behöver granskas</translation>
+<translation id="3798048725356732506">Med Chromium-profiler kan du hålla isär olika delar av ditt liv. Lägg till en ny profil nu.</translation>
 <translation id="3802055581630249637">Sidor som du troligen kommer att besöka läses in i förväg i Chromium så att de läses in snabbare när du besöker dem</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3846683726093018685">**Sammanfatta:** Beskriv det primära ämnet och syftet med innehållet på skärmbilden i en mening på färre än 30 ord.
@@ -387,6 +390,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
+<translation id="5713518899297503106">Med Chromium-profiler kan du hålla isär privat surfande och jobb. Lägg till en ny profil nu.</translation>
 <translation id="5768371961535086509">Chromium frigör minne från inaktiva flikar. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chromium fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer om minnessparläget<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Om du har glömt lösenfrasen eller vill ändra den här inställningen kan du <ph name="SETTINGS_LINK" /> Chromium-datan i kontot</translation>
 <translation id="5800158606660203929">Anpassa och kontrollera Chromium. Ställ in Chromium som standardwebbläsare.</translation>
@@ -574,6 +578,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7810005234485217901">Du kan fästa Bildsökning för enkel åtkomst</translation>
 <translation id="7828947555739565424">Det finns redan en Chromium-profil med detta konto på enheten</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">Anpassa Chromium så att webbläsaren får ett nytt utseende</translation>
 <translation id="7859018312476869945">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="7867198900892795913">Det gick inte att uppdatera Chromium till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>
@@ -646,6 +651,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8704119203788522458">Det här är Chromium</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8719993436687031146">Vill du logga in i Chromium?</translation>
+<translation id="8745263398357414606">Håll allt i Chromium</translation>
 <translation id="8747073452963259673">nedre vänstra hörnet av sökområdet: <ph name="LEFT" /> % åt vänster, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="878572486461146056">Installationsfel: Nätverksadministratören har tillämpat en grupprincip som förhindrar installation: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Du behöver ge Chromium behörighet att använda kameran och mikrofonen på webbplatsen</translation>

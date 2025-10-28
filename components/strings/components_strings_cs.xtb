@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pokud chcete ukončit režim celé obrazovky, přejeďte shora dolů a klepněte na tlačítko Zpět</translation>
 <translation id="1138458427267715730">Nechte si zaslat upozornění, když na kterémkoli webu klesne cena</translation>
 <translation id="1142713751288681188">Typ papíru</translation>
+<translation id="1142965388643537393">Cestovní informace</translation>
 <translation id="1144136880160289237">Zatím žádná aktivní témata nemáte</translation>
 <translation id="1149617035358809955">ověřit vaši totožnost, aby mohl vyplnit vaše platební údaje</translation>
 <translation id="1150565364351027703">Sluneční brýle</translation>
@@ -177,6 +178,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1285320974508926690">Tento web nikdy nepřekládat</translation>
 <translation id="1292571435393770077">Přihrádka 16</translation>
 <translation id="1292701964462482250">Software na počítači Chromu brání v bezpečném připojení k webu (pouze počítače se systémem Windows)</translation>
+<translation id="1293556467332435079">Soubory</translation>
 <translation id="1293797321964802402">Obálka 9 × 11 palců</translation>
 <translation id="129553762522093515">Nedávno zavřené</translation>
 <translation id="1296930489679394997">Výprodeje</translation>
@@ -837,6 +839,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2357481397660644965">Vaše zařízení spravuje doména <ph name="DEVICE_MANAGER" /> a váš účet spravuje doména <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Několik</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
+<translation id="236000571258713023">Vozidla</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Nabídka změny velikosti</translation>
 <translation id="2365355378251437925">Vyplňte pole <ph name="FIELD" /></translation>
@@ -2195,6 +2198,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4598556348158889687">Správa úložiště</translation>
 <translation id="459914240367517409">Návrhy a vývoj webů</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Rezervace letenek</translation>
 <translation id="4607608436550361748">Zobrazit tipy k Chromu</translation>
 <translation id="460848736049414407">Blokováno administrátorem</translation>
 <translation id="4610279718074907952">Tento web je ve skupině definované vlastníkem <ph name="SET_OWNER" />, která může sledovat vaši aktivitu</translation>
@@ -2203,6 +2207,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4619564267100705184">Ověřte svoji totožnost</translation>
 <translation id="4622292761762557753">Přesto přenést</translation>
 <translation id="4622647778991854660">Povolte oznámení v oznamovacím centru. Otevřete <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Doklady totožnosti</translation>
 <translation id="4627675673814409125">Tuto zásadu nelze nastavit na úrovni profilu Chrome, bude proto ignorována.</translation>
 <translation id="4628678854894591460">Nabídky dovolené</translation>
 <translation id="4628948037717959914">Fotka</translation>
@@ -3147,7 +3152,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6189351761800074311">Váš text a obsah stránky se odesílají do Googlu, ale nepoužívají se k vylepšování umělé inteligence.
     <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Přepsat některé klávesy na klávesnici, například Esc</translation>
-<translation id="6192524964213419211">Uložte si své údaje, ať můžete ve službách Google pracovat rychleji. Vaše informace se ukládají do účtu <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> uživatele <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Tady zobrazíte všechny sledované produkty</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Spotřební elektronika</translation>
@@ -3483,7 +3487,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6716039223770814796">Porovnat položky <ph name="COMPARE_SET_NAME" /> · Počet: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Web <ph name="URL" /> chce vytvořit 3D mapu vašeho okolí a sledovat polohu kamery</translation>
 <translation id="6717692133381953670">Ze zařízení <ph name="DEVICE_NAME" /> byla odeslána karta</translation>
-<translation id="6718524733720986924">Údaje si můžete uložit, aby vám automatické vyplňování příště mohlo vyplnit víc polí</translation>
 <translation id="6718612893943028815">Použít kameru?</translation>
 <translation id="6721164594124191969">Štítky (lesklé)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

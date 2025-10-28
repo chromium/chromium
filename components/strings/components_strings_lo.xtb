@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – ເພື່ອອອກຈາກໂໝດເຕັມຈໍ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
 <translation id="1138458427267715730">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໃນທຸກເວັບໄຊທົ່ວເວັບ</translation>
 <translation id="1142713751288681188">ປະເພດເຈ້ຍ</translation>
+<translation id="1142965388643537393">ຂໍ້ມູນທ່ອງທ່ຽວ</translation>
 <translation id="1144136880160289237">ທ່ານຍັງບໍ່ມີຫົວຂໍ້ທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="1149617035358809955">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອໃຫ້ສາມາດຕື່ມຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານໄດ້</translation>
 <translation id="1150565364351027703">ແວ່ນກັນແດດ</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
 <translation id="1292571435393770077">ຖາດ 16</translation>
 <translation id="1292701964462482250">"ຊອບແວຢູ່ໃນຄອມພິວເຕີຂອງທ່ານກຳລັງປ້ອງກັນບໍ່ໃຫ້ Chrome ເຊື່ອມຕໍ່ກັບເວັບໄຊໄດ້ຢ່າງປອດໄພ" (ຄອມພິວເຕີ Windows ເທົ່ານັ້ນ)</translation>
+<translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 ນິ້ວ</translation>
 <translation id="129553762522093515">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
 <translation id="1296930489679394997">ຫຼຸດລາຄາ</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="DEVICE_MANAGER" /> ແລະ ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">ຫຼາຍສະກຸນເງິນ</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
+<translation id="236000571258713023">ພາຫະນະ</translation>
 <translation id="2361263712565360498">275 x 395 ມມ</translation>
 <translation id="236340516568226369">ປັບຂະໜາດເມນູສະ​ຫຼັບ</translation>
 <translation id="2365355378251437925">ປ້ອນ <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@
 <translation id="4598556348158889687">ການຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="459914240367517409">ການອອກແບບ ແລະ ພັດທະນາເວັບໄຊ</translation>
 <translation id="4602465984861132303">​ໂບ​ລິງ</translation>
+<translation id="4603727370377253901">ການຈອງຖ້ຽວບິນ</translation>
 <translation id="4607608436550361748">ເບິ່ງເຄັດລັບ Chrome</translation>
 <translation id="460848736049414407">ຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບ</translation>
 <translation id="4610279718074907952">ເວັບໄຊນີ້ແມ່ນຢູ່ໃນກຸ່ມ, ເຊິ່ງກຳນົດໄວ້ໂດຍ <ph name="SET_OWNER" />, ທີ່ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານ</translation>
@@ -2207,6 +2211,7 @@
 <translation id="4619564267100705184">ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້</translation>
 <translation id="4622292761762557753">ຢືນຢັນການໂອນຍ້າຍ</translation>
 <translation id="4622647778991854660">ເປີດການນຳໃຊ້ການແຈ້ງເຕືອນໃນສູນການແຈ້ງເຕືອນ. ເປີດ <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">ເອກະສານລະບຸຕົວຕົນ</translation>
 <translation id="4627675673814409125">ບໍ່ສາມາດຕັ້ງນະໂຍບາຍນີ້ຢູ່ລະດັບໂປຣໄຟລ໌ Chrome ໄດ້ ແລະ ລະບົບຈະບໍ່ສົນໃຈ.</translation>
 <translation id="4628678854894591460">ຂໍ້ສະເໜີການພັກຜ່ອນ</translation>
 <translation id="4628948037717959914">ຮູບຖ່າຍ</translation>
@@ -3152,7 +3157,6 @@
 <translation id="6189351761800074311">ລະບົບຈະສົ່ງຂໍ້ຄວາມ ແລະ ເນື້ອຫາໜ້າເວັບຂອງທ່ານໄປຫາ Google, ແຕ່ຈະບໍ່ນຳໄປໃຊ້ໃນການປັບປຸງ AI.
     <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">ຍົກເລີກບາງປຸ່ມຢູ່ແປ້ນພິມຂອງທ່ານ, ເຊັ່ນ: Esc</translation>
-<translation id="6192524964213419211">ບັນທຶກຂໍ້ມູນຂອງທ່ານເພື່ອເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄວຂຶ້ນໃນຜະລິດຕະພັນຕ່າໆຂອງ Google. ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໄວ້ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ສຳລັບ <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">ເບິ່ງສິນຄ້າທີ່ທ່ານຕິດຕາມທັງໝົດຢູ່ບ່ອນນີ້</translation>
 <translation id="6195371403461054755">ທໍ​ລະ​ນີ​ສາດ</translation>
 <translation id="6195418151868446719">ເຄື່ອງໃຊ້ໄຟຟ້າທົ່ວໄປ</translation>
@@ -3488,7 +3492,6 @@
 <translation id="6716039223770814796">ປຽບທຽບ <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ລາຍການ</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ແລະ ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="6717692133381953670">ແຖບທີ່ສົ່ງຈາກ <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">ບັນທຶກຂໍ້ມູນຂອງທ່ານເພື່ອໃຫ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດສາມາດຕື່ມໃສ່ໃນຊ່ອງຂໍ້ມູນເພີ່ມເຕີມສໍາລັບທ່ານໃນຄັ້ງຕໍ່ໄປໄດ້</translation>
 <translation id="6718612893943028815">ໃຊ້ກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="6721164594124191969">ປ້າຍ (ມັນວາວ)</translation>
 <translation id="6726832600570791992">(ແບຈຳລອງ 32 ບິດ)</translation>

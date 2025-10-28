@@ -595,6 +595,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3739899004075612870">Bookmark toegevoegd in <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Gesproken zoekopdracht is niet beschikbaar op dit apparaat</translation>
 <translation id="376561056759077985">Sommige gegevens zijn nog niet opgeslagen</translation>
+<translation id="3770620323585347665">Venster een naam geven</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
 <translation id="3771290962915251154">Deze instelling staat uit omdat ouderlijk toezicht is aangezet</translation>
 <translation id="3771694256347217732">Servicevoorwaarden van Google</translation>
@@ -788,6 +789,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4668279686271488041">De gegevens van advertentiemetingen worden regelmatig van je apparaat verwijderd</translation>
 <translation id="4668347365065281350">Alle gegevens die zijn opgeslagen door sites, waaronder cookies en andere lokaal opgeslagen gegevens</translation>
 <translation id="4673702426794876519">Incognitovenster</translation>
+<translation id="4675298276894277358">Deze site wordt niet meer getoond</translation>
 <translation id="4678082183394354975">Donker thema voor sites staat aan in Chrome</translation>
 <translation id="4682306524980568490">Er kunnen maar <ph name="MAX_INSTANCE_COUNT" /> vensters worden getoond</translation>
 <translation id="4684427112815847243">Alles synchroniseren</translation>
@@ -989,6 +991,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="555671485580955310">Geschiedenis en tabbladen synchroniseren</translation>
 <translation id="555816257274242153">Prijs volgen gestopt</translation>
+<translation id="5559778750856177186">Snelkoppeling losgemaakt</translation>
 <translation id="5561445479436807659">Spring een leuke Dino-game binnen</translation>
 <translation id="5561549206367097665">Wachten op netwerk…</translation>
 <translation id="5568069709869097550">Kan niet aanmelden</translation>
@@ -1662,6 +1665,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282297628636750033">Donker thema zo mogelijk toepassen op sites</translation>
 <translation id="8282950411412455249">Naar beveiligingsinstellingen</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 incognitovenster sluiten}other{# incognitovensters sluiten}}</translation>
 <translation id="831192587911042850">Hiermee voeg je de huidige website toe aan de lijst met websites die je volgt.</translation>
 <translation id="8317318757008452355">Opties openen om af te drukken</translation>
 <translation id="8320212361750431956">Recente activiteit</translation>

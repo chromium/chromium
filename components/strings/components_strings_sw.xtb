@@ -178,6 +178,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1285320974508926690">Kamwe usitafsiri tovuti hii</translation>
 <translation id="1292571435393770077">Trei ya 16</translation>
 <translation id="1292701964462482250">"Kuna programu kwenye kompyuta yako inayoizuia Chrome isiunganishe kwenye wavuti kwa usalama" (kompyuta za Windows pekee)</translation>
+<translation id="1293556467332435079">Faili</translation>
 <translation id="1293797321964802402">Bahasha ya ukubwa wa inchi 9 kwa 11</translation>
 <translation id="129553762522093515">Vilivyofungwa hivi karibuni</translation>
 <translation id="1296930489679394997">Mauzo</translation>
@@ -3156,7 +3157,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6189351761800074311">Maandishi na maudhui ya ukurasa wako hutumwa Google, lakini hayatatumika kuboresha AI.
     <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Kubatilisha baadhi ya vitufe kwenye kibodi yako, kama vile Esc</translation>
-<translation id="6192524964213419211">Hifadhi taarifa yako ili kukusaidia kukamilisha mambo kwa haraka, katika bidhaa za Google. Taarifa zako za <ph name="ACCOUNT" /> zimehifadhiwa kwenye <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="6194209731893739467">Angalia bidhaa zako zote unazofuatilia hapa</translation>
 <translation id="6195371403461054755">Jiolojia</translation>
 <translation id="6195418151868446719">Vifaa vya Kielektroniki vya Mtumiaji</translation>
@@ -3492,7 +3492,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6716039223770814796">Linganisha <ph name="COMPARE_SET_NAME" /> · Vipengee <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> inataka kubuni ramani ya 3D ya mazingira yako na kufuatilia mkao wa kamera</translation>
 <translation id="6717692133381953670">Kichupo kimetumwa kutoka kwenye <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Hifadhi maelezo yako ili kipengele cha kujaza kiotomatiki kiweze kukujazia sehemu zaidi wakati mwingine</translation>
 <translation id="6718612893943028815">Ungependa kutumia kamera?</translation>
 <translation id="6721164594124191969">Lebo (Mng'ao)</translation>
 <translation id="6726832600570791992">(biti 32 iliyoigwa)</translation>

@@ -178,6 +178,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
 <translation id="1292571435393770077">Ladica 16</translation>
 <translation id="1292701964462482250">"Softver na vašem računalu sprječava sigurno povezivanje Chromea s webom" (samo na Windows računalima)</translation>
+<translation id="1293556467332435079">Datoteke</translation>
 <translation id="1293797321964802402">Omotnica 9 x 11 in</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296930489679394997">Prodaja</translation>
@@ -3155,7 +3156,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6189351761800074311">Vaš tekst i sadržaj stranice šalju se Googleu, ali se neće upotrebljavati za poboljšanje AI-ja.
     <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Nadjačavanje nekih tipki na tipkovnici, kao što je Esc</translation>
-<translation id="6192524964213419211">Spremite svoje podatke da biste brže obavljali zadatke u Googleovim proizvodima. Vaši se podaci spremaju na uslugu <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Ovdje pogledajte sve svoje praćene proizvode</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Potrošačka elektronika</translation>
@@ -3491,7 +3491,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6716039223770814796">Usporedite kategoriju <ph name="COMPARE_SET_NAME" /> · broj stavki: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi izraditi 3D kartu vašeg okruženja i pratiti položaj kamere</translation>
 <translation id="6717692133381953670">Kartica je poslana s uređaja <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Spremite podatke da bi automatsko popunjavanje sljedeći put moglo popuniti više polja</translation>
 <translation id="6718612893943028815">Koristiti kameru?</translation>
 <translation id="6721164594124191969">Naljepnice (sjajne)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

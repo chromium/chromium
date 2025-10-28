@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">Cada perfil conserva la seva informació de Chrome pròpia, com ara les adreces d'interès, l'historial, les contrasenyes i més</translation>
 <translation id="2018879682492276940">La instal·lació ha fallat. Torna-ho a provar.</translation>
 <translation id="2024959665595762054">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat</translation>
+<translation id="2026377840141807639">Els perfils de Chrome et permeten mantenir la navegació personal i la de la feina separades. Afegeix un perfil nou ara.</translation>
 <translation id="2034233344106846793">Quan és possible, Chrome actualitza automàticament les connexions no segures a HTTPS</translation>
 <translation id="2039417478970545937">Configuració.</translation>
 <translation id="2091012649849228750">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
@@ -361,6 +362,7 @@
 <translation id="5170938038195470297">El vostre perfil no es pot utilitzar perquè prové d'una versió més nova de Google Chrome. Pot ser que algunes funcions no estiguin disponibles. Especifiqueu un directori de perfil diferent o utilitzeu una versió més nova de Chrome.</translation>
 <translation id="5174969993834422967">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic a la icona de notificacions que hi ha a l'extrem dret de la barra d'ubicacions.</translation>
 <translation id="5174983315706567306">No hi ha prou espai de disc.</translation>
+<translation id="5190467473654176081">Personalitza Chrome per renovar-ne l'aspecte</translation>
 <translation id="5201744974236816379">Actualització de Chrome</translation>
 <translation id="521447420733633466">Si comparteixes un dispositiu, els amics i els familiars poden navegar per separat i configurar Chrome com vulguin</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -382,6 +384,7 @@
 <translation id="5510398294750420479">Baixa Chrome al telèfon per afegir una capa addicional de protecció siguis on siguis</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
 <translation id="5530733413481476019">Fes que Chrome sigui més ràpid</translation>
+<translation id="5550137307985173298">Fes clic al botó Personalitza Chrome a la pàgina Pestanya nova per renovar l'aspecte de Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5596627076506792578">Més opcions</translation>
@@ -410,6 +413,7 @@
 <translation id="5736850870166430177">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
 <translation id="5756509061973259733">Ja existeix un perfil de Chrome amb aquest compte en aquest dispositiu</translation>
 <translation id="5759947850379142561">Selecciona el text o la imatge que vulguis cercar amb Google Lens o prem Esc per sortir de Google Lens</translation>
+<translation id="5762867845020858790">Afegeix un perfil de Chrome nou per mantenir separades les adreces d'interès, les contrasenyes i la configuració.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">No s'ha pogut iniciar Chrome. Torna-ho a provar.</translation>
 <translation id="5809516625706423866">No es pot connectar a Internet. Error d'HTTP "401 Unauthorized". Comprova la configuració del servidor intermediari.</translation>
@@ -510,6 +514,7 @@
 <translation id="6800285125190089494">Inicia la sessió en llocs web més ràpidament utilitzant les contrasenyes desades per a Chrome a iOS</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="683440813066116847">Regla d'entrada de Google Chrome Canary per permetre el trànsit de mDNS.</translation>
+<translation id="6841242485723266823">Els perfils de Chrome t'ajuden a separar les diferents parts de la teva vida. Afegeix un perfil nou ara.</translation>
 <translation id="684888714667046800">No es pot connectar a Internet. Si fas servir un tallafoc, assegura't que <ph name="PRODUCT_EXE_NAME" /> sigui a la llista d'accés permès.</translation>
 <translation id="6877155553248388166">extrem inferior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="BOTTOM" /> % per baix</translation>
 <translation id="6881299373831449287">S'està actualitzant Chrome</translation>
@@ -674,6 +679,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 minut}other{Chrome es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="8637932705841171563">Per compartir la finestra, permet que Chrome gravi la pantalla a Configuració del sistema</translation>
 <translation id="8641606876632989680">Chrome t'enviarà una notificació quan iniciïs la sessió amb una contrasenya en perill</translation>
+<translation id="8647930742055103497">Mantén-ho tot a Chrome</translation>
 <translation id="8656634243791296665">Obre Gemini a Chrome Dev</translation>
 <translation id="8669527147644353129">Aplicació d'ajuda de Google Chrome</translation>
 <translation id="8677922833187616101">Mostra sempre la drecera del mode IA de Google</translation>

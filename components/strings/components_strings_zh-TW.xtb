@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1142713751288681188">紙張類型</translation>
+<translation id="1142965388643537393">旅遊資訊</translation>
 <translation id="1144136880160289237">目前沒有任何有效主題</translation>
 <translation id="1149617035358809955">驗證你的身分，以便填入付款資訊</translation>
 <translation id="1150565364351027703">太陽眼鏡</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
 <translation id="1292571435393770077">紙匣 16</translation>
 <translation id="1292701964462482250">「你的電腦上有軟體阻止 Chrome 建立安全的網路連線」(僅限 Windows 電腦)</translation>
+<translation id="1293556467332435079">檔案</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">最近關閉的分頁</translation>
 <translation id="1296930489679394997">銷售</translation>
@@ -836,6 +838,7 @@
 <translation id="2357481397660644965">你的裝置是由 <ph name="DEVICE_MANAGER" /> 管理，帳戶是由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種</translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="236000571258713023">車輛</translation>
 <translation id="2361263712565360498">275 x 395 公釐</translation>
 <translation id="236340516568226369">畫面大小切換選單</translation>
 <translation id="2365355378251437925">請輸入「<ph name="FIELD" />」</translation>
@@ -2197,6 +2200,7 @@
 <translation id="4598556348158889687">儲存空間管理</translation>
 <translation id="459914240367517409">網頁設計與開發</translation>
 <translation id="4602465984861132303">保齡球</translation>
+<translation id="4603727370377253901">機票預訂</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="460848736049414407">已遭管理員封鎖</translation>
 <translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，群組擁有者可以查看你的活動</translation>
@@ -2205,6 +2209,7 @@
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4622292761762557753">仍要轉移</translation>
 <translation id="4622647778991854660">請前往通知中心啟用通知。開啟<ph name="LINK" />。</translation>
+<translation id="4623894491222334521">身分證明文件</translation>
 <translation id="4627675673814409125">這項政策無法在 Chrome 設定檔層級設定，因此將遭到忽略。</translation>
 <translation id="4628678854894591460">假期專案</translation>
 <translation id="4628948037717959914">相片</translation>
@@ -3150,7 +3155,6 @@
 <translation id="6189351761800074311">你的文字和網頁內容會傳送給 Google，但不會用於提升 AI 技術。
     <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">覆寫鍵盤上的按鍵，例如 Esc 鍵</translation>
-<translation id="6192524964213419211">儲存資訊後可在各項 Google 產品使用，效率更高！這項資訊會儲存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="6194209731893739467">在這裡查看所有追蹤的產品</translation>
 <translation id="6195371403461054755">地質學</translation>
 <translation id="6195418151868446719">消費性電子產品</translation>
@@ -3486,7 +3490,6 @@
 <translation id="6716039223770814796">比較「<ph name="COMPARE_SET_NAME" />」· <ph name="ITEMS" /> 個項目</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
 <translation id="6717692133381953670">收到「<ph name="DEVICE_NAME" />」傳來的分頁</translation>
-<translation id="6718524733720986924">儲存資訊，讓自動填入功能下次可以填入更多欄位</translation>
 <translation id="6718612893943028815">要使用攝影機嗎？</translation>
 <translation id="6721164594124191969">標籤 (光面)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

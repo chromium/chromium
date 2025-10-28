@@ -3467,7 +3467,6 @@
 <translation id="3393554941209044235">การวิเคราะห์เอกสารของ Chrome</translation>
 <translation id="3394072120086516913">PC ใช้สายและอุปกรณ์แคสต์ใช้ Wi-Fi</translation>
 <translation id="3394850431319394743">ได้รับอนุญาตให้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครอง</translation>
-<translation id="3396442984945202128">ยืนยันว่าเป็นคุณ</translation>
 <translation id="3396800784455899911">การคลิกปุ่ม "ยอมรับและดำเนินการต่อ" แสดงว่าคุณยอมรับการดำเนินการของบริการต่างๆ ของ Google ตามที่ชี้แจ้งไว้ด้านบน</translation>
 <translation id="339722927132407568">ค้าง</translation>
 <translation id="3399432415385675819">ระบบจะปิดใช้การแจ้งเตือน</translation>
@@ -3591,7 +3590,6 @@
 <translation id="3479357084663933762">ตาบอดสีเขียว</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
 <translation id="3479685872808224578">ไม่พบเซิร์ฟเวอร์การพิมพ์ โปรดตรวจสอบที่อยู่แล้วลองอีกครั้ง</translation>
-<translation id="3479753605053415848">คลิกเพื่อปรับแต่ง Chrome</translation>
 <translation id="3480612136143976912">ปรับแต่งขนาดและรูปแบบของคำบรรยายสำหรับคำบรรยายสด แอปบางอย่างและเว็บไซต์บางเว็บจะใช้การตั้งค่านี้ด้วย</translation>
 <translation id="3480827850068960424">พบ <ph name="NUM" /> แท็บ</translation>
 <translation id="3481268647794498892">กำลังจะเปิดใน <ph name="ALTERNATIVE_BROWSER_NAME" /> ในอีก <ph name="COUNTDOWN_SECONDS" /> วินาที</translation>
@@ -4114,7 +4112,6 @@
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="381202950560906753">เพิ่มลายนิ้วมืออีก</translation>
 <translation id="3812525830114410218">ใบรับรองมีปัญหา</translation>
-<translation id="3813275565773644111">องค์กรได้ปิดการบันทึกประวัติการเข้าชมและแท็บในบัญชี Google ของคุณ</translation>
 <translation id="3813296892522778813">ไปที่<ph name="BEGIN_LINK_CHROMIUM" />ความช่วยเหลือของ Google Chrome<ph name="END_LINK_CHROMIUM" /> หากคุณไม่พบข้อมูลที่กำลังค้นหา</translation>
 <translation id="3813358687923336574">ภาษาที่ใช้ในการแปลหน้าเว็บและใช้กับคำตอบด่วน</translation>
 <translation id="3813458570141926987">รายการหัวข้อที่คาดคะเนโดย Chrome ตามประวัติการท่องเว็บล่าสุด</translation>
@@ -5125,7 +5122,6 @@
 <translation id="4523876148417776526">ยังไม่ได้ดึงข้อมูลรายการเว็บไซต์ XML</translation>
 <translation id="4524832533047962394">ระบบปฏิบัติการเวอร์ชันนี้ไม่รองรับโหมดการลงทะเบียนที่กำหนด โปรดตรวจสอบว่าคุณใช้เวอร์ชันล่าสุดอยู่</translation>
 <translation id="4526051299161934899">กลุ่มแท็บที่บันทึกไว้ซึ่งซ่อนอยู่</translation>
-<translation id="4526853756266614740">เลือกรูปภาพเพื่อใช้ธีมในทันที</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4528494169189661126">เสนอการแปลภาษา</translation>
 <translation id="4528638190900283934">ลงชื่อเข้าใช้เพื่อรับฟีเจอร์เพิ่มเติม</translation>
@@ -8080,7 +8076,6 @@
 <translation id="6624687053722465643">สวีทเนส</translation>
 <translation id="6626581113916585374">โหมดเอฟเฟกต์</translation>
 <translation id="6627743754845412571">ไม่ได้รับอนุญาตให้ติดตามการเคลื่อนไหวของมือ</translation>
-<translation id="6628184833987882108">ระบบจะส่งเนื้อหาจากเว็บไซต์นี้ไปยัง Google และเจ้าหน้าที่ตรวจสอบอาจดูเนื้อหาดังกล่าวเพื่อนำไปใช้ปรับปรุงฟีเจอร์นี้</translation>
 <translation id="6628316682330029452">ใบรับรองไคลเอ็นต์คือใบรับรองที่ระบุตัวตนของคุณให้เซิร์ฟเวอร์อื่นๆ ทราบ</translation>
 <translation id="6628328486509726751">อัปโหลด <ph name="WEBRTC_LOG_UPLOAD_TIME" /> แล้ว</translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
@@ -9103,7 +9098,6 @@
 <translation id="7353261921908507769">รายชื่อติดต่อจะแชร์เนื้อหากับคุณได้เมื่ออยู่ใกล้เคียง การโอนจะไม่เริ่มจนกว่าคุณจะยอมรับ</translation>
 <translation id="7353432112255316844">ยืนยันว่าเป็นคุณ</translation>
 <translation id="735361434055555355">กำลังติดตั้ง Linux...</translation>
-<translation id="7354120289251608189">ตอนนี้คุณเปลี่ยนโฉมเบราว์เซอร์ของตัวเองได้ทุกเมื่อแล้ว</translation>
 <translation id="7356506068433555887">ต้นปาล์ม</translation>
 <translation id="7356696499551368971">ระบบจะนำสิทธิ์ที่คุณเลือกไว้ออก</translation>
 <translation id="7356908624372060336">บันทึกเครือข่าย</translation>
@@ -10652,7 +10646,6 @@
 <translation id="8383614331548401927">สรุปจากการใช้ครั้งล่าสุด</translation>
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
 <translation id="8387361103813440603">ไม่ได้รับอนุญาตให้ดูตำแหน่งของคุณ</translation>
-<translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8388770971141403598">ไม่รองรับโปรไฟล์รอง</translation>
 <translation id="8389492867173948260">อนุญาตให้ส่วนขยายนี้อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดในเว็บไซต์ที่คุณเข้าชม</translation>
 <translation id="8390392581097975659">กำลังติดตั้งซอฟต์แวร์เครื่องสแกน</translation>
@@ -11556,7 +11549,6 @@
 <translation id="90033698482696970">สแกนหาโปรไฟล์ eSIM ที่ใช้ได้โดยอัตโนมัติไหม</translation>
 <translation id="9003647077635673607">อนุญาตบนทุกเว็บไซต์</translation>
 <translation id="9005774573776346118">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อเข้าถึงรหัสผ่าน บุ๊กมาร์ก และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
-<translation id="9007688236643268728">&amp;ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9008201858626224558">ปุ่มย้อนกลับในหน้ารายละเอียด <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9008828754342192581">คุณเคยเลือกที่จะอนุญาตให้ใช้งานส่วนขยายทั้งหมดบน <ph name="ORIGIN" /></translation>

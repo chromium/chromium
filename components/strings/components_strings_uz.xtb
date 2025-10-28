@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Butun ekran rejimidan chiqish uchun ekranni yuqori chetidan pastga torting va “Orqaga” tugmasini bosing.</translation>
 <translation id="1138458427267715730">Internetdagi istalgan saytda narx tushganda bildirishnoma oling</translation>
 <translation id="1142713751288681188">Qogʻoz turi</translation>
+<translation id="1142965388643537393">Sayohat haqida axborot</translation>
 <translation id="1144136880160289237">Hech qanday faol mavzu mavjud emas</translation>
 <translation id="1149617035358809955">toʻlov maʼlumotlari toʻldirilishi uchun shaxsingizni tasdiqlang</translation>
 <translation id="1150565364351027703">Qora ko‘zoynak</translation>
@@ -177,6 +178,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1292571435393770077">Tarnov 16</translation>
 <translation id="1292701964462482250">“Kompyuteringizdagi dastur Chrome brauzerini internetga xavfsiz ulanishiga imkon bermayapti” (Faqat Windows o‘rnatilgan tizimlar uchun)</translation>
+<translation id="1293556467332435079">Fayllar</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">Yaqinda yopilganlar</translation>
 <translation id="1296930489679394997">Chegirmali sotuvlar</translation>
@@ -836,6 +838,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2357481397660644965">Qurilma <ph name="DEVICE_MANAGER" /> domenida va hisobingiz <ph name="ACCOUNT_MANAGER" /> tomonidan boshqariladi.</translation>
 <translation id="2359629602545592467">Bir nechta</translation>
 <translation id="2359808026110333948">Davom etish</translation>
+<translation id="236000571258713023">Transport vositalari</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Hajmni oʻzgartirish tugmasi menyusi</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> axborotini kiriting</translation>
@@ -2194,6 +2197,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4598556348158889687">Xotira boshqaruvi</translation>
 <translation id="459914240367517409">Veb-dizayn va dasturlash</translation>
 <translation id="4602465984861132303">Bouling</translation>
+<translation id="4603727370377253901">Parvoz bandlovlari</translation>
 <translation id="4607608436550361748">Chrome maslahatlarini ochish</translation>
 <translation id="460848736049414407">Administrator bloklagan</translation>
 <translation id="4610279718074907952">Bu sayt <ph name="SET_OWNER" />ning guruhiga kiradi va u guruhdagi faoliyatni koʻra oladi</translation>
@@ -2202,6 +2206,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
 <translation id="4622292761762557753">Uzatilsin</translation>
 <translation id="4622647778991854660">Bildirishnomalarni Bildirishnomalar markazi orqali yoqing. <ph name="LINK" /> ilovasini oching.</translation>
+<translation id="4623894491222334521">Shaxsni tasdiqlovchi hujjatlar</translation>
 <translation id="4627675673814409125">Bu qoidani Chrome profili darajasida tatbiq etib boʻlmaydi va eʼtiborsiz qoldiriladi.</translation>
 <translation id="4628678854894591460">Taʼtil takliflari</translation>
 <translation id="4628948037717959914">Rasm</translation>
@@ -3146,7 +3151,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6189351761800074311">Matn va sahifa kontenti Googlega yuboriladi, lekin AIni yaxshilash uchun ishlatilmaydi.
     <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esc kabi klaviaturadagi ayrim tugmalarni almashtirish</translation>
-<translation id="6192524964213419211">Google mahsulotlarida vazifalarni tezroq bajarish uchun axborotingizni saqlang. <ph name="ACCOUNT" /> hisobingiz maʼlumotlari <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> xotirasida saqlanadi</translation>
 <translation id="6194209731893739467">Barcha kuzatadigan mahsulotlaringiz shu yerda chiqadi</translation>
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6195418151868446719">Maishiy elektronika</translation>
@@ -3482,7 +3486,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> taqqoslash · <ph name="ITEMS" /> ta element</translation>
 <translation id="6716672519412350405"><ph name="URL" /> sayti atrofingiz 3D xaritasini yaratmoqchi va kamera holatini kuzatmoqchi</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> yuborgan varaq</translation>
-<translation id="6718524733720986924">Axborotni saqlasangiz, keyingi safar koʻproq qatorlar avtomatik kiritiladi</translation>
 <translation id="6718612893943028815">Kamera ishlatilsinmi?</translation>
 <translation id="6721164594124191969">Yorliqlar (yaltiroq)</translation>
 <translation id="6726832600570791992">(32-bit emulyatsiya)</translation>

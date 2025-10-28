@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
 <translation id="1497590942294823549">Menú → Xestor de contrasinais</translation>
 <translation id="1498283581832036924">Non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
+<translation id="1503814213414825943">Selecciona as contas que queiras exportar a outra aplicación.</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1506063256525392513">Permíteche tirar e cargar fotos, así como escanear códigos QR</translation>
 <translation id="1508263560970797965">Continuar no modo de incógnito</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Asegúrate de ter conexión de rede e téntao de novo.</translation>
 <translation id="4070132839822635162">Non iniciar sesión</translation>
 <translation id="4092655288299341041">Mostrar axuda:</translation>
-<translation id="4095483462103784441">Crear grupo de pestanas</translation>
 <translation id="4099756562043439968">Definir un recordatorio</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar todo como lido</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Cambiar contrasinal no sitio web</translation>
 <translation id="5248640482715684545">Este sitio está tentando abrir outra aplicación.</translation>
 <translation id="5250371859659394278">Dunha fonte descoñecida</translation>
+<translation id="5269913829202614649">Personalizar a páxina de inicio</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.}other{Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.}}</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quere que te unas a un grupo de pestanas. Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao unirte. A ligazón caducará ás 48 horas.</translation>

@@ -89,6 +89,7 @@
 <translation id="2039417478970545937">Configuració.</translation>
 <translation id="2049376729098081731">Tria si vols incloure l'historial de Chromium per obtenir experiències més personalitzades als serveis de Google</translation>
 <translation id="2054039611381840095">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 12 o una versió posterior. Aquest ordinador utilitza macOS 11.</translation>
+<translation id="2064856577282482477">Fes clic al botó Personalitza Chromium a la pàgina Pestanya nova per renovar l'aspecte de Chromium</translation>
 <translation id="2086476982681781442">Chromium ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
 <translation id="208726765006323911">Veuràs una indicació per provar <ph name="FEATURE_NAME" /> la propera vegada que obris Chromium a iOS.</translation>
 <translation id="2099452623287920103">Les contrasenyes i altres dades de Chromium que hagis desat al teu Compte de Google se suprimiran d'aquest dispositiu. Per tornar-les a utilitzar a Chromium, inicia la sessió de nou.</translation>
@@ -171,6 +172,7 @@
 <translation id="2933336679234709858">Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
 <translation id="2948852018303413228">Inicia la sessió en llocs web més ràpidament utilitzant les contrasenyes desades per a Chromium a iOS</translation>
+<translation id="2966959524256557996">Afegeix un perfil de Chromium nou per mantenir separades les adreces d'interès, les contrasenyes i la configuració.</translation>
 <translation id="2970426615109535079">La teva organització gestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="2977506796191543575">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
@@ -237,6 +239,7 @@
 <translation id="3788675262216168505">Gestiona els perfils de Chromium</translation>
 <translation id="3790262771324122253">Descobreix per què Chromium bloqueja algunes baixades</translation>
 <translation id="379589255253486813">Chromium t'avisarà si hi ha res que hagis de revisar</translation>
+<translation id="3798048725356732506">Els perfils de Chromium t'ajuden a separar les diferents parts de la teva vida. Afegeix un perfil nou ara.</translation>
 <translation id="3802055581630249637">Chromium precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3846683726093018685">**Resumeix**: en una sola frase de menys de 30 paraules, descriu el tema i la finalitat principals del contingut de la captura de pantalla.
@@ -385,6 +388,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostra Chromium en aquest idioma</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
+<translation id="5713518899297503106">Els perfils de Chromium et permeten mantenir la navegació personal i la de la feina separades. Afegeix un perfil nou ara.</translation>
 <translation id="5768371961535086509">Chromium allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chromium. Les pestanyes inactives s'activen de nou automàticament quan hi tornes. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi de memòria<ph name="END_LINK" />.</translation>
 <translation id="5775198138441669627">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="SETTINGS_LINK" /> les dades de Chromium del teu compte</translation>
 <translation id="5800158606660203929">Personalitza i controla Chromium. Defineix Chromium com a navegador predeterminat.</translation>
@@ -572,6 +576,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7810005234485217901">Pots fixar la cerca d'imatges per accedir-hi fàcilment</translation>
 <translation id="7828947555739565424">Ja existeix un perfil de Chromium amb aquest compte en aquest dispositiu</translation>
 <translation id="7845233973568007926">T'agraïm la instal·lació. Has de reiniciar l'equip abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">Personalitza Chromium per renovar-ne l'aspecte</translation>
 <translation id="7859018312476869945">Quan escrius a la barra d'adreces o al quadre de cerca, Chromium envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="7867198900892795913">Chromium no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les noves funcions ni de les correccions de seguretat.</translation>
 <translation id="7872446069773932638">S'està baixant… Queden <ph name="SECONDS" /> segons</translation>
@@ -644,6 +649,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8704119203788522458">Aquest és el vostre Chromium</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8719993436687031146">Vols iniciar la sessió a Chromium?</translation>
+<translation id="8745263398357414606">Mantén-ho tot a Chromium</translation>
 <translation id="8747073452963259673">extrem inferior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="BOTTOM" /> % per baix</translation>
 <translation id="878572486461146056">Error d'instal·lació: l'administrador de la xarxa ha aplicat una norma de grup que impedeix la instal·lació (<ph name="INSTALL_ERROR" />)</translation>
 <translation id="8796602469536043152">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera i al micròfon</translation>

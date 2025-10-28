@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pentru a ieși din ecranul complet, trage din partea de sus și atinge butonul Înapoi</translation>
 <translation id="1138458427267715730">Primește alerte când scade prețul pe orice site de pe web</translation>
 <translation id="1142713751288681188">Tip de hârtie</translation>
+<translation id="1142965388643537393">Informații de călătorie</translation>
 <translation id="1144136880160289237">Încă nu ai niciun subiect activ</translation>
 <translation id="1149617035358809955">să îți confirme identitatea pentru a completa informațiile de plată</translation>
 <translation id="1150565364351027703">Ochelari de soare</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
 <translation id="1292571435393770077">Tava 16</translation>
 <translation id="1292701964462482250">„Pe computer există software care împiedică browserul Chrome să se conecteze în siguranță la internet” (doar pentru computerele Windows)</translation>
+<translation id="1293556467332435079">Fișiere</translation>
 <translation id="1293797321964802402">Plic de 9 x 11 inchi</translation>
 <translation id="129553762522093515">Închise recent</translation>
 <translation id="1296930489679394997">Reduceri</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">Dispozitivul este gestionat de <ph name="DEVICE_MANAGER" />, iar contul tău este gestionat de <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mai multe</translation>
 <translation id="2359808026110333948">Continuă</translation>
+<translation id="236000571258713023">Vehicule</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Meniu cu comutatoare de redimensionare</translation>
 <translation id="2365355378251437925">Intră în <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@
 <translation id="4598556348158889687">Gestionarea stocării</translation>
 <translation id="459914240367517409">Design și dezvoltare web</translation>
 <translation id="4602465984861132303">Popice</translation>
+<translation id="4603727370377253901">Rezervări de zboruri</translation>
 <translation id="4607608436550361748">Vezi sfaturile privind Chrome</translation>
 <translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
@@ -2207,6 +2211,7 @@
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4622292761762557753">Transferă oricum</translation>
 <translation id="4622647778991854660">Activează notificările în Centrul de notificări. Deschide <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Acte de identitate</translation>
 <translation id="4627675673814409125">Această politică nu se poate seta la nivelul profilului Chrome și va fi ignorată.</translation>
 <translation id="4628678854894591460">Oferte de vacanțe</translation>
 <translation id="4628948037717959914">Fotografie</translation>
@@ -3152,7 +3157,6 @@
 <translation id="6189351761800074311">Textul și conținutul paginii sunt trimise la Google, dar nu vor fi folosite pentru a îmbunătăți AI-ul.
     <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Înlocuiește unele taste de pe tastatură, cum ar fi Esc</translation>
-<translation id="6192524964213419211">Salvează-ți informațiile pentru a lucra mai productiv în produsele Google. Informațiile tale sunt salvate în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pentru <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Vezi toate produsele urmărite aici</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Electronice de consum</translation>
@@ -3488,7 +3492,6 @@
 <translation id="6716039223770814796">Compară <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> articole</translation>
 <translation id="6716672519412350405"><ph name="URL" /> dorește să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="6717692133381953670">Filă trimisă de pe <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Salvează informațiile astfel încât completarea automată să poată completa mai multe câmpuri data viitoare</translation>
 <translation id="6718612893943028815">Folosești camera foto?</translation>
 <translation id="6721164594124191969">Etichete (lucioase)</translation>
 <translation id="6726832600570791992">(simulare pe 32 de biți)</translation>

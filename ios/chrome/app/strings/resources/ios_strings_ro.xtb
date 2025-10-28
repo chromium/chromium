@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
 <translation id="1497590942294823549">Meniu → Manager de parole</translation>
 <translation id="1498283581832036924">Contul tău <ph name="WEBSITE" /> nu se va șterge.</translation>
+<translation id="1503814213414825943">Selectează conturile pe care vrei să le exporți în altă aplicație.</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
 <translation id="1506063256525392513">Astfel, poți să fotografiezi, să încarci fotografiile și să scanezi coduri QR</translation>
 <translation id="1508263560970797965">Continuă în modul incognito</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Vezi parola</translation>
 <translation id="1996318269856535896">Poți folosi în continuare datele de navigare existente de pe acest dispozitiv. Pentru a le folosi, deconectează-te de la contul gestionat.</translation>
 <translation id="2010008505735295285">Reîncarcă</translation>
+<translation id="2012723204723845092">Bine ați revenit!</translation>
 <translation id="2015722694326466240">Pentru a vedea parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="201759455285471444">Extinde grupul de file.</translation>
 <translation id="202070562065520783">Explică-mi</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">Nu ai parole sau chei de acces salvate, dar poți șterge lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>
 <translation id="3530206579861815432">Găsește rapid filele deschise și închise recent de pe toate dispozitivele sincronizate.</translation>
 <translation id="3530767473765895035">Gestionează conturile de pe acest dispozitiv…</translation>
+<translation id="353340646084395154">Preferințele pentru pagina Filă nouă au fost eliminate</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
 <translation id="3540141921715814660">Adaugă în Marcaje</translation>
 <translation id="3546122170015471515">Previzualizări Maps pe Google.com</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Asigură-te că ai o conexiune la rețea și încearcă din nou.</translation>
 <translation id="4070132839822635162">Nu mă conectez</translation>
 <translation id="4092655288299341041">Afișează secțiunea Ajutor</translation>
-<translation id="4095483462103784441">Creează un nou grup de file</translation>
 <translation id="4099756562043439968">Setează un memento</translation>
 <translation id="4108998448622696017">Detectează și te avertizează cu privire la evenimentele periculoase atunci când au loc.</translation>
 <translation id="4111985840824673503">Marchează-le pe toate drept citite</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Astfel, cauți mai rapid folosind vocea</translation>
 <translation id="4895540042460820904">Data ultimei deschideri</translation>
 <translation id="4896467949657706481">Filele au fost închise și te-ai deconectat</translation>
+<translation id="4911042367886397055">Bun venit înapoi, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Poți trimite în siguranță o copie a parolei unui membru al grupului de familie. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Poți folosi datele de navigare existente când te conectezi ca <ph name="USER_EMAIL" />. Organizația ta poate să vadă aceste date.</translation>
 <translation id="4918086044614829423">Acceptă</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Nota are peste 1.000 de caractere.</translation>
 <translation id="5087098519049306025">Urmărirea prețurilor</translation>
 <translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Se preiau elementele…</translation>
 <translation id="5118462200606189584">Adaugă un cont…</translation>
 <translation id="5118764316110575523">Dezactivat</translation>
 <translation id="5119329531859909472">Pentru a urmări produsul, atinge Urmărește</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Schimbă parola pentru site</translation>
 <translation id="5248640482715684545">Acest site încearcă să deschidă altă aplicație.</translation>
 <translation id="5250371859659394278">Dintr-o sursă necunoscută</translation>
+<translation id="5269913829202614649">Personalizează pagina de pornire</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un câmp obligatoriu este necompletat. Completează-l înainte de a salva.}few{Unele câmpuri obligatorii sunt necompletate. Completează-le înainte de a salva.}other{Unele câmpuri obligatorii sunt necompletate. Completează-le înainte de a salva.}}</translation>
 <translation id="5271549068863921519">Salvează parola</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vrea să te alături unui grup de file. Oricine are linkul poate edita toate filele, așadar ai grijă la conectare. Linkul expiră în 48 de ore.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} închisă}few{{count} închise}other{{count} închise}}</translation>
 <translation id="5394975111793637642">Ascunde cardul Recenzii de produse pentru tine</translation>
+<translation id="5407806496954700135">Dorești să aplici personalizările paginii Filă nouă de pe alt dispozitiv?</translation>
 <translation id="5414763847370083940">Vei primi o alertă dacă prețul scade pe orice site.</translation>
 <translation id="5415289094036440596">Cheile de acces nu pot fi trimise</translation>
 <translation id="5416455648658732408">Mută în grupul de file</translation>
@@ -1755,6 +1761,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7696316012653762532">Opțiuni pentru a traduce pagina</translation>
 <translation id="7700527812567437847">Caută pe ecran cu Google Lens</translation>
 <translation id="7701040980221191251">Niciuna</translation>
+<translation id="7708668404222666001">Preferințele pentru pagina Filă nouă au fost aplicate</translation>
 <translation id="7708994397325774423">Accesează toate parolele</translation>
 <translation id="7711440461521638739">Nu refolosești parole</translation>
 <translation id="7712361583414030698">Se afișează versiunea offline</translation>

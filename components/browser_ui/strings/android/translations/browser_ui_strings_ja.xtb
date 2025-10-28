@@ -540,6 +540,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">次のサイトデータを削除しますか？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
+<translation id="6991142177939282156">許可 • おおよその位置情報を使用</translation>
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
@@ -650,6 +651,7 @@
 <translation id="8261506727792406068">削除</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">アプリによる管理</translation>
+<translation id="8301363963630676147">一時的に許可 • おおよその位置情報を使用</translation>
 <translation id="8315509175050791576">タブを共有しています</translation>
 <translation id="8324158725704657629">次回から表示しない</translation>
 <translation id="8362795839483915693">アクセスしたサイトを拡大、縮小できます</translation>

@@ -540,6 +540,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Vill du radera webbplatsdata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
+<translation id="6991142177939282156">Tillåts • Använder ungefärlig</translation>
 <translation id="6992289844737586249">Fråga innan webbplatser tillåts att använda mikrofonen (rekommenderas)</translation>
 <translation id="7000754031042624318">Inaktiverad i Android-inställningarna</translation>
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
@@ -650,6 +651,7 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8284326494547611709">Textning</translation>
 <translation id="8300705686683892304">Hanteras av app</translation>
+<translation id="8301363963630676147">Tillåts den här gången • Använder ungefärlig</translation>
 <translation id="8315509175050791576">Dela en flik</translation>
 <translation id="8324158725704657629">Fråga inte igen</translation>
 <translation id="8362795839483915693">Du kan zooma in eller ut på webbplatser</translation>

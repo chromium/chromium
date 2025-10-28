@@ -91,6 +91,7 @@
 <translation id="2018528049276128029">Mỗi hồ sơ đều có thông tin riêng trên Chrome, chẳng hạn như dấu trang, các trang web đã truy cập, mật khẩu và nhiều thông tin khác</translation>
 <translation id="2018879682492276940">Không cài đặt được. Vui lòng thử lại.</translation>
 <translation id="2024959665595762054">Để sử dụng và lưu dữ liệu trên Chrome vào Tài khoản Google, hãy xác minh danh tính của bạn</translation>
+<translation id="2026377840141807639">Hồ sơ Chrome giúp bạn tách biệt giữa hoạt động duyệt web cá nhân và công việc. Thêm hồ sơ mới ngay.</translation>
 <translation id="2034233344106846793">Chrome tự động nâng cấp các kết nối không an toàn lên HTTPS mỗi khi có thể</translation>
 <translation id="2039417478970545937">Cài đặt.</translation>
 <translation id="2091012649849228750">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 8.</translation>
@@ -365,6 +366,7 @@
 Một số tính năng có thể không khả dụng. Vui lòng chỉ định thư mục hồ sơ khác hoặc sử dụng phiên bản Chrome mới hơn.</translation>
 <translation id="5174969993834422967">Bạn thường chặn các thông báo. Để trang web này có thể gửi thông báo cho bạn, hãy nhấp vào biểu tượng thông báo ở góc bên phải của thanh vị trí.</translation>
 <translation id="5174983315706567306">Dung lượng ổ đĩa không đủ.</translation>
+<translation id="5190467473654176081">Tuỳ chỉnh Chrome để mang lại giao diện mới</translation>
 <translation id="5201744974236816379">Cập nhật Chrome</translation>
 <translation id="521447420733633466">Nếu các bạn dùng chung một thiết bị, thì bạn bè và gia đình có thể duyệt web một cách riêng biệt cũng như thiết lập Chrome theo ý muốn</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
@@ -386,6 +388,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5510398294750420479">Tải Chrome xuống điện thoại để tăng cường bảo mật khi bạn di chuyển</translation>
 <translation id="5524890928877629608">góc trên cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="TOP" />% từ trên cùng xuống</translation>
 <translation id="5530733413481476019">Giúp Chrome hoạt động nhanh hơn</translation>
+<translation id="5550137307985173298">Nhấp vào nút Tuỳ chỉnh Chrome trên Trang thẻ mới để mang lại giao diện mới cho Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách người dùng thông thường, không phải quản trị viên.</translation>
 <translation id="5596627076506792578">Tùy chọn khác</translation>
@@ -414,6 +417,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5736850870166430177">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
 <translation id="5756509061973259733">Thiết bị này đã có một hồ sơ trên Chrome sử dụng tài khoản này</translation>
 <translation id="5759947850379142561">Chọn văn bản hoặc hình ảnh bất kỳ mà bạn muốn tìm kiếm bằng Google Ống kính hoặc nhấn phím Escape để thoát khỏi Google Ống kính</translation>
+<translation id="5762867845020858790">Thêm một hồ sơ Chrome mới để tách biệt dấu trang, mật khẩu và chế độ cài đặt.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Không thể mở Chrome. Hãy thử lại.</translation>
 <translation id="5809516625706423866">Không thể kết nối với Internet. HTTP 401 không được phép. Vui lòng kiểm tra cấu hình proxy.</translation>
@@ -514,6 +518,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6800285125190089494">Đăng nhập vào các trang web nhanh hơn bằng mật khẩu đã lưu cho Chrome trên iOS</translation>
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="683440813066116847">Quy tắc kết nối để Google Chrome Canary cho phép lưu lượng truy cập mDNS.</translation>
+<translation id="6841242485723266823">Hồ sơ trên Chrome giúp bạn tách biệt các khía cạnh khác nhau trong cuộc sống. Thêm hồ sơ mới ngay.</translation>
 <translation id="684888714667046800">Không kết nối được với Internet. Nếu bạn sử dụng tường lửa, vui lòng đảm bảo <ph name="PRODUCT_EXE_NAME" /> có trong danh sách cho phép.</translation>
 <translation id="6877155553248388166">góc dưới cùng bên phải của khu vực tìm kiếm: <ph name="RIGHT" />% từ bên phải sang, <ph name="BOTTOM" />% từ dưới cùng lên</translation>
 <translation id="6881299373831449287">Đang cập nhật Chrome</translation>
@@ -678,6 +683,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8625237574518804553">{0,plural, =1{Chrome sẽ khởi động lại sau 1 phút}other{Chrome sẽ khởi động lại sau # phút}}</translation>
 <translation id="8637932705841171563">Để chia sẻ cửa sổ, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống</translation>
 <translation id="8641606876632989680">Chrome sẽ thông báo khi mật khẩu bạn dùng để đăng nhập đã bị lộ</translation>
+<translation id="8647930742055103497">Lưu mọi thứ trong Chrome</translation>
 <translation id="8656634243791296665">Mở Gemini trong Chrome Dev</translation>
 <translation id="8669527147644353129">Trình trợ giúp của Google Chrome</translation>
 <translation id="8677922833187616101">Luôn hiện lối tắt đến Chế độ AI của Google</translation>

@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">Każdy profil zawiera własne dane Chrome, takie jak zakładki, historia, hasła i inne</translation>
 <translation id="2018879682492276940">Nie udało się zainstalować. Spróbuj ponownie.</translation>
 <translation id="2024959665595762054">Potwierdź swoją tożsamość, aby móc zapisywać dane z Chrome na koncie Google i ich używać</translation>
+<translation id="2026377840141807639">Profile w Chrome pozwalają oddzielić przeglądanie prywatne od służbowego. Dodaj nowy profil już teraz.</translation>
 <translation id="2034233344106846793">Chrome automatycznie przełącza niezabezpieczone połączenia na HTTPS, gdy jest to możliwe</translation>
 <translation id="2039417478970545937">Ustawienia.</translation>
 <translation id="2091012649849228750">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.</translation>
@@ -360,6 +361,7 @@
 <translation id="5170938038195470297">Nie można użyć Twojego profilu, ponieważ został utworzony w nowszej wersji Google Chrome. Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub użyj nowszej wersji Chrome.</translation>
 <translation id="5174969993834422967">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na wysyłanie powiadomień, kliknij ikonę powiadomienia w prawym rogu paska lokalizacji.</translation>
 <translation id="5174983315706567306">Za mało miejsca na dysku.</translation>
+<translation id="5190467473654176081">Spersonalizuj Chrome, aby zmienić jego wygląd</translation>
 <translation id="5201744974236816379">aktualizacja Chrome</translation>
 <translation id="521447420733633466">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chrome po swojemu</translation>
 <translation id="5234764350956374838">Zamknij</translation>
@@ -381,6 +383,7 @@
 <translation id="5510398294750420479">Pobierz Chrome na telefon, aby zapewnić sobie dodatkową warstwę ochrony, gdziekolwiek jesteś</translation>
 <translation id="5524890928877629608">lewy górny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Przyspiesz działanie Chrome</translation>
+<translation id="5550137307985173298">Kliknij przycisk Dostosuj Chrome na stronie Nowa karta, aby zmienić wygląd Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Błąd uruchamiania: uruchom instalator jako zwykły użytkownik, a nie jako administrator.</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
@@ -409,6 +412,7 @@
 <translation id="5736850870166430177">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="5756509061973259733">Na tym urządzeniu istnieje już profil Chrome z tym kontem</translation>
 <translation id="5759947850379142561">Wybierz tekst lub obraz, aby wyszukać go za pomocą Obiektywu Google, lub naciśnij Escape, aby zamknąć Obiektyw</translation>
+<translation id="5762867845020858790">Dodaj nowy profil Chrome, aby oddzielnie przechowywać zakładki, hasła i ustawienia.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nie udało się uruchomić Chrome. Spróbuj ponownie.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
@@ -509,6 +513,7 @@
 <translation id="6800285125190089494">Szybciej loguj się na stronach dzięki zapisanym hasłom w Chrome na iOS</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="683440813066116847">Reguła dla ruchu przychodzącego w Google Chrome Canary zezwalająca na ruch mDNS.</translation>
+<translation id="6841242485723266823">Profile Chrome pomagają oddzielić różne aspekty Twojego życia. Dodaj nowy profil już teraz.</translation>
 <translation id="684888714667046800">Nie można połączyć się z internetem. Jeśli używasz zapory sieciowej, sprawdź, czy adres <ph name="PRODUCT_EXE_NAME" /> znajduje się na liście dozwolonych.</translation>
 <translation id="6877155553248388166">prawy dolny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u dołu <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Aktualizuję Chrome</translation>
@@ -673,6 +678,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome uruchomi się ponownie za minutę}few{Chrome uruchomi się ponownie za # minuty}many{Chrome uruchomi się ponownie za # minut}other{Chrome uruchomi się ponownie za # minuty}}</translation>
 <translation id="8637932705841171563">Aby udostępnić okno, pozwól Chrome na nagrywanie ekranu w ustawieniach systemu</translation>
 <translation id="8641606876632989680">Chrome powiadomi Cię w razie logowania za pomocą przejętego hasła</translation>
+<translation id="8647930742055103497">Przechowuj wszystko w Chrome</translation>
 <translation id="8656634243791296665">Otwórz Gemini w wersji deweloperskiej Chrome</translation>
 <translation id="8669527147644353129">Pomoc Google Chrome</translation>
 <translation id="8677922833187616101">Zawsze pokazuj skrót do trybu AI od Google</translation>

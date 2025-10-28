@@ -178,6 +178,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1292571435393770077">Taca 16</translation>
 <translation id="1292701964462482250">„Oprogramowanie na Twoim komputerze uniemożliwia Chrome bezpieczne połączenie się z internetem” (tylko na komputerach z systemem Windows)</translation>
+<translation id="1293556467332435079">Pliki</translation>
 <translation id="1293797321964802402">Koperta 9 x 11 cali</translation>
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
 <translation id="1296930489679394997">Sprzedaż</translation>
@@ -3156,7 +3157,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6189351761800074311">Twój tekst i zawartość strony są wysyłane do Google, ale nie będą używane do ulepszania AI.
     <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Zastąpić funkcje niektórych klawiszy na klawiaturze, np. Esc</translation>
-<translation id="6192524964213419211">Zapisz swoje dane, aby szybciej wykonywać zadania w usługach Google. Twoje informacje są zapisane w usłudze <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> na koncie <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Tu zobaczysz wszystkie obserwowane produkty</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elektronika użytkowa</translation>
@@ -3492,7 +3492,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6716039223770814796">Porównaj: <ph name="COMPARE_SET_NAME" /> · Liczba produktów: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> chce tworzyć mapę 3D Twojego otoczenia i śledzić pozycję kamery</translation>
 <translation id="6717692133381953670">Karta została wysłana z urządzenia <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Zapisz informacje, aby autouzupełnianie mogło wypełniać więcej pól</translation>
 <translation id="6718612893943028815">Korzystać z kamery?</translation>
 <translation id="6721164594124191969">Etykiety (błyszczące)</translation>
 <translation id="6726832600570791992">(emulacja wersji 32-bitowej)</translation>

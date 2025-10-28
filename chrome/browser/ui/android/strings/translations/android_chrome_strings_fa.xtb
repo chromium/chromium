@@ -595,6 +595,7 @@
 <translation id="3739899004075612870">در <ph name="PRODUCT_NAME" /> نشانک‌گذاری شد</translation>
 <translation id="3740525748616366977">جستجوی گفتاری در این دستگاه دردسترس نیست</translation>
 <translation id="376561056759077985">برخی‌از داده‌ها هنوز ذخیره نشده است</translation>
+<translation id="3770620323585347665">نام‌گذاری پنجره</translation>
 <translation id="3771033907050503522">برگه‌های ناشناس</translation>
 <translation id="3771290962915251154">این تنظیم غیرفعال است زیرا کنترل‌های والدین روشن است</translation>
 <translation id="3771694256347217732">‏شرایط خدمات Google</translation>
@@ -722,6 +723,7 @@
 <translation id="4355272626458588338">با اضافه کردن نشانک، می‌توانید به صفحه‌ای که برایتان مهم است برگردید</translation>
 <translation id="4356503491090073318">شماره کارت*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">‏باز کردن برنامه «لنز Google»</translation>
 <translation id="4359809482106103048">ایمنی در یک نگاه</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4380055775103003110">اگر این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
@@ -788,6 +790,7 @@
 <translation id="4668279686271488041">داده‌های سنجش آگهی مرتباً از دستگاهتان حذف می‌شود</translation>
 <translation id="4668347365065281350">همه داده‌هایی که سایت‌ها ذخیره کرده‌اند، ازجمله کوکی‌ها و دیگر داده‌هایی که به‌طور محلی ذخیره شده‌اند</translation>
 <translation id="4673702426794876519">پنجره ناشناس</translation>
+<translation id="4675298276894277358">این سایت دیگر نمایش داده نخواهد شد</translation>
 <translation id="4678082183394354975">‏زمینه تاریک برای سایت‌ها در Chrome روشن است</translation>
 <translation id="4682306524980568490">فقط <ph name="MAX_INSTANCE_COUNT" /> پنجره را می‌توان نمایش داد</translation>
 <translation id="4684427112815847243">همگام‌سازی همه</translation>
@@ -989,6 +992,7 @@
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="555671485580955310">همگام‌سازی سابقه و برگه‌ها</translation>
 <translation id="555816257274242153">پیگیری قیمت متوقف شد</translation>
+<translation id="5559778750856177186">سنجاق میان‌بر برداشته شد</translation>
 <translation id="5561445479436807659">رفتن به بازی جذاب دایناسور</translation>
 <translation id="5561549206367097665">در انتظار شبکه…</translation>
 <translation id="5568069709869097550">ورود به سیستم ممکن نیست</translation>
@@ -1499,6 +1503,7 @@
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
 <translation id="7612989789287281429">درحال وارد کردن شما به سیستم…</translation>
 <translation id="7619072057915878432">به‌دلیل نقص‌هایی در شبکه، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{اشتراک یک سایت لغو شد}one{اشتراک # سایت لغو شد}other{اشتراک # سایت لغو شد}}</translation>
 <translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
 <translation id="7628417132421583481">رفتن به «مدیر گذرواژه»</translation>
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
@@ -1662,6 +1667,7 @@
 <translation id="8281886186245836920">رد شدن</translation>
 <translation id="8282297628636750033">استفاده از زمینه تاریک برای سایت‌ها، هرگاه ممکن باشد</translation>
 <translation id="8282950411412455249">رفتن به «تنظیمات ایمنی»</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{بستن ۱ پنجره ناشناس}one{بستن # پنجره ناشناس}other{بستن # پنجره ناشناس}}</translation>
 <translation id="831192587911042850">وب‌سایت فعلی را به فهرست وب‌سایت‌هایی که دنبال می‌کنید اضافه می‌کند.</translation>
 <translation id="8317318757008452355">باز کردن گزینه‌های چاپ</translation>
 <translation id="8320212361750431956">فعالیت اخیر</translation>

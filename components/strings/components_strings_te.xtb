@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1292571435393770077">ట్రే 16</translation>
 <translation id="1292701964462482250">"మీ కంప్యూటర్‌లో ఉన్న సాఫ్ట్‌వేర్ కారణంగా Chrome సురక్షితంగా వెబ్‌కు కనెక్ట్ కాలేకపోతోంది" (Windows కంప్యూటర్‌ల కోసం మాత్రమే)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">9 x 11 అంగుళాల ఎన్వలప్</translation>
 <translation id="129553762522093515">ఇటీవల మూసివేయబడినవి</translation>
 <translation id="1296930489679394997">విక్రయాలు</translation>
@@ -3151,7 +3152,6 @@
 <translation id="6189351761800074311">మీ టెక్స్ట్‌ను, పేజీ కంటెంట్‌ను Googleకు పంపాము, కానీ వీటిని AIని మెరుగుపరచడానికి ఉపయోగించము.
     <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">మీ కీబోర్డ్‌లోని కొన్ని కీలను ఓవర్‌రైడ్ చేయండి, ఉదా., Esc</translation>
-<translation id="6192524964213419211">Google ప్రోడక్ట్‌లలో పనులను వేగంగా పూర్తి చేయడానికి మీ సమాచారాన్ని సేవ్ చేయండి. మీ సమాచారం <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />‌లో సేవ్ చేయబడింది</translation>
 <translation id="6194209731893739467">మీరు ట్రాక్ చేసిన అన్ని ప్రోడక్ట్‌లను ఇక్కడ చూడండి</translation>
 <translation id="6195371403461054755">భూగర్భశాస్త్రం</translation>
 <translation id="6195418151868446719">కన్జ్యూమర్ ఎలక్ట్రానిక్స్</translation>
@@ -3487,7 +3487,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" />‌ను కంపార్ చేయండి · <ph name="ITEMS" /> ఐటెమ్‌లు</translation>
 <translation id="6716672519412350405">మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించడానికి, కెమెరా పొజిషన్‌ను ట్రాక్ చేయడానికి <ph name="URL" /> అనుమతి అడుగుతోంది</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> నుండి పంపిన ట్యాబ్</translation>
-<translation id="6718524733720986924">మీ సమాచారాన్ని సేవ్ చేయండి, తద్వారా ఆటోఫిల్ తదుపరిసారి మీ కోసం మరిన్ని ఫీల్డ్‌లను పూరించగలదు</translation>
 <translation id="6718612893943028815">కెమెరాను ఉపయోగించాలా?</translation>
 <translation id="6721164594124191969">లేబుల్స్ (గ్లాసీ)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

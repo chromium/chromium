@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Tam ekrandan çıxmaq üçün yuxarıdan dartın və geri düyməsinə toxunun</translation>
 <translation id="1138458427267715730">Veb-saytlarda qiymət düşəndə bildiriş alın</translation>
 <translation id="1142713751288681188">Kağız növü</translation>
+<translation id="1142965388643537393">Səyahət məlumatları</translation>
 <translation id="1144136880160289237">Hələ aktiv mövzu yoxdur</translation>
 <translation id="1149617035358809955">ödəniş məlumatını doldurmaq üçün kimliyi doğrulamağa çalışır</translation>
 <translation id="1150565364351027703">Gün eynəyi</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
 <translation id="1292571435393770077">Qab 16</translation>
 <translation id="1292701964462482250">"Kompüterdəki proqram təminatı Chrome'un vebə təhlükəsiz şəkildə qoşulmağına mane olur" (yalnız Windows kompüterləri)</translation>
+<translation id="1293556467332435079">Fayllar</translation>
 <translation id="1293797321964802402">Zərf 9 x 11 düym</translation>
 <translation id="129553762522093515">Son qapadılan</translation>
 <translation id="1296930489679394997">Endirimlər</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">Cihazı <ph name="DEVICE_MANAGER" />, hesabı isə<ph name="ACCOUNT_MANAGER" /> idarə edir.</translation>
 <translation id="2359629602545592467">Çoxsaylı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
+<translation id="236000571258713023">Nəqliyyat vasitələri</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Keçirmə menyusunun ölçüsünü dəyişdirin</translation>
 <translation id="2365355378251437925">Daxil edin: <ph name="FIELD" /></translation>
@@ -2195,6 +2198,7 @@
 <translation id="4598556348158889687">Yaddaş idarəetməsi</translation>
 <translation id="459914240367517409">Veb Dizayn və İnkişaf</translation>
 <translation id="4602465984861132303">Boulinq</translation>
+<translation id="4603727370377253901">Uçuş rezervasiyaları</translation>
 <translation id="4607608436550361748">Chrome ipucularına baxın</translation>
 <translation id="460848736049414407">Admin tərəfindən bloklanıb</translation>
 <translation id="4610279718074907952">Bu sayt fəaliyyətinizi görən <ph name="SET_OWNER" /> tərəfindən təyin edilən qrupdadır</translation>
@@ -2203,6 +2207,7 @@
 <translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4622292761762557753">İstənilən halda ötürün</translation>
 <translation id="4622647778991854660">Bildiriş Mərkəzində bildirişləri aktivləşdirin. Açın: <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Kimlik sənədləri</translation>
 <translation id="4627675673814409125">Bu siyasət Chrome profil səviyyəsində ayarlana bilməz və nəzərə alınmayacaq.</translation>
 <translation id="4628678854894591460">Tətil təklifləri</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3148,7 +3153,6 @@
 <translation id="6189351761800074311">Mətn və səhifə kontentiniz Google-a göndərilir, lakin Sİ-ni təkmilləşdirmək üçün istifadə edilməyəcək.
     <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Klaviaturanızda Esc kimi bəzi düymələri əvəzləyin</translation>
-<translation id="6192524964213419211">Google məhsullarında işləri daha tez yerinə yetirmək üçün məlumatınızı yadda saxlayın. Məlumatlarınız <ph name="ACCOUNT" /> üçün burada saxlanılır: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="6194209731893739467">Bütün izlənən məhsulları burada görə bilərsiniz</translation>
 <translation id="6195371403461054755">Geologiya</translation>
 <translation id="6195418151868446719">İstehlakçı Elektronikası</translation>
@@ -3484,7 +3488,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elementi müqayisə edin</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və kamera mövqeyini izləmək istəyir</translation>
 <translation id="6717692133381953670">Tab <ph name="DEVICE_NAME" /> cihazından göndərilib</translation>
-<translation id="6718524733720986924">Növbəti dəfə avto-doldurma ilə daha çox sahənin doldurulması üçün məlumatlarınızı yadda saxlayın</translation>
 <translation id="6718612893943028815">Kameradan istifadə edilsin?</translation>
 <translation id="6721164594124191969">Etiket (parlaq)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

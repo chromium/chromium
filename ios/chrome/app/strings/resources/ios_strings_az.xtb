@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Hazırda bu istifadəçi adını bu sayt üçün yadda saxlamısınız</translation>
 <translation id="1497590942294823549">Menyu → Parol meneceri</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinməyəcək.</translation>
+<translation id="1503814213414825943">Başqa tətbiqə eksport etmək istədiyiniz hesabları seçin.</translation>
 <translation id="1506061864768559482">Axtarış mühərriki</translation>
 <translation id="1506063256525392513">Bu, foto çəkməyə və yükləməyə, həmçinin QR kodları skan etməyə imkan verir</translation>
 <translation id="1508263560970797965">Anonim rejimdə davam edin</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Şəbəkə bağlantısının olmasına əmin olun və yenidən cəhd edin.</translation>
 <translation id="4070132839822635162">Daxil olmayın</translation>
 <translation id="4092655288299341041">Yardımı göstərin</translation>
-<translation id="4095483462103784441">Yeni tab qrupu yaradın</translation>
 <translation id="4099756562043439968">Xatırladıcı ayarlayın</translation>
 <translation id="4108998448622696017">Təhlükəli hadisələr baş verdikdə onları aşkarlayır və sizə xəbərdarlıq edir.</translation>
 <translation id="4111985840824673503">Hamısını oxunmuş kimi qeyd edin</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Veb-saytda parolu dəyişin</translation>
 <translation id="5248640482715684545">Bu sayt başqa tətbiq açmağa çalışır.</translation>
 <translation id="5250371859659394278">Naməlum mənbədən</translation>
+<translation id="5269913829202614649">Əsas səhifəni fərdiləşdirin</translation>
 <translation id="5271265092610673171">{count,plural, =1{Lazımi sahə boşdur. Yadda saxlamazdan əvvəl doldurun.}other{Bəzi lazımi sahələr boşdur. Yadda saxlamazdan əvvəl doldurun.}}</translation>
 <translation id="5271549068863921519">Şifrəni yadda saxlayın</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) tab qrupuna qoşulmağınızı istəyir. Keçidi olan hər kəs bütün tabları redaktə edə bilər, ona görə də qoşularkən diqqətli olun. Keçidin müddəti 48 saat sonra bitir.</translation>

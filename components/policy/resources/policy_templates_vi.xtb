@@ -1933,6 +1933,7 @@ Nếu bạn không đặt chính sách này, thì người dùng có thể thay 
 <translation id="2306505001667207184">Nhắc người dùng chọn chứng chỉ máy khách mỗi khi chính sách tự động chọn khớp với nhiều chứng chỉ.</translation>
 <translation id="230713790688681130">Bật bố cục Hindi Inscript</translation>
 <translation id="2307496301287881990">Báo cáo trạng thái đồ họa và hiển thị</translation>
+<translation id="2308084581803907194">Độ phức tạp cao</translation>
 <translation id="2308899582897965249">Tắt tính năng In thầm lặng</translation>
 <translation id="2309284543927494965">Chặn bản cập nhật</translation>
 <translation id="2309341709647905294">Không báo cáo thông tin về những thiết bị ngoại vi được cắm vào thiết bị này</translation>
@@ -2744,6 +2745,19 @@ Nếu bạn bật chính sách này, phím trình chạy/phím tìm kiếm sẽ 
       Nếu bạn không đặt chính sách này, hệ thống sẽ không áp dụng chính sách cho các thiết bị được quản lý mà áp dụng cho các thiết bị thuộc sở hữu của người dùng thông thường.
       Lưu ý rằng nếu bạn tắt chính sách này, thì chỉ có tính năng thu thập dữ liệu theo dõi trên toàn hệ thống là bị vô hiệu hóa. Chính sách này không ảnh hưởng đến tính năng thu thập dữ liệu theo dõi trình duyệt.</translation>
 <translation id="2922511125678964398">Cho phép quá trình xác thực qua trang xác thực bỏ qua cài đặt proxy</translation>
+<translation id="2923126158151236068">Chính sách này định cấu hình các yêu cầu tối thiểu về độ phức tạp đối với các yếu tố xác thực trên máy (mã PIN và mật khẩu trên máy) do người dùng đặt trên <ph name="PRODUCT_OS_NAME" />.
+
+Nếu bạn không đặt chính sách này, cấp độ phức tạp mặc định sẽ là Không có.
+
+Các yêu cầu của chính sách này sẽ được thực thi khi người dùng thiết lập một mã PIN/mật khẩu mới trên máy hoặc thay đổi mã PIN/mật khẩu hiện tại.
+
+Cấp độ phức tạp được đo dựa trên các chỉ số về chất lượng mật khẩu của Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), được điều chỉnh cho phù hợp với <ph name="PRODUCT_OS_NAME" />:
+– 1 = Không có: Cần có mã PIN/mật khẩu, nhưng không có quy định hạn chế về nội dung hoặc độ dài của mã PIN/mật khẩu.
+– 2 = Thấp: Yêu cầu cơ bản về độ phức tạp.
+– 3 = Trung bình: Yêu cầu nghiêm ngặt hơn về độ dài và loại ký tự.
+– 4 = Cao: Yêu cầu cao nhất về độ phức tạp, đòi hỏi nhiều loại ký tự.
+
+Hãy xem bài viết trên trung tâm trợ giúp để biết nội dung giải thích chi tiết về ý nghĩa của từng cấp độ đối với cả mã PIN và mật khẩu.</translation>
 <translation id="2926813071464307947">Tắt hộp cát Vùng chứa ứng dụng kết xuất</translation>
 <translation id="2931888116345994552">Nếu bạn bật hoặc không đặt chính sách này, thì các bản cập nhật cho mọi thành phần trong <ph name="PRODUCT_NAME" /> sẽ được bật.
 
@@ -3517,6 +3531,15 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
 
       Nếu bạn đặt thành Tắt hoặc không đặt chính sách này, DTC sẽ bị tắt. DTC sẽ không thể thu thập, xử lý hoặc báo cáo về dữ liệu đo từ xa và chẩn đoán trên thiết bị.</translation>
 <translation id="3442589735857147823">Cho phép người dùng sử dụng máy ảo cần thiết để hỗ trợ ứng dụng Linux</translation>
+<translation id="34476328503285475">Nếu bạn đặt chính sách này, hệ thống sẽ định cấu hình trước tối đa 10 lối tắt tuỳ chỉnh trên trang Thẻ mới của <ph name="PRODUCT_NAME" />.
+
+Nếu bạn đặt chính sách này, người dùng sẽ thấy các lối tắt này theo mặc định, ngoài các lối tắt cá nhân của họ. Người dùng có thể kiểm soát chế độ hiển thị các lối tắt của tổ chức trên bảng điều khiển "Tuỳ chỉnh Chrome".
+
+URL lối tắt phải không được trùng lặp.
+
+Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> thành true, thì người dùng có thể thay đổi tên của lối tắt. Nếu bạn đặt thành false hoặc không đặt, thì người dùng sẽ không thể chỉnh sửa tên.
+
+Nếu bạn đặt <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> thành true, thì người dùng có thể xoá lối tắt. Nếu bạn đặt thành false hoặc không đặt, thì người dùng không thể xoá lối tắt.</translation>
 <translation id="3450649825886735618">Không sử dụng bất kỳ dịch vụ web nào của Google để sửa lỗi chính tả</translation>
 <translation id="3451422488938880786"> Cho phép bật/tắt tính năng liên kết lại các phím tắt quốc tế</translation>
 <translation id="3451901387456196887">Người dùng sẽ được chọn thiết bị truyền trong trình đơn của <ph name="PRODUCT_NAME" /> bằng cách sử dụng mã truy cập hoặc quét mã QR.</translation>
@@ -6061,6 +6084,7 @@ Hệ thống sẽ bỏ qua các miền không đúng định dạng.</translatio
 <translation id="5163889437570441600">Có thể truyền nội dung tới thiết bị này bằng cách sử dụng <ph name="PRODUCT_NAME" />.
 
           Nếu bạn thiết lập chính sách này thành Sai, người dùng sẽ không thể truyền nội dung tới thiết bị của họ. Nếu bạn thiết lập chính sách này thành Đúng, người dùng được phép truyền nội dung. Nếu bạn không thiết lập chính sách này, người dùng không được phép truyền nội dung tới thiết bị ChromeOS đã đăng ký, nhưng có thể truyền nội dung tới thiết bị chưa đăng ký.</translation>
+<translation id="5166766992668636906">Độ phức tạp trung bình</translation>
 <translation id="5168529971295111207">Chính sách này không được dùng nữa, thay vào đó hãy sử dụng ProxyMode.
 
           Cho phép bạn chỉ định máy chủ proxy mà <ph name="PRODUCT_NAME" /> sẽ sử dụng và ngăn người dùng thay đổi các tùy chọn cài đặt proxy.
@@ -7669,6 +7693,7 @@ Xin lưu ý rằng các hạn chế khác, như hạn chế do chính sách ArcE
 <translation id="6144046700495610112">Nếu bạn đặt chính sách này thành Bật, thì dữ liệu tự động điền vào biểu mẫu trên trình duyệt mặc định trước sẽ được nhập trong lần chạy đầu tiên. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì dữ liệu tự động điền vào biểu mẫu sẽ không được nhập trong lần chạy đầu tiên.
 
       Người dùng có thể kích hoạt hộp thoại nhập. Ngoài ra, hộp đánh dấu dữ liệu tự động điền vào biểu mẫu sẽ được đánh dấu/bỏ đánh dấu tương ứng với giá trị của chính sách này.</translation>
+<translation id="6144246313478615705">Đặt độ phức tạp tối thiểu cho mã PIN và mật khẩu trên máy</translation>
 <translation id="614551633868957694">Ứng dụng và tiện ích của Chrome</translation>
 <translation id="614616930188030377">Các mẫu trong danh sách này sẽ được so khớp với nguồn bảo mật của URL yêu cầu.
       Nếu tìm thấy mẫu phù hợp hoặc nếu chrome://flags/#enable-webrtc-hide-local-ips-with-mdns đang Tắt, thì địa chỉ IP cục bộ sẽ hiển thị trong ứng viên WebRTC ICE.
@@ -9192,6 +9217,17 @@ Chỉ cho phép nguồn gốc HTTPS hợp lệ. Không hỗ trợ ký tự đạ
 Mọi mục nhập không hợp lệ đều sẽ bị bỏ qua.</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>
 <translation id="7045221780834308118">Nếu bạn đặt chính sách này thành Enabled (Bật), thì các ứng dụng web bên thứ ba có thể sử dụng Desk API để kiểm soát các không gian làm việc trên <ph name="PRODUCT_OS_NAME" />. Nếu bạn tắt hoặc không đặt chính sách này, thì <ph name="DESK_API_NAME" /> sẽ không hoạt động. Chính sách này sẽ chỉ có hiệu lực trên các thiết bị đã đăng ký.</translation>
+<translation id="704591686761455167">Chính sách này kiểm soát việc có phân vùng URL Blob trong quá trình tìm nạp và điều hướng hay không.
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt, URL Blob sẽ được phân vùng.
+Nếu bạn đặt chính sách này thành Tắt, URL Blob sẽ không được phân vùng.
+
+Nếu tính năng phân vùng bộ nhớ bị tắt đối với một nguồn gốc cấp cao nhất cụ thể thông qua <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> hoặc <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, thì URL Blob cũng sẽ không được phân vùng.
+
+Nếu bạn phải sử dụng chính sách này, vui lòng báo cáo lỗi tại <ph name="BUG_URL" /> và giải thích trường hợp sử dụng của bạn. Theo lịch, chính sách này sẽ được cung cấp thông qua phiên bản 146 của <ph name="PRODUCT_NAME" />, sau đó phương thức triển khai cũ sẽ bị loại bỏ.
+
+LƯU Ý: Chỉ các quy trình kết xuất hình ảnh mới bắt đầu mới thể hiện các thay đổi đối với chính sách này trong khi trình duyệt đang chạy.
+
+Vui lòng truy cập vào https://developers.google.com/privacy-sandbox/cookies/storage-partitioning để biết thông tin chi tiết về tính năng phân vùng bộ nhớ của bên thứ ba.</translation>
 <translation id="7046113122884041950">Không cho phép sử dụng Smart Lock</translation>
 <translation id="7046997898355294677">Hiện thông báo về quyền riêng tư cho đến khi người dùng đóng</translation>
 <translation id="7047495632846973438">Chỉ định xem chính sách về quyền thu thập dữ liệu màn hình được chọn hay bị bỏ qua.</translation>
@@ -9890,6 +9926,7 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 
       Nếu người dùng sử dụng thiết bị không được quản lý, thì khả năng đặt chính sách này sẽ còn phụ thuộc vào việc người dùng có phải là chủ sở hữu thiết bị hay không.</translation>
 <translation id="7570291542739287032">Chỉ trên đám mây</translation>
+<translation id="7572641760104970905">Không phức tạp</translation>
 <translation id="757395965347379751">Khi bạn bật cài đặt này, <ph name="PRODUCT_NAME" /> sẽ cho phép các chứng chỉ có chữ ký SHA-1 miễn là các chứng chỉ xác thực thành công và cung cấp đến chứng chỉ CA được cài đặt cục bộ.
 
       Hãy lưu ý rằng chính sách này phụ thuộc vào ngăn xếp xác minh chứng chỉ hệ điều hành cho phép chữ ký SHA-1. Nếu bản cập nhật HĐH thay đổi khả năng xử lý HĐH của chứng chỉ SHA-1 thì chính sách này có thể không còn hiệu lực nữa.  Ngoài ra, theo dự kiến, chính sách này sẽ là giải pháp tạm thời nhằm cho các doanh nghiệp thêm thời gian để di chuyển khỏi SHA-1.  Chính sách này sẽ bị xóa vào hoặc khoảng ngày 01 tháng 01 năm 2019.
@@ -9988,6 +10025,7 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
 <translation id="7648907905084499629">Dùng hành vi <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> cho các cookie trên tất cả các trang web</translation>
 <translation id="7657261947024629645">Tối ưu hóa cho hiệu suất.</translation>
 <translation id="76580522298425324">Cho phép chụp ảnh màn hình mà không cần cử chỉ trước đó của người dùng</translation>
+<translation id="7661379728107156839">Độ phức tạp thấp</translation>
 <translation id="7666228839913571182">Cho phép cookie của bên thứ ba</translation>
 <translation id="7666782560345386904">Chế độ cài đặt cho tính năng tự động điền nâng cao</translation>
 <translation id="7669630878711068277">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng có thể in trong <ph name="PRODUCT_NAME" /> và không thể thay đổi tùy chọn cài đặt này.

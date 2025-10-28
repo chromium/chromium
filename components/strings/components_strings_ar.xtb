@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1292571435393770077">الدُرج 16</translation>
 <translation id="1292701964462482250">‏"هناك برامج على جهاز الكمبيوتر تمنع اتصال Chrome بالويب بأمان" (أجهزة الكمبيوتر المزوّدة بنظام التشغيل Windows فقط)</translation>
+<translation id="1293556467332435079">ملفات</translation>
 <translation id="1293797321964802402">ظرف مقاس 23 × 28 سم</translation>
 <translation id="129553762522093515">المغلقة حديثًا</translation>
 <translation id="1296930489679394997">مبيعات</translation>
@@ -3156,7 +3157,6 @@
 <translation id="6189351761800074311">‏يتم إرسال محتوى الصفحة والنص إلى Google، ولكن لن يتم استخدامهما لتحسين ميزات الذكاء الاصطناعي.
     <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">‏يمكنك تجاوُز بعض المفاتيح على لوحة مفاتيحك، مثل Esc</translation>
-<translation id="6192524964213419211">‏يمكنك حفظ معلوماتك في "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" للحساب <ph name="ACCOUNT" /> لإنجاز المهام بشكل أسرع في جميع منتجات Google</translation>
 <translation id="6194209731893739467">الاطّلاع هنا على جميع المنتجات التي يتمّ تتبّع أسعارها</translation>
 <translation id="6195371403461054755">جيولوجيا</translation>
 <translation id="6195418151868446719">أجهزة إلكترونية استهلاكية</translation>
@@ -3492,7 +3492,6 @@
 <translation id="6716039223770814796">مقارنة "<ph name="COMPARE_SET_NAME" />" · <ph name="ITEMS" /> عنصر</translation>
 <translation id="6716672519412350405">يريد الموقع الإلكتروني <ph name="URL" /> إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا.</translation>
 <translation id="6717692133381953670">تم إرسال علامة التبويب من "<ph name="DEVICE_NAME" />"</translation>
-<translation id="6718524733720986924">يمكنك حفظ معلوماتك حتى تتمكّن ميزة "الملء التلقائي" من ملء المزيد من الحقول نيابةً عنك في المرة القادمة</translation>
 <translation id="6718612893943028815">هل تريد استخدام الكاميرا؟</translation>
 <translation id="6721164594124191969">تصنيفات (لامعة)</translation>
 <translation id="6726832600570791992">(في وضع المحاكاة لنظام 32 بت)</translation>

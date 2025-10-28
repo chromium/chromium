@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1007349221964075684">খোলা ছদ্মবেশী উইন্ডো দেখতে স্ক্রিন লক ব্যবহার করুন</translation>
 <translation id="1010283278930414892">এই ডিভাইসে কোনও সেভ করা পাসওয়ার্ড নেই</translation>
 <translation id="1011749477052068769">এখানে সরান</translation>
 <translation id="1014083013111769343">রিডিং মোড সম্পর্কিত পছন্দ সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
@@ -594,6 +595,7 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
 <translation id="3740525748616366977">এই ডিভাইসে ভয়েস সার্চ উপলভ্য নেই</translation>
 <translation id="376561056759077985">কিছু ডেটা এখনও সেভ হয়নি</translation>
+<translation id="3770620323585347665">উইন্ডোর নাম দিন</translation>
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="3771290962915251154">অভিভাবকীয় নিয়ন্ত্রণ চালু থাকায় এই সেটিং বন্ধ আছে</translation>
 <translation id="3771694256347217732">Google পরিষেবার শর্তাবলী</translation>
@@ -787,6 +789,7 @@
 <translation id="4668279686271488041">আপনার ডিভাইস থেকে বিজ্ঞাপন-পরিমাপ ডেটা নিয়মিত মুছে ফেলা হয়</translation>
 <translation id="4668347365065281350">কুকি ও স্থানীয়ভাবে সেভ করা ডেটা সহ সাইটের সেভ করা সব ডেটা</translation>
 <translation id="4673702426794876519">ছদ্মবেশী উইন্ডো</translation>
+<translation id="4675298276894277358">এই সাইট আর দেখানো হবে না</translation>
 <translation id="4678082183394354975">Chrome-এ সাইটের জন্য ডার্ক থিম চালু আছে</translation>
 <translation id="4682306524980568490">শুধু <ph name="MAX_INSTANCE_COUNT" />টি উইন্ডো দেখানো যাবে</translation>
 <translation id="4684427112815847243">সবকিছু সিঙ্ক করুন</translation>
@@ -988,6 +991,7 @@
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="555671485580955310">ইতিহাস ও ট্যাব সিঙ্ক করা</translation>
 <translation id="555816257274242153">দাম ট্র্যাক করা বন্ধ করা হয়েছে</translation>
+<translation id="5559778750856177186">শর্টকাট আনপিন করা হয়েছে</translation>
 <translation id="5561445479436807659">Dino গেম উপভোগ করুন</translation>
 <translation id="5561549206367097665">নেটওয়ার্কের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="5568069709869097550">প্রবেশ করতে পারছেন না</translation>
@@ -1167,6 +1171,7 @@
 <translation id="6312687380483398334">ওয়েব অ্যাপ (কোনও রকম আওয়াজ ছাড়া)</translation>
 <translation id="6315386555979018699">মুছুন এবং এগিয়ে যান</translation>
 <translation id="6316139424528454185">এই Android ভার্সন সমর্থিত নয়</translation>
+<translation id="631839948975905034">আপনি Chrome ছেড়ে বেরিয়ে আসার সময়, ছদ্মবেশী উইন্ডো লক করুন</translation>
 <translation id="6324916366299863871">শর্টকার্ট এডিট করুন</translation>
 <translation id="6324977638108296054">হাইলাইট করা টেক্সটের লিঙ্ক কপি করা যাচ্ছে না</translation>
 <translation id="6333140779060797560"><ph name="APPLICATION" /> এর মাধ্যমে শেয়ার করুন</translation>
@@ -1660,6 +1665,7 @@
 <translation id="8281886186245836920">এড়িয়ে যান</translation>
 <translation id="8282297628636750033">সম্ভব হলে সাইটে ডার্ক থিম রাখুন</translation>
 <translation id="8282950411412455249">নিরাপত্তা সেটিংসে যান</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{১টি ছদ্মবেশী উইন্ডো বন্ধ করুন}one{#টি ছদ্মবেশী উইন্ডো বন্ধ করুন}other{#টি ছদ্মবেশী উইন্ডো বন্ধ করুন}}</translation>
 <translation id="831192587911042850">আপনার ফলো করা ওয়েবসাইটের তালিকায় বর্তমান ওয়েব সাইট যোগ করে।</translation>
 <translation id="8317318757008452355">প্রিন্ট করার বিকল্প খুলুন</translation>
 <translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>

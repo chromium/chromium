@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> — lai izietu no pilnekrāna režīma, velciet no augšdaļas un pieskarieties pogai Atpakaļ.</translation>
 <translation id="1138458427267715730">Saņemiet brīdinājumus, kad kādā tīmekļa vietnē tiek konstatēts cenas kritums.</translation>
 <translation id="1142713751288681188">Papīra tips</translation>
+<translation id="1142965388643537393">Informācija par ceļojumiem</translation>
 <translation id="1144136880160289237">Jums vēl nav nevienas aktīvas tēmas.</translation>
 <translation id="1149617035358809955">verificēt jūsu identitāti, lai varētu ievadīt jūsu maksājumu informāciju</translation>
 <translation id="1150565364351027703">Saulesbrilles</translation>
@@ -177,6 +178,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1285320974508926690">Nekad netulkot šo vietni</translation>
 <translation id="1292571435393770077">16. paplāte</translation>
 <translation id="1292701964462482250">“Programmatūra jūsu datorā, kuras dēļ pārlūkā Chrome nevar izveidot drošu tīmekļa savienojumu” (tikai Windows datoros)</translation>
+<translation id="1293556467332435079">Faili</translation>
 <translation id="1293797321964802402">Aploksne (9 x 11 collas)</translation>
 <translation id="129553762522093515">Nesen aizvērtas</translation>
 <translation id="1296930489679394997">Pārdošana</translation>
@@ -837,6 +839,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2357481397660644965">Jūsu ierīci pārvalda <ph name="DEVICE_MANAGER" />, un jūsu kontu pārvalda <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Vairākas</translation>
 <translation id="2359808026110333948">Turpināt</translation>
+<translation id="236000571258713023">Transportlīdzekļi</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Pārslēgšanas izvēlnes lieluma maiņa</translation>
 <translation id="2365355378251437925">Ievadiet šādu informāciju: <ph name="FIELD" /></translation>
@@ -2197,6 +2200,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4598556348158889687">Krātuves pārvaldība</translation>
 <translation id="459914240367517409">Tīmekļa dizains un izstrāde</translation>
 <translation id="4602465984861132303">Boulings</translation>
+<translation id="4603727370377253901">Lidojumu rezervācijas</translation>
 <translation id="4607608436550361748">Skatīt Chrome padomus</translation>
 <translation id="460848736049414407">Bloķējis administrators</translation>
 <translation id="4610279718074907952">Šī vietne ir uzņēmuma <ph name="SET_OWNER" /> definētā grupā, un jūsu darbības ir redzamas visai grupai.</translation>
@@ -2205,6 +2209,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4622292761762557753">Tomēr pārsūtīt</translation>
 <translation id="4622647778991854660">Paziņojumu centrā iespējojiet paziņojumus. Atveriet sadaļu “<ph name="LINK" />”.</translation>
+<translation id="4623894491222334521">Personu apliecinoši dokumenti</translation>
 <translation id="4627675673814409125">Šo politiku nevar iestatīt Chrome profila līmenī, un tā tiks ignorēta.</translation>
 <translation id="4628678854894591460">Brīvdienu piedāvājumi</translation>
 <translation id="4628948037717959914">Fotoattēls</translation>
@@ -3150,7 +3155,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6189351761800074311">Jūsu teksts un lapas saturs tiek nosūtīts uzņēmumam Google, taču netiks izmantots, lai uzlabotu MI.
     <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="6190518157737269631">Ignorēt noteiktus tastatūras taustiņus, piemēram, atsoļa taustiņu</translation>
-<translation id="6192524964213419211">Saglabājiet savu informāciju, lai ātrāk veiktu darbu Google produktos. Jūsu informācija tiek saglabāta lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Skatiet visus savus izsekotos produktus šeit</translation>
 <translation id="6195371403461054755">Ģeoloģija</translation>
 <translation id="6195418151868446719">Patēriņa elektronika</translation>
@@ -3486,7 +3490,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6716039223770814796">Salīdzināt: <ph name="COMPARE_SET_NAME" /> · Vienumu skaits: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Vietne <ph name="URL" /> vēlas izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju.</translation>
 <translation id="6717692133381953670">Cilne tika nosūtīta no ierīces “<ph name="DEVICE_NAME" />”</translation>
-<translation id="6718524733720986924">Saglabājiet savu informāciju, lai nākamreiz varētu aizpildīt vairāk lauku, izmantojot automātisko aizpildi.</translation>
 <translation id="6718612893943028815">Vai lietot kameru?</translation>
 <translation id="6721164594124191969">Etiķešu papīrs (glancēts)</translation>
 <translation id="6726832600570791992">(32 biti, emulēts)</translation>

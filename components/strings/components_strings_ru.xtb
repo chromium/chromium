@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1292571435393770077">Лоток 16</translation>
 <translation id="1292701964462482250">"ПО, установленное на компьютере, не позволяет Chrome безопасно подключиться к Интернету" (только для Windows)</translation>
+<translation id="1293556467332435079">Файлы</translation>
 <translation id="1293797321964802402">Конверт 229 x 279 мм</translation>
 <translation id="129553762522093515">Недавно закрытые</translation>
 <translation id="1296930489679394997">Продажи</translation>
@@ -3155,7 +3156,6 @@
 <translation id="6189351761800074311">Ваш текст и содержимое страницы передаются в Google, но не используются для улучшения ИИ.
     <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Переопределение некоторых клавиш, например Esc.</translation>
-<translation id="6192524964213419211">Сохраните свои данные, чтобы быстрее выполнять действия в продуктах Google. Ваша информация сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Здесь вы найдете все отслеживаемые товары</translation>
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6195418151868446719">Бытовая электроника</translation>
@@ -3491,7 +3491,6 @@
 <translation id="6716039223770814796">Сравнение товаров из категории "<ph name="COMPARE_SET_NAME" />" · Товаров: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запрашивает разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры.</translation>
 <translation id="6717692133381953670">Вкладка отправлена с устройства "<ph name="DEVICE_NAME" />"</translation>
-<translation id="6718524733720986924">Сохраните данные для автозаполнения большего количества полей в дальнейшем.</translation>
 <translation id="6718612893943028815">Использовать камеру?</translation>
 <translation id="6721164594124191969">Этикетки (глянцевые)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

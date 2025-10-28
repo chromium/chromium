@@ -93,6 +93,7 @@
 <translation id="2018528049276128029">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chrome 정보가 보관됩니다.</translation>
 <translation id="2018879682492276940">설치할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2024959665595762054">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
+<translation id="2026377840141807639">Chrome 프로필을 사용하면 개인용 인터넷 사용 기록과 업무용 인터넷 사용 기록을 분리할 수 있습니다. 지금 새 프로필을 추가하세요.</translation>
 <translation id="2034233344106846793">가능한 경우 Chrome이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
 <translation id="2039417478970545937">설정</translation>
 <translation id="2091012649849228750">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8을 사용 중입니다.</translation>
@@ -366,6 +367,7 @@
 일부 기능은 사용하지 못할 수 있습니다. 다른 프로필 디렉터리를 지정하거나 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="5174969993834422967">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 위치 표시줄의 오른쪽 모서리에 있는 알림 아이콘을 클릭하세요.</translation>
 <translation id="5174983315706567306">디스크 공간이 충분하지 않습니다.</translation>
+<translation id="5190467473654176081">Chrome을 맞춤설정하여 새로운 디자인으로 변경하세요.</translation>
 <translation id="5201744974236816379">Chrome 업데이트</translation>
 <translation id="521447420733633466">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="5234764350956374838">닫기</translation>
@@ -389,6 +391,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5510398294750420479">이동 중에 보안을 한층 더 강화하려면 휴대전화에 Chrome을 다운로드하세요.</translation>
 <translation id="5524890928877629608">검색 영역의 왼쪽 상단: 왼쪽 <ph name="LEFT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Chrome의 속도를 높여보세요</translation>
+<translation id="5550137307985173298">새 탭 페이지에서 Chrome 맞춤설정 버튼을 클릭하여 Chrome에 새로운 디자인을 적용하세요.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
@@ -417,6 +420,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5736850870166430177">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="5756509061973259733">이 계정을 사용하는 Chrome 프로필이 기기에 이미 존재합니다.</translation>
 <translation id="5759947850379142561">Google 렌즈로 검색할 텍스트 또는 이미지를 선택하거나 Esc 키를 눌러 Google 렌즈를 종료하세요</translation>
+<translation id="5762867845020858790">북마크, 비밀번호, 설정을 별도로 유지하려면 새 Chrome 프로필을 추가하세요.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="5809516625706423866">인터넷에 연결할 수 없습니다(HTTP 401 Unauthorized). 프록시 설정을 확인하시기 바랍니다.</translation>
@@ -517,6 +521,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6800285125190089494">iOS의 Chrome에 저장된 비밀번호를 사용하여 사이트에 더 빠르게 로그인하세요.</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
+<translation id="6841242485723266823">Chrome 프로필을 사용하면 삶의 여러 부분을 분리할 수 있습니다. 지금 새 프로필을 추가하세요.</translation>
 <translation id="684888714667046800">인터넷에 연결할 수 없습니다. 방화벽을 사용하는 경우 <ph name="PRODUCT_EXE_NAME" />이(가) 허용 목록에 있는지 확인해 주세요.</translation>
 <translation id="6877155553248388166">검색 영역의 오른쪽 하단: 오른쪽 <ph name="RIGHT" />%, 하단 <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome 업데이트 중</translation>
@@ -681,6 +686,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="8637932705841171563">창을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="8641606876632989680">유출된 비밀번호로 로그인하면 Chrome에서 알림을 표시함</translation>
+<translation id="8647930742055103497">Chrome에서 모든 항목을 보관하세요</translation>
 <translation id="8656634243791296665">Chrome 개발자의 Gemini 열기</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>
 <translation id="8677922833187616101">Google AI 모드 바로가기 항상 표시</translation>

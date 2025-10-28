@@ -595,6 +595,7 @@
 <translation id="3739899004075612870">Закладка дададзена ў <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Галасавы пошук недаступны на гэтай прыладзе</translation>
 <translation id="376561056759077985">Некаторыя даныя яшчэ не захаваны</translation>
+<translation id="3770620323585347665">Дадаць назву акна</translation>
 <translation id="3771033907050503522">Укладкі інкогніта</translation>
 <translation id="3771290962915251154">Гэта налада выключана, бо ўключаны бацькоўскі кантроль</translation>
 <translation id="3771694256347217732">Умовы выкарыстання Google</translation>
@@ -788,6 +789,7 @@
 <translation id="4668279686271488041">Даныя вымярэння паказчыкаў, звязаных з рэкламай, рэгулярна выдаляюцца з прылады.</translation>
 <translation id="4668347365065281350">Усе даныя, захаваныя сайтамі, у тым ліку файлы cookie і іншыя лакальна захаваныя даныя</translation>
 <translation id="4673702426794876519">Акно ў рэжыме інкогніта</translation>
+<translation id="4675298276894277358">Мы больш не будзем паказваць гэты сайт</translation>
 <translation id="4678082183394354975">У браўзеры Chrome уключана цёмная тэма для сайтаў</translation>
 <translation id="4682306524980568490">Максімальная колькасць вокнаў, якую можна адкрыць: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Сінхранізаваць усё</translation>
@@ -989,6 +991,7 @@
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="555671485580955310">Сінхранізаваць гісторыю і ўкладкі</translation>
 <translation id="555816257274242153">Адсочванне цаны спынена</translation>
+<translation id="5559778750856177186">Ярлык адмацаваны</translation>
 <translation id="5561445479436807659">Перайсці ў вясёлую гульню з дыназаўрам</translation>
 <translation id="5561549206367097665">Чакаецца адказ сеткі…</translation>
 <translation id="5568069709869097550">Не ўдалося ўвайсці ў сістэму</translation>
@@ -1662,6 +1665,7 @@
 <translation id="8281886186245836920">Прапусціць</translation>
 <translation id="8282297628636750033">Прымяняць цёмную тэму, калі гэта магчыма</translation>
 <translation id="8282950411412455249">Перайсці ў налады бяспекі</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Закрыць 1 акно ў рэжыме інкогніта}one{Закрыць # акно ў рэжыме інкогніта}few{Закрыць # акна ў рэжыме інкогніта}many{Закрыць # акон у рэжыме інкогніта}other{Закрыць # акна ў рэжыме інкогніта}}</translation>
 <translation id="831192587911042850">Дадае бягучы вэб-сайт у спіс падпісак.</translation>
 <translation id="8317318757008452355">Адкрыць параметры друку</translation>
 <translation id="8320212361750431956">Нядаўнія дзеянні</translation>

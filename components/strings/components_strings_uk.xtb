@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – щоб вийти з повноекранного режиму, проведіть пальцем від верхнього краю екрана й натисніть кнопку "Назад"</translation>
 <translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1142713751288681188">Тип паперу</translation>
+<translation id="1142965388643537393">Інформація про подорожі</translation>
 <translation id="1144136880160289237">У вас іще немає активних тем</translation>
 <translation id="1149617035358809955">підтвердити вашу особу, щоб автоматично заповнити платіжну інформацію</translation>
 <translation id="1150565364351027703">Сонцезахисні окуляри</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1292571435393770077">Лоток 16</translation>
 <translation id="1292701964462482250">"Програмне забезпечення на вашому комп’ютері перешкоджає веб-переглядачеві Chrome безпечно під’єднуватися до Інтернету" (лише для комп’ютерів з ОС Windows)</translation>
+<translation id="1293556467332435079">Файли</translation>
 <translation id="1293797321964802402">Конверт 9 x 11 дюймів</translation>
 <translation id="129553762522093515">Нещодавно закриті</translation>
 <translation id="1296930489679394997">Продажі</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">Вашим пристроєм керує <ph name="DEVICE_MANAGER" />, а обліковим записом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Декілька</translation>
 <translation id="2359808026110333948">Продовжити</translation>
+<translation id="236000571258713023">Транспортні засоби</translation>
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню зміни розмірів</translation>
 <translation id="2365355378251437925">Заповніть поле "<ph name="FIELD" />"</translation>
@@ -2199,6 +2202,7 @@
 <translation id="4598556348158889687">Керування сховищем</translation>
 <translation id="459914240367517409">Вебдизайн і розробка</translation>
 <translation id="4602465984861132303">Боулінг</translation>
+<translation id="4603727370377253901">Бронювання авіаквитків</translation>
 <translation id="4607608436550361748">Переглянути поради щодо Chrome</translation>
 <translation id="460848736049414407">Заблоковано адміністратором</translation>
 <translation id="4610279718074907952">Цей сайт належить до групи, визначеної сайтом-власником <ph name="SET_OWNER" />, і інші сайти-учасники можуть бачити ваші дії</translation>
@@ -2207,6 +2211,7 @@
 <translation id="4619564267100705184">Підтвердити особу</translation>
 <translation id="4622292761762557753">Усе одно перенести</translation>
 <translation id="4622647778991854660">Увімкніть сповіщення в Центрі сповіщень. Відкрийте <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Посвідчення особи</translation>
 <translation id="4627675673814409125">Це правило не можна налаштувати на рівні профілю Chrome, тому воно ігноруватиметься.</translation>
 <translation id="4628678854894591460">Пропозиції для відпочинку</translation>
 <translation id="4628948037717959914">Фотографія</translation>
@@ -3152,7 +3157,6 @@
 <translation id="6189351761800074311">Текст і контент сторінки надсилаються в Google, але не використовуються для покращення ШІ.
     <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">перевизначити деякі клавіші на клавіатурі, наприклад Esc</translation>
-<translation id="6192524964213419211">Щоб швидше виконувати завдання в продуктах Google, збережіть свою інформацію в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Тут можна переглянути всі відстежувані товари</translation>
 <translation id="6195371403461054755">Геологія</translation>
 <translation id="6195418151868446719">Побутова електроніка</translation>
@@ -3488,7 +3492,6 @@
 <translation id="6716039223770814796">Порівняльна таблиця "<ph name="COMPARE_SET_NAME" />" · Товарів: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Хост <ph name="URL" /> намагається створити 3D-карту вашого оточення й відстежувати положення камери</translation>
 <translation id="6717692133381953670">Вкладку надіслано з пристрою <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Збережіть інформацію, щоб наступного разу автоматично заповнювати більше полів</translation>
 <translation id="6718612893943028815">Використовувати камеру?</translation>
 <translation id="6721164594124191969">Етикетки (глянцеві)</translation>
 <translation id="6726832600570791992">(32-розрядна емульована версія)</translation>

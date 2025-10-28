@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">ይህንን የተጠቃሚ ስም ለዚህ ጣቢያ ቀድሞውኑ አስቀምጠዋል</translation>
 <translation id="1497590942294823549">ምናሌ → የሚስጥር ቁልፍ አስተዳዳሪ</translation>
 <translation id="1498283581832036924">የእርስዎ የ<ph name="WEBSITE" /> መለያ አይሰረዝም።</translation>
+<translation id="1503814213414825943">ወደ ሌላ መተግበሪያ መላክ የሚፈልጓቸውን መለያዎች ይምረጡ።</translation>
 <translation id="1506061864768559482">የፍለጋ ፕሮግራም</translation>
 <translation id="1506063256525392513">ይህ ፎቶዎችን እንዲያነሱ እና እንዲሰቅሉና እንዲሁም የQR ኮዶችን እንዲቃኙ ያስችልዎታል</translation>
 <translation id="1508263560970797965">በማንነት የማያሳውቅ ይቀጥሉ</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">የይለፍ ቃልን አሳይ</translation>
 <translation id="1996318269856535896">በዚህ መሣሪያ ላይ አሁንም የእርስዎን ነባር የአሰሳ ውሂብ መጠቀም ይችላሉ። እሱን ለመጠቀም፣ ከሚተዳደር መለያዎ ዘግተው ይውጡ።</translation>
 <translation id="2010008505735295285">እንደገና ጫን</translation>
+<translation id="2012723204723845092">እንኳን በደህና ተመልሰው መጡ!</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="201759455285471444">የትር ቡድኑን ዘርጋ</translation>
 <translation id="202070562065520783">ይህን አብራራልኝ</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">ምንም የተቀመጡ የይለፍ ቃላት ወይም የይለፍ ቁልፎች የሉዎትም፣ ነገር ግን በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጧቸውን ጣቢያዎች እና መተግበሪያዎች ዝርዝር መሰረዝ ይችላሉ። ለጣቢያዎች እና ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="3530206579861815432">በመላው የእርስዎ የሰመሩ መሣሪያዎች ላይ ክፍት እና በቅርቡ የተዘጉ ትሮችን በፍጥነት ያግኙ።</translation>
 <translation id="3530767473765895035">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያስተዳድሩ…</translation>
+<translation id="353340646084395154">የአዲስ የትር ገፅ ምርጫዎች ተወግደዋል</translation>
 <translation id="3533436815740441613">አዲስ ትር</translation>
 <translation id="3540141921715814660">ወደ እልባቶች አክል</translation>
 <translation id="3546122170015471515">Google.com ላይ ያሉ የካርታዎች ቅድመ እይታዎች</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">የአውታረ መረብ ግንኙነት እንዳለዎት ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="4070132839822635162">በመለያ አትግባ</translation>
 <translation id="4092655288299341041">እገዛ አሳይ</translation>
-<translation id="4095483462103784441">አዲስ የትር ቡድን ፍጠር</translation>
 <translation id="4099756562043439968">አስታዋሽ አቀናብር</translation>
 <translation id="4108998448622696017">አደገኛ ክስተቶች ልክ ሲያጋጥሙ ፈልጎ ያገኛቸውና ስለእነሱ ያስጠነቅቅዎታል።</translation>
 <translation id="4111985840824673503">ሁሉም እንደተነበቡ ምልክት አድርግ</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">ይህ እርስዎ ድምጽዎን ተጠቅመው እንዲፈልጉ ያስችልዎታል</translation>
 <translation id="4895540042460820904">መጨረሻ የተከፈተው</translation>
 <translation id="4896467949657706481">ትሮች ተዘግተዋል፤ እርስዎ ዘግተው ወጥተዋል</translation>
+<translation id="4911042367886397055">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">የይለፍ ቃልዎ ቅጂ ደህንነቱ በተጠበቀ ሁኔታ በቤተሰብ ቡድንዎ ውስጥ ካለ ሰው ጋር ማጋራት ይችላሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">እንደ <ph name="USER_EMAIL" /> በመለያ ሲገቡ ነባር የአሰሳ ውሂብን መምረጥ ይችላሉ። ድርጅትዎ ይህን ውሂብ መመልከት ይችል ይሆናል።</translation>
 <translation id="4918086044614829423">ይቀበሉ</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">ማስታወሻ ከ1000 ቁምፊዎች በላይ ነው</translation>
 <translation id="5087098519049306025">የዋጋ ክትትል</translation>
 <translation id="5090832849094901128">ይህን የይለፍ ቃል መሰረዝ <ph name="WEBSITE" /> ላይ መለያዎን አይሰርዘውም።</translation>
+<translation id="5113960131843706315">የእርስዎን ነገሮች በማግኘት ላይ…</translation>
 <translation id="5118462200606189584">መለያ አክል…</translation>
 <translation id="5118764316110575523">ጠፍቷል</translation>
 <translation id="5119329531859909472">ምርቱን ለመከታተል፣ ተከታተል ላይ መታ ያድርጉ</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">ድር ጣቢያ ላይ የይለፍ ቃል ይቀይሩ</translation>
 <translation id="5248640482715684545">ይህ ጣቢያ ሌላ መተግበሪያ ለመክፈት እየሞከረ ነው።</translation>
 <translation id="5250371859659394278">ከማይታወቅ ምንጭ</translation>
+<translation id="5269913829202614649">የመነሻ ገጽ ያብጁ</translation>
 <translation id="5271265092610673171">{count,plural, =1{አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።}one{አንዳንድ አስፈላጊ መስክ ባዶ ነው። ከማስቀመጥ በፊት ይሙሉት።}other{አንዳንድ አስፈላጊ መስኮች ባዶ ናቸው። ከማስቀመጥ በፊት ይሙሏቸው።}}</translation>
 <translation id="5271549068863921519">የይለፍ ቃሉን አስቀምጥ</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) እርስዎ የትር ቡድንን እንዲቀላቀሉ ይፈልጋሉ። አገናኙ ያላቸው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላሉ፣ ስለዚህ በጥንቃቄ ይቀላቀሉ። አገናኙ በ48 ሰዓት ውስጥ የአገልግሎት ጊዜው ያበቃል።</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">የሚፈልጓቸውን ርዕሶች እና ጣቢያዎች በሚከተለው ያስተዳድሩ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ተዘግቷል}one{{count} ተዘግቷል}other{{count} ተዘግተዋል}}</translation>
 <translation id="5394975111793637642">ለእርስዎ ካርድ የምርት ግምገማዎችን ይደብቁ</translation>
+<translation id="5407806496954700135">ከሌላ መሣሪያ የአዲስ ትር ገፅ ማበጀቶችዎን መተግበር ይፈልጋሉ?</translation>
 <translation id="5414763847370083940">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ።</translation>
 <translation id="5415289094036440596">የይለፍ ቁልፍች ሊጋሩ አይችሉም</translation>
 <translation id="5416455648658732408">ወደ ትር ቡድን ውሰድ</translation>
@@ -1755,6 +1761,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7696316012653762532">ገፁን የመተርጎም አማራጮች</translation>
 <translation id="7700527812567437847">በGoogle ሌንስ ማያ ገፅ ውስጥ ይፈልጉ</translation>
 <translation id="7701040980221191251">ምንም</translation>
+<translation id="7708668404222666001">የአዲስ ትር ገፅ ምርጫዎችዎን ተተግብረዋል</translation>
 <translation id="7708994397325774423">ሁሉንም የይለፍ ቃላትዎን ያግኙ</translation>
 <translation id="7711440461521638739">ምንም የይለፍ ቃላትን ዳግም እየተጠቀሙ አይደለም</translation>
 <translation id="7712361583414030698">ከመስመር ውጭ ሥሪቱን በመመልከት ላይ</translation>

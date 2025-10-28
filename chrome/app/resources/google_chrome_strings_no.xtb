@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">Hver profil har sin egen Chrome-informasjon, som bokmerker, logg, passord med mer</translation>
 <translation id="2018879682492276940">Installasjonen mislyktes. Prøv igjen.</translation>
 <translation id="2024959665595762054">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg</translation>
+<translation id="2026377840141807639">Med Chrome-profiler kan du holde personlig surfing og jobb atskilt. Legg til en ny profil nå.</translation>
 <translation id="2034233344106846793">Chrome oppgraderer usikre tilkoblinger til HTTPS automatisk når det er mulig</translation>
 <translation id="2039417478970545937">Innstillinger.</translation>
 <translation id="2091012649849228750">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.</translation>
@@ -361,6 +362,7 @@
 <translation id="5170938038195470297">Profilen din kan ikke brukes fordi den er fra en nyere versjon av Google Chrome. Enkelte funksjoner kan være utilgjengelige. Angi en annen profilkatalog, eller bruk en nyere versjon av Chrome.</translation>
 <translation id="5174969993834422967">Du blokkerer vanligvis varsler. For å la dette nettstedet sende deg varsler, klikk på varselikonet i høyre hjørne av adressefeltet.</translation>
 <translation id="5174983315706567306">Det er for lite diskplass.</translation>
+<translation id="5190467473654176081">Tilpass Chrome for å gi den et nytt utseende</translation>
 <translation id="5201744974236816379">Chrome-oppdatering</translation>
 <translation id="521447420733633466">Hvis du deler en enhet med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil</translation>
 <translation id="5234764350956374838">Lukk</translation>
@@ -382,6 +384,7 @@
 <translation id="5510398294750420479">Last ned Chrome på telefonen for å legge til et ekstra lag med beskyttelse når du er på farten</translation>
 <translation id="5524890928877629608">øverst til venstre i søkefeltet: venstre<ph name="LEFT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Gjør Chrome raskere</translation>
+<translation id="5550137307985173298">Klikk på Tilpass Chrome-knappen på Ny fane-siden for å gi Chrome et nytt utseende</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-Inn)</translation>
 <translation id="5579324208890605088">Oppstartsfeil: Kjør installasjonsprogrammet som vanlig bruker, ikke som administrator.</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
@@ -410,6 +413,7 @@
 <translation id="5736850870166430177">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
 <translation id="5756509061973259733">Det finnes allerede en Chrome-profil med denne kontoen på denne enheten</translation>
 <translation id="5759947850379142561">Velg tekst eller bilder for å søke med Google Lens, eller trykk på Esc for å avslutte Google Lens</translation>
+<translation id="5762867845020858790">Legg til en ny Chrome-profil for å holde bokmerker, passord og innstillinger atskilt.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kunne ikke starte Chrome. Prøv på nytt.</translation>
 <translation id="5809516625706423866">Kan ikke koble til internett. HTTP 401 – uautorisert. Kontroller proxy-tjenerkonfigurasjonen.</translation>
@@ -510,6 +514,7 @@
 <translation id="6800285125190089494">Logg på nettsteder raskere med lagrede passord for Chrome på iOS</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
+<translation id="6841242485723266823">Med Chrome-profiler kan du holde forskjellige deler av livet ditt atskilt. Legg til en ny profil nå.</translation>
 <translation id="684888714667046800">Kan ikke koble til internett. Hvis du bruker en brannmur, må du sørge for at <ph name="PRODUCT_EXE_NAME" /> står på godkjenningslisten.</translation>
 <translation id="6877155553248388166">nederst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, nederst <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Oppdaterer Chrome</translation>
@@ -674,6 +679,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome startes på nytt om 1 minutt}other{Chrome startes på nytt om # minutter}}</translation>
 <translation id="8637932705841171563">For å dele vinduet, tillat skjermopptak for Chrome i Systeminnstillinger</translation>
 <translation id="8641606876632989680">Chrome varsler deg når du logger på med passord som er utsatt for sikkerhetsbrudd</translation>
+<translation id="8647930742055103497">Hold alt i Chrome</translation>
 <translation id="8656634243791296665">Åpne Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome-hjelper</translation>
 <translation id="8677922833187616101">Vis alltid snarveien til AI-modus fra Google</translation>

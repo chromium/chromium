@@ -1894,6 +1894,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2290615375132886363">Botões de navegação do tablet</translation>
 <translation id="2291452790265535215">Experimente usar o painel lateral para marcadores, percursos e muito mais</translation>
 <translation id="229182044471402145">Não foi encontrado qualquer tipo de letra correspondente.</translation>
+<translation id="2292590498047171967">Para partilhar separadores e colaborar com outras pessoas, sincronize o seu histórico e separadores com a conta <ph name="EMAIL" /></translation>
 <translation id="2292848386125228270">Inicie o <ph name="PRODUCT_NAME" /> como um utilizador normal. Se precisar de executar com acesso root para programação, volte a executar com a sinalização --no-sandbox.</translation>
 <translation id="2292862094862078674">Verifique a ligação à Internet e tente novamente. Ainda pode selecionar um dos temas gerados anteriormente abaixo.</translation>
 <translation id="2294081976975808113">Privacidade do ecrã</translation>
@@ -3473,7 +3474,6 @@ Quer pará-lo?</translation>
 <translation id="3393554941209044235">Análise de documentos do Chrome</translation>
 <translation id="3394072120086516913">O PC está ligado com fios e o dispositivo de transmissão está ligado a uma rede Wi-Fi</translation>
 <translation id="3394850431319394743">Com autorização para utilizar identificadores para reproduzir conteúdo protegido</translation>
-<translation id="3396442984945202128">Validar a sua identidade</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e continuar", está a aceitar o processamento descrito acima para estes serviços Google.</translation>
 <translation id="339722927132407568">Bloqueia</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
@@ -3597,7 +3597,6 @@ Quer pará-lo?</translation>
 <translation id="3479357084663933762">Deuteranomalia</translation>
 <translation id="3479552764303398839">Agora não</translation>
 <translation id="3479685872808224578">Não foi possível detetar o servidor de impressão. Verifique o endereço e tente novamente.</translation>
-<translation id="3479753605053415848">Clique para personalizar o Chrome</translation>
 <translation id="3480612136143976912">Personalize o tamanho e o estilo das legendas para as Legendas instantâneas. Algumas apps e sites também irão utilizar esta definição.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> separadores encontrados</translation>
 <translation id="3481268647794498892">A abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> dentro de <ph name="COUNTDOWN_SECONDS" /> segundos</translation>
@@ -4120,7 +4119,6 @@ Quer pará-lo?</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="381202950560906753">Adicionar outra</translation>
 <translation id="3812525830114410218">Certificado incorreto</translation>
-<translation id="3813275565773644111">A sua organização desativou a gravação do histórico e dos separadores na sua Conta Google</translation>
 <translation id="3813296892522778813">Aceda à <ph name="BEGIN_LINK_CHROMIUM" />ajuda do Google Chrome<ph name="END_LINK_CHROMIUM" /> se não conseguir encontrar aquilo que procura.</translation>
 <translation id="3813358687923336574">Idioma utilizado para traduzir páginas e Respostas rápidas</translation>
 <translation id="3813458570141926987">Lista de tópicos estimados pelo Chrome com base no seu histórico de navegação recente</translation>
@@ -5131,7 +5129,6 @@ Quer pará-lo?</translation>
 <translation id="4523876148417776526">Ainda não fora obtidas listas de sites XML.</translation>
 <translation id="4524832533047962394">O modo de inscrição fornecido não é suportado por esta versão do sistema operativo. Certifique-se de que está a executar a versão mais recente.</translation>
 <translation id="4526051299161934899">Grupos de separadores guardados ocultos</translation>
-<translation id="4526853756266614740">Escolha uma imagem para aplicar o tema instantaneamente</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4528494169189661126">Sugestão de tradução</translation>
 <translation id="4528638190900283934">Inicie sessão para obter funcionalidades adicionais</translation>
@@ -8094,7 +8091,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6624687053722465643">Doce</translation>
 <translation id="6626581113916585374">Modo de efeito</translation>
 <translation id="6627743754845412571">Sem autorização para monitorizar as suas mãos</translation>
-<translation id="6628184833987882108">O conteúdo deste site é enviado para a Google e pode ser visto por revisores humanos para melhorar esta funcionalidade</translation>
 <translation id="6628316682330029452">Os certificados de cliente são certificados que fazem a sua identificação perante outros servidores.</translation>
 <translation id="6628328486509726751">Carregado <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
@@ -8360,6 +8356,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6808039367995747522">Para continuar, insira e toque na chave de segurança.</translation>
 <translation id="6808166974213191158">Criador de imagem do sistema do ChromeOS Flex</translation>
 <translation id="6808193438228982088">Raposa</translation>
+<translation id="6808818615395768377">Bloquear se o site for desconhecido (predefinição)</translation>
 <translation id="6809470175540814047">Abra na janela de navegação anónima</translation>
 <translation id="6810613314571580006">Iniciar sessão automaticamente nos Sites com as credenciais armazenadas. Quando a funcionalidade está desativada, é-lhe pedida sempre uma confirmação antes de iniciar sessão num Website.</translation>
 <translation id="6811034713472274749">A página está preparada para ser visualizada</translation>
@@ -9117,7 +9114,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7353261921908507769">Os seus contactos podem partilhar consigo quando estiver nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="7353432112255316844">Validar identidade</translation>
 <translation id="735361434055555355">A instalar o Linux…</translation>
-<translation id="7354120289251608189">Agora pode dar ao seu navegador um novo aspeto em qualquer altura.</translation>
 <translation id="7356506068433555887">Palmeira</translation>
 <translation id="7356696499551368971">As suas autorizações escolhidas são removidas</translation>
 <translation id="7356908624372060336">Registos de rede</translation>
@@ -10668,7 +10664,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8383614331548401927">Recapitulação de boas-vindas</translation>
 <translation id="8386091599636877289">A política não foi encontrada.</translation>
 <translation id="8387361103813440603">Sem autorização para ver a sua localização</translation>
-<translation id="8387617938027387193">Valide a sua identidade</translation>
 <translation id="8388770971141403598">Os perfis secundários não são suportados</translation>
 <translation id="8389492867173948260">Permitir que esta extensão leia e altere todos os dados nos Websites que visita:</translation>
 <translation id="8390392581097975659">A instalar software de leitor</translation>
@@ -11573,7 +11568,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="90033698482696970">Procurar automaticamente os perfis de eSIM disponíveis?</translation>
 <translation id="9003647077635673607">Permitir em todos os Sites</translation>
 <translation id="9005774573776346118">Para aceder às suas palavras-passe, marcadores e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
-<translation id="9007688236643268728">&amp;Iniciar sessão novamente</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botão anterior da página de detalhes <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9008828754342192581">Optou anteriormente por permitir todas as extensões em <ph name="ORIGIN" /></translation>

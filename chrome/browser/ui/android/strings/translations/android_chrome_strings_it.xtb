@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
+<translation id="1007349221964075684">Utilizza il blocco schermo per vedere le finestre Incognito</translation>
 <translation id="1010283278930414892">Nessuna password salvata su questo dispositivo</translation>
 <translation id="1011749477052068769">Sposta qui</translation>
 <translation id="1014083013111769343">Preferenze della modalità Lettura aperte a schermo intero</translation>
@@ -1167,6 +1168,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6312687380483398334">App web (modalità silenziosa)</translation>
 <translation id="6315386555979018699">Elimina e continua</translation>
 <translation id="6316139424528454185">Vers. Android non supportata</translation>
+<translation id="631839948975905034">Blocca le finestre Incognito quando esci da Chrome</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6324977638108296054">Impossibile creare un link al testo evidenziato</translation>
 <translation id="6333140779060797560">Condividi tramite <ph name="APPLICATION" /></translation>

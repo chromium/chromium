@@ -3563,6 +3563,15 @@ Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açı
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa DTC kapatılır. Cihazdan telemetri ve teşhis verilerini toplayamaz, işleyemez veya raporlayamaz.</translation>
 <translation id="3442589735857147823">Kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin ver</translation>
+<translation id="34476328503285475">Politika ayarlandığında <ph name="PRODUCT_NAME" /> Yeni Sekme sayfasında 10 adede kadar özel kısayol önceden yapılandırılır.
+
+Bu politika ayarlanırsa kullanıcılar kişisel kısayollarının yanı sıra varsayılan olarak bu kısayolları da görür. Kullanıcılar, "Chrome'u özelleştir" panelinde kuruluşlarının kısayollarının görünürlüğünü kontrol edebilir.
+
+Kısayol URL'leri benzersiz olmalıdır.
+
+<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />, doğru değerine ayarlanırsa kullanıcılar kısayolun adını değiştirebilir. Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar adı düzenleyemez.
+
+<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />, doğru değerine ayarlanırsa kullanıcılar kısayolu kaldırabilir. Politika, yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar kısayolu kaldıramaz.</translation>
 <translation id="3450649825886735618">Yazım hatalarının düzeltilmesine yardımcı olması için herhangi bir Google web hizmeti kullanma</translation>
 <translation id="3451422488938880786"> Yeniden eşleştirilen uluslararası klavye kısayollarının etkinleştirilmesine/devre dışı bırakılmasına olanak tanır</translation>
 <translation id="3451901387456196887">Kullanıcılara <ph name="PRODUCT_NAME" /> menüsünde erişim kodu kullanarak veya QR kodu tarayarak yayın cihazı seçme olanağı verilir.</translation>
@@ -8341,6 +8350,13 @@ Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirme 
 <translation id="6520802717075138474">İlk çalıştırmada arama motorlarını varsayılan tarayıcıdan içe aktar</translation>
 <translation id="6521971538031711337">Yönetilen kullanıcının, cihazın ana makine adını yapılandırmasını engelle</translation>
 <translation id="6523079496775454310">Yönetilmeyen cihazlarda, yönetilen kullanıcılar için cihaz sinyali izni verilmesini etkinleştir</translation>
+<translation id="6523608518493993483">Bu politika, yöneticilerin tarayıcı HTTP önbelleğini diskte şifrelemesine olanak tanır.
+
+Bu politika etkinleştirildiğinde tarayıcı önbelleği şifrelenir.
+
+Bu politika devre dışı bırakıldığında veya ayarlanmadığında tarayıcı önbelleği şifrelenmez.
+
+Tarayıcı önbelleği şifreleme, performansı etkileyebilir.</translation>
 <translation id="6527674993612811419">Güvenli olmayan formlarda uyarı göster ve otomatik doldurma özelliğini devre dışı bırak</translation>
 <translation id="6532769014584932288">Uyanık kalma kilitlerine izin ver</translation>
 <translation id="6533881418188970751">İndirmeden önce dosyanın nereye kaydedileceğini kullanıcıya sor</translation>

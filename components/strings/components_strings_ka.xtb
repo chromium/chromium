@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">არასდროს გადათარგმნო ეს საიტი</translation>
 <translation id="1292571435393770077">ლანგარი 16</translation>
 <translation id="1292701964462482250">„თქვენს კომპიუტერზე დაინსტალირებული პროგრამული უზრუნველყოფა ხელს უშლის Chrome-ს ვებზე უსაფრთხოდ წვდომაში“ (მხოლოდ Windows)</translation>
+<translation id="1293556467332435079">ფაილები</translation>
 <translation id="1293797321964802402">კონვერტი 9 x 11 დუიმი</translation>
 <translation id="129553762522093515">ბოლოს დახურული</translation>
 <translation id="1296930489679394997">გაყიდვები</translation>
@@ -3156,7 +3157,6 @@
 <translation id="6189351761800074311">თქვენი იმ გვერდის ტექსტი და კონტენტი გაეგზავნა Google-ს, მაგრამ ისინი არ გამოიყენება ხელოვნური ინტელექტის დასახვეწად.
     <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">უგულებელყავით თქვენი კლავიატურის ზოგიერთი კლავიში, მაგალითად Esc</translation>
-<translation id="6192524964213419211">შეინახეთ თქვენი ინფორმაცია, რომ უფრო სწრაფად შეასრულოთ ამოცანები Google პროდუქტებში. თქვენს ინფორმაციას შეინახავს <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ანგარიშისთვის <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">აქ შეგიძლიათ იხილოთ თქვენი ყველა თვალმიდევნებული პროდუქტი</translation>
 <translation id="6195371403461054755">გეოლოგია</translation>
 <translation id="6195418151868446719">საყოფაცხოვრებო ელექტრონიკა</translation>
@@ -3492,7 +3492,6 @@
 <translation id="6716039223770814796">შედარება: <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ერთეული</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ითხოვს თქვენი გარემოს 3-განზომილებიანი რუკის შექმნასა და კამერის პოზიციისთვის თვალის მიდევნების ნებართვას</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" />-იდან გამოგზავნილი ჩანართი</translation>
-<translation id="6718524733720986924">შეინახეთ თქვენი ინფორმაცია, რათა ავტომატური შევსებით მეტი ველი შეივსოს მომავალში</translation>
 <translation id="6718612893943028815">გსურთ კამერის გამოყენება?</translation>
 <translation id="6721164594124191969">ლეიბლები (პრიალა)</translation>
 <translation id="6726832600570791992">(32-ბიტიანი, ემულირებული)</translation>

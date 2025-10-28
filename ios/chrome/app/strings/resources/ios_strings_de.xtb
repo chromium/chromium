@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Du hast diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1497590942294823549">Menü → Passwortmanager</translation>
 <translation id="1498283581832036924">Dein <ph name="WEBSITE" />-Konto wird nicht gelöscht.</translation>
+<translation id="1503814213414825943">Wähle die Konten aus, die du in eine andere App exportieren möchtest.</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1506063256525392513">Dadurch kannst du Fotos aufnehmen und hochladen und QR-Codes scannen</translation>
 <translation id="1508263560970797965">Im Inkognitomodus fortfahren</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="4070132839822635162">Nicht anmelden</translation>
 <translation id="4092655288299341041">Hilfe anzeigen</translation>
-<translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
 <translation id="4099756562043439968">Erinnerung einrichten</translation>
 <translation id="4108998448622696017">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend.</translation>
 <translation id="4111985840824673503">Alle als gelesen markieren</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Passwort auf der Website ändern</translation>
 <translation id="5248640482715684545">Diese Website versucht, eine andere App zu öffnen.</translation>
 <translation id="5250371859659394278">Von einer unbekannten Quelle</translation>
+<translation id="5269913829202614649">Startseite anpassen</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ein Pflichtfeld ist leer. Bitte fülle es vor dem Speichern aus.}other{Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.}}</translation>
 <translation id="5271549068863921519">Passwort speichern</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) möchte, dass du einer Tabgruppe beitrittst. Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, ob du beitrittst. Der Link läuft in 48 Stunden ab.</translation>

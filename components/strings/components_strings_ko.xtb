@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
+<translation id="1142965388643537393">여행 정보</translation>
 <translation id="1144136880160289237">아직 활성 주제가 없습니다.</translation>
 <translation id="1149617035358809955">결제 정보를 입력하기 위해 본인 인증을 시도 중입니다.</translation>
 <translation id="1150565364351027703">선글라스</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
 <translation id="1292571435393770077">트레이 16</translation>
 <translation id="1292701964462482250">'컴퓨터의 소프트웨어로 인해 Chrome이 안전하게 웹에 접속할 수 없습니다'(Windows 컴퓨터만 해당)</translation>
+<translation id="1293556467332435079">파일</translation>
 <translation id="1293797321964802402">봉투 9 x 11 in</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1296930489679394997">판매</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="236000571258713023">차량</translation>
 <translation id="2361263712565360498">275x395mm</translation>
 <translation id="236340516568226369">크기 변경 전환 메뉴</translation>
 <translation id="2365355378251437925"><ph name="FIELD" />을(를) 입력하세요.</translation>
@@ -2199,6 +2202,7 @@
 <translation id="4598556348158889687">저장용량 관리</translation>
 <translation id="459914240367517409">웹 디자인 및 개발</translation>
 <translation id="4602465984861132303">볼링</translation>
+<translation id="4603727370377253901">항공편 예약</translation>
 <translation id="4607608436550361748">Chrome 도움말 보기</translation>
 <translation id="460848736049414407">관리자가 차단함</translation>
 <translation id="4610279718074907952"><ph name="SET_OWNER" />에서 정의한 그룹(내 활동을 볼 수 있음)에 속하는 사이트입니다.</translation>
@@ -2207,6 +2211,7 @@
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4622292761762557753">무시하고 전송</translation>
 <translation id="4622647778991854660">알림 센터에서 알림을 사용 설정합니다. <ph name="LINK" />를 엽니다.</translation>
+<translation id="4623894491222334521">신원 확인 문서</translation>
 <translation id="4627675673814409125">이 정책은 Chrome 프로필 수준에서 설정할 수 없으며 무시됩니다.</translation>
 <translation id="4628678854894591460">휴양 상품</translation>
 <translation id="4628948037717959914">사진</translation>
@@ -3152,7 +3157,6 @@
 <translation id="6189351761800074311">텍스트 및 페이지 콘텐츠가 Google로 전송되지만 AI를 개선하는 데 사용되지는 않습니다.
     <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esc 키 등 키보드 키 재정의</translation>
-<translation id="6192524964213419211">Google 제품 전반에서 정보를 저장하여 작업을 더 빠르게 처리하세요. 정보는 <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장됩니다</translation>
 <translation id="6194209731893739467">추적 중인 모든 제품을 여기에서 확인</translation>
 <translation id="6195371403461054755">지질학</translation>
 <translation id="6195418151868446719">소비자 가전 제품</translation>
@@ -3488,7 +3492,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> 비교 · 항목 <ph name="ITEMS" />개</translation>
 <translation id="6716672519412350405"><ph name="URL" />에서 주변 환경의 3D 지도를 생성하고 카메라 위치를 추적하려고 합니다.</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" />에서 전송한 탭</translation>
-<translation id="6718524733720986924">다음번에 자동 완성이 더 많은 입력란을 채울 수 있도록 정보를 저장하세요</translation>
 <translation id="6718612893943028815">카메라를 사용하시겠습니까?</translation>
 <translation id="6721164594124191969">라벨(유광)</translation>
 <translation id="6726832600570791992">(32비트 에뮬레이션됨)</translation>

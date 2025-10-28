@@ -88,6 +88,7 @@
 <translation id="2039417478970545937">Ayarlar.</translation>
 <translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="2054039611381840095">Gelecekteki Chromium güncellemelerini almak için macOS 12 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 11 kullanıyor.</translation>
+<translation id="2064856577282482477">Chromium'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chromium'u özelleştir düğmesini tıklayın</translation>
 <translation id="2086476982681781442">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="208726765006323911">Chromium iOS'i bir sonraki açışınızda <ph name="FEATURE_NAME" /> özelliğini denemeniz için bir istem görürsünüz.</translation>
 <translation id="2099452623287920103">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chromium verileri bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
@@ -170,6 +171,7 @@
 <translation id="2933336679234709858">Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için bu kodu girin.</translation>
 <translation id="2945997411976714835">Yükleme hatası: Yükleyici işlemi başlatılamadı.</translation>
 <translation id="2948852018303413228">iOS'te Chromium için kayıtlı şifreleri kullanarak sitelerde daha hızlı oturum açın</translation>
+<translation id="2966959524256557996">Yer işaretleri, şifreler ve ayarları ayrı tutmak için yeni bir Chromium profili ekleyin.</translation>
 <translation id="2970426615109535079">Chromium'u kuruluşunuz yönetiyor</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
@@ -234,6 +236,7 @@
 <translation id="3788675262216168505">Chromium Profillerini Yönetin</translation>
 <translation id="3790262771324122253">Chromium'un bazı indirme işlemlerini neden engellediğini öğrenin</translation>
 <translation id="379589255253486813">Chromium, incelemeniz gereken bir konu varsa sizi bilgilendirir</translation>
+<translation id="3798048725356732506">Chromium profilleri, hayatınızın farklı yönlerini ayırmanıza yardımcı olur. Hemen yeni bir profil ekleyin.</translation>
 <translation id="3802055581630249637">Chromium, ziyaret etme olasılığınızın yüksek olduğu sayfaları önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
 <translation id="3810973564298564668">Yönet</translation>
 <translation id="3846683726093018685">**Özetle:** Ekran görüntüsündeki içeriğin temel konusunu ve amacını 30 kelimeden kısa olacak şekilde tek bir cümleyle açıkla.
@@ -382,6 +385,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="569897634095159764">İnternet'e bağlanılamıyor. Proxy sunucu kimlik doğrulama gerektiriyor.</translation>
+<translation id="5713518899297503106">Chromium profilleri, kişisel tarama işlemlerinizi ve iş için yaptığınız tarama işlemlerinizi ayrı tutmanızı sağlar. Hemen yeni bir profil ekleyin.</translation>
 <translation id="5768371961535086509">Chromium, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chromium hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir. <ph name="BEGIN_LINK" />Bellek Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="5775198138441669627">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız hesabınızdaki Chromium verilerini <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5800158606660203929">Chromium'u özelleştirin ve kontrol edin. Chromium'u varsayılan tarayıcınız olarak ayarlayın.</translation>
@@ -569,6 +573,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7810005234485217901">Daha kolay erişmek için Görsel Arama'yı sabitleyebilirsiniz</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
+<translation id="7853661403199074278">Chromium'a yeni bir görünüm kazandırmak için özelleştirin</translation>
 <translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="7867198900892795913">Chromium en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>
@@ -641,6 +646,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8704119203788522458">Bu sizin Chromium'unuz</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8719993436687031146">Chromium'da oturum açmak istiyor musunuz?</translation>
+<translation id="8745263398357414606">Her şeyi Chromium'da tutun</translation>
 <translation id="8747073452963259673">arama alanının sol alt köşesi: sol %<ph name="LEFT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="878572486461146056">Yükleme hatası: Ağ yöneticiniz, yükleme işlemini engelleyen bir grup politikası uygulamış: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>

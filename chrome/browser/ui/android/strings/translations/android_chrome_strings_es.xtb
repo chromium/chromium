@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1007349221964075684">Usa el bloqueo de pantalla para ver las ventanas de Incógnito abiertas</translation>
 <translation id="1010283278930414892">No hay contraseñas guardadas en este dispositivo</translation>
 <translation id="1011749477052068769">Mover aquí</translation>
 <translation id="1014083013111769343">Preferencias del modo Lectura abiertas a altura completa</translation>
@@ -721,6 +722,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4355272626458588338">Puedes volver a una página que consideres importante añadiendo un marcador</translation>
 <translation id="4356503491090073318">Número de tarjeta*</translation>
 <translation id="4357206670025518404"><ph name="COUNT_NUMBER" />+</translation>
+<translation id="4358630185957185589">Abrir Google Lens</translation>
 <translation id="4359809482106103048">Seguridad de un vistazo</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4380055775103003110">Si el problema persiste, puedes probar otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1167,6 +1169,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6312687380483398334">Aplicaciones web (no interrumpir)</translation>
 <translation id="6315386555979018699">Eliminar y continuar</translation>
 <translation id="6316139424528454185">Esta versión de Android no es compatible</translation>
+<translation id="631839948975905034">Bloquear las ventanas de Incógnito al cerrar Chrome</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6324977638108296054">No se puede crear un enlace al texto destacado</translation>
 <translation id="6333140779060797560">Compartir a través de <ph name="APPLICATION" /></translation>
@@ -1497,6 +1500,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7612619742409846846">Has iniciado sesión en Google como</translation>
 <translation id="7612989789287281429">Iniciando sesión…</translation>
 <translation id="7619072057915878432">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas de la red.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Suscripción a un sitio anulada}other{Suscripción a # sitios anulada}}</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7628417132421583481">Ir al Gestor de contraseñas</translation>
 <translation id="7630202231528827509">URL del proveedor</translation>

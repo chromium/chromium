@@ -90,6 +90,7 @@
 <translation id="2039417478970545937">설정</translation>
 <translation id="2049376729098081731">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chromium 방문 기록을 포함할지 선택하세요.</translation>
 <translation id="2054039611381840095">향후 Chromium 업데이트를 받으려면 macOS 12 이상이 필요합니다. 이 컴퓨터에서는 macOS 11을 사용 중입니다.</translation>
+<translation id="2064856577282482477">새 탭 페이지에서 'Chromium 맞춤설정' 버튼을 클릭하여 Chromium에 새로운 디자인을 적용하세요.</translation>
 <translation id="2086476982681781442">사기성 파일이며 기기에 예기치 않은 변경사항이 적용될 수 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="208726765006323911">다음번에 Chromium iOS를 열면 <ph name="FEATURE_NAME" /> 기능을 사용해 보라는 메시지가 표시됩니다.</translation>
 <translation id="2099452623287920103">Google 계정에 저장된 비밀번호 및 기타 Chromium 데이터가 이 기기에서 삭제됩니다. Chromium에서 다시 사용하려면 다시 로그인하세요</translation>
@@ -172,6 +173,7 @@
 <translation id="2933336679234709858">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chromium 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
 <translation id="2945997411976714835">설치 오류: 설치 프로그램 프로세스를 시작할 수 없습니다.</translation>
 <translation id="2948852018303413228">iOS의 Chromium에 저장된 비밀번호를 사용하여 사이트에 더 빠르게 로그인하세요.</translation>
+<translation id="2966959524256557996">북마크, 비밀번호, 설정을 별도로 유지하려면 새 Chromium 프로필을 추가하세요.</translation>
 <translation id="2970426615109535079">조직에서 Chromium을 관리합니다.</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
 <translation id="2977506796191543575">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
@@ -238,6 +240,7 @@
 <translation id="3788675262216168505">Chromium 프로필 관리</translation>
 <translation id="3790262771324122253">Chromium에서 일부 다운로드를 차단하는 이유 알아보기</translation>
 <translation id="379589255253486813">검토가 필요한 경우 Chromium에서 알려드립니다</translation>
+<translation id="3798048725356732506">Chromium 프로필을 사용하면 삶의 여러 부분을 분리할 수 있습니다. 지금 새 프로필을 추가하세요.</translation>
 <translation id="3802055581630249637">Chromium은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3846683726093018685">**요약:** 30단어 미만의 한 문장으로 스크린샷 속 콘텐츠의 주요 주제와 목적을 설명해 줘.
@@ -386,6 +389,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">이 언어로 Chromium 표시</translation>
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
+<translation id="5713518899297503106">Chromium 프로필을 사용하면 개인 인터넷 사용 기록과 업무용 인터넷 사용 기록을 분리할 수 있습니다. 지금 새 프로필을 추가하세요.</translation>
 <translation id="5768371961535086509">Chromium이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chromium의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다. <ph name="BEGIN_LINK" />메모리 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">암호가 기억나지 않거나 이 설정을 변경하려면 계정의 Chromium 데이터를 <ph name="SETTINGS_LINK" />하세요.</translation>
 <translation id="5800158606660203929">Chromium을 맞춤설정 및 제어합니다. Chromium을 기본 브라우저로 설정합니다.</translation>
@@ -573,6 +577,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7810005234485217901">이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="7828947555739565424">이 계정을 사용하는 Chromium 프로필이 기기에 이미 존재합니다</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
+<translation id="7853661403199074278">Chromium을 맞춤설정하여 새로운 디자인으로 변경하세요.</translation>
 <translation id="7859018312476869945">주소 표시줄이나 검색창에 검색어를 입력하면 Chromium은 더 나은 추천 검색어를 제공하기 위해 사용자가 입력한 내용을 기본 검색엔진으로 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="7867198900892795913">Chromium을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
 <translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
@@ -645,6 +650,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8704119203788522458">나만의 Chromium</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8719993436687031146">Chromium에 로그인하시겠습니까?</translation>
+<translation id="8745263398357414606">Chromium에 모든 항목 보관</translation>
 <translation id="8747073452963259673">검색 영역의 왼쪽 하단: 왼쪽 <ph name="LEFT" />%, 하단 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">설치 오류: 네트워크 관리자가 설치를 방지하는 그룹 정책을 적용했습니다: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">이 사이트에서 카메라와 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>

@@ -2000,6 +2000,7 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 <translation id="2306505001667207184">Solicitar ao usuário que selecione o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados.</translation>
 <translation id="230713790688681130">Ativar layout de teclado Inscript hindi</translation>
 <translation id="2307496301287881990">Informar status de tela e gráficos</translation>
+<translation id="2308084581803907194">Alta complexidade</translation>
 <translation id="2308899582897965249">Desativar a impressão silenciosa</translation>
 <translation id="2309284543927494965">Bloquear atualizações</translation>
 <translation id="2309341709647905294">Não relatar informações sobre periféricos que estão conectados ao dispositivo</translation>
@@ -2865,6 +2866,19 @@ comportamento das teclas de função, e essa configuração não poderá ser mod
       Se a política não for definida, ela ficará desativada em dispositivos gerenciados e ativada em dispositivos de consumidores.
       Observe que a desativação desta política afeta apenas a coleta de rastreamento do sistema. A coleta de rastreamento do navegador não é afetada.</translation>
 <translation id="2922511125678964398">Permitir que a autenticação do portal cativo ignore as configurações de proxy</translation>
+<translation id="2923126158151236068">Esta política configura os requisitos mínimos de complexidade para fatores de autenticação local (PINs e senhas locais) definidos pelos usuários no <ph name="PRODUCT_OS_NAME" />.
+
+Se esta política não estiver definida, o nível de complexidade padrão será Nenhum.
+
+Os requisitos desta política são aplicados quando um usuário configura um novo PIN/senha local ou muda um já definido.
+
+Os níveis de complexidade são baseados nas métricas de qualidade de senha do Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), adaptadas para o <ph name="PRODUCT_OS_NAME" />:
+- 1 = Nenhum: um PIN/senha é exigido, mas não há restrições sobre o conteúdo ou o tamanho.
+- 2 = Baixa: requisitos de complexidade básicos.
+- 3 = Médio: requisitos mais rigorosos de comprimento e tipo de caractere.
+- 4 = Alto: requisitos de complexidade mais fortes, exigindo vários tipos de caracteres.
+
+Consulte o artigo da Central de Ajuda para explicações detalhadas sobre o que cada nível significa para PINs e senhas.</translation>
 <translation id="2926813071464307947">Desativar o sandbox do contêiner do app Renderer</translation>
 <translation id="2931888116345994552">Se a política for ativada ou deixada sem definição, as atualizações para todos os componentes no <ph name="PRODUCT_NAME" /> serão ativadas.
 
@@ -3654,6 +3668,15 @@ Se a política for deixada sem definição, a navegação no navegador será blo
 
       Se a política for definida como "Desativada" ou deixada sem definição, o DTC será desativado. Não será possível coletar, processar ou gerar relatórios de dados de diagnóstico e telemetria pelo dispositivo.</translation>
 <translation id="3442589735857147823">Permitir que os usuários usem máquinas virtuais necessárias para os apps Linux</translation>
+<translation id="34476328503285475">A definição da política pré-configura até 10 atalhos personalizados na página "Nova guia" do <ph name="PRODUCT_NAME" />.
+
+Se essa opção for definida, os usuários verão esses atalhos por padrão, além dos pessoais. Os usuários podem controlar a visibilidade dos atalhos da organização no painel "Personalizar o Chrome".
+
+Os URLs de atalho precisam ser exclusivos.
+
+Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> for definida como verdadeira, os usuários poderão mudar o nome do atalho. Se for definida como falsa ou não for definida, os usuários não poderão editar o nome.
+
+Se a opção <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> for definida como verdadeira, os usuários poderão remover o atalho. Se for definida como falsa ou não for definida, os usuários não poderão remover o atalho.</translation>
 <translation id="3450649825886735618">Não usar serviços da Web do Google para ajudar a solucionar erros de ortografia</translation>
 <translation id="3451422488938880786"> Permite ativar/desativar o remapeamento de atalhos de teclados internacionais</translation>
 <translation id="3451901387456196887">O usuário terá a opção de selecionar dispositivos de transmissão usando um código de acesso ou fazendo a leitura de um QR code no menu do <ph name="PRODUCT_NAME" />.</translation>
@@ -6213,6 +6236,7 @@ Domínios com formato incorreto serão ignorados.</translation>
 <translation id="5163889437570441600">Permite que o conteúdo seja transmitido usando o <ph name="PRODUCT_NAME" />.
 
           Se essa política for definida como falsa, os usuários não poderão transmitir conteúdo para o dispositivo deles. Se essa política for definida como verdadeira, os usuários poderão transmitir conteúdo. Se essa política não for definida, os usuários não poderão transmitir conteúdo para dispositivos ChromeOS inscritos, mas poderão transmitir para dispositivos não inscritos.</translation>
+<translation id="5166766992668636906">Complexidade média</translation>
 <translation id="5168529971295111207">Esta política está obsoleta. Use a política ProxyMode.
 
           Permite que você especifique o servidor proxy usado pelo <ph name="PRODUCT_NAME" /> e impede os usuários de alterarem as configurações de proxy.
@@ -7832,6 +7856,7 @@ Outras restrições, como as impostas pelas políticas ArcEnabled e Unaffiliated
 <translation id="6144046700495610112">Se a política for definida como ativada, os dados de preenchimento automático de formulários serão importados do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, nenhum dado de preenchimento automático de formulário será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção de dados de preenchimento automático de formulários estará marcada ou desmarcada de acordo com o valor da política.</translation>
+<translation id="6144246313478615705">Definir complexidade mínima para PINs e senhas locais</translation>
 <translation id="614551633868957694">Extensões e apps do Chrome</translation>
 <translation id="614616930188030377">Os padrões desta lista serão comparados com a origem de segurança do URL solicitante.
       Se uma correspondência for encontrada ou a opção chrome://flags/#enable-webrtc-hide-local-ips-with-mdns estiver desativada, os endereços IP locais serão mostrados nos candidatos ICE do WebRTC.
@@ -8569,6 +8594,13 @@ Ela não afeta a análise de downloads configurada pelo Chrome Enterprise Connec
 <translation id="6520802717075138474">Importar mecanismos de pesquisa do navegador padrão na primeira execução</translation>
 <translation id="6521971538031711337">Impedir que o usuário gerenciado configure o nome do host do dispositivo</translation>
 <translation id="6523079496775454310">Ativar o consentimento de indicadores do dispositivo para usuários gerenciados em dispositivos não gerenciados</translation>
+<translation id="6523608518493993483">Esta política permite que os administradores criptografem o cache http do navegador no disco.
+
+Quando esta política está ativada, o cache do navegador é criptografado.
+
+Quando esta política está desativada ou não é definida, o cache do navegador não é criptografado.
+
+A criptografia do cache do navegador pode afetar o desempenho.</translation>
 <translation id="6527674993612811419">Mostrar avisos e desativar o preenchimento automático em formulários não seguros</translation>
 <translation id="6532769014584932288">Permitir wake locks</translation>
 <translation id="6533881418188970751">Perguntar ao usuário onde salvar o arquivo antes do download</translation>
@@ -9388,6 +9420,26 @@ Somente origens HTTPS válidas são permitidas. Caracteres curinga não são ace
 As entradas inválidas são ignoradas.</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7045221780834308118">Se a política for ativada, os aplicativos da Web de terceiros poderão usar a API Desk para controlar os espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se a política for desativada ou deixada sem definição, o <ph name="DESK_API_NAME" /> vai ficar indisponível. A política só será aplicada em dispositivos registrados.</translation>
+<translation id="704591686761455167">Esta política controla se os URLs de blobs são particionados durante a busca e navegação.
+Se ela for ativada ou deixada sem definição, os URLs de blobs serão particionados.
+Se ela for desativada, os URLs de blobs não serão particionados.
+
+Se o particionamento de armazenamento for desativado para uma determinada origem de nível superior por
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+ou <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+os URLs de blobs também não serão particionados.
+
+Se você precisar usar a política, informe um bug em
+<ph name="BUG_URL" />
+explicando seu caso de uso. A política está programada para ser oferecida até
+a versão 146 do <ph name="PRODUCT_NAME" />. Após essa versão,
+a implementação antiga será removida.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.
+
+Para ver detalhes sobre o particionamento de armazenamento de terceiros, consulte
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7046113122884041950">Não permitir o Smart Lock</translation>
 <translation id="7046997898355294677">Mostrar notificações de privacidade até que elas sejam dispensadas pelo usuário</translation>
 <translation id="7047495632846973438">Especifica se a política de permissões de captura de tela foi marcada ou ignorada.</translation>
@@ -10020,6 +10072,17 @@ a leitura em voz alta será ativada.</translation>
       Se a política for ativada ou for deixada sem definição, os sites só poderão chamar o getDisplayMedia() de contextos na lista de permissões da política de captura de tela.
 
       Se ela for desativada, os sites poderão chamar o getDisplayMedia() até mesmo de contextos fora da lista de permissões da política de captura de tela. Pode haver outras restrições.</translation>
+<translation id="750408442628578356">Controla se o app do Gemini pode realizar ações nas páginas da web em nome do usuário.
+
+Se for definida como 0 ou deixada sem definição, o app do Gemini poderá realizar ações nas páginas da web.
+
+Se for definida como 1, ele não terá permissão para isso.
+
+Esta política não tem efeito quando o app do Gemini está desativado. Por exemplo, ele pode ser desativado pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre o Gemini no Chrome, acesse https://support.google.com/chrome/a/answer/16291696.
+
+O acionamento do Gemini só está disponível em alguns países e idiomas. Definir esta política não garante que o recurso será ativado. Ele ainda vai ficar sujeito à disponibilidade. Para mais informações sobre o lançamento, consulte as notas da versão do Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=pt-br</translation>
 <translation id="7506745375479451616">Esta política controla o comando usado para abrir URLs no <ph name="PRODUCT_NAME" /> ao alternar do <ph name="IE_PRODUCT_NAME" />. Ela pode ser definida como um caminho de arquivo executável ou <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automaticamente o local do <ph name="PRODUCT_NAME" />.
 
       Se ela não for definida, o <ph name="IE_PRODUCT_NAME" /> detectará automaticamente o caminho executável do <ph name="PRODUCT_NAME" /> ao abrir o <ph name="PRODUCT_NAME" /> com o Internet Explorer.
@@ -10103,6 +10166,7 @@ Se a política não for definida, nenhuma exceção a <ph name="FLOATING_SSO_DOM
 
       Se o dispositivo do usuário não for gerenciado, a disponibilidade da funcionalidade será dependente também da possibilidade de o usuário não ser proprietário do dispositivo.</translation>
 <translation id="7570291542739287032">Somente no Cloud</translation>
+<translation id="7572641760104970905">Sem complexidade</translation>
 <translation id="757395965347379751">Quando esta configuração está ativada, o <ph name="PRODUCT_NAME" /> permite certificados SHA-1 assinados, desde que eles sejam validados e estejam vinculados a certificados de CA instalados localmente.
 
       Esta política depende da permissão de assinaturas SHA-1 pela pilha de verificação de certificados do sistema operacional. Se a atualização de um SO alterar o modo como esse sistema lida com certificados SHA-1, talvez esta política deixe de ter efeito. Além disso, esta política é usada como alternativa temporária para dar às empresas mais tempo para deixar de usar SHA-1. Esta política será removida no dia 1 de janeiro de 2019 ou em uma data próxima a essa.
@@ -10200,6 +10264,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>
+<translation id="7661379728107156839">Baixa complexidade</translation>
 <translation id="7666228839913571182">Permitir cookies de terceiros</translation>
 <translation id="7666782560345386904">Configurações do preenchimento automático aprimorado</translation>
 <translation id="7669630878711068277">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir com o <ph name="PRODUCT_NAME" /> e não poderão mudar esta configuração.

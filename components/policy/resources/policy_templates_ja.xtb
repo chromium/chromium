@@ -9227,6 +9227,17 @@ Kyber の提供には下位互換性があります。既存の TLS サーバー
       このポリシーを有効に設定するか未設定のままにした場合、サイトはディスプレイ キャプチャ許可ポリシーで許可リストに登録されたコンテキストからのみ getDisplayMedia() を呼び出すことができます。
 
       このポリシーを無効に設定した場合、サイトはディスプレイ キャプチャ許可ポリシーで許可リストに登録されていないコンテキストからでも getDisplayMedia() を呼び出すことができます。ただし、他の制限が適用される可能性があります。</translation>
+<translation id="750408442628578356">Gemini アプリにユーザーの代わりにウェブページでの操作を許可するかどうかを制御します。
+
+0 / 未設定  = Gemini アプリにウェブページでの操作を許可する。
+
+1 = Gemini アプリにウェブページでの操作を許可しない。
+
+Gemini アプリが無効になっている場合、このポリシーは無視されます。たとえば、Gemini アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。
+
+Gemini in Chrome について詳しくは、https://support.google.com/chrome/a/answer/16291696 をご覧ください。
+
+Gemini による操作は、一部の国や言語ではご利用いただけません。このポリシーを設定しても、機能が有効になるとは限りません。有効になるかどうかは、国や言語での提供状況によって異なります。リリースについて詳しくは、Enterprise リリースノート（https://support.google.com/chrome/a/answer/7679408?hl=ja）をご覧ください。</translation>
 <translation id="7506745375479451616">このポリシーでは、<ph name="IE_PRODUCT_NAME" /> から <ph name="PRODUCT_NAME" /> に切り替えて URL を開くときに使用するコマンドを管理します。このポリシーは、実行ファイルのパスに設定するか <ph name="PRODUCT_NAME_PLACEHOLDER" /> に設定することで、<ph name="PRODUCT_NAME" /> の場所を自動検出できます。
 
       このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> が Internet Explorer から起動する際に <ph name="IE_PRODUCT_NAME" /> が <ph name="PRODUCT_NAME" /> の実行パスを自動検出します。注: <ph name="IE_PRODUCT_NAME" /> の従来のブラウザをサポートするアドインがインストールされていない場合、このポリシーは無視されます。</translation>

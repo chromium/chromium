@@ -178,6 +178,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1292571435393770077">Tabuleiro 16</translation>
 <translation id="1292701964462482250">"Existe software no computador que está a impedir que o Chrome se ligue à Web em segurança" (apenas para computadores com Windows)</translation>
+<translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 pol.</translation>
 <translation id="129553762522093515">Fechados recentemente</translation>
 <translation id="1296930489679394997">Vendas</translation>
@@ -3156,7 +3157,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6189351761800074311">O texto e o conteúdo da página são enviados para a Google, mas não são usados para melhorar a IA.
     <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Substituir algumas teclas do teclado, como a tecla Esc</translation>
-<translation id="6192524964213419211">Guarde as suas informações para realizar tarefas mais rapidamente nos produtos Google. As suas informações são guardadas na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Veja todos os produtos monitorizados aqui</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Eletrónica de consumo</translation>
@@ -3492,7 +3492,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6716039223770814796">Comparar <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> itens</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente à sua volta e monitorizar a posição da câmara.</translation>
 <translation id="6717692133381953670">Separador enviado do <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Guarde as suas informações para que o preenchimento automático possa preencher mais campos para si da próxima vez</translation>
 <translation id="6718612893943028815">Quer utilizar a câmara?</translation>
 <translation id="6721164594124191969">Etiquetas (brilhante)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

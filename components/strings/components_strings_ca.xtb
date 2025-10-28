@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" />. Per sortir de la pantalla completa, arrossega des de la part superior i toca el botó Enrere.</translation>
 <translation id="1138458427267715730">Rep alertes quan el preu baixi en qualsevol lloc web d'Internet</translation>
 <translation id="1142713751288681188">Tipus de paper</translation>
+<translation id="1142965388643537393">Informació de viatges</translation>
 <translation id="1144136880160289237">Encara no tens cap tema actiu</translation>
 <translation id="1149617035358809955">verificar la teva identitat per poder emplenar la informació de pagament</translation>
 <translation id="1150565364351027703">Ulleres de sol</translation>
@@ -177,6 +178,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
 <translation id="1292571435393770077">Safata 16</translation>
 <translation id="1292701964462482250">"L'ordinador conté programari que impedeix que Chrome es connecti de manera segura al web" (només en ordinadors Windows)</translation>
+<translation id="1293556467332435079">Fitxers</translation>
 <translation id="1293797321964802402">Sobre de 9 x 11 polzades</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
 <translation id="1296930489679394997">Vendes</translation>
@@ -837,6 +839,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2357481397660644965">El dispositiu està gestionat per <ph name="DEVICE_MANAGER" /> i el compte està gestionat per <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Diverses</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="236000571258713023">Vehicles</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menú de commutadors per canviar la mida</translation>
 <translation id="2365355378251437925">Introdueix <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4598556348158889687">Gestió de l'emmagatzematge</translation>
 <translation id="459914240367517409">Disseny i desenvolupament web</translation>
 <translation id="4602465984861132303">Bitlles</translation>
+<translation id="4603727370377253901">Reserves de vols</translation>
 <translation id="4607608436550361748">Mostra consells per a Chrome</translation>
 <translation id="460848736049414407">Bloquejat per l'administrador</translation>
 <translation id="4610279718074907952">Aquest lloc web forma part d'un grup, definit per <ph name="SET_OWNER" />, que pot veure la teva activitat</translation>
@@ -2207,6 +2211,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4622292761762557753">Transfereix igualment</translation>
 <translation id="4622647778991854660">Activa les notificacions al Centre de notificacions. Obre <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Documents d'identitat</translation>
 <translation id="4627675673814409125">Aquesta política no es pot establir a nivell del perfil de Chrome i s'ignorarà.</translation>
 <translation id="4628678854894591460">Ofertes de vacances</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3152,7 +3157,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6189351761800074311">El text i el contingut de la pàgina s'envien a Google, però no s'utilitzaran per millorar la IA.
     <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Anul·lar algunes tecles del teclat, com ara Esc</translation>
-<translation id="6192524964213419211">Desa la teva informació per enllestir tasques més ràpidament en tots els productes de Google. La teva informació es desa a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Consulta aquí tots els productes que segueixes</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Electrònica de consum</translation>
@@ -3488,7 +3492,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6716039223770814796">Compara <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elements</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vol crear un mapa en 3D del teu entorn i fer un seguiment de la posició de la càmera</translation>
 <translation id="6717692133381953670">S'ha enviat una pestanya des de <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Desa la informació perquè la propera vegada es puguin emplenar més camps amb l'emplenament automàtic</translation>
 <translation id="6718612893943028815">Vols utilitzar la càmera?</translation>
 <translation id="6721164594124191969">Etiquetes (brillants)</translation>
 <translation id="6726832600570791992">(emula un dispositiu de 32 bits)</translation>

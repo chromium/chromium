@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1007349221964075684">Fes servir el bloqueig de pantalla per veure les finestres d'incògnit obertes</translation>
 <translation id="1010283278930414892">No hi ha cap contrasenya desada en aquest dispositiu</translation>
 <translation id="1011749477052068769">Mou aquí</translation>
 <translation id="1014083013111769343">Preferències del mode de lectura obertes a alçada completa</translation>
@@ -721,6 +722,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4355272626458588338">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
 <translation id="4356503491090073318">Número de targeta*</translation>
 <translation id="4357206670025518404"><ph name="COUNT_NUMBER" />+</translation>
+<translation id="4358630185957185589">Obre Google Lens</translation>
 <translation id="4359809482106103048">Seguretat d'una ullada</translation>
 <translation id="4378154925671717803">Telèfon</translation>
 <translation id="4380055775103003110">Si el problema persisteix, pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1167,6 +1169,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6312687380483398334">Aplicacions web (en mode silenciós)</translation>
 <translation id="6315386555979018699">Suprimeix i continua</translation>
 <translation id="6316139424528454185">Versió d'Android no admesa</translation>
+<translation id="631839948975905034">Bloqueja les finestres d'incògnit després de sortir de Chrome</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>
 <translation id="6324977638108296054">No es pot crear un enllaç que dirigeixi al contingut marcat</translation>
 <translation id="6333140779060797560">Comparteix mitjançant <ph name="APPLICATION" />.</translation>
@@ -1497,6 +1500,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7612989789287281429">S'està iniciant la sessió…</translation>
 <translation id="7619072057915878432">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors a la xarxa.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{S'ha cancel·lat la subscripció a un lloc web}other{S'ha cancel·lat la subscripció a # llocs web}}</translation>
 <translation id="7626032353295482388">Et donem la benvinguda a Chrome</translation>
 <translation id="7628417132421583481">Ves al gestor de contrasenyes</translation>
 <translation id="7630202231528827509">URL del proveïdor</translation>

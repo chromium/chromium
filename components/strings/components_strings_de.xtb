@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – zum Beenden des Vollbildmodus: von oben ziehen und auf den Button „Zurück“ tippen</translation>
 <translation id="1138458427267715730">Du kannst dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>
 <translation id="1142713751288681188">Papiertyp</translation>
+<translation id="1142965388643537393">Reiseinformationen</translation>
 <translation id="1144136880160289237">Du hast noch keine aktiven Themen</translation>
 <translation id="1149617035358809955">deine Identität zu bestätigen, damit du die Zahlungsinformationen eingeben kannst</translation>
 <translation id="1150565364351027703">Sonnenbrille</translation>
@@ -177,6 +178,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
 <translation id="1292571435393770077">Fach 16</translation>
 <translation id="1292701964462482250">"Software auf deinem Computer verhindert, dass Chrome eine sichere Internetverbindung herstellt" (nur Windows-Computer)</translation>
+<translation id="1293556467332435079">Dateien</translation>
 <translation id="1293797321964802402">Umschlag 9 × 11 Zoll</translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1296930489679394997">Verkauf</translation>
@@ -837,6 +839,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2357481397660644965">Dein Gerät wird von <ph name="DEVICE_MANAGER" /> und dein Konto von <ph name="ACCOUNT_MANAGER" /> verwaltet.</translation>
 <translation id="2359629602545592467">Mehrere</translation>
 <translation id="2359808026110333948">Weiter</translation>
+<translation id="236000571258713023">Fahrzeuge</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menü für die Größenanpassung</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> eingeben</translation>
@@ -2197,6 +2200,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4598556348158889687">Speicherplatzverwaltung</translation>
 <translation id="459914240367517409">Webdesign und -entwicklung</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Flugreservierungen</translation>
 <translation id="4607608436550361748">Chrome-Tipps aufrufen</translation>
 <translation id="460848736049414407">Vom Administrator blockiert</translation>
 <translation id="4610279718074907952">Diese Website ist einer durch <ph name="SET_OWNER" /> definierten Gruppe zugeordnet, die deine Aktivitäten sehen kann</translation>
@@ -2205,6 +2209,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4622292761762557753">Trotzdem übertragen</translation>
 <translation id="4622647778991854660">Hier kannst du Benachrichtigungen im Benachrichtigungscenter aktivieren. Öffne „<ph name="LINK" />“.</translation>
+<translation id="4623894491222334521">Ausweisdokumente</translation>
 <translation id="4627675673814409125">Diese Richtlinie kann nicht auf der Chrome-Profilebene festgelegt werden und wird ignoriert.</translation>
 <translation id="4628678854894591460">Urlaubsangebote</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3150,7 +3155,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6189351761800074311">Deine Texte und Seiteninhalte werden an Google gesendet, aber nicht zur Verbesserung von KI verwendet.
     <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Einige Tasten auf der Tastatur überschreiben, z. B. Esc</translation>
-<translation id="6192524964213419211">Wenn du deine Informationen speicherst, kannst du viele Dinge in Google-Produkten schneller erledigen. Deine Informationen für <ph name="ACCOUNT" /> werden in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert</translation>
 <translation id="6194209731893739467">Alle beobachteten Produkte hier ansehen</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Unterhaltungselektronik</translation>
@@ -3486,7 +3490,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> vergleichen · <ph name="ITEMS" /> Elemente</translation>
 <translation id="6716672519412350405"><ph name="URL" /> möchte eine 3D-Karte deiner Umgebung erstellen und die Kameraposition verfolgen</translation>
 <translation id="6717692133381953670">Tab von „<ph name="DEVICE_NAME" />“ gesendet</translation>
-<translation id="6718524733720986924">Speichere deine Informationen, damit Autofill beim nächsten Mal mehr Felder für dich ausfüllen kann</translation>
 <translation id="6718612893943028815">Kamera verwenden?</translation>
 <translation id="6721164594124191969">Etiketten (glänzend)</translation>
 <translation id="6726832600570791992">(32-Bit-Emulation)</translation>

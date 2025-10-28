@@ -595,6 +595,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3739899004075612870">Imealamishwa katika <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Kipengele cha kutafuta kwa kutamka hakipatikani kwenye kifaa hiki</translation>
 <translation id="376561056759077985">Bado hujahifadhi baadhi ya data</translation>
+<translation id="3770620323585347665">Lipe dirisha jina</translation>
 <translation id="3771033907050503522">Vichupo Fiche</translation>
 <translation id="3771290962915251154">Mipangilio hii imezimwa kwa sababu vidhibiti vya wazazi vimewashwa</translation>
 <translation id="3771694256347217732">Sheria na Masharti ya Google</translation>
@@ -722,6 +723,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4355272626458588338">Unaweza kurudi kwenye ukurasa ambao ni muhimu kwako kwa kuweka alamisho</translation>
 <translation id="4356503491090073318">Namba ya kadi*</translation>
 <translation id="4357206670025518404">na <ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Fungua Lenzi ya Google</translation>
 <translation id="4359809482106103048">Usalama kwa muhtasari</translation>
 <translation id="4378154925671717803">Simu</translation>
 <translation id="4380055775103003110">Iwapo hitilafu hii itaendelea kutokea, unaweza kujaribu njia nyingine ili uendelee kwenye <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -788,6 +790,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4668279686271488041">Data ya kipimo cha matangazo hufutwa mara kwa mara kwenye kifaa chako</translation>
 <translation id="4668347365065281350">Data yote inayohifadhiwa na tovuti, ikiwa ni pamoja na vidakuzi na data nyingine inayohifadhiwa kwenye kifaa</translation>
 <translation id="4673702426794876519">Dirisha la faraghani</translation>
+<translation id="4675298276894277358">Tovuti hii haitaonyeshwa tena</translation>
 <translation id="4678082183394354975">Mandhari meusi ya tovuti yamewashwa katika Chrome</translation>
 <translation id="4682306524980568490">Unaweza kuonyeshwa madirisha <ph name="MAX_INSTANCE_COUNT" /> pekee</translation>
 <translation id="4684427112815847243">Sawazisha kila kitu</translation>
@@ -989,6 +992,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="555671485580955310">Sawazisha historia na vichupo</translation>
 <translation id="555816257274242153">Umeacha kufuatilia bei</translation>
+<translation id="5559778750856177186">Umebandua njia ya mkato</translation>
 <translation id="5561445479436807659">Cheza mchezo wa kusisimua wa Dinosau</translation>
 <translation id="5561549206367097665">Inasubiri intaneti…</translation>
 <translation id="5568069709869097550">Siwezi kuingia</translation>
@@ -1499,6 +1503,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7612619742409846846">Umeingia katika akaunti ya Google ukitumia</translation>
 <translation id="7612989789287281429">Unaingia katika akaunti…</translation>
 <translation id="7619072057915878432">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya hitilafu za mtandao.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Umejiondoa kwenye tovuti moja}other{Umejiondoa kwenye tovuti #}}</translation>
 <translation id="7626032353295482388">Karibu kwenye Chrome</translation>
 <translation id="7628417132421583481">Nenda kwenye Kidhibiti cha Manenosiri</translation>
 <translation id="7630202231528827509">URL ya mtoa huduma</translation>
@@ -1662,6 +1667,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8281886186245836920">Ruka</translation>
 <translation id="8282297628636750033">Tumia mandhari meusi kwenye tovuti, panapowezekana</translation>
 <translation id="8282950411412455249">Nenda kwenye mipangilio ya usalama</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Funga Dirisha 1 la faraghani}other{Funga Madirisha # ya faraghani}}</translation>
 <translation id="831192587911042850">Huongeza tovuti unayoitumia sasa kwenye orodha ya tovuti unazofuatilia.</translation>
 <translation id="8317318757008452355">Fungua chaguo za kuchapisha</translation>
 <translation id="8320212361750431956">Shughuli za Hivi Majuzi</translation>

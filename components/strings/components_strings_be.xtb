@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
 <translation id="1292571435393770077">Латок 16</translation>
 <translation id="1292701964462482250">"Праграмнае забеспячэнне на камп’ютары не дае браўзеру Chrome устанавіць бяспечнае падключэнне да інтэрнэту" (толькі камп’ютары пад кіраваннем Windows)</translation>
+<translation id="1293556467332435079">Файлы</translation>
 <translation id="1293797321964802402">Канверт 9 x 11 цаляў</translation>
 <translation id="129553762522093515">Нядаўна закрытыя</translation>
 <translation id="1296930489679394997">Продаж</translation>
@@ -3155,7 +3156,6 @@
 <translation id="6189351761800074311">Ваш тэкст і змесціва старонкі адпраўляюцца ў Google, але не будуць выкарыстоўвацца для паляпшэння штучнага інтэлекту.
     <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Перавызначаць некаторыя клавішы на клавіятуры, напрыклад Esc</translation>
-<translation id="6192524964213419211">Захавайце звесткі, каб паскорыць працу ў розных прадуктах Google. Ваша інфармацыя захоўваецца ў сэрвісе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" уліковага запісу <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Тут можна паглядзець усе прадукты, за якімі вы сочыце</translation>
 <translation id="6195371403461054755">Геалогія</translation>
 <translation id="6195418151868446719">Бытавая электронная тэхніка</translation>
@@ -3491,7 +3491,6 @@
 <translation id="6716039223770814796">Параўнаць: <ph name="COMPARE_SET_NAME" />, элементаў: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405">Сайт <ph name="URL" /> запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
 <translation id="6717692133381953670">Укладка адпраўлена з прылады "<ph name="DEVICE_NAME" />"</translation>
-<translation id="6718524733720986924">Захавайце сваю інфармацыю, каб наступны раз вы маглі запоўніць больш палёў з дапамогай аўтазапаўнення</translation>
 <translation id="6718612893943028815">Выкарыстоўваць камеру?</translation>
 <translation id="6721164594124191969">Глянцавы этыкетачны матэрыял</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

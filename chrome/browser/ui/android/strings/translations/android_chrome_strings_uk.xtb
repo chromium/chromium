@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
+<translation id="1007349221964075684">Використовувати спосіб розблокування екрана, щоб переглядати відкриті анонімні вікна</translation>
 <translation id="1010283278930414892">На цьому пристрої немає збережених паролів</translation>
 <translation id="1011749477052068769">Перемістити сюди</translation>
 <translation id="1014083013111769343">Параметри режиму читання відкрито на всю висоту</translation>
@@ -1167,6 +1168,7 @@
 <translation id="6312687380483398334">Веб-додатки (тихий режим)</translation>
 <translation id="6315386555979018699">Видалити й продовжити</translation>
 <translation id="6316139424528454185">Версія Android несумісна</translation>
+<translation id="631839948975905034">Блокувати анонімні вікна після закриття Chrome</translation>
 <translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6324977638108296054">Не вдається створити посилання на виділений текст</translation>
 <translation id="6333140779060797560">Надіслати через <ph name="APPLICATION" /></translation>

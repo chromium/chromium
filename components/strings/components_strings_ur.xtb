@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – فُل اسکرین سے باہر نکلنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="1138458427267715730">ویب پر کسی بھی سائٹ پر قیمت کم ہونے پر الرٹس حاصل کریں</translation>
 <translation id="1142713751288681188">کاغذ کی قسم</translation>
+<translation id="1142965388643537393">سفری معلومات</translation>
 <translation id="1144136880160289237">آپ کے پاس ابھی تک کوئی فعال موضوع نہیں ہے</translation>
 <translation id="1149617035358809955">تصدیق کریں کہ یہ آپ ہی ہیں تاکہ یہ آپ کی ادائیگی کی معلومات کو پُر کر سکے</translation>
 <translation id="1150565364351027703">دھوپ کا چشمہ</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1292571435393770077">ٹرے 16</translation>
 <translation id="1292701964462482250">‏"آپ کے کمپیوٹر میں موجود سافٹ ویئر Chrome کو محفوظ طور پر ویب سے منسلک ہونے سے روک رہا ہے" (صرف Windows کمپیوٹرز کیلئے)</translation>
+<translation id="1293556467332435079">فائلیں</translation>
 <translation id="1293797321964802402">‏‎9 x 11انچ لفافہ</translation>
 <translation id="129553762522093515">حال ہی میں بند کردہ</translation>
 <translation id="1296930489679394997">سیلز</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">آپ کا آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے اور آپ کا اکاؤنٹ <ph name="ACCOUNT_MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="2359629602545592467">متعدد</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
+<translation id="236000571258713023">گاڑیاں</translation>
 <translation id="2361263712565360498">‏‎275 x 395 مل لیٹر</translation>
 <translation id="236340516568226369">ٹوگل مینیو کا سائز تبدیل کریں</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> درج کریں</translation>
@@ -2200,6 +2203,7 @@
 <translation id="4598556348158889687">اسٹوریج کا نظم</translation>
 <translation id="459914240367517409">ویب ڈیزائن اور ڈویلپمنٹ</translation>
 <translation id="4602465984861132303">باؤلنگ</translation>
+<translation id="4603727370377253901">فلائیٹ کے ریزرویشنز</translation>
 <translation id="4607608436550361748">‏Chrome کی تجاویز دیکھیں</translation>
 <translation id="460848736049414407">منتظم کے ذریعے مسدود کردہ</translation>
 <translation id="4610279718074907952">یہ سائٹ ایک گروپ میں موجود ہے، جس کی وضاحت <ph name="SET_OWNER" /> نے کی ہے، جو آپ کی سرگرمی دیکھ سکتی ہے</translation>
@@ -2208,6 +2212,7 @@
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4622292761762557753">بہر حال منتقل کریں</translation>
 <translation id="4622647778991854660">اطلاع کے مرکز میں اطلاعات کو فعال کریں۔ <ph name="LINK" /> کھولیں۔</translation>
+<translation id="4623894491222334521">شناختی دستاویزات</translation>
 <translation id="4627675673814409125">‏یہ پالیسی Chrome پروفائل کی سطح پر سیٹ نہیں کی جا سکتی اور اسے نظر انداز کر دیا جائے گا۔</translation>
 <translation id="4628678854894591460">تعطیل کی پیشکشیں</translation>
 <translation id="4628948037717959914">تصویر</translation>
@@ -3154,7 +3159,6 @@
 <translation id="6189351761800074311">‏آپ کے ٹیکسٹ اور صفحہ کے مواد کو Google کو بھیجا جاتا ہے، لیکن AI کو بہتر بنانے کے لیے ان کا استعمال نہیں کیا جائے گا۔
     <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">‏اپنے کی بورڈ پر کچھ کلیدوں کو اوور رائیڈ کریں، جیسے Esc</translation>
-<translation id="6192524964213419211">‏تمام Google پروڈکٹس پر تیزی سے کام مکمل کرنے کے لیے اپنی معلومات محفوظ کریں۔ آپ کی معلومات <ph name="ACCOUNT" /> کے لیے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کی گئی ہے</translation>
 <translation id="6194209731893739467">اپنے تمام ٹریک کردہ پروڈکٹس یہاں دیکھیں</translation>
 <translation id="6195371403461054755">ارضیات</translation>
 <translation id="6195418151868446719">کنزیومر الیکٹرانکس</translation>
@@ -3490,7 +3494,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> کا موازنہ کریں · <ph name="ITEMS" /> آئٹمز</translation>
 <translation id="6716672519412350405">‏<ph name="URL" /> آپ کے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کرنا چاہتا ہے</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> سے بھیجا گیا ٹیب</translation>
-<translation id="6718524733720986924">اپنی معلومات محفوظ کریں تاکہ اگلی بار آٹو فل آپ کے لیے مزید فیلڈز کو پُر کر سکے</translation>
 <translation id="6718612893943028815">کیمرا استعمال کریں؟</translation>
 <translation id="6721164594124191969">لیبلز (گلوسی)</translation>
 <translation id="6726832600570791992">(32 بٹ ایمولیٹڈ)</translation>

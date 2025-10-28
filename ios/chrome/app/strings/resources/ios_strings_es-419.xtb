@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Ya guardaste este nombre de usuario en este sitio</translation>
 <translation id="1497590942294823549">Menú → Administrador de contraseñas</translation>
 <translation id="1498283581832036924">No se borrará tu cuenta de <ph name="WEBSITE" />.</translation>
+<translation id="1503814213414825943">Selecciona las cuentas que quieres exportar a otra app.</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1506063256525392513">Te permite tomar fotos, subirlas y escanear códigos QR</translation>
 <translation id="1508263560970797965">Continuar en Incógnito</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Asegúrate de tener una conexión de red y vuelve a intentarlo.</translation>
 <translation id="4070132839822635162">No acceder</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
-<translation id="4095483462103784441">Crear un nuevo grupo de pestañas</translation>
 <translation id="4099756562043439968">Establecer un recordatorio</translation>
 <translation id="4108998448622696017">Detecta y te advierte sobre eventos peligrosos cuando ocurren.</translation>
 <translation id="4111985840824673503">Marcar todas como leídas</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Cambiar la contraseña en el sitio web</translation>
 <translation id="5248640482715684545">Este sitio está intentando abrir otra aplicación.</translation>
 <translation id="5250371859659394278">De una fuente desconocida</translation>
+<translation id="5269913829202614649">Personaliza la página principal</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Llénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Llénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quiere que te unas a un grupo de pestañas. Cualquier persona que tenga el vínculo puede editar todas las pestañas, así que únete con cuidado. El vínculo vence dentro de 48 h.</translation>

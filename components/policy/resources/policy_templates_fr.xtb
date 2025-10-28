@@ -8200,6 +8200,13 @@ Cette règle n'a pas d'incidence sur l'analyse du contenu téléchargé configur
 <translation id="6520802717075138474">Importer les moteurs de recherche du navigateur par défaut à la première exécution</translation>
 <translation id="6521971538031711337">Empêcher l'utilisateur géré de configurer le nom d'hôte de l'appareil</translation>
 <translation id="6523079496775454310">Activer l'autorisation de partage des signaux pour les utilisateurs gérés sur des appareils non gérés</translation>
+<translation id="6523608518493993483">Cette règle permet aux administrateurs de chiffrer le cache HTTP du navigateur sur le disque.
+
+Lorsque cette règle est activée, le cache du navigateur est chiffré.
+
+Si elle est désactivée ou qu'elle n'est pas configurée, le cache du navigateur n'est pas chiffré.
+
+Le chiffrement du cache du navigateur peut avoir un impact sur les performances.</translation>
 <translation id="6527674993612811419">Afficher des avertissements et désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="6532769014584932288">Autoriser les wakelocks</translation>
 <translation id="6533881418188970751">Demander à l'utilisateur à quel emplacement enregistrer le fichier avant son téléchargement</translation>

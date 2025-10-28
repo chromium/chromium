@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" />: per uscire dalla modalità a schermo intero, trascina dall'alto e tocca il pulsante Indietro</translation>
 <translation id="1138458427267715730">Ricevi avvisi quando il prezzo cala su qualsiasi sito del web</translation>
 <translation id="1142713751288681188">Tipo di carta</translation>
+<translation id="1142965388643537393">Informazioni di viaggio</translation>
 <translation id="1144136880160289237">Non hai ancora argomenti attivi</translation>
 <translation id="1149617035358809955">verificare la tua identità per poter inserire i tuoi dati di pagamento</translation>
 <translation id="1150565364351027703">Occhiali da sole</translation>
@@ -177,6 +178,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
 <translation id="1292571435393770077">Vassoio 16</translation>
 <translation id="1292701964462482250">"Il software installato sul computer sta impedendo a Chrome di connettersi in sicurezza al Web" (solo su computer Windows)</translation>
+<translation id="1293556467332435079">File</translation>
 <translation id="1293797321964802402">Busta 9 x 11 pollici</translation>
 <translation id="129553762522093515">Chiuse di recente</translation>
 <translation id="1296930489679394997">Vendite</translation>
@@ -837,6 +839,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2357481397660644965">Il tuo dispositivo è gestito da <ph name="DEVICE_MANAGER" /> e il tuo account da <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continua</translation>
+<translation id="236000571258713023">Veicoli</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu di attivazione/disattivazione ridimensionamento</translation>
 <translation id="2365355378251437925">Inserisci un valore per <ph name="FIELD" /></translation>
@@ -2196,6 +2199,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4598556348158889687">Gestione dello spazio di archiviazione</translation>
 <translation id="459914240367517409">Web design e sviluppo di siti web</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Prenotazioni di voli</translation>
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
 <translation id="460848736049414407">Bloccato dall'amministratore</translation>
 <translation id="4610279718074907952">Questo sito fa parte di un gruppo, definito da <ph name="SET_OWNER" />, che può vedere la tua attività</translation>
@@ -2204,6 +2208,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4622292761762557753">Trasferisci comunque</translation>
 <translation id="4622647778991854660">Abilita le notifiche nel Centro notifiche. Apri <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Documenti di identità</translation>
 <translation id="4627675673814409125">Questa policy non può essere impostata a livello di profilo Chrome e verrà ignorata.</translation>
 <translation id="4628678854894591460">Offerte di pacchetti vacanza</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3148,7 +3153,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6189351761800074311">Il testo e i contenuti della pagina vengono inviati a Google, ma non verranno utilizzati per migliorare l'AI.
     <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esegui l'override di alcuni tasti della tastiera, ad esempio Esc</translation>
-<translation id="6192524964213419211">Salva le tue informazioni per velocizzare le attività nei prodotti Google. Le tue informazioni sono salvate su <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Visualizza tutti i tuoi prodotti monitorati qui</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Elettronica di consumo</translation>
@@ -3484,7 +3488,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6716039223770814796">Confronta <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elementi</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vorrebbe creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera</translation>
 <translation id="6717692133381953670">Scheda inviata da <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Salva le tue informazioni in modo che la compilazione automatica possa riempire più campi la prossima volta</translation>
 <translation id="6718612893943028815">Usare la videocamera?</translation>
 <translation id="6721164594124191969">Etichette (lucide)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">ಈ ಸೈಟ್ ಅನ್ನು ಎಂದಿಗೂ ಭಾಷಾಂತರಿಸದಿರಿ</translation>
 <translation id="1292571435393770077">ಟ್ರೇ 16</translation>
 <translation id="1292701964462482250">"ಸುರಕ್ಷಿತವಾಗಿ ವೆಬ್‌ಗೆ ಸಂಪರ್ಕಿಸುವ Chrome ನ ಕಾರ್ಯವನ್ನು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಸಾಫ್ಟ್‌ವೇರ್‌ ಸ್ಥಗಿತಗೊಳಿಸಿದೆ" (Windows ಕಂಪ್ಯೂಟರ್‌ಗಳಿಗೆ ಮಾತ್ರ)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">ಎನ್ವಲಪ್ 9 x 11 ಇಂಚು</translation>
 <translation id="129553762522093515">ಇತ್ತೀಚೆಗೆ ಮುಚ್ಚಲಾಗಿರುವುದು</translation>
 <translation id="1296930489679394997">ಮಾರಾಟಗಳು</translation>
@@ -3152,7 +3153,6 @@
 <translation id="6189351761800074311">ನಿಮ್ಮ ಪಠ್ಯ ಮತ್ತು ಪುಟದ ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಆದರೆ AI ಅನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಲಾಗುವುದಿಲ್ಲ.
     <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ Esc ನಂತಹ ಕೆಲವು ಕೀಗಳನ್ನು ಓವರ್‌ರೈಡ್ ಮಾಡಿ</translation>
-<translation id="6192524964213419211">Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ವೇಗವಾಗಿ ಮಾಡಲು ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ. ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು <ph name="ACCOUNT" /> ಗಾಗಿ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6194209731893739467">ನೀವು ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಎಲ್ಲಾ ಉತ್ಪನ್ನಗಳನ್ನು ಇಲ್ಲಿ ನೋಡಿ</translation>
 <translation id="6195371403461054755">ಭೂವಿಜ್ಞಾನ</translation>
 <translation id="6195418151868446719">ಗ್ರಾಹಕರ ಎಲೆಕ್ಟ್ರಾನಿಕ್ಸ್</translation>
@@ -3489,7 +3489,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> ಅನ್ನು ಹೋಲಿಸಿ · <ph name="ITEMS" /> ಐಟಂಗಳು</translation>
 <translation id="6716672519412350405">ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸುವುದು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು <ph name="URL" /> ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="6717692133381953670">ಟ್ಯಾಬ್ ಅನ್ನು <ph name="DEVICE_NAME" /> ದಿಂದ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
-<translation id="6718524733720986924">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ, ಇದರಿಂದ ಆಟೋಫಿಲ್ ಮುಂದಿನ ಬಾರಿ ನಿಮಗಾಗಿ ಹೆಚ್ಚಿನ ಫೀಲ್ಡ್‌ಗಳನ್ನು ತುಂಬುತ್ತದೆ</translation>
 <translation id="6718612893943028815">ಕ್ಯಾಮರಾ ಬಳಸುವುದೇ?</translation>
 <translation id="6721164594124191969">ಲೇಬಲ್‌ಗಳು (ಹೊಳಪು)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

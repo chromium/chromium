@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">இந்த தளத்தை எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="1292571435393770077">டிரே 16</translation>
 <translation id="1292701964462482250">"உங்கள் கம்ப்யூட்டரில் உள்ள மென்பொருள் இணையத்துடன் பாதுகாப்பாக இணைவதிலிருந்து Chromeமைத் தடுக்கிறது" (Windows கம்ப்யூட்டர்கள் மட்டும்)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">என்வெலப் 9 x 11 இன்ச்</translation>
 <translation id="129553762522093515">சமீபத்தில் மூடியவை</translation>
 <translation id="1296930489679394997">விற்பனை</translation>
@@ -3151,7 +3152,6 @@
 <translation id="6189351761800074311">நீங்கள் எழுதும் வார்த்தைகளும் பக்க உள்ளடக்கமும் Googleளுக்கு அனுப்பப்படும். ஆனால், AIயை மேம்படுத்த இவை பயன்படுத்தப்படாது.
     <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esc போன்ற சில பட்டன்களை உங்கள் கீபோர்டில் மீறிச் செயல்படுதல்</translation>
-<translation id="6192524964213419211">Google தயாரிப்புகள் எல்லாவற்றிலும் விரைவாகச் செயல்களை மேற்கொள்ள உங்கள் தகவல்களைச் சேமியுங்கள். <ph name="ACCOUNT" /> கணக்கிற்கான உங்கள் தகவல் <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> இல் சேமிக்கப்படும்.</translation>
 <translation id="6194209731893739467">நீங்கள் கண்காணிக்கும் தயாரிப்புகள் இங்கே காட்டப்படும்</translation>
 <translation id="6195371403461054755">புவியியல்</translation>
 <translation id="6195418151868446719">நுகர்வோர் எலக்ட்ரானிக் சாதனங்கள்</translation>
@@ -3487,7 +3487,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> ஐ ஒப்பிடு · <ph name="ITEMS" /> தயாரிப்புகள்</translation>
 <translation id="6716672519412350405">உங்களைச் சுற்றியுள்ள இடங்களின் 3D மேப்பை உருவாக்கவும் கேமரா நிலையை டிராக் செய்யவும் <ph name="URL" /> விரும்புகிறது</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> இல் இருந்து பக்கம் அனுப்பப்பட்டுள்ளது</translation>
-<translation id="6718524733720986924">தகவல்களைச் சேமித்தால், அடுத்த முறை தன்னிரப்பி உங்களுக்காக அதிகமான புலங்களைத் தானாகவே நிரப்பும்</translation>
 <translation id="6718612893943028815">கேமராவைப் பயன்படுத்தவா?</translation>
 <translation id="6721164594124191969">க்ளாஸ்ஸி லேபிள்கள்</translation>
 <translation id="6726832600570791992">(32-பிட் எமுலேட்டட்)</translation>

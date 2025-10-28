@@ -93,6 +93,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2018528049276128029">Cada perfil almacena su propia información de Chrome, como los marcadores, el historial, las contraseñas y mucho más.</translation>
 <translation id="2018879682492276940">No se ha podido realizar la instalación. Vuelve a intentarlo.</translation>
 <translation id="2024959665595762054">Para usar y guardar los datos de Chrome en tu cuenta de Google, verifica tu identidad</translation>
+<translation id="2026377840141807639">Los perfiles de Chrome te permiten mantener separada la navegación personal de la del trabajo. Añade un perfil nuevo ahora.</translation>
 <translation id="2034233344106846793">Chrome cambia las conexiones no seguras a HTTPS automáticamente cuando es posible</translation>
 <translation id="2039417478970545937">Configuración.</translation>
 <translation id="2091012649849228750">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
@@ -367,6 +368,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 Puede que algunas funciones no estén disponibles. Especifica otro directorio de perfil o usa una versión más reciente de Chrome.</translation>
 <translation id="5174969993834422967">Sueles bloquear las notificaciones. Para permitir que este sitio te envíe notificaciones, haz clic en el icono de notificación que aparece en la esquina derecha de la barra de direcciones.</translation>
 <translation id="5174983315706567306">No hay suficiente espacio en disco.</translation>
+<translation id="5190467473654176081">Personaliza Chrome para cambiar su diseño</translation>
 <translation id="5201744974236816379">Actualización de Chrome</translation>
 <translation id="521447420733633466">Si compartes un dispositivo, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome a su gusto.</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -390,6 +392,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5510398294750420479">Descarga Chrome en tu teléfono para añadir una capa adicional de protección estés donde estés</translation>
 <translation id="5524890928877629608">esquina superior izquierda del área de búsqueda: un <ph name="LEFT" /> % a la izquierda y un <ph name="TOP" /> % arriba</translation>
 <translation id="5530733413481476019">Haz que Chrome sea más rápido</translation>
+<translation id="5550137307985173298">Haz clic en el botón Personalizar Chrome de la página Nueva pestaña para cambiar el diseño de Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (tráfico mDNS entrante)</translation>
 <translation id="5579324208890605088">Error de arranque: ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5596627076506792578">Más opciones</translation>
@@ -418,6 +421,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5736850870166430177">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chrome también envíe URLs, incluidos fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="5756509061973259733">Ya existe un perfil de Chrome con esa cuenta en este dispositivo.</translation>
 <translation id="5759947850379142561">Selecciona cualquier texto o imagen para buscar con Google Lens o pulsa la tecla Esc para salir de Google Lens</translation>
+<translation id="5762867845020858790">Añade un nuevo perfil de Chrome para mantener separados los marcadores, las contraseñas y los ajustes.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> ‑ Google Chrome Canary</translation>
 <translation id="5804318322022881572">No se ha podido iniciar Chrome. Inténtalo de nuevo.</translation>
 <translation id="5809516625706423866">No se puede conectar a Internet. HTTP 401 no autorizado. Comprueba la configuración del proxy.</translation>
@@ -518,6 +522,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6800285125190089494">Inicia sesión más rápido en sitios usando contraseñas guardadas en Chrome para iOS</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="683440813066116847">Regla entrante para que Google Chrome Canary permita tráfico mDNS.</translation>
+<translation id="6841242485723266823">Los perfiles de Chrome te ayudan a separar diferentes aspectos de tu vida. Añade un perfil nuevo ahora.</translation>
 <translation id="684888714667046800">No se puede conectar a Internet. Si usas un cortafuegos, asegúrate de que <ph name="PRODUCT_EXE_NAME" /> esté en la lista de permitidos.</translation>
 <translation id="6877155553248388166">esquina inferior derecha del área de búsqueda: un <ph name="RIGHT" /> % a la derecha y un <ph name="BOTTOM" /> % abajo</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
@@ -682,6 +687,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se reiniciará dentro de 1 minuto}other{Chrome se reiniciará dentro de # minutos}}</translation>
 <translation id="8637932705841171563">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Ajustes del sistema</translation>
 <translation id="8641606876632989680">Chrome te enviará una notificación cuando inicies sesión con una contraseña vulnerada</translation>
+<translation id="8647930742055103497">Mantenlo todo en Chrome</translation>
 <translation id="8656634243791296665">Abrir Gemini en Chrome Dev</translation>
 <translation id="8669527147644353129">Ayudante de Google Chrome</translation>
 <translation id="8677922833187616101">Mostrar siempre el acceso directo al Modo IA de Google</translation>

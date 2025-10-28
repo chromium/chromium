@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Jūs jau saglabājāt šo lietotājvārdu šai vietnei</translation>
 <translation id="1497590942294823549">Izvēlne → Paroļu pārvaldnieks</translation>
 <translation id="1498283581832036924">Jūsu <ph name="WEBSITE" /> konts netiks dzēsts.</translation>
+<translation id="1503814213414825943">Atlasiet kontus, kurus vēlaties eksportēt uz citu lietotni.</translation>
 <translation id="1506061864768559482">Meklētājprogramma</translation>
 <translation id="1506063256525392513">Varat uzņemt un augšupielādēt fotoattēlus, kā arī skenēt kvadrātkodus</translation>
 <translation id="1508263560970797965">Turpināt inkognito režīmā</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Skatīt paroli</translation>
 <translation id="1996318269856535896">Jūs joprojām varat izmantot esošos pārlūkošanas datus šajā ierīcē. Lai tos izmantotu, izrakstieties no pārvaldītā konta.</translation>
 <translation id="2010008505735295285">Atkārtoti ielādēt</translation>
+<translation id="2012723204723845092">Sveicam atpakaļ!</translation>
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
 <translation id="202070562065520783">Paskaidro man</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">Jums nav saglabātu paroļu vai piekļuves atslēgu, taču varat dzēst to vietņu un lietotņu sarakstu, kurām izvēlējāties nekad nesaglabāt pierakstīšanās informāciju. Konti, kurus izveidojāt vietnēm un lietotnēm, netiks dzēsti.</translation>
 <translation id="3530206579861815432">Ātri atrodiet atvērtās un nesen aizvērtās cilnes savās sinhronizētajās ierīcēs.</translation>
 <translation id="3530767473765895035">Kontu pārvaldīšana šajā ierīcē</translation>
+<translation id="353340646084395154">Jaunas cilnes lapas preferences ir noņemtas</translation>
 <translation id="3533436815740441613">Jauna cilne</translation>
 <translation id="3540141921715814660">Pievienot grāmatzīmēm</translation>
 <translation id="3546122170015471515">Maps priekšskatījumi vietnē Google.com</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Pārbaudiet, vai ir izveidots tīkla savienojums, un mēģiniet vēlreiz.</translation>
 <translation id="4070132839822635162">Nepierakstīties</translation>
 <translation id="4092655288299341041">Rādīt palīdzību</translation>
-<translation id="4095483462103784441">Izveidot jaunu ciļņu grupu</translation>
 <translation id="4099756562043439968">Iestatīt atgādinājumu</translation>
 <translation id="4108998448622696017">Kad atgadās bīstami notikumi, tie tiek noteikti un jūs saņemat brīdinājumus.</translation>
 <translation id="4111985840824673503">Atzīmēt visu kā izlasītu</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Varat meklēt, izmantojot balsi</translation>
 <translation id="4895540042460820904">Pēdējoreiz atvērts</translation>
 <translation id="4896467949657706481">Cilnes tika aizvērtas; jūs tikāt izrakstīts</translation>
+<translation id="4911042367886397055">Laipni lūdzam atpakaļ, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Varat droši kopīgot paroles kopiju ar kādu ģimenes grupas dalībnieku. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="4917025507570489430">Varat izmantot esošos pārlūkošanas datus, kad esat pierakstījies kā <ph name="USER_EMAIL" />. Iespējams, jūsu organizācija varēs skatīt šos datus.</translation>
 <translation id="4918086044614829423">Pieņemt</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Piezīmes garums pārsniedz 1000 rakstzīmes.</translation>
 <translation id="5087098519049306025">Cenu izsekošana</translation>
 <translation id="5090832849094901128">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Notiek jūsu satura iegūšana…</translation>
 <translation id="5118462200606189584">Pievienot kontu…</translation>
 <translation id="5118764316110575523">Izslēgts</translation>
 <translation id="5119329531859909472">Lai izsekotu produktam, pieskarieties pogai “Izsekošana”.</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Mainīt paroli tīmekļa vietnē</translation>
 <translation id="5248640482715684545">Šī vietne mēģina atvērt citu lietojumprogrammu.</translation>
 <translation id="5250371859659394278">No nezināma avota</translation>
+<translation id="5269913829202614649">Sākumlapas pielāgošana</translation>
 <translation id="5271265092610673171">{count,plural, =1{Obligātais lauks ir tukšs. Pirms saglabāšanas aizpildiet to.}zero{Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.}one{Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.}other{Daži obligātie lauki ir tukši. Pirms saglabāšanas aizpildiet tos.}}</translation>
 <translation id="5271549068863921519">Saglabāt paroli</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vēlas, lai jūs pievienotos ciļņu grupai. Ikviens, kam ir saite, var rediģēt visas cilnes, tāpēc pievienojoties ievērojiet piesardzību. Saite ir derīga 48 stundas.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">Pārvaldiet tēmas un vietnes, kas jūs interesē</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} aizvērta cilne}zero{{count} aizvērtu ciļņu}one{{count} aizvērta cilne}other{{count} aizvērtas cilnes}}</translation>
 <translation id="5394975111793637642">Paslēpt kartīti “Jums ieteiktās produktu atsauksmes”</translation>
+<translation id="5407806496954700135">Vai vēlaties lietot jaunas cilnes lapas pielāgojumus no citas ierīces?</translation>
 <translation id="5414763847370083940">Jūs saņemsiet brīdinājumu, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
 <translation id="5415289094036440596">Piekļuves atslēgas nevar kopīgot.</translation>
 <translation id="5416455648658732408">Pārvietot uz ciļņu grupu</translation>
@@ -1755,6 +1761,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7696316012653762532">Šīs lapas tulkošanas opcijas</translation>
 <translation id="7700527812567437847">Meklēt ekrānā, izmantojot Google Lens</translation>
 <translation id="7701040980221191251">Nav</translation>
+<translation id="7708668404222666001">Jaunas cilnes lapas preferences ir lietotas</translation>
 <translation id="7708994397325774423">Iegūstiet visas savas paroles</translation>
 <translation id="7711440461521638739">Jūs nevienu paroli neizmantojat atkārtoti</translation>
 <translation id="7712361583414030698">Tiek skatīta bezsaistes versija</translation>

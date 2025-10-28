@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">אל תתרגמו את האתר הזה</translation>
 <translation id="1292571435393770077">מגש 16</translation>
 <translation id="1292701964462482250">‏"יש תוכנה במחשב שלך שמונעת מ-Chrome להתחבר באופן מאובטח אל האינטרנט" (מחשבי Windows בלבד)</translation>
+<translation id="1293556467332435079">קבצים</translation>
 <translation id="1293797321964802402">‏מעטפה – 9x11 אינץ'</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
 <translation id="1296930489679394997">מכירות</translation>
@@ -3161,7 +3162,6 @@ Del</translation>
 <translation id="6189351761800074311">‏הטקסט ותוכן הדפים שלך יישלחו אל Google, אבל לא ישמשו לשיפור ה-AI.
     <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">‏שינוי מברירת המחדל של חלק מהמקשים במקלדת, כמו מקש Esc</translation>
-<translation id="6192524964213419211">‏כדי לבצע פעולות מהר יותר בכל מוצרי Google, כדאי לשמור את הפרטים. הפרטים שלך נשמרו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> בחשבון <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">כאן יופיעו כל המוצרים שבמעקב</translation>
 <translation id="6195371403461054755">גיאולוגיה</translation>
 <translation id="6195418151868446719">מוצרי חשמל</translation>
@@ -3497,7 +3497,6 @@ Del</translation>
 <translation id="6716039223770814796">‫<ph name="COMPARE_SET_NAME" /> · השוואה בין <ph name="ITEMS" /> פריטים</translation>
 <translation id="6716672519412350405">האתר <ph name="URL" /> רוצה ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="6717692133381953670">הכרטיסייה נשלחה ממכשיר <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">כדאי לשמור את הפרטים כדי שהמילוי האוטומטי יוכל למלא שדות נוספים בפעם הבאה</translation>
 <translation id="6718612893943028815">להשתמש במצלמה?</translation>
 <translation id="6721164594124191969">Labels (Glossy)</translation>
 <translation id="6726832600570791992">(32‎-bit emulated)</translation>

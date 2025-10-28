@@ -9565,6 +9565,17 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
       Als dit beleid wordt toegepast of niet is ingesteld, kunnen sites getDisplayMedia() alleen aanroepen vanuit contexten die door het rechtenbeleid voor schermopname op de toelatingslijst zijn gezet.
 
       Als het beleid niet wordt toegepast, kunnen sites getDisplayMedia() ook aanroepen vanuit contexten die niet door het rechtenbeleid voor schermopname op de toelatingslijst zijn gezet. Er kunnen nog steeds andere beperkingen gelden.</translation>
+<translation id="750408442628578356">Hiermee bepaal je of de Gemini-app actie mag ondernemen op de webpagina's namens de gebruiker.
+
+0/niet ingesteld = De Gemini-app mag actie ondernemen op de webpagina's.
+
+1 = De Gemini-app mag geen actie ondernemen op de webpagina's.
+
+Dit beleid heeft geen effect als de Gemini-app is uitgezet. De Gemini-app kan bijvoorbeeld worden uitgezet met het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Ga voor meer informatie over Gemini in Chrome naar https://support.google.com/chrome/a/answer/16291696.
+
+Activering van Gemini is niet in alle landen of talen beschikbaar. Als je dit beleid instelt, garandeert dit niet dat de functie wordt aangezet. De functie blijft afhankelijk van de beschikbaarheid. Check de release-opmerkingen voor Chrome Enterprise voor meer informatie over de uitrol: https://support.google.com/chrome/a/answer/7679408?hl=nl</translation>
 <translation id="7506745375479451616">Met dit beleid wordt bepaald welke opdracht wordt gebruikt om URL's te openen in <ph name="PRODUCT_NAME" /> bij overschakeling vanuit <ph name="IE_PRODUCT_NAME" />. Dit beleid kan worden ingesteld op een pad naar een uitvoerbaar bestand of op <ph name="PRODUCT_NAME_PLACEHOLDER" /> om de locatie van <ph name="PRODUCT_NAME" /> automatisch te detecteren.
 
       Als je het beleid niet instelt, detecteert <ph name="IE_PRODUCT_NAME" /> het eigen pad van <ph name="PRODUCT_NAME" /> naar een uitvoerbaar bestand als <ph name="PRODUCT_NAME" /> wordt gestart vanuit Internet Explorer.

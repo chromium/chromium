@@ -387,6 +387,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1244917379075403655">Klicke auf die Einstellungen</translation>
 <translation id="1245331638296910488">Dateien werden beim Öffnen in Microsoft 365 in OneDrive verschoben</translation>
 <translation id="1245628370644070008">Wiederherstellung lokaler Daten</translation>
+<translation id="1246420197935327230">Bereich auswählen</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> konnte nicht installiert werden: Die Image-URL hat einen <ph name="HTTP_ERROR" />-Fehlercode zurückgegeben. Bitte wende dich an deinen Administrator.</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
 <translation id="1249818027270187058">{NUM_SITES,plural, =1{Benachrichtigungen nicht zulässig für 1 Website}other{Benachrichtigungen nicht zulässig für {NUM_SITES} Websites}}</translation>
@@ -2812,6 +2813,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2916745397441987255">In Erweiterungen suchen</translation>
 <translation id="2918484639460781603">Zu den Einstellungen wechseln</translation>
 <translation id="2918484644467055090">Dieses Gerät kann nicht in der Organisation registriert werden, zu der dein Konto gehört, weil die Geräteverwaltung einer anderen Organisation zugewiesen wurde.</translation>
+<translation id="2920346489891435227">Link in Ansicht rechts öffnen</translation>
 <translation id="2920852127376356161">Dürfen keine Protokolle verarbeiten</translation>
 <translation id="2921081876747860777">Erstelle ein Passwort, um deine lokalen Daten zu schützen.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> wird jetzt gesperrt.
@@ -3462,7 +3464,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3394072120086516913">PC verwendet eine kabelgebundene Verbindung für den Internetzugriff und Übertragungsgerät ist mit WLAN verbunden</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
-<translation id="3396442984945202128">Identität bestätigen</translation>
 <translation id="3396800784455899911">Wenn du auf die Schaltfläche „Akzeptieren und fortfahren“ klickst, willigst du damit in die oben für diese Google-Dienste beschriebene Verarbeitung deiner Daten ein.</translation>
 <translation id="339722927132407568">Hängenbleiben</translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
@@ -3586,7 +3587,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3479357084663933762">Deuteranomalie</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3479685872808224578">Der Druckserver wurde nicht erkannt. Prüfe die Adresse und versuche es noch einmal.</translation>
-<translation id="3479753605053415848">Zum Anpassen von Chrome klicken</translation>
 <translation id="3480612136143976912">Hier kannst du die Größe von Untertiteln und den Stil der Funktion „Automatische Untertitel“ anpassen. Diese Einstellung wird auch in einigen Apps und Websites verwendet.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> Tabs gefunden</translation>
 <translation id="3481268647794498892">Wird in <ph name="COUNTDOWN_SECONDS" /> Sekunden in <ph name="ALTERNATIVE_BROWSER_NAME" /> geöffnet</translation>
@@ -4109,7 +4109,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="381202950560906753">Weitere hinzufügen</translation>
 <translation id="3812525830114410218">Ungültiges Zertifikat</translation>
-<translation id="3813275565773644111">Deine Organisation hat das Speichern von Verlauf und Tabs in deinem Google-Konto deaktiviert</translation>
 <translation id="3813296892522778813">Wenn du keine Ergebnisse erhältst, <ph name="BEGIN_LINK_CHROMIUM" />rufe die Google Chrome-Hilfe auf<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="3813358687923336574">Verwendete Sprache zum Übersetzen von Seiten und Schnellinfos</translation>
 <translation id="3813458570141926987">Liste der von Chrome geschätzten Themen basierend auf deinem aktuellen Browserverlauf</translation>
@@ -4587,6 +4586,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4133265950310064865">Erweitertes Safe Browsing</translation>
 <translation id="4134838386867070505">Schritt 1 von 4: Problem beschreiben</translation>
 <translation id="413534985210133938">„<ph name="LOCAL_FOLDER" />“ ist nur auf diesem Gerät gespeichert. Wenn du dieses Lesezeichen in den Ordner „<ph name="LOCAL_FOLDER" />“ verschiebst, ist es auf deinen anderen Geräten nicht mehr verfügbar.</translation>
+<translation id="4135370802895537423">Link in Ansicht rechts öffnen</translation>
 <translation id="4135746311382563554">Zusatzbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="4136203100490971508">Das Nachtlicht wird automatisch bei Sonnenaufgang deaktiviert</translation>
 <translation id="41365691917097717">Wenn du fortfährst, erlaubst du der ADB-Fehlerbehebung, Android-Apps zu erstellen und zu testen. Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
@@ -4672,6 +4672,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4209251085232852247">Deaktiviert</translation>
 <translation id="4210048056321123003">Virtuelle Maschine wird heruntergeladen</translation>
 <translation id="4210380525132844778">Grund: <ph name="RULE" /> wurde in der Liste „<ph name="LIST_NAME" />“ gefunden.</translation>
+<translation id="4210428686880035809">Link in Ansicht links öffnen</translation>
 <translation id="4211362364312260125">Hauptmarkierung auf Webseiten für Hilfstechnologien identifizieren</translation>
 <translation id="421182450098841253">&amp;Lesezeichenleiste anzeigen</translation>
 <translation id="4211904048067111541">Nicht mehr für Android-Apps verwenden</translation>
@@ -5118,7 +5119,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4523876148417776526">XML-Websitelisten wurden noch nicht abgerufen.</translation>
 <translation id="4524832533047962394">Der verwendete Anmeldemodus wird von dieser Version des Betriebssystems nicht unterstützt. Bitte führe ein Update auf die aktuelle Version durch.</translation>
 <translation id="4526051299161934899">Ausgeblendete gespeicherte Tabgruppen</translation>
-<translation id="4526853756266614740">Wähle ein Bild aus, um das Design sofort anzuwenden</translation>
 <translation id="452750746583162491">Synchronisierte Daten prüfen</translation>
 <translation id="4528494169189661126">Übersetzungsvorschlag</translation>
 <translation id="4528638190900283934">Melde dich für zusätzliche Funktionen an</translation>
@@ -6046,6 +6046,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5184662919967270437">Dein Gerät wird aktualisiert</translation>
 <translation id="5185386675596372454">Die aktuelle Version von "<ph name="EXTENSION_NAME" />" wurde deaktiviert, weil sie weitere Berechtigungen erfordert.</translation>
 <translation id="5185500136143151980">Kein Internet</translation>
+<translation id="5186362203408605578">Wenn du ein anderes Gerät verwenden möchtest, scanne den QR‑Code</translation>
 <translation id="5186381005592669696">Anzeigesprache für unterstützte Apps anpassen</translation>
 <translation id="5186788525428341874">Du kannst diesen Passkey verwenden, um dich auf deinen Geräten schneller anzumelden. Er wird im Google Passwortmanager für <ph name="ACCOUNT_NAME" /> gespeichert.</translation>
 <translation id="5187641678926990264">Seite als App &amp;installieren…</translation>
@@ -6430,6 +6431,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5457082343331641453">Suchanfrage ergänzen</translation>
 <translation id="5457113250005438886">Ungültig</translation>
 <translation id="5457459357461771897">Fotos, Musik und andere Medien auf deinem Computer lesen und löschen</translation>
+<translation id="5457795687441958389">Abgemeldet bleiben</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Du hast zu oft eine falsche PIN eingegeben. Damit du weiterhin auf deine Passkeys und Passwörter zugreifen kannst, musst du deine PIN ändern.</translation>
 <translation id="5459470938885464873">Fehler beim Importieren des Zertifikats</translation>
@@ -7438,6 +7440,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6175910054050815932">Link abrufen</translation>
 <translation id="6177412385419165772">Wird entfernt…</translation>
 <translation id="6177478397823976397">Keine Geräte gefunden. Durch Klicken wird ein Hilfe-Artikel in einem neuen Tab geöffnet.</translation>
+<translation id="6177779807714496775">Link in Ansicht links öffnen</translation>
 <translation id="6178664161104547336">Zertifikat auswählen</translation>
 <translation id="6178682841350631965">Deine Anmeldedaten wurden aktualisiert</translation>
 <translation id="6179830757749383456">Browser wird von <ph name="BROWSER_DOMAIN" /> verwaltet, Profil wird von <ph name="PROFILE_DOMAIN" /> verwaltet</translation>
@@ -8070,7 +8073,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6624687053722465643">Törtchen</translation>
 <translation id="6626581113916585374">Effektmodus</translation>
 <translation id="6627743754845412571">Dürfen deine Handbewegungen nicht verfolgen</translation>
-<translation id="6628184833987882108">Inhalte dieser Website werden an Google gesendet und möglicherweise von Prüfern zur Verbesserung dieser Funktion angesehen</translation>
 <translation id="6628316682330029452">Clientzertifikate sind Zertifikate, die deine Identität gegenüber anderen Servern bestätigen.</translation>
 <translation id="6628328486509726751">Hochgeladen am <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
@@ -8575,6 +8577,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6973611239564315524">Ein Upgrade auf Debian 10 (Buster) ist verfügbar</translation>
 <translation id="69739764870135975">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
 <translation id="697508444536771064">Linux herunterfahren</translation>
+<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> möchte Informationen auf deinem Mobilgerät speichern</translation>
 <translation id="6978121630131642226">Suchmaschinen</translation>
 <translation id="6978717888677691380">Von dir blockierte Websites</translation>
 <translation id="6979041727349121225">Energiesparmodus</translation>
@@ -9092,7 +9095,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7353261921908507769">Deine Kontakte können Daten mit dir teilen, wenn sie in der Nähe sind. Die Übertragung beginnt erst, nachdem du die Einladung angenommen hast.</translation>
 <translation id="7353432112255316844">Identität bestätigen</translation>
 <translation id="735361434055555355">Linux wird installiert…</translation>
-<translation id="7354120289251608189">Jetzt kannst du deinem Browser jederzeit einen neuen Look verleihen.</translation>
 <translation id="7356506068433555887">Palme</translation>
 <translation id="7356696499551368971">Die ausgewählten Berechtigungen werden entfernt</translation>
 <translation id="7356908624372060336">Netzwerkprotokolle</translation>
@@ -10642,7 +10644,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8383614331548401927">Willkommen zurück</translation>
 <translation id="8386091599636877289">Richtlinie nicht gefunden.</translation>
 <translation id="8387361103813440603">Dürfen meine Standortdaten nicht abrufen</translation>
-<translation id="8387617938027387193">Deine Identität bestätigen</translation>
 <translation id="8388770971141403598">Sekundäre Profile werden nicht unterstützt</translation>
 <translation id="8389492867173948260">Dieser Erweiterung erlauben, alle meine Daten auf von mir besuchten Websites zu lesen und zu ändern:</translation>
 <translation id="8390392581097975659">Scanner-Software wird installiert</translation>
@@ -11546,7 +11547,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="90033698482696970">Automatisch nach verfügbaren eSIM-Profilen scannen?</translation>
 <translation id="9003647077635673607">Auf allen Websites zulassen</translation>
 <translation id="9005774573776346118">Wenn du auf allen deinen Geräten auf deine Passwörter, Lesezeichen und andere Daten zugreifen möchtest, melde dich als <ph name="EMAIL" /> an</translation>
-<translation id="9007688236643268728">&amp;Wieder anmelden</translation>
 <translation id="9008201768610948239">Ignorieren</translation>
 <translation id="9008201858626224558">Schaltfläche „Zurück“ für die Detailseite <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9008828754342192581">Du hast dich zuvor dafür entschieden, alle Erweiterungen auf <ph name="ORIGIN" /> zuzulassen</translation>
@@ -11954,6 +11954,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Allgemein</translation>
+<translation id="987574372967138078"><ph name="WEBSITE_ORIGIN" /> möchte Informationen von deinem Mobilgerät abrufen</translation>
 <translation id="988320949174893488">Gelegentliches Stocken</translation>
 <translation id="988978206646512040">Eine leere Passphrase ist nicht zulässig</translation>
 <translation id="992032470292211616">Erweiterungen, Apps und Designs können Schäden auf deinem Gerät verursachen. Möchtest du wirklich fortfahren?</translation>

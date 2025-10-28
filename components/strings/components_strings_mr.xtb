@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – फुल स्क्रीनमधून बाहेर पडण्यासाठी, वरून ड्रॅग करा आणि मागे जा बटणाला स्पर्श करा</translation>
 <translation id="1138458427267715730">संपूर्ण वेबवरील कोणत्याही साइटवर किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="1142713751288681188">पेपर टाइप</translation>
+<translation id="1142965388643537393">प्रवासाशी संबंधित माहिती</translation>
 <translation id="1144136880160289237">तुमच्याकडे अद्याप कोणतेही ॲक्टिव्ह विषय नाहीत</translation>
 <translation id="1149617035358809955">हे तुम्हीच आहात याची पडताळणी करा, जेणेकरून त्याला तुमची पेमेंट माहिती भरता येईल</translation>
 <translation id="1150565364351027703">सनग्लासेस</translation>
@@ -177,6 +178,7 @@
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तुमच्या कॉंप्युटरवरील सॉफ्टवेअर Chrome ला सुरक्षितपणे वेबशी कनेक्ट होण्यापासून थांबवत आहे" (फक्‍त Windows कॉंप्युटरचा)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">एन्व्हलप ९ x ११ इंच</translation>
 <translation id="129553762522093515">अलीकडे बंद केलेले</translation>
 <translation id="1296930489679394997">विक्री</translation>
@@ -837,6 +839,7 @@
 <translation id="2357481397660644965">तुमचे डिव्हाइस <ph name="DEVICE_MANAGER" /> द्वारे आणि खाते <ph name="ACCOUNT_MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="2359629602545592467">अनेक</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="236000571258713023">वाहने</translation>
 <translation id="2361263712565360498">२७५ x ३९५ मिमी</translation>
 <translation id="236340516568226369">आकार बदलण्याच्या टॉगलचा मेनू</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> एंटर करा</translation>
@@ -2198,6 +2201,7 @@
 <translation id="4598556348158889687">स्टोरेज व्यवस्थापन</translation>
 <translation id="459914240367517409">वेब डिझाइन आणि डेव्हलपमेंट</translation>
 <translation id="4602465984861132303">गोलंदाजी</translation>
+<translation id="4603727370377253901">फ्लाइटची आरक्षणे</translation>
 <translation id="4607608436550361748">Chrome शी संबंधित टिपा पहा</translation>
 <translation id="460848736049414407">अ‍ॅडमिनने ब्लॉक केलेली</translation>
 <translation id="4610279718074907952">ही साइट <ph name="SET_OWNER" /> द्वारे परिभाषित केलेल्या गटामध्ये आहे, जी तुमच्या अ‍ॅक्टिव्हिटी पाहू शकते</translation>
@@ -2206,6 +2210,7 @@
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4622292761762557753">तरीही ट्रान्सफर करा</translation>
 <translation id="4622647778991854660">नोटिफिकेशन केंद्र येथे नोटिफिकेशन सुरू करा. <ph name="LINK" /> उघडा.</translation>
+<translation id="4623894491222334521">ओळखीशी संबंधित दस्तऐवज</translation>
 <translation id="4627675673814409125">हे धोरण Chrome प्रोफाइल स्तरावर सेट केले जाऊ शकत नाही आणि ते दुर्लक्षित केले जाईल.</translation>
 <translation id="4628678854894591460">सुट्ट्यांच्या ऑफर</translation>
 <translation id="4628948037717959914">फोटो</translation>
@@ -3152,7 +3157,6 @@
 <translation id="6189351761800074311">तुमचा मजकूर आणि पेजचा आशय या गोष्टी Google ला पाठवल्या जातात, पण AI मध्ये सुधारणा करण्यासाठी वापरल्या जाणार नाहीत.
     <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">तुमच्या कीबोर्डवरील Esc सारख्या काही की ओव्हरराइड करा</translation>
-<translation id="6192524964213419211">सर्व Google उत्पादनांवर कामे अधिक जलद पूर्ण करण्यासाठी तुमची माहिती सेव्ह करा. <ph name="ACCOUNT" /> साठी तुमची माहिती <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये सेव्ह केली आहे</translation>
 <translation id="6194209731893739467">तुमची सर्व माग ठेवलेली उत्पादने येथे पहा</translation>
 <translation id="6195371403461054755">भूशास्त्र</translation>
 <translation id="6195418151868446719">ग्राहकांशी संबंधित इलेक्‍ट्रॉनिक उपकरणे</translation>
@@ -3488,7 +3492,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> ची तुलना करा · <ph name="ITEMS" /> आयटम</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ला तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करायचा आणि कॅमेर्‍याचे स्थान ट्रॅक करायचे आहे</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> वरून टॅब पाठवला आहे</translation>
-<translation id="6718524733720986924">तुमची माहिती सेव्ह करा, जेणेकरून पुढच्या वेळी ऑटोफिलद्वारे अधिक फील्ड भरता येतील</translation>
 <translation id="6718612893943028815">कॅमेरा वापरायचा का?</translation>
 <translation id="6721164594124191969">लेबल (ग्लॉसी)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

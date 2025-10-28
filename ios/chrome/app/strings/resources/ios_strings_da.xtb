@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
 <translation id="1497590942294823549">Menu → Adgangs­kode­admin­istrator</translation>
 <translation id="1498283581832036924">Din <ph name="WEBSITE" />-konto slettes ikke.</translation>
+<translation id="1503814213414825943">Vælg de konti, du vil eksportere til en anden app.</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1506063256525392513">Det giver dig mulighed for at tage og uploade billeder samt scanne QR-koder</translation>
 <translation id="1508263560970797965">Fortsæt i inkognito</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="4070132839822635162">Log ikke ind</translation>
 <translation id="4092655288299341041">Vis Hjælp</translation>
-<translation id="4095483462103784441">Opret ny fanegruppe</translation>
 <translation id="4099756562043439968">Opret en påmindelse</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4111985840824673503">Markér alle som læste</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Skift adgangskode på website</translation>
 <translation id="5248640482715684545">Dette website forsøger at åbne en anden app.</translation>
 <translation id="5250371859659394278">Via en ukendt kilde</translation>
+<translation id="5269913829202614649">Tilpas startsiden</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vil gerne invitere dig til en fanegruppe. Alle med linket kan redigere alle faner, så vær opmærksom på det, når du deltager. Linket udløber om 48 timer.</translation>

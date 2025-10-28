@@ -178,6 +178,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
 <translation id="1292571435393770077">Šešioliktas dėklas</translation>
 <translation id="1292701964462482250">„Programinė įranga jūsų kompiuteryje neleidžia „Chrome“ saugiai prisijungti prie žiniatinklio“ (tik „Windows“ kompiuteriuose)</translation>
+<translation id="1293556467332435079">Failai</translation>
 <translation id="1293797321964802402">9 x 11 col. vokas</translation>
 <translation id="129553762522093515">Neseniai uždarytas</translation>
 <translation id="1296930489679394997">Išpardavimas</translation>
@@ -3157,7 +3158,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6189351761800074311">Jūsų tekstas ir puslapio turinys siunčiami „Google“, bet nebus naudojami DI tobulinti.
     <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Nepaisyti kai kurių klaviatūros klavišų, pvz., „Esc“</translation>
-<translation id="6192524964213419211">Išsaugokite informaciją, kad galėtumėte sparčiau atlikti užduotis „Google“ produktuose. Jūsų informacija išsaugota <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />)</translation>
 <translation id="6194209731893739467">Peržiūrėkite visus stebimus produktus čia</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Elektronikos prekės</translation>
@@ -3493,7 +3493,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6716039223770814796">Palyginti: <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> element.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> nori kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
 <translation id="6717692133381953670">Skirtukas išsiųstas iš „<ph name="DEVICE_NAME" />“</translation>
-<translation id="6718524733720986924">Išsaugokite informaciją, kad automatinio pildymo funkcija kitą kartą galėtų užpildyti daugiau laukų</translation>
 <translation id="6718612893943028815">Naudoti fotoaparatą?</translation>
 <translation id="6721164594124191969">Etiketės (blizgios)</translation>
 <translation id="6726832600570791992">(32 bitų emuliacija)</translation>

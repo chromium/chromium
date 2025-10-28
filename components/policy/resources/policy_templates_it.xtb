@@ -8350,6 +8350,13 @@ Questa policy non influisce sull'analisi dei contenuti dei download configurata 
 <translation id="6520802717075138474">Importa motori di ricerca dal browser predefinito alla prima esecuzione</translation>
 <translation id="6521971538031711337">Evita che un utente gestito configuri il nome host del dispositivo</translation>
 <translation id="6523079496775454310">Attiva il consenso degli indicatori dei dispositivi per gli utenti gestiti su dispositivi non gestiti</translation>
+<translation id="6523608518493993483">Questa policy consente agli amministratori di criptare la cache HTTP del browser su disco.
+
+Se la policy viene attivata, la cache del browser verrà criptata.
+
+Se la policy viene disattivata o se non viene configurata, la cache del browser non verrà criptata.
+
+La crittografia della cache del browser potrebbe influire sulle prestazioni.</translation>
 <translation id="6527674993612811419">Mostra avvisi e disattiva la compilazione automatica sui moduli non sicuri</translation>
 <translation id="6532769014584932288">Consenti i wakelock</translation>
 <translation id="6533881418188970751">Chiedi all'utente dove salvare il file prima di avviare il download</translation>

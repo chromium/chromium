@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – A teljes képernyős nézetből való kilépéshez húzza lefelé az ujját a képernyő tetejétől, majd érintse meg a Vissza gombot</translation>
 <translation id="1138458427267715730">Értesítéseket kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="1142713751288681188">Papírtípus</translation>
+<translation id="1142965388643537393">Utazási információk</translation>
 <translation id="1144136880160289237">Még nincsenek aktív témái.</translation>
 <translation id="1149617035358809955">ellenőrizni az Ön személyazonosságát, hogy kitölthesse a fizetési adatokat</translation>
 <translation id="1150565364351027703">Napszemüveg</translation>
@@ -177,6 +178,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
 <translation id="1292571435393770077">16. tálca</translation>
 <translation id="1292701964462482250">„A számítógépen található valamelyik szoftver megakadályozza a Chrome-ot abban, hogy biztonságosan csatlakozzon az internetre” (csak Windows rendszerű számítógépeken)</translation>
+<translation id="1293556467332435079">Fájlok</translation>
 <translation id="1293797321964802402">9 × 11 hüvelykes boríték</translation>
 <translation id="129553762522093515">Mostanában bezárt</translation>
 <translation id="1296930489679394997">Értékesítés</translation>
@@ -837,6 +839,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2357481397660644965">Eszközét a(z) <ph name="DEVICE_MANAGER" />, fiókját pedig a(z) <ph name="ACCOUNT_MANAGER" /> kezeli.</translation>
 <translation id="2359629602545592467">Több</translation>
 <translation id="2359808026110333948">Tovább</translation>
+<translation id="236000571258713023">Járművek</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Méretváltó menü</translation>
 <translation id="2365355378251437925">A(z) <ph name="FIELD" /> megadása kötelező</translation>
@@ -2196,6 +2199,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4598556348158889687">Tárhelykezelés</translation>
 <translation id="459914240367517409">Webdesign és -fejlesztés</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Repülőjegy-foglalások</translation>
 <translation id="4607608436550361748">Chrome-tippek megjelenítése</translation>
 <translation id="460848736049414407">Rendszergazda által letiltva</translation>
 <translation id="4610279718074907952">Ez a webhely egy olyan, a(z) <ph name="SET_OWNER" /> által meghatározott csoportban található, amely láthatja az Ön tevékenységeit</translation>
@@ -2204,6 +2208,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4622292761762557753">Átvitel mégis</translation>
 <translation id="4622647778991854660">Az értesítések engedélyezése az Értesítési központban. A <ph name="LINK" /> megnyitása.</translation>
+<translation id="4623894491222334521">Személyazonosító okmányok</translation>
 <translation id="4627675673814409125">Ez az irányelv nem állítható be a Chrome-profil szintjén, ezért figyelmen kívül hagyja a rendszer.</translation>
 <translation id="4628678854894591460">Vakációs ajánlatok</translation>
 <translation id="4628948037717959914">Fénykép</translation>
@@ -3149,7 +3154,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6189351761800074311">A rendszer elküldi a Google-nak a szöveges és oldaltartalmakat, de nem használjuk fel őket az AI fejlesztésére.
     <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="6190518157737269631">Felülbírálni a billentyűzet egyes gombjait, például az Esc billentyűt</translation>
-<translation id="6192524964213419211">Mentse el adatait, hogy gyorsabban elvégezhesse a feladatait a Google-termékekben. Adatait a(z) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> szolgáltatásba mentette a rendszer a következő fiókhoz: <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Itt lesz majd látható az összes nyomon követett termék</translation>
 <translation id="6195371403461054755">Geológia</translation>
 <translation id="6195418151868446719">Szórakoztató elektronika</translation>
@@ -3485,7 +3489,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> elem összehasonlítása</translation>
 <translation id="6716672519412350405">A(z) <ph name="URL" /> 3D-s térképet szeretne készíteni az Ön környezetéről, és követni szeretné a kamera pozícióját</translation>
 <translation id="6717692133381953670">A(z) <ph name="DEVICE_NAME" /> eszközről küldött lap</translation>
-<translation id="6718524733720986924">Mentse adatait, hogy az automatikus kitöltés legközelebb még több mezőt tölthessen ki Ön helyett</translation>
 <translation id="6718612893943028815">Engedélyezi a kamera használatát?</translation>
 <translation id="6721164594124191969">Címkék (fényes)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

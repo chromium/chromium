@@ -93,6 +93,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2018528049276128029">Elke profiel hou sy eie Chrome-inligting soos boekmerke, geskiedenis, wagwoorde en meer</translation>
 <translation id="2018879682492276940">Kan nie installeer nie. Probeer weer.</translation>
 <translation id="2024959665595762054">Verifieer dis jy om Chrome-data in jou Google-rekening te gebruik en te stoor</translation>
+<translation id="2026377840141807639">Met Chrome-profiele kan jy persoonlike blaai-aktiwiteit en werk apart hou. Voeg nou ’n nuwe profiel by.</translation>
 <translation id="2034233344106846793">Chrome gradeer onveilige verbindings outomaties op na HTTPS, wanneer moontlik</translation>
 <translation id="2039417478970545937">Instellings.</translation>
 <translation id="2091012649849228750">Jy het Windows 10 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.</translation>
@@ -367,6 +368,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of gebruik 'n nuwer weergawe van Chrome.</translation>
 <translation id="5174969993834422967">Jy blokkeer gewoonlik kennisgewings. Klik die kennisgewing-ikoon in die regter hoek van jou liggingbalk sodat dié werf jou in kennis kan stel.</translation>
 <translation id="5174983315706567306">Te min skyfspasie.</translation>
+<translation id="5190467473654176081">Pasmaak Chrome om dit ’n nuwe voorkoms te gee</translation>
 <translation id="5201744974236816379">Chrome-opdatering</translation>
 <translation id="521447420733633466">As jy 'n toestel deel, kan vriende en familie apart blaai en Chrome opstel nes hulle dit wil hê</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -390,6 +392,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5510398294750420479">Laai Chrome op jou foon af om ’n ekstra laag beskerming by te voeg wanneer jy aan die beweeg is</translation>
 <translation id="5524890928877629608">boonste linkerhoek van soekgebied: links <ph name="LEFT" />%, bo <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Maak Chrome vinniger</translation>
+<translation id="5550137307985173298">Klik die Pasmaak Chrome-knoppie op die Nuwe Oortjie-bladsy om vir Chrome ’n nuwe voorkoms te gee</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Aanskakelingfout: laat loop die installeerder as ’n gereelde gebruiker, nie as administrateur nie.</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
@@ -418,6 +421,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5736850870166430177">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
 <translation id="5756509061973259733">'n Chrome-profiel met hierdie rekening bestaan reeds op hierdie toestel</translation>
 <translation id="5759947850379142561">Kies enige teks of prent om met Google Lens te soek of druk Escape om uit Google Lens te gaan</translation>
+<translation id="5762867845020858790">Voeg ’n nuwe Chrome-profiel by om boekmerke, wagwoorde en instellings apart te hou.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kon nie Chrome begin nie. Probeer weer.</translation>
 <translation id="5809516625706423866">Kon nie aan die internet koppel nie. HTTP 401 ongemagtig. Gaan asseblief jou proxy-opstelling na.</translation>
@@ -518,6 +522,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6800285125190089494">Meld vinniger by werwe aan deur gestoorde wagwoorde vir Chrome op iOS te gebruik</translation>
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="683440813066116847">Inkomende reël vir Google Chrome Kanarie om mDNS-verkeer toe te laat.</translation>
+<translation id="6841242485723266823">Chrome-profiele help jou om verskillende dele van jou lewe te skei. Voeg nou ’n nuwe profiel by.</translation>
 <translation id="684888714667046800">Kan nie aan die internet koppel nie. As jy ’n brandmuur gebruik, moet jy seker maak dat <ph name="PRODUCT_EXE_NAME" /> op die toelaatlys is.</translation>
 <translation id="6877155553248388166">onderste regterhoek van soekgebied: regs <ph name="RIGHT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Dateer tans Chrome op</translation>
@@ -682,6 +687,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sal oor 1 minuut herbegin}other{Chrome sal oor # minute herbegin}}</translation>
 <translation id="8637932705841171563">Om jou venster te deel, moet jy skermopname vir Chrome in Stelselinstellings toelaat.</translation>
 <translation id="8641606876632989680">Chrome sal jou in kennis stel wanneer jy met 'n gekompromitteerde wagwoord aanmeld</translation>
+<translation id="8647930742055103497">Hou alles in Chrome</translation>
 <translation id="8656634243791296665">Maak Gemini in Chrome Dev oop</translation>
 <translation id="8669527147644353129">Google Chrome-helper</translation>
 <translation id="8677922833187616101">Wys altyd Google KI-moduskortpad</translation>

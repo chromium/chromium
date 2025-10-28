@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
 <translation id="1292571435393770077">ട്രേ 16</translation>
 <translation id="1292701964462482250">"വെബിലേക്ക് സുരക്ഷിതമായി കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ സോഫ്റ്റ്‌വെയർ തടയുന്നു" (Windows കമ്പ്യൂട്ടറുകളിൽ മാത്രം)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 ഇഞ്ച്</translation>
 <translation id="129553762522093515">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="1296930489679394997">വിൽപ്പനകൾ</translation>
@@ -3155,7 +3156,6 @@
 <translation id="6189351761800074311">നിങ്ങളുടെ ടെക്സ്റ്റും പേജ് ഉള്ളടക്കവും Google-ലേക്ക് അയയ്ക്കും, എന്നാൽ AI മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കില്ല.
     <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">നിങ്ങളുടെ കീബോർഡിലെ Esc പോലുള്ള ചില കീകൾ അസാധുവാക്കുക</translation>
-<translation id="6192524964213419211">Google ഉൽപ്പന്നങ്ങളിലുടനീളം കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കാൻ നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിക്കുക. നിങ്ങളുടെ വിവരങ്ങൾ <ph name="ACCOUNT" /> എന്ന അക്കൗണ്ടിനുള്ള <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു</translation>
 <translation id="6194209731893739467">നിങ്ങൾ ട്രാക്ക് ചെയ്യുന്ന എല്ലാ ഉൽപ്പന്നങ്ങളും ഇവിടെ കാണാം</translation>
 <translation id="6195371403461054755">ജിയോളജി</translation>
 <translation id="6195418151868446719">കൺസ്യൂമർ ഇലക്ട്രോണിക്‌സ്</translation>
@@ -3491,7 +3491,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> താരതമ്യം ചെയ്യുക · <ph name="ITEMS" /> ഇനങ്ങൾ</translation>
 <translation id="6716672519412350405">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കാനും ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യാനും <ph name="URL" /> താല്‍‌പ്പര്യപ്പെടുന്നു</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്നയച്ച ടാബ്</translation>
-<translation id="6718524733720986924">അടുത്ത തവണ നിങ്ങൾക്കായി കൂടുതൽ ഫീൽഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാൻ കഴിയുന്ന തരത്തിൽ നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിക്കുക.</translation>
 <translation id="6718612893943028815">ക്യാമറ ഉപയോഗിക്കണോ?</translation>
 <translation id="6721164594124191969">ലേബലുകൾ (ഗ്ലോസി)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">你已在這個網站上儲存此使用者名稱</translation>
 <translation id="1497590942294823549">選單 → 密碼管理工具</translation>
 <translation id="1498283581832036924">系統不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
+<translation id="1503814213414825943">選取要匯出至其他應用程式的帳戶。</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
 <translation id="1506063256525392513">這項操作可以讓你拍照、上傳相片及掃描 QR 圖碼</translation>
 <translation id="1508263560970797965">繼續使用無痕模式</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="4070132839822635162">不登入</translation>
 <translation id="4092655288299341041">顯示說明資訊</translation>
-<translation id="4095483462103784441">建立新分頁群組</translation>
 <translation id="4099756562043439968">設定提醒</translation>
 <translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
 <translation id="4111985840824673503">全部標示為已讀取</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">變更網站密碼</translation>
 <translation id="5248640482715684545">這個網站正在嘗試開啟另一個應用程式。</translation>
 <translation id="5250371859659394278">來源不明</translation>
+<translation id="5269913829202614649">自訂首頁</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀請你加入分頁群組。知道連結的使用者都可以編輯所有分頁，請謹慎考慮是否加入。連結將在 48 小時後失效。</translation>

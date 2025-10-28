@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
 <translation id="1138458427267715730">Receba alertas quando houver uma redução no preço em qualquer site</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
+<translation id="1142965388643537393">Informações de viagem</translation>
 <translation id="1144136880160289237">Você ainda não tem temas ativos</translation>
 <translation id="1149617035358809955">confirmar sua identidade para preencher as informações de pagamento</translation>
 <translation id="1150565364351027703">Óculos de sol</translation>
@@ -177,6 +178,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1292571435393770077">Bandeja 16</translation>
 <translation id="1292701964462482250">"Algum software no seu computador está impedindo o Google Chrome de se conectar com segurança à Web" (somente computadores Windows)</translation>
+<translation id="1293556467332435079">Arquivos</translation>
 <translation id="1293797321964802402">Envelope de 23 cm x 28 cm</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="1296930489679394997">Vendas</translation>
@@ -837,6 +839,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="236000571258713023">Veículos</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu de redimensionamento</translation>
 <translation id="2365355378251437925">Digitar <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="459914240367517409">Desenvolvimento de sites e webdesign</translation>
 <translation id="4602465984861132303">Boliche</translation>
+<translation id="4603727370377253901">Reservas de voo</translation>
 <translation id="4607608436550361748">Ver dicas do Chrome</translation>
 <translation id="460848736049414407">Bloqueado pelo administrador</translation>
 <translation id="4610279718074907952">Este site está em um grupo, definido por <ph name="SET_OWNER" />, que pode ver sua atividade</translation>
@@ -2207,6 +2211,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
 <translation id="4622647778991854660">Ative as notificações na Central de notificações. Abra as <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Documentos de identificação</translation>
 <translation id="4627675673814409125">Não é possível definir essa política no nível de perfil do Chrome. Ela será ignorada.</translation>
 <translation id="4628678854894591460">Ofertas de férias</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3152,7 +3157,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6189351761800074311">O texto e o conteúdo da página são enviados ao Google, mas não serão usados para melhorar a IA.
     <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Substituir algumas teclas do teclado, como Esc</translation>
-<translation id="6192524964213419211">Salve suas informações para agilizar o dia a dia nos produtos do Google. Os dados são salvos na <ph name="ACCOUNT" /> de <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="6194209731893739467">Veja todos os seus produtos monitorados aqui</translation>
 <translation id="6195371403461054755">Geologia</translation>
 <translation id="6195418151868446719">Produtos eletrônicos de consumo</translation>
@@ -3488,7 +3492,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6716039223770814796">Comparar <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> itens</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quer criar um mapa 3D do ambiente à sua volta e acompanhar a posição da câmera</translation>
 <translation id="6717692133381953670">Guia enviada pelo dispositivo <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Salve suas informações para usar o preenchimento automático na próxima vez</translation>
 <translation id="6718612893943028815">Usar a câmera?</translation>
 <translation id="6721164594124191969">Rótulos (brilhantes)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

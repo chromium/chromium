@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
+<translation id="1007349221964075684">ໃຊ້ການລັອກໜ້າຈໍເພື່ອເບິ່ງໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="1010283278930414892">ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກບັນທຶກໄວ້ຢູ່ອຸປະກອນນີ້</translation>
 <translation id="1011749477052068769">ຍ້າຍມານີ້</translation>
 <translation id="1014083013111769343">ຄ່າກຳນົດໂໝດການອ່ານເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
@@ -1167,6 +1168,7 @@
 <translation id="6312687380483398334">ແອັບເວັບ (ມິດງຽບ)</translation>
 <translation id="6315386555979018699">ລຶບ ແລະ ສືບຕໍ່</translation>
 <translation id="6316139424528454185">ບໍ່ຮອງຮັບເວີຊັນ Android</translation>
+<translation id="631839948975905034">ລັອກໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເມື່ອທ່ານອອກຈາກ Chrome</translation>
 <translation id="6324916366299863871">ແກ້ໄຂທາງລັດ</translation>
 <translation id="6324977638108296054">ບໍ່ສາມາດສ້າງລິ້ງໄປຍັງໄຮໄລ້ໄດ້</translation>
 <translation id="6333140779060797560">ແຊຣ໌ຜ່ານ <ph name="APPLICATION" /></translation>

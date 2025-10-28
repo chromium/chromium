@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le plein écran, faites glisser depuis le haut, puis appuyez sur le bouton Retour</translation>
 <translation id="1138458427267715730">Recevez des alertes en cas de baisse de prix sur n'importe quel site Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
+<translation id="1142965388643537393">Informations de voyage</translation>
 <translation id="1144136880160289237">Vous n'avez pas encore de thèmes actifs</translation>
 <translation id="1149617035358809955">valider votre identité afin de pouvoir indiquer vos infos de paiement</translation>
 <translation id="1150565364351027703">Lunettes de soleil</translation>
@@ -177,6 +178,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1285320974508926690">Ne jamais traduire ce site</translation>
 <translation id="1292571435393770077">Bac 16</translation>
 <translation id="1292701964462482250">Un logiciel installé sur votre ordinateur empêche Chrome de se connecter au Web de manière sécurisée (sous Windows uniquement)</translation>
+<translation id="1293556467332435079">Fichiers</translation>
 <translation id="1293797321964802402">Enveloppe 230x280</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1296930489679394997">Métiers de la vente</translation>
@@ -837,6 +839,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte par <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
+<translation id="236000571258713023">Véhicules</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu d'activation/de désactivation du redimensionnement</translation>
 <translation id="2365355378251437925">Saisir <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4598556348158889687">Gestion du stockage</translation>
 <translation id="459914240367517409">Conception et développement Web</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Réservations de vols</translation>
 <translation id="4607608436550361748">Voir les astuces Chrome</translation>
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
 <translation id="4610279718074907952">Ce site fait partie d'un groupe, défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
@@ -2207,6 +2211,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
 <translation id="4622647778991854660">Activer les notifications dans le centre de notifications. Ouvrir <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Pièces d'identité</translation>
 <translation id="4627675673814409125">Cette règle sera ignorée, car elle ne peut pas être définie au niveau du profil Chrome.</translation>
 <translation id="4628678854894591460">Séjours touristiques</translation>
 <translation id="4628948037717959914">Photo</translation>
@@ -3152,7 +3157,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6189351761800074311">Votre texte et le contenu de votre page sont envoyés à Google, mais ne seront pas utilisés pour améliorer l'IA.
     <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Remplacer certaines touches du clavier, comme Échap</translation>
-<translation id="6192524964213419211">Enregistrez vos informations pour gagner du temps dans les produits Google. Elles seront enregistrées dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Retrouvez tous vos produits suivis ici</translation>
 <translation id="6195371403461054755">Géologie</translation>
 <translation id="6195418151868446719">Électronique grand public</translation>
@@ -3488,7 +3492,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6716039223770814796">Comparer <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> éléments</translation>
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer un plan 3D de votre environnement et suivre la position de la caméra</translation>
 <translation id="6717692133381953670">Onglet envoyé depuis <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Enregistrez vos informations pour que la saisie automatique puisse remplir plus de champs la prochaine fois</translation>
 <translation id="6718612893943028815">Utiliser la caméra ?</translation>
 <translation id="6721164594124191969">Étiquettes (brillantes)</translation>
 <translation id="6726832600570791992">(émulation 32 bits)</translation>

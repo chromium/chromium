@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Täisekraanilt väljumiseks lohistage ülaosast alla ja puudutage nuppu Tagasi</translation>
 <translation id="1138458427267715730">Teile saadetakse teavitus, kui hinda alandatakse ükskõik millisel veebisaidil</translation>
 <translation id="1142713751288681188">Paberi tüüp</translation>
+<translation id="1142965388643537393">Reisiteave</translation>
 <translation id="1144136880160289237">Teil pole veel ühtegi aktiivset teemat</translation>
 <translation id="1149617035358809955">kinnitage oma isik, et Chrome saaks teie makseteabe sisestada</translation>
 <translation id="1150565364351027703">Päikeseprillid</translation>
@@ -177,6 +178,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1292571435393770077">Salv 16</translation>
 <translation id="1292701964462482250">„Teie arvutis olev tarkvara ei luba Chrome'il veebiga turvaliselt ühendust luua” (ainult Windowsi arvutid)</translation>
+<translation id="1293556467332435079">Failid</translation>
 <translation id="1293797321964802402">9 × 11-tolline ümbrik</translation>
 <translation id="129553762522093515">Viimati suletud</translation>
 <translation id="1296930489679394997">Müük</translation>
@@ -837,6 +839,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2357481397660644965">Teie seadet haldab <ph name="DEVICE_MANAGER" /> ja teie kontot haldab <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mitu</translation>
 <translation id="2359808026110333948">Jätka</translation>
+<translation id="236000571258713023">Sõidukid</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menüü suuruse vahetamine</translation>
 <translation id="2365355378251437925">Sisestage <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4598556348158889687">Salvestusruumi haldus</translation>
 <translation id="459914240367517409">Veebidisain ja -arendus</translation>
 <translation id="4602465984861132303">Keegel</translation>
+<translation id="4603727370377253901">Lendude broneeringud</translation>
 <translation id="4607608436550361748">Vaadake Chrome'i nõuandeid</translation>
 <translation id="460848736049414407">Administraator on blokeerinud</translation>
 <translation id="4610279718074907952">See sait on omaniku <ph name="SET_OWNER" /> määratud grupis, mis näeb teie tegevusi</translation>
@@ -2207,6 +2211,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4622292761762557753">Kanna ikkagi üle</translation>
 <translation id="4622647778991854660">Märguanded saate lubada märguandekeskuses. Avage <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Isikut tõendavad dokumendid</translation>
 <translation id="4627675673814409125">Seda reeglit ei saa Chrome'i profiili tasemel määrata ja seda eiratakse.</translation>
 <translation id="4628678854894591460">Puhkusepakkumised</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3152,7 +3157,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6189351761800074311">Teie tekst ja lehe sisu saadetakse Google'ile, kuid seda ei kasutata AI täiustamiseks.
     <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Saate alistada oma klaviatuuri teatud klahve, näiteks paoklahvi</translation>
-<translation id="6192524964213419211">Teabe salvestamine aitab Google'i teenustes kiiremini tegutseda. Teie teave salvestatakse rakenduses <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontole <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Vaadake kõiki oma jälgitavaid tooteid siin</translation>
 <translation id="6195371403461054755">Geoloogia</translation>
 <translation id="6195418151868446719">Tarbeelektroonika</translation>
@@ -3488,7 +3492,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6716039223770814796">Võrdlustabel „<ph name="COMPARE_SET_NAME" />“ · <ph name="ITEMS" /> üksust</translation>
 <translation id="6716672519412350405"><ph name="URL" /> soovib luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit</translation>
 <translation id="6717692133381953670">Vaheleht saadeti seadmest <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Salvestage oma andmed, et automaattäide saaks järgmine kord teie eest rohkem välju täita</translation>
 <translation id="6718612893943028815">Kas kasutada kaamerat?</translation>
 <translation id="6721164594124191969">Etiketid (läikega)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

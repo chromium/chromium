@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">এই ছাইটটো কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="1292571435393770077">ট্ৰে’ ১৬</translation>
 <translation id="1292701964462482250">"আপোনাৰ কম্পিউটাৰৰ ছফ্‌টৱেৰৰে Chromeক ৱেবৰ সৈতে সুৰক্ষিত ভাৱে সংযুক্ত হোৱাত বাধা প্ৰদান কৰি আছে (কেৱল Windows কম্পিউটাৰ)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">এনভেল’প ৯ x ১১ ইঞ্চি</translation>
 <translation id="129553762522093515">শেহতীয়াকৈ বন্ধ কৰা</translation>
 <translation id="1296930489679394997">বিক্ৰী</translation>
@@ -3151,7 +3152,6 @@
 <translation id="6189351761800074311">আপোনাৰ পাঠ আৰু পৃষ্ঠাৰ সমলসমূহ Googleলৈ পঠিওৱা হয়, কিন্তু AI উন্নত কৰিবলৈ সেয়া ব্যৱহাৰ কৰা নহয়।
     <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">আপোনাৰ কীব’ৰ্ডৰ কিছুমান কী অ’ভাৰৰাইড কৰক, যেনে, এস্কে’প</translation>
-<translation id="6192524964213419211">Googleৰ সমগ্ৰ প্ৰ’ডাক্টত কামবোৰ দ্ৰুতভাৱে কৰিবলৈ আপোনাৰ তথ্য ছেভ কৰক। আপোনাৰ তথ্যখিনি <ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত ছেভ কৰা হয়</translation>
 <translation id="6194209731893739467">আপোনাৰ আটাইবোৰ ট্ৰেক কৰা প্ৰ’ডাক্ট ইয়াত চাওক</translation>
 <translation id="6195371403461054755">ভূ-বিজ্ঞান</translation>
 <translation id="6195418151868446719">উপভোক্তাৰ বৈদ্যুতিক সামগ্ৰী</translation>
@@ -3487,7 +3487,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> তুলনা কৰক · <ph name="ITEMS" /> টা বস্তু</translation>
 <translation id="6716672519412350405"><ph name="URL" />এ আপোনাৰ চৌপাশৰ এখন 3D মেপ সৃষ্টি কৰিবলৈ আৰু কেমেৰাৰ স্থান ট্ৰেক কৰিবলৈ বিচাৰিছে</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" />ৰ পৰা পঠিওৱা টেব</translation>
-<translation id="6718524733720986924">আপোনাৰ তথ্য ছেভ কৰক যাতে স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধাই পৰৱৰ্তী বাৰ আপোনাৰ বাবে অধিক ক্ষেত্ৰত তথ্য পূৰণ কৰিব পাৰে</translation>
 <translation id="6718612893943028815">কেমেৰা ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="6721164594124191969">লেবেল (গ্লছযুক্ত)</translation>
 <translation id="6726832600570791992">(৩২-বিট এমুলে’ট কৰা)</translation>

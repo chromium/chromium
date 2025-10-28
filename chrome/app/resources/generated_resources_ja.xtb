@@ -779,6 +779,7 @@
 <translation id="152913213824448541">ニアバイシェアの連絡先</translation>
 <translation id="1529769834253316556">行の高さ</translation>
 <translation id="1529891865407786369">電源</translation>
+<translation id="1530376661400379364">Chrome で設定をリセットしました</translation>
 <translation id="1531275250079031713">[新しい Wi-Fi を追加] ダイアログを表示</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">このダウンロードがパソコンに損害を与える可能性があることを理解しました</translation>
@@ -1069,6 +1070,7 @@
 <translation id="1709916727352927457">パスキーの削除</translation>
 <translation id="1709972045049031556">共有できません</translation>
 <translation id="1712143791363119140">進行中</translation>
+<translation id="1714265454085143857">固定タブ</translation>
 <translation id="1714326320203665217">メインノードのアノテーション ファイルをダウンロードしました</translation>
 <translation id="1714644264617423774">ユーザー補助機能を有効にするとデバイスが使いやすくなります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> のサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>
@@ -1191,6 +1193,7 @@
 <translation id="1805967612549112634">PIN の確認</translation>
 <translation id="1806335016774576568">別の開いているアプリに切り替える</translation>
 <translation id="1807246157184219062">ライト</translation>
+<translation id="1807542511544484064">次の設定が Chrome の外部から変更されました。ユーザーを保護するため、Chrome でリセットしました。</translation>
 <translation id="180759455458343539">画像を追加</translation>
 <translation id="1808571181382454540">設定ページに移動</translation>
 <translation id="1808805149659872686">新しいエントリ</translation>
@@ -1887,6 +1890,7 @@
 <translation id="2290615375132886363">タブレットのナビゲーション ボタン</translation>
 <translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
 <translation id="229182044471402145">一致するフォントは見つかりませんでした。</translation>
+<translation id="2292590498047171967">他のユーザーとタブを共有して共同作業を行うには、履歴とタブを <ph name="EMAIL" /> と同期してください</translation>
 <translation id="2292848386125228270">通常のユーザーとして <ph name="PRODUCT_NAME" /> を起動してください。開発の目的でルートとして実行する必要がある場合は、--no-sandbox フラグを指定して再実行してください。</translation>
 <translation id="2292862094862078674">インターネット接続を確認してから、もう一度お試しください。以前に生成された下のテーマから選択することは可能です。</translation>
 <translation id="2294081976975808113">画面のプライバシー</translation>
@@ -3462,7 +3466,6 @@
 <translation id="3393554941209044235">Chrome ドキュメント解析</translation>
 <translation id="3394072120086516913">PC は有線、キャスト デバイスは Wi-Fi で接続されている</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
-<translation id="3396442984945202128">本人確認</translation>
 <translation id="3396800784455899911">[同意して続行] をクリックすると、これらの Google サービスに関する上記の処理内容に同意したことになります。</translation>
 <translation id="339722927132407568">固まる</translation>
 <translation id="3399432415385675819">通知が無効になります</translation>
@@ -3586,7 +3589,6 @@
 <translation id="3479357084663933762">第二色弱</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3479685872808224578">プリント サーバーを検出できませんでした。アドレスを確認してから、もう一度お試しください。</translation>
-<translation id="3479753605053415848">クリックして Chrome をカスタマイズ</translation>
 <translation id="3480612136143976912">自動字幕起こしの字幕のサイズとスタイルをカスタマイズできます。一部のアプリとサイトでもこの設定が使用されます。</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> 個のタブが見つかりました</translation>
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> 秒後に <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
@@ -4108,7 +4110,6 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">別の指紋を登録</translation>
 <translation id="3812525830114410218">不適切な証明書</translation>
-<translation id="3813275565773644111">Google アカウントでの履歴とタブの保存は組織によって無効にされています</translation>
 <translation id="3813296892522778813">探しているものが見つからない場合は、<ph name="BEGIN_LINK_CHROMIUM" />Google Chrome のヘルプ<ph name="END_LINK_CHROMIUM" />をご覧ください。</translation>
 <translation id="3813358687923336574">ページの翻訳とクイック アンサーに使用する言語</translation>
 <translation id="3813458570141926987">最近の閲覧履歴に基づき Chrome で抽出されたトピックのリスト</translation>
@@ -5117,7 +5118,6 @@
 <translation id="4523876148417776526">XML サイトリストはまだ取得されていません。</translation>
 <translation id="4524832533047962394">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることをご確認ください。</translation>
 <translation id="4526051299161934899">非表示の保存済みタブグループ</translation>
-<translation id="4526853756266614740">画像を選択してテーマをすぐに適用</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4528494169189661126">翻訳の提案</translation>
 <translation id="4528638190900283934">ログインすると追加の機能を使用できます</translation>
@@ -8071,7 +8071,6 @@
 <translation id="6624687053722465643">スイーツ</translation>
 <translation id="6626581113916585374">エフェクト モード</translation>
 <translation id="6627743754845412571">ハンド トラッキングを許可しないサイト</translation>
-<translation id="6628184833987882108">このサイトのコンテンツは Google に送信され、この機能を改善する目的で人間のレビュアーによる確認が行われる場合があります</translation>
 <translation id="6628316682330029452">クライアント証明書は、他のサーバーに対してユーザーの認証を行う証明書です。</translation>
 <translation id="6628328486509726751">アップロード日時: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" />+<ph name="KEY" /> キー</translation>
@@ -8336,6 +8335,7 @@
 <translation id="6808039367995747522">続行するには、セキュリティ キーを差し込んでタッチしてください</translation>
 <translation id="6808166974213191158">ChromeOS Flex システム イメージ ライター</translation>
 <translation id="6808193438228982088">キツネ</translation>
+<translation id="6808818615395768377">あまり利用したことがないサイトの場合はブロックする（デフォルト）</translation>
 <translation id="6809470175540814047">シークレット ウィンドウで開く</translation>
 <translation id="6810613314571580006">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能が無効になっている場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="6811034713472274749">ページを表示できます</translation>
@@ -9093,7 +9093,6 @@
 <translation id="7353261921908507769">近くにいる連絡先から共有を受けられます。許可するまで転送は行われません。</translation>
 <translation id="7353432112255316844">本人確認</translation>
 <translation id="735361434055555355">Linux をインストールしています...</translation>
-<translation id="7354120289251608189">ブラウザのデザインをいつでも変更できるようになりました。</translation>
 <translation id="7356506068433555887">ヤシの木</translation>
 <translation id="7356696499551368971">選択した権限が削除されます</translation>
 <translation id="7356908624372060336">ネットワーク ログ</translation>
@@ -10642,7 +10641,6 @@
 <translation id="8383614331548401927">おかえりなさい</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
 <translation id="8387361103813440603">位置情報の取得を許可しないサイト</translation>
-<translation id="8387617938027387193">本人確認</translation>
 <translation id="8388770971141403598">セカンダリ プロファイルはサポートされていません</translation>
 <translation id="8389492867173948260">アクセスしたウェブサイト上にある自分の全データの読み取りと変更をこの拡張機能に許可します。</translation>
 <translation id="8390392581097975659">スキャナ ソフトウェアをインストールしています</translation>
@@ -11546,7 +11544,6 @@
 <translation id="90033698482696970">利用可能な eSIM プロファイルを自動的にスキャンしますか？</translation>
 <translation id="9003647077635673607">すべてのウェブサイトで許可する</translation>
 <translation id="9005774573776346118">すべてのデバイスで同じパスワード、ブックマーク、その他の設定を使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
-<translation id="9007688236643268728">もう一度ログイン(&amp;S)</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> の詳細ページの戻るボタン</translation>
 <translation id="9008828754342192581"><ph name="ORIGIN" /> の拡張機能をすべて許可するよう選択しています</translation>
@@ -11567,6 +11564,7 @@
 <translation id="9016827136585652292">プライバシー画面の切り替え</translation>
 <translation id="90181708067259747">有効期限: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">インストールが完了しました</translation>
+<translation id="9018677074423884999">デフォルトの検索エンジン（DSE）</translation>
 <translation id="901876615920222131">グループをもう一度開くには、グループをクリックします</translation>
 <translation id="9019062154811256702">自動入力設定の読み取りと変更</translation>
 <translation id="9019956081903586892">スペルチェック辞書をダウンロードできませんでした</translation>
@@ -11623,6 +11621,7 @@
 <translation id="9045160989383249058">リーディング リストは新しいサイドパネルに移動しました。こちらをお使いください。</translation>
 <translation id="9048745018038487540">フォントをすべて選択</translation>
 <translation id="9050666287014529139">パスフレーズ</translation>
+<translation id="905137631551495997">拡張機能</translation>
 <translation id="905145695813415387">「<ph name="LOCAL_FOLDER" />」は、このデバイスのみに保存されます。このフォルダを「<ph name="LOCAL_FOLDER" />」に移動すると、他のデバイスからはアクセスできなくなります。</translation>
 <translation id="9052404922357793350">引き続きブロックする</translation>
 <translation id="90528604757378587">バックグラウンド アクティビティや一部の視覚効果（スムーズ スクロールなど）が制限されることがあります。</translation>

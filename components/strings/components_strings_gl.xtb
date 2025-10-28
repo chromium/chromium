@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" />: Para saír da pantalla completa, arrastra o cursor desde a parte superior e toca o botón para volver</translation>
 <translation id="1138458427267715730">Recibe alertas cando baixe o prezo en calquera sitio da Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
+<translation id="1142965388643537393">Información de viaxes</translation>
 <translation id="1144136880160289237">Aínda non tes ningún tema activo</translation>
 <translation id="1149617035358809955">verificar a túa identidade para poder completar a túa información de pago</translation>
 <translation id="1150565364351027703">Lentes de sol</translation>
@@ -177,6 +178,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1292571435393770077">Bandexa 16</translation>
 <translation id="1292701964462482250">"Hai software no teu ordenador que está evitando que Chrome se conecte de forma segura á web" (só para ordenadores con Windows)</translation>
+<translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1293797321964802402">Sobre 9 x 11 polgadas</translation>
 <translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1296930489679394997">Vendas</translation>
@@ -837,6 +839,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> xestiona o teu dispositivo e <ph name="ACCOUNT_MANAGER" /> xestiona a túa conta.</translation>
 <translation id="2359629602545592467">Varias divisas</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="236000571258713023">Vehículos</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menú dos botóns do cambio de tamaño</translation>
 <translation id="2365355378251437925">Cubre o campo <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4598556348158889687">Xestión do almacenamento</translation>
 <translation id="459914240367517409">Deseño e programación web</translation>
 <translation id="4602465984861132303">Birlos</translation>
+<translation id="4603727370377253901">Reservas de voos</translation>
 <translation id="4607608436550361748">Ver consellos de Chrome</translation>
 <translation id="460848736049414407">Bloqueado polo administrador</translation>
 <translation id="4610279718074907952">Este sitio está nun grupo definido por <ph name="SET_OWNER" />, que pode ver a túa actividade</translation>
@@ -2207,6 +2211,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4622292761762557753">Transferir de todos os xeitos</translation>
 <translation id="4622647778991854660">Activa as notificacións no Centro de notificacións. Abre <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Documentos de identidade</translation>
 <translation id="4627675673814409125">Esta política non se pode configurar no perfil de Chrome e, polo tanto, ignorarase.</translation>
 <translation id="4628678854894591460">Ofertas de vacacións</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3152,7 +3157,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6189351761800074311">O texto e o contido da páxina enviaranse a Google, pero non se usarán para mellorar a IA.
     <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Ignora algunhas teclas do teclado, como Escape</translation>
-<translation id="6192524964213419211">Garda a túa información para realizar tarefas máis rápido nos produtos de Google. A túa información está gardada en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />)</translation>
 <translation id="6194209731893739467">Aquí podes ver todos os produtos dos que fagas un seguimento</translation>
 <translation id="6195371403461054755">Xeoloxía</translation>
 <translation id="6195418151868446719">Electrónica de consumo</translation>
@@ -3488,7 +3492,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6716039223770814796">Comparar <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> produtos</translation>
 <translation id="6716672519412350405"><ph name="URL" /> quere crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
 <translation id="6717692133381953670">Pestana enviada desde <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Garda a túa información para que a próxima vez se completen máis campos automaticamente</translation>
 <translation id="6718612893943028815">Queres usar a cámara?</translation>
 <translation id="6721164594124191969">Etiquetas (brillo)</translation>
 <translation id="6726832600570791992">(emula un dispositivo de 32 bits)</translation>

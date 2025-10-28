@@ -3667,6 +3667,15 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, DTC akan dinonaktifkan. DTC tidak akan dapat mengumpulkan, memproses, atau melaporkan data telemetri dan diagnostik dari perangkat.</translation>
 <translation id="3442589735857147823">Izinkan pengguna menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
+<translation id="34476328503285475">Menyetel kebijakan ini akan membuat prakonfigurasi pada hingga 10 pintasan khusus di halaman Tab Baru <ph name="PRODUCT_NAME" />.
+
+Jika kebijakan ini disetel, pengguna akan melihat pintasan ini secara default, selain pintasan pribadi mereka. Pengguna dapat mengontrol visibilitas pintasan organisasi mereka di panel "Sesuaikan Chrome".
+
+URL pintasan harus unik.
+
+Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> disetel ke benar (true), pengguna dapat mengubah nama pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat mengubah nama pintasan.
+
+Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> disetel ke benar (true), pengguna dapat menghapus pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat menghapus pintasan.</translation>
 <translation id="3450649825886735618">Jangan gunakan layanan web Google untuk membantu mengatasi kesalahan ejaan</translation>
 <translation id="3451422488938880786"> Dapat mengaktifkan/menonaktifkan pemetaan ulang tombol pintasan internasional</translation>
 <translation id="3451901387456196887">Pengguna akan diberi opsi di menu <ph name="PRODUCT_NAME" /> untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>
@@ -8589,6 +8598,13 @@ Kebijakan ini tidak memengaruhi analisis konten download yang dikonfigurasi oleh
 <translation id="6520802717075138474">Impor mesin telusur dari browser default saat pertama kali dijalankan</translation>
 <translation id="6521971538031711337">Cegah pengguna terkelola mengonfigurasi nama host perangkat</translation>
 <translation id="6523079496775454310">Aktifkan izin sinyal perangkat untuk pengguna terkelola di perangkat yang tidak dikelola</translation>
+<translation id="6523608518493993483">Kebijakan ini memungkinkan administrator mengenkripsi cache http browser di disk.
+
+Jika kebijakan ini disetel ke Aktif, cache browser akan dienkripsi.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, cache browser tidak akan dienkripsi.
+
+Enkripsi cache browser dapat menyebabkan dampak performa.</translation>
 <translation id="6527674993612811419">Tampilkan peringatan dan nonaktifkan isi otomatis pada formulir yang tidak aman</translation>
 <translation id="6532769014584932288">Izinkan penguncian layar saat aktif</translation>
 <translation id="6533881418188970751">Tanyakan pada pengguna tempat menyimpan file sebelum mendownload</translation>

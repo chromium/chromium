@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – to exit full screen, drag from the top and touch the back button</translation>
 <translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
 <translation id="1142713751288681188">Paper type</translation>
+<translation id="1142965388643537393">Travel info</translation>
 <translation id="1144136880160289237">You don't have any active topics yet</translation>
 <translation id="1149617035358809955">verify it's you so it can fill in your payment info</translation>
 <translation id="1150565364351027703">Sunglasses</translation>
@@ -177,6 +178,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">'Software on your computer is stopping Chrome from safely connecting to the web' (Windows computers only)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">Recently closed</translation>
 <translation id="1296930489679394997">Sales</translation>
@@ -837,6 +839,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="236000571258713023">Vehicles</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Resize toggle menu</translation>
 <translation id="2365355378251437925">Enter <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4598556348158889687">Storage management</translation>
 <translation id="459914240367517409">Web design and development</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Flight reservations</translation>
 <translation id="4607608436550361748">See Chrome tips</translation>
 <translation id="460848736049414407">Blocked by admin</translation>
 <translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
@@ -2207,6 +2211,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4622292761762557753">Transfer anyway</translation>
 <translation id="4622647778991854660">Enable notifications in the Notification Centre. Open <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Identity docs</translation>
 <translation id="4627675673814409125">This policy cannot be set at the Chrome profile level and will be ignored.</translation>
 <translation id="4628678854894591460">Holiday Offers</translation>
 <translation id="4628948037717959914">Photo</translation>
@@ -3152,7 +3157,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6189351761800074311">Your text and page content are sent to Google, but will not be used to improve AI.
     <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Override some keys on your keyboard, like Esc</translation>
-<translation id="6192524964213419211">Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">See all your tracked products here</translation>
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6195418151868446719">Consumer electronics</translation>
@@ -3488,7 +3492,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6716039223770814796">Compare <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> items</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
 <translation id="6717692133381953670">Tab sent from <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Save your info so that autofill can fill in more fields for you next time</translation>
 <translation id="6718612893943028815">Use camera?</translation>
 <translation id="6721164594124191969">Labels (glossy)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

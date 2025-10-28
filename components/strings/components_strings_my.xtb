@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">ဒီဆိုက်ကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="1292571435393770077">ဗန်း ၁၆</translation>
 <translation id="1292701964462482250">"သင်၏ကွန်ပျူတာရှိ ဆော့ဖ်ဝဲလ်သည် Chrome ကို ဝဘ်သို့ လုံခြုံစွာချိတ်ဆက်မှု မပြုလုပ်နိုင်ရန် တားဆီးထားပါသည်" (Windows ကွန်ပျူတာများသာ)</translation>
+<translation id="1293556467332435079">ဖိုင်များ</translation>
 <translation id="1293797321964802402">၉ x ၁၁ လက်မ စာအိတ်</translation>
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1296930489679394997">လျှော့ဈေး</translation>
@@ -3156,7 +3157,6 @@
 <translation id="6189351761800074311">သင့်စာသားနှင့် စာမျက်နှာ အကြောင်းအရာတို့ကို Google ထံသို့ ပို့သော်လည်း AI ပိုကောင်းစေရန် သုံးမည်မဟုတ်ပါ။
     <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Esc ကဲ့သို့သော သင့်ကီးဘုတ်ရှိ ကီးအချို့ကို အစားထိုးရန်</translation>
-<translation id="6192524964213419211">Google ထုတ်ကုန်များတွင် ကိစ္စများအမြန်ပြီးမြောက်ရန် သင့်အချက်အလက်ကို သိမ်းနိုင်သည်။ သင့်အချက်အလက်ကို <ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> သို့ သိမ်းလိုက်သည်</translation>
 <translation id="6194209731893739467">စောင့်ကြည့်ထားသည့် ထုတ်ကုန်များကို ဤနေရာတွင် ကြည့်နိုင်သည်</translation>
 <translation id="6195371403461054755">ဘူမိဗေဒ</translation>
 <translation id="6195418151868446719">လူသုံးကုန် အီလက်ထရောနစ်ပစ္စည်း</translation>
@@ -3492,7 +3492,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ခု နှိုင်းယှဉ်ရန်</translation>
 <translation id="6716672519412350405"><ph name="URL" /> က သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ ပြုလုပ်လိုသည်</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> မှ ပို့ထားသော တဘ်</translation>
-<translation id="6718524733720986924">သင့်အချက်အလက်သိမ်းပါက အော်တိုဖြည့်သည် နောက်တစ်ကြိမ်တွင် နောက်ထပ်အကွက်များ၌ သင့်အတွက် ဖြည့်ပေးနိုင်သည်</translation>
 <translation id="6718612893943028815">ကင်မရာ အသုံးပြုမလား။</translation>
 <translation id="6721164594124191969">လေဘယ်လ် (တောက်ပြောင်)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

@@ -595,6 +595,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3739899004075612870">Označeno u pregledniku <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Na ovom uređaju glasovno pretraživanje nije dostupno</translation>
 <translation id="376561056759077985">Neki podaci još nisu spremljeni</translation>
+<translation id="3770620323585347665">Dodijelite naziv prozoru</translation>
 <translation id="3771033907050503522">Anonimne kartice</translation>
 <translation id="3771290962915251154">Ta je postavka onemogućena jer je uključen roditeljski nadzor</translation>
 <translation id="3771694256347217732">Googleovi uvjeti pružanja usluge</translation>
@@ -722,6 +723,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4355272626458588338">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="4356503491090073318">Broj kartice*</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Otvorite Google objektiv</translation>
 <translation id="4359809482106103048">Kratki pregled sigurnosti</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Ako se taj problem nastavi pojavljivati, možete isprobati nove načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -788,6 +790,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4668279686271488041">Podaci o mjerenju oglasa redovito se brišu s vašeg uređaja</translation>
 <translation id="4668347365065281350">Svi podaci koje su pohranile web-lokacije, uključujući kolačiće i druge lokalno pohranjene podatke</translation>
 <translation id="4673702426794876519">Anonimni prozor</translation>
+<translation id="4675298276894277358">Ova se web-lokacija više neće prikazivati</translation>
 <translation id="4678082183394354975">Tamna tema za web-lokacije uključena je u Chromeu</translation>
 <translation id="4682306524980568490">Maksimalni broj prozora koji se može prikazati: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Sinkroniziraj sve</translation>
@@ -989,6 +992,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5556459405103347317">Ponovno učitaj</translation>
 <translation id="555671485580955310">Sinkronizacija povijesti i kartica</translation>
 <translation id="555816257274242153">Praćenje cijene zaustavljeno</translation>
+<translation id="5559778750856177186">Prečac je otkvačen</translation>
 <translation id="5561445479436807659">Zaigrajte zabavnu igru Dinosaur</translation>
 <translation id="5561549206367097665">Čekanje na mrežu…</translation>
 <translation id="5568069709869097550">Ne mogu se prijaviti</translation>
@@ -1499,6 +1503,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7612619742409846846">Prijavljeni ste na Google kao</translation>
 <translation id="7612989789287281429">Prijavljivanje…</translation>
 <translation id="7619072057915878432">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog kvarova na mreži.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Otkazana je pretplata na jednu web-lokaciju}one{Otkazana je pretplata na # web-lokaciju}few{Otkazana je pretplata na # web-lokacije}other{Otkazana je pretplata na # web-lokacija}}</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7628417132421583481">Otvorite Upravitelj zaporki</translation>
 <translation id="7630202231528827509">URL davatelja usluga</translation>
@@ -1662,6 +1667,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8282297628636750033">Primijeni tamnu temu na web-lokacije, kad je moguće</translation>
 <translation id="8282950411412455249">Otvorite sigurnosne postavke</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Zatvori 1 anonimni prozor}one{Zatvori # anonimni prozor}few{Zatvori # anonimna prozora}other{Zatvori # anonimnih prozora}}</translation>
 <translation id="831192587911042850">Dodaje trenutačnu web-lokaciju na popis web-lokacija koje pratite.</translation>
 <translation id="8317318757008452355">Otvaranje opcija za ispis</translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>

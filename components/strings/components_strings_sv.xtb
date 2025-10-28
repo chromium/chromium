@@ -79,6 +79,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Dra från toppen och tryck på bakåtknappen för att avsluta helskärmsläget</translation>
 <translation id="1138458427267715730">Få aviseringar när priset sänks på någon webbplats på webben</translation>
 <translation id="1142713751288681188">Papperstyp</translation>
+<translation id="1142965388643537393">Reseinformation</translation>
 <translation id="1144136880160289237">Du har inga aktiva ämnen än</translation>
 <translation id="1149617035358809955">verifiera din identitet för att fylla i dina betalningsuppgifter</translation>
 <translation id="1150565364351027703">Solglasögon</translation>
@@ -177,6 +178,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1292571435393770077">Fack 16</translation>
 <translation id="1292701964462482250">Mjukvara på datorn förhindrar att Chrome ansluter till internet på ett säkert sätt (endast Windows-datorer)</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="1293797321964802402">Kuvert, 9 x 11 tum</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1296930489679394997">Försäljning</translation>
@@ -837,6 +839,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2357481397660644965">Enheten hanteras av <ph name="DEVICE_MANAGER" /> och kontot hanteras av <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flera</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
+<translation id="236000571258713023">Fordon</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Ändra storlek på menyn för att aktivera och inaktivera</translation>
 <translation id="2365355378251437925">Ange <ph name="FIELD" /></translation>
@@ -2199,6 +2202,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4598556348158889687">Lagringshantering</translation>
 <translation id="459914240367517409">Webbdesign och webbutveckling</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Flygbokningar</translation>
 <translation id="4607608436550361748">Visa tips om Chrome</translation>
 <translation id="460848736049414407">Blockeras av administratören</translation>
 <translation id="4610279718074907952">Den här webbplatsen ingår i en grupp som definierats av <ph name="SET_OWNER" /> och som kan se din aktivitet</translation>
@@ -2207,6 +2211,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4622292761762557753">Överför ändå</translation>
 <translation id="4622647778991854660">Aktivera aviseringar i aviseringscentret. Öppna <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Id-handlingar</translation>
 <translation id="4627675673814409125">Den här policyn kan inte ställas in på Chrome-profilnivå och kommer att ignoreras.</translation>
 <translation id="4628678854894591460">Paketresor</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -3152,7 +3157,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6189351761800074311">Din text och ditt sidinnehåll skickas till Google, men används inte för att förbättra AI.
     <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Åsidosätt vissa tangenter på tangentbordet, till exempel Esc</translation>
-<translation id="6192524964213419211">Spara dina uppgifter så att du kan få saker gjorda snabbare i Googles produkter. Din information sparas i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> för <ph name="ACCOUNT" />.</translation>
 <translation id="6194209731893739467">Se alla bevakade produkter här</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Hemelektronik</translation>
@@ -3488,7 +3492,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6716039223770814796">Jämför <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> objekt</translation>
 <translation id="6716672519412350405"><ph name="URL" /> skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
 <translation id="6717692133381953670">Fliken skickades från <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Spara dina uppgifter så att autofyll kan fylla i fler fält åt dig nästa gång</translation>
 <translation id="6718612893943028815">Vill du använda kameran?</translation>
 <translation id="6721164594124191969">Etiketter (blanka)</translation>
 <translation id="6726832600570791992">(32-bitars emulerad)</translation>

@@ -178,6 +178,7 @@
 <translation id="1285320974508926690">कभी भी इस साइट का अनुवाद न करें</translation>
 <translation id="1292571435393770077">ट्रे 16</translation>
 <translation id="1292701964462482250">"आपके कंप्यूटर पर मौजूद सॉफ़्टवेयर Chrome को सुरक्षित रूप से वेब से कनेक्ट होने से रोक रहा है" (केवल Windows कंप्यूटर)</translation>
+<translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1293797321964802402">9 x 11 इंच का लिफ़ाफ़ा</translation>
 <translation id="129553762522093515">हाल ही में बंद किए गए</translation>
 <translation id="1296930489679394997">सेल्स</translation>
@@ -3156,7 +3157,6 @@
 <translation id="6189351761800074311">आपका टेक्स्ट और पेज का कॉन्टेंट, Google को भेजा जाता है. हालांकि, इनका इस्तेमाल एआई को बेहतर बनाने के लिए नहीं किया जाएगा.
     <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">अपने कीबोर्ड पर Esc जैसे कुछ बटनों के इनपुट को बदलने की अनुमति दें</translation>
-<translation id="6192524964213419211">अपनी जानकारी सेव करें, ताकि आप Google के सभी प्रॉडक्ट पर तेज़ी से काम कर सकें. आपकी जानकारी, <ph name="ACCOUNT" /> के लिए <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> में सेव की गई है</translation>
 <translation id="6194209731893739467">ट्रैक किए गए अपने सभी प्रॉडक्ट यहां देखें</translation>
 <translation id="6195371403461054755">जियोलॉजी</translation>
 <translation id="6195418151868446719">कंज़्यूमर इलेक्ट्रॉनिक डिवाइसें</translation>
@@ -3492,7 +3492,6 @@
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> की तुलना करें · <ph name="ITEMS" /> आइटम</translation>
 <translation id="6716672519412350405"><ph name="URL" /> आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
 <translation id="6717692133381953670"><ph name="DEVICE_NAME" /> से टैब भेजा गया है</translation>
-<translation id="6718524733720986924">अपनी जानकारी सेव करें, ताकि ऑटोमैटिक भरने की सुविधा से अगली बार ज़्यादा फ़ील्ड भरे जा सकें</translation>
 <translation id="6718612893943028815">क्या आप कैमरे का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="6721164594124191969">लेबल (ग्लॉसी)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>
