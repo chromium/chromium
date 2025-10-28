@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
+
+#import <array>
 
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -66,7 +63,7 @@ namespace {
 // List of policy types to preference names. This is used for simple policies
 // that directly map to a single preference.
 // clang-format off
-const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
+constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kAllowChromeDataInBackups,
     prefs::kAllowChromeDataInBackups,
     base::Value::Type::BOOLEAN },
@@ -193,7 +190,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kIncognitoModeAllowlist,
     policy::policy_prefs::kIncognitoModeAllowlist,
     base::Value::Type::LIST },
-};
+});
 // clang-format on
 
 void PopulatePolicyHandlerParameters(
@@ -210,10 +207,9 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
           base::BindRepeating(&policy::GetChromePolicyDetails),
           are_future_policies_allowed_by_default);
 
-  for (size_t i = 0; i < std::size(kSimplePolicyMap); ++i) {
+  for (const PolicyToPreferenceMapEntry& entry : kSimplePolicyMap) {
     handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-        kSimplePolicyMap[i].policy_name, kSimplePolicyMap[i].preference_path,
-        kSimplePolicyMap[i].value_type));
+        entry.policy_name, entry.preference_path, entry.value_type));
   }
 
   handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
