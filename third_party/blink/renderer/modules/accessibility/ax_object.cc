@@ -42,6 +42,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -198,217 +199,6 @@ bool IsValidRole(ax::mojom::blink::Role role) {
   }
 }
 #endif
-
-constexpr wtf_size_t kNumRoles =
-    static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
-
-using ARIARoleMap =
-    HashMap<String, ax::mojom::blink::Role, CaseFoldingHashTraits<String>>;
-
-struct RoleEntry {
-  const char* role_name;
-  ax::mojom::blink::Role role;
-};
-
-// Mapping of ARIA role name to internal role name.
-// This is used for the following:
-// 1. Map from an ARIA role to the internal role when building tree.
-// 2. Map from an internal role to an ARIA role name, for debugging, the
-//    xml-roles object attribute and element.computedRole.
-const RoleEntry kAriaRoles[] = {
-    {"alert", ax::mojom::blink::Role::kAlert},
-    {"alertdialog", ax::mojom::blink::Role::kAlertDialog},
-    {"application", ax::mojom::blink::Role::kApplication},
-    {"article", ax::mojom::blink::Role::kArticle},
-    {"banner", ax::mojom::blink::Role::kBanner},
-    {"blockquote", ax::mojom::blink::Role::kBlockquote},
-    {"button", ax::mojom::blink::Role::kButton},
-    {"caption", ax::mojom::blink::Role::kCaption},
-    {"cell", ax::mojom::blink::Role::kCell},
-    {"code", ax::mojom::blink::Role::kCode},
-    {"checkbox", ax::mojom::blink::Role::kCheckBox},
-    {"columnheader", ax::mojom::blink::Role::kColumnHeader},
-    {"combobox", ax::mojom::blink::Role::kComboBoxGrouping},
-    {"comment", ax::mojom::blink::Role::kComment},
-    {"complementary", ax::mojom::blink::Role::kComplementary},
-    {"contentinfo", ax::mojom::blink::Role::kContentInfo},
-    {"definition", ax::mojom::blink::Role::kDefinition},
-    {"deletion", ax::mojom::blink::Role::kContentDeletion},
-    {"dialog", ax::mojom::blink::Role::kDialog},
-    {"directory", ax::mojom::blink::Role::kList},
-    // -------------------------------------------------
-    // DPub Roles:
-    // www.w3.org/TR/dpub-aam-1.0/#mapping_role_table
-    {"doc-abstract", ax::mojom::blink::Role::kDocAbstract},
-    {"doc-acknowledgments", ax::mojom::blink::Role::kDocAcknowledgments},
-    {"doc-afterword", ax::mojom::blink::Role::kDocAfterword},
-    {"doc-appendix", ax::mojom::blink::Role::kDocAppendix},
-    {"doc-backlink", ax::mojom::blink::Role::kDocBackLink},
-    // Deprecated in DPUB-ARIA 1.1. Use a listitem inside of a doc-bibliography.
-    {"doc-biblioentry", ax::mojom::blink::Role::kDocBiblioEntry},
-    {"doc-bibliography", ax::mojom::blink::Role::kDocBibliography},
-    {"doc-biblioref", ax::mojom::blink::Role::kDocBiblioRef},
-    {"doc-chapter", ax::mojom::blink::Role::kDocChapter},
-    {"doc-colophon", ax::mojom::blink::Role::kDocColophon},
-    {"doc-conclusion", ax::mojom::blink::Role::kDocConclusion},
-    {"doc-cover", ax::mojom::blink::Role::kDocCover},
-    {"doc-credit", ax::mojom::blink::Role::kDocCredit},
-    {"doc-credits", ax::mojom::blink::Role::kDocCredits},
-    {"doc-dedication", ax::mojom::blink::Role::kDocDedication},
-    // Deprecated in DPUB-ARIA 1.1. Use a listitem inside of a doc-endnotes.
-    {"doc-endnote", ax::mojom::blink::Role::kDocEndnote},
-    {"doc-endnotes", ax::mojom::blink::Role::kDocEndnotes},
-    {"doc-epigraph", ax::mojom::blink::Role::kDocEpigraph},
-    {"doc-epilogue", ax::mojom::blink::Role::kDocEpilogue},
-    {"doc-errata", ax::mojom::blink::Role::kDocErrata},
-    {"doc-example", ax::mojom::blink::Role::kDocExample},
-    {"doc-footnote", ax::mojom::blink::Role::kDocFootnote},
-    {"doc-foreword", ax::mojom::blink::Role::kDocForeword},
-    {"doc-glossary", ax::mojom::blink::Role::kDocGlossary},
-    {"doc-glossref", ax::mojom::blink::Role::kDocGlossRef},
-    {"doc-index", ax::mojom::blink::Role::kDocIndex},
-    {"doc-introduction", ax::mojom::blink::Role::kDocIntroduction},
-    {"doc-noteref", ax::mojom::blink::Role::kDocNoteRef},
-    {"doc-notice", ax::mojom::blink::Role::kDocNotice},
-    {"doc-pagebreak", ax::mojom::blink::Role::kDocPageBreak},
-    {"doc-pagefooter", ax::mojom::blink::Role::kDocPageFooter},
-    {"doc-pageheader", ax::mojom::blink::Role::kDocPageHeader},
-    {"doc-pagelist", ax::mojom::blink::Role::kDocPageList},
-    {"doc-part", ax::mojom::blink::Role::kDocPart},
-    {"doc-preface", ax::mojom::blink::Role::kDocPreface},
-    {"doc-prologue", ax::mojom::blink::Role::kDocPrologue},
-    {"doc-pullquote", ax::mojom::blink::Role::kDocPullquote},
-    {"doc-qna", ax::mojom::blink::Role::kDocQna},
-    {"doc-subtitle", ax::mojom::blink::Role::kDocSubtitle},
-    {"doc-tip", ax::mojom::blink::Role::kDocTip},
-    {"doc-toc", ax::mojom::blink::Role::kDocToc},
-    // End DPub roles.
-    // -------------------------------------------------
-    {"document", ax::mojom::blink::Role::kDocument},
-    {"emphasis", ax::mojom::blink::Role::kEmphasis},
-    {"feed", ax::mojom::blink::Role::kFeed},
-    {"figure", ax::mojom::blink::Role::kFigure},
-    {"form", ax::mojom::blink::Role::kForm},
-    {"generic", ax::mojom::blink::Role::kGenericContainer},
-    // -------------------------------------------------
-    // ARIA Graphics module roles:
-    // https://rawgit.com/w3c/graphics-aam/master/
-    {"graphics-document", ax::mojom::blink::Role::kGraphicsDocument},
-    {"graphics-object", ax::mojom::blink::Role::kGraphicsObject},
-    {"graphics-symbol", ax::mojom::blink::Role::kGraphicsSymbol},
-    // End ARIA Graphics module roles.
-    // -------------------------------------------------
-    {"grid", ax::mojom::blink::Role::kGrid},
-    {"gridcell", ax::mojom::blink::Role::kGridCell},
-    {"group", ax::mojom::blink::Role::kGroup},
-    {"heading", ax::mojom::blink::Role::kHeading},
-    {"img", ax::mojom::blink::Role::kImage},
-    // role="image" is listed after role="img" to treat the synonym img
-    // as a computed name image
-    {"image", ax::mojom::blink::Role::kImage},
-    {"insertion", ax::mojom::blink::Role::kContentInsertion},
-    {"link", ax::mojom::blink::Role::kLink},
-    {"list", ax::mojom::blink::Role::kList},
-    {"listbox", ax::mojom::blink::Role::kListBox},
-    {"listitem", ax::mojom::blink::Role::kListItem},
-    {"log", ax::mojom::blink::Role::kLog},
-    {"main", ax::mojom::blink::Role::kMain},
-    {"marquee", ax::mojom::blink::Role::kMarquee},
-    {"math", ax::mojom::blink::Role::kMath},
-    {"menu", ax::mojom::blink::Role::kMenu},
-    {"menubar", ax::mojom::blink::Role::kMenuBar},
-    {"menuitem", ax::mojom::blink::Role::kMenuItem},
-    {"menuitemcheckbox", ax::mojom::blink::Role::kMenuItemCheckBox},
-    {"menuitemradio", ax::mojom::blink::Role::kMenuItemRadio},
-    {"mark", ax::mojom::blink::Role::kMark},
-    {"meter", ax::mojom::blink::Role::kMeter},
-    {"navigation", ax::mojom::blink::Role::kNavigation},
-    // role="presentation" is the same as role="none".
-    {"presentation", ax::mojom::blink::Role::kNone},
-    // role="none" is listed after role="presentation", so that it is the
-    // canonical name in devtools and tests.
-    {"none", ax::mojom::blink::Role::kNone},
-    {"note", ax::mojom::blink::Role::kNote},
-    {"option", ax::mojom::blink::Role::kListBoxOption},
-    {"paragraph", ax::mojom::blink::Role::kParagraph},
-    {"progressbar", ax::mojom::blink::Role::kProgressIndicator},
-    {"radio", ax::mojom::blink::Role::kRadioButton},
-    {"radiogroup", ax::mojom::blink::Role::kRadioGroup},
-    {"region", ax::mojom::blink::Role::kRegion},
-    {"row", ax::mojom::blink::Role::kRow},
-    {"rowgroup", ax::mojom::blink::Role::kRowGroup},
-    {"rowheader", ax::mojom::blink::Role::kRowHeader},
-    {"scrollbar", ax::mojom::blink::Role::kScrollBar},
-    {"search", ax::mojom::blink::Role::kSearch},
-    {"searchbox", ax::mojom::blink::Role::kSearchBox},
-    {"sectionfooter", ax::mojom::blink::Role::kSectionFooter},
-    {"sectionheader", ax::mojom::blink::Role::kSectionHeader},
-    {"separator", ax::mojom::blink::Role::kSplitter},
-    {"slider", ax::mojom::blink::Role::kSlider},
-    {"spinbutton", ax::mojom::blink::Role::kSpinButton},
-    {"status", ax::mojom::blink::Role::kStatus},
-    {"strong", ax::mojom::blink::Role::kStrong},
-    {"subscript", ax::mojom::blink::Role::kSubscript},
-    {"suggestion", ax::mojom::blink::Role::kSuggestion},
-    {"superscript", ax::mojom::blink::Role::kSuperscript},
-    {"switch", ax::mojom::blink::Role::kSwitch},
-    {"tab", ax::mojom::blink::Role::kTab},
-    {"table", ax::mojom::blink::Role::kTable},
-    {"tablist", ax::mojom::blink::Role::kTabList},
-    {"tabpanel", ax::mojom::blink::Role::kTabPanel},
-    {"term", ax::mojom::blink::Role::kTerm},
-    {"textbox", ax::mojom::blink::Role::kTextField},
-    {"time", ax::mojom::blink::Role::kTime},
-    {"timer", ax::mojom::blink::Role::kTimer},
-    {"toolbar", ax::mojom::blink::Role::kToolbar},
-    {"tooltip", ax::mojom::blink::Role::kTooltip},
-    {"tree", ax::mojom::blink::Role::kTree},
-    {"treegrid", ax::mojom::blink::Role::kTreeGrid},
-    {"treeitem", ax::mojom::blink::Role::kTreeItem}};
-
-// More friendly names for debugging, and for WPT tests.
-// These are roles which map from the ARIA role name to the internal role when
-// building the tree, but in DevTools or testing, we want to show the ARIA
-// role name, since that is the publicly visible concept.
-const RoleEntry kReverseRoles[] = {
-    {"banner", ax::mojom::blink::Role::kHeader},
-    {"button", ax::mojom::blink::Role::kToggleButton},
-    {"button", ax::mojom::blink::Role::kPopUpButton},
-    {"contentinfo", ax::mojom::blink::Role::kFooter},
-    {"option", ax::mojom::blink::Role::kMenuListOption},
-    {"option", ax::mojom::blink::Role::kListBoxOption},
-    {"group", ax::mojom::blink::Role::kDetails},
-    {"generic", ax::mojom::blink::Role::kSectionWithoutName},
-    {"combobox", ax::mojom::blink::Role::kComboBoxMenuButton},
-    {"combobox", ax::mojom::blink::Role::kComboBoxSelect},
-    {"combobox", ax::mojom::blink::Role::kTextFieldWithComboBox}};
-
-static ARIARoleMap* CreateARIARoleMap() {
-  ARIARoleMap* role_map = new ARIARoleMap;
-
-  for (auto aria_role : kAriaRoles)
-    role_map->Set(String(aria_role.role_name), aria_role.role);
-
-  return role_map;
-}
-
-// The role name vector contains only ARIA roles, and no internal roles.
-static Vector<AtomicString>* CreateAriaRoleNameVector() {
-  Vector<AtomicString>* role_name_vector = new Vector<AtomicString>(kNumRoles);
-  role_name_vector->Fill(g_null_atom, kNumRoles);
-
-  for (auto aria_role : kAriaRoles) {
-    (*role_name_vector)[static_cast<wtf_size_t>(aria_role.role)] =
-        AtomicString(aria_role.role_name);
-  }
-
-  for (auto reverse_role : kReverseRoles) {
-    (*role_name_vector)[static_cast<wtf_size_t>(reverse_role.role)] =
-        AtomicString(reverse_role.role_name);
-  }
-
-  return role_name_vector;
-}
 
 void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
                                     const AXObject::AXObjectVector& objects,
@@ -7986,23 +7776,20 @@ ax::mojom::blink::Role AXObject::FirstValidRoleInRoleString(
     bool ignore_form_and_region) {
   DCHECK(!value.empty());
 
-  static const ARIARoleMap* role_map = CreateARIARoleMap();
-
   Vector<String> role_vector;
   value.SimplifyWhiteSpace().Split(' ', role_vector);
-  ax::mojom::blink::Role role = ax::mojom::blink::Role::kUnknown;
   for (const auto& child : role_vector) {
-    auto it = role_map->find(child);
-    if (it == role_map->end() ||
-        (ignore_form_and_region &&
-         (it->value == ax::mojom::blink::Role::kForm ||
-          it->value == ax::mojom::blink::Role::kRegion))) {
+    ax::mojom::blink::Role role =
+        AriaRoleToInternalRole(AtomicString(child.LowerASCII()));
+    if (role == ax::mojom::blink::Role::kUnknown ||
+        (ignore_form_and_region && (role == ax::mojom::blink::Role::kForm ||
+                                    role == ax::mojom::blink::Role::kRegion))) {
       continue;
     }
-    return it->value;
+    return role;
   }
 
-  return role;
+  return ax::mojom::blink::Role::kUnknown;
 }
 
 bool AXObject::SupportsNameFromContents(bool recursive,
@@ -8404,10 +8191,7 @@ ax::mojom::blink::Role AXObject::ButtonRoleType() const {
 
 // static
 const AtomicString& AXObject::AriaRoleName(ax::mojom::blink::Role role) {
-  static const Vector<AtomicString>* aria_role_name_vector =
-      CreateAriaRoleNameVector();
-
-  return aria_role_name_vector->at(static_cast<wtf_size_t>(role));
+  return InternalRoleToAriaRole(role);
 }
 
 const String AXObject::InternalRoleName(ax::mojom::blink::Role role) {
@@ -8426,7 +8210,8 @@ const String AXObject::RoleName(ax::mojom::blink::Role role,
                                 bool* is_internal) {
   if (is_internal)
     *is_internal = false;
-  if (const auto& role_name = AriaRoleName(role)) {
+  const auto& role_name = AriaRoleName(role);
+  if (!role_name.empty()) {
     return role_name.GetString();
   }
 
