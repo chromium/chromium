@@ -36,6 +36,9 @@
 - (void)selectSuggestionForDeletion:(id<AutocompleteSuggestion>)suggestion
                               inRow:(NSUInteger)row;
 
+/// Informs the mutator that the close button was pressed.
+- (void)closeButtonTapped;
+
 /// Request suggestions from the data source.
 /// `n` is the number of suggestions that are considered visible. Meaning the
 /// user doesn't have to scroll or hide the keyboard to see those `n` first

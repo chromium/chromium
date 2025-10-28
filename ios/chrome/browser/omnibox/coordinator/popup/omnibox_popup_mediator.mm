@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_consumer.h"
 #import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -288,6 +289,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         << "Suggestion type " << NSStringFromClass(suggestion.class)
         << " not handled for deletion.";
   }
+}
+
+- (void)closeButtonTapped {
+  [self.omniboxCommandsHandler cancelOmniboxEdit];
+  [self.omniboxAutocompleteController closeOmniboxPopup];
 }
 
 - (void)onScroll {

@@ -27,10 +27,6 @@
 // TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
 @property(nonatomic, assign) BOOL usedAsPrimaryToolbar;
 
-// Whether the location bar is expanded and positioned relatively to the
-// cancel button.
-@property(nonatomic, assign) BOOL expanded;
-
 // Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
