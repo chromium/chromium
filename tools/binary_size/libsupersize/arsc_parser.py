@@ -618,8 +618,7 @@ class ArscResTableType(ArscChunk):
     self.id = reader.NextUByte()
     assert self.id != 0, 'ResTable_type has invalid id.'
     self.flags = reader.NextUByte()
-    assert (self.flags & ArscResTableType.FLAG_SPARSE) == 0, (
-        'Sparse tables are unsupported.')
+    self.is_sparse = self.flags & ArscResTableType.FLAG_SPARSE != 0
     self.reserved = reader.NextUShort()
     self.entry_count = reader.NextUInt()
     self.entries_start = reader.NextUInt()
@@ -631,11 +630,12 @@ class ArscResTableType(ArscChunk):
     self.type_str = parent.type_pool.GetString(self.id - 1)
 
     entries_start_addr = self.addr + self.entries_start
-    entries_offsets = [reader.NextUInt() for _ in range(self.entry_count)]
-    assert entries_start_addr >= reader.Tell()
+    if not self.is_sparse:
+      entries_offsets = [reader.NextUInt() for _ in range(self.entry_count)]
+      self.entry_placeholder += sum(4 for o in entries_offsets
+                                    if o == ArscResTableType.NO_ENTRY)
 
-    self.entry_placeholder += sum(4 for o in entries_offsets
-                                  if o == ArscResTableType.NO_ENTRY)
+    assert entries_start_addr >= reader.Tell()
     # Skip reading actual entries.
 
   @property
@@ -647,6 +647,7 @@ class ArscResTableType(ArscChunk):
         'TYPE', {
             'type_str': self.type_str,
             'entry_count': self.entry_count,
+            'is_sparse': self.is_sparse,
             'size': self.size,
             'placeholder': self.entry_placeholder,
             'config': str(self.config),
