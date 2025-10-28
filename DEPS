@@ -428,7 +428,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': '42cbfedd76691c19af012a3d717fca07d7b09cc9',
+  'quiche_revision': 'fb1da6940289d3e8fa63599c2236505e64d050ba',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
@@ -2761,7 +2761,7 @@ deps = {
   },
 
   'src/third_party/quic_trace/src':
-    Var('chromium_git') + '/external/github.com/google/quic-trace.git' + '@' + 'e5c4ef17d934e078644e65d667ca6d86fe020d49',
+    Var('chromium_git') + '/external/github.com/google/quic-trace.git' + '@' + 'c33abf42245ee56745addc9f1e06f914c48c9ca4',
 
   'src/third_party/pywebsocket3/src':
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/pywebsocket3.git' + '@' + '50602a14f1b6da17e0b619833a13addc6ea78bc2',

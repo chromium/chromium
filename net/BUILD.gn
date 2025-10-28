@@ -3147,6 +3147,7 @@ target(_test_target_type, "net_unittests") {
     "HpackHeaderTableFuzzTest.CanCallMethodSequence",
     "HttpNoVarySearchTest.AreEquivalentImplementationsMatch",
     "PickleTest.FuzzRoundTrip",
+    "QuicheHostnameUtilsFuzzTest.FuzzPropertyNormalizationIsIdempotentForValidSni",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
     "TransportParametersFuzzTest.ParseTransportParametersDoesNotCrash",
     "UrlUnescapeIteratorTest.SameOutputAsUnescapePercentEncodedUrl",
