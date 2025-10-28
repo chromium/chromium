@@ -11,6 +11,7 @@ package private_metrics;
 
 import "dwa/deidentified_web_analytics.proto";
 import "private_metrics/domain_keyed_metrics.proto";
+import "private_metrics/private_user_metrics.proto";
 
 // A header included with each uploaded encrypted report in “associated data”,
 // documenting how the report is encrypted and how the report may be used.
@@ -103,4 +104,24 @@ message PrivateMetricReport {
   // The epoch the report is associated with. Reports may only be processed with
   // other reports from the same epoch.
   optional fixed64 epoch_id = 3;
+}
+
+// The payload of the PrivateMetricEndpoint request. This is a generic container
+// for different types of private metrics payloads sent to the Private Metrics
+// Collector (PMC) endpoint. It is designed to be extensible to support future
+// private metrics use cases.
+// Next tag: 4
+message PrivateMetricEndpointPayload {
+  oneof payload {
+    EncryptedPrivateMetricReport encrypted_private_metric_report = 1;
+    PrivateUserMetrics private_uma_report = 2;
+  }
+
+  enum ReportType {
+    REPORT_TYPE_INVALID = 1;
+    DWA = 2;
+    DKM = 3;
+    PUMA = 4;
+  }
+  optional ReportType report_type = 3;
 }
