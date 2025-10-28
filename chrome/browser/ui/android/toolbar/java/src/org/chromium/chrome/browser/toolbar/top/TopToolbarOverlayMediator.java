@@ -256,10 +256,11 @@ public class TopToolbarOverlayMediator {
                                             ? getBookmarkBarAdjustedContentOffset()
                                             : mBrowserControlsStateProvider.getTopControlsHeight();
                             if (getControlsPosition() == ControlsPosition.TOP) {
-                                mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, height);
+                                mModel.set(
+                                        TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, height);
                             } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
                                 mModel.set(
-                                        TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                        TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
                                         mBottomToolbarControlsOffsetSupplier.get()
                                                 + mViewportHeight);
                             }
@@ -291,7 +292,7 @@ public class TopToolbarOverlayMediator {
                             updateOffsetTag();
                             if (shouldUpdateOffsets) {
                                 mModel.set(
-                                        TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                        TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
                                         mBrowserControlsStateProvider.getContentOffset());
                             }
                         }
@@ -586,12 +587,12 @@ public class TopToolbarOverlayMediator {
 
         if (getControlsPosition() == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
-            mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
+            mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
             return;
         }
 
         if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
+            mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
             return;
         }
 
@@ -606,7 +607,7 @@ public class TopToolbarOverlayMediator {
             contentOffset = Math.min(getBookmarkBarAdjustedContentOffset(), contentOffset);
         }
 
-        mModel.set(TopToolbarOverlayProperties.CONTENT_OFFSET, contentOffset);
+        mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
     }
 
     private void onBottomToolbarControlsOffsetChanged(Integer ignored) {

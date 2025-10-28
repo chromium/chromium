@@ -39,6 +39,7 @@ class TopToolbarSceneLayer : public SceneLayer {
       jint url_bar_color,
       jfloat x_offset,
       jfloat y_offset,
+      jfloat legacy_content_offset,
       bool show_shadow,
       bool visible,
       bool anonymize,

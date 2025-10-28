@@ -72,7 +72,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         .with(TopToolbarOverlayProperties.VISIBLE, true)
                         .with(TopToolbarOverlayProperties.X_OFFSET, 0)
                         .with(
-                                TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
                                 browserControlsStateProvider.getContentOffset())
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
                         .with(TopToolbarOverlayProperties.SHOW_SHADOW, showHairline)

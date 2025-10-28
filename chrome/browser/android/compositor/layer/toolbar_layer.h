@@ -37,7 +37,8 @@ class ToolbarLayer : public Layer {
                     int toolbar_textbox_background_color,
                     int url_bar_background_resource_id,
                     float x_offset,
-                    float content_offset,
+                    float y_offset,
+                    float legacy_content_offset,
                     bool show_debug,
                     bool clip_shadow,
                     const viz::OffsetTag& offset_tag);

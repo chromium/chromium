@@ -41,7 +41,8 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
     jint url_bar_resource_id,
     jint url_bar_color,
     jfloat x_offset,
-    jfloat content_offset,
+    jfloat y_offset,
+    jfloat legacy_content_offset,
     bool show_shadow,
     bool visible,
     bool anonymize,
@@ -63,8 +64,8 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
   viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
   toolbar_layer_->PushResource(toolbar_resource_id, toolbar_background_color,
                                anonymize, url_bar_color, url_bar_resource_id,
-                               x_offset, content_offset, false, !show_shadow,
-                               offset_tag);
+                               x_offset, y_offset, legacy_content_offset, false,
+                               !show_shadow, offset_tag);
 }
 
 void TopToolbarSceneLayer::UpdateProgressBar(
