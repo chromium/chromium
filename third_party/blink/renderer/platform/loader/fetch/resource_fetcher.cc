@@ -135,7 +135,7 @@ static constexpr char kEarlyHintsInitiatorType[] = "early-hints";
     break;                       \
   }
 
-const std::string ResourceTypeName(ResourceType type) {
+std::string_view ResourceTypeName(ResourceType type) {
   // `ResourceType` variants in
   // tools/metrics/histograms/metadata/blink/histograms.xml
   // should be updated when you update the followings.
@@ -365,7 +365,7 @@ void MaybeRecordBoostImagePriorityReason(const bool is_first_n,
 constexpr char kLCPPDeferUnusedPreloadHistogramPrefix[] =
     "Blink.LCPP.DeferUnusedPreload.";
 
-std::string LinkPreloadStrForHistogram(bool link_preload) {
+std::string_view LinkPreloadStrForHistogram(bool link_preload) {
   return link_preload ? "LinkPreload" : "NoLinkPreload";
 }
 
