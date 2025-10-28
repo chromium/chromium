@@ -365,6 +365,7 @@ source_set("test_account_info") {
     "//base",
     "//components/signin/internal/identity_manager:capabilities",
     "//components/signin/public/identity_manager:tribool",
+    "//google_apis",
   ]
 }
 

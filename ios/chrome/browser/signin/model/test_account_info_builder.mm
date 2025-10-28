@@ -4,16 +4,17 @@
 
 #import "ios/chrome/browser/signin/model/test_account_info_builder.h"
 
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/test_account_info.h"
 
 @implementation TestAccountInfoBuilder {
-  NSString* _gaiaID;
+  GaiaId _gaiaID;
   NSMutableDictionary<NSString*, NSNumber*>* _capabilities;
 }
 
 - (instancetype)initWithTestAccountInfo:(TestAccountInfo*)testAccountInfo {
   if ((self = [super init])) {
-    _gaiaID = [testAccountInfo.gaiaID copy];
+    _gaiaID = testAccountInfo.gaiaID;
     self.userEmail = [testAccountInfo.userEmail copy];
     self.userFullName = [testAccountInfo.userFullName copy];
     self.userGivenName = [testAccountInfo.userGivenName copy];
