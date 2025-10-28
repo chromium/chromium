@@ -291,10 +291,14 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
     const webapps::AppId app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
     Browser* app_browser = LaunchWebAppBrowser(app_id);
+    EXPECT_NE(app_browser, nullptr);
+    // Ensure that the app browser is visible before proceeding. This ensures
+    // that all PWA launching processes have finished.
+    views::test::WidgetVisibleWaiter(app_browser->GetBrowserView().GetWidget())
+        .Wait();
     // TODO(crbug.com/442643377): Delete this wait after the update runs for
     // every navigation.
     provider().command_manager().AwaitAllCommandsCompleteForTesting();
-    EXPECT_NE(app_browser, nullptr);
 
     // Trigger an update, verify pending update info stored.
     const GURL update_url =
