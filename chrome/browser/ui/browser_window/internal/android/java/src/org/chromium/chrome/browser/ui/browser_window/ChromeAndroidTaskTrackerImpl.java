@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import androidx.annotation.GuardedBy;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -33,6 +36,8 @@ import java.util.Map;
 final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     private static @Nullable ChromeAndroidTaskTrackerImpl sInstance;
+
+    private static boolean sPausePendingTaskActivityCreationForTesting;
 
     /**
      * Maps {@link ChromeAndroidTask} IDs to their instances. This reflects the {@link
@@ -126,7 +131,10 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             // Apply a non-default initial show state if needed.
             setInitialShowState(pendingTask, createParams.getInitialShowState());
 
-            launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
+            // Launch the required Activity based on |createParams|.
+            if (!sPausePendingTaskActivityCreationForTesting) {
+                launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
+            }
             return pendingTask;
         }
     }
@@ -270,6 +278,20 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         synchronized (mTasksLock) {
             return mPendingTasks;
         }
+    }
+
+    static void pausePendingTaskActivityCreationForTesting() {
+        sPausePendingTaskActivityCreationForTesting = true;
+        ResettersForTesting.register(() -> sPausePendingTaskActivityCreationForTesting = false);
+    }
+
+    static void resumePendingTaskActivityCreationForTesting(
+            AndroidBrowserWindowCreateParams createParams, int pendingId) {
+        sPausePendingTaskActivityCreationForTesting = false;
+        Intent newWindowIntent = createNewWindowIntent(createParams);
+        assertNonNull(newWindowIntent);
+        newWindowIntent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
+        launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
     }
 
     @GuardedBy("mTasksLock")

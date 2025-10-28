@@ -252,6 +252,7 @@ if (is_android) {
       "//chrome/android:chrome_java",
       "//chrome/android/javatests:chrome_test_java_helper",
       "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/browser_window/public/android:java",
@@ -259,9 +260,12 @@ if (is_android) {
       "//chrome/test/android:chrome_java_test_support_common",
       "//chrome/test/android:chrome_java_transit",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
+      "//ui/base/mojom:ui_base_types_java",
     ]
     data = [ "//chrome/test/data/android/about.html" ]
   }
