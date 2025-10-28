@@ -19,6 +19,16 @@ class ConvertAIPageContentToProtoSession;
 
 namespace optimization_guide {
 
+// Tracks reasons that Autofill thinks a given field should be redacted.
+enum class AutofillFieldRedactionReason {
+  // This field does not need to be redacted according to Autofill.
+  kNoRedactionNeeded,
+
+  // This field should be redacted as it could contain sensitive payments
+  // information.
+  kShouldRedactForPayments,
+};
+
 // Represents information derived from Autofill for a given field.
 struct AutofillFieldMetadata {
   // The coarse type of the form that the field belongs to.
@@ -32,6 +42,12 @@ struct AutofillFieldMetadata {
   // flattened forms, where one virtual form is built by combining forms from
   // multiple iframes.
   uint32_t section_id;
+
+  // The redaction reason that Autofill suggests for the field. Note that this
+  // is based only on the detected type of the field, not whether or not it
+  // contains any actual content.
+  AutofillFieldRedactionReason redaction_reason =
+      AutofillFieldRedactionReason::kNoRedactionNeeded;
 };
 
 // Represents information about what fillable data is available from Autofill.

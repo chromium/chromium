@@ -36,6 +36,11 @@ namespace features {
 // Killswitch to adding autofill information to form controls.
 BASE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether or not Autofill-suggested redactions of credit card fields
+// are applied to the page content.
+BASE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {
@@ -60,6 +65,51 @@ std::optional<AutofillFieldMetadata> GetAutofillFieldData(
   }
 
   return std::nullopt;
+}
+
+proto::RedactionDecision ConvertAutofillFieldRedactionReason(
+    const optimization_guide::proto::FormControlData& form_control_data,
+    AutofillFieldRedactionReason redaction_reason) {
+  switch (redaction_reason) {
+    case AutofillFieldRedactionReason::kNoRedactionNeeded:
+      return proto::REDACTION_DECISION_NO_REDACTION_NECESSARY;
+    case AutofillFieldRedactionReason::kShouldRedactForPayments:
+      return form_control_data.field_value().empty()
+                 ? proto::REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD
+                 : proto::
+                       REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD;
+  }
+}
+
+bool ShouldRedactContent(proto::RedactionDecision redaction_decision) {
+  switch (redaction_decision) {
+    case proto::REDACTION_DECISION_NO_REDACTION_NECESSARY:
+    case proto::REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD:
+    case proto::REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD:
+      return false;
+
+    case proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD:
+      return true;
+
+    case proto::REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD:
+      return base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentAutofillCreditCardRedactions);
+
+    default:
+      // We cannot exhaustively switch nor static_assert on the proto values, as
+      // otherwise automatic syncing of new enum values will break compilation.
+      // Instead, we default to not redacting and just best-effort log.
+      LOG(ERROR) << "Missing case statement in ShouldRedactContent";
+      return false;
+  }
+}
+
+// Returns whether or not a given form control node should have its content
+// redacted (irrespective of the reason).
+bool ShouldRedactContent(
+    const optimization_guide::proto::FormControlData& form_control_data) {
+  return form_control_data.has_redaction_decision() &&
+         ShouldRedactContent(form_control_data.redaction_decision());
 }
 
 optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
@@ -521,6 +571,29 @@ void ConvertFormControlData(
         autofill_metadata->section_id);
     proto_form_control_data->add_coarse_autofill_field_type(
         autofill_metadata->coarse_field_type);
+
+    // If we do not current have a redaction decision and Autofill does, use the
+    // one that Autofill suggests.
+    //
+    // TODO(b/454611037): Handle <select> related data as well.
+    if (base::FeatureList::IsEnabled(
+            features::kAnnotatedPageContentAutofillCreditCardRedactions)) {
+      proto::RedactionDecision autofill_redaction_decision =
+          ConvertAutofillFieldRedactionReason(
+              *proto_form_control_data, autofill_metadata->redaction_reason);
+      if (proto_form_control_data->redaction_decision() ==
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY &&
+          autofill_redaction_decision !=
+              proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
+        proto_form_control_data->set_redaction_decision(
+            autofill_redaction_decision);
+
+        if (ShouldRedactContent(
+                proto_form_control_data->redaction_decision())) {
+          proto_form_control_data->clear_field_value();
+        }
+      }
+    }
   }
 }
 
@@ -907,6 +980,20 @@ class Converter {
             return base::ok();
         }
       }
+    }
+
+    // If we have discovered new redaction reasons during this conversion (e.g.,
+    // from Autofill provided data), then we should not include child nodes as
+    // child nodes can include content from redacted fields.
+    //
+    // Note that this logic can come after the iframe code above, because
+    // a single node can never be both an iframe and also be redacted due to
+    // form control data.
+    const optimization_guide::proto::ContentAttributes& proto_attributes =
+        proto_node->content_attributes();
+    if (proto_attributes.has_form_control_data() &&
+        ShouldRedactContent(proto_attributes.form_control_data())) {
+      return base::ok();
     }
 
     // We should only get here if this is either a non-redacted local frame or a

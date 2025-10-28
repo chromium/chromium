@@ -4,6 +4,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -19,6 +20,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -282,5 +284,116 @@ IN_PROC_BROWSER_TEST_F(AutofillAnnotationsProviderBrowserTest,
           optimization_guide::proto::
               AutofillInformation_FillableData_CREDIT_CARD));
 }
+
+class AutofillAnnotationsProviderRedactionBrowserTest
+    : public AutofillAnnotationsProviderBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  AutofillAnnotationsProviderRedactionBrowserTest() {
+    if (ShouldRedact()) {
+      feature_list_.InitAndEnableFeature(
+          optimization_guide::features::
+              kAnnotatedPageContentAutofillCreditCardRedactions);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          optimization_guide::features::
+              kAnnotatedPageContentAutofillCreditCardRedactions);
+    }
+  }
+
+  bool ShouldRedact() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that sensitive fields are correctly redacted by Autofill.
+IN_PROC_BROWSER_TEST_P(AutofillAnnotationsProviderRedactionBrowserTest,
+                       Redaction) {
+  LoadPage(
+      https_server()->GetURL("/address_sections_and_creditcard_filled.html"),
+      /*num_expected_forms=*/1);
+
+  std::vector<const optimization_guide::proto::FormControlData*>
+      form_control_datas = GetFormControlDatas(page_content());
+
+  // Find the fields and check their redaction status.
+  const optimization_guide::proto::FormControlData* name_full_field = nullptr;
+  const optimization_guide::proto::FormControlData* address_field = nullptr;
+  const optimization_guide::proto::FormControlData* phone_field = nullptr;
+  const optimization_guide::proto::FormControlData* cc_name_field = nullptr;
+  const optimization_guide::proto::FormControlData* cc_number_field = nullptr;
+  const optimization_guide::proto::FormControlData* cc_exp_field = nullptr;
+
+  for (const auto* field : form_control_datas) {
+    if (field->field_name() == "shipping-name") {
+      name_full_field = field;
+    } else if (field->field_name() == "shipping-address") {
+      address_field = field;
+    } else if (field->field_name() == "shipping-phone") {
+      phone_field = field;
+    } else if (field->field_name() == "cc-name") {
+      cc_name_field = field;
+    } else if (field->field_name() == "cc-number") {
+      cc_number_field = field;
+    } else if (field->field_name() == "cc-exp") {
+      cc_exp_field = field;
+    }
+  }
+
+  ASSERT_TRUE(name_full_field);
+  EXPECT_EQ(
+      name_full_field->redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  EXPECT_EQ(name_full_field->field_value(), "John Doe");
+
+  ASSERT_TRUE(address_field);
+  EXPECT_EQ(
+      address_field->redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  EXPECT_EQ(address_field->field_value(), "123 Main St");
+
+  ASSERT_TRUE(phone_field);
+  EXPECT_EQ(
+      phone_field->redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  EXPECT_EQ(phone_field->field_value(), "555-555-5555");
+
+  ASSERT_TRUE(cc_name_field);
+  EXPECT_EQ(
+      cc_name_field->redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  EXPECT_EQ(cc_name_field->field_value(), "Jane Doe");
+
+  ASSERT_TRUE(cc_number_field);
+  if (ShouldRedact()) {
+    EXPECT_EQ(cc_number_field->redaction_decision(),
+              optimization_guide::proto::
+                  REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+    EXPECT_EQ(cc_number_field->field_value(), "");
+  } else {
+    EXPECT_EQ(
+        cc_number_field->redaction_decision(),
+        optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+    EXPECT_EQ(cc_number_field->field_value(), "4111111111111111");
+  }
+
+  ASSERT_TRUE(cc_exp_field);
+  if (ShouldRedact()) {
+    EXPECT_EQ(cc_exp_field->redaction_decision(),
+              optimization_guide::proto::
+                  REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+    EXPECT_EQ(cc_exp_field->field_value(), "");
+  } else {
+    EXPECT_EQ(
+        cc_exp_field->redaction_decision(),
+        optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+    EXPECT_EQ(cc_exp_field->field_value(), "12/2030");
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutofillAnnotationsProviderRedactionBrowserTest,
+                         testing::Bool());
 
 }  // namespace autofill

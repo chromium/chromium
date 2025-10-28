@@ -27,6 +27,7 @@ namespace optimization_guide {
 
 namespace features {
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations);
+BASE_DECLARE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions);
 }  // namespace features
 
 struct RenderFrameInfo {

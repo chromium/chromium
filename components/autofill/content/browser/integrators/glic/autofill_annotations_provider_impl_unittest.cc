@@ -88,7 +88,8 @@ class AutofillAnnotationsProviderImplTest
 
 // Ensure that `section_id` and `coarse_field_type` are properly returned by
 // GetAutofillFieldData.
-TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData) {
+TEST_F(AutofillAnnotationsProviderImplTest,
+       GetAutofillFieldData_AddAnnotations) {
   // Register a form to the Autofill Manager.
   FormDescription form_description = {
       .fields = {
@@ -113,6 +114,88 @@ TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData) {
   EXPECT_EQ(metadata->section_id, 0u);
   EXPECT_EQ(metadata->coarse_field_type,
             optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_ADDRESS);
+}
+
+TEST_F(AutofillAnnotationsProviderImplTest, GetAutofillFieldData_Redaction) {
+  // Register a form to the Autofill Manager.
+  FormDescription form_description = {
+      .fields = {
+          {.server_type = autofill::NAME_FULL,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"name",
+           .name = u"name",
+           .value = u"Albert Smith"},
+          {.server_type = autofill::PHONE_HOME_WHOLE_NUMBER,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"phone",
+           .name = u"phone",
+           .value = u"1234567890"},
+          {.server_type = autofill::ADDRESS_HOME_STREET_ADDRESS,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"address",
+           .name = u"address",
+           .value = u"123 Main St"},
+          {.server_type = autofill::CREDIT_CARD_NUMBER,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"cc-number",
+           .name = u"cc-number",
+           .value = u"411111111111"},
+          {.server_type = autofill::UNKNOWN_TYPE,
+           .host_frame = LocalFrameToken(
+               contents()->GetPrimaryMainFrame()->GetFrameToken().value()),
+           .label = u"empty",
+           .name = u"empty",
+           .value = u""},
+      }};
+  FormData form = autofill::test::GetFormData(form_description);
+  autofill_manager()->AddSeenForm(
+      form, autofill::test::GetHeuristicTypes(form_description),
+      autofill::test::GetServerTypes(form_description));
+
+  ConvertAIPageContentToProtoSession session;
+  std::optional<AutofillFieldMetadata> name_metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[0].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(name_metadata);
+  EXPECT_EQ(name_metadata->redaction_reason,
+            AutofillFieldRedactionReason::kNoRedactionNeeded);
+
+  std::optional<AutofillFieldMetadata> phone_metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[1].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(phone_metadata);
+  EXPECT_EQ(phone_metadata->redaction_reason,
+            AutofillFieldRedactionReason::kNoRedactionNeeded);
+
+  std::optional<AutofillFieldMetadata> address_metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[2].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(address_metadata);
+  EXPECT_EQ(address_metadata->redaction_reason,
+            AutofillFieldRedactionReason::kNoRedactionNeeded);
+
+  std::optional<AutofillFieldMetadata> cc_metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[3].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(cc_metadata);
+  EXPECT_EQ(cc_metadata->redaction_reason,
+            AutofillFieldRedactionReason::kShouldRedactForPayments);
+
+  std::optional<AutofillFieldMetadata> unknown_metadata =
+      autofill_annotations_provider_.GetAutofillFieldData(
+          *contents()->GetPrimaryMainFrame(),
+          form.fields()[4].renderer_id().GetUnsafeValue(), session);
+  ASSERT_TRUE(unknown_metadata);
+  EXPECT_EQ(unknown_metadata->redaction_reason,
+            AutofillFieldRedactionReason::kNoRedactionNeeded);
 }
 
 // Ensures that GetAutofillAvailability returns no availability when there are
