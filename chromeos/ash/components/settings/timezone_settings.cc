@@ -371,9 +371,9 @@ TimezoneSettingsBaseImpl::GetTimezoneList() const {
 }
 
 TimezoneSettingsBaseImpl::TimezoneSettingsBaseImpl() {
-  for (size_t i = 0; i < std::size(kTimeZones); ++i) {
+  for (const char* timezone : kTimeZones) {
     timezones_.push_back(base::WrapUnique(icu::TimeZone::createTimeZone(
-        icu::UnicodeString(UNSAFE_TODO(kTimeZones[i]), -1, US_INV))));
+        icu::UnicodeString(timezone, -1, US_INV))));
   }
 }
 
