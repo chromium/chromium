@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/hash.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
@@ -56,7 +57,7 @@ void GetPdfData(const char* file_name,
 }
 
 std::string HashData(base::span<const uint8_t> data) {
-  return base::HexEncode(base::SHA1Hash(data));
+  return base::HexEncode(crypto::hash::Sha256(data));
 }
 
 void ComparePwgOutput(const base::FilePath& expected_file,

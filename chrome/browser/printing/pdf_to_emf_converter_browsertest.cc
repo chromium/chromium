@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/hash.h"
 #include "printing/emf_win.h"
 #include "printing/metafile.h"
 #include "printing/pdf_render_settings.h"
@@ -108,7 +109,7 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
 }
 
 std::string HashData(base::span<const uint8_t> data) {
-  return base::HexEncode(base::SHA1Hash(data));
+  return base::HexEncode(crypto::hash::Sha256(data));
 }
 
 class PdfToEmfConverterBrowserTest
