@@ -6,6 +6,9 @@ import("//build/config/cast.gni")
 import("//build/config/features.gni")
 
 declare_args() {
+  # Whether or not to use external popup menu.
+  use_external_popup_menu = is_android || (is_apple && use_blink)
+
   # Enables basic plugin support. This enables support for registering and
   # looking up plugins.
   #

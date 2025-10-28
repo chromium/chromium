@@ -20,6 +20,7 @@ if (is_android) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "USE_EXTERNAL_POPUP_MENU=$use_external_popup_menu",
     "ENABLE_DEVTOOLS_FRONTEND=$enable_devtools_frontend",
     "ENABLE_PLUGINS=$enable_plugins",
     "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
