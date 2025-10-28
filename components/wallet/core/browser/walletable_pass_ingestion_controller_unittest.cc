@@ -22,11 +22,12 @@ using base::test::EqualsProto;
 using optimization_guide::ModelBasedCapabilityKey::kWalletablePassExtraction;
 using optimization_guide::OptimizationGuideDecision::kFalse;
 using optimization_guide::OptimizationGuideDecision::kTrue;
-using optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST;
+using optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST;
 using optimization_guide::proto::WalletablePass;
 using testing::_;
 using testing::Return;
 using testing::WithArgs;
+using enum optimization_guide::proto::PassCategory;
 
 namespace wallet {
 namespace {
@@ -133,34 +134,40 @@ class WalletablePassIngestionControllerTest : public testing::Test {
 };
 
 TEST_F(WalletablePassIngestionControllerTest,
-       IsEligibleForExtraction_NonHttpUrl_NotEligible) {
+       GetPassCategoryForURL_NonHttpUrl_NotEligible) {
   GURL file_url("file:///test.html");
-  EXPECT_FALSE(test_api(controller()).IsEligibleForExtraction(file_url));
+  EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(file_url),
+            std::nullopt);
 
   GURL ftp_url("ftp://example.com");
-  EXPECT_FALSE(test_api(controller()).IsEligibleForExtraction(ftp_url));
+  EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(ftp_url),
+            std::nullopt);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
-       IsEligibleForExtraction_AllowlistedUrl) {
+       GetPassCategoryForURL_AllowlistedUrl) {
   GURL https_url("https://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  https_url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(
+          https_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
       .WillOnce(Return(kTrue));
 
-  EXPECT_TRUE(test_api(controller()).IsEligibleForExtraction(https_url));
+  EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(https_url),
+            PASS_CATEGORY_LOYALTY_CARD);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
-       IsEligibleForExtraction_NotAllowlistedUrl) {
+       GetPassCategoryForURL_NotAllowlistedUrl) {
   GURL http_url("http://example.com");
-  EXPECT_CALL(mock_decider(),
-              CanApplyOptimization(
-                  http_url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
+  EXPECT_CALL(
+      mock_decider(),
+      CanApplyOptimization(
+          http_url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
       .WillOnce(Return(kFalse));
 
-  EXPECT_FALSE(test_api(controller()).IsEligibleForExtraction(http_url));
+  EXPECT_EQ(test_api(controller()).GetPassCategoryForURL(http_url),
+            std::nullopt);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -179,9 +186,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        StartWalletablePassDetectionFlow_NotEligible) {
   GURL url("https://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
       .WillOnce(Return(kFalse));
 
   EXPECT_CALL(*controller(), GetAnnotatedPageContent(_)).Times(0);
@@ -191,9 +198,9 @@ TEST_F(WalletablePassIngestionControllerTest,
 TEST_F(WalletablePassIngestionControllerTest,
        StartWalletablePassDetectionFlow_Eligible) {
   GURL url("https://example.com");
-  EXPECT_CALL(
-      mock_decider(),
-      CanApplyOptimization(url, WALLETABLE_PASS_DETECTION_ALLOWLIST, nullptr))
+  EXPECT_CALL(mock_decider(),
+              CanApplyOptimization(
+                  url, WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST, nullptr))
       .WillOnce(Return(kTrue));
 
   // Expect ShowWalletablePassConsentBubble to be called.

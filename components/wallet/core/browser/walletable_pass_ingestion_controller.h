@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
 #include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_category.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 
@@ -52,9 +53,16 @@ class WalletablePassIngestionController {
   // extraction allowlist.
   void RegisterOptimizationTypes();
 
-  // Checks if the URL is eligible for pass extraction. This is determined by
-  // consulting an allowlist managed by the Optimization Guide.
-  bool IsEligibleForExtraction(const GURL& url) const;
+  // Searches the Optimization Guide's allowlists to find a pass category
+  // for the given `url`.
+  //
+  // Each PassCategory has its own allowlist. This method returns the
+  // *first* category that lists the `url`.
+  //
+  // Returns the matching PassCategory if found, or std::nullopt if the `url`
+  // is not in any pass allowlist.
+  std::optional<optimization_guide::proto::PassCategory> GetPassCategoryForURL(
+      const GURL& url) const;
 
   // Gets the title of current page.
   virtual std::string GetPageTitle() const = 0;

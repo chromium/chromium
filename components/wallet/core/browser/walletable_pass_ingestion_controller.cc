@@ -15,8 +15,10 @@
 namespace wallet {
 namespace {
 
-using enum WalletablePassClient::WalletablePassBubbleResult;
+using optimization_guide::proto::PassCategory;
 using optimization_guide::proto::WalletablePass;
+using enum WalletablePassClient::WalletablePassBubbleResult;
+using enum optimization_guide::proto::PassCategory;
 
 std::string GetWalletablePassCategory(const WalletablePass& walletable_pass) {
   switch (walletable_pass.pass_case()) {
@@ -46,12 +48,13 @@ WalletablePassIngestionController::~WalletablePassIngestionController() =
 
 void WalletablePassIngestionController::RegisterOptimizationTypes() {
   client_->GetOptimizationGuideDecider()->RegisterOptimizationTypes(
-      {optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST});
+      {optimization_guide::proto::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST});
 }
 
 void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
     const GURL& url) {
-  if (!IsEligibleForExtraction(url)) {
+  std::optional<PassCategory> pass_category = GetPassCategoryForURL(url);
+  if (!pass_category) {
     return;
   }
 
@@ -59,18 +62,25 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
   ShowConsentBubble(url);
 }
 
-bool WalletablePassIngestionController::IsEligibleForExtraction(
+std::optional<PassCategory>
+WalletablePassIngestionController::GetPassCategoryForURL(
     const GURL& url) const {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
-    return false;
+    return std::nullopt;
   }
 
   // Check if URL is allowlisted via optimization guide
-  return client_->GetOptimizationGuideDecider()->CanApplyOptimization(
-             url,
-             optimization_guide::proto::WALLETABLE_PASS_DETECTION_ALLOWLIST,
-             /*optimization_metadata=*/nullptr) ==
-         optimization_guide::OptimizationGuideDecision::kTrue;
+  if (client_->GetOptimizationGuideDecider()->CanApplyOptimization(
+          url,
+          optimization_guide::proto::
+              WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) ==
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return PASS_CATEGORY_LOYALTY_CARD;
+  }
+
+  // TODO(crbug.com/455680372): Check more allowlists.
+  return std::nullopt;
 }
 
 void WalletablePassIngestionController::ShowConsentBubble(const GURL& url) {

@@ -25,8 +25,9 @@ class WalletablePassIngestionControllerTestApi {
       WalletablePassIngestionController* controller)
       : controller_(CHECK_DEREF(controller)) {}
 
-  bool IsEligibleForExtraction(const GURL& url) {
-    return controller_->IsEligibleForExtraction(url);
+  std::optional<optimization_guide::proto::PassCategory> GetPassCategoryForURL(
+      const GURL& url) {
+    return controller_->GetPassCategoryForURL(url);
   }
 
   void ExtractWalletablePass(
