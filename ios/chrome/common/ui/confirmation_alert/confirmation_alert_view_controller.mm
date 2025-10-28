@@ -361,7 +361,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (void)didTapSecondaryActionButton {
-  CHECK(self.secondaryActionString);
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertSecondaryAction)]) {
     [self.actionHandler confirmationAlertSecondaryAction];
@@ -369,7 +368,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (void)didTapTertiaryActionButton {
-  CHECK(self.tertiaryActionString);
   if ([self.actionHandler
           respondsToSelector:@selector(confirmationAlertTertiaryAction)]) {
     [self.actionHandler confirmationAlertTertiaryAction];
