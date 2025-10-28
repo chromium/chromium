@@ -130,26 +130,30 @@ void SidePanelCoordinator::Show(
   SidePanelEntry* entry = GetEntryForUniqueKey(input);
 
   if (!IsSidePanelShowing(entry->type())) {
-    SetOpenedTimestamp(base::TimeTicks::Now());
-    SidePanelUtil::RecordSidePanelOpen(open_trigger);
-    // Record usage for side panel promo.
-    feature_engagement::TrackerFactory::GetForBrowserContext(
-        browser_view_->GetProfile())
-        ->NotifyEvent("side_panel_shown");
+    SetOpenedTimestamp(entry->type(), base::TimeTicks::Now());
+    SidePanelUtil::RecordSidePanelOpen(entry->type(), open_trigger);
 
-    // Close IPH for side panel if shown.
-    ClosePromoAndMaybeNotifyUsed(
-        feature_engagement::kIPHReadingListInSidePanelFeature,
-        SidePanelEntryId::kReadingList, input.key.id());
-    ClosePromoAndMaybeNotifyUsed(
-        feature_engagement::kIPHPowerBookmarksSidePanelFeature,
-        SidePanelEntryId::kBookmarks, input.key.id());
-    ClosePromoAndMaybeNotifyUsed(
-        feature_engagement::kIPHReadingModeSidePanelFeature,
-        SidePanelEntryId::kReadAnything, input.key.id());
+    if (entry->type() == SidePanelEntry::PanelType::kContent) {
+      // Record usage for side panel promo.
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          browser_view_->GetProfile())
+          ->NotifyEvent("side_panel_shown");
+
+      // Close IPH for side panel if shown.
+      ClosePromoAndMaybeNotifyUsed(
+          feature_engagement::kIPHReadingListInSidePanelFeature,
+          SidePanelEntryId::kReadingList, input.key.id());
+      ClosePromoAndMaybeNotifyUsed(
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature,
+          SidePanelEntryId::kBookmarks, input.key.id());
+      ClosePromoAndMaybeNotifyUsed(
+          feature_engagement::kIPHReadingModeSidePanelFeature,
+          SidePanelEntryId::kReadAnything, input.key.id());
+    }
   }
 
-  SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
+  SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(entry->type(),
+                                                         open_trigger);
 
   // If the side panel is already showing, cancel all loads and do nothing.
   if (current_key(entry->type()) && *current_key(entry->type()) == input) {
@@ -168,7 +172,7 @@ void SidePanelCoordinator::Show(
   }
 
   SidePanelUtil::RecordEntryShowTriggeredMetrics(
-      browser_view_->browser(), entry->key().id(), open_trigger);
+      entry->type(), browser_view_->browser(), entry->key().id(), open_trigger);
 
   waiter(entry->type())
       ->WaitForEntry(entry,
@@ -424,7 +428,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
     content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }
   side_panel->RemoveHeaderView();
-  SidePanelUtil::RecordSidePanelClosed(opened_timestamp());
+  SidePanelUtil::RecordSidePanelClosed(type, opened_timestamp(type));
 }
 
 void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(

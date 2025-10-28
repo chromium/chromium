@@ -117,9 +117,9 @@ bool SidePanelUIBase::IsSidePanelEntryShowing(
   return false;
 }
 
-void SidePanelUIBase::SetOpenedTimestamp(base::TimeTicks timestamp) {
-  panel_data_.at(SidePanelEntry::PanelType::kContent)->opened_timestamp =
-      timestamp;
+void SidePanelUIBase::SetOpenedTimestamp(SidePanelEntry::PanelType type,
+                                         base::TimeTicks timestamp) {
+  panel_data_.at(type)->opened_timestamp = timestamp;
 }
 
 void SidePanelUIBase::NotifyShownCallbacksFor(SidePanelEntry::PanelType type) {

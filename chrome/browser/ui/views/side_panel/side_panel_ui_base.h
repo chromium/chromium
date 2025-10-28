@@ -131,10 +131,10 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
       SidePanelRegistry* old_contextual_registry,
       SidePanelRegistry* new_contextual_registry) = 0;
 
-  void SetOpenedTimestamp(base::TimeTicks timestamp);
-  base::TimeTicks opened_timestamp() {
-    return panel_data_.at(SidePanelEntry::PanelType::kContent)
-        ->opened_timestamp;
+  void SetOpenedTimestamp(SidePanelEntry::PanelType type,
+                          base::TimeTicks timestamp);
+  base::TimeTicks opened_timestamp(SidePanelEntry::PanelType type) {
+    return panel_data_.at(type)->opened_timestamp;
   }
 
   void NotifyShownCallbacksFor(SidePanelEntry::PanelType type);

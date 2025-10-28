@@ -38,6 +38,15 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_legacy_side_panel_coordinator.h"
 #endif
 
+namespace {
+
+std::string GetSidePanelNameFor(SidePanelEntry::PanelType type) {
+  return type == SidePanelEntry::PanelType::kContent ? "SidePanel"
+                                                     : "ToolbarHeightSidePanel";
+}
+
+}  // namespace
+
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
                                           SidePanelRegistry* window_registry) {
@@ -122,27 +131,36 @@ actions::ActionItem* SidePanelUtil::GetActionItem(
 }
 
 void SidePanelUtil::RecordSidePanelOpen(
+    SidePanelEntry::PanelType type,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
-  base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({GetSidePanelNameFor(type), ".Show"}).c_str()));
 
   if (trigger.has_value()) {
-    base::UmaHistogramEnumeration("SidePanel.OpenTrigger", trigger.value());
+    base::UmaHistogramEnumeration(
+        base::StrCat({GetSidePanelNameFor(type), ".OpenTrigger"}),
+        trigger.value());
   }
 }
 
 void SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(
+    SidePanelEntry::PanelType type,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
-    base::UmaHistogramEnumeration("SidePanel.OpenOrChangeEntryTrigger",
-                                  trigger.value());
+    base::UmaHistogramEnumeration(
+        base::StrCat({GetSidePanelNameFor(type), ".OpenOrChangeEntryTrigger"}),
+        trigger.value());
   }
 }
 
-void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
-  base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
+void SidePanelUtil::RecordSidePanelClosed(SidePanelEntry::PanelType type,
+                                          base::TimeTicks opened_timestamp) {
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({GetSidePanelNameFor(type), ".Hide"}).c_str()));
 
-  base::UmaHistogramLongTimes("SidePanel.OpenDuration",
-                              base::TimeTicks::Now() - opened_timestamp);
+  base::UmaHistogramLongTimes(
+      base::StrCat({GetSidePanelNameFor(type), ".OpenDuration"}),
+      base::TimeTicks::Now() - opened_timestamp);
 }
 
 void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
@@ -195,13 +213,14 @@ void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordEntryShowTriggeredMetrics(
+    SidePanelEntry::PanelType type,
     Browser* browser,
     SidePanelEntry::Id id,
     std::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
-                      ".ShowTriggered"}),
+        base::StrCat({GetSidePanelNameFor(type), ".",
+                      SidePanelEntryIdToHistogramName(id), ".ShowTriggered"}),
         trigger.value());
   }
 }

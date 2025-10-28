@@ -66,6 +66,11 @@ chromium-metrics-reviews@google.com.
   <variant name="WebView"/>
 </variants>
 
+<variants name="SidePanelType">
+  <variant name="SidePanel" summary="content height side panel"/>
+  <variant name="ToolbarHeightSidePanel" summary="toolbar height side panel"/>
+</variants>
+
 <!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
 
 <variants name="SpareProcessMaybeTakeAction">
@@ -2099,38 +2104,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SidePanel.OpenDuration" units="ms" expires_after="2026-03-22">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records how long the side panel was open for (capped at 1 hour) starting
-    when the side panel is triggered to be opened. Note this might be different
-    than when the side panel becomes visible due to delays for loading content.
-    Recorded when the side panel is closed.
-  </summary>
-</histogram>
-
-<histogram name="SidePanel.OpenOrChangeEntryTrigger"
-    enum="SidePanelOpenTrigger" expires_after="2026-03-15">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Logs the UI location from which the side panel is triggered to be opened or
-    to change the entry shown. Recorded when the side panel is shown or the
-    entry changed and a trigger is provided.
-  </summary>
-</histogram>
-
-<histogram name="SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
-    expires_after="2026-03-22">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Logs the UI location from which the side panel is triggered to be opened.
-    Recorded when the side panel is shown and a trigger is provided.
-  </summary>
-</histogram>
-
 <histogram name="SidePanel.ResizedWidth" units="px" expires_after="2026-04-05">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -2195,19 +2168,6 @@ chromium-metrics-reviews@google.com.
   <token key="SidePanelEntry" variants="SidePanelEntry"/>
 </histogram>
 
-<histogram name="SidePanel.{SidePanelEntry}.ShowTriggered"
-    enum="SidePanelOpenTrigger" expires_after="2026-03-22">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records how a side panel entry is triggered to be shown. (i.e. by toolbar
-    button, by commbobox selection). This is recorded when a new side panel
-    entry is triggered to be shown regardless any side panel entry is currently
-    open.
-  </summary>
-  <token key="SidePanelEntry" variants="SidePanelEntry"/>
-</histogram>
-
 <histogram name="SidePanel.{SidePanelEntry}.TimeFromEntryTriggerToShown"
     units="ms" expires_after="2026-03-01">
   <owner>corising@chromium.org</owner>
@@ -2216,6 +2176,57 @@ chromium-metrics-reviews@google.com.
     Records elapsed time between when the {SidePanelEntry} side panel entry
     triggered to be shown and when it was shown.
   </summary>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
+<histogram name="{SidePanelType}.OpenDuration" units="ms"
+    expires_after="2026-03-22">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how long the {SidePanelType} was open for (capped at 1 hour)
+    starting when the {SidePanelType} is triggered to be opened. Note this might
+    be different than when the {SidePanelType} becomes visible due to delays for
+    loading content. Recorded when the {SidePanelType} is closed.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.OpenOrChangeEntryTrigger"
+    enum="SidePanelOpenTrigger" expires_after="2026-03-15">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs the UI location from which the {SidePanelType} is triggered to be
+    opened or to change the entry shown. Recorded when the {SidePanelType} is
+    shown or the entry changed and a trigger is provided.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.OpenTrigger" enum="SidePanelOpenTrigger"
+    expires_after="2026-03-22">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs the UI location from which the {SidePanelType} is triggered to be
+    opened. Recorded when the {SidePanelType} is shown and a trigger is
+    provided.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.{SidePanelEntry}.ShowTriggered"
+    enum="SidePanelOpenTrigger" expires_after="2026-03-22">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how a {SidePanelType} entry is triggered to be shown. (i.e. by
+    toolbar button, by commbobox selection). This is recorded when a new
+    {SidePanelType} entry is triggered to be shown regardless any
+    {SidePanelType} entry is currently open.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
   <token key="SidePanelEntry" variants="SidePanelEntry"/>
 </histogram>
 

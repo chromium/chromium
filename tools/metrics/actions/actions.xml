@@ -826,6 +826,11 @@ should be able to be added at any place in this file.
   <variant name=".UnfamiliarSite" summary="Recorded on an unfamiliar site."/>
 </variants>
 
+<variants name="SidePanelType">
+  <variant name="SidePanel" summary="content height side panel"/>
+  <variant name="ToolbarHeightSidePanel" summary="toolbar height side panel"/>
+</variants>
+
 <variants name="TabsSuggestions_Type">
   <variant name="" summary="aggregated"/>
   <variant name=".Closing"
@@ -41628,12 +41633,6 @@ should be able to be added at any place in this file.
   <description>Recorded when the Glic side panel entry is shown.</description>
 </action>
 
-<action name="SidePanel.Hide">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>The user closed the side panel.</description>
-</action>
-
 <action name="SidePanel.History.Shown">
   <owner>mfacey@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -41825,12 +41824,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the shopping insights side panel entry is shown.
   </description>
-</action>
-
-<action name="SidePanel.Show">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>The user opened the side panel.</description>
 </action>
 
 <action name="SidePanel.SideSearch.NewTabButtonClicked">
@@ -52649,6 +52642,20 @@ should be able to be added at any place in this file.
 <action name="ZoomPlus_AtMaximum">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="{SidePanelType}.Hide">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>The user closed the {SidePanelType}.</description>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</action>
+
+<action name="{SidePanelType}.Show">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>The user opened the {SidePanelType}.</description>
+  <token key="SidePanelType" variants="SidePanelType"/>
 </action>
 
 </actions>
