@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -81,25 +82,31 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(PaidContentState)
 enum class PaidContentState {
   kUnknown = 0,
   kHasPaidContent = 1,
   kNoPaidContentFound = 2,
+  kMaxValue = kNoPaidContentFound,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PaidContentState)
+
+const char kHistogramPaidContentPageLoad[] = "PageLoad.PaidContent.State";
 
 void RecordPaidContentPageLoad(
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate,
     std::optional<bool> has_paid_content) {
-  ukm::builders::PaidContentPageLoad builder(delegate.GetPageUkmSourceId());
-  // TODO(gklassen): Add UMA.
+  PaidContentState state = PaidContentState::kUnknown;
   // TODO(gklassen): Consider adding support for isAccessibleForFree=true as new
   // enum value.
-  PaidContentState value = PaidContentState::kUnknown;
   if (has_paid_content.has_value()) {
-    value = has_paid_content.value() ? PaidContentState::kHasPaidContent
+    state = has_paid_content.value() ? PaidContentState::kHasPaidContent
                                      : PaidContentState::kNoPaidContentFound;
   }
-  builder.SetHasPaidContent(static_cast<int64_t>(value));
+  base::UmaHistogramEnumeration(kHistogramPaidContentPageLoad, state);
+
+  ukm::builders::PaidContentPageLoad builder(delegate.GetPageUkmSourceId());
+  builder.SetHasPaidContent(static_cast<int64_t>(state));
   builder.Record(ukm::UkmRecorder::Get());
 }
 
