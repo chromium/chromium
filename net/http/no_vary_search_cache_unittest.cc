@@ -1181,7 +1181,7 @@ TEST_P(NoVarySearchCacheTest, ReplayInsertBadURLs) {
   });
   static constexpr std::string_view kRealURL = "https://example.example/test";
   const std::string partition_key = GenerateCachePartitionKey(kRealURL);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   const std::optional<std::string> query = "t=1";
   const base::Time update_time;
   for (const auto& [description, bad_url] : kBadURLs) {
@@ -1195,17 +1195,30 @@ TEST_P(NoVarySearchCacheTest, ReplayInsertBadURLs) {
 TEST_P(NoVarySearchCacheTest, ReplayInsertBadQuery) {
   static constexpr std::string_view kUrl = "https://example.example/";
   const std::string partition_key = GenerateCachePartitionKey(kUrl);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   const base::Time update_time;
   cache().ReplayInsert(partition_key, std::string(kUrl), nvs_data, "t=1#what",
                        update_time);
   EXPECT_EQ(cache().size(), 0u);
 }
 
+TEST_P(NoVarySearchCacheTest, ReplayEraseSuccess) {
+  static constexpr std::string_view kUrl = "https://example.example/";
+  const std::string partition_key = GenerateCachePartitionKey(kUrl);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
+  const std::optional<std::string> query = "t=1";
+  const base::Time update_time;
+  cache().ReplayInsert(partition_key, std::string(kUrl), nvs_data, query,
+                       update_time);
+
+  cache().ReplayErase(partition_key, std::string(kUrl), nvs_data, query);
+  EXPECT_EQ(cache().size(), 0u);
+}
+
 TEST_P(NoVarySearchCacheTest, ReplayEraseOnEmptyCache) {
   static constexpr std::string_view kUrl = "https://example.example/";
   const std::string partition_key = GenerateCachePartitionKey(kUrl);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   cache().ReplayErase(partition_key, std::string(kUrl), nvs_data, "t=1");
   EXPECT_EQ(cache().size(), 0u);
 }
@@ -1213,7 +1226,7 @@ TEST_P(NoVarySearchCacheTest, ReplayEraseOnEmptyCache) {
 TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedPartition) {
   static constexpr std::string_view kUrl = "https://example.example/";
   const std::string partition_key = GenerateCachePartitionKey(kUrl);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   const std::optional<std::string> query = "t=1";
   const base::Time update_time;
   cache().ReplayInsert(partition_key, std::string(kUrl), nvs_data, query,
@@ -1226,7 +1239,7 @@ TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedPartition) {
 TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedBaseUrl) {
   static constexpr std::string_view kUrl = "https://example.example/";
   const std::string partition_key = GenerateCachePartitionKey(kUrl);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   const std::optional<std::string> query = "t=1";
   const base::Time update_time;
   cache().ReplayInsert(partition_key, std::string(kUrl), nvs_data, query,
@@ -1239,7 +1252,7 @@ TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedBaseUrl) {
 TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedNVSData) {
   static constexpr std::string_view kUrl = "https://example.example/";
   const std::string partition_key = GenerateCachePartitionKey(kUrl);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   const std::optional<std::string> query = "t=1";
   const base::Time update_time;
   cache().ReplayInsert(partition_key, std::string(kUrl), nvs_data, query,
@@ -1255,7 +1268,7 @@ TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedNVSData) {
 TEST_P(NoVarySearchCacheTest, ReplayEraseMismatchedQuery) {
   static constexpr std::string_view kUrl = "https://example.example/";
   const std::string partition_key = GenerateCachePartitionKey(kUrl);
-  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  const auto nvs_data = HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
   const std::optional<std::string> query = "t=1";
   const base::Time update_time;
   cache().ReplayInsert(partition_key, std::string(kUrl), nvs_data, query,
