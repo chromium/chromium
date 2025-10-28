@@ -1530,41 +1530,36 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
       Node().ItemsData(line_info.UseFirstLineStyle()).items;
   String text = Node().ItemsData(line_info.UseFirstLineStyle()).text_content;
   InlineItemTextIndex current;
-  if (!line_info.Results().empty()) {
-    // We use the end index of the last InlineItemResult rather than
-    // the break token because we need to count the width for
-    // collapsed trailing spaces.
-    current = line_info.Results()[line_info.Results().size() - 1].End();
-
-    breakpoint_status = kMightHaveBreakpoints;
-
-    // Is the breakpoint that we found on the line-breaking with ellipsis a
-    // breakpoint that could be found with a regular line-breaking? The spaces
-    // that caused this breakpoint, if any, are between `current` and the break
-    // token, so we check their styles.
-    InlineItemTextIndex break_token_index = line_info.GetBreakToken()->Start();
-    InlineItemTextIndex idx = current;
-    while (idx.item_index <= break_token_index.item_index) {
-      if (idx.text_offset == items[idx.item_index]->EndOffset()) {
-        idx.item_index++;
-        continue;
-      }
-      if (idx == break_token_index) {
-        break;
-      }
-      // There are collapsed spaces that belong to this item.
-      if (items[idx.item_index]->Style()->ShouldWrapLine()) {
+  if (line_info.HasTrailingSpaces()) {
+    // If the line ends with hanging spaces, those item results were treated as
+    // zero width, and so they don't represent the width they'd have without the
+    // ellipsis. So we set `current` to the end of the last result that doesn't
+    // hang (if any), or the start of the first result otherwise.
+    current = line_info.Results()[0].Start();
+    for (auto& item_result : base::Reversed(line_info.Results())) {
+      if (item_result.item->EndCollapseType() !=
+              InlineItem::kOpaqueToCollapsing &&
+          !item_result.has_only_pre_wrap_trailing_spaces) {
+        current = item_result.End();
         breakpoint_status = kHasBreakpoints;
         break;
       }
-      idx.text_offset = items[idx.item_index]->EndOffset();
-      idx.item_index++;
     }
+  } else if (!line_info.Results().empty()) {
+    // We use the end index of the last InlineItemResult rather than
+    // the break token because we need to count the width for
+    // collapsed trailing spaces.
+    breakpoint_status = kHasBreakpoints;
+    current = line_info.Results().back().End();
   } else {
     current = line_info.GetBreakToken()->Start();
   }
 
+  // `can_hang_or_collapse` is an upper bound for the width of the line that
+  // would collapse or hang.
   LayoutUnit can_hang_or_collapse;
+
+  // This loop breaks when we're guaranteed to overflow.
   while (remaining_width + can_hang_or_collapse >= LayoutUnit() &&
          current.item_index < items.size()) {
     const InlineItem& item = *items[current.item_index];
@@ -1602,7 +1597,24 @@ InlineLayoutAlgorithm::DoesRemainderFitInLineWithoutEllipsis(
       switch (item.EndCollapseType()) {
         case InlineItem::kNotCollapsible:
         case InlineItem::kCollapsed:
-          can_hang_or_collapse = LayoutUnit();
+          // Even if the item is not collapsible, it could still have hanging
+          // whitespace.
+          {
+            bool has_hanging_whitespace = false;
+            if (!item.Style()->ShouldBreakSpaces()) {
+              UChar last_char = text[item.EndOffset() - 1];
+              has_hanging_whitespace =
+                  Character::IsOtherSpaceSeparator(last_char) ||
+                  (item.Style()->ShouldPreserveWhiteSpaces() &&
+                   item.Style()->ShouldWrapLine() &&
+                   (last_char == uchar::kSpace || last_char == uchar::kTab));
+            }
+            if (has_hanging_whitespace) {
+              can_hang_or_collapse += width;
+            } else {
+              can_hang_or_collapse = LayoutUnit();
+            }
+          }
           break;
         case InlineItem::kCollapsible:
           can_hang_or_collapse += width;

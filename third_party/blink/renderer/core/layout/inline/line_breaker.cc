@@ -2441,12 +2441,13 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
     if (item_result->StartOffset() == item.StartOffset() &&
         item_result->EndOffset() == item.EndOffset()) {
       item_result->inline_size =
-          item_result->shape_result && mode_ != LineBreakerMode::kMinContent
+          item_result->shape_result && mode_ != LineBreakerMode::kMinContent &&
+                  !line_clamp_ellipsis_width_
               ? item_result->shape_result->SnappedWidth()
               : LayoutUnit();
     } else {
       UpdateShapeResult(*line_info, item_result);
-      if (mode_ == LineBreakerMode::kMinContent) {
+      if (mode_ == LineBreakerMode::kMinContent || line_clamp_ellipsis_width_) {
         item_result->inline_size = LayoutUnit();
       }
     }
