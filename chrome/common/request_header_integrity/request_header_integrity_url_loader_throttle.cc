@@ -101,9 +101,11 @@ void RequestHeaderIntegrityURLLoaderThrottle::DetachFromCurrentSequence() {}
 void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
-  if (google_util::IsGoogleAssociatedDomainUrl(request->url)) {
-    AddRequestIntegrityHeaders(&(request->cors_exempt_headers));
+  if (!google_util::IsGoogleAssociatedDomainUrl(request->url)) {
+    return;
   }
+
+  AddRequestIntegrityHeaders(&(request->cors_exempt_headers));
 }
 
 void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
@@ -129,25 +131,6 @@ bool RequestHeaderIntegrityURLLoaderThrottle::IsFeatureEnabled() {
 void RequestHeaderIntegrityURLLoaderThrottle::UpdateCorsExemptHeaders(
     network::mojom::NetworkContextParams* params) {
   AddRequestIntegrityHeaderNamesToVector(&(params->cors_exempt_header_list));
-}
-
-// static
-void RequestHeaderIntegrityURLLoaderThrottle::ModifyRequestIntegrityHeaders(
-    const GURL& url,
-    bool url_is_redirect,
-    net::HttpRequestHeaders& cors_exempt_headers) {
-  CHECK(IsFeatureEnabled());
-  if (google_util::IsGoogleAssociatedDomainUrl(url)) {
-    AddRequestIntegrityHeaders(&cors_exempt_headers);
-    return;
-  }
-  if (url_is_redirect) {
-    std::vector<std::string> to_be_removed_request_headers;
-    AddRequestIntegrityHeaderNamesToVector(&to_be_removed_request_headers);
-    for (const std::string& name : to_be_removed_request_headers) {
-      cors_exempt_headers.RemoveHeader(name);
-    }
-  }
 }
 
 }  // namespace request_header_integrity

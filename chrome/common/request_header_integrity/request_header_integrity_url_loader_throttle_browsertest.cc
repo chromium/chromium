@@ -12,13 +12,11 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -41,20 +39,6 @@
 #if !defined(COPYRIGHT_HEADER_NAME)
 #define COPYRIGHT_HEADER_NAME "X-Placeholder-4"
 #endif
-
-namespace {
-constexpr char kAddSpeculationRulePrefetchScript[] = R"({
-    const script = document.createElement('script');
-    script.type = 'speculationrules';
-    script.text = `{
-      "prefetch": [{
-        "source": "list",
-        "urls": [$1]
-      }]
-    }`;
-    document.head.appendChild(script);
-  })";
-}  // namespace
 
 class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
     : public InProcessBrowserTest {
@@ -155,18 +139,6 @@ class RequestHeaderIntegrityURLLoaderThrottleBrowserTest
     base::RunLoop loop;
     done_callbacks_.emplace(url, loop.QuitClosure());
     loop.Run();
-  }
-
-  void StartPrefetch(const GURL& prefetch_url) {
-    std::string script =
-        content::JsReplace(kAddSpeculationRulePrefetchScript, prefetch_url);
-    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(script), base::NullCallback(),
-        content::ISOLATED_WORLD_ID_GLOBAL);
-  }
-
-  content::WebContents* web_contents() {
-    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
  private:
@@ -280,29 +252,9 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
-                       HeadersAddedForGoogleUrlPrefetch) {
-  GURL google_url = GetGoogleUrl();
-  StartPrefetch(google_url);
-  WaitForRequest(google_url);
-  EXPECT_TRUE(HasReceivedHeader(google_url, LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_TRUE(HasReceivedHeader(google_url, VALIDATE_HEADER_NAME));
-  EXPECT_TRUE(HasReceivedHeader(google_url, COPYRIGHT_HEADER_NAME));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        HeadersNotAddedForChromium) {
   GURL chromium_url = GetChromiumUrl();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_url));
-  EXPECT_FALSE(HasReceivedHeader(chromium_url, LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_FALSE(HasReceivedHeader(chromium_url, VALIDATE_HEADER_NAME));
-  EXPECT_FALSE(HasReceivedHeader(chromium_url, COPYRIGHT_HEADER_NAME));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
-                       HeadersNotAddedForChromiumPrefetch) {
-  GURL chromium_url = GetChromiumUrl();
-  StartPrefetch(chromium_url);
-  WaitForRequest(chromium_url);
   EXPECT_FALSE(HasReceivedHeader(chromium_url, LASTCHANGE_YEAR_HEADER_NAME));
   EXPECT_FALSE(HasReceivedHeader(chromium_url, VALIDATE_HEADER_NAME));
   EXPECT_FALSE(HasReceivedHeader(chromium_url, COPYRIGHT_HEADER_NAME));
@@ -344,29 +296,9 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
-                       RedirectFromChromiumToChromiumPrefetch) {
-  StartPrefetch(GetChromiumToChromiumRedirectUrl());
-  GURL target_url = GetChromiumUrl();
-  WaitForRequest(target_url);
-  EXPECT_FALSE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_FALSE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
-  EXPECT_FALSE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        RedirectFromChromiumToGoogle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GetChromiumToGoogleRedirectUrl()));
-  GURL target_url = GetGoogleUrl();
-  WaitForRequest(target_url);
-  EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_TRUE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
-  EXPECT_TRUE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
-                       RedirectFromChromiumToGooglePrefetch) {
-  StartPrefetch(GetChromiumToGoogleRedirectUrl());
   GURL target_url = GetGoogleUrl();
   WaitForRequest(target_url);
   EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
@@ -386,29 +318,9 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
-                       RedirectFromGoogleToChromiumPrefetch) {
-  StartPrefetch(GetGoogleToChromiumRedirectUrl());
-  GURL target_url = GetChromiumUrl();
-  WaitForRequest(target_url);
-  EXPECT_FALSE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_FALSE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
-  EXPECT_FALSE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        RedirectFromGoogleToGoogle) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetGoogleToGoogleRedirectUrl()));
-  GURL target_url = GetGoogleUrl();
-  WaitForRequest(target_url);
-  EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
-  EXPECT_TRUE(HasReceivedHeader(target_url, VALIDATE_HEADER_NAME));
-  EXPECT_TRUE(HasReceivedHeader(target_url, COPYRIGHT_HEADER_NAME));
-}
-
-IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
-                       RedirectFromGoogleToGooglePrefetch) {
-  StartPrefetch(GetGoogleToGoogleRedirectUrl());
   GURL target_url = GetGoogleUrl();
   WaitForRequest(target_url);
   EXPECT_TRUE(HasReceivedHeader(target_url, LASTCHANGE_YEAR_HEADER_NAME));
