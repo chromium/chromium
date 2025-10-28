@@ -12211,14 +12211,13 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="HistoryApi.AdvanceMethod">
+<event name="HistoryApi.PushState">
   <owner>yaoxia@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
-    Records usage of `window.history` methods that advance the history position
-    (`pushState()`, `forward()`, and `go()` with positive values), capturing
-    details about user activation and ad-related information. Recorded when
-    these specific methods are invoked.
+    Records usage of `window.history.pushState` method, capturing details about
+    user activation and ad-related information. Recorded when this method is
+    invoked.
   </summary>
   <metric name="FromAd" enum="Boolean">
     <summary>

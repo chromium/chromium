@@ -40,6 +40,19 @@ class ExecuteScript;
 // The tracker is maintained per local root.
 class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
  public:
+  // A list of JavaScript APIs that are frequently monkey patched by ad scripts.
+  // This enum is used as a parameter to `IsAdScriptInStack` to enable a
+  // heuristic that can ignore a top-level ad script, preventing false positives
+  // when the API is called from a non-ad script through an ad script's monkey
+  // patch.
+  enum class MonkeyPatchableApi {
+    // Default setting to disable the heuristic.
+    kNone,
+
+    // history.pushState
+    kHistoryPushState,
+  };
+
   struct NoProvenance {};
 
   // Represents the reason why a script is classified as an ad. It can be one
@@ -116,6 +129,16 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // generally best as it catches more ads, but if you're calling very
   // frequently then consider just the bottom of the stack for performance sake.
   //
+  // When `ignore_monkey_patch` is specified, a heuristic is enabled to prevent
+  // false positives from monkey patching. If the script at the top of the stack
+  // is an ad script and the API was invoked by non-ad script, this check will
+  // be ignored for the first call to the specified API within the current
+  // synchronous task. This is because the ad script is likely just a proxy for
+  // the real, non-ad caller.
+  //
+  // Note: This function is not idempotent when `ignore_monkey_patch` is used,
+  // as it tracks the first call to an API within a synchronous task.
+  //
   // Output Parameters:
   // - `out_ad_script_ancestry`: if non-null and there is ad script in the
   //   stack, this will be populated with the ad script's ancestry and the
@@ -123,6 +146,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   //   the populated fields.
   virtual bool IsAdScriptInStack(
       StackType stack_type,
+      MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone,
       AdScriptAncestry* out_ad_script_ancestry = nullptr);
 
   virtual void Trace(Visitor*) const;
@@ -149,7 +173,25 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // ancestry chain, it returns only one script (the most immediate one).
   bool IsAdScriptInStackHelper(
       StackType stack_type,
+      MonkeyPatchableApi ignore_monkey_patch,
       std::optional<AdScriptIdentifier>* out_ad_script);
+
+  // Helper for the `ignore_monkey_patch` heuristic. Returns true if the API is
+  // called from a non-ad script through an ad script's monkey patch, and this
+  // is the first time this API has been called this way within the current
+  // synchronous task. If it returns true, the call should be ignored for ad
+  // tracking purposes. This method is not const because it modifies
+  // `ad_monkey_patch_calls_in_scope_`.
+  //
+  // Precondition: The script at the top of the stack is a known ad script.
+  bool IsFirstCallOfApiFromNonAdScript(v8::Isolate* isolate,
+                                       MonkeyPatchableApi api);
+
+  // Helper for `IsFirstCallOfApiFromNonAdScript` that performs the stack
+  // analysis. It returns true if the call stack indicates that a non-ad script
+  // called the monkey patched `api`.
+  bool WasApiCalledByNonAdScript(v8::Isolate* isolate,
+                                 MonkeyPatchableApi api) const;
 
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
@@ -200,8 +242,17 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // A map of all known ad script ids to their metadata.
   HashMap<int, AdScriptData> ad_script_data_;
 
+  // Tracks APIs that have been identified as being called through an ad
+  // script's monkey patch within the current synchronous task. This set is
+  // cleared when the task completes. Used by the `ignore_monkey_patch`
+  // heuristic.
+  HashSet<MonkeyPatchableApi> ad_monkey_patch_calls_in_scope_;
+
   // The number of ad-related async tasks currently running in the stack.
   int running_ad_async_tasks_ = 0;
+
+  // The number of sync tasks currently running in the stack.
+  int running_sync_tasks_ = 0;
 };
 
 }  // namespace blink

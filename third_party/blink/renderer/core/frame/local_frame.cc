@@ -2045,8 +2045,10 @@ LocalFrame::LocalFrame(
   // fenced frames.
   is_frame_created_by_ad_script_ =
       !IsMainFrame() && ad_tracker_ &&
-      ad_tracker_->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                     &ad_script_ancestry_);
+      ad_tracker_->IsAdScriptInStack(
+          AdTracker::StackType::kBottomAndTop,
+          /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
+          &ad_script_ancestry_);
 
   Initialize();
   // Now that we know whether the frame is provisional, inherit the probe

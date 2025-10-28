@@ -60,17 +60,27 @@ namespace blink {
 
 namespace {
 
-void MaybeRecordHistoryAdvanceMethodUkm(LocalDOMWindow* window) {
+void MaybeRecordHistoryPushStateUkm(LocalDOMWindow* window) {
   if (!window || !window->GetFrame()) {
+    return;
+  }
+
+  AdTracker* ad_tracker = window->GetFrame()->GetAdTracker();
+  if (!ad_tracker) {
     return;
   }
 
   bool has_sticky_user_activation =
       window->GetFrame()->HasStickyUserActivation();
-  bool from_ad = window->GetFrame()->IsAdScriptInStack() ||
-                 window->GetFrame()->IsAdFrame();
 
-  ukm::builders::HistoryApi_AdvanceMethod(window->UkmSourceID())
+  bool from_ad = window->GetFrame()->IsAdFrame() ||
+                 ad_tracker->IsAdScriptInStack(
+                     AdTracker::StackType::kBottomAndTop,
+                     /*ignore_monkey_patch=*/
+                     AdTracker::MonkeyPatchableApi::kHistoryPushState,
+                     /*out_ad_script_ancestry=*/nullptr);
+
+  ukm::builders::HistoryApi_PushState(window->UkmSourceID())
       .SetHasStickyUserActivation(has_sticky_user_activation)
       .SetFromAd(from_ad)
       .Record(window->UkmRecorder());
@@ -213,9 +223,6 @@ void History::go(ScriptState* script_state,
                  int delta,
                  ExceptionState& exception_state) {
   base::TimeTicks actual_navigation_start = base::TimeTicks::Now();
-  if (delta > 0) {
-    MaybeRecordHistoryAdvanceMethodUkm(DomWindow());
-  }
 
   LocalDOMWindow* window = DomWindow();
   if (!window) {
@@ -269,7 +276,7 @@ void History::pushState(ScriptState* script_state,
                         const String& title,
                         const String& url,
                         ExceptionState& exception_state) {
-  MaybeRecordHistoryAdvanceMethodUkm(DomWindow());
+  MaybeRecordHistoryPushStateUkm(DomWindow());
 
   v8::Isolate* isolate = script_state->GetIsolate();
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;

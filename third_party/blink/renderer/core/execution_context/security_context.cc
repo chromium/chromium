@@ -213,8 +213,10 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
         AdTracker* ad_tracker = frame->GetAdTracker();
 
         if (ad_tracker &&
-            ad_tracker->IsAdScriptInStack(AdTracker::StackType::kBottomAndTop,
-                                          &ad_ancestry)) {
+            ad_tracker->IsAdScriptInStack(
+                AdTracker::StackType::kBottomAndTop,
+                /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
+                &ad_ancestry)) {
           window->CountPermissionsPolicyUsage(
               feature, UseCounterImpl::PermissionsPolicyUsageType::
                            kEnabledPrivacySensitive);

@@ -161,18 +161,20 @@ class TestAdTracker : public AdTracker {
     run_loop.Run();
   }
 
-  // Intercepts `IsAdScriptInStack` to capture and store the ad script's
-  // ancestry for frame creation scenario.
-  bool IsAdScriptInStack(
-      StackType stack_type,
-      AdScriptAncestry* out_ad_script_ancestry = nullptr) override {
-    bool result =
-        AdTracker::IsAdScriptInStack(stack_type, out_ad_script_ancestry);
+  // Test-only override for IsAdScriptInStack. Calls the base implementation
+  // and caches its results for later verification in tests.
+  bool IsAdScriptInStack(StackType stack_type,
+                         MonkeyPatchableApi ignore_monkey_patch,
+                         AdScriptAncestry* out_ad_script_ancestry) override {
+    bool result = AdTracker::IsAdScriptInStack(stack_type, ignore_monkey_patch,
+                                               out_ad_script_ancestry);
 
-    // We are only interested in the output parameter for a frame creation
-    // scenario (implied by non-null `out_ad_script_ancestry`).
-    if (sim_test_ && out_ad_script_ancestry) {
-      last_ad_script_ancestry_ = *out_ad_script_ancestry;
+    if (sim_test_) {
+      last_is_ad_script_in_stack_result_ = result;
+
+      if (out_ad_script_ancestry) {
+        last_ad_script_ancestry_ = *out_ad_script_ancestry;
+      }
     }
 
     return result;
@@ -180,6 +182,10 @@ class TestAdTracker : public AdTracker {
 
   const AdScriptAncestry& last_ad_script_ancestry() const {
     return last_ad_script_ancestry_;
+  }
+
+  bool last_is_ad_script_in_stack_result() const {
+    return last_is_ad_script_in_stack_result_;
   }
 
  protected:
@@ -208,6 +214,8 @@ class TestAdTracker : public AdTracker {
   HashMap<String, int> script_ids_;
 
   bool sim_test_ = false;
+
+  bool last_is_ad_script_in_stack_result_ = false;
   AdScriptAncestry last_ad_script_ancestry_;
 
   base::OnceClosure quit_closure_;
@@ -3029,6 +3037,435 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_RulesetInOriginatingDocumentUpdated) {
 
   // Clean up for SimTest expectations.
   ad_document.Complete("<body></body>");
+}
+
+// Tests that a call is correctly flagged as an ad when the API is not
+// monkeypatched. The `ignore_monkey_patch` heuristic does not apply, and the
+// ad script at the top of the stack triggers the detection.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_ApiNotMonkeypatched_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script defines a function that calls pushState directly. The API
+  // itself is not monkeypatched.
+  ad_script.Complete(R"SCRIPT(
+    function doAdWork() {
+      window.history.pushState({}, '', '/new-url');
+    }
+  )SCRIPT");
+
+  // The vanilla script calls the function defined in the ad script.
+  vanilla_script.Complete(R"SCRIPT(
+    doAdWork();
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The call is correctly identified as originating from an ad script because
+  // the API is native, so the heuristic to ignore monkey patch pattern is
+  // skipped.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the heuristic correctly ignores the first call to a monkeypatched
+// API from a non-ad script. This prevents misattributing the call to the ad
+// script, which is likely acting only as a proxy.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_FirstProxiedCall_IsNotAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script calls the now-monkeypatched API. The call stack will
+  // have the ad script's wrapper at the top.
+  vanilla_script.Complete(R"SCRIPT(
+    window.history.pushState({}, '', '/new-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The IsAdScriptInStack check is triggered by the pushState implementation.
+  // The heuristic identifies the monkeypatch and, for this first call, assumes
+  // the ad script is a proxy and returns false.
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that monkeypatched API is invoked from non-ad script, and the second
+// proxy within the monkeypatch function is correctly flagged as an ad. The
+// heuristic is designed to only ignore the *first* call, assuming subsequent
+// calls from the same ad script are genuine ad behavior.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_SecondProxiedCall_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState and, within the patch,
+  // invokes the original function twice.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script calls the monkeypatched API once.
+  vanilla_script.Complete(R"SCRIPT(
+    window.history.pushState({}, '', '/new-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The first call to the native pushState is ignored by the heuristic. The
+  // second call is not, as the heuristic only applies once per API per task.
+  // The TestAdTracker stores the result of the *last* call, which should be
+  // true.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that a nested task (triggered by document.write) does not reset the
+// heuristic's state for the top-level task. A second proxied call after the
+// nested task completes is still correctly flagged as an ad.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_NestedTaskDoesNotResetState) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState and, within the patch,
+  // invokes the original function twice, creating a nested task in between.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+
+      // Trigger a nested task.
+      document.write(`
+        <script>
+          // Non-trivial script
+        <\/script>
+      `);
+
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script calls the monkeypatched API once.
+  vanilla_script.Complete(R"SCRIPT(
+    window.history.pushState({}, '', '/new-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The first call to the native pushState is ignored by the heuristic. The
+  // second call is not, as the heuristic only applies once per API per task.
+  // The TestAdTracker stores the result of the *last* call, which should be
+  // true.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests a limitation of the heuristic. When a non-ad script makes
+// two separate calls to a monkeypatched API, the first call is correctly
+// ignored, but the second is flagged as an ad. This is a known false positive
+// because the heuristic's state is tied to the broader AdTracker task, not the
+// immediate V8 stack frame.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_TwoProxiedCallsInSameTask_SecondIsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The non-ad script calls the monkeypatched API twice.
+  vanilla_script.Complete(R"SCRIPT(
+    window.history.pushState({}, '', '/new-url');
+    window.history.pushState({}, '', '/new-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The first call is ignored, but the second is flagged as an ad because it's
+  // the second time the heuristic has seen a call to this API within the same
+  // synchronous task. The last recorded result will be true.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the bottom-of-stack check takes precedence over the monkeypatching
+// heuristic. When an ad script initiates the execution (and is thus at the
+// bottom of the stack), any calls it makes are flagged as ads, even if it also
+// monkeypatches the API.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_AdScriptAtBottomOfStack_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script></body>
+  )HTML");
+
+  // The ad script first monkeypatches the API and then immediately calls it.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+
+    window.history.pushState({}, '', '/new-url');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The call is flagged as an ad because the AdTracker first identifies that an
+  // ad script is at the bottom of the execution stack and returns true
+  // immediately, without evaluating the top-of-stack heuristic.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the heuristic correctly identifies an ad when a non-ad script
+// calls an ad function that performs a "just-in-time" monkeypatch and then
+// calls the API. This is not a legitimate monkey patch pattern, and should be
+// flagged.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_JustInTimePatchByAdFunction_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script defines a function that will perform the monkeypatch and
+  // call.
+  ad_script.Complete(R"SCRIPT(
+    function performAdAction() {
+      const originalPushState = window.history.pushState;
+      window.history.pushState = function(...args) {
+        originalPushState.apply(window.history, args);
+      };
+
+      window.history.pushState({}, '', '/new-url');
+    }
+  )SCRIPT");
+
+  // The vanilla script initiates the entire chain by calling the ad function.
+  vanilla_script.Complete(R"SCRIPT(
+    performAdAction();
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The heuristic correctly flags this as an ad. It walks the stack and finds
+  // that the function at the ad/non-ad boundary is `performAdAction`, not the
+  // `pushState` API itself. This indicates it's not a simple proxy call, so
+  // the ad script at the top of the stack is not ignored.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the heuristic correctly ignores the first proxied call in an
+// asynchronous task (e.g., a setTimeout callback).
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_AsyncFirstProxiedCall_IsNotAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script uses setTimeout to asynchronously call the monkeypatched
+  // API.
+  vanilla_script.Complete(R"SCRIPT(
+    setTimeout(() => {
+      window.history.pushState({}, '', '/new-url');
+    }, 0);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The heuristic still applies within the async task. Because it's the first
+  // call within this new task, it returns false.
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that a second call to a monkeypatched API within the same asynchronous
+// task is correctly flagged as an ad.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_AsyncSecondCallInSameTask_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState and invokes the original
+  // function twice within the patch.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script uses setTimeout to asynchronously call the monkeypatched
+  // API.
+  vanilla_script.Complete(R"SCRIPT(
+    setTimeout(() => {
+      window.history.pushState({}, '', '/new-url');
+    }, 0);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The first call within the async task is ignored. The second is not. The
+  // TestAdTracker stores the result of the *last* call, which should be true.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the heuristic correctly resets across separate asynchronous tasks.
+// When two separate setTimeout callbacks from a non-ad script each call the
+// monkeypatched API, both calls are ignored because they are the first call
+// within their respective new task scopes.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_TwoSeparateAsyncTasks_BothAreNotAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script uses setTimeout twice, each asynchronously calling the
+  // monkeypatched API.
+  vanilla_script.Complete(R"SCRIPT(
+    setTimeout(() => {
+      window.history.pushState({}, '', '/new-url-1');
+    }, 0);
+    setTimeout(() => {
+      window.history.pushState({}, '', '/new-url-2');
+    }, 0);
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // Each setTimeout creates a new synchronous task, resetting the heuristic's
+  // state. Therefore, the call in the second task is also considered a "first
+  // call" and is ignored. The last recorded result is false.
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests a known limitation where the heuristic does not apply to calls within
+// a Promise callback (e.g., .then()). This is because AdTracker does not
+// currently track synchronous task scopes for promise resolutions, so the call
+// is flagged as an ad based on the top-of-stack script.
+TEST_F(AdTrackerSimTest,
+       IgnoreMonkeyPatchHeuristic_PromiseCallbackDoesNotApply_IsAd) {
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String vanilla_script_url = "https://example.com/script.js";
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  // The ad script monkeypatches history.pushState.
+  ad_script.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+  )SCRIPT");
+
+  // The vanilla script uses Promise.resolve().then() to asynchronously call
+  // the monkeypatched API.
+  vanilla_script.Complete(R"SCRIPT(
+    Promise.resolve().then(() => {
+      window.history.pushState({}, '', '/new-url');
+    });
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // AdTracker does not currently track synchronous task scopes for promise
+  // resolutions. The check therefore falls back to identifying the ad script at
+  // the top of the stack and returns true.
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
 class AdTrackerDisabledSimTest : public SimTest,
