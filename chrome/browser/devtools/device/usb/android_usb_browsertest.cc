@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -245,13 +246,21 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
                           GenericTransferOutCallback callback) override {
     if (remaining_body_length_ == 0) {
       // A new message, parse header first.
-      DCHECK_GE(buffer.size(), 6u);
-      const auto* header = reinterpret_cast<const uint32_t*>(buffer.data());
+      auto reader = base::SpanReader(buffer);
+      uint32_t command;
+      uint32_t arg0;
+      uint32_t arg1;
+      uint32_t body_length;
+      uint32_t magic;
+      CHECK(reader.ReadU32LittleEndian(command));
+      CHECK(reader.ReadU32LittleEndian(arg0));
+      CHECK(reader.ReadU32LittleEndian(arg1));
+      CHECK(reader.ReadU32LittleEndian(body_length));
+      CHECK(reader.Skip(4u));  // checksum
+      CHECK(reader.ReadU32LittleEndian(magic));
       current_message_ =
-          std::make_unique<AdbMessage>(header[0], UNSAFE_TODO(header[1]),
-                                       UNSAFE_TODO(header[2]), std::string());
-      remaining_body_length_ = UNSAFE_TODO(header[3]);
-      uint32_t magic = UNSAFE_TODO(header[5]);
+          std::make_unique<AdbMessage>(command, arg0, arg1, std::string());
+      remaining_body_length_ = body_length;
       if ((current_message_->command ^ 0xffffffff) != magic) {
         DCHECK(false) << "Header checksum error";
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -280,18 +289,16 @@ class FakeAndroidUsbDevice : public FakeUsbDevice {
 
   template <class D>
   void append(D data) {
-    std::copy(reinterpret_cast<uint8_t*>(&data),
-              UNSAFE_TODO((reinterpret_cast<uint8_t*>(&data)) + sizeof(D)),
-              std::back_inserter(output_buffer_));
+    auto bytes = base::byte_span_from_ref(data);
+    output_buffer_.insert(output_buffer_.end(), bytes.begin(), bytes.end());
   }
 
   // Copied from AndroidUsbDevice::Checksum
   uint32_t Checksum(const std::string& data) {
-    unsigned char* x = (unsigned char*)data.data();
-    int count = data.length();
     uint32_t sum = 0;
-    while (count-- > 0)
-      sum += *UNSAFE_TODO(x++);
+    for (unsigned char c : data) {
+      sum += c;
+    }
     return sum;
   }
 
