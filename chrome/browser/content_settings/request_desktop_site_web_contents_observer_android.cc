@@ -33,7 +33,8 @@ enum class UserAgentRequestType {
 };
 }  // namespace rds_web_contents_observer
 
-static std::optional<bool> s_is_oem_allowlisted_for_external_display_desktop_ua;
+static std::optional<bool>
+    s_is_oem_allowlisted_for_external_display_desktop_ua = false;
 
 RequestDesktopSiteWebContentsObserverAndroid::
     RequestDesktopSiteWebContentsObserverAndroid(content::WebContents* contents)
