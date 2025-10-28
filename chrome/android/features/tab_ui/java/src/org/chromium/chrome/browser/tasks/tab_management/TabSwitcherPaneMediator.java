@@ -403,7 +403,8 @@ public class TabSwitcherPaneMediator
     void maybeTranslatePinnedStrip(
             Activity activity,
             ObservableSupplierImpl<Boolean> hubSearchBoxVisibilitySupplier,
-            boolean show) {
+            boolean show,
+            boolean forced) {
         Configuration config = activity.getResources().getConfiguration();
         FrameLayout pinnedTabsContainer = mContainerView.findViewById(R.id.pinned_tabs_container);
         boolean isTabletOrLandscape =
@@ -411,7 +412,8 @@ public class TabSwitcherPaneMediator
                         || HubUtils.isScreenWidthTablet(config.screenWidthDp);
         boolean shouldShow = show && !isTabletOrLandscape;
         if (hubSearchBoxVisibilitySupplier.get() != null
-                && shouldShow == hubSearchBoxVisibilitySupplier.get()) {
+                && shouldShow == hubSearchBoxVisibilitySupplier.get()
+                && !forced) {
             // Early out.
             return;
         }
@@ -443,7 +445,8 @@ public class TabSwitcherPaneMediator
      * @param isTabletOrLandscape Whether the device is a tablet or landscape.
      */
     void setSearchBoxSpace(boolean isTabletOrLandscape) {
-        mContainerViewModel.set(TabListContainerProperties.SEARCH_BOX_PADDING, isTabletOrLandscape);
+        mContainerViewModel.set(
+                TabListContainerProperties.IS_TABLET_OR_LANDSCAPE, isTabletOrLandscape);
     }
 
     private boolean ableToOpenDialog(Tab tab) {
