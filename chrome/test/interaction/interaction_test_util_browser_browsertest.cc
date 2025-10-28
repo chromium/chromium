@@ -140,8 +140,9 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
   }
 }
 
+// TODO(crbug.com/455686746): This test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
-                       CompareScreenshot_WebPage) {
+                       DISABLED_CompareScreenshot_WebPage) {
   // Set the browser view to a consistent size.
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -160,8 +161,9 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
                  /*baseline_cl=*/"3924454"));
 }
 
+// TODO(crbug.com/455686746): This test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
-                       CompareScreenshot_WebPageElement) {
+                       DISABLED_CompareScreenshot_WebPageElement) {
   // Set the browser view to a consistent size.
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
