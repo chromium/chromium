@@ -84,4 +84,7 @@ specific_include_rules = {
     "multicast_controller.*": [
         "+net/base/ip_address.h",
     ],
+    "ai_page_content_agent.cc": [
+        "+third_party/blink/renderer/core/exported/web_view_impl.h",
+    ],
 }

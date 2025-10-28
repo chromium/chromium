@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/content/browser/mock_autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -13,6 +14,7 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
@@ -1047,6 +1049,39 @@ TEST_F(PageContentProtoUtilTest, ConvertLabel) {
   EXPECT_EQ(anchor_attributes.attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
   EXPECT_EQ(anchor_attributes.label(), "aria label");
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertPopup) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAIPageContentIncludePopupWindows);
+  auto mojom_content = CreatePageContent();
+
+  blink::mojom::AIPageContentPopupPtr popup =
+      blink::mojom::AIPageContentPopup::New();
+  popup->root_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+  popup->root_node->children_nodes.push_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText));
+  popup->root_node->children_nodes.push_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kText));
+  popup->opener_dom_node_id = 1;
+  mojom_content->frame_data->popup = std::move(popup);
+
+  AIPageContentResult page_content;
+
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(mojom_content, page_content).has_value());
+
+  EXPECT_EQ(page_content.proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  EXPECT_EQ(page_content.proto.root_node().children_nodes_size(), 0);
+
+  ASSERT_TRUE(page_content.proto.has_popup_window());
+  EXPECT_EQ(
+      page_content.proto.popup_window().root_node().children_nodes().size(), 2);
+  EXPECT_EQ(
+      page_content.proto.popup_window().opener_common_ancestor_dom_node_id(),
+      1);
 }
 
 // Test helper to set the geometry of a ContentNode.

@@ -6,13 +6,16 @@
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +30,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/display/display_switches.h"
 
@@ -1578,6 +1582,181 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
   EXPECT_FALSE(button.content_attributes().interaction_info().is_clickable());
 }
+
+// Popups may be rendered as native OS-level widgets on Android and MacOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+
+namespace {
+
+// Helper function to generate a click on the given RenderWidgetHost. The
+// mouse event is forwarded directly to the RenderWidgetHost without any
+// hit-testing.
+void SimulateMouseClickAt(content::RenderWidgetHost* rwh, gfx::PointF point) {
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_event.SetPositionInWidget(point.x(), point.y());
+  rwh->ForwardMouseEvent(mouse_event);
+}
+
+bool HasTextNode(const optimization_guide::proto::ContentNode& node,
+                 const std::string& text) {
+  if (node.content_attributes().has_text_data() &&
+      node.content_attributes().text_data().text_content() == text) {
+    return true;
+  }
+  for (const auto& child : node.children_nodes()) {
+    if (HasTextNode(child, text)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+class PageContentProtoProviderPopupBrowserTest
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  PageContentProtoProviderPopupBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAIPageContentIncludePopupWindows);
+  }
+  ~PageContentProtoProviderPopupBrowserTest() override = default;
+
+ protected:
+  // TODO: b/450618828 - Consider replacing this with an explicit hook to know
+  // when a popup is opened.
+  void WaitForPopup() {
+    while (true) {
+      LoadData();
+      if (page_content().has_popup_window()) {
+        break;
+      }
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+      run_loop.Run();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
+                       SelectInMainFrame) {
+  LoadPage(https_server()->GetURL("/open_popup.html"));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('select_input').showPicker();"));
+
+  WaitForPopup();
+
+  const auto& popup_window = page_content().popup_window();
+  EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
+            page_content()
+                .main_frame_data()
+                .document_identifier()
+                .serialized_token());
+
+  const auto& select_node = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
+            select_node.content_attributes().common_ancestor_dom_node_id());
+
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
+                       SelectInSameOriginIframe) {
+  LoadPage(https_server()->GetURL("a.com", "/open_popup_iframe.html"));
+
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(content::ExecJs(
+      iframe, "document.getElementById('select_input').showPicker();"));
+
+  WaitForPopup();
+
+  const auto& popup_window = page_content().popup_window();
+
+  const auto& iframe_node = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
+            iframe_node.content_attributes()
+                .iframe_data()
+                .frame_data()
+                .document_identifier()
+                .serialized_token());
+
+  EXPECT_EQ(iframe_node.children_nodes().size(), 1);
+  const auto& iframe_node_root = iframe_node.children_nodes()[0];
+  const auto& select_node = iframe_node_root.children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
+            select_node.content_attributes().common_ancestor_dom_node_id());
+
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
+                       SelectInCrossOriginIframe) {
+  LoadPage(https_server()->GetURL(
+      "a.com", "/open_popup_iframe.html?domain=/cross-site/b.com/"));
+
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  // showPicker() is not allowed from cross-origin iframe for security reasons,
+  // therefore simulating a user click.
+  SimulateMouseClickAt(
+      iframe->GetRenderWidgetHost(),
+      GetCenterCoordinatesOfElementWithId(iframe, "select_input"));
+
+  WaitForPopup();
+
+  const auto& popup_window = page_content().popup_window();
+
+  const auto& iframe_node = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
+            iframe_node.content_attributes()
+                .iframe_data()
+                .frame_data()
+                .document_identifier()
+                .serialized_token());
+
+  EXPECT_EQ(iframe_node.children_nodes().size(), 1);
+  const auto& iframe_node_root = iframe_node.children_nodes()[0];
+  const auto& select_node = iframe_node_root.children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
+            select_node.content_attributes().common_ancestor_dom_node_id());
+
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest, ColorPicker) {
+  LoadPage(https_server()->GetURL("/open_popup.html"), nullptr);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('color_input').click();"));
+
+  WaitForPopup();
+
+  const auto& popup_window = page_content().popup_window();
+  EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
+            page_content()
+                .main_frame_data()
+                .document_identifier()
+                .serialized_token());
+
+  const auto& color_node = page_content().root_node().children_nodes()[1];
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
+            color_node.content_attributes().common_ancestor_dom_node_id());
+}
+#endif
 
 }  // namespace
 

@@ -1126,6 +1126,11 @@ void WebPagePopupImpl::ExecuteEditCommand(const String& command,
   }
 }
 
+Element& WebPagePopupImpl::OwnerElement() {
+  CHECK(popup_client_);
+  return popup_client_->OwnerElement();
+}
+
 // WebPagePopup ----------------------------------------------------------------
 
 WebPagePopupImpl* WebPagePopupImpl::Create(
