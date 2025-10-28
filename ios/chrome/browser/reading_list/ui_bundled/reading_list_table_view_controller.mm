@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_controller.h"
+
+#import <array>
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -1165,11 +1162,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   TableViewModel* model = self.tableViewModel;
   __block NSUInteger removedSectionCount = 0;
   void (^updates)(void) = ^{
-    ReadingListSectionIdentifier sections[] = {kSectionIdentifierRead,
-                                               kSectionIdentifierUnread};
-    for (size_t i = 0; i < std::size(sections); ++i) {
-      ReadingListSectionIdentifier section = sections[i];
-
+    static constexpr auto kSections =
+        std::to_array<ReadingListSectionIdentifier>(
+            {kSectionIdentifierRead, kSectionIdentifierUnread});
+    for (ReadingListSectionIdentifier section : kSections) {
       if ([model hasSectionForSectionIdentifier:section] &&
           ![self hasItemInSection:section]) {
         // If `section` has no items, remove it from the model and the table
