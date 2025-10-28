@@ -16,6 +16,7 @@ source_set("ui") {
   deps = [
     "//components/feature_engagement/public",
     "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/welcome_back/resources",
   ]
   frameworks = [
     "Foundation.framework",
