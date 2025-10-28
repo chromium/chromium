@@ -50,7 +50,7 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
 }
 
 static constexpr base::TimeDelta kUpdateScrimBackgroundDebounceDelay =
-    base::Milliseconds(150);
+    base::Milliseconds(25);
 
 class ActorUiTabControllerFactoryInterface {
  public:
