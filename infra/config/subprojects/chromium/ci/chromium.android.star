@@ -3812,6 +3812,11 @@ ci.builder(
                     "--skia-gold-consider-unsupported",
                 ],
             ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    "--skia-gold-consider-unsupported",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(
