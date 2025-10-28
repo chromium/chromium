@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -222,7 +222,7 @@ id<GREYMatcher> SharePasswordsTitle() {
 
   // Click the primary action button and ensure the Instructions Half Sheet View
   // Controller comes up.
-  [self tapPromoButton:kConfirmationAlertPrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:kButtonStackPrimaryActionAccessibilityIdentifier];
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(step_id))]
       assertWithMatcher:grey_sufficientlyVisible()];

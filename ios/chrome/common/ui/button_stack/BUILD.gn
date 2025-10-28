@@ -12,12 +12,21 @@ source_set("button_stack") {
     "button_stack_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "button_stack_constants.h",
+    "button_stack_constants.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

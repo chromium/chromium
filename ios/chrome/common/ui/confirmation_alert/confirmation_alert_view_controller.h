@@ -5,19 +5,18 @@
 #ifndef IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONFIRMATION_ALERT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_COMMON_UI_CONFIRMATION_ALERT_CONFIRMATION_ALERT_VIEW_CONTROLLER_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 
 @protocol ConfirmationAlertActionHandler;
 
 // A view controller useful to show modal alerts and confirmations. The main
-// content consists in a big image, a title, and a subtitle which are contained
-// in a scroll view for cases when the content doesn't fit in the screen.
+// content consists in a big image, a title, and a subtitle.
 // The view controller can have up to three action buttons, which are positioned
 // at the bottom. They are arranged, from top to bottom,
 // `primaryActionString`, `secondaryActionString`, `tertiaryActionString`.
 // Setting those properties will make those buttons be added to the view
 // controller.
-@interface ConfirmationAlertViewController : UIViewController
+@interface ConfirmationAlertViewController : ButtonStackViewController
 
 // The background color to apply to the main view. If needed, must be set before
 // the view is loaded.
@@ -101,9 +100,6 @@
 // stackview. Must be set before the view is loaded.
 @property(nonatomic, assign) CGFloat customSpacing;
 
-// Sets the custom height for the gradient view above the action buttons.
-@property(nonatomic, assign) CGFloat customGradientViewHeight;
-
 // When YES, the content is attached to the top of the view instead of being
 // centered.
 @property(nonatomic) BOOL topAlignedLayout;
@@ -126,13 +122,6 @@
 // green checkmark badge. Must be set before the view is loaded. Default is NO.
 @property(nonatomic, assign) BOOL imageEnclosedWithShadowWithoutBadge;
 
-// Set to NO to prevent the scroll view from showing a vertical scrollbar
-// indicator. Must be set before the view is loaded. Default is YES.
-@property(nonatomic) BOOL showsVerticalScrollIndicator;
-
-// Set to NO to prevent the scroll view from scrolling. Default is YES.
-@property(nonatomic) BOOL scrollEnabled;
-
 // When set, this value will be set as the accessibility label for the help
 // button.
 @property(nonatomic, copy) NSString* helpButtonAccessibilityLabel;
@@ -154,21 +143,12 @@
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
 
-// Sets the custom scroll view bottom insets.
-@property(nonatomic, assign) CGFloat customScrollViewBottomInsets;
+// Sets the custom content bottom insets.
+@property(nonatomic, assign) CGFloat customContentBottomInset;
 
 // Indicates whether information stack view items should horizontally fill the
 // space.
 @property(nonatomic) BOOL shouldFillInformationStack;
-
-// Bottom margin for the action stack view.
-@property(nonatomic, assign) CGFloat actionStackBottomMargin;
-
-// Button for the primary action string.
-@property(nonatomic, readonly) UIButton* primaryActionButton;
-
-// Button for the secondary action string.
-@property(nonatomic, readonly) UIButton* secondaryActionButton;
 
 // Whether this sheet is presenting a destructive action. Default is NO.
 @property(nonatomic, assign) BOOL destructiveAction;
@@ -182,13 +162,6 @@
 // text, and shows the primary action button in a disabled state.
 @property(nonatomic, assign) BOOL isConfirmed;
 
-// Designated initializer.
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)name
-                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
-
 // Can be overridden by subclasses to customize the secondary title, e.g. set a
 // different style, or a UITextViewDelegate. The default implementation does
 // nothing.
@@ -199,12 +172,6 @@
 // nothing.
 - (void)customizeSubtitle:(UITextView*)subtitle;
 
-// Show or hide the gradient view depending on the state of the bottom sheet.
-- (void)displayGradientView:(BOOL)shouldShow;
-
-// Returns YES if the scroll view is scrolled to the bottom.
-- (BOOL)isScrolledToBottom;
-
 // Detent that attempts to fit the preferred height of the content. Detent may
 // be inactive in some size classes, so it should be used together with at
 // least one other detent.
@@ -213,9 +180,6 @@
 
 // Calculates the preferred height of the content.
 - (CGFloat)preferredHeightForContent;
-
-// Scrolls the view to the end.
-- (void)scrollToBottom;
 
 @end
 

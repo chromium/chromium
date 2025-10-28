@@ -79,6 +79,9 @@
 // Scrolls the view to the end.
 - (void)scrollToBottom;
 
+// Returns the height of the button stack view.
+- (CGFloat)buttonStackHeight;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_BUTTON_STACK_BUTTON_STACK_VIEW_CONTROLLER_H_

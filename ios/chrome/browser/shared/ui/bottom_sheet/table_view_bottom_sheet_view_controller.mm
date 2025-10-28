@@ -163,11 +163,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customScrollViewBottomInsets = 0;
+  self.customContentBottomInset = 0;
 
   [super viewDidLoad];
 
-  [self displayGradientView:NO];
+  self.showsGradientView = NO;
 
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
@@ -218,7 +218,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self displayGradientView:![self isScrolledToBottom]];
+  self.showsGradientView = ![self isScrolledToBottom];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -231,11 +231,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // more space than the screen.
   NSString* selectedDetentIdentifier =
       sheetPresentationController.selectedDetentIdentifier;
-  [self displayGradientView:selectedDetentIdentifier ==
-                                kCustomMinimizedDetentIdentifier ||
-                            (selectedDetentIdentifier ==
-                                 kCustomDetentIdentifier &&
-                             _expandSizeTooLarge)];
+
+  self.showsGradientView =
+      selectedDetentIdentifier == kCustomMinimizedDetentIdentifier ||
+      (selectedDetentIdentifier == kCustomDetentIdentifier &&
+       _expandSizeTooLarge);
 }
 
 #pragma mark - Private
@@ -300,7 +300,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   if (useMinimizedState) {
     // Show gradient view when the user is in minimized state to show that the
     // view can be scrolled.
-    [self displayGradientView:YES];
+    self.showsGradientView = YES;
 
     CGFloat bottomSheetHeight = [self initialHeight];
     auto detentBlock = ^CGFloat(

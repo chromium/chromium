@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
@@ -40,7 +41,8 @@ constexpr CGFloat customSpacingAfterImage = 1;
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail
                                  proactive:(BOOL)proactivePasswordGeneration {
-  if ((self = [super init])) {
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+  if (self) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
     _proactive = proactivePasswordGeneration;

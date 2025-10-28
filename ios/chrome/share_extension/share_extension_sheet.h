@@ -37,13 +37,6 @@
 // The delegate for interactions in `ShareExtensionSheet`.
 @property(nonatomic, weak) id<ShareExtensionDelegate> delegate;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-
 - (void)setAccounts:(NSArray<AccountInfo*>*)accounts;
 
 @end

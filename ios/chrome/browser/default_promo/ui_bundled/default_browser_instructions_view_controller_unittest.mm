@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -51,22 +52,23 @@ bool HasInstructionSteps(UIView* view) {
 }
 
 bool HasPrimaryActionButton(UIView* view) {
-  return FindByID(view,
-                  kConfirmationAlertPrimaryActionAccessibilityIdentifier) !=
-         nil;
+  UIView* button =
+      FindByID(view, kButtonStackPrimaryActionAccessibilityIdentifier);
+  return button && !button.hidden;
 }
 
 bool HasSecondaryActionButton(UIView* view) {
-  return FindByID(view,
-                  kConfirmationAlertSecondaryActionAccessibilityIdentifier) !=
-         nil;
+  UIView* button =
+      FindByID(view, kButtonStackSecondaryActionAccessibilityIdentifier);
+  return button && !button.hidden;
 }
 
 bool HasTertiaryActionButton(UIView* view) {
-  return FindByID(view,
-                  kConfirmationAlertTertiaryActionAccessibilityIdentifier) !=
-         nil;
+  UIView* button =
+      FindByID(view, kButtonStackTertiaryActionAccessibilityIdentifier);
+  return button && !button.hidden;
 }
+
 }  // namespace
 
 // Test view creation with subtitle.

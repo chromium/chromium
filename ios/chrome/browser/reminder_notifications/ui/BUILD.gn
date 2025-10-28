@@ -38,6 +38,7 @@ source_set("unit_tests") {
   deps = [
     ":ui",
     "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//testing/gtest",

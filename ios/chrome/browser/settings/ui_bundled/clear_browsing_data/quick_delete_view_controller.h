@@ -23,13 +23,6 @@
 
 @property(nonatomic, weak) id<QuickDeleteMutator> mutator;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
-
 // Moves Voiceover focus to the browsing data row.
 - (void)focusOnBrowsingDataRow;
 

@@ -4,15 +4,13 @@
 
 #import "ios/chrome/credential_provider_extension/ui/passkey_error_alert_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+
 namespace {
 
 // Custom size for the image when shown as a favicon. Used to override the base
 // class' value.
 constexpr CGFloat kCustomFaviconSideLength = 42;
-
-// Custom bottom margin for the primary action button. Used to override the base
-// class' value.
-constexpr CGFloat kCustomPrimaryActionButtonBottomMargin = 24;
 
 // Point size of the image.
 constexpr CGFloat kImagePointSize = 60;
@@ -113,7 +111,7 @@ NSString* GetSubtitleString(ErrorType error_type) {
 }
 
 - (instancetype)initForErrorType:(ErrorType)errorType {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _errorType = errorType;
   }
@@ -136,15 +134,6 @@ NSString* GetSubtitleString(ErrorType error_type) {
   self.primaryActionString = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
       @"The primary action title.");
-
-  // Override the `actionStackBottomMargin` on iPhones as the default vertical
-  // position of the primary button is too close to the bottom of the screen.
-  // This issue isn't present on iPads, as the view is presented in the center
-  // of the screen.
-  if ([[UIDevice currentDevice] userInterfaceIdiom] ==
-      UIUserInterfaceIdiomPhone) {
-    self.actionStackBottomMargin = kCustomPrimaryActionButtonBottomMargin;
-  }
 
   [super loadView];
 }

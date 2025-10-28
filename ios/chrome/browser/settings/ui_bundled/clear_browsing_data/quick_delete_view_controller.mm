@@ -114,11 +114,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - UIViewController
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 - (void)viewDidLoad {
   base::RecordAction(
       base::UserMetricsAction("ClearBrowsingData_DialogCreated"));
@@ -145,13 +140,13 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customScrollViewBottomInsets = 0;
+  self.customContentBottomInset = 0;
   self.actionHandler = self;
   self.destructiveAction = YES;
 
   [super viewDidLoad];
 
-  [self displayGradientView:NO];
+  self.showsGradientView = NO;
 
   [self updatePrimaryActionButtonEnabledStatus];
 

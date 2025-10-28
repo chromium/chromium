@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_table_view_cell.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -48,16 +49,14 @@ bool HasSubtitle(UIView* view) {
 
 // Returns whether the view hierarchy contains a primary action button.
 bool HasPrimaryActionButton(UIView* view) {
-  return FindViewById(view,
-                      kConfirmationAlertPrimaryActionAccessibilityIdentifier) !=
+  return FindViewById(view, kButtonStackPrimaryActionAccessibilityIdentifier) !=
          nil;
 }
 
 // Returns whether the view hierarchy contains a secondary action button.
 bool HasSecondaryActionButton(UIView* view) {
   return FindViewById(
-             view, kConfirmationAlertSecondaryActionAccessibilityIdentifier) !=
-         nil;
+             view, kButtonStackSecondaryActionAccessibilityIdentifier) != nil;
 }
 
 }  // namespace

@@ -25,11 +25,6 @@ CGFloat const kIconSize = 32;
 
 @implementation YoutubeIncognitoEnterpriseSheet
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 - (void)viewDidLoad {
   self.actionHandler = self;
   self.showDismissBarButton = NO;
@@ -50,7 +45,7 @@ CGFloat const kIconSize = 32;
   self.scrollEnabled = YES;
   self.topAlignedLayout = YES;
 
-  [self displayGradientView:YES];
+  self.showsGradientView = YES;
 
   [super viewDidLoad];
 }

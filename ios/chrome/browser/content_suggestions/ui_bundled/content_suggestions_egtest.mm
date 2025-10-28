@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -87,8 +87,8 @@ void TapPromoStyleSecondaryActionButton() {
 
 // Tap the ConfirmationAlertSecondaryAction Button.
 void TapSecondaryActionButton() {
-  id<GREYMatcher> button = grey_accessibilityID(
-      kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+  id<GREYMatcher> button =
+      grey_accessibilityID(kButtonStackSecondaryActionAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:button] assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:button] performAction:grey_tap()];
 }

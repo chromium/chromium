@@ -7,6 +7,7 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
@@ -156,6 +157,18 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   [_scrollView setContentOffset:CGPointMake(0, scrollLimit) animated:YES];
 }
 
+- (CGFloat)buttonStackHeight {
+  // Calculate the size the stack view needs without forcing a full layout pass.
+  CGFloat stackHeight =
+      [_actionStackView
+          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+          .height;
+  if (stackHeight > 0) {
+    return stackHeight + self.actionStackBottomMargin;
+  }
+  return 0;
+}
+
 #pragma mark - ButtonStackConsumer
 
 - (void)setLoading:(BOOL)loading {
@@ -266,18 +279,24 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   // will handle showing/hiding them based on the current configuration.
   self.tertiaryActionButton =
       [self createButtonForStyle:_configuration.tertiaryButtonStyle];
+  self.tertiaryActionButton.accessibilityIdentifier =
+      kButtonStackTertiaryActionAccessibilityIdentifier;
   [self.tertiaryActionButton addTarget:self
                                 action:@selector(handleTertiaryAction)
                       forControlEvents:UIControlEventTouchUpInside];
 
   self.primaryActionButton =
       [self createButtonForStyle:_configuration.primaryButtonStyle];
+  self.primaryActionButton.accessibilityIdentifier =
+      kButtonStackPrimaryActionAccessibilityIdentifier;
   [self.primaryActionButton addTarget:self
                                action:@selector(handlePrimaryAction)
                      forControlEvents:UIControlEventTouchUpInside];
 
   self.secondaryActionButton =
       [self createButtonForStyle:_configuration.secondaryButtonStyle];
+  self.secondaryActionButton.accessibilityIdentifier =
+      kButtonStackSecondaryActionAccessibilityIdentifier;
   [self.secondaryActionButton addTarget:self
                                  action:@selector(handleSecondaryAction)
                        forControlEvents:UIControlEventTouchUpInside];
@@ -385,7 +404,12 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
         constraintEqualToAnchor:safeAreaLayoutGuide.trailingAnchor],
   ]];
   AddSameConstraints(_scrollView, _scrollContainerView);
+
+  // contentView view constraints.
   AddSameConstraints(_scrollView, _contentView);
+  [NSLayoutConstraint activateConstraints:@[
+    [_contentView.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor],
+  ]];
 
   // Ensures the content view either fills the scroll view (for short content)
   // or expands to enable scrolling (for long content).
@@ -424,12 +448,14 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   _secondaryActionButton.enabled = !showingProgressState;
   _tertiaryActionButton.enabled = !showingProgressState;
 
+  _primaryActionButton.imageView.accessibilityIdentifier = nil;
   _primaryActionButton.tunedDownStyle = _isConfirmed;
-
   if (_isLoading) {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageSpinner;
   } else if (_isConfirmed) {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageCheckmark;
+    _primaryActionButton.imageView.accessibilityIdentifier =
+        kButtonStackCheckmarkSymbolAccessibilityIdentifier;
   } else {
     _primaryActionButton.primaryButtonImage = PrimaryButtonImageNone;
   }

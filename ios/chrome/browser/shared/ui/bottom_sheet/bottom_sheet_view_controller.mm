@@ -29,7 +29,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   self.alwaysShowImage = YES;
   self.customGradientViewHeight = kCustomGradientViewHeight;
   [super viewDidLoad];
-  [self displayGradientView:NO];
+  self.showsGradientView = NO;
   [self setUpBottomSheetPresentationController];
   [self setUpBottomSheetDetents];
   [self registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
@@ -44,7 +44,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
     BOOL tooLarge = (fullHeight > context.maximumDetentValue);
-    [self displayGradientView:tooLarge];
+    self.showsGradientView = tooLarge;
     return tooLarge ? context.maximumDetentValue : fullHeight;
   };
   UISheetPresentationControllerDetent* customDetentExpand =

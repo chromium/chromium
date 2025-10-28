@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -215,7 +215,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest, TestRemindMeLater) {
 
   UIView* tertiary_button_view =
       FindByID(promo_view_controller.view,
-               kConfirmationAlertTertiaryActionAccessibilityIdentifier);
+               kButtonStackTertiaryActionAccessibilityIdentifier);
   EXPECT_NSNE(nil, tertiary_button_view);
   ASSERT_TRUE([tertiary_button_view isKindOfClass:[UIButton class]]);
 
@@ -258,7 +258,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
 
   UIView* secondary_button_view =
       FindByID(promo_view_controller.view,
-               kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+               kButtonStackSecondaryActionAccessibilityIdentifier);
   EXPECT_NSNE(nil, secondary_button_view);
   ASSERT_TRUE([secondary_button_view isKindOfClass:[UIButton class]]);
 
@@ -302,7 +302,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
           view_controller_.presentedViewController);
   UIView* primary_button_view =
       FindByID(promo_view_controller.view,
-               kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+               kButtonStackPrimaryActionAccessibilityIdentifier);
   EXPECT_NSNE(nil, primary_button_view);
   ASSERT_TRUE([primary_button_view isKindOfClass:[UIButton class]]);
 
@@ -349,7 +349,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
           view_controller_.presentedViewController);
   UIView* primary_button_view =
       FindByID(promo_view_controller.view,
-               kConfirmationAlertPrimaryActionAccessibilityIdentifier);
+               kButtonStackPrimaryActionAccessibilityIdentifier);
   EXPECT_NSNE(nil, primary_button_view);
   ASSERT_TRUE([primary_button_view isKindOfClass:[UIButton class]]);
 
@@ -372,7 +372,7 @@ TEST_F(DefaultBrowserGenericPromoCoordinatorTest,
   // Tap the secondary button to dismiss the promo.
   UIView* secondary_button_view =
       FindByID(promo_view_controller.view,
-               kConfirmationAlertSecondaryActionAccessibilityIdentifier);
+               kButtonStackSecondaryActionAccessibilityIdentifier);
   EXPECT_NSNE(nil, secondary_button_view);
   ASSERT_TRUE([secondary_button_view isKindOfClass:[UIButton class]]);
 

@@ -247,10 +247,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   alertScreen.customSpacingAfterImage = kSpacing;
   alertScreen.customSpacing = kSpacing;
 
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-    alertScreen.actionStackBottomMargin = kSpacing;
-  }
-
   // The view can have either instruction steps or subtitles.
   if (hasSteps) {
     NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];

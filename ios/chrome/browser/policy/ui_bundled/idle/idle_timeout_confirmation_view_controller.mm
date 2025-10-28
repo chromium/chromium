@@ -9,6 +9,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -28,7 +29,8 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 - (instancetype)initWithIdleTimeoutTitleId:(int)titleId
                      idleTimeoutSubtitleId:(int)subtitleId
                       idleTimeoutThreshold:(int)threshold {
-  if ((self = [super init])) {
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+  if (self) {
     self.titleString = l10n_util::GetNSString(titleId);
     self.subtitleString = base::SysUTF16ToNSString(
         l10n_util::GetPluralStringFUTF16(subtitleId, threshold));

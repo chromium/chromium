@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -420,7 +421,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
   // Click the "Got It" button.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+                     kButtonStackPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -456,7 +457,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
   // Click the "Got It" button.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+                     kButtonStackPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -617,7 +618,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
   // Tap the cancel button.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
+                     kButtonStackSecondaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
@@ -653,7 +654,7 @@ void TapShareButtonAndWaitForSpinnerToDisappear() {
   // Tap the share button in the first run experience view.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+                     kButtonStackPrimaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   // Check that the current view is the family picker view.

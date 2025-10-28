@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -160,7 +161,7 @@ UIImageView* BrandingImageView() {
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
     withBrowserCoordinatorCommands:
         (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
-  self = [super init];
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
   if (self) {
     _delegate = delegate;
     _browserCoordinatorHandler = browserCoordinatorHandler;
@@ -185,7 +186,7 @@ UIImageView* BrandingImageView() {
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
-  self.customScrollViewBottomInsets = 0;
+  self.customContentBottomInset = 0;
 
   // Don't show the dismiss bar button (with the secondary button used for
   // canceling), and ensure there is still sufficient space between the top of

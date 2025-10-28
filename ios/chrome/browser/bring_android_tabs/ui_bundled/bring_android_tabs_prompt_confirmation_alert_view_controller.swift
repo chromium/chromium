@@ -29,6 +29,7 @@ class BringAndroidTabsPromptConfirmationAlertViewController:
 
   init(tabsCount: Int) {
     self.tabsCount = tabsCount
+    super.init(configuration: ButtonStackConfiguration())
   }
 
   override func viewDidLoad() {

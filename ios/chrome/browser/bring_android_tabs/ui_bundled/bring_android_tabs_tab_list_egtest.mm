@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_utils.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -51,7 +51,7 @@ void TriggerTabList() {
   VerifyConfirmationAlertPromptVisibility(YES);
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertTertiaryActionAccessibilityIdentifier)]
+                     kButtonStackTertiaryActionAccessibilityIdentifier)]
       performAction:grey_tap()];
   VerifyTabListPromptVisibility(YES);
 }

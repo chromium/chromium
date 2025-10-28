@@ -14,7 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -101,11 +101,10 @@ id<GREYMatcher> VirtualCardEnrollmentAcceptButton() {
 
 // Matcher for the activity indicator.
 id<GREYMatcher> ActivityIndicatorMatcher() {
-  return grey_allOf(
-      grey_kindOfClassName(@"UIActivityIndicatorView"),
-      grey_ancestor(grey_accessibilityID(
-          kConfirmationAlertPrimaryActionAccessibilityIdentifier)),
-      nil);
+  return grey_allOf(grey_kindOfClassName(@"UIActivityIndicatorView"),
+                    grey_ancestor(grey_accessibilityID(
+                        kButtonStackPrimaryActionAccessibilityIdentifier)),
+                    nil);
 }
 
 }  // namespace
@@ -318,7 +317,7 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
   // Assert the primary action button is disabled.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+                     kButtonStackPrimaryActionAccessibilityIdentifier)]
       assertWithMatcher:
           grey_allOf(
               grey_not(grey_enabled()),
@@ -329,7 +328,7 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
   // Assert the secondary action button is disabled.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
+                     kButtonStackSecondaryActionAccessibilityIdentifier)]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Inject a successful enrollment response from the payments server.
@@ -340,15 +339,15 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
   // Assert the primary action button is still disabled.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+                     kButtonStackPrimaryActionAccessibilityIdentifier)]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Assert the primary action button contains the checkmark symbol.
-  [[[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kConfirmationAlertCheckmarkSymbolIdentifier)]
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_accessibilityID(
+                      kButtonStackCheckmarkSymbolAccessibilityIdentifier)]
       inRoot:grey_accessibilityID(
-                 kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+                 kButtonStackPrimaryActionAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

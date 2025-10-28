@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -20,7 +21,8 @@ constexpr CGFloat kCustomSpacingAfterImage = 1;
 @implementation UserPolicyPromptViewController
 
 - (instancetype)initWithManagedDomain:(NSString*)managedDomain {
-  if ((self = [super init])) {
+  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+  if (self) {
     self.titleString = l10n_util::GetNSString(
         IDS_IOS_USER_POLICY_NOTIFICATION_NO_SIGNOUT_TITLE);
     self.subtitleString = l10n_util::GetNSStringF(
