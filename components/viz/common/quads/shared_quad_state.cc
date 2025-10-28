@@ -85,7 +85,7 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("transform", quad_to_target_transform, value);
   cc::MathUtil::AddToTracedValue("layer_content_rect", quad_layer_rect, value);
-  cc::MathUtil::AddToTracedValue("layer_visible_content_rect",
+  cc::MathUtil::AddToTracedValue("visible_quad_layer_rect",
                                  visible_quad_layer_rect, value);
   value->SetString("mask_filter_info", mask_filter_info.ToString());
   if (clip_rect) {

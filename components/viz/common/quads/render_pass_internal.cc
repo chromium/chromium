@@ -99,6 +99,8 @@ void RenderPassInternal::AsValueInto(
     base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("output_rect", output_rect, value);
   cc::MathUtil::AddToTracedValue("damage_rect", damage_rect, value);
+  cc::MathUtil::AddToTracedValue("transform_to_root_target",
+                                 transform_to_root_target, value);
 
   value->SetBoolean("has_transparent_background", has_transparent_background);
   value->SetBoolean("cache_render_pass", cache_render_pass);
