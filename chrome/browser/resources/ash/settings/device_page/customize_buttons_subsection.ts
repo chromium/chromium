@@ -24,7 +24,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {ReorderButtonEvent, ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
 import {getTemplate} from './customize_buttons_subsection.html.js';
-import type {OnDropCallback} from './drag_and_drop_manager.js';
 import {DragAndDropManager} from './drag_and_drop_manager.js';
 import type {ActionChoice, ButtonRemapping} from './input_device_settings_types.js';
 import {MetaKey} from './input_device_settings_types.js';
@@ -247,38 +246,42 @@ export class CustomizeButtonsSubsectionElement extends
     this.selectedButtonName_ = '';
   }
 
-  private onDrop_: OnDropCallback =
-      (originIndex: number, destinationIndex: number) => {
-        if (originIndex < 0 || originIndex >= this.buttonRemappingList.length ||
-            destinationIndex < 0 ||
-            destinationIndex >= this.buttonRemappingList.length) {
-          return;
-        }
+  private onDrop_(originIndex: number, destinationIndex: number) {
+    if (originIndex < 0 || originIndex >= this.buttonRemappingList.length ||
+        destinationIndex < 0 ||
+        destinationIndex >= this.buttonRemappingList.length) {
+      return;
+    }
 
-        // Move the item in this.buttonRemappingList from originIndex
-        // to destinationIndex.
-        const movedItem = this.buttonRemappingList[originIndex];
-        // Remove item at origin index
-        this.splice('buttonRemappingList', originIndex, 1);
-        // Add item at destination index
-        this.splice('buttonRemappingList', destinationIndex, 0, movedItem);
+    // Move the item in this.buttonRemappingList from originIndex
+    // to destinationIndex.
+    const movedItem = this.buttonRemappingList[originIndex];
+    // Remove item at origin index
+    this.splice('buttonRemappingList', originIndex, 1);
+    // Add item at destination index
+    this.splice('buttonRemappingList', destinationIndex, 0, movedItem);
 
-        // Announce which row the item moved to.
-        getAnnouncerInstance().announce(this.i18n(
-            'buttonReorderingAriaAnnouncement', destinationIndex + 1));
+    // Announce which row the item moved to.
+    getAnnouncerInstance().announce(
+        this.i18n('buttonReorderingAriaAnnouncement', destinationIndex + 1));
 
-        // Focus the dropdown element for where this button is moving so focus
-        // moves with the element.
-        const buttonRows =
-            this.$.subsection.querySelectorAll('customize-button-row');
-        assert(!!buttonRows && buttonRows.length > destinationIndex);
-        buttonRows[destinationIndex].focusReorderingButton();
+    // Focus the dropdown element for where this button is moving so focus
+    // moves with the element.
+    const buttonRows =
+        this.$.subsection.querySelectorAll('customize-button-row');
+    assert(!!buttonRows && buttonRows.length > destinationIndex);
+    buttonRows[destinationIndex].focusReorderingButton();
 
-        this.dispatchEvent(new CustomEvent('button-remapping-changed', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
+    this.dispatchEvent(new CustomEvent('button-remapping-changed', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  // Exposed publicly only for testing purposes.
+  onDropForTesting(originIndex: number, destinationIndex: number) {
+    this.onDrop_(originIndex, destinationIndex);
+  }
 
   private onKeyCombinationDialogClose_(): void {
     const buttonRows =

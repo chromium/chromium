@@ -105,3 +105,8 @@ interface Uint8ArrayConstructor {
 interface ImageCapture {
   grabFrame(): Promise<ImageBitmap>;
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver/observe
+interface PerformanceObserverInit {
+  durationThreshold?: number;
+}

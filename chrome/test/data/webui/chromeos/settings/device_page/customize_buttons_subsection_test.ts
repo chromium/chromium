@@ -171,8 +171,7 @@ suite('<customize-buttons-subsection>', () => {
 
     // Call the callback directly since the event listening functionality
     // is handled by DragAndDropManager (which is unit tested separately).
-    // @ts-expect-error (we're invoking a private method for the test).
-    customizeButtonsSubsection.onDrop_(1, 0);
+    customizeButtonsSubsection.onDropForTesting(1, 0);
     await flushTasks();
 
     assertNotEquals(
@@ -196,8 +195,7 @@ suite('<customize-buttons-subsection>', () => {
 
     // When onDrop_ is called with invalid indices, the button remapping list
     // should not change.
-    // @ts-expect-error (we're invoking a private method for the test).
-    customizeButtonsSubsection.onDrop_(100, -10);
+    customizeButtonsSubsection.onDropForTesting(100, -10);
     await flushTasks();
 
     assertEquals(1, buttonRemappingChangedEventCount);

@@ -115,8 +115,8 @@ export class TabStrip extends CrLitElement {
   private outOfBoundsDragX = 0;
   private outOfBoundsDragY = 0;
 
-  // @ts-expect-error: Set during drag events.
-  private tabElement: TabElement;
+  // Set during drag events.
+  private tabElement: TabElement|null = null;
 
   dragMouseDown(e: MouseEvent) {
     e = e || window.event;
@@ -144,6 +144,7 @@ export class TabStrip extends CrLitElement {
     }
 
     this.dragging = false;
+    this.tabElement = null;
     this.translateX = 0;
     this.mouseX = 0;
     this.tabOrderX = 0;
@@ -163,6 +164,8 @@ export class TabStrip extends CrLitElement {
     if (!this.dragging) {
       return;
     }
+
+    assert(this.tabElement);
 
     this.translateX = this.translateX - (this.mouseX - e.clientX);
     this.mouseX = e.clientX;

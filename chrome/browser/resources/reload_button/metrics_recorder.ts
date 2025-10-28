@@ -235,7 +235,6 @@ export class MetricsRecorder {
       // Ensures we capture all previous events.
       buffered: true,
       // Ensures we capture shortest possible duration.
-      // @ts-expect-error TS2353: durationThreshold is a valid property.
       durationThreshold: 0,
     });
     return observer;
