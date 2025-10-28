@@ -1247,17 +1247,13 @@ StyleRuleNestedDeclarations* CreateNestedDeclarationsRule(
 StyleRuleBase* CSSParserImpl::CreateDeclarationsRule(
     CSSNestingType nesting_type,
     const CSSSelector* selector_list,
-    wtf_size_t start_index,
-    wtf_size_t end_index) {
+    wtf_size_t start_index) {
   DCHECK(selector_list || (nesting_type != CSSNestingType::kNesting));
-  DCHECK_LE(start_index, end_index);
 
-  // Create a nested declarations rule containing all declarations
-  // in [start_index, end_index).
-  HeapVector<CSSPropertyValue, 64> declarations;
-  declarations.AppendRange(
-      UNSAFE_TODO(parsed_properties_.begin() + start_index),
-      UNSAFE_TODO(parsed_properties_.begin() + end_index));
+  // Create a nested declarations rule containing all declarations from
+  // start_index to the end.
+  HeapVector<CSSPropertyValue, 64> declarations(
+      base::span(parsed_properties_).subspan(start_index));
 
   // Create the selector for StyleRuleNestedDeclarations's inner StyleRule.
 
@@ -1308,7 +1304,6 @@ void CSSParserImpl::EmitDeclarationsRuleIfNeeded(
     // CSSNestedDeclarations; they are effectively shifted to the top instead.
     return;
   }
-  wtf_size_t end_index = parsed_properties_.size();
   if (start_index == kNotFound) {
     return;
   }
@@ -1317,7 +1312,7 @@ void CSSParserImpl::EmitDeclarationsRuleIfNeeded(
   // the page (the styles parsed with an `observer_` are for local use in the
   // inspector only).
   const bool emit_empty_rule = observer_;
-  if (start_index >= end_index && !emit_empty_rule) {
+  if (start_index >= parsed_properties_.size() && !emit_empty_rule) {
     return;
   }
 
@@ -1325,7 +1320,7 @@ void CSSParserImpl::EmitDeclarationsRuleIfNeeded(
       nesting_type,
       parent_rule_for_nesting ? parent_rule_for_nesting->FirstSelector()
                               : nullptr,
-      start_index, end_index);
+      start_index);
   DCHECK(nested_declarations_rule);
   child_rules.push_back(nested_declarations_rule);
 

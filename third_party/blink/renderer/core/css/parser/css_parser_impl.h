@@ -449,7 +449,7 @@ class CORE_EXPORT CSSParserImpl {
   // [1] https://drafts.csswg.org/css-nesting-1/#nested-declarations-rule
 
   // Creates a new "nested declarations rule", consisting of the declarations
-  // (parsed_properties_) in the range [start_index, end_index).
+  // (parsed_properties_) in the range from start_index to the end.
   // or (depending on `nesting_type`) a "function declarations rule",
   // which works similarly, but contains function descriptors rather
   // than regular properties.
@@ -461,8 +461,7 @@ class CORE_EXPORT CSSParserImpl {
   // https://drafts.csswg.org/css-mixins-1/#cssfunctiondeclarations
   StyleRuleBase* CreateDeclarationsRule(CSSNestingType nesting_type,
                                         const CSSSelector* selector_list,
-                                        wtf_size_t start_index,
-                                        wtf_size_t end_index);
+                                        wtf_size_t start_index);
 
   // Adds a new "nested declarations rule" to child_rules, consisting of
   // the declarations (parsed_properties_) from start_index until the end.
