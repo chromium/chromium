@@ -143,10 +143,16 @@ declare_args() {
 
   # Use Starboard media backend.
   enable_starboard_media = false
+
+  # This is the Cast release version. It should have form that identify a
+  #  release version in a unique way, separately from the incremental build
+  #  number. In example can have a form of <major>.<minor>.
+  # This values is a part if product version used by the crash reporting client,
+  #  and expected to be set by the external build system.
+  # For local user build we set it to "local.${USER}" value.
+  cast_build_release = "local." + getenv("USER")
 }
 
-# This is the release version, which takes the form <major>.<minor>.
-cast_build_release = "eng." + getenv("USER")
 
 # All locales supported by Cast builds. This provides a single point of
 # reference for all GN files referencing a locales list.
