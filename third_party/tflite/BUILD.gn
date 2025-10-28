@@ -41,6 +41,14 @@ proto_library("tflite_tools_proto") {
   cc_generator_options = "lite=true:"
 }
 
+proto_library("benchmark_result_proto") {
+  proto_in_dir = "src"
+  sources =
+      [ "src/tensorflow/lite/tools/benchmark/proto/benchmark_result.proto" ]
+  cc_generator_options = "lite=true:"
+  visibility = [ ":tflite_benchmark" ]
+}
+
 config("tflite_config") {
   include_dirs = [
     "$root_gen_dir/third_party/tflite/src",
@@ -1440,6 +1448,7 @@ if (build_with_chromium) {
       "src/tensorflow/lite/tools/utils.h",
     ]
     deps = [
+      ":benchmark_result_proto",
       ":tflite",
       ":tflite_builtin_op_resolver",
       ":tflite_tools_proto",

@@ -2070,7 +2070,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/jk-jeon/dragonbox.git' + '@' + '6c7c925b571d54486b9ffae8d9d18a822801cbda',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'cd4f989f8f9288ab5aed1643ecb04c7be021021e',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '2aa2ff29002d070aa0f5aa86c06bf93e3bb7eff8',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2914,7 +2914,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + 'cbeeef926f2460ca7f00996fa50a0aa4d8c889cb',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '3f5b49f242347153e569efeb364fbcb853b936aa',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -3003,7 +3003,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '29f9f143f2a1bca1049311fe28fed232ae8fdc80',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '43c2b577ce92ddd4cda925c4d060867c12e70de0',
 
   'src/third_party/libei/cipd': {
 
