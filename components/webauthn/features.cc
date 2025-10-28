@@ -11,10 +11,10 @@ namespace webauthn::features {
 
 #if BUILDFLAG(IS_ANDROID)
 
-// Not yet enabled by default.
+// Enabled by default in M144. Remove in or after M147.
 BASE_FEATURE(kWebAuthnAndroidPasskeyCacheMigration,
              "WebAuthenticationAndroidPasskeyCacheMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
