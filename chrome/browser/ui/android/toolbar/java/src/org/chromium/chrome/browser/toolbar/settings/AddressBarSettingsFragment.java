@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -34,7 +35,9 @@ public class AddressBarSettingsFragment extends ChromeBaseSettingsFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.address_bar_settings);
         CharSequence summary = getTitle(getContext());
         mPageTitle.set(summary.toString());
-        findPreference(PREF_ADDRESS_BAR_TITLE).setTitle(summary);
+        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            findPreference(PREF_ADDRESS_BAR_TITLE).setTitle(summary);
+        }
         overrideDescriptionIfFoldable();
     }
 
