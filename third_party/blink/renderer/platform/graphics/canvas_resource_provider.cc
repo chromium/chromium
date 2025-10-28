@@ -1241,16 +1241,13 @@ CanvasResourceProvider::CreateSharedImageProvider(
       (!is_accelerated || shared_image_caps.supports_scanout_shared_images);
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kUseCRPSIForLowLatencyOnWindows)) {
-    // On Windows, SCANOUT usage is additionally supported in the special case
-    // of the swapchain being used on the service side to implement concurrent
-    // read/write.
-    is_overlay_supported =
-        is_overlay_supported ||
-        (shared_image_usage_flags.Has(
-             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
-         shared_image_caps.shared_image_swap_chain);
-  }
+  // On Windows, SCANOUT usage is additionally supported in the special case
+  // of the swapchain being used on the service side to implement concurrent
+  // read/write.
+  is_overlay_supported = is_overlay_supported ||
+                         (shared_image_usage_flags.Has(
+                              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
+                          shared_image_caps.shared_image_swap_chain);
 #endif
 
   if (!is_overlay_supported) {
@@ -1346,17 +1343,16 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kUseCRPSIForLowLatencyOnWindows)) {
-    gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-        gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-    return CanvasResourceProvider::CreateSharedImageProvider(
-        size, format, alpha_type, color_space, should_initialize,
-        context_provider_wrapper, RasterMode::kGPU, shared_image_usage_flags,
-        delegate);
-  }
-#endif
-
+  gpu::SharedImageUsageSet shared_image_usage_flags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+  return CanvasResourceProvider::CreateSharedImageProvider(
+      size, format, alpha_type, color_space, should_initialize,
+      context_provider_wrapper, RasterMode::kGPU, shared_image_usage_flags,
+      delegate);
+#else
+  // TODO(crbug.com/415968760): Remove this code, as the
+  // `shared_image_swap_chain` capability is true only on Windows.
   auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
       size, format, alpha_type, color_space, context_provider_wrapper,
       delegate);
@@ -1373,6 +1369,7 @@ CanvasResourceProvider::CreateSwapChainProvider(
   }
 
   return nullptr;
+#endif
 }
 
 CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
@@ -1483,10 +1480,6 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
     const {
   return raster_mode_ != cc::PlaybackImageProvider::RasterMode::kSoftware;
 }
-
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kUseCRPSIForLowLatencyOnWindows, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
 

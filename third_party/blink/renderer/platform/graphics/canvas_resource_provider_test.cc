@@ -184,10 +184,6 @@ TEST_F(CanvasResourceProviderTest,
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list{kUseCRPSIForLowLatencyOnWindows};
-#endif
-
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -600,10 +596,6 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect2DGpuMemoryBuffer) {
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList feature_list{kUseCRPSIForLowLatencyOnWindows};
-#endif
-
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
