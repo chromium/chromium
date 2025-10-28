@@ -211,7 +211,6 @@ void AwFileSystemAccessPermissionContext::CheckPathsAgainstEnterprisePolicy(
 void AwFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
     const content::PathInfo& path_info,
     base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/40101272): Figure out what external paths should be blocked.
   if (path_info.type == content::PathType::kExternal) {
     std::move(callback).Run(/*should_block=*/false);
     return;
