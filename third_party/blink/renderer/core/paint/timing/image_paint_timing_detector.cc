@@ -137,8 +137,7 @@ ImagePaintTimingDetector::TakePaintTimingCallback() {
               is_recording_lcp);
         }
       },
-      WrapWeakPersistent(this), frame_index_, IsRecordingLargestImagePaint());
-  last_registered_frame_index_ = frame_index_++;
+      WrapWeakPersistent(this), frame_index_++, IsRecordingLargestImagePaint());
 
   // This is for unit-testing purposes only. Some of these tests check for UKMs
   // and things that are not covered by WPT.

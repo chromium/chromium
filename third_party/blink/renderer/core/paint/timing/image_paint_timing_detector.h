@@ -283,7 +283,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;
-  uint32_t last_registered_frame_index_ = 0;
   bool added_entry_in_latest_frame_ = false;
 
   bool contains_full_viewport_image_ = false;
