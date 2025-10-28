@@ -496,7 +496,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageUsage.ULP.Initiation.AcceptLanguagesPageLanguageOverlap.Base"
-    units="%" expires_after="2025-12-10">
+    units="%" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base"
-    units="%" expires_after="2025-12-10">
+    units="%" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -526,7 +526,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.ChromeUILanguageInULP"
-    enum="ULPLanguageStatus" expires_after="2025-12-10">
+    enum="ULPLanguageStatus" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP"
-    enum="LocaleCodeBCP47" expires_after="2025-12-10">
+    enum="LocaleCodeBCP47" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -563,7 +563,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP.Count"
-    units="count" expires_after="2025-12-10">
+    units="count" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -574,7 +574,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.PageLanguagesMissingFromULP"
-    enum="LocaleCodeBCP47" expires_after="2025-12-10">
+    enum="LocaleCodeBCP47" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -586,7 +586,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageUsage.ULP.Initiation.PageLanguagesMissingFromULP.Count"
-    units="count" expires_after="2025-12-10">
+    units="count" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -597,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Status{AccountType}"
-    enum="ULPInitiationStatus" expires_after="2025-12-10">
+    enum="ULPInitiationStatus" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -613,7 +613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
-    enum="ULPLanguageStatus" expires_after="2025-12-10">
+    enum="ULPLanguageStatus" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.TranslateTargetInULP"
-    enum="ULPLanguageStatus" expires_after="2025-12-10">
+    enum="ULPLanguageStatus" expires_after="2026-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
