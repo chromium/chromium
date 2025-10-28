@@ -136,7 +136,7 @@ class AddressSuggestionGeneratorTest : public testing::Test {
     std::vector<Suggestion> suggestions;
     AddressSuggestionGenerator address_suggestion_generator(
         autofill_client_, /*plus_address_email_override=*/std::nullopt,
-        /*form_filler=*/nullptr, /*log_manager=*/nullptr);
+        /*log_manager=*/nullptr);
 
     auto on_suggestions_generated =
         [&suggestions](
@@ -1344,7 +1344,7 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
 
   AddressSuggestionGenerator generator(
       *autofill_client(), /*plus_address_email_override=*/std::nullopt,
-      /*form_filler=*/nullptr, /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
       savedCallbackArgument;

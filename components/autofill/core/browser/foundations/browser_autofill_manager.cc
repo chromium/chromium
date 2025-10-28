@@ -2930,8 +2930,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     std::optional<std::string> plus_address_email_override) {
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
-      client(), plus_address_email_override, form_filler_->GetWeakPtr(),
-      log_manager());
+      client(), plus_address_email_override, log_manager());
 
   auto on_suggestions_generated =
       [&suggestions](

@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
+#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -875,11 +876,9 @@ bool ContainsProfileSuggestionWithRecordType(
 AddressSuggestionGenerator::AddressSuggestionGenerator(
     const AutofillClient& client,
     const std::optional<std::string>& plus_address_email_override,
-    base::WeakPtr<FormFiller> form_filler,
     LogManager* log_manager)
     : plus_address_email_override_(plus_address_email_override),
       client_(client),
-      form_filler_(form_filler),
       log_manager_(log_manager) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
@@ -1021,10 +1020,11 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
     // size, we assume as a fallback that all fields are fillable.
     base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
         skip_reasons;
-    if (form_filler_ && form.fields().size() == form_structure->field_count()) {
-      skip_reasons = form_filler_->GetFieldFillingSkipReasons(
+    if (form.fields().size() == form_structure->field_count()) {
+      skip_reasons = FormFiller::GetFieldFillingSkipReasons(
           form.fields(), *form_structure, *trigger_autofill_field,
-          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress);
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+          *client_);
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure->field_count(); ++i) {

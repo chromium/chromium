@@ -27,6 +27,7 @@
 
 namespace autofill {
 
+class AutofillClient;
 class BrowserAutofillManager;
 
 // Denotes the reason for triggering a refill attempt.
@@ -129,12 +130,13 @@ class FormFiller {
   // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
-  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
+  static base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
   GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
                              const FormStructure& form_structure,
                              const AutofillField& trigger_field,
                              const RefillOptions& refill_options,
-                             FillingProduct filling_product) const;
+                             FillingProduct filling_product,
+                             const AutofillClient& client);
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual

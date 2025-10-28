@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -78,7 +77,6 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
   AddressSuggestionGenerator(
       const AutofillClient& client,
       const std::optional<std::string>& plus_address_email_override,
-      base::WeakPtr<FormFiller> form_filler,
       LogManager* log_manager);
   ~AddressSuggestionGenerator() override;
 
@@ -152,9 +150,6 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
   // implemented.
   const std::optional<std::string> plus_address_email_override_;
   const raw_ref<const AutofillClient> client_;
-
-  // Used to obtain field filling skip reasons.
-  base::WeakPtr<FormFiller> form_filler_;
 
   raw_ptr<LogManager> log_manager_;
 
