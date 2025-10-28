@@ -989,7 +989,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Interrupted"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_manager.h:SigninAddAccountToDeviceResult) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/authentication/add_account_signin/add_account_signin_manager.h:SigninAddAccountToDeviceResult) -->
 
 <enum name="SigninAndroidAddAccountState">
   <int value="0" label="Requested"/>

@@ -4,11 +4,10 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("add_account_signin") {
+source_set("coordinator") {
   sources = [
     "add_account_signin_coordinator.h",
     "add_account_signin_coordinator.mm",
-    "add_account_signin_enums.h",
     "add_account_signin_manager.h",
     "add_account_signin_manager.mm",
     "add_account_signin_mediator.h",
@@ -17,19 +16,15 @@ source_set("add_account_signin") {
   ]
   deps = [
     "//components/prefs",
-    "//components/signin/public/identity_manager",
     "//components/strings",
-    "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/add_account_signin/public",
     "//ios/chrome/browser/authentication/ui_bundled",
-    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
-    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",
-    "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/coordinator/alert",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
@@ -52,7 +47,7 @@ source_set("unit_tests") {
     "add_account_signin_manager_unittest.mm",
   ]
   deps = [
-    ":add_account_signin",
+    ":coordinator",
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",

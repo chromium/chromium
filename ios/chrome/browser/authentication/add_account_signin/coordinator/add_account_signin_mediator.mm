@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_mediator.h"
+#import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_mediator.h"
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_mediator_delegate.h"
+#import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_mediator_delegate.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 
 @interface AddAccountSigninMediator () <AuthenticationServiceObserving> {
