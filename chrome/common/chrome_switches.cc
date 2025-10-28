@@ -964,6 +964,9 @@ const char kGlicSkipReloadAfterNavigation[] =
     "glic-skip-reload-after-navigation";
 // Whether additional logging is enabled in the glic api host.
 const char kGlicHostLogging[] = "glic-host-logging";
+// Whether to show web actuation toggle in the Chrome AI settings page.
+const char kGlicAlwaysShowWebActuationToggle[] =
+    "glic-always-show-web-actuation-toggle";
 
 // List of URL patterns in the glic webview to redirect to an admin blocked
 // panel, as a space-separated list.

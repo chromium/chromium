@@ -302,6 +302,7 @@ extern const char kGlicDev[];
 extern const char kGlicSkipReloadAfterNavigation[];
 extern const char kGlicHostLogging[];
 extern const char kGlicAdminRedirectPatterns[];
+extern const char kGlicAlwaysShowWebActuationToggle[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

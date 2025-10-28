@@ -737,6 +737,10 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(ENABLE_GLIC)
 
 bool ShouldShowWebActuationToggle(Profile* profile) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAlwaysShowWebActuationToggle)) {
+    return true;
+  }
   if (!base::FeatureList::IsEnabled(features::kGlicWebActuationSetting)) {
     return false;
   }
