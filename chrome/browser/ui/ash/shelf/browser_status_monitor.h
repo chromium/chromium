@@ -66,13 +66,13 @@ class BrowserStatusMonitor : public BrowserListObserver,
 
  private:
   // Add a windowed browser-based app to the shelf.
-  void AddAppBrowserToShelf(Browser* browser);
+  void AddAppBrowserToShelf(BrowserWindowInterface* browser);
 
   // Remove a windowed browser-based app from the shelf.
-  void RemoveAppBrowserFromShelf(Browser* browser);
+  void RemoveAppBrowserFromShelf(BrowserWindowInterface* browser);
 
   // Check if an application is currently in the shelf by browser or app id.
-  bool IsAppBrowserInShelf(Browser* browser);
+  bool IsAppBrowserInShelf(BrowserWindowInterface* browser);
   bool IsAppBrowserInShelfWithAppId(const std::string& app_id);
 
   class LocalWebContentsObserver;
@@ -105,7 +105,7 @@ class BrowserStatusMonitor : public BrowserListObserver,
 
   raw_ptr<ChromeShelfController> shelf_controller_;
 
-  std::map<Browser*, std::string> browser_to_app_id_map_;
+  std::map<raw_ptr<BrowserWindowInterface>, std::string> browser_to_app_id_map_;
   std::map<content::WebContents*, std::unique_ptr<LocalWebContentsObserver>>
       webcontents_to_observer_map_;
 
@@ -119,7 +119,7 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // Browsers for which OnBrowserAdded() was called, but not OnBrowserRemoved().
   // Used to validate that OnBrowserAdded() is invoked before
   // OnTabStripModelChanged().
-  std::set<raw_ptr<Browser, SetExperimental>> known_browsers_;
+  std::set<raw_ptr<BrowserWindowInterface, SetExperimental>> known_browsers_;
   // Tabs that are removed from one browser and are getting reinserted into
   // another.
   std::set<raw_ptr<content::WebContents>> tabs_in_transit_;

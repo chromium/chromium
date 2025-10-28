@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -180,17 +181,20 @@ bool IsAppPinEditable(apps::AppType app_type,
   }
 }
 
-bool IsBrowserRepresentedInBrowserList(Browser* browser,
+bool IsBrowserRepresentedInBrowserList(BrowserWindowInterface* browser,
                                        const ash::ShelfModel* model) {
   // Only Ash desktop browser windows for the active user are represented.
   if (!browser ||
-      !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
+      !multi_user_util::IsProfileFromActiveUser(browser->GetProfile())) {
     return false;
   }
 
-  if (browser->is_type_app() || browser->is_type_app_popup()) {
+  BrowserWindowInterface::Type type = browser->GetType();
+  if (type == BrowserWindowInterface::TYPE_APP ||
+      type == BrowserWindowInterface::TYPE_APP_POPUP) {
     // V1 App popup windows may have their own item.
-    ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
+    ash::ShelfID id(web_app::GetAppIdFromApplicationName(
+        browser->GetBrowserForMigrationOnly()->app_name()));
     if (model->ItemByID(id)) {
       return false;
     }

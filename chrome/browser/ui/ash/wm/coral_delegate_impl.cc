@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/scanner_feedback_dialog/scanner_feedback_dialog.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -153,31 +154,34 @@ Browser* CreateBrowser() {
 
 // Finds the first tab with given url on the desk with the given `index` and
 // returns the source browser and the tab index.
-Browser* FindTabOnDeskAtIndex(const GURL& url,
-                              int& out_tab_index,
-                              size_t src_desk_index) {
+BrowserWindowInterface* FindTabOnDeskAtIndex(const GURL& url,
+                                             int& out_tab_index,
+                                             size_t src_desk_index) {
   out_tab_index = -1;
   auto* desks_helper = chromeos::DesksHelper::Get(nullptr);
-  for (auto browser : *BrowserList::GetInstance()) {
-    // Guarantee the window belongs to the desk with the given `index`.
-    if (!desks_helper->BelongsToDesk(browser->window()->GetNativeWindow(),
-                                     src_desk_index)) {
-      continue;
-    }
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        // Guarantee the window belongs to the desk with the given `index`.
+        if (!desks_helper->BelongsToDesk(
+                browser->GetWindow()->GetNativeWindow(), src_desk_index)) {
+          return true;
+        }
 
-    if (browser->profile()->IsIncognitoProfile()) {
-      continue;
-    }
+        if (browser->GetProfile()->IsIncognitoProfile()) {
+          return true;
+        }
 
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int idx = 0; idx < tab_strip_model->count(); idx++) {
-      if (tab_strip_model->GetWebContentsAt(idx)->GetVisibleURL() == url) {
-        out_tab_index = idx;
-        return browser;
-      }
-    }
-  }
-  return nullptr;
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int idx = 0; idx < tab_strip_model->count(); idx++) {
+          if (tab_strip_model->GetWebContentsAt(idx)->GetVisibleURL() == url) {
+            out_tab_index = idx;
+            found_browser = browser;
+          }
+        }
+        return !found_browser;
+      });
+  return found_browser;
 }
 
 }  // namespace

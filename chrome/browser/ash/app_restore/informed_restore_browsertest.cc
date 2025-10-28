@@ -210,14 +210,20 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
 
   // Verify that two browsers are launched and they are the file manager and
   // settings SWAs.
-  auto* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, browser_list->size());
-  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
-    return IsBrowserForSystemWebApp(browser, SystemWebAppType::FILE_MANAGER);
-  }));
-  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
-    return IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS);
-  }));
+  bool found_file_manager = false;
+  bool found_settings = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (IsBrowserForSystemWebApp(browser, SystemWebAppType::FILE_MANAGER)) {
+          found_file_manager = true;
+        }
+        if (IsBrowserForSystemWebApp(browser, SystemWebAppType::SETTINGS)) {
+          found_settings = true;
+        }
+        return true;
+      });
+  EXPECT_TRUE(found_file_manager);
+  EXPECT_TRUE(found_settings);
 }
 
 // Creates 3 browser windows on 3 different desks that will be restored in the
@@ -342,38 +348,46 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, WindowStates) {
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
-  auto* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(5u, browser_list->size());
-
   // Test that there is a maximized, floated and snapped window.
-  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
-    return WindowState::Get(browser->window()->GetNativeWindow())
-        ->IsMaximized();
-  }));
-  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
-    return WindowState::Get(browser->window()->GetNativeWindow())->IsFloated();
-  }));
-  EXPECT_TRUE(std::ranges::any_of(*browser_list, [](Browser* browser) {
-    return WindowState::Get(browser->window()->GetNativeWindow())->IsSnapped();
-  }));
+  bool found_maximized = false;
+  bool found_floated = false;
+  bool found_snapped = false;
+  bool found_fullscreen = false;
+  WindowState* minimized_window_state = nullptr;
+
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        aura::Window* const native_window =
+            browser->GetWindow()->GetNativeWindow();
+        WindowState* const window_state = WindowState::Get(native_window);
+
+        if (window_state->IsMaximized()) {
+          found_maximized = true;
+        } else if (window_state->IsFloated()) {
+          found_floated = true;
+        } else if (window_state->IsSnapped()) {
+          found_snapped = true;
+        } else if (window_state->IsFullscreen()) {
+          found_fullscreen = true;
+        } else if (window_state->IsMinimized()) {
+          minimized_window_state = window_state;
+        }
+        return true;
+      });
+
+  EXPECT_TRUE(found_maximized);
+  EXPECT_TRUE(found_floated);
+  EXPECT_TRUE(found_snapped);
 
   // Test that there is no fullscreen window as full restore does not restore
   // fullscreen state.
-  EXPECT_TRUE(std::ranges::none_of(*browser_list, [](Browser* browser) {
-    return WindowState::Get(browser->window()->GetNativeWindow())
-        ->IsFullscreen();
-  }));
+  EXPECT_FALSE(found_fullscreen);
 
   // Test the pre-minimized state of the minimized browser window. When we
   // unminimize it, it should be maximized state.
-  auto it = std::ranges::find_if(*browser_list, [](Browser* browser) {
-    return WindowState::Get(browser->window()->GetNativeWindow())
-        ->IsMinimized();
-  });
-  ASSERT_NE(it, browser_list->end());
-  auto* window_state = WindowState::Get((*it)->window()->GetNativeWindow());
-  window_state->Unminimize();
-  EXPECT_TRUE(window_state->IsMaximized());
+  ASSERT_TRUE(minimized_window_state);
+  minimized_window_state->Unminimize();
+  EXPECT_TRUE(minimized_window_state->IsMaximized());
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_ClickCancelButton) {

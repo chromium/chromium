@@ -138,7 +138,8 @@ bool IsSystemWebApp(Browser* browser);
 
 // Returns whether the |browser| is dedicated (see above) to hosting the system
 // app |type|.
-bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type);
+bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
+                              SystemWebAppType type);
 
 // Returns the SystemWebAppType that should capture the |url|.
 std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,

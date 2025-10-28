@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -35,18 +36,28 @@ namespace {
 
 // Checks if a given browser is running a windowed app. It will return true for
 // web apps, hosted apps, and packaged V1 apps.
-bool IsAppBrowser(const Browser* browser) {
-  return (browser->is_type_app() || browser->is_type_app_popup()) &&
-         !web_app::GetAppIdFromApplicationName(browser->app_name()).empty();
+bool IsAppBrowser(const BrowserWindowInterface* browser) {
+  const BrowserWindowInterface::Type browser_type = browser->GetType();
+  if (browser_type != BrowserWindowInterface::TYPE_APP &&
+      browser_type != BrowserWindowInterface::TYPE_APP_POPUP) {
+    return false;
+  }
+  return !web_app::GetAppIdFromApplicationName(
+              browser->GetBrowserForMigrationOnly()->app_name())
+              .empty();
 }
 
-Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* GetBrowserWithTabStripModel(
+    TabStripModel* tab_strip_model) {
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetTabStripModel() == tab_strip_model) {
+          found_browser = browser;
+        }
+        return !found_browser;
+      });
+  return found_browser;
 }
 
 }  // namespace
@@ -92,9 +103,11 @@ BrowserStatusMonitor::~BrowserStatusMonitor() {
   BrowserList::RemoveObserver(this);
 
   // Simulate OnBrowserRemoved() for all Browsers.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserRemoved(browser);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        OnBrowserRemoved(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
 }
 
 void BrowserStatusMonitor::Initialize() {
@@ -102,9 +115,11 @@ void BrowserStatusMonitor::Initialize() {
   initialized_ = true;
 
   // Simulate OnBrowserAdded() for all existing Browsers.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
 
   // BrowserList::AddObserver() comes before BrowserTabStripTracker::Init() to
   // ensure that OnBrowserAdded() is always invoked before
@@ -118,44 +133,50 @@ void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
   // When the active profile changes, all windowed and tabbed apps owned by the
   // newly selected profile are added to the shelf, and the ones owned by other
   // profiles are removed.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    bool owned = multi_user_util::IsProfileFromActiveUser(browser->profile());
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        const bool owned =
+            multi_user_util::IsProfileFromActiveUser(browser->GetProfile());
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
 
-    if (browser->is_type_app() || browser->is_type_app_popup()) {
-      // Add windowed apps owned by the current profile, and remove the one
-      // owned by other profiles.
-      bool app_in_shelf = IsAppBrowserInShelf(browser);
-      content::WebContents* active_web_contents =
-          tab_strip_model->GetActiveWebContents();
+        const BrowserWindowInterface::Type browser_type = browser->GetType();
+        if (browser_type == BrowserWindowInterface::TYPE_APP ||
+            browser_type == BrowserWindowInterface::TYPE_APP_POPUP) {
+          // Add windowed apps owned by the current profile, and remove the one
+          // owned by other profiles.
+          Browser* const browser_ptr = browser->GetBrowserForMigrationOnly();
+          const bool app_in_shelf = IsAppBrowserInShelf(browser_ptr);
+          content::WebContents* const active_web_contents =
+              tab_strip_model->GetActiveWebContents();
 
-      if (owned && !app_in_shelf) {
-        // Adding an app to the shelf consists of two actions: add the browser
-        // (shelf item) and add the content (shelf item status).
-        AddAppBrowserToShelf(browser);
-        if (active_web_contents) {
-          shelf_controller_->UpdateAppState(active_web_contents,
-                                            false /*remove*/);
+          if (owned && !app_in_shelf) {
+            // Adding an app to the shelf consists of two actions: add the
+            // browser (shelf item) and add the content (shelf item status).
+            AddAppBrowserToShelf(browser_ptr);
+            if (active_web_contents) {
+              shelf_controller_->UpdateAppState(active_web_contents,
+                                                false /*remove*/);
+            }
+          } else if (!owned && app_in_shelf) {
+            // Removing an app from the shelf requires to remove the content and
+            // the shelf item (reverse order of addition).
+            if (active_web_contents) {
+              shelf_controller_->UpdateAppState(active_web_contents,
+                                                true /*remove*/);
+            }
+            RemoveAppBrowserFromShelf(browser_ptr);
+          }
+
+        } else if (browser_type == BrowserWindowInterface::TYPE_NORMAL) {
+          // Add tabbed apps owned by the current profile, and remove the ones
+          // owned by other profiles.
+          for (int i = 0; i < tab_strip_model->count(); ++i) {
+            shelf_controller_->UpdateAppState(
+                tab_strip_model->GetWebContentsAt(i), !owned /*remove*/);
+          }
         }
-      } else if (!owned && app_in_shelf) {
-        // Removing an app from the shelf requires to remove the content and
-        // the shelf item (reverse order of addition).
-        if (active_web_contents) {
-          shelf_controller_->UpdateAppState(active_web_contents,
-                                            true /*remove*/);
-        }
-        RemoveAppBrowserFromShelf(browser);
-      }
-
-    } else if (browser->is_type_normal()) {
-      // Add tabbed apps owned by the current profile, and remove the ones owned
-      // by other profiles.
-      for (int i = 0; i < tab_strip_model->count(); ++i) {
-        shelf_controller_->UpdateAppState(tab_strip_model->GetWebContentsAt(i),
-                                          !owned /*remove*/);
-      }
-    }
-  }
+        return true;
+      });
 
   // Update the browser state since some of the additions/removals above might
   // have had an impact on the browser item state.
@@ -219,7 +240,8 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   // OnBrowserAdded() must be invoked before OnTabStripModelChanged(). See
   // comment in constructor.
-  Browser* browser = GetBrowserWithTabStripModel(tab_strip_model);
+  BrowserWindowInterface* const browser =
+      GetBrowserWithTabStripModel(tab_strip_model);
 #if DCHECK_IS_ON()
   DCHECK(base::Contains(known_browsers_, browser));
 #endif
@@ -256,7 +278,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
         case TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip:
           // The tab will be reinserted immediately into another browser, so
           // this event is ignored.
-          if (browser->is_type_devtools()) {
+          if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
             // TODO(crbug.com/40773744): when a dev tools window is docked, and
             // its WebContents is removed, it will not be reinserted into
             // another tab strip, so it should be treated as closed.
@@ -285,12 +307,13 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
   }
 }
 
-void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
+void BrowserStatusMonitor::AddAppBrowserToShelf(
+    BrowserWindowInterface* browser) {
   DCHECK(IsAppBrowser(browser));
   DCHECK(initialized_);
 
-  std::string app_id =
-      web_app::GetAppIdFromApplicationName(browser->app_name());
+  const std::string app_id = web_app::GetAppIdFromApplicationName(
+      browser->GetBrowserForMigrationOnly()->app_name());
   DCHECK(!app_id.empty());
   if (!IsAppBrowserInShelfWithAppId(app_id)) {
     if (auto* chrome_controller = ChromeShelfController::instance()) {
@@ -301,13 +324,14 @@ void BrowserStatusMonitor::AddAppBrowserToShelf(Browser* browser) {
   browser_to_app_id_map_[browser] = app_id;
 }
 
-void BrowserStatusMonitor::RemoveAppBrowserFromShelf(Browser* browser) {
+void BrowserStatusMonitor::RemoveAppBrowserFromShelf(
+    BrowserWindowInterface* browser) {
   DCHECK(IsAppBrowser(browser));
   DCHECK(initialized_);
 
   auto iter = browser_to_app_id_map_.find(browser);
   if (iter != browser_to_app_id_map_.end()) {
-    std::string app_id = iter->second;
+    const std::string app_id = iter->second;
     browser_to_app_id_map_.erase(iter);
     if (!IsAppBrowserInShelfWithAppId(app_id)) {
       shelf_controller_->SetAppStatus(app_id, ash::STATUS_CLOSED);
@@ -315,7 +339,8 @@ void BrowserStatusMonitor::RemoveAppBrowserFromShelf(Browser* browser) {
   }
 }
 
-bool BrowserStatusMonitor::IsAppBrowserInShelf(Browser* browser) {
+bool BrowserStatusMonitor::IsAppBrowserInShelf(
+    BrowserWindowInterface* browser) {
   return browser_to_app_id_map_.find(browser) != browser_to_app_id_map_.end();
 }
 

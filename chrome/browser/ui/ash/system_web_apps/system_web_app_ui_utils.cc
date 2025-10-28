@@ -357,10 +357,13 @@ bool IsSystemWebApp(Browser* browser) {
   return browser->app_controller() && browser->app_controller()->system_app();
 }
 
-bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type) {
+bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
+                              SystemWebAppType type) {
   DCHECK(browser);
-  return browser->app_controller() && browser->app_controller()->system_app() &&
-         browser->app_controller()->system_app()->GetType() == type;
+  web_app::AppBrowserController* const app_controller =
+      browser->GetAppBrowserController();
+  return app_controller && app_controller->system_app() &&
+         app_controller->system_app()->GetType() == type;
 }
 
 std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,

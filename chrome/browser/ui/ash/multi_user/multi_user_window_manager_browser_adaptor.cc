@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -112,11 +113,13 @@ void MultiUserWindowManagerBrowserAdaptor::AddUser(
   }
 
   // Account all existing browser windows of this user accordingly.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->IsSameOrParent(profile)) {
-      OnBrowserAdded(browser);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->IsSameOrParent(profile)) {
+          OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        }
+        return true;
+      });
 }
 
 void MultiUserWindowManagerBrowserAdaptor::OnBrowserAdded(Browser* browser) {

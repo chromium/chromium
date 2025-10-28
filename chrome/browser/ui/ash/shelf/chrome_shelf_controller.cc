@@ -353,14 +353,18 @@ void ChromeShelfController::Init() {
 
   // Tag all open browser windows with the appropriate shelf id property. This
   // associates each window with the shelf item for the active web contents.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (IsBrowserRepresentedInBrowserList(browser, model_) &&
-        browser->tab_strip_model()->GetActiveWebContents()) {
-      SetShelfIDForBrowserWindowContents(
-          ash::BrowserController::GetInstance()->GetDelegate(browser),
-          browser->tab_strip_model()->GetActiveWebContents());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (IsBrowserRepresentedInBrowserList(browser, model_)) {
+          if (content::WebContents* const active_web_contents =
+                  browser->GetTabStripModel()->GetActiveWebContents()) {
+            SetShelfIDForBrowserWindowContents(
+                ash::BrowserController::GetInstance()->GetDelegate(browser),
+                active_web_contents);
+          }
+        }
+        return true;
+      });
 
   UpdatePinnedAppsFromSync();
   if (browser_status_monitor_) {
@@ -553,25 +557,28 @@ void ChromeShelfController::UpdateAppState(content::WebContents* contents,
 
 void ChromeShelfController::UpdateV1AppState(const std::string& app_id) {
   TRACE_EVENT0("ui", "ChromeShelfController::UpdateV1AppState");
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!browser->is_type_normal() ||
-        !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      continue;
-    }
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* const web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      if (shelf_controller_helper_->GetAppID(web_contents) != app_id) {
-        continue;
-      }
-      UpdateAppState(web_contents, false /*remove*/);
-      if (browser->tab_strip_model()->GetActiveWebContents() == web_contents) {
-        SetShelfIDForBrowserWindowContents(
-            ash::BrowserController::GetInstance()->GetDelegate(browser),
-            web_contents);
-      }
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
+            !multi_user_util::IsProfileFromActiveUser(browser->GetProfile())) {
+          return true;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          content::WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          if (shelf_controller_helper_->GetAppID(web_contents) != app_id) {
+            continue;
+          }
+          UpdateAppState(web_contents, false /*remove*/);
+          if (tab_strip_model->GetActiveWebContents() == web_contents) {
+            SetShelfIDForBrowserWindowContents(
+                ash::BrowserController::GetInstance()->GetDelegate(browser),
+                web_contents);
+          }
+        }
+        return true;
+      });
 }
 
 ash::ShelfAction ChromeShelfController::ActivateWindowOrMinimizeIfActive(
@@ -717,12 +724,14 @@ ChromeShelfController::GetBrowserShortcutShelfItemControllerForTesting() {
 
 void ChromeShelfController::UpdateBrowserItemState() {
   ash::ShelfItemStatus browser_status = ash::STATUS_CLOSED;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (IsBrowserRepresentedInBrowserList(browser, model_)) {
-      browser_status = ash::STATUS_RUNNING;
-      break;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (IsBrowserRepresentedInBrowserList(browser, model_)) {
+          browser_status = ash::STATUS_RUNNING;
+          return false;
+        }
+        return true;
+      });
 
   if (browser_status == ash::STATUS_CLOSED) {
     // If browser shortcut icon is not pinned, remove it.

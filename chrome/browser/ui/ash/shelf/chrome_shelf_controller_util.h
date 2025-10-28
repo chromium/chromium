@@ -12,7 +12,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace ash {
 class ShelfModel;
@@ -48,9 +48,9 @@ bool IsAppPinEditable(apps::AppType app_type,
                       const std::string& app_id,
                       Profile* profile);
 
-// Returns true when the given |browser| is listed in the browser application
-// list.
-bool IsBrowserRepresentedInBrowserList(Browser* browser,
+// Returns true when the given |browser| is listed in the browser
+// application list.
+bool IsBrowserRepresentedInBrowserList(BrowserWindowInterface* browser,
                                        const ash::ShelfModel* model);
 
 // Pins an app to the shelf using only an app_id.

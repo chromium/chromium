@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -178,23 +179,26 @@ void WaitForDeskModel() {
   }
 }
 
-Browser* FindBrowser(int32_t window_id) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetProperty(app_restore::kRestoreWindowIdKey) == window_id) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* FindBrowser(int32_t window_id) {
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetWindow()->GetNativeWindow()->GetProperty(
+                app_restore::kRestoreWindowIdKey) == window_id) {
+          found_browser = browser;
+        }
+        return !found_browser;
+      });
+  return found_browser;
 }
 
 aura::Window* FindBrowserWindow(int32_t window_id) {
-  Browser* browser = FindBrowser(window_id);
-  return browser ? browser->window()->GetNativeWindow() : nullptr;
+  BrowserWindowInterface* const browser = FindBrowser(window_id);
+  return browser ? browser->GetWindow()->GetNativeWindow() : nullptr;
 }
 
-std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+std::vector<GURL> GetURLsForBrowserWindow(BrowserWindowInterface* browser) {
+  const TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   std::vector<GURL> urls;
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     urls.push_back(tab_strip_model->GetWebContentsAt(i)->GetVisibleURL());
@@ -203,22 +207,24 @@ std::vector<GURL> GetURLsForBrowserWindow(Browser* browser) {
 }
 
 // Locate all browsers launched from templates whose URLs match `urls`.
-std::vector<Browser*> FindLaunchedBrowsersByURLs(
+std::vector<BrowserWindowInterface*> FindLaunchedBrowsersByURLs(
     const std::vector<GURL>& urls) {
-  std::vector<Browser*> browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    if (window->GetProperty(app_restore::kRestoreWindowIdKey) <
-            kLaunchedWindowIdBase &&
-        GetURLsForBrowserWindow(browser) == urls) {
-      browsers.push_back(browser);
-    }
-  }
+  std::vector<BrowserWindowInterface*> browsers;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetWindow()->GetNativeWindow()->GetProperty(
+                app_restore::kRestoreWindowIdKey) < kLaunchedWindowIdBase &&
+            GetURLsForBrowserWindow(browser) == urls) {
+          browsers.push_back(browser);
+        }
+        return true;
+      });
   return browsers;
 }
 
 // Locate a browser launched from a template whose URLs match `urls`.
-Browser* FindLaunchedBrowserByURLs(const std::vector<GURL>& urls) {
+BrowserWindowInterface* FindLaunchedBrowserByURLs(
+    const std::vector<GURL>& urls) {
   auto browsers = FindLaunchedBrowsersByURLs(urls);
   return browsers.empty() ? nullptr : browsers.front();
 }
@@ -877,13 +883,18 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
 
   // Verify that the settings window has been launched on the new desk (desk B).
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  auto it =
-      std::ranges::find_if(*BrowserList::GetInstance(), [](Browser* browser) {
-        return ash::IsBrowserForSystemWebApp(browser,
-                                             ash::SystemWebAppType::SETTINGS);
+  BrowserWindowInterface* settings_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (ash::IsBrowserForSystemWebApp(browser,
+                                          ash::SystemWebAppType::SETTINGS)) {
+          settings_browser = browser;
+        }
+        return !settings_browser;
       });
-  ASSERT_NE(it, BrowserList::GetInstance()->end());
-  aura::Window* new_settings_window = (*it)->window()->GetNativeWindow();
+  ASSERT_NE(settings_browser, nullptr);
+  aura::Window* const new_settings_window =
+      settings_browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(ash::Shell::GetContainer(new_settings_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             new_settings_window->parent());
@@ -1022,14 +1033,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
   content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct urls and active tab.
-  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
+  BrowserWindowInterface* const new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(static_cast<int>(browser_active_index),
-            new_browser->tab_strip_model()->active_index());
+            new_browser->GetTabStripModel()->active_index());
 
   // Verify that the browser window has been launched on the new desk (desk B).
   EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
-  aura::Window* browser_window = new_browser->window()->GetNativeWindow();
+  aura::Window* const browser_window =
+      new_browser->GetWindow()->GetNativeWindow();
   ASSERT_TRUE(browser_window);
   EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
@@ -1119,12 +1131,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct urls and active tab.
-  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
+  BrowserWindowInterface* const new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
 
   std::vector<tab_groups::TabGroupInfo> got_tab_groups =
       chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
-          new_browser->tab_strip_model()->group_model());
+          new_browser->GetTabStripModel()->group_model());
 
   EXPECT_FALSE(got_tab_groups.empty());
 
@@ -1163,12 +1175,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchBrowserWithPinnedTabs) {
   content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct urls and active tab.
-  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
+  BrowserWindowInterface* const new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
 
   // Assert the number of pinned tabs is correct.
   ASSERT_EQ(expected_number_of_pinned_tabs,
-            new_browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
+            new_browser->GetTabStripModel()->IndexOfFirstNonPinnedTab());
 }
 
 // Tests that browser session restore isn't triggered when we launch a template
@@ -1205,7 +1217,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
 
   // Verify that the browser was launched with the correct number of tabs, and
   // that browser session restore did not restore any windows/tabs.
-  Browser* new_browser =
+  BrowserWindowInterface* const new_browser =
       FindLaunchedBrowserByURLs({GURL(kAboutBlankUrl), GURL(kNewTabPageUrl)});
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
@@ -1253,22 +1265,25 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
   SetAndLaunchTemplate(std::move(desk_template));
 
   // Verify that the browser was launched with the correct bounds.
-  Browser* new_browser_1 = FindLaunchedBrowserByURLs(browser_urls_1);
+  BrowserWindowInterface* const new_browser_1 =
+      FindLaunchedBrowserByURLs(browser_urls_1);
   ASSERT_TRUE(new_browser_1);
   EXPECT_EQ(browser_bounds_1,
-            new_browser_1->window()->GetNativeWindow()->bounds());
+            new_browser_1->GetWindow()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and minimized.
-  Browser* new_browser_2 = FindLaunchedBrowserByURLs(browser_urls_2);
+  BrowserWindowInterface* const new_browser_2 =
+      FindLaunchedBrowserByURLs(browser_urls_2);
   ASSERT_TRUE(new_browser_2);
-  ASSERT_TRUE(new_browser_2->window()->IsMinimized());
+  ASSERT_TRUE(new_browser_2->GetWindow()->IsMinimized());
   EXPECT_EQ(browser_bounds_2,
-            new_browser_2->window()->GetNativeWindow()->bounds());
+            new_browser_2->GetWindow()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and maximized.
-  Browser* new_browser_3 = FindLaunchedBrowserByURLs(browser_urls_3);
+  BrowserWindowInterface* const new_browser_3 =
+      FindLaunchedBrowserByURLs(browser_urls_3);
   ASSERT_TRUE(new_browser_3);
-  ASSERT_TRUE(new_browser_3->window()->IsMaximized());
+  ASSERT_TRUE(new_browser_3->GetWindow()->IsMaximized());
 }
 
 // Tests that saving and launching a template that contains a PWA works as
@@ -1306,11 +1321,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   SetAndLaunchTemplate(std::move(desk_template));
 
   // Verify that the PWA was launched correctly.
-  Browser* new_pwa_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  BrowserWindowInterface* const new_pwa_browser =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_TRUE(new_pwa_browser);
-  ASSERT_TRUE(new_pwa_browser->is_type_app());
-  aura::Window* new_browser_window =
-      new_pwa_browser->window()->GetNativeWindow();
+  ASSERT_TRUE(new_pwa_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+  aura::Window* const new_browser_window =
+      new_pwa_browser->GetWindow()->GetNativeWindow();
   EXPECT_NE(new_browser_window, pwa_window);
   EXPECT_EQ(pwa_bounds, new_browser_window->bounds());
   const std::string* new_app_name =
@@ -1361,7 +1377,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
 
   LaunchTemplate(uuid);
   // Verify that the PWA was not launched.
-  Browser* new_pwa_browser = FindLaunchedBrowserByURLs(urls);
+  BrowserWindowInterface* const new_pwa_browser =
+      FindLaunchedBrowserByURLs(urls);
   EXPECT_FALSE(new_pwa_browser);
 }
 
@@ -1390,11 +1407,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
 
   // Verify that the PWA was launched correctly, and that the out of scope url
   // was successfully opened in the PWA (and not in a normal browser window).
-  Browser* new_pwa_browser = FindLaunchedBrowserByURLs(urls);
+  BrowserWindowInterface* const new_pwa_browser =
+      FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_pwa_browser);
-  ASSERT_TRUE(new_pwa_browser->is_type_app());
-  aura::Window* new_browser_window =
-      new_pwa_browser->window()->GetNativeWindow();
+  ASSERT_TRUE(new_pwa_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+  aura::Window* const new_browser_window =
+      new_pwa_browser->GetWindow()->GetNativeWindow();
   EXPECT_NE(new_browser_window, pwa_window);
   const std::string* new_app_name =
       new_browser_window->GetProperty(app_restore::kBrowserAppNameKey);
@@ -1531,14 +1549,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchBrowser) {
   EXPECT_EQ(4u, BrowserList::GetInstance()->size());
 
   // Test that the created browser has the same tabs and the same active tab.
-  Browser* new_browser = FindLaunchedBrowserByURLs(urls);
+  BrowserWindowInterface* const new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
   EXPECT_EQ(static_cast<int>(browser_active_index),
-            new_browser->tab_strip_model()->active_index());
+            new_browser->GetTabStripModel()->active_index());
 
   // Verify that the browser window has been launched on the new desk (desk B).
   EXPECT_EQ(1, ash::DesksController::Get()->GetActiveDeskIndex());
-  aura::Window* browser_window = new_browser->window()->GetNativeWindow();
+  aura::Window* const browser_window =
+      new_browser->GetWindow()->GetNativeWindow();
   ASSERT_TRUE(browser_window);
   EXPECT_EQ(ash::Shell::GetContainer(browser_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
@@ -1797,16 +1816,18 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   settings_window = nullptr;
   help_window = nullptr;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    const std::u16string title = window->GetTitle();
-    if (title == settings_title) {
-      settings_window = window;
-    }
-    if (title == help_title) {
-      help_window = window;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        aura::Window* const window = browser->GetWindow()->GetNativeWindow();
+        const std::u16string title = window->GetTitle();
+        if (title == settings_title) {
+          settings_window = window;
+        }
+        if (title == help_title) {
+          help_window = window;
+        }
+        return true;
+      });
   ASSERT_TRUE(settings_window);
   ASSERT_TRUE(help_window);
   EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
@@ -1965,22 +1986,25 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   content::RunAllTasksUntilIdle();
 
   // Verify that the browser was launched with the correct bounds.
-  Browser* new_browser_1 = FindLaunchedBrowserByURLs(browser_urls_1);
+  BrowserWindowInterface* const new_browser_1 =
+      FindLaunchedBrowserByURLs(browser_urls_1);
   ASSERT_TRUE(new_browser_1);
   EXPECT_EQ(browser_bounds_1,
-            new_browser_1->window()->GetNativeWindow()->bounds());
+            new_browser_1->GetWindow()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and minimized.
-  Browser* new_browser_2 = FindLaunchedBrowserByURLs(browser_urls_2);
+  BrowserWindowInterface* const new_browser_2 =
+      FindLaunchedBrowserByURLs(browser_urls_2);
   ASSERT_TRUE(new_browser_2);
-  ASSERT_TRUE(new_browser_2->window()->IsMinimized());
+  ASSERT_TRUE(new_browser_2->GetWindow()->IsMinimized());
   EXPECT_EQ(browser_bounds_2,
-            new_browser_2->window()->GetNativeWindow()->bounds());
+            new_browser_2->GetWindow()->GetNativeWindow()->bounds());
 
   // Verify that the browser was launched and maximized.
-  Browser* new_browser_3 = FindLaunchedBrowserByURLs(browser_urls_3);
+  BrowserWindowInterface* const new_browser_3 =
+      FindLaunchedBrowserByURLs(browser_urls_3);
   ASSERT_TRUE(new_browser_3);
-  ASSERT_TRUE(new_browser_3->window()->IsMaximized());
+  ASSERT_TRUE(new_browser_3->GetWindow()->IsMaximized());
 }
 
 // Tests that saving and launching a template that contains a PWA works as
@@ -2021,11 +2045,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   ClickFirstTemplateItem();
 
   // Verify that the PWA was launched correctly.
-  Browser* new_pwa_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  BrowserWindowInterface* const new_pwa_browser =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_TRUE(new_pwa_browser);
-  ASSERT_TRUE(new_pwa_browser->is_type_app());
-  aura::Window* new_browser_window =
-      new_pwa_browser->window()->GetNativeWindow();
+  ASSERT_TRUE(new_pwa_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+  aura::Window* const new_browser_window =
+      new_pwa_browser->GetWindow()->GetNativeWindow();
   EXPECT_NE(new_browser_window, pwa_window);
   EXPECT_EQ(pwa_bounds, new_browser_window->bounds());
   const std::string* new_app_name =
@@ -3507,16 +3532,19 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
 
   // Verify that there are three browsers (two from the suite and one from the
   // test), and verify that our launched browsers are stacked on top.
-  Browser* new_browser_one = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
-  Browser* new_browser_two = FindLaunchedBrowserByURLs({GURL(kExampleUrl2)});
+  BrowserWindowInterface* const new_browser_one =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  BrowserWindowInterface* const new_browser_two =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl2)});
   ASSERT_TRUE(new_browser_one);
   ASSERT_TRUE(new_browser_two);
 
-  aura::Window* old_browser_window = browser()->window()->GetNativeWindow();
-  aura::Window* new_browser_window_one =
-      new_browser_one->window()->GetNativeWindow();
-  aura::Window* new_browser_window_two =
-      new_browser_two->window()->GetNativeWindow();
+  aura::Window* const old_browser_window =
+      browser()->window()->GetNativeWindow();
+  aura::Window* const new_browser_window_one =
+      new_browser_one->GetWindow()->GetNativeWindow();
+  aura::Window* const new_browser_window_two =
+      new_browser_two->GetWindow()->GetNativeWindow();
 
   // All browsers should be on the same desk.
   ASSERT_EQ(old_browser_window->parent(), new_browser_window_one->parent());
@@ -3561,8 +3589,8 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowOffset) {
   ASSERT_EQ(browsers.size(), 2u);
 
   // Verify that the two windows are not in the same position.
-  aura::Window* window1 = browsers[0]->window()->GetNativeWindow();
-  aura::Window* window2 = browsers[1]->window()->GetNativeWindow();
+  aura::Window* window1 = browsers[0]->GetWindow()->GetNativeWindow();
+  aura::Window* window2 = browsers[1]->GetWindow()->GetNativeWindow();
   EXPECT_NE(window1->bounds(), window2->bounds());
 }
 
@@ -3597,9 +3625,11 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
       ash::Shell::Get()->saved_desk_delegate(),
       display::Screen::Get()->GetPrimaryDisplay().id());
 
-  Browser* browser1 = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  BrowserWindowInterface* const browser1 =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_TRUE(browser1);
-  Browser* browser2 = FindLaunchedBrowserByURLs({GURL(kExampleUrl2)});
+  BrowserWindowInterface* const browser2 =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl2)});
   ASSERT_TRUE(browser2);
 
   // The update callback should have been invoked already and the template
@@ -3623,14 +3653,15 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
   // windows are updated.
   updated_template = nullptr;
 
-  aura::Window* browser2_window = browser2->window()->GetNativeWindow();
+  aura::Window* const browser2_window =
+      browser2->GetWindow()->GetNativeWindow();
 
   // Set the bounds of the two windows. This should result in the template
   // getting updated.
   const gfx::Rect window1_set_bounds(50, 50, 640, 480);
-  browser1->window()->GetNativeWindow()->SetBounds(window1_set_bounds);
+  browser1->GetWindow()->GetNativeWindow()->SetBounds(window1_set_bounds);
   const gfx::Rect window2_set_bounds(100, 100, 800, 600);
-  browser2->window()->GetNativeWindow()->SetBounds(window2_set_bounds);
+  browser2->GetWindow()->GetNativeWindow()->SetBounds(window2_set_bounds);
 
   // Reverse the Z order, we will use this to verify that the Z order is
   // persisted.
@@ -3696,7 +3727,8 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateAutoLaunch) {
   run_loop.Run();
 
   // Verify that a new browser has been launched.
-  Browser* new_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  BrowserWindowInterface* const new_browser =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_TRUE(new_browser);
 }
 
@@ -3718,6 +3750,7 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateNoAutoLaunch) {
   run_loop.Run();
 
   // Verify that a new browser has *not* been launched.
-  Browser* new_browser = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  BrowserWindowInterface* const new_browser =
+      FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
   ASSERT_FALSE(new_browser);
 }

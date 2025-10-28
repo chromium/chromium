@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -82,11 +83,15 @@ std::vector<std::string> CollectAppIDsFromWindows(
 
 // Returns the native window associated with `swa_type`, if it exists.
 aura::Window* GetNativeWindowForSwa(SystemWebAppType swa_type) {
-  BrowserList* browsers = BrowserList::GetInstance();
-  auto it = std::ranges::find_if(*browsers, [swa_type](Browser* browser) {
-    return IsBrowserForSystemWebApp(browser, swa_type);
-  });
-  return it == browsers->end() ? nullptr : (*it)->window()->GetNativeWindow();
+  aura::Window* found_window = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [swa_type, &found_window](BrowserWindowInterface* browser) {
+        if (IsBrowserForSystemWebApp(browser, swa_type)) {
+          found_window = browser->GetWindow()->GetNativeWindow();
+        }
+        return !found_window;
+      });
+  return found_window;
 }
 
 class WindowDestroyedObserver : public aura::WindowObserver {

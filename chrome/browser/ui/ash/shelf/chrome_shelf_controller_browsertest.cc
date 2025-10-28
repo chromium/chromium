@@ -173,21 +173,24 @@ ash::ShelfAction SelectItem(
   return SelectShelfItem(id, event_type, display_id, source);
 }
 
-// Find the browser that associated with |app_name|.
-Browser* FindBrowserForApp(const std::string& app_name) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    std::string browser_app_name =
-        web_app::GetAppIdFromApplicationName(browser->app_name());
-    if (browser_app_name == app_name) {
-      return browser;
-    }
-  }
-  return nullptr;
+// Find the browser window interface that is associated with |app_name|.
+BrowserWindowInterface* FindBrowserForApp(const std::string& app_name) {
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [app_name, &found_browser](BrowserWindowInterface* browser) {
+        if (web_app::GetAppIdFromApplicationName(
+                browser->GetBrowserForMigrationOnly()->app_name()) ==
+            app_name) {
+          found_browser = browser;
+        }
+        return !found_browser;  // Continue while not found
+      });
+  return found_browser;
 }
 
 // Close |app_browser| and wait until it's closed.
-void CloseAppBrowserWindow(Browser* app_browser) {
-  app_browser->window()->Close();
+void CloseAppBrowserWindow(BrowserWindowInterface* app_browser) {
+  app_browser->GetWindow()->Close();
   ui_test_utils::WaitForBrowserToClose(app_browser);
 }
 
@@ -1272,13 +1275,15 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
 
   // Find the native window for the app.
   gfx::NativeWindow native_window = gfx::NativeWindow();
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->app_controller() &&
-        browser->app_controller()->app_id() == app_id) {
-      native_window = browser->window()->GetNativeWindow();
-      break;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [app_id, &native_window](BrowserWindowInterface* browser) {
+        if (web_app::AppBrowserController* const app_controller =
+                browser->GetAppBrowserController();
+            app_controller && app_controller->app_id() == app_id) {
+          native_window = browser->GetWindow()->GetNativeWindow();
+        }
+        return !native_window;  // Continue while not found
+      });
   ASSERT_TRUE(native_window);
 
   // The native window shelf ID and app ID should match the web app ID.
@@ -1572,9 +1577,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
   const Extension* extension = LoadAndLaunchExtension(
       "app1", apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                                   false /* prefer_containner */));
-  Browser* app_browser = FindBrowserForApp(extension->id());
+  BrowserWindowInterface* app_browser = FindBrowserForApp(extension->id());
   ASSERT_TRUE(app_browser);
-  BrowserWindow* window = app_browser->window();
+  ui::BaseWindow* window = app_browser->GetWindow();
   EXPECT_FALSE(window->IsMaximized());
   window->Maximize();
   EXPECT_TRUE(window->IsMaximized());
@@ -1586,12 +1591,12 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
                                   false /* prefer_containner */));
   app_browser = FindBrowserForApp(extension->id());
   ASSERT_TRUE(app_browser);
-  window = app_browser->window();
+  window = app_browser->GetWindow();
   EXPECT_TRUE(window->IsMaximized());
 
   window->Restore();
   EXPECT_FALSE(window->IsMaximized());
-  app_browser->window()->Close();
+  app_browser->GetWindow()->Close();
   CloseAppBrowserWindow(app_browser);
 
   // Reopen the App. It should start un-maximized.
@@ -1600,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
                                   false /* prefer_containner */));
   app_browser = FindBrowserForApp(extension->id());
   ASSERT_TRUE(app_browser);
-  window = app_browser->window();
+  window = app_browser->GetWindow();
   EXPECT_FALSE(window->IsMaximized());
 }
 
@@ -2302,9 +2307,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
       [&](BrowserWindowInterface* browser) {
         if (browser->GetType() == BrowserWindowInterface::TYPE_APP) {
           app_browser = browser;
-          return false;  // stop iterating
         }
-        return true;  // continue iterating
+        return !app_browser;  // Continue while not found
       });
   ASSERT_TRUE(app_browser);
 

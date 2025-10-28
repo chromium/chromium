@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -96,11 +97,14 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
 
   profile_list_.push_back(owner->profile());
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser && browser->window() && browser->window()->GetNativeWindow()) {
-      observed_windows_.AddObservation(browser->window()->GetNativeWindow());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (ui::BaseWindow* const window = browser->GetWindow();
+            window && window->GetNativeWindow()) {
+          observed_windows_.AddObservation(window->GetNativeWindow());
+        }
+        return true;
+      });
 }
 
 AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
