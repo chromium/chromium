@@ -1884,7 +1884,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PredictionManager.DownloadServiceAvailabilityBlockedFetch"
-    enum="BooleanBlocked" expires_after="2025-11-09">
+    enum="BooleanBlocked" expires_after="2026-11-09">
   <owner>rajendrant@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
   <summary>
