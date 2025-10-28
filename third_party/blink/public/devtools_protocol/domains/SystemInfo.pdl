@@ -74,19 +74,6 @@ experimental domain SystemInfo
       webp
       unknown
 
-  # Describes a supported image decoding profile with its associated minimum and
-  # maximum resolutions and subsampling.
-  type ImageDecodeAcceleratorCapability extends object
-    properties
-      # Image coded, e.g. Jpeg.
-      ImageType imageType
-      # Maximum supported dimensions of the image in pixels.
-      Size maxDimensions
-      # Minimum supported dimensions of the image in pixels.
-      Size minDimensions
-      # Optional array of supported subsampling formats, e.g. 4:2:0, if known.
-      array of SubsamplingFormat subsamplings
-
   # Provides information about the GPU(s) on the system.
   type GPUInfo extends object
     properties
@@ -102,8 +89,6 @@ experimental domain SystemInfo
       array of VideoDecodeAcceleratorCapability videoDecoding
       # Supported accelerated video encoding capabilities.
       array of VideoEncodeAcceleratorCapability videoEncoding
-      # Supported accelerated image decoding capabilities.
-      array of ImageDecodeAcceleratorCapability imageDecoding
 
   # Represents process info.
   type ProcessInfo extends object

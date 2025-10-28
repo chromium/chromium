@@ -219,9 +219,6 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
         VideoEncodeAcceleratorSupportedProfileToProtocol(profile));
   }
 
-  auto image_profiles = std::make_unique<
-      protocol::Array<SystemInfo::ImageDecodeAcceleratorCapability>>();
-
   std::unique_ptr<GPUInfo> gpu =
       GPUInfo::Create()
           .SetDevices(std::move(devices))
@@ -230,7 +227,6 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
           .SetDriverBugWorkarounds(std::move(driver_bug_workarounds))
           .SetVideoDecoding(std::move(decoding_profiles))
           .SetVideoEncoding(std::move(encoding_profiles))
-          .SetImageDecoding(std::move(image_profiles))
           .Build();
 
   base::CommandLine* command = base::CommandLine::ForCurrentProcess();
