@@ -55,6 +55,14 @@ void RecordDownloadFailureReason(InstallerDownloaderFailureReason reason) {
                                 reason);
 }
 
+void RecordDownloadInterruptReason(
+    download::DownloadInterruptReason interrupt_reason) {
+  // Records the interrupt reason to a sparse histogram. This is preferred for
+  // enums with many possible values, where not all may be emitted.
+  base::UmaHistogramSparse("Windows.InstallerDownloader.InterruptReason",
+                           static_cast<int>(interrupt_reason));
+}
+
 }  // namespace
 
 class InstallerDownloaderObserver final
@@ -91,11 +99,16 @@ class InstallerDownloaderObserver final
       case download::DownloadItem::IN_PROGRESS:
         break;
       case download::DownloadItem::INTERRUPTED:
+        RecordDownloadFailureReason(
+            InstallerDownloaderFailureReason::kInterrupted);
+        RecordDownloadInterruptReason(item->GetLastReason());
+        // `this` is deleted by `completion_callback_`, so nothing below this
+        // point may access it.
+        std::move(completion_callback_).Run(/*succeeded=*/false);
+        break;
       case download::DownloadItem::CANCELLED:
         RecordDownloadFailureReason(
-            state == download::DownloadItem::INTERRUPTED
-                ? InstallerDownloaderFailureReason::kInterrupted
-                : InstallerDownloaderFailureReason::kCancelled);
+            InstallerDownloaderFailureReason::kCancelled);
         // `this` is deleted by `completion_callback_`, so nothing below this
         // point may access it.
         std::move(completion_callback_).Run(/*succeeded=*/false);
@@ -230,10 +243,7 @@ void InstallerDownloaderModelImpl::OnInstallerDownloadCreated(
   // If `reason` is anything other than NONE (or we never got a DownloadItem)
   // will be treated as a failure.
   if (reason != download::DOWNLOAD_INTERRUPT_REASON_NONE || !item) {
-    // Records the interrupt reason to a sparse histogram. This is preferred for
-    // enums with many possible values, where not all may be emitted.
-    base::UmaHistogramSparse("Windows.InstallerDownloader.InterruptReason",
-                             static_cast<int>(reason));
+    RecordDownloadInterruptReason(reason);
     std::move(completion_callback).Run(/*succeeded=*/false);
     return;
   }
