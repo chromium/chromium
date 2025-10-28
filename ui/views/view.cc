@@ -956,7 +956,7 @@ void View::SetLayoutManagerUseConstrainedSpace(
   InvalidateLayout();
 }
 
-void View::InvalidateLayout() {
+void View::InvalidateLayout(bool avoid_propagate_during_layout) {
   if (invalidating_) {
     return;
   }
@@ -982,7 +982,11 @@ void View::InvalidateLayout() {
   }
 
   if (parent_) {
-    parent_->InvalidateLayout();
+    // When avoid propagation is on, only propagate invalidations while the
+    // parent isn't being laid out; this prevents layout loops.
+    if (!avoid_propagate_during_layout || !parent_->performing_layout_) {
+      parent_->InvalidateLayout();
+    }
   } else {
     Widget* widget = GetWidget();
     if (widget) {
@@ -3637,7 +3641,7 @@ void View::LayoutImmediately() {
   });
   invalidates_during_layout_ = 0;
   ++layouts_since_last_paint_;
-  base::AutoReset allow_layout(&layout_allowed_, true);
+  base::AutoReset performing_layout(&performing_layout_, true);
 
   ++current_layout_call_depth_;
   ++max_layout_call_depth_;

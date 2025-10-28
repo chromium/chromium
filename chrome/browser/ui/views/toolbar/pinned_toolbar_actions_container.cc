@@ -625,7 +625,10 @@ void PinnedToolbarActionsContainer::RemoveButton(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&PinnedToolbarActionsContainer::InvalidateLayout,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       // This will always be on a fresh call stack, never
+                       // mid-layout so the value passed here doesn't matter.
+                       /*avoid_propagate_during_layout=*/false));
   } else {
     auto removed_button = RemoveChildViewT(button);
     if (removed_button->IsPermanent()) {
