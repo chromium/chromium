@@ -24,7 +24,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
-#include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
@@ -232,12 +231,11 @@ void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key) {
-  auto* embedder = GetEmbedderForKey(key);
-  if (!embedder) {
-    return;
-  }
   instance_metrics_.OnClose();
-  embedder->Close();
+  auto* embedder = GetEmbedderForKey(key);
+  if (embedder) {
+    embedder->Close();
+  }
   MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
@@ -845,24 +843,4 @@ void GlicInstanceImpl::OnWebClientCleared() {
   actor_task_manager_->CancelTask();
   NotifyPanelWillOpen(mojom::InvocationSource::kDefaultValue);
 }
-
-void GlicInstanceImpl::CloseAllEmbeddersForTesting() {
-  // Copy the keys before iterating because Close() might modify `embedders_`.
-  std::vector<EmbedderKey> keys;
-  for (auto& [key, entry] : embedders_) {
-    keys.push_back(key);
-  }
-  for (const auto& key : keys) {
-    Close(key);
-  }
-}
-
-views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
-  auto* embedder = GetActiveEmbedder();
-  if (!embedder) {
-    return nullptr;
-  }
-  return embedder->GetView().get();
-}
-
 }  // namespace glic

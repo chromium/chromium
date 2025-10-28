@@ -204,10 +204,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   glic::GlicInstanceMetrics* metrics() { return &instance_metrics_; }
 
-  // Test support.
-  void CloseAllEmbeddersForTesting();
-  views::View* GetActiveEmbedderGlicViewForTesting();
-
  private:
   struct EmbedderEntry {
     EmbedderEntry();
