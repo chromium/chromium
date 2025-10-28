@@ -97,20 +97,16 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(const Observer* observer) override;
 
-  void AddOpenSite(const std::string& site) {
-    if (open_sites_.contains(site)) {
-      open_sites_.at(site)++;
-    } else {
-      open_sites_.insert({site, 1});
-    }
-  }
+  inline void AddOpenSite(const std::string& site) { ++open_sites_[site]; }
 
   void RemoveOpenSite(const std::string& site) {
-    CHECK(open_sites_.contains(site));
-    if (open_sites_.contains(site)) {
-      open_sites_.at(site)--;
-      if (open_sites_.at(site) == 0) {
-        open_sites_.erase(site);
+    auto it = open_sites_.find(site);
+    bool site_found = it != open_sites_.end();
+    CHECK(site_found);
+    if (site_found) {
+      --it->second;
+      if (it->second == 0) {
+        open_sites_.erase(it);
       }
     }
   }
