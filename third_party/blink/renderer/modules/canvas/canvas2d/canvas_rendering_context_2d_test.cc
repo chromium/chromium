@@ -3560,6 +3560,7 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
 
+#if BUILDFLAG(IS_WIN)
 class CanvasRenderingContext2DTestSwapChain
     : public CanvasRenderingContext2DTestAccelerated {
  protected:
@@ -3602,4 +3603,6 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
+#endif
+
 }  // namespace blink

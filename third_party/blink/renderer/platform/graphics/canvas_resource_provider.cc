@@ -1342,7 +1342,6 @@ CanvasResourceProvider::CreateSwapChainProvider(
     return nullptr;
   }
 
-#if BUILDFLAG(IS_WIN)
   gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -1350,26 +1349,6 @@ CanvasResourceProvider::CreateSwapChainProvider(
       size, format, alpha_type, color_space, should_initialize,
       context_provider_wrapper, RasterMode::kGPU, shared_image_usage_flags,
       delegate);
-#else
-  // TODO(crbug.com/415968760): Remove this code, as the
-  // `shared_image_swap_chain` capability is true only on Windows.
-  auto provider = std::make_unique<CanvasResourceProviderSwapChain>(
-      size, format, alpha_type, color_space, context_provider_wrapper,
-      delegate);
-  if (provider->IsValid()) {
-    if (should_initialize ==
-        CanvasResourceProvider::ShouldInitialize::kCallClear)
-      provider->Clear();
-
-    // Check whether an error occurred while flushing the recording.
-    if (!provider->IsValid()) {
-      return nullptr;
-    }
-    return provider;
-  }
-
-  return nullptr;
-#endif
 }
 
 CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(

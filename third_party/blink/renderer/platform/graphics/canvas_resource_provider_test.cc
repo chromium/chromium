@@ -695,6 +695,7 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
   EXPECT_TRUE(!provider || !provider->IsValid());
 }
 
+#if BUILDFLAG(IS_WIN)
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
@@ -715,6 +716,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   EXPECT_TRUE(provider->IsSingleBuffered());
   EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
 }
+#endif
 
 TEST_F(
     CanvasResourceProviderTest,
