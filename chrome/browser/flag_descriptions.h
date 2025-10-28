@@ -7443,11 +7443,6 @@ inline constexpr char kGameDashboardGamePWAs[] = "Game Dashboard Game PWAs";
 inline constexpr char kGameDashboardGamePWAsDescription[] =
     "Enables Game Dashboard for an additional set of game PWAs.";
 
-inline constexpr char kGameDashboardGamesInTest[] =
-    "Game Dashboard Games In Test";
-inline constexpr char kGameDashboardGamesInTestDescription[] =
-    "Enables Game Dashboard for a set of games being further evaluated.";
-
 inline constexpr char kGameDashboardUtilities[] = "Game Dashboard Utilities";
 inline constexpr char kGameDashboardUtilitiesDescription[] =
     "Enables utility features in the Game Dashboard.";

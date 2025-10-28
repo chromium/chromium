@@ -911,9 +911,6 @@ BASE_FEATURE(kGameDashboardGamepadSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the Game Dashboard for additional PWA games.
 BASE_FEATURE(kGameDashboardGamePWAs, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables additional games being evaluated for the Game Dashboard.
-BASE_FEATURE(kGameDashboardGamesInTest, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Game Dashboard Main Menu utility views.
 BASE_FEATURE(kGameDashboardUtilities, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3133,10 +3130,6 @@ bool IsGameDashboardGamepadSupportEnabled() {
 
 bool IsGameDashboardGamePWAsEnabled() {
   return base::FeatureList::IsEnabled(kGameDashboardGamePWAs);
-}
-
-bool IsGameDashboardGamesInTestEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboardGamesInTest);
 }
 
 bool AreGameDashboardUtilitiesEnabled() {

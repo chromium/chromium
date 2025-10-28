@@ -63,19 +63,12 @@ static const std::array<std::string, 12> kPWAGameAppIdAllowList{
     extension_misc::kAmazonLunaAppIdUS, extension_misc::kBoosteroidAppId,
     extension_misc::kPokiAppId,         extension_misc::kXboxCloudGamingAppId};
 
-// List of additional game app IDs that are being tested.
-static const std::array<std::string, 3> kGamesInTestAppIdAllowList{
-    extension_misc::kCoolMathGamesAppId, extension_misc::kNowGGAppIdUK,
-    extension_misc::kNowGGAppIdUS};
-
 // Checks whether the given `app_id` is allow listed to show the Game
 // Dashboard button.
 bool IsAppIdAllowListed(const std::string& app_id) {
   return base::Contains(kGameAppIdAllowList, app_id) ||
          (features::IsGameDashboardGamePWAsEnabled() &&
-          base::Contains(kPWAGameAppIdAllowList, app_id)) ||
-         (features::IsGameDashboardGamesInTestEnabled() &&
-          base::Contains(kGamesInTestAppIdAllowList, app_id));
+          base::Contains(kPWAGameAppIdAllowList, app_id));
 }
 }  // namespace
 
