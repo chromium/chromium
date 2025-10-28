@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -153,7 +155,15 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        final View v = super.onCreateView(inflater, container, savedInstanceState);
+        LayoutInflater localInflater = inflater;
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // TODO(crbug.com/439911511): Set the style directly in the layout instead.
+            Context themedContext =
+                    new ContextThemeWrapper(
+                            getActivity(), R.style.ThemeOverlay_Chromium_Settings_InputFields);
+            localInflater = inflater.cloneInContext(themedContext);
+        }
+        final View v = super.onCreateView(localInflater, container, savedInstanceState);
         if (mCard == null) {
             SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return v;

@@ -97,8 +97,6 @@ found in the LICENSE file.
 
     <style
         name="ThemeOverlay.Chromium.Settings.Containment" parent="">
-        <item name="textInputStyle">@style/Widget.Chromium.Settings.TextInputLayout.OutlinedBox</item>
-        <item name="autoCompleteTextViewStyle">@style/Widget.Chromium.Settings.AutoCompleteTextView.OutlinedBox</item>
         <item name="android:navigationBarColor">@macro/settings_bg_color</item>
         <item name="android:statusBarColor">@macro/settings_bg_color</item>
         <item name="android:colorAccent">@macro/preference_category_text_color_contained</item>
@@ -106,6 +104,11 @@ found in the LICENSE file.
 
     <style name="ThemeOverlay.Chromium.Settings.MainPanel" parent="">
         <item name="android:colorAccent">@macro/preference_category_text_color_standard</item>
+    </style>
+
+    <style name="ThemeOverlay.Chromium.Settings.InputFields" parent="">
+        <item name="textInputStyle">@style/Widget.Chromium.Settings.TextInputLayout.OutlinedBox</item>
+        <item name="autoCompleteTextViewStyle">@style/Widget.Chromium.Settings.AutoCompleteTextView.OutlinedBox</item>
     </style>
 
     <style name="Theme.Chromium.Settings.ManageSpace">
