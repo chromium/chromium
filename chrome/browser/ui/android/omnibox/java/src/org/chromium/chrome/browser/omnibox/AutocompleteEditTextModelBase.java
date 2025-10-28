@@ -111,6 +111,9 @@ public interface AutocompleteEditTextModelBase {
          * @return The package name of the current keyboard app.
          */
         String getKeyboardPackageName();
+
+        /** Specifies whether the current user input should be shown as multi-line. */
+        void setInputIsMultilineEligible(boolean isMultilineEligible);
     }
 
     /**

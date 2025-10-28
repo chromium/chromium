@@ -335,8 +335,7 @@ public class UrlBar extends AutocompleteEditText {
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
-        setSingleLine(true);
-        setMaxLines(1);
+        setInputIsMultilineEligible(false);
         setHorizontalFadingEdgeEnabled(!focused);
 
         if (focused) {
@@ -470,16 +469,15 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         limitDisplayableLength();
+    }
 
+    @Override
+    public void setInputIsMultilineEligible(boolean isMultilineEligible) {
         if (OmniboxFeatures.allowMultilineEditField() && !mIsInCct) {
-            // Observe the user input alone, to prevent autocompletion from taking over the input.
-            boolean isMultilineEligible = TextUtils.indexOf(getTextWithoutAutocomplete(), ' ') >= 0;
-            boolean wasMultilineEligible = !isSingleLine();
-            if (isMultilineEligible != wasMultilineEligible) {
+            // Only act if the caller wants multiline, but is single line - or the other way around.
+            if (isMultilineEligible != !isSingleLine()) {
                 // Toggling between single- and multi-line edit fields appears to make the EditText
                 // restart and reposition the cursor.
-                // TODO(crbug.com/432311666): verify if selection restart is caused by our own
-                // logic. If it is, see if this can be fixed and remove selection management below.
                 int cursor = getSelectionStart();
                 setSingleLine(!isMultilineEligible);
                 setMaxLines(isMultilineEligible ? MULTILINE_EDIT_MAX_LINES : 1);
