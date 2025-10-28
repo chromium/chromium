@@ -7569,6 +7569,29 @@ chromium-metrics-reviews@google.com.
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
 
+<histogram name="Media.VideoEncoder.NDKVEA.EncodeStatus.{VideoCodec}"
+    enum="EncoderStatus" expires_after="2026-04-01">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records if the {VideoCodec} encoder was torn down because the stream ended,
+    or if it was due to an encoder error. Recorded once when shutting down an
+    accelerated (or out of process) video encoder on Android.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.NDKVEA.InitStatus.{VideoCodec}"
+    enum="EncoderStatus" expires_after="2026-04-01">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the initialization status of the NdkVideoEncodeAccelerator for
+    {VideoCodec}. Recorded every time Initialize() is called.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.VideoEncoder.{Impl}.EncodingLatency.{VideoCodec}"
     units="ms" expires_after="2026-04-01">
   <owner>eugene@chromium.org</owner>
@@ -7581,6 +7604,7 @@ chromium-metrics-reviews@google.com.
   <token key="Impl">
     <variant name="D3D12VEA" summary=""/>
     <variant name="MFVEA" summary=""/>
+    <variant name="NDKVEA" summary=""/>
   </token>
   <token key="VideoCodec" variants="VideoCodec"/>
 </histogram>
