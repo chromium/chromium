@@ -63,15 +63,24 @@ public class NtpThemeCollectionsUtils {
                         new ViewTreeObserver.OnGlobalLayoutListener() {
                             @Override
                             public void onGlobalLayout() {
-                                recyclerView
-                                        .getViewTreeObserver()
-                                        .removeOnGlobalLayoutListener(this);
+                                // We only update the span count if the RecyclerView is visible and
+                                // has a valid width. This is crucial for when the device is
+                                // rotated while the RecyclerView is in a non-visible bottom sheet.
+                                // In that case, we wait until it becomes visible to get the correct
+                                // width.
+                                if (!recyclerView.isShown() || recyclerView.getWidth() <= 0) {
+                                    return;
+                                }
 
                                 updateSpanCount(
                                         gridLayoutManager,
                                         recyclerView.getMeasuredWidth(),
                                         itemMaxWidth,
                                         spacing);
+
+                                recyclerView
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
                             }
                         });
     }

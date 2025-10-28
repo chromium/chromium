@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -111,16 +114,35 @@ public class NtpThemeCollectionsUtilsUnitTest {
         ArgumentCaptor<OnGlobalLayoutListener> listenerCaptor =
                 ArgumentCaptor.forClass(ViewTreeObserver.OnGlobalLayoutListener.class);
         verify(viewTreeObserverSpy).addOnGlobalLayoutListener(listenerCaptor.capture());
+        OnGlobalLayoutListener listener = listenerCaptor.getValue();
 
+        // 1. Not shown, should do nothing.
+        doReturn(false).when(recyclerViewSpy).isShown();
         recyclerViewSpy.measure(
                 View.MeasureSpec.makeMeasureSpec(410, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
         recyclerViewSpy.layout(0, 0, 410, 800);
+        listener.onGlobalLayout();
 
-        // Manually invoke the listener.
-        listenerCaptor.getValue().onGlobalLayout();
+        // 2. Shown but width is 0, should do nothing.
+        doReturn(true).when(recyclerViewSpy).isShown();
+        recyclerViewSpy.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
+        recyclerViewSpy.layout(0, 0, 0, 800);
+        listener.onGlobalLayout();
 
+        // At this point, no update should have happened.
+        verify(layoutManagerSpy, never()).setSpanCount(anyInt());
+        verify(viewTreeObserverSpy, never()).removeOnGlobalLayoutListener(any());
+
+        // 3. Shown and has width, should update span count and remove listener.
+        recyclerViewSpy.measure(
+                View.MeasureSpec.makeMeasureSpec(410, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
+        recyclerViewSpy.layout(0, 0, 410, 800);
+        listener.onGlobalLayout();
         verify(layoutManagerSpy).setSpanCount(3);
-        verify(viewTreeObserverSpy).removeOnGlobalLayoutListener(listenerCaptor.getValue());
+        verify(viewTreeObserverSpy).removeOnGlobalLayoutListener(listener);
     }
 }
