@@ -897,8 +897,15 @@ class AppBannerManagerPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+// TODO(crbug.com/455855627): Failing on Android tablets.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrerenderingShouldNotUpdateState \
+  DISABLED_PrerenderingShouldNotUpdateState
+#else
+#define MAYBE_PrerenderingShouldNotUpdateState PrerenderingShouldNotUpdateState
+#endif
 IN_PROC_BROWSER_TEST_F(AppBannerManagerPrerenderBrowserTest,
-                       PrerenderingShouldNotUpdateState) {
+                       MAYBE_PrerenderingShouldNotUpdateState) {
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
 
