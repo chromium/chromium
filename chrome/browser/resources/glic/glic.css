@@ -444,3 +444,7 @@ cr-progress {
   border-radius: 48px;
   align-self: flex-start;
 }
+
+#freLoadingPanel .container {
+  background: var(--color--surface);
+}
