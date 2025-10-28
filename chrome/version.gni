@@ -45,7 +45,6 @@ if (target_os == "android") {
       "chrome_version_code = " + "\"@CHROME_VERSION_CODE@\" " +
       "chrome_beta_version_code = " + "\"@CHROME_MODERN_VERSION_CODE@\" " +
       "chrome_auto_version_code = " + "\"@MONOCHROME_VERSION_CODE@\" " +
-      "chrome_desktop_version_code = \"@CHROME_DESKTOP_VERSION_CODE@\" " +
       "monochrome_version_code = \"@MONOCHROME_VERSION_CODE@\" " +
       "trichrome_version_code = \"@TRICHROME_VERSION_CODE@\" " +
       "trichrome_auto_version_code = \"@TRICHROME_AUTO_VERSION_CODE@\" " +
@@ -57,6 +56,10 @@ if (target_os == "android") {
   # Generate hybrid configurations for target_cpu's that can run in hybrid configurations.
   # i.e. "riscv64" does not show up in this list, as it's a 64-bit-only target_cpu.
   if (target_cpu == "arm64" || target_cpu == "x64") {
+    if (is_desktop_android) {
+      _version_dictionary_template +=
+          "chrome_desktop_version_code = \"@CHROME_DESKTOP_VERSION_CODE@\" "
+    }
     _version_dictionary_template +=
         "chrome_32_version_code = \"@CHROME_32_VERSION_CODE@\" "
     _version_dictionary_template +=
@@ -246,10 +249,8 @@ if (is_android && current_toolchain == default_toolchain) {
     "AndroidWebviewAuto: $webview_auto_version_code",
   ]
 
-  if (android_64bit_target_cpu) {
-    lines_to_write += [
-      "ChromeDesktop: $chrome_desktop_version_code",
-    ]
+  if (defined(chrome_desktop_version_code)) {
+    lines_to_write += [ "ChromeDesktop: $chrome_desktop_version_code" ]
   }
 
   if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
@@ -323,7 +324,7 @@ if (is_android) {
   # in the android_chrome_versions.txt above
   if (_use_stable_package_name_for_trichrome) {
     chrome_version_code = chrome_beta_version_code
-  } else if (is_desktop_android) {
+  } else if (defined(chrome_desktop_version_code)) {
     chrome_version_code = chrome_desktop_version_code
   }
 
