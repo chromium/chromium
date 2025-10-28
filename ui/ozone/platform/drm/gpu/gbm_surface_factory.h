@@ -78,7 +78,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapForProtectedBufferHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle) override;
   bool SupportsDrmModifiersFilter() const override;
   void SetDrmModifiersFilter(

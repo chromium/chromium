@@ -454,12 +454,13 @@ scoped_refptr<gfx::NativePixmap>
 GbmSurfaceFactory::CreateNativePixmapForProtectedBufferHandle(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle) {
   // Create a new NativePixmap without querying the external service for any
   // existing mappings.
-  return CreateNativePixmapFromHandleInternal(widget, size, format,
-                                              std::move(handle));
+  return CreateNativePixmapFromHandleInternal(
+      widget, size, viz::SharedImageFormatToBufferFormat(format),
+      std::move(handle));
 }
 
 bool GbmSurfaceFactory::SupportsDrmModifiersFilter() const {

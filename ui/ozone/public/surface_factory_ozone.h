@@ -171,7 +171,7 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   virtual scoped_refptr<gfx::NativePixmap>
   CreateNativePixmapForProtectedBufferHandle(gfx::AcceleratedWidget widget,
                                              gfx::Size size,
-                                             gfx::BufferFormat format,
+                                             viz::SharedImageFormat format,
                                              gfx::NativePixmapHandle handle);
 
   // This callback can be used by implementations of this interface to query

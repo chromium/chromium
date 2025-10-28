@@ -523,7 +523,7 @@ scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
   scoped_refptr<gfx::NativePixmap> pixmap =
       factory->CreateNativePixmapForProtectedBufferHandle(
           gfx::kNullAcceleratedWidget, kDummyBufferSize,
-          gfx::BufferFormat::RGBA_8888, std::move(pixmap_handle));
+          viz::SinglePlaneFormat::kRGBA_8888, std::move(pixmap_handle));
   if (!pixmap) {
     VLOGF(1) << "Failed importing dummy handle";
     return nullptr;
