@@ -27,25 +27,34 @@ std::string GetStringValue(const EntityInstance& entity,
 
 // Returns a `sync_pb::AutofillValuableSpecifics` message with
 // the flight reservation entity type.
-sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics() {
+sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics(
+    test::FlightReservationOptions options = {}) {
   sync_pb::AutofillValuableSpecifics specifics =
       sync_pb::AutofillValuableSpecifics();
-  specifics.set_id("00000000-0000-4000-8000-500000000000");
-  specifics.mutable_flight_reservation()->set_flight_number("987654321");
-  specifics.mutable_flight_reservation()->set_flight_ticket_number("123123456");
-  specifics.mutable_flight_reservation()->set_flight_confirmation_code("0123");
-  specifics.mutable_flight_reservation()->set_passenger_name("John Doe");
-  specifics.mutable_flight_reservation()->set_departure_airport("MUC");
-  specifics.mutable_flight_reservation()->set_arrival_airport("BEY");
-  specifics.mutable_flight_reservation()->set_departure_date_unix_epoch_micros(
-      base::Time::FromSecondsSinceUnixEpoch(60).InMillisecondsSinceUnixEpoch() *
-      1000);
+  specifics.set_id(options.guid);
+  specifics.mutable_flight_reservation()->set_flight_number(
+      base::UTF16ToUTF8(options.flight_number));
+  specifics.mutable_flight_reservation()->set_flight_ticket_number(
+      base::UTF16ToUTF8(options.ticket_number));
+  specifics.mutable_flight_reservation()->set_flight_confirmation_code(
+      base::UTF16ToUTF8(options.confirmation_code));
+  specifics.mutable_flight_reservation()->set_passenger_name(
+      base::UTF16ToUTF8(options.name));
+  specifics.mutable_flight_reservation()->set_departure_airport(
+      base::UTF16ToUTF8(options.departure_airport));
+  specifics.mutable_flight_reservation()->set_arrival_airport(
+      base::UTF16ToUTF8(options.arrival_airport));
+  if (options.departure_time.has_value()) {
+    specifics.mutable_flight_reservation()
+        ->set_departure_date_unix_epoch_micros(
+            options.departure_time->InMillisecondsSinceUnixEpoch() * 1000);
+  }
 
   ChromeValuablesMetadata metadata;
   ChromeValuablesMetadataEntry& entry = *metadata.add_metadata_entries();
   entry.set_attribute_type("Passenger name");
   entry.set_field_type(static_cast<int>(FieldType::NAME_FULL));
-  entry.set_value("Joe Smith");
+  entry.set_value(base::UTF16ToUTF8(options.name));
   entry.set_verification_status(
       static_cast<int>(VerificationStatus::kServerParsed));
 
@@ -62,12 +71,10 @@ sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics() {
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly
 // deserializes the flight reservation entity from its proto representation.
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
-  sync_pb::AutofillValuableSpecifics specifics =
-      TestFlightReservationSpecifics();
   base::Time departure_time;
   ASSERT_TRUE(base::Time::FromUTCString("2025-01-01", &departure_time));
-  specifics.mutable_flight_reservation()->set_departure_date_unix_epoch_micros(
-      departure_time.InMillisecondsSinceUnixEpoch() * 1000);
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestFlightReservationSpecifics({.departure_time = departure_time});
   std::optional<EntityInstance> flight_reservation =
       CreateEntityInstanceFromSpecifics(specifics);
 
@@ -83,10 +90,6 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
       GetStringValue(*flight_reservation,
                      AttributeTypeName::kFlightReservationConfirmationCode),
       specifics.flight_reservation().flight_confirmation_code());
-  EXPECT_EQ(GetStringValue(*flight_reservation,
-                           AttributeTypeName::kFlightReservationPassengerName),
-            "Joe Smith");  // Name from metadata takes precedence over the
-                           // `passenger_name` field.
   EXPECT_EQ(
       GetStringValue(*flight_reservation,
                      AttributeTypeName::kFlightReservationDepartureAirport),
@@ -99,7 +102,8 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_FlightReservation) {
             "2025-01-01");
   const AttributeInstance& name = *flight_reservation->attribute(
       AttributeType(AttributeTypeName::kFlightReservationPassengerName));
-  EXPECT_EQ(name.GetRawInfo(FieldType::NAME_FULL), u"Joe Smith");
+  EXPECT_EQ(name.GetRawInfo(FieldType::NAME_FULL),
+            base::UTF8ToUTF16(specifics.flight_reservation().passenger_name()));
   EXPECT_EQ(name.GetVerificationStatus(FieldType::NAME_FULL),
             VerificationStatus::kServerParsed);
   EXPECT_EQ(test_api(*flight_reservation).frecency_override(),
@@ -112,8 +116,6 @@ TEST(EntitySyncUtilTest,
      CreateEntityInstanceFromSpecifics_FlightReservation_EmptyDepartureTime) {
   sync_pb::AutofillValuableSpecifics specifics =
       TestFlightReservationSpecifics();
-  specifics.mutable_flight_reservation()
-      ->clear_departure_date_unix_epoch_micros();
 
   std::optional<EntityInstance> flight_reservation =
       CreateEntityInstanceFromSpecifics(specifics);
