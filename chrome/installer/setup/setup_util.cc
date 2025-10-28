@@ -451,14 +451,8 @@ void RecordUnPackMetrics(UnPackStatus unpack_status, UnPackConsumer consumer) {
   std::string consumer_name;
 
   switch (consumer) {
-    case UnPackConsumer::CHROME_ARCHIVE_PATCH:
-      consumer_name = "ChromeArchivePatch";
-      break;
     case UnPackConsumer::COMPRESSED_CHROME_ARCHIVE:
       consumer_name = "CompressedChromeArchive";
-      break;
-    case UnPackConsumer::SETUP_EXE_PATCH:
-      consumer_name = "SetupExePatch";
       break;
     case UnPackConsumer::UNCOMPRESSED_CHROME_ARCHIVE:
       consumer_name = "UncompressedChromeArchive";

@@ -55,14 +55,6 @@ base::expected<base::FilePath, InstallStatus> UncompressChromeArchive(
   // 0.01% FILE_NOT_FOUND
   // 0.01% LOCK_VIOLATION
   // 0.01% ACCESS_DENIED
-  //
-  // Setup.Install.LzmaUnPackResult_ChromeArchivePatch
-  // 0.09% DISK_FULL
-  // 0.01% FILE_NOT_FOUND
-  //
-  // More information can also be found with metrics:
-  // Setup.Install.LzmaUnPackNTSTATUS_CompressedChromeArchive
-  // Setup.Install.LzmaUnPackNTSTATUS_ChromeArchivePatch
   base::FilePath output_file;
   UnPackStatus unpack_status =
       UnPackArchive(compressed_archive, working_directory, &output_file);

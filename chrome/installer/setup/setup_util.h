@@ -37,11 +37,13 @@ class InitialPreferences;
 extern const char kUnPackStatusMetricsName[];
 
 // The name of consumers of UnPackArchive which is used to publish metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum UnPackConsumer {
-  CHROME_ARCHIVE_PATCH,
-  COMPRESSED_CHROME_ARCHIVE,
-  SETUP_EXE_PATCH,
-  UNCOMPRESSED_CHROME_ARCHIVE,
+  // CHROME_ARCHIVE_PATCH = 0,
+  COMPRESSED_CHROME_ARCHIVE = 1,
+  // SETUP_EXE_PATCH = 2,
+  UNCOMPRESSED_CHROME_ARCHIVE = 3,
 };
 
 // Find the version of Chrome from an install source directory.
