@@ -366,7 +366,7 @@ class RemoveLocalStorageTester {
 
     base::RunLoop populate_loop;
     database->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](storage::DomStorageDatabase* db) {
+        base::BindLambdaForTesting([&](storage::DomStorageDatabaseLevelDB* db) {
           PopulateDatabase(db, origin1, origin2, origin3);
           populate_loop.Quit();
         }));
@@ -381,7 +381,7 @@ class RemoveLocalStorageTester {
     EXPECT_TRUE(DOMStorageExistsForOrigin(origin3));
   }
 
-  static void PopulateDatabase(storage::DomStorageDatabase* db,
+  static void PopulateDatabase(storage::DomStorageDatabaseLevelDB* db,
                                const url::Origin& origin1,
                                const url::Origin& origin2,
                                const url::Origin& origin3) {

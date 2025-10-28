@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "storage/common/database/db_status.h"
 
 namespace storage {
@@ -93,15 +94,19 @@ class AsyncDomStorageDatabase {
     virtual base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() = 0;
   };
 
-  base::SequenceBound<DomStorageDatabase>& database() { return database_; }
-  const base::SequenceBound<DomStorageDatabase>& database() const {
+  base::SequenceBound<DomStorageDatabaseLevelDB>& database() {
+    return database_;
+  }
+
+  const base::SequenceBound<DomStorageDatabaseLevelDB>& database() const {
     return database_;
   }
 
   void RewriteDB(StatusCallback callback);
 
   template <typename ResultType>
-  using DatabaseTask = base::OnceCallback<ResultType(DomStorageDatabase&)>;
+  using DatabaseTask =
+      base::OnceCallback<ResultType(DomStorageDatabaseLevelDB&)>;
 
   template <typename ResultType>
   using TaskTraits = internal::DatabaseTaskTraits<ResultType>;
@@ -113,7 +118,7 @@ class AsyncDomStorageDatabase {
         [](DatabaseTask<ResultType> task,
            typename TaskTraits<ResultType>::CallbackType callback,
            scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-           DomStorageDatabase* db) {
+           DomStorageDatabaseLevelDB* db) {
           callback_task_runner->PostTask(
               FROM_HERE, TaskTraits<ResultType>::RunTaskAndBindCallbackToResult(
                              *db, std::move(task), std::move(callback)));
@@ -129,7 +134,7 @@ class AsyncDomStorageDatabase {
 
   using BatchDatabaseTask =
       base::OnceCallback<void(DomStorageBatchOperationLevelDB&,
-                              const DomStorageDatabase&)>;
+                              const DomStorageDatabaseLevelDB&)>;
   void RunBatchDatabaseTasks(RunBatchTasksContext context,
                              std::vector<BatchDatabaseTask> tasks,
                              base::OnceCallback<void(DbStatus)> callback);
@@ -147,14 +152,15 @@ class AsyncDomStorageDatabase {
 
  private:
   void OnDatabaseOpened(StatusCallback callback,
-                        base::SequenceBound<DomStorageDatabase> database,
+                        base::SequenceBound<DomStorageDatabaseLevelDB> database,
                         DbStatus status);
 
   explicit AsyncDomStorageDatabase();
 
-  base::SequenceBound<DomStorageDatabase> database_;
+  base::SequenceBound<DomStorageDatabaseLevelDB> database_;
 
-  using BoundDatabaseTask = base::OnceCallback<void(DomStorageDatabase*)>;
+  using BoundDatabaseTask =
+      base::OnceCallback<void(DomStorageDatabaseLevelDB*)>;
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
   std::set<raw_ptr<Committer>> committers_;
 
@@ -167,7 +173,7 @@ template <typename ResultType>
 struct DatabaseTaskTraits {
   using CallbackType = base::OnceCallback<void(ResultType)>;
   static base::OnceClosure RunTaskAndBindCallbackToResult(
-      DomStorageDatabase& db,
+      DomStorageDatabaseLevelDB& db,
       AsyncDomStorageDatabase::DatabaseTask<ResultType> task,
       CallbackType callback) {
     return base::BindOnce(std::move(callback), std::move(task).Run(db));
@@ -183,7 +189,7 @@ struct DatabaseTaskTraits<std::tuple<Args...>> {
   using CallbackType = base::OnceCallback<void(Args...)>;
 
   static base::OnceClosure RunTaskAndBindCallbackToResult(
-      DomStorageDatabase& db,
+      DomStorageDatabaseLevelDB& db,
       AsyncDomStorageDatabase::DatabaseTask<ResultType> task,
       CallbackType callback) {
     return BindTupleAsArgs(

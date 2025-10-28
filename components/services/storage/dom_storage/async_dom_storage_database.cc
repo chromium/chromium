@@ -24,7 +24,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
-  DomStorageDatabaseFactory::OpenDirectory(
+  DomStorageDatabaseLevelDB::OpenDirectory(
       directory, dbname, memory_dump_id, std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -39,7 +39,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenInMemory(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
-  DomStorageDatabaseFactory::OpenInMemory(
+  DomStorageDatabaseLevelDB::OpenInMemory(
       tracking_name, memory_dump_id, std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -57,7 +57,7 @@ void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   database_.PostTaskWithThisObject(base::BindOnce(
       [](StatusCallback callback,
          scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-         DomStorageDatabase* db) {
+         DomStorageDatabaseLevelDB* db) {
         callback_task_runner->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), db->RewriteDB()));
       },
@@ -71,7 +71,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
   RunDatabaseTask(base::BindOnce(
                       [](RunBatchTasksContext context,
                          std::vector<BatchDatabaseTask> tasks,
-                         DomStorageDatabase& db) -> DbStatus {
+                         DomStorageDatabaseLevelDB& db) -> DbStatus {
                         std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                             db.CreateBatchOperation();
                         // TODO(crbug.com/40245293): Remove this after debugging
@@ -150,7 +150,7 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 
   RunDatabaseTask(
       base::BindOnce(
-          [](std::vector<Commit> commits, DomStorageDatabase& db) {
+          [](std::vector<Commit> commits, DomStorageDatabaseLevelDB& db) {
             std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                 db.CreateBatchOperation();
             for (const Commit& commit : commits) {
@@ -182,7 +182,7 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 
 void AsyncDomStorageDatabase::OnDatabaseOpened(
     StatusCallback callback,
-    base::SequenceBound<DomStorageDatabase> database,
+    base::SequenceBound<DomStorageDatabaseLevelDB> database,
     DbStatus status) {
   database_ = std::move(database);
   std::vector<BoundDatabaseTask> tasks;

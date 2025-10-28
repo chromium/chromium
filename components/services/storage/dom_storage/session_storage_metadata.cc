@@ -91,7 +91,7 @@ SessionStorageMetadata::SetupNewDatabaseForTesting() {
   std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
   tasks.push_back(base::BindOnce(
       [](int64_t next_map_id, DomStorageBatchOperationLevelDB& batch,
-         const DomStorageDatabase& db) {
+         const DomStorageDatabaseLevelDB& db) {
         batch.Put(base::span(kLevelDbSchemaVersionKeyBytes),
                   LatestDatabaseVersionAsVector());
         batch.Put(base::span(kNextMapIdKeyBytes), NumberToValue(next_map_id));
@@ -242,7 +242,8 @@ SessionStorageMetadata::RegisterNewMap(
   save_tasks->push_back(base::BindOnce(
       [](int64_t new_map_id, DomStorageDatabase::Key storage_key_key,
          DomStorageDatabase::Value storage_key_map_number,
-         DomStorageBatchOperationLevelDB& batch, const DomStorageDatabase& db) {
+         DomStorageBatchOperationLevelDB& batch,
+         const DomStorageDatabaseLevelDB& db) {
         batch.Put(base::span(kNextMapIdKeyBytes), NumberToValue(new_map_id));
         batch.Put(storage_key_key, storage_key_map_number);
       },
@@ -278,7 +279,8 @@ void SessionStorageMetadata::RegisterShallowClonedNamespace(
 
   save_tasks->push_back(base::BindOnce(
       [](std::vector<DomStorageDatabase::KeyValuePair> new_entries,
-         DomStorageBatchOperationLevelDB& batch, const DomStorageDatabase&) {
+         DomStorageBatchOperationLevelDB& batch,
+         const DomStorageDatabaseLevelDB&) {
         for (const auto& entry : new_entries)
           batch.Put(entry.key, entry.value);
       },
@@ -309,7 +311,8 @@ void SessionStorageMetadata::DeleteNamespace(
 
   save_tasks->push_back(base::BindOnce(
       [](std::vector<DomStorageDatabase::Key> prefixes_to_delete,
-         DomStorageBatchOperationLevelDB& batch, const DomStorageDatabase& db) {
+         DomStorageBatchOperationLevelDB& batch,
+         const DomStorageDatabaseLevelDB& db) {
         for (const auto& prefix : prefixes_to_delete)
           batch.DeletePrefixed(prefix);
       },
@@ -342,7 +345,8 @@ void SessionStorageMetadata::DeleteArea(
   save_tasks->push_back(base::BindOnce(
       [](const DomStorageDatabase::Key& area_key,
          std::vector<DomStorageDatabase::Key> prefixes_to_delete,
-         DomStorageBatchOperationLevelDB& batch, const DomStorageDatabase& db) {
+         DomStorageBatchOperationLevelDB& batch,
+         const DomStorageDatabaseLevelDB& db) {
         batch.Delete(area_key);
         for (const auto& prefix : prefixes_to_delete)
           batch.DeletePrefixed(prefix);

@@ -594,7 +594,8 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
 
   database_->RunDatabaseTask(
       base::BindOnce(
-          [](const DomStorageDatabase::Key& prefix, DomStorageDatabase& db) {
+          [](const DomStorageDatabase::Key& prefix,
+             DomStorageDatabaseLevelDB& db) {
             std::vector<DomStorageDatabase::KeyValuePair> data;
             DbStatus status = db.GetPrefixed(prefix, &data);
             return std::make_tuple(status, std::move(data));

@@ -72,14 +72,14 @@ class DomStorageDatabaseLevelDB
       delete;
   ~DomStorageDatabaseLevelDB() override;
 
-  // DomStorageDatabase implementation:
-  DbStatus Get(KeyView key, Value* out_value) const override;
-  DbStatus Put(KeyView key, ValueView value) override;
+  DbStatus Get(KeyView key, Value* out_value) const;
+  DbStatus Put(KeyView key, ValueView value);
   DbStatus GetPrefixed(KeyView prefix,
-                       std::vector<KeyValuePair>* entries) const override;
+                       std::vector<KeyValuePair>* entries) const;
+  std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation();
+
+  // DomStorageDatabase implementation:
   DbStatus RewriteDB() override;
-  std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation()
-      override;
   bool ShouldFailAllCommits() const override;
   void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
   void MakeAllCommitsFailForTesting() override;
@@ -88,26 +88,9 @@ class DomStorageDatabaseLevelDB
   leveldb::DB* GetLevelDBDatabase(
       base::PassKey<DomStorageBatchOperationLevelDB> key) const;
 
- private:
-  friend class DomStorageDatabaseFactory;
-  friend class DomStorageDatabaseLevelDBTest;
-
-  // Initializes a new DomStorageDatabaseLevelDB, creating or opening persistent
-  // on-filesystem database as specified. Asynchronously invokes `callback` when
-  // done.
-  //
-  // This must be called on a sequence that allows blocking operations.
-  void Init(StatusCallback callback);
-
   using OpenCallback = base::OnceCallback<void(
       base::SequenceBound<DomStorageDatabaseLevelDB> database,
       DbStatus status)>;
-
-  template <typename... Args>
-  static void CreateSequenceBoundDomStorageDatabase(
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      OpenCallback callback,
-      Args&&... args);
 
   static void OpenDirectory(
       const base::FilePath& directory,
@@ -129,6 +112,17 @@ class DomStorageDatabaseLevelDB
       const std::string& name,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       StatusCallback callback);
+
+ private:
+  // Opens `db_` using `options_` and `name_` then runs `callback` with the
+  // result.
+  void Init(StatusCallback callback);
+
+  template <typename... Args>
+  static void CreateSequenceBoundDomStorageDatabase(
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      OpenCallback callback,
+      Args&&... args);
 
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

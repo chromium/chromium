@@ -620,7 +620,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
 
   // Ensure that the first opened database always fails to write data.
   session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+      base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(
             base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
@@ -735,7 +735,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
 
   // Ensure that this database always fails to write data.
   session_storage_impl()->GetDatabaseForTesting().PostTaskWithThisObject(
-      base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+      base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(
             base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
@@ -917,7 +917,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   // Clear all the data from the backing database.
   base::RunLoop loop;
   session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
-      base::BindOnce([](DomStorageDatabase& db) {
+      base::BindOnce([](DomStorageDatabaseLevelDB& db) {
         std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
             db.CreateBatchOperation();
         batch->DeletePrefixed(StringViewToUint8Vector("map"));

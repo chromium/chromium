@@ -265,6 +265,13 @@ DbStatus DomStorageDatabaseLevelDB::GetPrefixed(
       });
 }
 
+std::unique_ptr<DomStorageBatchOperationLevelDB>
+DomStorageDatabaseLevelDB::CreateBatchOperation() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::make_unique<DomStorageBatchOperationLevelDB>(
+      weak_factory_.GetWeakPtr());
+}
+
 DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
   if (!db_) {
     return DbStatus::IOError(kInvalidDatabaseMessage);
@@ -274,13 +281,6 @@ DbStatus DomStorageDatabaseLevelDB::RewriteDB() {
     db_.reset();
   }
   return FromLevelDBStatus(status);
-}
-
-std::unique_ptr<DomStorageBatchOperationLevelDB>
-DomStorageDatabaseLevelDB::CreateBatchOperation() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<DomStorageBatchOperationLevelDB>(
-      weak_factory_.GetWeakPtr());
 }
 
 bool DomStorageDatabaseLevelDB::ShouldFailAllCommits() const {

@@ -27,20 +27,17 @@ class MemoryAllocatorDumpGuid;
 
 namespace storage {
 
-class DomStorageBatchOperationLevelDB;
-
 // Abstract interface for DOM storage database implementations. Provides
 // key-value storage operations for DOMStorage StorageAreas.
 //
-// An instance of this database exists per Profile. The `storage_key` prefix is
-// used to organize key-value pairs for a StorageArea. It enables efficient
-// prefix-based operations to manipulate data for entire storage areas.
-
-// Use the static `OpenInMemory()` or `OpenDirectory()` helpers to
-// asynchronously create an instance of this type from any sequence.
-// When owning a SequenceBound<DomStorageDatabase> as produced by
-// those helpers, all work on the DomStorageDatabase can be safely done via
-// `SequenceBound::PostTaskWithThisObject`.
+// Two instances of this database exists per Profile: one for session storage
+// and one for local storage. Records the key-value pairs for all StorageAreas
+// along with usage metadata.
+//
+// Use the `DomStorageDatabaseFactory` to  asynchronously create an instance of
+// this type from any sequence. When owning a SequenceBound<DomStorageDatabase>
+// as produced by those helpers, all work on the DomStorageDatabase can be
+// safely done via `SequenceBound::PostTaskWithThisObject`.
 class DomStorageDatabase {
  public:
   using Key = std::vector<uint8_t>;
@@ -65,33 +62,19 @@ class DomStorageDatabase {
 
   virtual ~DomStorageDatabase() = default;
 
-  // Retrieves the value for |key| in the database.
-  virtual DbStatus Get(KeyView key, Value* out_value) const = 0;
+  // TODO(crbug.com/377242771): Support both SQLite and LevelDB by adding more
+  // shared functions to this interface.
 
-  // Sets the database entry for |key| to |value|.
-  virtual DbStatus Put(KeyView key, ValueView value) = 0;
-
-  // Gets all database entries whose key starts with |prefix|.
-  virtual DbStatus GetPrefixed(KeyView prefix,
-                               std::vector<KeyValuePair>* entries) const = 0;
-
-  // Rewrites the database on disk to clean up traces of deleted entries.
+  // For LevelDB only. Rewrites the database on disk to
+  // clean up traces of deleted entries.
   //
-  // NOTE: If |RewriteDB()| fails, this DomStorageDatabase may no longer
+  // NOTE: If `RewriteDB()` fails, this DomStorageDatabase may no longer
   // be usable; in such cases, all future operations will return an IOError
   // status.
   virtual DbStatus RewriteDB() = 0;
 
-  // Returns a database implementation appropriate batch operation for
-  // atomically applying multiple database updates. The returned object is not
-  // thread safe. It should be accessed from the same sequence it was created
-  // on. The returned object must not outlive the DomStorageDatabase instance
-  // it was created from.
-  virtual std::unique_ptr<DomStorageBatchOperationLevelDB>
-  CreateBatchOperation() = 0;
+  // Test-only functions.
   virtual bool ShouldFailAllCommits() const = 0;
-
-  // Test only methods.
   virtual void MakeAllCommitsFailForTesting() = 0;
   virtual void SetDestructionCallbackForTesting(base::OnceClosure callback) = 0;
 };

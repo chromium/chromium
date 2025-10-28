@@ -66,7 +66,7 @@ class SessionStorageAreaImplTest : public testing::Test {
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::DoNothing());
     leveldb_database_->RunDatabaseTask(
-        base::BindOnce([](DomStorageDatabase& db) {
+        base::BindOnce([](DomStorageDatabaseLevelDB& db) {
           return db.Put(StdStringToUint8Vector("map-0-key1"),
                         StdStringToUint8Vector("data1"));
         }),

@@ -179,7 +179,7 @@ class StorageAreaImplTest : public testing::Test,
                         const std::vector<uint8_t>& value) {
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+        base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* db) {
           ASSERT_TRUE(db->Put(key, value).ok());
           loop.Quit();
         }));
@@ -194,7 +194,7 @@ class StorageAreaImplTest : public testing::Test,
     std::vector<uint8_t> value;
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+        base::BindLambdaForTesting([&](const DomStorageDatabaseLevelDB& db) {
           ASSERT_TRUE(db.Get(ToBytes(key), &value).ok());
           loop.Quit();
         }));
@@ -206,7 +206,7 @@ class StorageAreaImplTest : public testing::Test,
     base::RunLoop loop;
     DbStatus status;
     db_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+        base::BindLambdaForTesting([&](const DomStorageDatabaseLevelDB& db) {
           std::vector<uint8_t> value;
           status = db.Get(ToBytes(key), &value);
           loop.Quit();
@@ -218,7 +218,7 @@ class StorageAreaImplTest : public testing::Test,
   void ClearDatabase() {
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
+        base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* db) {
           std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
               db->CreateBatchOperation();
           ASSERT_TRUE(batch->DeletePrefixed({}).ok());

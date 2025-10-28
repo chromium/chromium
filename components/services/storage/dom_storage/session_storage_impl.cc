@@ -791,7 +791,7 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   }
 
   database_->RunDatabaseTask(
-      base::BindOnce([](DomStorageDatabase& db) {
+      base::BindOnce([](DomStorageDatabaseLevelDB& db) {
         ValueAndStatus version;
         version.status = db.Get(
             base::span(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
@@ -847,7 +847,7 @@ void SessionStorageImpl::OnGotDatabaseMetadata(
   // Write the version number for brand new empty databases.
   if (!version_parse.database_version) {
     database_->RunDatabaseTask(
-        base::BindOnce([](DomStorageDatabase& db) {
+        base::BindOnce([](DomStorageDatabaseLevelDB& db) {
           return db.Put(
               base::span(SessionStorageMetadata::kLevelDbSchemaVersionKeyBytes),
               SessionStorageMetadata::LatestDatabaseVersionAsVector());

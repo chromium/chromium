@@ -129,9 +129,9 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void FlushAreaForTesting(const std::string& namespace_id,
                            const blink::StorageKey& storage_key);
 
-  // Access the underlying DomStorageDatabase. May be null if the database is
-  // not yet open.
-  base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() {
+  // Access the underlying DomStorageDatabaseLevelDB. May be null if the
+  // database is not yet open.
+  base::SequenceBound<DomStorageDatabaseLevelDB>& GetDatabaseForTesting() {
     return database_->database();
   }
 
