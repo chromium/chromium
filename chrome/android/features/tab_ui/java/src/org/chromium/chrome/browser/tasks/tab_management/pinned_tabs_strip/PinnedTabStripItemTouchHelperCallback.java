@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.view.ViewConfiguration;
 
@@ -41,6 +42,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     private final TabListModel mModel;
     private final ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
+    private final int mFixedScrollAmount;
     private int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
 
     /**
@@ -56,9 +58,11 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
             Supplier<RecyclerView> recyclerViewSupplier,
             OnLongPressTabItemEventListener onLongPress) {
         super(/* dragDirs= */ 0, /* swipeDirs= */ 0);
+        Resources res = context.getResources();
         int longPressDpThreshold =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
+                res.getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
+        mFixedScrollAmount =
+                res.getDimensionPixelSize(R.dimen.pinned_tab_strip_out_of_bounds_scroll_amount);
 
         mCurrentTabGroupModelFilterSupplier = tabGroupModelFilter;
         mModel = model;
@@ -74,6 +78,31 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         return makeMovementFlags(ItemTouchHelper.START | ItemTouchHelper.END, 0);
+    }
+
+    @Override
+    public int interpolateOutOfBoundsScroll(
+            RecyclerView recyclerView,
+            int viewSize,
+            int viewSizeOutOfBounds,
+            int totalSize,
+            long msSinceStartScroll) {
+        // The default implementation of ItemTouchHelper.Callback.interpolateOutOfBoundsScroll
+        // calculates scroll speed based on the distance the dragged item is out of bounds and
+        // the time it has been there. This results in a gradual acceleration that can feel
+        // slow and unresponsive, especially in a horizontal RecyclerView where precise
+        // reordering is desired. To provide a more responsive and fluid drag-and-drop
+        // experience, this override returns a fixed scroll amount in the direction the item is out
+        // of bounds. This ensures that auto-scrolling starts immediately at a consistent speed,
+        // allowing the user to reorder items more efficiently without having to drag them far past
+        // the edge.
+        // To provide a more responsive and fluid drag-and-drop experience, this override
+        // returns a fixed scroll amount in the direction the item is out of bounds. The value
+        // mFixedScrollAmount is an empirically chosen constant that provides a good balance between
+        // responsiveness and control. A lower value would make scrolling too slow, while a higher
+        // value would make it difficult to precisely position the item.
+        final int direction = (int) Math.signum(viewSizeOutOfBounds);
+        return direction * mFixedScrollAmount;
     }
 
     @Override
