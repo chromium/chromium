@@ -1075,7 +1075,9 @@ ContextResult RasterDecoderImpl::Initialize(
   query_manager_ = std::make_unique<RasterQueryManager>(shared_context_state_);
 
   if (enable_gpu_rasterization) {
-    DCHECK(gr_context() || graphite_shared_context());
+    if (!gr_context() && !graphite_shared_context()) {
+      return ContextResult::kFatalFailure;
+    }
     use_gpu_raster_ = true;
     paint_cache_ = std::make_unique<cc::ServicePaintCache>();
   }
