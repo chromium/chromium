@@ -31,10 +31,11 @@ ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          DOMWrapperWorld* world,
                          ExecutionContext* execution_context)
-    : isolate_(v8::Isolate::GetCurrent()),
+    : isolate_(world->GetIsolate()),
       context_(isolate_, context),
       world_(world),
       per_context_data_(MakeGarbageCollected<V8PerContextData>(context)) {
+  CHECK(isolate_);
   DCHECK(world_);
   context_.SetWeak(this, &OnV8ContextCollectedCallback);
   context->SetAlignedPointerInEmbedderData(kV8ContextPerContextDataIndex, this,

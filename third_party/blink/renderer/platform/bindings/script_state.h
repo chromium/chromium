@@ -194,7 +194,7 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
     SECURITY_CHECK(!script_state || script_state->context_ == context);
     return script_state;
   }
-
+  // Isolate is never null.
   v8::Isolate* GetIsolate() const { return isolate_; }
   DOMWrapperWorld& World() const { return *world_; }
   const V8ContextToken& GetToken() const { return token_; }
@@ -235,7 +235,10 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   static void OnV8ContextCollectedCallback(
       const v8::WeakCallbackInfo<ScriptState>&);
 
-  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
+  // This is de-facto a `raw_ref`, but actually using `raw_ref` here
+  // leads to considerable bloat in bindings, so we just CHECK() it
+  // upon construction.
+  const raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
   // This persistent handle is weak.
   ScopedPersistent<v8::Context> context_;
 
