@@ -9,12 +9,9 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace content {
-class IdentityRequestAccount;
-}  // namespace content
 
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
