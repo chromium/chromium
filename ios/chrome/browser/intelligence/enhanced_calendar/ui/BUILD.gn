@@ -13,6 +13,7 @@ source_set("ui") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/public/provider/chrome/browser/add_to_calendar:add_to_calendar_api",
     "//ui/base",
