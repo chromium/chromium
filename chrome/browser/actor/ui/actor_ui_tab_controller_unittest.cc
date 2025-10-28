@@ -165,7 +165,7 @@ class ActorUiTabControllerTest : public testing::Test {
   MockTabInterface& mock_tab() { return mock_tab_; }
 
   void Debounce() {
-    task_environment_.FastForwardBy(kUpdateScrimBackgroundDebounceDelay +
+    task_environment_.FastForwardBy(features::kGlicActorUiDebounceTimer.Get() +
                                     base::Milliseconds(1));
   }
 

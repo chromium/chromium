@@ -53,7 +53,7 @@ ActorUiTabController::ActorUiTabController(
       controller_factory_(std::move(controller_factory)),
       update_scrim_background_debounce_timer_(
           FROM_HERE,
-          kUpdateScrimBackgroundDebounceDelay,
+          features::kGlicActorUiDebounceTimer.Get(),
           base::BindRepeating(&ActorUiTabController::UpdateScrimBackground,
                               base::Unretained(this))),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {

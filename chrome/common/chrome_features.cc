@@ -316,6 +316,7 @@ const char kGlicActorUiStandaloneBorderGlowName[] =
     "glic-actor-ui-standalone-border-glow";
 const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[] =
     "glic-actor-completed-task-expiry-delay-seconds";
+const char kGlicActorUiDebounceTimerName[] = "glic-actor-ui-debounce-timer";
 
 // Controls whether the task icon in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTaskIcon{
@@ -349,6 +350,11 @@ const base::FeatureParam<bool> kGlicActorUiStandaloneBorderGlow{
 // Controls the expiry delay for completed tasks in the actor ui.
 const base::FeatureParam<int> kGlicActorUiCompletedTaskExpiryDelaySeconds{
     &kGlicActorUi, kGlicActorUiCompletedTaskExpiryDelaySecondsName, 10};
+// Controls the debounce timer for the Glic Actor UI Tab Controller, in
+// milliseconds. This is used to debounce hover events on the actor overlay and
+// handoff button.
+const base::FeatureParam<base::TimeDelta> kGlicActorUiDebounceTimer{
+    &kGlicActorUi, kGlicActorUiDebounceTimerName, base::Milliseconds(25)};
 
 // Controls renderer tool observation timeout when waiting on local
 // (non-network) work. This has no effect when kGlicActorPageStabilityMinWait is
