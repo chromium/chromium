@@ -6,9 +6,8 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
-import android.provider.Browser;
+import android.graphics.Rect;
 import android.util.ArrayMap;
 
 import androidx.annotation.GuardedBy;
@@ -105,20 +104,29 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     }
 
     @Override
+    @Nullable
     public ChromeAndroidTask createPendingTask(
             AndroidBrowserWindowCreateParams createParams,
             @Nullable JniOnceCallback<Long> callback) {
         synchronized (mTasksLock) {
+            Intent newWindowIntent = createNewWindowIntent(createParams);
+            if (newWindowIntent == null) {
+                if (callback != null) {
+                    callback.onResult(0L);
+                }
+                return null;
+            }
+
             int pendingId = IdSequencer.next();
+            newWindowIntent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
+
             var pendingTask = new ChromeAndroidTaskImpl(pendingId, createParams, callback);
             mPendingTasks.put(pendingId, pendingTask);
 
             // Apply a non-default initial show state if needed.
             setInitialShowState(pendingTask, createParams.getInitialShowState());
 
-            // Launch the required Activity based on |createParams|.
-            launchActivityFromParams(createParams, pendingId);
-
+            launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
             return pendingTask;
         }
     }
@@ -319,41 +327,41 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
-    private static void launchActivityFromParams(
-            AndroidBrowserWindowCreateParams createParams, int pendingId) {
-        String activityClassName;
+    private static @Nullable Intent createNewWindowIntent(
+            AndroidBrowserWindowCreateParams createParams) {
         switch (createParams.getWindowType()) {
             case BrowserWindowType.NORMAL:
-                activityClassName = "org.chromium.chrome.browser.ChromeTabbedActivity";
-                break;
+                // TODO(http://crbug.com/453777179): use MultiInstanceManager to create the Intent.
+                try {
+                    Intent intent =
+                            new Intent(
+                                    ContextUtils.getApplicationContext(),
+                                    Class.forName(
+                                            "org.chromium.chrome.browser.ChromeTabbedActivity"));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                    IntentUtils.addTrustedIntentExtras(intent);
+                    return intent;
+                } catch (ClassNotFoundException e) {
+                    return null;
+                }
             default:
-                throw new UnsupportedOperationException(
-                        "Attempting to create a browser window for an unsupported activity.");
+                return null;
+        }
+    }
+
+    private static void launchNewWindowIntent(Intent intent, Rect initialBounds) {
+        MultiInstanceManager.onMultiInstanceModeStarted();
+
+        var context = ContextUtils.getApplicationContext();
+        if (initialBounds.isEmpty()) {
+            context.startActivity(intent);
+            return;
         }
 
-        Context context = ContextUtils.getApplicationContext();
-        try {
-            // TODO(http://crbug.com/453777179): use MultiInstanceManager to create the Intent.
-            Intent intent = new Intent(context, Class.forName(activityClassName));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
-            intent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
-            IntentUtils.addTrustedIntentExtras(intent);
-
-            MultiInstanceManager.onMultiInstanceModeStarted();
-
-            if (!createParams.getInitialBounds().isEmpty()) {
-                // Apply non-default initial launch bounds if non-empty.
-                ActivityOptions options = ActivityOptions.makeBasic();
-                options.setLaunchBounds(createParams.getInitialBounds());
-                context.startActivity(intent, options.toBundle());
-            } else {
-                context.startActivity(intent);
-            }
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
+        ActivityOptions options = ActivityOptions.makeBasic();
+        options.setLaunchBounds(initialBounds);
+        context.startActivity(intent, options.toBundle());
     }
 
     /** Returns all PENDING and ALIVE Tasks. */

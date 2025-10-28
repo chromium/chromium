@@ -114,16 +114,29 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
-    public void createPendingTask_requestsUnsupportedWindowType_throwsException() {
+    public void createPendingTask_requestsUnsupportedWindowType_returnsNull() {
         // Arrange.
-        var mockParams =
+        AndroidBrowserWindowCreateParams mockCreateParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
-                        BrowserWindowType.APP_POPUP, new Rect(), WindowShowState.DEFAULT);
+                        BrowserWindowType.APP, new Rect(), WindowShowState.DEFAULT);
 
         // Act and Assert.
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
+        ChromeAndroidTask pendingTask =
+                mChromeAndroidTaskTracker.createPendingTask(mockCreateParams, null);
+        assertNull(pendingTask);
+    }
+
+    @Test
+    public void createPendingTask_requestUnsupportedWindowType_invokesCallbackWithNullPtrValue() {
+        // Arrange.
+        AndroidBrowserWindowCreateParams mockCreateParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.APP, new Rect(), WindowShowState.DEFAULT);
+        JniOnceCallback<Long> mockCallback = mock();
+
+        // Act and Assert.
+        mChromeAndroidTaskTracker.createPendingTask(mockCreateParams, mockCallback);
+        verify(mockCallback).onResult(0L);
     }
 
     @Test
@@ -137,7 +150,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Act.
         var task =
                 (ChromeAndroidTaskImpl)
-                        mChromeAndroidTaskTracker.createPendingTask(mockParams, null);
+                        assertNonNull(
+                                mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
 
         // Assert.
         var pendingActionManager = task.getPendingActionManagerForTesting();
@@ -156,7 +170,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Act.
         var task =
                 (ChromeAndroidTaskImpl)
-                        mChromeAndroidTaskTracker.createPendingTask(mockParams, null);
+                        assertNonNull(
+                                mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
 
         // Assert.
         var pendingActionManager = task.getPendingActionManagerForTesting();
@@ -212,7 +227,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var pendingTask = mChromeAndroidTaskTracker.createPendingTask(mockParams, null);
+        var pendingTask =
+                assertNonNull(mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
         int pendingId = assertNonNull(pendingTask.getPendingId());
 
         int taskId = 123;
@@ -247,7 +263,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
         JniOnceCallback<Long> mockCallback = mock();
-        var pendingTask = mChromeAndroidTaskTracker.createPendingTask(mockParams, mockCallback);
+        var pendingTask =
+                assertNonNull(
+                        mChromeAndroidTaskTracker.createPendingTask(mockParams, mockCallback));
         int pendingId = assertNonNull(pendingTask.getPendingId());
 
         int taskId = 123;
@@ -719,7 +737,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Arrange: Create pending task.
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var pendingTask = mChromeAndroidTaskTracker.createPendingTask(mockParams, null);
+        var pendingTask =
+                assertNonNull(mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
         // Arrange: Request SHOW_INACTIVE or DEACTIVATE on the pending task.
         if (action == PendingAction.SHOW_INACTIVE) {
             pendingTask.showInactive();

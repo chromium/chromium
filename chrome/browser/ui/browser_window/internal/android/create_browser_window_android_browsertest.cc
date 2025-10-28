@@ -25,8 +25,9 @@ class CreateBrowserWindowAndroidBrowserTest : public AndroidBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CreateBrowserWindowAndroidBrowserTest,
-                       CreateBrowserWindowReturnsBrowserWindowInterface) {
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowReturnsBrowserWindowInterfaceForSupportedWindowType) {
   Profile* profile = GetProfile();
   BrowserWindowCreateParams create_params =
       BrowserWindowCreateParams(BrowserWindowInterface::Type::TYPE_NORMAL,
@@ -42,7 +43,21 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CreateBrowserWindowAndroidBrowserTest,
-                       CreateBrowserWindowAsyncReturnsBrowserWindowInterface) {
+                       CreateBrowserWindowReturnsNullForUnsupportedWindowType) {
+  Profile* profile = GetProfile();
+  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+      BrowserWindowInterface::Type::TYPE_APP /* not supported on Android */,
+      *profile, /*from_user_gesture=*/false);
+
+  BrowserWindowInterface* new_browser_window =
+      CreateBrowserWindow(std::move(create_params));
+
+  EXPECT_EQ(new_browser_window, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsyncTriggersCallbackWithBrowserWindowInterfaceForSupportedWindowType) {
   Profile* profile = GetProfile();
   BrowserWindowCreateParams create_params =
       BrowserWindowCreateParams(BrowserWindowInterface::Type::TYPE_NORMAL,
@@ -56,4 +71,19 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowAndroidBrowserTest,
   EXPECT_EQ(new_browser_window->GetType(),
             BrowserWindowInterface::Type::TYPE_NORMAL);
   EXPECT_EQ(new_browser_window->GetProfile(), profile);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsyncTriggersCallbackWithNullForUnsupportedWindowType) {
+  Profile* profile = GetProfile();
+  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+      BrowserWindowInterface::Type::TYPE_APP /* not supported on Android */,
+      *profile, /*from_user_gesture=*/false);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_browser_window = future.Get();
+
+  EXPECT_EQ(new_browser_window, nullptr);
 }

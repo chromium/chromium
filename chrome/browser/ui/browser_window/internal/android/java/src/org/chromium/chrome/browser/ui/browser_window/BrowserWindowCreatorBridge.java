@@ -22,7 +22,7 @@ final class BrowserWindowCreatorBridge {
         ChromeAndroidTaskTracker tracker = ChromeAndroidTaskTrackerFactory.getInstance();
         assert tracker != null;
         ChromeAndroidTask task = tracker.createPendingTask(createParams, null);
-        return task.getOrCreateNativeBrowserWindowPtr();
+        return task == null ? 0L : task.getOrCreateNativeBrowserWindowPtr();
     }
 
     @CalledByNative
