@@ -7,7 +7,6 @@
 #include <optional>
 #include <tuple>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -84,9 +83,9 @@ TEST(CreateModelExecutionResponder, Simple) {
           kTestTokenNumber, blink::Unretained(&complete_runloop),
           WrapPersistent(resolver)),
       /*overflow_callback=*/overflow_runloop.QuitClosure(),
-      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver), nullptr,
-                     WrapPersistent(script_state)));
+      blink::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      blink::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver), nullptr,
+                      WrapPersistent(script_state)));
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -122,11 +121,11 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
       script_state, /*signal=*/nullptr,
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      base::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
+      blink::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothing(),
-      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver), nullptr,
-                     WrapPersistent(script_state)));
+      blink::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      blink::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver), nullptr,
+                      WrapPersistent(script_state)));
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
@@ -162,12 +161,12 @@ TEST(CreateModelExecutionResponder, AbortWithoutResponse) {
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      base::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
+      blink::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothing(),
-      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
-                     WrapPersistent(controller->signal()),
-                     WrapPersistent(script_state)));
+      blink::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      blink::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+                      WrapPersistent(controller->signal()),
+                      WrapPersistent(script_state)));
 
   controller->abort(scope.GetScriptState());
 
@@ -202,12 +201,12 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
       script_state, controller->signal(),
       blink::scheduler::GetSequencedTaskRunnerForTesting(),
       AIMetrics::AISessionType::kLanguageModel,
-      base::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
+      blink::BindOnce(&ResolvePromiseOnCompletion, WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothing(),
-      base::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
-      base::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
-                     WrapPersistent(controller->signal()),
-                     WrapPersistent(script_state)));
+      blink::BindOnce(&RejectPromiseOnError, WrapPersistent(resolver)),
+      blink::BindOnce(&RejectPromiseOnAbort, WrapPersistent(resolver),
+                      WrapPersistent(controller->signal()),
+                      WrapPersistent(script_state)));
 
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
