@@ -105,6 +105,7 @@ public class EdgeToEdgeInstrumentationTest {
 
     @Before
     public void setUp() {
+        mActivityTestRule.getEmbeddedTestServerRule().setServerPort(12345);
         mTestServer = mActivityTestRule.getTestServer();
         mActivity = mActivityTestRule.getActivity();
         assertNotNull(mActivity);
