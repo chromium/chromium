@@ -429,6 +429,42 @@ void PermissionActionsHistory::RecordOneTimeGrant(
       current_count);
 }
 
+void PermissionActionsHistory::RecordOTPCountForGrant(
+    ContentSettingsType permission,
+    int count) {
+  if (permission != ContentSettingsType::GEOLOCATION &&
+      permission != ContentSettingsType::MEDIASTREAM_MIC &&
+      permission != ContentSettingsType::MEDIASTREAM_CAMERA) {
+    return;
+  }
+  std::string histogram_name = "Permissions.OneTimePermission.";
+  histogram_name += PermissionUtil::GetPermissionString(permission);
+  histogram_name += ".GrantOTPCount";
+  base::UmaHistogramCounts100(histogram_name, count);
+}
+
+int PermissionActionsHistory::GetOneTimeGrantCount(
+    const GURL& origin,
+    ContentSettingsType permission) {
+  if (permission != ContentSettingsType::GEOLOCATION &&
+      permission != ContentSettingsType::MEDIASTREAM_MIC &&
+      permission != ContentSettingsType::MEDIASTREAM_CAMERA) {
+    return 0;
+  }
+  base::Value setting = settings_map_->GetWebsiteSetting(
+      origin, origin, ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr);
+  if (!setting.is_none() && setting.is_dict()) {
+    const base::Value::Dict& dict = setting.GetDict();
+    const std::string permission_str =
+        PermissionUtil::GetPermissionString(permission);
+    const base::Value::Dict* permission_dict = dict.FindDict(permission_str);
+    if (permission_dict) {
+      return permission_dict->FindInt(kOneTimeGrantCountKey).value_or(0);
+    }
+  }
+  return 0;
+}
+
 // static
 void PermissionActionsHistory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

@@ -1203,7 +1203,9 @@ void PermissionRequestManager::CurrentRequestsDecided(
       }
       // TODO(crbug.com/446603274): Record metrics of geolocation PEPC
       // request.
-    } else if (permission_action == PermissionAction::GRANTED_ONCE) {
+    }
+
+    if (permission_action == PermissionAction::GRANTED_ONCE) {
       ContentSettingsType content_settings_type =
           request->GetContentSettingsType();
 
@@ -1212,6 +1214,18 @@ void PermissionRequestManager::CurrentRequestsDecided(
           content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
         actions_history->RecordOneTimeGrant(request->requesting_origin(),
                                             content_settings_type);
+      }
+    } else if (permission_action == PermissionAction::GRANTED) {
+      ContentSettingsType content_settings_type =
+          request->GetContentSettingsType();
+
+      if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+          content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+          content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
+        actions_history->RecordOTPCountForGrant(
+            content_settings_type,
+            actions_history->GetOneTimeGrantCount(request->requesting_origin(),
+                                                  content_settings_type));
       }
     }
   }

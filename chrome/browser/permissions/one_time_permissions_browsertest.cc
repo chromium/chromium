@@ -99,3 +99,69 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionsBrowserTest, RecordOneTimeGrant) {
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.VideoCapture.OneTimeGrant", 1, 1);
 }
+
+IN_PROC_BROWSER_TEST_F(OneTimePermissionsBrowserTest, RecordGrantOTPCount) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
+  base::HistogramTester histogram_tester;
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  test::PermissionRequestManagerTestApi test_api(manager);
+
+  // Request Geolocation twice with "Allow this time"
+  RequestPermission(permissions::RequestType::kGeolocation);
+  RequestPermission(permissions::RequestType::kGeolocation);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 2, 1);
+
+  // Now grant permanently
+  permissions::PermissionRequestObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  test_api.AddSimpleRequest(browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetPrimaryMainFrame(),
+                            permissions::RequestType::kGeolocation);
+  observer.Wait();
+  manager->Accept();  // Permanent grant
+
+  // Expect GrantOTPCount to be 2 for Geolocation
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.Geolocation.GrantOTPCount", 2, 1);
+
+  // Request Mic once with "Allow this time"
+  RequestPermission(permissions::RequestType::kMicStream);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 1, 1);
+
+  // Now grant permanently
+  permissions::PermissionRequestObserver observer2(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  test_api.AddSimpleRequest(browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetPrimaryMainFrame(),
+                            permissions::RequestType::kMicStream);
+  observer2.Wait();
+  manager->Accept();  // Permanent grant
+
+  // Expect GrantOTPCount to be 1 for AudioCapture
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.AudioCapture.GrantOTPCount", 1, 1);
+
+  // Grant Camera permanently without any prior one-time grants
+  permissions::PermissionRequestObserver observer3(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  test_api.AddSimpleRequest(browser()
+                                ->tab_strip_model()
+                                ->GetActiveWebContents()
+                                ->GetPrimaryMainFrame(),
+                            permissions::RequestType::kCameraStream);
+  observer3.Wait();
+  manager->Accept();  // Permanent grant
+
+  // Expect GrantOTPCount to be 0 for VideoCapture
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.VideoCapture.GrantOTPCount", 0, 1);
+}
