@@ -96,6 +96,7 @@ import java.util.Map;
 @NullMarked
 public class MainSettings extends ChromeBaseSettingsFragment
         implements TemplateUrlService.LoadListener,
+                TemplateUrlService.TemplateUrlServiceObserver,
                 SyncService.SyncStateChangedListener,
                 SigninManager.SignInStateObserver,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
@@ -185,6 +186,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onStart() {
         super.onStart();
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
+        if (templateUrlService != null) {
+            templateUrlService.addObserver(this);
+        }
+
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
@@ -202,6 +209,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
+        }
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(getProfile());
+        if (templateUrlService != null) {
+            templateUrlService.removeObserver(this);
         }
     }
 
@@ -670,6 +682,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onTemplateUrlServiceLoaded() {
         TemplateUrlServiceFactory.getForProfile(getProfile()).unregisterLoadListener(this);
+        updateSearchEnginePreference();
+    }
+
+    @Override
+    public void onTemplateURLServiceChanged() {
         updateSearchEnginePreference();
     }
 
