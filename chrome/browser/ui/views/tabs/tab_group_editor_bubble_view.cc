@@ -937,12 +937,24 @@ void TabGroupEditorBubbleView::ConvertToBookmarkPressed() {
 
               std::optional<tab_groups::SavedTabGroup> saved_group =
                   tab_group_service->GetGroup(group);
-              if (!saved_group) {
+
+              // Do not delete shared tab group.
+              if (!saved_group || saved_group->is_shared_tab_group()) {
                 return;
               }
 
-              tab_groups::SavedTabGroupUtils::DeleteSavedGroup(
-                  browser, saved_group->saved_guid());
+              // Remove the group directly without prompt dialog since the
+              // bookmark editor dialog already did that.
+              tab_group_service->RemoveGroup(saved_group->saved_guid());
+              std::optional<tab_groups::TabGroupId> local_group_id =
+                  saved_group->local_group_id();
+              if (local_group_id) {
+                tab_group_service->RemoveGroup(local_group_id.value());
+                tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(
+                    nullptr, local_group_id.value());
+              } else {
+                tab_group_service->RemoveGroup(saved_group->saved_guid());
+              }
             }));
   }
 
