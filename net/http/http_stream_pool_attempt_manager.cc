@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -1037,7 +1038,25 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   // a Job.
   // TODO(crbug.com/346835898): Change to DCHECK once we stabilize the
   // implementation.
-  CHECK(!CanUseExistingQuicSession());
+  // TODO(crbug.com/455891789): Replace this block with
+  // CHECK(CanUseExistingQuicSession()), once bug is fixed.
+  if (CanUseExistingQuicSession()) {
+    SCOPED_CRASH_KEY_BOOL("crbug-455891789", "CanUseQuic", CanUseQuic());
+    SCOPED_CRASH_KEY_BOOL("crbug-455891789", "IsQuicEnabled",
+                          http_network_session()->IsQuicEnabled());
+    SCOPED_CRASH_KEY_BOOL(
+        "crbug-455891789", "IsQuicBroken",
+        pool()->IsQuicBroken(quic_session_alias_key().destination(),
+                             quic_session_alias_key()
+                                 .session_key()
+                                 .network_anonymization_key()));
+    SCOPED_CRASH_KEY_BOOL("crbug-455891789", "is_using_tls", is_using_tls_);
+    SCOPED_CRASH_KEY_BOOL("crbug-455891789", "enable_alt_services",
+                          job->enable_alternative_services());
+    SCOPED_CRASH_KEY_BOOL("crbug-455891789", "force_quic",
+                          group_->force_quic());
+    NOTREACHED();
+  }
   CHECK(job->type() == JobType::kAltSvcQuicPreconnect ||
         !HasAvailableSpdySession());
 

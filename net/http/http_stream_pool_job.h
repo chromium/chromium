@@ -162,6 +162,11 @@ class HttpStreamPool::Job {
     return delegate_->net_log();
   }
 
+  // TODO(crbug.com/455891789): Remove this once the bug is fixed.
+  bool enable_alternative_services() const {
+    return delegate_->enable_alternative_services();
+  }
+
   const NetLogWithSource& net_log() const { return job_net_log_; }
 
   const NetLogWithSource& request_net_log() const { return request_net_log_; }
