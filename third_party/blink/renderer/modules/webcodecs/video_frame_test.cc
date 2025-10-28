@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 
-#include "base/compiler_specific.h"
+#include <algorithm>
+
+#include "base/containers/span_reader.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "media/base/video_frame.h"
@@ -202,10 +204,8 @@ TEST_F(VideoFrameTest, CopyToRGB) {
   uint32_t buffer_size =
       blink_frame->allocationSize(options, scope.GetExceptionState());
   auto* buffer = DOMArrayBuffer::Create(buffer_size, 1);
-  uint8_t* data = static_cast<uint8_t*>(buffer->Data());
-
   // Set buffer to white pixels.
-  UNSAFE_TODO(memset(data, 0xff, buffer_size));
+  std::ranges::fill(buffer->ByteSpan(), 0xff);
   AllowSharedBufferSource* destination =
       MakeGarbageCollected<AllowSharedBufferSource>(buffer);
 
@@ -217,12 +217,17 @@ TEST_F(VideoFrameTest, CopyToRGB) {
   ASSERT_TRUE(tester.IsFulfilled());
 
   // Check that after copyTo() all the pixels are black.
+  base::SpanReader<const uint8_t> reader(buffer->ByteSpan());
   for (int y = 0; y < media_frame->coded_size().height(); y++) {
     for (int x = 0; x < media_frame->coded_size().width(); x++) {
-      uint8_t* addr = &UNSAFE_TODO(data[y * media_frame->stride(0) + x * 4]);
-      ASSERT_EQ(addr[0], 0) << " R x: " << x << " y: " << y;
-      UNSAFE_TODO(ASSERT_EQ(addr[1], 0)) << " G x: " << x << " y: " << y;
-      UNSAFE_TODO(ASSERT_EQ(addr[2], 0)) << " B x: " << x << " y: " << y;
+      uint8_t r, g, b, a;
+      ASSERT_TRUE(reader.ReadU8BigEndian(r));
+      ASSERT_TRUE(reader.ReadU8BigEndian(g));
+      ASSERT_TRUE(reader.ReadU8BigEndian(b));
+      ASSERT_TRUE(reader.ReadU8BigEndian(a));
+      ASSERT_EQ(r, 0) << " R x: " << x << " y: " << y;
+      ASSERT_EQ(g, 0) << " G x: " << x << " y: " << y;
+      ASSERT_EQ(b, 0) << " B x: " << x << " y: " << y;
     }
   }
 
