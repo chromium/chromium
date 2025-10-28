@@ -414,7 +414,7 @@ cr-searchbox-icon {
   z-index: 100;
 }
 
-:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(composebox-file-carousel) {
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
   margin-top: 16px;
 }
 
@@ -559,13 +559,15 @@ cr-searchbox-icon {
   --cr-icon-button-size: 36px;
   display: flex;
   position: absolute;
-  inset-inline-end: 14px;
 }
 
 :host([realbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   bottom: 10px;
+  inset-inline-end: 14px;
 }
 
 :host([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  top: 60px;
+  margin-inline-end: 14px;
+  margin-inline-start: auto;
+  position: static;
 }
