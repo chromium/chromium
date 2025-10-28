@@ -20,9 +20,6 @@ class WebFrame;
 // page content.
 class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
  public:
-  using ReplacementsCallback =
-      base::RepeatingCallback<FeatureScript::PlaceholderReplacements()>;
-
   static PageContextExtractorJavaScriptFeature* GetInstance();
 
   // Extracts the page context from the `frame` content. Calls `callback` when

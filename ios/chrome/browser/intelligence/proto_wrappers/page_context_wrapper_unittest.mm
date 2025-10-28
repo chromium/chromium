@@ -219,6 +219,8 @@ class PageContextWrapperTest : public PlatformTest,
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   net::EmbeddedTestServer test_server_;
+  net::EmbeddedTestServer xorigin_test_server_;
+  net::EmbeddedTestServer xorigin_test_server_b_;
   id<SnapshotStorage> snapshot_storage_ = nil;
   ControllableFakeSnapshotGeneratorDelegate* snapshot_delegate_ = nil;
 
@@ -232,6 +234,21 @@ class PageContextWrapperTest : public PlatformTest,
 
 // Tests that the page context is correctly populated with the page URL, title,
 // inner text, and annotated page content (including iframes).
+//
+// The page layout is as follows:
+//      +----------------------------------+
+//      | Main page (Origin M)             |  - Main frame (Origin M)
+//      |                                  |    |
+//      |   +--------------------------+   |    +-- Iframe 1 (Origin M)
+//      |   | Iframe 1 (Origin M)      |   |    |     |
+//      |   |   +------------------+   |   |    |     +-- Iframe 3 (Origin M)
+//      |   |   | Iframe 3         |   |   |    |
+//      |   |   +------------------+   |   |    +-- Iframe 2 (Origin M)
+//      |   +--------------------------+   |
+//      |   +--------------------------+   |
+//      |   | Iframe 2 (Origin M)      |   |
+//      |   +--------------------------+   |
+//      +----------------------------------+
 TEST_P(PageContextWrapperTest, PopulatePageContext) {
   const std::string main_html =
       base::StrCat({"<html><head><title>Main</title></head><body><p>Main frame "
@@ -811,6 +828,360 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextGenerationFailure) {
   ASSERT_FALSE(captured_response.has_value());
   EXPECT_EQ(captured_response.error(),
             PageContextWrapperError::kInnerTextError);
+}
+
+// Tests that extraction works across origins.
+// The page layout is as follows:
+//      +----------------------------------+
+//      | Main page (Origin M)             |  - Main frame (Origin M)
+//      |                                  |    |
+//      |   +--------------------------+   |    +-- Iframe (Origin A)
+//      |   | Iframe (Origin A)        |   |
+//      |   +--------------------------+   |
+//      |                                  |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest, PopulatePageContextWithCrossOriginFrame) {
+  const char kCrossOriginIframePath[] = "/iframe_cross.html";
+  const char kCrossOriginIframeHtml[] =
+      "<html><head><title>Child Cross Origin</title></head><body><p>Child "
+      "frame cross-origin text</p></body></html>";
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframePath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeHtml)));
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_url = xorigin_test_server_.GetURL(kCrossOriginIframePath);
+  const std::string main_html = base::StrCat(
+      {"<html><head><title>Main Cross Origin</title></head><body><p>Main "
+       "frame cross-origin text</p><iframe src=\"",
+       iframe_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  wrapper.shouldGetInnerText = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+  EXPECT_EQ(page_context->url(), main_url.spec());
+  EXPECT_EQ(page_context->title(), "Main Cross Origin");
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+  ASSERT_TRUE(page_context->has_inner_text());
+
+  const auto& inner_text = page_context->inner_text();
+  EXPECT_THAT(inner_text, testing::HasSubstr("Main frame cross-origin text"));
+  EXPECT_THAT(inner_text, testing::HasSubstr("Child frame cross-origin text"));
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  // There should be one text node and one iframe node.
+  ASSERT_EQ(root_node.children_nodes_size(), 2);
+
+  const optimization_guide::proto::ContentNode* text_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_node = nullptr;
+
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT) {
+      text_node = &node;
+    } else if (node.content_attributes().attribute_type() ==
+               optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      iframe_node = &node;
+    }
+  }
+
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(iframe_node);
+
+  EXPECT_EQ(text_node->content_attributes().text_data().text_content(),
+            "Main frame cross-origin text");
+
+  const auto& iframe_frame_data =
+      iframe_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_frame_data.title(), "Child Cross Origin");
+  EXPECT_EQ(iframe_frame_data.url(), iframe_url.spec());
+
+  ASSERT_EQ(iframe_node->children_nodes_size(), 1);
+  const auto& iframe_root_node = iframe_node->children_nodes(0);
+  EXPECT_EQ(iframe_root_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  ASSERT_EQ(iframe_root_node.children_nodes_size(), 1);
+  const auto& iframe_text_node = iframe_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_text_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(iframe_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text");
+}
+
+// Tests that extraction works across origins with nested same-origin frames.
+// The page layout is as follows:
+//      +----------------------------------+
+//      | Main page (Origin M)             |  - Main frame (Origin M)
+//      |                                  |    |
+//      |   +--------------------------+   |    +-- Iframe 1 (Origin A)
+//      |   | Iframe 1 (Origin A)      |   |    |     |
+//      |   |   +------------------+   |   |    |     +-- Iframe 2 (Origin A)
+//      |   |   | Iframe 2         |   |   |
+//      |   |   +------------------+   |   |
+//      |   +--------------------------+   |
+//      |                                  |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest,
+       PopulatePageContextWithNestedSameCrossOriginFrame) {
+  const char kCrossOriginIframe1Path[] = "/iframe_cross1.html";
+  const char kCrossOriginIframe2Path[] = "/iframe_cross2.html";
+  const char kCrossOriginIframe1Html[] =
+      "<html><head><title>Child Cross Origin 1</title></head><body><p>Child "
+      "frame cross-origin text 1</p><iframe "
+      "src=\"/iframe_cross2.html\"></iframe></body></html>";
+  const char kCrossOriginIframe2Html[] =
+      "<html><head><title>Child Cross Origin 2</title></head><body><p>Child "
+      "frame cross-origin text 2</p></body></html>";
+
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframe1Path,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframe1Html)));
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframe2Path,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframe2Html)));
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_url = xorigin_test_server_.GetURL(kCrossOriginIframe1Path);
+  const std::string main_html = base::StrCat(
+      {"<html><head><title>Main Cross Origin</title></head><body><p>Main "
+       "frame cross-origin text</p><iframe src=\"",
+       iframe_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  wrapper.shouldGetInnerText = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+
+  const auto& inner_text = page_context->inner_text();
+  EXPECT_THAT(inner_text, testing::HasSubstr("Main frame cross-origin text"));
+  EXPECT_THAT(inner_text,
+              testing::HasSubstr("Child frame cross-origin text 1"));
+  EXPECT_THAT(inner_text,
+              testing::HasSubstr("Child frame cross-origin text 2"));
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 2);
+
+  const optimization_guide::proto::ContentNode* iframe_node = nullptr;
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      iframe_node = &node;
+    }
+  }
+  ASSERT_TRUE(iframe_node);
+
+  const auto& iframe_frame_data =
+      iframe_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_frame_data.title(), "Child Cross Origin 1");
+
+  ASSERT_EQ(iframe_node->children_nodes_size(), 1);
+  const auto& iframe_root_node = iframe_node->children_nodes(0);
+  ASSERT_EQ(iframe_root_node.children_nodes_size(), 2);
+
+  const auto& nested_iframe_node = iframe_root_node.children_nodes(1);
+  EXPECT_EQ(nested_iframe_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& nested_iframe_frame_data =
+      nested_iframe_node.content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(nested_iframe_frame_data.title(), "Child Cross Origin 2");
+  EXPECT_EQ(nested_iframe_frame_data.url(),
+            xorigin_test_server_.GetURL(kCrossOriginIframe2Path).spec());
+}
+
+// Tests that extraction works across origins with nested different-origin
+// frames.
+//      +----------------------------------+
+//      | Main page (test_server_)         |  - Main frame (Origin M)
+//      |                                  |    |
+//      |   +--------------------------+   |    +-- Iframe A (Origin A)
+//      |   | Iframe A (Origin A)      |   |    |     |
+//      |   |                          |   |    |     +-- Iframe B (Origin B)
+//      |   |   +------------------+   |   |
+//      |   |   | Iframe B         |   |   |
+//      |   |   | (Origin B)       |   |   |
+//      |   |   +------------------+   |   |
+//      |   |                          |   |
+//      |   +--------------------------+   |
+//      |                                  |
+//      +----------------------------------+
+TEST_P(PageContextWrapperTest,
+       PopulatePageContextWithNestedDifferentCrossOriginFrame) {
+  const char kCrossOriginIframeAPath[] = "/iframe_cross_a.html";
+  const char kCrossOriginIframeBPath[] = "/iframe_cross_b.html";
+  const char kCrossOriginIframeBHtml[] =
+      "<html><head><title>Child Cross Origin B</title></head><body><p>Child "
+      "frame cross-origin text B</p></body></html>";
+
+  xorigin_test_server_b_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframeBPath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeBHtml)));
+  ASSERT_TRUE(xorigin_test_server_b_.Start());
+  GURL iframe_b_url = xorigin_test_server_b_.GetURL(kCrossOriginIframeBPath);
+
+  const std::string kCrossOriginIframeAHtml = base::StrCat(
+      {"<html><head><title>Child Cross Origin A</title></head><body><p>Child "
+       "frame cross-origin text A</p><iframe src=\"",
+       iframe_b_url.spec(), "\"></iframe></body></html>"});
+
+  xorigin_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kCrossOriginIframeAPath,
+      base::BindRepeating(&testing::HandlePageWithHtml,
+                          kCrossOriginIframeAHtml)));
+  ASSERT_TRUE(xorigin_test_server_.Start());
+
+  GURL iframe_a_url = xorigin_test_server_.GetURL(kCrossOriginIframeAPath);
+  const std::string main_html = base::StrCat(
+      {"<html><head><title>Main Cross Origin</title></head><body><p>Main "
+       "frame cross-origin text</p><iframe src=\"",
+       iframe_a_url.spec(), "\"></iframe></body></html>"});
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context;
+
+  PageContextWrapper* wrapper = [[PageContextWrapper alloc]
+        initWithWebState:web_state()
+      completionCallback:base::BindOnce(
+                             [](base::RunLoop* run_loop,
+                                std::unique_ptr<
+                                    optimization_guide::proto::PageContext>*
+                                    out_page_context,
+                                PageContextWrapperCallbackResponse response) {
+                               if (response.has_value()) {
+                                 *out_page_context =
+                                     std::move(response.value());
+                               }
+                               run_loop->Quit();
+                             },
+                             &run_loop, &page_context)];
+
+  wrapper.shouldGetAnnotatedPageContent = YES;
+  wrapper.shouldGetInnerText = YES;
+  [wrapper populatePageContextFieldsAsyncWithTimeout:base::Seconds(5)];
+
+  run_loop.Run();
+
+  ASSERT_TRUE(page_context);
+
+  const auto& inner_text = page_context->inner_text();
+  EXPECT_THAT(inner_text, testing::HasSubstr("Main frame cross-origin text"));
+  EXPECT_THAT(inner_text,
+              testing::HasSubstr("Child frame cross-origin text A"));
+  EXPECT_THAT(inner_text,
+              testing::HasSubstr("Child frame cross-origin text B"));
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+  ASSERT_EQ(root_node.children_nodes_size(), 3);
+
+  const optimization_guide::proto::ContentNode* text_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_a_node = nullptr;
+  const optimization_guide::proto::ContentNode* iframe_b_node = nullptr;
+
+  for (const auto& node : root_node.children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT) {
+      text_node = &node;
+    } else if (node.content_attributes().attribute_type() ==
+               optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      if (node.content_attributes().iframe_data().frame_data().url() ==
+          iframe_a_url.spec()) {
+        iframe_a_node = &node;
+      } else if (node.content_attributes().iframe_data().frame_data().url() ==
+                 iframe_b_url.spec()) {
+        iframe_b_node = &node;
+      }
+    }
+  }
+
+  ASSERT_TRUE(text_node);
+  ASSERT_TRUE(iframe_a_node);
+  ASSERT_TRUE(iframe_b_node);
+
+  EXPECT_EQ(text_node->content_attributes().text_data().text_content(),
+            "Main frame cross-origin text");
+
+  // Verify iframe A.
+  const auto& iframe_a_frame_data =
+      iframe_a_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_a_frame_data.title(), "Child Cross Origin A");
+  ASSERT_EQ(iframe_a_node->children_nodes_size(), 1);
+  const auto& iframe_a_root_node = iframe_a_node->children_nodes(0);
+  ASSERT_EQ(iframe_a_root_node.children_nodes_size(), 1);
+  const auto& iframe_a_text_node = iframe_a_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_a_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text A");
+
+  // Verify iframe B.
+  const auto& iframe_b_frame_data =
+      iframe_b_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_b_frame_data.title(), "Child Cross Origin B");
+  ASSERT_EQ(iframe_b_node->children_nodes_size(), 1);
+  const auto& iframe_b_root_node = iframe_b_node->children_nodes(0);
+  ASSERT_EQ(iframe_b_root_node.children_nodes_size(), 1);
+  const auto& iframe_b_text_node = iframe_b_root_node.children_nodes(0);
+  EXPECT_EQ(iframe_b_text_node.content_attributes().text_data().text_content(),
+            "Child frame cross-origin text B");
 }
 
 INSTANTIATE_TEST_SUITE_P(,
