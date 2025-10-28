@@ -12,9 +12,6 @@ repositories {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    // Needed only by internal targets:
-    compile 'com.android.support:support-annotations:28.0.0'
-
     // buildCompile needed because we add a custom dep of onto this from guava
     // to fix "unknown enum constant ReflectionSupport$Level.FULL".
     buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
