@@ -92,6 +92,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {
+  DCHECK_GE(task_manager_string_id, 0);
   RequestResult make_contents_result = Request(webui_url, profile);
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
