@@ -390,7 +390,7 @@
     ]
   },
   {
-    "prefix": "css-anchor-update-enabled",
+    "prefix": "css-anchor-update-disabled",
     "owners": [
       "ikilpatrick@chromium.org",
       "rendering-core-dev@chromium.org"
@@ -404,7 +404,7 @@
       "external/wpt/css/css-anchor-position"
     ],
     "args": [
-      "--enable-blink-features=CSSAnchorUpdate"
+      "--disable-blink-features=CSSAnchorUpdate"
     ],
     "expires": "Aug 13, 2026"
   },
