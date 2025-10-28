@@ -23,12 +23,6 @@ void PrintTo(const OverlayCandidate& candidate, std::ostream* os);
 
 namespace test {
 
-// Comparator for sorting algorithms that places candidates in ascending order
-// using their z-order as the sort key.
-struct PlaneZOrderAscendingComparator {
-  bool operator()(const OverlayCandidate& a, const OverlayCandidate& b) const;
-};
-
 // Matches a render pass overlay with matching `render_pass_id`.
 testing::Matcher<const OverlayCandidate&> IsRenderPassOverlay(
     AggregatedRenderPassId id);

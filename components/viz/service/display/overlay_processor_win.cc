@@ -218,6 +218,9 @@ void OverlayProcessorWin::ProcessForOverlays(
         render_passes->back()->id);
   }
 
+  // Sort back-to-front to make the subsequent operations easier.
+  std::ranges::sort(*candidates, {}, &OverlayCandidate::plane_z_order);
+
   if (is_page_fullscreen_mode_ &&
       base::FeatureList::IsEnabled(
           features::kEarlyFullScreenVideoOptimization)) {
@@ -230,7 +233,11 @@ void OverlayProcessorWin::ProcessForOverlays(
     pending_remove_primary_plane_ = false;
   }
   if (primary_plane) {
-    candidates->push_back(std::move(primary_plane).value());
+    // Insert the primary plane above all underlays.
+    const auto insert_positon = std::ranges::find_if(
+        *candidates, [](const auto& z_order) { return z_order > 0; },
+        &OverlayCandidate::plane_z_order);
+    candidates->insert(insert_positon, std::move(primary_plane).value());
     primary_plane.reset();
   }
 
@@ -658,8 +665,11 @@ void OverlayProcessorWin::TryPromoteFullScreenVideo(
     return;
   }
 
-  // Sort back-to-front to make the subsequent operations easier.
-  std::ranges::sort(candidates, {}, &OverlayCandidate::plane_z_order);
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // This function assumes the candidates list is sorted.
+  CHECK(
+      std::ranges::is_sorted(candidates, {}, &OverlayCandidate::plane_z_order));
+#endif
 
   // Find the front-most full screen video candidate by searching from the back.
   auto frontmost_candidate_it = std::ranges::find_if(

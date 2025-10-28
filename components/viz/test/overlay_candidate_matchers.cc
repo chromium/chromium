@@ -44,12 +44,6 @@ void PrintTo(const OverlayCandidate& candidate, std::ostream* os) {
 
 namespace test {
 
-bool PlaneZOrderAscendingComparator::operator()(
-    const OverlayCandidate& a,
-    const OverlayCandidate& b) const {
-  return a.plane_z_order < b.plane_z_order;
-}
-
 testing::Matcher<const OverlayCandidate&> IsRenderPassOverlay(
     AggregatedRenderPassId id) {
   return testing::AllOf(

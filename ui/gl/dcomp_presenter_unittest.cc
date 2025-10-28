@@ -942,9 +942,8 @@ TEST_P(DCompPresenterTest, VisualsReused) {
           gfx::OverlayLayerId::MakeForTesting(0));
 
   // Frame 2:
-  // overlay 0: root dcomp surface
-  // overlay 1: swapchain z-order = -1 (underlay)
-  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
+  // overlay 0: swapchain z-order = -1 (underlay)
+  // overlay 1: root dcomp surface
   {
     DCLayerOverlayParams params;
     params.overlay_image.emplace(texture_size, texture);
@@ -956,6 +955,7 @@ TEST_P(DCompPresenterTest, VisualsReused) {
     params.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
     ScheduleOverlay(std::move(params));
   }
+  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
 
   ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
   EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
@@ -3051,50 +3051,6 @@ TEST_P(DCompPresenterSkiaGoldTest,
   overlay.z_order = 1;
   overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
   ScheduleOverlay(std::move(overlay));
-
-  PresentAndCheckScreenshot();
-}
-
-// Check that DCLayerTree sorts overlays by their z-order instead of using the
-// schedule order.
-TEST_P(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
-  InitializeTest(gfx::Size(100, 100));
-
-  // Insert overlays out of order with respect to z-ordering
-  std::vector<std::pair<SkColor4f, int>> color_and_z_order = {
-      {SkColors::kGreen, 2},
-      {SkColors::kGreen, -1},
-      {SkColors::kRed, -2},
-      {SkColors::kRed, 1},
-  };
-
-  for (const auto& [color, z_order] : color_and_z_order) {
-    gfx::Rect quad_rect = gfx::Rect(15 + z_order * 5, 15 + z_order * 5, 30, 30);
-    auto overlay =
-        CreateParamsFromImage(CreateDCompSurface(quad_rect.size(), color));
-    overlay.quad_rect = quad_rect;
-    overlay.z_order = z_order;
-    overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(z_order);
-
-    ScheduleOverlay(std::move(overlay));
-  }
-
-  // Insert a translucent root plane so that we can easily see underlays
-  SkColor4f translucent_blue = SkColors::kBlue;
-  translucent_blue.fA = 0.5;
-  InitializeRootAndScheduleRootSurface(current_window_size(), translucent_blue);
-
-  {
-    // Insert a black backdrop since our root surface is not opaque. This is not
-    // strictly required, but it ensures that we explicitly make all pixels in
-    // our output opaque.
-    auto overlay = CreateParamsFromImage(
-        CreateDCompSurface(current_window_size(), SkColors::kBlack));
-    overlay.quad_rect = gfx::Rect(current_window_size());
-    overlay.z_order = INT_MIN;
-    overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
-    ScheduleOverlay(std::move(overlay));
-  }
 
   PresentAndCheckScreenshot();
 }

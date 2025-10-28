@@ -866,6 +866,10 @@ DCLayerTree::VisualTree::~VisualTree() = default;
 
 base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
     const std::vector<DCLayerOverlayParams>& overlays) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  CHECK(std::ranges::is_sorted(overlays, {}, &DCLayerOverlayParams::z_order));
+#endif
+
   // Index into the subtree from the previous frame that is being reused in the
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
@@ -1239,10 +1243,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  // Sort layers by z-order.
-  std::ranges::sort(overlays, std::ranges::less(),
-                    &DCLayerOverlayParams::z_order);
-
   // Move unused video swap chains to `unused_video_swap_chains` for potential
   // reuse (when adjacent frames have a videos that have different layer IDs
   // which can sometimes happen when a video's src changes), then cleanup.
@@ -1347,6 +1347,7 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         tint_overlay.transform = it->transform;
         tint_overlay.clip_rect = it->clip_rect;
         tint_overlay.rounded_corner_bounds = it->rounded_corner_bounds;
+        tint_overlay.z_order = it->z_order;
         tint_overlay.opacity = 0.25;
         tint_overlay.background_color = tint_color;
         tint_overlay.layer_id =
