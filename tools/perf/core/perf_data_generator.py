@@ -610,7 +610,12 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'android-desktop-x64-builder-perf': {},
+    'android-desktop-arm-builder-perf': {
+        'additional_compile_targets': ['trichrome_google_64_32_minimal_apks'],
+    },
+    'android-desktop-x64-builder-perf': {
+        'additional_compile_targets': ['trichrome_google_64_minimal_apks'],
+    },
     'android-brya-kano-i5-8gb-perf': {
         'tests': [{
             'isolate':

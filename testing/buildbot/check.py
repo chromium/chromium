@@ -55,6 +55,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'resource_sizes_trichrome_google',
     'resource_sizes_system_webview_google_bundle',
     'trichrome_google_64_32_minimal_apks',
+    'trichrome_google_64_minimal_apks',
 
     # These are used by https://www.chromium.org/developers/cluster-telemetry.
     'ct_telemetry_perf_tests_without_chrome',

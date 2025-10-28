@@ -109,6 +109,16 @@
       }
     ]
   },
+  "android-desktop-arm-builder-perf": {
+    "additional_compile_targets": [
+      "trichrome_google_64_32_minimal_apks"
+    ]
+  },
+  "android-desktop-x64-builder-perf": {
+    "additional_compile_targets": [
+      "trichrome_google_64_minimal_apks"
+    ]
+  },
   "android-go-processor-perf": {},
   "android-go-wembley-perf": {
     "isolated_scripts": [
