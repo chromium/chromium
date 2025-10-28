@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
-#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "url/gurl.h"
 

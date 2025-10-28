@@ -43,7 +43,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/local_storage_database.pb.h"
+#include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"

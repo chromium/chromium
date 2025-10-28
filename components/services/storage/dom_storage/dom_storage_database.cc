@@ -4,7 +4,7 @@
 
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
-#include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 
 namespace storage {
 namespace {

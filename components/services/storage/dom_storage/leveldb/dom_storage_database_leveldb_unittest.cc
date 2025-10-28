@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 
 #include <algorithm>
 #include <functional>
@@ -18,7 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
-#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

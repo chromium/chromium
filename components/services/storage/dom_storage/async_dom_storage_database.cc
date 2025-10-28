@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {

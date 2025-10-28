@@ -141,7 +141,7 @@ source_set("browser") {
     "//components/services/quarantine",
     "//components/services/storage",
     "//components/services/storage:filesystem_proxy_factory",
-    "//components/services/storage/dom_storage:local_storage_proto",
+    "//components/services/storage/dom_storage/leveldb:local_storage_proto",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
     "//components/sqlite_proto",

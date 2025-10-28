@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
-#include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
-#include "components/services/storage/dom_storage/dom_storage_database_leveldb_utils.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb_utils.h"
 #include "storage/common/database/leveldb_status_helper.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"

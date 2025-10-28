@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/dom_storage/dom_storage_database_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 
 #include <memory>
 #include <optional>
@@ -28,9 +28,9 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/types/pass_key.h"
-#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/dom_storage_database_leveldb_utils.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb_utils.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "storage/common/database/leveldb_status_helper.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -125,8 +125,7 @@ DomStorageDatabaseLevelDB::DomStorageDatabaseLevelDB(
   Init(std::move(callback));
 }
 
-void DomStorageDatabaseLevelDB::Init(
-    StatusCallback callback) {
+void DomStorageDatabaseLevelDB::Init(StatusCallback callback) {
   db_ = TryOpenDB(options_, name_, std::move(callback));
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(

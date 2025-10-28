@@ -26,7 +26,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
-#include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
+#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

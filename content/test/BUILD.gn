@@ -3266,7 +3266,7 @@ test("content_unittests") {
     "//components/services/storage",
     "//components/services/storage:filesystem_proxy_factory",
     "//components/services/storage:test_support",
-    "//components/services/storage/dom_storage:local_storage_proto",
+    "//components/services/storage/dom_storage/leveldb:local_storage_proto",
     "//components/services/storage/public/cpp",
     "//components/services/storage/service_worker:service_worker_proto",
     "//components/system_media_controls:test_support",
