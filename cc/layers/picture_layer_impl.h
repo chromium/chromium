@@ -392,6 +392,8 @@ class CC_EXPORT PictureLayerImpl
   void AppendQuadsSpecialization(const AppendQuadsContext& context,
                                  viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data) override;
+
+  std::optional<SkColor4f> solid_color_;
 };
 
 }  // namespace cc

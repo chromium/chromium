@@ -192,7 +192,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
     // Solid color layers have no tilings.
-    DCHECK(!raster_source_->IsSolidColor() || tilings_->num_tilings() == 0);
+    DCHECK(!solid_color_ || tilings_->num_tilings() == 0);
 
     // The pending tree should have at most a single tiling.
     DCHECK_LE(tilings_->num_tilings(), 1u);
@@ -204,8 +204,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     DCHECK(invalidation_.IsEmpty());
 
     // After syncing a solid color layer, the active layer has no tilings.
-    DCHECK(!raster_source_->IsSolidColor() ||
-           layer_impl->tilings_->num_tilings() == 0);
+    DCHECK(!solid_color_ || layer_impl->tilings_->num_tilings() == 0);
 
     layer_impl->raster_page_scale_ = raster_page_scale_;
     layer_impl->raster_device_scale_ = raster_device_scale_;
@@ -227,9 +226,8 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
-  if (raster_source_->IsSolidColor()) {
-    AppendSolidQuad(render_pass, append_quads_data,
-                    raster_source_->GetSolidColor());
+  if (solid_color_) {
+    AppendSolidQuad(render_pass, append_quads_data, *solid_color_);
     return;
   }
 
@@ -787,6 +785,10 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
   // first frame.
   bool could_have_tilings = CanHaveTilings();
   raster_source_ = std::move(raster_source);
+  solid_color_.reset();
+  if (raster_source_->IsSolidColor()) {
+    solid_color_ = raster_source_->GetSolidColor();
+  }
 
   raster_source_->set_debug_name(DebugName());
 
@@ -1833,8 +1835,9 @@ void PictureLayerImpl::ResetRasterScale() {
 bool PictureLayerImpl::CanHaveTilings() const {
   if (!raster_source_)
     return false;
-  if (raster_source_->IsSolidColor())
+  if (solid_color_) {
     return false;
+  }
   if (!draws_content())
     return false;
   if (!raster_source_->HasRecordings())
@@ -1986,8 +1989,7 @@ void PictureLayerImpl::AsValueInto(
 
   state->BeginDictionary("can_have_tilings_state");
   state->SetBoolean("can_have_tilings", CanHaveTilings());
-  state->SetBoolean("raster_source_solid_color",
-                    raster_source_->IsSolidColor());
+  state->SetBoolean("raster_source_solid_color", !!solid_color_);
   state->SetBoolean("draws_content", draws_content());
   state->SetBoolean("raster_source_has_recordings",
                     raster_source_->HasRecordings());
