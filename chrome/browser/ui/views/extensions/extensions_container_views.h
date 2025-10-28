@@ -13,9 +13,14 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "extensions/common/extension_id.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class ToolbarActionView;
 class ToolbarActionViewController;
+
+namespace views {
+class FocusManager;
+}  // namespace views
 
 // ExtensionsContainer with views-specific additional methods.
 //
@@ -76,6 +81,18 @@ class ExtensionsContainerViews : public ExtensionsContainer {
 
   // Called when a popup is closed.
   virtual void OnPopupClosed(const extensions::ExtensionId& action_id) = 0;
+
+  // Returns the FocusManager to use when registering accelerators.
+  virtual views::FocusManager* GetFocusManagerForAccelerator() = 0;
+
+  // Returns the reference button for the extension action's popup. Rather than
+  // relying on the button being a MenuButton, the button returned should have a
+  // MenuButtonController. This is part of the ongoing work from
+  // http://crbug.com/901183 to simplify the button hierarchy by migrating
+  // controller logic into a separate class leaving MenuButton as an empty class
+  // to be deprecated.
+  virtual views::BubbleAnchor GetReferenceButtonForPopup(
+      const extensions::ExtensionId& action_id) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_CONTAINER_VIEWS_H_

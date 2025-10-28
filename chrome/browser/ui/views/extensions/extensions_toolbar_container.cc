@@ -1101,6 +1101,16 @@ void ExtensionsToolbarContainer::OnPopupClosed(
   GetViewForId(action_id)->OnPopupClosed();
 }
 
+views::FocusManager*
+ExtensionsToolbarContainer::GetFocusManagerForAccelerator() {
+  return GetFocusManager();
+}
+
+views::BubbleAnchor ExtensionsToolbarContainer::GetReferenceButtonForPopup(
+    const extensions::ExtensionId& action_id) {
+  return GetViewForId(action_id)->GetReferenceButtonForPopup();
+}
+
 void ExtensionsToolbarContainer::OnMouseExited(const ui::MouseEvent& event) {
   UpdateToolbarActionHoverCard(nullptr,
                                ToolbarActionHoverCardUpdateType::kHover);

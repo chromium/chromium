@@ -34,9 +34,7 @@ class ExtensionsMenuButton : public HoverButton,
   // HoverButton:
   void AddedToWidget() override;
 
-  // ToolbarActionViewDelegateViews:
-  views::FocusManager* GetFocusManagerForAccelerator() override;
-  views::BubbleAnchor GetReferenceButtonForPopup() override;
+  // ToolbarActionViewDelegate:
   void UpdateState() override;
 
   std::u16string_view label_text_for_testing() const {

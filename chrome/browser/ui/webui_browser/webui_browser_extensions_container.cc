@@ -53,15 +53,6 @@ class WebUIBrowserExtensionsContainer::ActionInfo
     extensions_container_->NotifyOfOneAction(controller_->GetId());
   }
 
-  // ToolbarActionViewDelegateViews:
-  views::FocusManager* GetFocusManagerForAccelerator() override {
-    return extensions_container_->window_->widget()->GetFocusManager();
-  }
-
-  views::BubbleAnchor GetReferenceButtonForPopup() override {
-    return GetAnchor();
-  }
-
   ui::TrackedElement* GetAnchor() {
     // TODO(webium): Use the proper button once TrackedElement supports
     // dynamic ids or the like. See https://crbug.com/444237074
@@ -294,6 +285,18 @@ void WebUIBrowserExtensionsContainer::OnPopupShown(
 
 void WebUIBrowserExtensionsContainer::OnPopupClosed(
     const extensions::ExtensionId& action_id) {}
+
+views::FocusManager*
+WebUIBrowserExtensionsContainer::GetFocusManagerForAccelerator() {
+  return window_->widget()->GetFocusManager();
+}
+
+views::BubbleAnchor WebUIBrowserExtensionsContainer::GetReferenceButtonForPopup(
+    const extensions::ExtensionId& action_id) {
+  auto it = actions_.find(action_id);
+  CHECK(it != actions_.end());
+  return it->second->GetAnchor();
+}
 
 void WebUIBrowserExtensionsContainer::CollapseConfirmation() {
   NOTIMPLEMENTED();

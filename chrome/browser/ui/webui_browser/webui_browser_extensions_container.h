@@ -54,6 +54,9 @@ class WebUIBrowserExtensionsContainer
   void OnPopupShown(const extensions::ExtensionId& action_id,
                     bool by_user) override;
   void OnPopupClosed(const extensions::ExtensionId& action_id) override;
+  views::FocusManager* GetFocusManagerForAccelerator() override;
+  views::BubbleAnchor GetReferenceButtonForPopup(
+      const extensions::ExtensionId& action_id) override;
 
   void CollapseConfirmation() override;
 

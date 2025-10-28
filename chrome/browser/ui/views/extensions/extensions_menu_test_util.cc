@@ -142,12 +142,8 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
     return ExtensionPopup::kMaxSize;
   }
 #endif
-  auto* view_delegate = static_cast<ToolbarActionViewDelegateViews*>(
-      static_cast<ExtensionActionViewController*>(
-          extensions_container_->GetActionForId(id))
-          ->view_delegate());
   return views::BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
-      view_delegate->GetReferenceButtonForPopup(),
+      extensions_container_->GetReferenceButtonForPopup(id),
       views::BubbleBorder::TOP_RIGHT,
       views::PlatformStyle::kAdjustBubbleIfOffscreen,
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);

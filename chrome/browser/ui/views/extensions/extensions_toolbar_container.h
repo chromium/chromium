@@ -215,6 +215,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnPopupShown(const extensions::ExtensionId& action_id,
                     bool by_user) override;
   void OnPopupClosed(const extensions::ExtensionId& action_id) override;
+  views::FocusManager* GetFocusManagerForAccelerator() override;
+  views::BubbleAnchor GetReferenceButtonForPopup(
+      const extensions::ExtensionId& action_id) override;
 
   // ToolbarActionView::Delegate:
   content::WebContents* GetCurrentWebContents() override;

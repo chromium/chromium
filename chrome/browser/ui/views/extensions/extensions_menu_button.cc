@@ -48,17 +48,7 @@ void ExtensionsMenuButton::AddedToWidget() {
   UpdateState();
 }
 
-// ToolbarActionViewDelegateViews:
-views::FocusManager* ExtensionsMenuButton::GetFocusManagerForAccelerator() {
-  return GetFocusManager();
-}
-
-views::BubbleAnchor ExtensionsMenuButton::GetReferenceButtonForPopup() {
-  return BrowserView::GetBrowserViewForBrowser(browser_)
-      ->toolbar()
-      ->GetExtensionsButton();
-}
-
+// ToolbarActionViewDelegate:
 void ExtensionsMenuButton::UpdateState() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =

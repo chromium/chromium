@@ -273,10 +273,6 @@ void ToolbarActionView::RemovedFromWidget() {
   MenuButton::RemovedFromWidget();
 }
 
-views::FocusManager* ToolbarActionView::GetFocusManagerForAccelerator() {
-  return GetFocusManager();
-}
-
 views::Button* ToolbarActionView::GetReferenceButtonForPopupInternal() {
   // Browser actions in the overflow menu can still show popups, so we may need
   // a reference view other than this button's parent. If so, use the overflow
