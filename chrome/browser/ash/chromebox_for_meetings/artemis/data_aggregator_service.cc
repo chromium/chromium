@@ -485,6 +485,37 @@ void DataAggregatorService::StartFetchTimer() {
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
+/*
+ * The upload process is a bit involved, so let's summarize:
+ *
+ * Note that `FetchFromAllSourcesAndEnqueue()` will be referred to as FetchAll()
+ * for brevity.
+ *
+ * - We call FetchAll() on a repeated timer. This will make the async Fetch()
+ *   requests for every data source we track.
+ * - As data comes in from the async calls, we add it to the "active" payload,
+ *   which is a reused payload object that collects data until the payload
+ *   is ready, most commonly when it reaches a max size, at which point the
+ *   data is copied to a new payload and the "active" payload is zero'ed out.
+ * - The new payload mentioned above is pushed to our upload queue. If there is
+ *   no enqueue currently in progress, we will also enqueue it to our reporting
+ *   pipeline.
+ * - Once an enqueue is initiated, we set an enqueue_in_progress_ bool and
+ *   enter our enqueue routine. During this time, we will return early from all
+ *   FetchAll() attempts until the enqueue succeeds.
+ *        NOTE: despite cancelling future FetchAll requests, we may still get
+ *        rolling responses from the async Fetch() calls that we already called.
+ *        These will just be appended into the now-empty active payload.
+ * - If the initial enqueue attempt fails, we will try again after N seconds,
+ *   determined by a backoff timer. Fetches will continue to be halted during
+ *   all retry attempts.
+ * - Once the enqueue attempt succeeds, we pop the payload off our queue and
+ *   check the queue for more data. If more is available, we'll immediately
+ *   schedule another enqueue.
+ * - FetchAll() calls will also be paused if the queue ever reaches the max
+ *   size set by `kMaxPayloadQueueSize`. This prevents us from needing to
+ *   drop data to keep the memory footprint down.
+ */
 void DataAggregatorService::FetchFromAllSourcesAndEnqueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
