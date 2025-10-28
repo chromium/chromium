@@ -197,12 +197,11 @@ int ExtractIntegerId(v8::Local<v8::Value> value) {
 mojom::SerializationFormat GetSerializationFormat(
     const ScriptContext& script_context) {
   if (!base::FeatureList::IsEnabled(
-          extensions_features::kStructuredCloningForMV3Messaging)) {
+          extensions_features::kStructuredCloningForMessaging)) {
     return mojom::SerializationFormat::kJson;
   }
 
-  const Extension* extension = script_context.extension();
-  return extension && extension->manifest_version() >= 3
+  return script_context.extension()
              ? mojom::SerializationFormat::kStructuredCloned
              : mojom::SerializationFormat::kJson;
 }

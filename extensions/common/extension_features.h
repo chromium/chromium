@@ -195,10 +195,10 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 // in 'chrome://extensions' for extensions not included in the allowlist.
 BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings);
 
-// When enabled, causes Manifest V3 (and greater) extensions to use structured
-// cloning (instead of JSON serialization) for extension messaging, except when
-// communicating with native messaging hosts.
-BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
+// When enabled, cause extensions to use structured cloning (instead of JSON
+// serialization) for extension messaging, except when communicating with native
+// messaging hosts.
+BASE_DECLARE_FEATURE(kStructuredCloningForMessaging);
 
 // If enabled, APIs of the Telemetry Extension platform that have pending
 // approval will be enabled. Read more about the platform here:
