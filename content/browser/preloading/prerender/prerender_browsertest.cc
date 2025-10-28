@@ -10633,16 +10633,23 @@ class PreloadingDeciderObserverForPrerenderTesting
     : public PreloadingDeciderObserverForTesting {
  public:
   explicit PreloadingDeciderObserverForPrerenderTesting(
-      RenderFrameHostImpl* rfh)
-      : rfh_(rfh) {
+      RenderFrameHostImpl& rfh)
+      : rfh_(rfh.GetWeakPtr()) {
     auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_);
+        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_.get());
     old_observer_ = preloading_decider->SetObserverForTesting(this);
     events_called_.fill(false);
   }
   ~PreloadingDeciderObserverForPrerenderTesting() override {
+    if (!rfh_) {
+      // The old document (the initiator document) has been destroyed, and the
+      // associated data has been destroyed as well. Also reset old_observer_ to
+      // avoid hanging pointer.
+      old_observer_ = nullptr;
+      return;
+    }
     auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_);
+        PreloadingDecider::GetOrCreateForCurrentDocument(rfh_.get());
     EXPECT_EQ(this, preloading_decider->SetObserverForTesting(old_observer_));
   }
 
@@ -10696,7 +10703,7 @@ class PreloadingDeciderObserverForPrerenderTesting
     }
   }
 
-  raw_ptr<RenderFrameHostImpl> rfh_;
+  base::WeakPtr<RenderFrameHostImpl> rfh_;
   raw_ptr<PreloadingDeciderObserverForTesting> old_observer_;
 
   std::array<base::OnceClosure, Events::kMaxValue + 1> quit_closures_;
@@ -10764,8 +10771,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
         eager_hover_time + (moderate_hover_time - eager_hover_time) / 10;
 
     RenderFrameHostImpl* rfh = current_frame_host();
+    ASSERT_TRUE(rfh);
     PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-        rfh);
+        *rfh);
     auto* preloading_decider =
         PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
     // Add speculation rules with the "eager" eagerness.
@@ -10834,7 +10842,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
   InsertAnchor(prerendering_url);
 
   RenderFrameHostImpl* rfh = current_frame_host();
-  PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(rfh);
+  ASSERT_TRUE(rfh);
+  PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
+      *rfh);
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
 
@@ -10898,7 +10908,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kConservative) {
   InsertAnchor(prerendering_url);
 
   RenderFrameHostImpl* rfh = current_frame_host();
-  PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(rfh);
+  ASSERT_TRUE(rfh);
+  PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
+      *rfh);
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
 
@@ -11117,8 +11129,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,
       PrerenderHostRegistry::kMaxRunningSpeculationRulesNonImmediatePrerenders +
       1;
   for (int i = 0; i < num_of_attempts; i++) {
+    ASSERT_TRUE(current_frame_host());
     PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-        current_frame_host());
+        *current_frame_host());
     const GURL prerendering_url =
         GetUrl("/empty.html?prerender" + base::ToString(i));
     prerendering_urls.push_back(prerendering_url);
@@ -11426,8 +11439,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
   RenderFrameHostImpl* rfh_next = current_frame_host();
   InsertAnchor(prerendering_url);
 
+  ASSERT_TRUE(rfh_next);
   PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-      rfh_next);
+      *rfh_next);
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(rfh_next);
 
@@ -11554,15 +11568,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
     // TODO(taiyo): modify |PreloadingDeciderObserverForPrerenderTesting| to
     // enable observing for URLs.
     {
+      ASSERT_TRUE(rfh_initial);
       PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-          rfh_initial);
+          *rfh_initial);
       AddPrerenderWithEagernessAsync(prerendering_url_a,
                                      GetSpeculationEagerness());
       preloading_decider_observer.WaitUpdateSpeculationCandidates();
     }
     {
+      ASSERT_TRUE(rfh_initial);
       PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-          rfh_initial);
+          *rfh_initial);
       AddPrerenderWithEagernessAsync(prerendering_url_b,
                                      GetSpeculationEagerness());
       preloading_decider_observer.WaitUpdateSpeculationCandidates();
@@ -15932,30 +15948,29 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest,
   // Prepare for moderate trigger.
   GURL prerender_url = GetUrl("/prerender/deferred_script.html");
   InsertAnchor(prerender_url);
-  {
-    RenderFrameHostImpl* rfh = current_frame_host();
-    PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-        rfh);
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
+  RenderFrameHostImpl* rfh = current_frame_host();
+  ASSERT_TRUE(rfh);
+  PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
+      *rfh);
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
 
-    // Inject prerender-until-script.
-    prerender_helper()->AddPrerenderUntilScriptAsync(
-        prerender_url, blink::mojom::SpeculationEagerness::kModerate);
-    preloading_decider_observer.WaitUpdateSpeculationCandidates();
-    EXPECT_FALSE(HasHostForUrl(prerender_url));
-    EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
-        prerender_url, blink::mojom::SpeculationAction::kPrerenderUntilScript));
+  // Inject prerender-until-script.
+  prerender_helper()->AddPrerenderUntilScriptAsync(
+      prerender_url, blink::mojom::SpeculationEagerness::kModerate);
+  preloading_decider_observer.WaitUpdateSpeculationCandidates();
+  EXPECT_FALSE(HasHostForUrl(prerender_url));
+  EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
+      prerender_url, blink::mojom::SpeculationAction::kPrerenderUntilScript));
 
-    // Trigger prerender-until-script.
-    test::PrerenderHostRegistryObserver observer(*web_contents_impl());
-    PointerHoverToAnchor(prerender_url);
-    preloading_decider_observer.WaitOnPointerHover();
-    observer.WaitForTrigger(prerender_url);
-    EXPECT_TRUE(HasHostForUrl(prerender_url));
-    EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
-        prerender_url, blink::mojom::SpeculationAction::kPrerenderUntilScript));
-  }
+  // Trigger prerender-until-script.
+  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
+  PointerHoverToAnchor(prerender_url);
+  preloading_decider_observer.WaitOnPointerHover();
+  observer.WaitForTrigger(prerender_url);
+  EXPECT_TRUE(HasHostForUrl(prerender_url));
+  EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
+      prerender_url, blink::mojom::SpeculationAction::kPrerenderUntilScript));
 
   GURL image_url = GetUrl("/blank.jpg");
   prerender_helper()->WaitForRequest(image_url, 1);
