@@ -1154,28 +1154,18 @@ void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
   // may or may not be safe to send between 32-bit and 64-bit systems, but we
   // leave that up to the code sending the message to ensure.
   // TODO(crbug.com/40511454): remove this code.
-  m->WriteUInt32(static_cast<uint32_t>(p.routing_id()));
-  m->WriteUInt32(p.type());
-  m->WriteUInt32(p.flags());
   m->WriteData(p.payload_bytes());
 }
 
 bool ParamTraits<Message>::Read(const base::Pickle* m,
                                 base::PickleIterator* iter,
                                 Message* r) {
-  uint32_t routing_id, type, flags;
-  if (!iter->ReadUInt32(&routing_id) || !iter->ReadUInt32(&type) ||
-      !iter->ReadUInt32(&flags)) {
-    return false;
-  }
-
   size_t payload_size;
   const char* payload;
   if (!iter->ReadData(&payload, &payload_size)) {
     return false;
   }
 
-  r->SetHeaderValues(static_cast<int32_t>(routing_id), type, flags);
   r->WriteBytes(payload, payload_size);
   return true;
 }

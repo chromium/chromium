@@ -33,31 +33,18 @@ namespace {
 
 // Tests nesting of messages as parameters to other messages.
 TEST(IPCMessageUtilsTest, NestedMessages) {
-  int32_t nested_routing = 12;
-  uint32_t nested_type = 78;
   int nested_content = 456789;
-  Message::PriorityValue nested_priority = Message::PRIORITY_HIGH;
-  Message nested_msg(nested_routing, nested_type, nested_priority);
-  nested_msg.set_sync();
+  Message nested_msg;
   ParamTraits<int>::Write(&nested_msg, nested_content);
 
   // Outer message contains the nested one as its parameter.
-  int32_t outer_routing = 91;
-  uint32_t outer_type = 88;
-  Message::PriorityValue outer_priority = Message::PRIORITY_NORMAL;
-  Message outer_msg(outer_routing, outer_type, outer_priority);
+  Message outer_msg;
   ParamTraits<Message>::Write(&outer_msg, nested_msg);
 
   // Read back the nested message.
   base::PickleIterator iter(outer_msg);
   IPC::Message result_msg;
   ASSERT_TRUE(ParamTraits<Message>::Read(&outer_msg, &iter, &result_msg));
-
-  // Verify nested message headers.
-  EXPECT_EQ(nested_msg.routing_id(), result_msg.routing_id());
-  EXPECT_EQ(nested_msg.type(), result_msg.type());
-  EXPECT_EQ(nested_msg.priority(), result_msg.priority());
-  EXPECT_EQ(nested_msg.flags(), result_msg.flags());
 
   // Verify nested message content
   base::PickleIterator nested_iter(nested_msg);
@@ -97,7 +84,7 @@ TEST(IPCMessageUtilsTest, InlinedVector) {
     inlined_vector.push_back(i * 2.0);
   }
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message msg;
   IPC::WriteParam(&msg, inlined_vector);
 
   absl::InlinedVector<double, stack_capacity> output;
@@ -270,7 +257,7 @@ TEST(IPCMessageUtilsTest, ScopedHandle) {
                                 FALSE, DUPLICATE_SAME_ACCESS));
   base::win::ScopedHandle dupe_handle(raw_dupe_handle);
 
-  Message message(0, 0, Message::PRIORITY_LOW);
+  Message message;
   WriteParam(&message, dupe_handle);
 
   base::PickleIterator iter(message);

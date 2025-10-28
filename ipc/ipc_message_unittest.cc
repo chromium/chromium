@@ -38,7 +38,7 @@ TEST(IPCMessageTest, BasicMessageTest) {
   std::string v2("foobar");
   std::u16string v3(u"hello world");
 
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(v1);
   m.WriteString(v2);
   m.WriteString16(v3);
@@ -66,7 +66,7 @@ TEST(IPCMessageTest, BasicMessageTest) {
 
 TEST(IPCMessageTest, Value) {
   auto expect_value_equals = [](const base::Value& input) {
-    IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+    IPC::Message msg;
     IPC::WriteParam(&msg, input);
 
     base::Value output;
@@ -95,7 +95,7 @@ TEST(IPCMessageTest, Value) {
   }
 
   // Also test the corrupt case.
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message bad_msg;
   bad_msg.WriteInt(99);
   base::PickleIterator iter(bad_msg);
   base::Value output;
@@ -121,7 +121,7 @@ TEST(IPCMessageTest, ValueDict) {
 
   input.Set("dict", std::move(subdict));
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message msg;
   IPC::WriteParam(&msg, input);
 
   base::Value::Dict output;
@@ -131,98 +131,18 @@ TEST(IPCMessageTest, ValueDict) {
   EXPECT_EQ(input, output);
 
   // Also test the corrupt case.
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message bad_msg;
   bad_msg.WriteInt(99);
   iter = base::PickleIterator(bad_msg);
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
 }
 
-TEST(IPCMessageTest, FindNext) {
-  IPC::Message message;
-  message.WriteString("Goooooooogle");
-  message.WriteInt(111);
-
-  std::vector<char> message_data(message.size() + 7);
-  memcpy(message_data.data(), message.data(), message.size());
-
-  const char* data_start = message_data.data();
-  const char* data_end = data_start + message.size();
-
-  IPC::Message::NextMessageInfo next;
-
-  // Data range contains the entire message plus some extra bytes
-  IPC::Message::FindNext(data_start, data_end + 1, &next);
-  EXPECT_TRUE(next.message_found);
-  EXPECT_EQ(next.message_size, message.size());
-  EXPECT_EQ(next.pickle_end, data_end);
-  EXPECT_EQ(next.message_end, data_end);
-
-  // Data range exactly contains the entire message
-  IPC::Message::FindNext(data_start, data_end, &next);
-  EXPECT_TRUE(next.message_found);
-  EXPECT_EQ(next.message_size, message.size());
-  EXPECT_EQ(next.pickle_end, data_end);
-  EXPECT_EQ(next.message_end, data_end);
-
-  // Data range doesn't contain the entire message
-  // (but contains the message header)
-  IPC::Message::FindNext(data_start, data_end - 1, &next);
-  EXPECT_FALSE(next.message_found);
-  EXPECT_EQ(next.message_size, message.size());
-
-  // Data range doesn't contain the message header
-  // (but contains the pickle header)
-  IPC::Message::FindNext(data_start,
-                         data_start + sizeof(IPC::Message::Header) - 1,
-                         &next);
-  EXPECT_FALSE(next.message_found);
-  EXPECT_EQ(next.message_size, 0u);
-
-  // Data range doesn't contain the pickle header
-  IPC::Message::FindNext(data_start,
-                         data_start + sizeof(base::Pickle::Header) - 1,
-                         &next);
-  EXPECT_FALSE(next.message_found);
-  EXPECT_EQ(next.message_size, 0u);
-}
-
-TEST(IPCMessageTest, FindNextOverflow) {
-  IPC::Message message;
-  message.WriteString("Data");
-  message.WriteInt(777);
-
-  const char* data_start = reinterpret_cast<const char*>(message.data());
-  const char* data_end = data_start + message.size();
-
-  IPC::Message::NextMessageInfo next;
-
-  // Payload size is negative (defeats 'start + size > end' check)
-  message.header()->payload_size = static_cast<uint32_t>(-1);
-  IPC::Message::FindNext(data_start, data_end, &next);
-  EXPECT_FALSE(next.message_found);
-  if (sizeof(size_t) > sizeof(uint32_t)) {
-    // No overflow, just insane message size
-    EXPECT_EQ(next.message_size,
-              message.header()->payload_size + sizeof(IPC::Message::Header));
-  } else {
-    // Actual overflow, reported as max size_t
-    EXPECT_EQ(next.message_size, std::numeric_limits<size_t>::max());
-  }
-
-  // Payload size is max positive integer (defeats size < 0 check, while
-  // still potentially causing overflow down the road).
-  message.header()->payload_size = std::numeric_limits<int32_t>::max();
-  IPC::Message::FindNext(data_start, data_end, &next);
-  EXPECT_FALSE(next.message_found);
-  EXPECT_EQ(next.message_size,
-            message.header()->payload_size + sizeof(IPC::Message::Header));
-}
 
 TEST(IPCMessageIntegrity, ReadBeyondBufferStr) {
   // This was BUG 984408.
   uint32_t v1 = std::numeric_limits<uint32_t>::max() - 1;
   int v2 = 666;
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(v1);
   m.WriteInt(v2);
 
@@ -235,7 +155,7 @@ TEST(IPCMessageIntegrity, ReadBeyondBufferStr16) {
   // This was BUG 984408.
   uint32_t v1 = std::numeric_limits<uint32_t>::max() - 1;
   int v2 = 777;
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(v1);
   m.WriteInt(v2);
 
@@ -246,7 +166,7 @@ TEST(IPCMessageIntegrity, ReadBeyondBufferStr16) {
 
 TEST(IPCMessageIntegrity, ReadBytesBadIterator) {
   // This was BUG 1035467.
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(1);
   m.WriteInt(2);
 
@@ -259,7 +179,7 @@ TEST(IPCMessageIntegrity, ReadVectorNegativeSize) {
   // A slight variation of BUG 984408. Note that the pickling of vector<char>
   // has a specialized template which is not vulnerable to this bug. So here
   // try to hit the non-specialized case vector<P>.
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(-1);  // This is the count of elements.
   m.WriteInt(1);
   m.WriteInt(2);
@@ -278,7 +198,7 @@ TEST(IPCMessageIntegrity, ReadVectorNegativeSize) {
 TEST(IPCMessageIntegrity, MAYBE_ReadVectorTooLarge1) {
   // This was BUG 1006367. This is the large but positive length case. Again
   // we try to hit the non-specialized case vector<P>.
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(0x21000003);  // This is the count of elements.
   m.WriteInt64(1);
   m.WriteInt64(2);
@@ -292,7 +212,7 @@ TEST(IPCMessageIntegrity, ReadVectorTooLarge2) {
   // This was BUG 1006367. This is the large but positive with an additional
   // integer overflow when computing the actual byte size. Again we try to hit
   // the non-specialized case vector<P>.
-  IPC::Message m(0, 1, IPC::Message::PRIORITY_NORMAL);
+  IPC::Message m;
   m.WriteInt(0x71000000);  // This is the count of elements.
   m.WriteInt64(1);
   m.WriteInt64(2);
