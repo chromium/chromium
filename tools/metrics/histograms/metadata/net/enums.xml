@@ -3290,6 +3290,17 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->
 
+<!-- LINT.IfChange(TrustTokenProtocolVersion) -->
+
+<enum name="TrustTokenProtocolVersion">
+  <int value="0" label="TrustTokenV3Pmb"/>
+  <int value="1" label="TrustTokenV3Voprf"/>
+  <int value="2" label="PrivateStateTokenV1Pmb"/>
+  <int value="3" label="PrivateStateTokenV1Voprf"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenProtocolVersion) -->
+
 <enum name="TrustTokenRequestHelperFactoryOutcome">
   <int value="0" label="Successfully created an issuance helper"/>
   <int value="1" label="Successfully created a redemption helper"/>

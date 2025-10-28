@@ -555,6 +555,10 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
         1);
   }
 
+  histograms.ExpectTotalCount("Net.TrustTokens.ProtocolVersion", 1);
+  histograms.ExpectUniqueSample(
+      "Net.TrustTokens.ProtocolVersion",
+      network::mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb, 1);
   // Expect three accesses, one for issue, redeem, and sign.
   EXPECT_EQ(3, access_count_);
 }

@@ -8412,6 +8412,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.TrustTokens.ProtocolVersion"
+    enum="TrustTokenProtocolVersion" expires_after="2026-04-15">
+  <owner>aykutb@chromium.org</owner>
+  <owner>trust-token@google.com</owner>
+  <summary>
+    The crypto version used for Private State Token (PST) operations. This is
+    recorded every time a PST issuance operation started. This will be used to
+    remove the unused crypto versions.
+  </summary>
+</histogram>
+
 <histogram name="Net.TrustTokens.RedemptionRequestEmpty" enum="BooleanEmpty"
     expires_after="2023-06-06">
   <owner>svaldez@chromium.org</owner>

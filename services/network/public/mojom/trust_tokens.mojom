@@ -19,12 +19,15 @@ import "mojo/public/mojom/base/time.mojom";
 //
 // NOTE: When updating this enum, you probably also need to update
 // kTrustTokensMajorVersion in trust_token_parameterization.h.
+//
+// LINT.IfChange(TrustTokenProtocolVersion)
 enum TrustTokenProtocolVersion {
   kTrustTokenV3Pmb,
   kTrustTokenV3Voprf,
   kPrivateStateTokenV1Pmb,
   kPrivateStateTokenV1Voprf,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TrustTokenProtocolVersion)
 
 
 // TrustTokenOperationStatus enumerates (an incomplete collection of) outcomes
