@@ -303,9 +303,7 @@ std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
 
 SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale) {
   SkScalar sk_scale = SkFloatToScalar(1.0f / scale);
-  SkPath path_in_dips;
-  path_in_pixels.transform(SkMatrix::Scale(sk_scale, sk_scale), &path_in_dips);
-  return path_in_dips;
+  return path_in_pixels.makeTransform(SkMatrix::Scale(sk_scale, sk_scale));
 }
 
 void SkColorToWlArray(const SkColor& color, wl_array& array) {

@@ -146,7 +146,7 @@ bool MaskedWindowDelegate::HasHitTestMask() const {
 }
 
 void MaskedWindowDelegate::GetHitTestMask(SkPath* mask) const {
-  mask->addRect(RectToSkRect(mask_rect_));
+  *mask = SkPath::Rect(RectToSkRect(mask_rect_));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

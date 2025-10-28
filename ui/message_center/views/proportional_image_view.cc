@@ -48,17 +48,14 @@ void ProportionalImageView::OnPaint(gfx::Canvas* canvas) {
                 rasterized, skia::ImageOperations::RESIZE_BEST, draw_size);
 
   if (apply_rounded_corners_) {
-    SkPath path;
     SkScalar corner_radius = SkIntToScalar(message_center::kImageCornerRadius);
 
 #if BUILDFLAG(IS_CHROMEOS)
     corner_radius = SkIntToScalar(message_center::kJellyImageCornerRadius);
 #endif
 
-    const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
-                                 corner_radius, corner_radius, corner_radius,
-                                 corner_radius, corner_radius};
-    path.addRoundRect(gfx::RectToSkRect(draw_bounds), kRadius);
+    const SkPath path = SkPath::RRect(gfx::RectToSkRect(draw_bounds),
+                                      corner_radius, corner_radius);
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

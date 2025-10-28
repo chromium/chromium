@@ -23,6 +23,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/color/color_id.h"
@@ -509,7 +510,7 @@ void NativeThemeBase::PaintArrow(cc::PaintCanvas* canvas,
 
 // static
 SkPath NativeThemeBase::PathForArrow(const gfx::RectF& rect, Part part) {
-  SkPath path;
+  SkPathBuilder path;
   if (part == kScrollbarUpArrow || part == kScrollbarDownArrow) {
     // Draw up-pointing arrow.
     const int arrow_height = base::ClampRound(rect.height()) / 2 + 1;
@@ -534,7 +535,7 @@ SkPath NativeThemeBase::PathForArrow(const gfx::RectF& rect, Part part) {
     path.transform(transform);
   }
 
-  return path;
+  return path.detach();
 }
 
 SkColor NativeThemeBase::GetAccentOrControlColorForState(
@@ -638,14 +639,14 @@ void NativeThemeBase::PaintCheckbox(cc::PaintCanvas* canvas,
         radius, radius, flags);
   } else if (extra_params.checked) {
     // Paint the checkmark.
-    SkPath check;
+    SkPathBuilder check;
     check.moveTo(skrect.x() + skrect.width() * 0.2f, skrect.centerY());
     check.rLineTo(skrect.width() * 0.2f, skrect.height() * 0.2f);
     check.lineTo(skrect.right() - skrect.width() * 0.2f,
                  skrect.y() + skrect.height() * 0.2f);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(skrect.height() * 0.16f);
-    canvas->drawPath(check, flags);
+    canvas->drawPath(check.detach(), flags);
   }
 }
 
@@ -711,7 +712,7 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
   // The arrow base is twice the arrow height, giving 45 degree sides.
   static constexpr float kAspectRatio = 2.0f;
 
-  SkPath path;
+  SkPathBuilder path;
   if (extra_params.arrow_direction == ArrowDirection::kDown) {
     int intended_width = extra_params.arrow_size;
     int intended_height = base::ClampFloor(intended_width / kAspectRatio);
@@ -796,7 +797,7 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(2.0f);
-  canvas->drawPath(path, flags);
+  canvas->drawPath(path.detach(), flags);
 }
 
 void NativeThemeBase::PaintProgressBar(
