@@ -44,6 +44,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   WebSocketTransportClientSocketPool(
       int max_sockets,
       int max_sockets_per_group,
+      SocketPoolAdditionalCapacity additional_capacity,
       const ProxyChain& proxy_chain,
       const CommonConnectJobParams* common_connect_job_params);
 

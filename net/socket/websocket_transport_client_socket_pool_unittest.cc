@@ -36,6 +36,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/ssl_client_socket.h"
@@ -116,6 +117,7 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
             /*early_data_enabled=*/nullptr),
         pool_(kMaxSockets,
               kMaxSocketsPerGroup,
+              SocketPoolAdditionalCapacity::Create(),
               ProxyChain::Direct(),
               &common_connect_job_params_) {
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(

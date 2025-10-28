@@ -13,6 +13,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_network_session.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -80,11 +81,13 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   if (pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL &&
       proxy_chain.is_direct()) {
     new_pool = std::make_unique<WebSocketTransportClientSocketPool>(
-        sockets_per_proxy_chain, sockets_per_group, proxy_chain,
+        sockets_per_proxy_chain, sockets_per_group,
+        SocketPoolAdditionalCapacity::Create(), proxy_chain,
         &websocket_common_connect_job_params_);
   } else {
     new_pool = std::make_unique<TransportClientSocketPool>(
         sockets_per_proxy_chain, sockets_per_group,
+        SocketPoolAdditionalCapacity::Create(),
         unused_idle_socket_timeout(pool_type_), proxy_chain,
         pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
         &common_connect_job_params_, cleanup_on_ip_address_change_);

@@ -159,6 +159,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   TransportClientSocketPool(
       int max_sockets,
       int max_sockets_per_group,
+      SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
       const ProxyChain& proxy_chain,
       bool is_for_websockets,
@@ -177,6 +178,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   static std::unique_ptr<TransportClientSocketPool> CreateForTesting(
       int max_sockets,
       int max_sockets_per_group,
+      SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
       const ProxyChain& proxy_chain_,
@@ -611,6 +613,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   TransportClientSocketPool(
       int max_sockets,
       int max_sockets_per_group,
+      SocketPoolAdditionalCapacity additional_capacity,
       base::TimeDelta unused_idle_socket_timeout,
       base::TimeDelta used_idle_socket_timeout,
       const ProxyChain& proxy_chain,

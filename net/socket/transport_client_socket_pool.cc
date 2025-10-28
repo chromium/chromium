@@ -141,6 +141,7 @@ struct TransportClientSocketPool::IdleSocket {
 TransportClientSocketPool::TransportClientSocketPool(
     int max_sockets,
     int max_sockets_per_group,
+    SocketPoolAdditionalCapacity additional_capacity,
     base::TimeDelta unused_idle_socket_timeout,
     const ProxyChain& proxy_chain,
     bool is_for_websockets,
@@ -148,6 +149,7 @@ TransportClientSocketPool::TransportClientSocketPool(
     bool cleanup_on_ip_address_change)
     : TransportClientSocketPool(max_sockets,
                                 max_sockets_per_group,
+                                additional_capacity,
                                 unused_idle_socket_timeout,
                                 ClientSocketPool::used_idle_socket_timeout(),
                                 proxy_chain,
@@ -180,6 +182,7 @@ std::unique_ptr<TransportClientSocketPool>
 TransportClientSocketPool::CreateForTesting(
     int max_sockets,
     int max_sockets_per_group,
+    SocketPoolAdditionalCapacity additional_capacity,
     base::TimeDelta unused_idle_socket_timeout,
     base::TimeDelta used_idle_socket_timeout,
     const ProxyChain& proxy_chain,
@@ -190,11 +193,11 @@ TransportClientSocketPool::CreateForTesting(
     bool connect_backup_jobs_enabled) {
   return base::WrapUnique<TransportClientSocketPool>(
       new TransportClientSocketPool(
-          max_sockets, max_sockets_per_group, unused_idle_socket_timeout,
-          used_idle_socket_timeout, proxy_chain, is_for_websockets,
-          common_connect_job_params, /*cleanup_on_ip_address_change=*/true,
-          std::move(connect_job_factory), ssl_client_context,
-          connect_backup_jobs_enabled));
+          max_sockets, max_sockets_per_group, additional_capacity,
+          unused_idle_socket_timeout, used_idle_socket_timeout, proxy_chain,
+          is_for_websockets, common_connect_job_params,
+          /*cleanup_on_ip_address_change=*/true, std::move(connect_job_factory),
+          ssl_client_context, connect_backup_jobs_enabled));
 }
 
 TransportClientSocketPool::CallbackResultPair::CallbackResultPair()
@@ -709,14 +712,16 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
     const std::string& name,
     const std::string& type) const {
   // TODO(mmenke): This currently doesn't return bound Requests or ConnectJobs.
-  auto dict = base::Value::Dict()
-                  .Set("name", name)
-                  .Set("type", type)
-                  .Set("handed_out_socket_count", handed_out_socket_count_)
-                  .Set("connecting_socket_count", connecting_socket_count_)
-                  .Set("idle_socket_count", idle_socket_count_)
-                  .Set("max_socket_count", max_sockets_)
-                  .Set("max_sockets_per_group", max_sockets_per_group_);
+  auto dict =
+      base::Value::Dict()
+          .Set("name", name)
+          .Set("type", type)
+          .Set("handed_out_socket_count", handed_out_socket_count_)
+          .Set("connecting_socket_count", connecting_socket_count_)
+          .Set("idle_socket_count", idle_socket_count_)
+          .Set("max_socket_count", max_sockets_)
+          .Set("max_sockets_per_group", max_sockets_per_group_)
+          .Set("additional_capacity", std::string(AdditionalCapacity()));
 
   if (group_map_.empty())
     return base::Value(std::move(dict));
@@ -789,6 +794,7 @@ bool TransportClientSocketPool::IdleSocket::IsUsable(
 TransportClientSocketPool::TransportClientSocketPool(
     int max_sockets,
     int max_sockets_per_group,
+    SocketPoolAdditionalCapacity additional_capacity,
     base::TimeDelta unused_idle_socket_timeout,
     base::TimeDelta used_idle_socket_timeout,
     const ProxyChain& proxy_chain,
@@ -798,7 +804,8 @@ TransportClientSocketPool::TransportClientSocketPool(
     std::unique_ptr<ConnectJobFactory> connect_job_factory,
     SSLClientContext* ssl_client_context,
     bool connect_backup_jobs_enabled)
-    : ClientSocketPool(is_for_websockets,
+    : ClientSocketPool(additional_capacity,
+                       is_for_websockets,
                        common_connect_job_params,
                        std::move(connect_job_factory)),
       max_sockets_(max_sockets),

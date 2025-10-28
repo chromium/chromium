@@ -164,10 +164,12 @@ void ClientSocketPool::set_used_idle_socket_timeout(base::TimeDelta timeout) {
 }
 
 ClientSocketPool::ClientSocketPool(
+    SocketPoolAdditionalCapacity additional_capacity,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     std::unique_ptr<ConnectJobFactory> connect_job_factory)
-    : is_for_websockets_(is_for_websockets),
+    : additional_capacity_(additional_capacity),
+      is_for_websockets_(is_for_websockets),
       common_connect_job_params_(common_connect_job_params),
       connect_job_factory_(std::move(connect_job_factory)) {}
 

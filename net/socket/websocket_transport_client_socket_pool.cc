@@ -34,9 +34,11 @@ namespace net {
 WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
     int max_sockets,
     int max_sockets_per_group,
+    SocketPoolAdditionalCapacity additional_capacity,
     const ProxyChain& proxy_chain,
     const CommonConnectJobParams* common_connect_job_params)
-    : ClientSocketPool(/*is_for_websockets=*/true,
+    : ClientSocketPool(additional_capacity,
+                       /*is_for_websockets=*/true,
                        common_connect_job_params,
                        std::make_unique<ConnectJobFactory>()),
       proxy_chain_(proxy_chain),
@@ -248,15 +250,17 @@ LoadState WebSocketTransportClientSocketPool::GetLoadState(
 base::Value WebSocketTransportClientSocketPool::GetInfoAsValue(
     const std::string& name,
     const std::string& type) const {
-  auto dict = base::Value::Dict()
-                  .Set("name", name)
-                  .Set("type", type)
-                  .Set("handed_out_socket_count", handed_out_socket_count_)
-                  .Set("connecting_socket_count",
-                       static_cast<int>(pending_connects_.size()))
-                  .Set("idle_socket_count", 0)
-                  .Set("max_socket_count", max_sockets_)
-                  .Set("max_sockets_per_group", max_sockets_);
+  auto dict =
+      base::Value::Dict()
+          .Set("name", name)
+          .Set("type", type)
+          .Set("handed_out_socket_count", handed_out_socket_count_)
+          .Set("connecting_socket_count",
+               static_cast<int>(pending_connects_.size()))
+          .Set("idle_socket_count", 0)
+          .Set("max_socket_count", max_sockets_)
+          .Set("max_sockets_per_group", max_sockets_)
+          .Set("additional_capacity", std::string(AdditionalCapacity()));
   return base::Value(std::move(dict));
 }
 

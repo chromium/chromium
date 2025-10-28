@@ -113,6 +113,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/mock_client_socket_pool_manager.h"
 #include "net/socket/next_proto.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/socks_connect_job.h"
@@ -752,6 +753,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
       const CommonConnectJobParams* common_connect_job_params)
       : TransportClientSocketPool(/*max_sockets=*/0,
                                   /*max_sockets_per_group=*/0,
+                                  SocketPoolAdditionalCapacity::Create(),
                                   base::TimeDelta(),
                                   ProxyChain::Direct(),
                                   /*is_for_websockets=*/false,
@@ -19567,6 +19569,7 @@ TEST_P(HttpNetworkTransactionTest, MultiRoundAuth) {
   auto transport_pool = std::make_unique<TransportClientSocketPool>(
       kMaxSocketsPerPool,   // Max sockets for pool
       kMaxSocketsPerGroup,  // Max sockets per group
+      SocketPoolAdditionalCapacity::Create(),
       /*unused_idle_socket_timeout=*/base::Seconds(10), ProxyChain::Direct(),
       /*is_for_websockets=*/false, &common_connect_job_params);
   auto* transport_pool_ptr = transport_pool.get();

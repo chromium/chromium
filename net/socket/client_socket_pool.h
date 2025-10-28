@@ -25,6 +25,7 @@
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/socket/connect_job.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_tag.h"
 #include "net/ssl/ssl_config.h"
 #include "url/scheme_host_port.h"
@@ -368,7 +369,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   static void set_used_idle_socket_timeout(base::TimeDelta timeout);
 
  protected:
-  ClientSocketPool(bool is_for_websockets,
+  ClientSocketPool(SocketPoolAdditionalCapacity additional_capacity,
+                   bool is_for_websockets,
                    const CommonConnectJobParams* common_connect_job_params,
                    std::unique_ptr<ConnectJobFactory> connect_job_factory);
 
@@ -387,7 +389,12 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
       SocketTag socket_tag,
       ConnectJob::Delegate* delegate);
 
+  const SocketPoolAdditionalCapacity& AdditionalCapacity() const {
+    return additional_capacity_;
+  }
+
  private:
+  SocketPoolAdditionalCapacity additional_capacity_;
   const bool is_for_websockets_;
   const raw_ptr<const CommonConnectJobParams> common_connect_job_params_;
   const std::unique_ptr<ConnectJobFactory> connect_job_factory_;

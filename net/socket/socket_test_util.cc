@@ -49,6 +49,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/socket.h"
+#include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -2100,6 +2101,7 @@ MockTransportClientSocketPool::MockTransportClientSocketPool(
     : TransportClientSocketPool(
           max_sockets,
           max_sockets_per_group,
+          SocketPoolAdditionalCapacity::Create(),
           base::Seconds(10) /* unused_idle_socket_timeout */,
           ProxyChain::Direct(),
           false /* is_for_websockets */,
