@@ -914,6 +914,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.OneTimePermission.{PermissionType}.OneTimeGrant"
+    units="count" expires_after="2026-01-15">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the number of times a one-time Geolocation permission has been
+    granted for a site. Each count represents an additional one-time grant for
+    the same site.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioCapture"/>
+    <variant name="Geolocation"/>
+    <variant name="VideoCapture"/>
+  </token>
+</histogram>
+
 <histogram
     name="Permissions.PageInfo.Changed.{PermissionType}.Reallowed.Outcome"
     enum="PermissionChangeInfo" expires_after="2026-03-15">

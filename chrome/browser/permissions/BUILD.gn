@@ -292,6 +292,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
+      "one_time_permissions_browsertest.cc",
       "permission_delegation_browsertest.cc",
       "permission_element_browsertest.cc",
       "permission_element_origin_trial_browsertest.cc",

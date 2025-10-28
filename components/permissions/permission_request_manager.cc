@@ -1191,10 +1191,9 @@ void PermissionRequestManager::CurrentRequestsDecided(
 
     PermissionUmaUtil::RecordEmbargoStatus(RecordActionAndGetEmbargoStatus(
         browser_context, request.get(), permission_action));
+    PermissionActionsHistory* actions_history =
+        PermissionsClient::Get()->GetPermissionActionsHistory(browser_context);
     if (request->IsEligibleForHeuristicAutoGrant()) {
-      PermissionActionsHistory* actions_history =
-          PermissionsClient::Get()->GetPermissionActionsHistory(
-              browser_context);
       if (permission_action == PermissionAction::GRANTED_ONCE) {
         actions_history->RecordTemporaryGrant(
             request->requesting_origin(), request->GetContentSettingsType());
@@ -1204,6 +1203,16 @@ void PermissionRequestManager::CurrentRequestsDecided(
       }
       // TODO(crbug.com/446603274): Record metrics of geolocation PEPC
       // request.
+    } else if (permission_action == PermissionAction::GRANTED_ONCE) {
+      ContentSettingsType content_settings_type =
+          request->GetContentSettingsType();
+
+      if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+          content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+          content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
+        actions_history->RecordOneTimeGrant(request->requesting_origin(),
+                                            content_settings_type);
+      }
     }
   }
 

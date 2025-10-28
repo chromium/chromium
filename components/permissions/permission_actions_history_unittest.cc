@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -159,9 +160,9 @@ class PermissionActionHistoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::TestBrowserContext browser_context_;
 
  private:
-  content::TestBrowserContext browser_context_;
   TestPermissionsClient permissions_client_;
 };
 
@@ -587,4 +588,47 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
   EXPECT_TRUE(history->RecordTemporaryGrant(url2, permission));
 }
 
+TEST_F(PermissionActionHistoryTest, RecordOneTimeGrant) {
+  GURL url1("https://www.example.com");
+  GURL url2("https://www.google.com");
+  auto* history = GetPermissionActionsHistory();
+  base::HistogramTester histogram_tester;
+
+  // Geolocation
+  history->RecordOneTimeGrant(url1, ContentSettingsType::GEOLOCATION);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 1);
+  history->RecordOneTimeGrant(url1, ContentSettingsType::GEOLOCATION);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 2, 1);
+  history->RecordOneTimeGrant(url2, ContentSettingsType::GEOLOCATION);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 2);
+
+  // Mic
+  history->RecordOneTimeGrant(url1, ContentSettingsType::MEDIASTREAM_MIC);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 1, 1);
+  history->RecordOneTimeGrant(url1, ContentSettingsType::MEDIASTREAM_MIC);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 2, 1);
+
+  // Camera
+  history->RecordOneTimeGrant(url1, ContentSettingsType::MEDIASTREAM_CAMERA);
+  histogram_tester.ExpectBucketCount(
+      "Permissions.OneTimePermission.VideoCapture.OneTimeGrant", 1, 1);
+
+  // Unsupported type - should be ignored
+  history->RecordOneTimeGrant(url1, ContentSettingsType::NOTIFICATIONS);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.Notifications.OneTimeGrant", 0);
+
+  // Check total counts
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 3);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.AudioCapture.OneTimeGrant", 2);
+  histogram_tester.ExpectTotalCount(
+      "Permissions.OneTimePermission.VideoCapture.OneTimeGrant", 1);
+}
 }  // namespace permissions

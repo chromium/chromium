@@ -119,6 +119,10 @@ class PermissionActionsHistory : public KeyedService {
   int GetTemporaryGrantCountForTesting(const GURL& request_origin,
                                        ContentSettingsType permission);
 
+  // Records a one-time grant for the given origin and permission type.
+  void RecordOneTimeGrant(const GURL& origin,
+                          ContentSettingsType permission_type);
+
  private:
   std::vector<Entry> GetHistoryInternal(const base::Time& begin,
                                         const std::string& key,
