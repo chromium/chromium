@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/coordinator/credential_import_coordinator.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 
-#import "ios/chrome/browser/webauthn/coordinator/credential_import_mediator.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 
 @implementation CredentialImportCoordinator {
   // Handles interaction with the model.

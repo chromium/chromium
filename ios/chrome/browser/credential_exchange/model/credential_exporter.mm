@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/model/credential_exporter.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -11,9 +11,9 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
-#import "ios/chrome/browser/webauthn/model/credential_exchange_passkey.h"
-#import "ios/chrome/browser/webauthn/model/credential_exchange_password.h"
-#import "ios/chrome/browser/webauthn/model/credential_export_manager_swift.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_export_manager_swift.h"
 #import "net/base/apple/url_conversions.h"
 
 @implementation CredentialExporter {

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEBAUTHN_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_WEBAUTHN_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/webauthn/ui/credential_export_consumer.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_export_consumer.h"
 
 namespace password_manager {
 class SavedPasswordsPresenter;
@@ -38,4 +38,4 @@ class PasskeyModel;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_WEBAUTHN_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_

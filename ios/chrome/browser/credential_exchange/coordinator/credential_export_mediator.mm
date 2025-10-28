@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/coordinator/credential_export_mediator.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/webauthn/core/browser/passkey_model.h"
-#import "ios/chrome/browser/webauthn/model/credential_exporter.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_exporter.h"
 
 @implementation CredentialExportMediator {
   // Used as a presentation anchor for OS views. Must not be nil.

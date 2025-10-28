@@ -2,21 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/apple/swift_source_set.gni")
-
 source_set("model") {
   sources = [
-    "credential_exporter.h",
-    "credential_exporter.mm",
-    "credential_importer.h",
-    "credential_importer.mm",
     "ios_passkey_model_factory.cc",
     "ios_passkey_model_factory.h",
   ]
   deps = [
-    ":credential_exchange_types",
-    ":credential_export_manager_swift",
-    ":credential_import_manager_swift",
     "//base",
     "//components/affiliations/core/browser:affiliations",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
@@ -30,34 +21,5 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/web/public",
-  ]
-}
-
-source_set("credential_exchange_types") {
-  sources = [
-    "credential_exchange_passkey.h",
-    "credential_exchange_passkey.mm",
-    "credential_exchange_password.h",
-    "credential_exchange_password.mm",
-  ]
-}
-
-swift_source_set("credential_export_manager_swift") {
-  bridge_header = "credential_import_manager_swift_bridge.h"
-  sources = [ "credential_export_manager.swift" ]
-  deps = [ ":credential_exchange_types" ]
-  frameworks = [
-    "AuthenticationServices.framework",
-    "Foundation.framework",
-  ]
-}
-
-swift_source_set("credential_import_manager_swift") {
-  bridge_header = "credential_import_manager_swift_bridge.h"
-  sources = [ "credential_import_manager.swift" ]
-  deps = [ ":credential_exchange_types" ]
-  frameworks = [
-    "AuthenticationServices.framework",
-    "Foundation.framework",
   ]
 }

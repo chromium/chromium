@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("coordinator") {
+source_set("import_coordinator") {
   sources = [
     "credential_import_coordinator.h",
     "credential_import_coordinator.mm",
@@ -10,7 +10,7 @@ source_set("coordinator") {
     "credential_import_mediator.mm",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
-  deps = [ "//ios/chrome/browser/webauthn/model" ]
+  deps = [ "//ios/chrome/browser/credential_exchange/model" ]
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -27,12 +27,12 @@ source_set("export_coordinator") {
     "//components/signin/public/identity_manager",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_exchange/model",
+    "//ios/chrome/browser/credential_exchange/ui",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webauthn/public",
-    "//ios/chrome/browser/webauthn/ui",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
     "//ios/chrome/common/credential_provider/ui",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",

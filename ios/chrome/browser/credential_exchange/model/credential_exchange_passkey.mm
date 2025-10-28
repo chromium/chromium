@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/model/credential_exchange_passkey.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 
 @implementation CredentialExchangePasskey
 

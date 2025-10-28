@@ -1,0 +1,54 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+source_set("model") {
+  sources = [
+    "credential_exporter.h",
+    "credential_exporter.mm",
+    "credential_importer.h",
+    "credential_importer.mm",
+  ]
+  deps = [
+    ":credential_exchange_types",
+    ":credential_export_manager_swift",
+    ":credential_import_manager_swift",
+    "//base",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:passkey_model",
+    "//net",
+  ]
+}
+
+source_set("credential_exchange_types") {
+  sources = [
+    "credential_exchange_passkey.h",
+    "credential_exchange_passkey.mm",
+    "credential_exchange_password.h",
+    "credential_exchange_password.mm",
+  ]
+}
+
+swift_source_set("credential_export_manager_swift") {
+  bridge_header = "credential_import_manager_swift_bridge.h"
+  sources = [ "credential_export_manager.swift" ]
+  deps = [ ":credential_exchange_types" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}
+
+swift_source_set("credential_import_manager_swift") {
+  bridge_header = "credential_import_manager_swift_bridge.h"
+  sources = [ "credential_import_manager.swift" ]
+  deps = [ ":credential_exchange_types" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}

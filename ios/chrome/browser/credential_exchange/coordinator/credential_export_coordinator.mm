@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/webauthn/coordinator/credential_export_coordinator.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_export_coordinator.h"
 
 #import <string>
 
@@ -10,12 +10,12 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
+#import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/webauthn/coordinator/credential_export_mediator.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
-#import "ios/chrome/browser/webauthn/ui/credential_export_view_controller.h"
-#import "ios/chrome/browser/webauthn/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_strings.h"
 #import "ios/chrome/common/credential_provider/ui/passkey_welcome_screen_view_controller.h"
