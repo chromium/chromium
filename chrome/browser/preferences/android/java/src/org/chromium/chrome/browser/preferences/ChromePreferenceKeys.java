@@ -649,6 +649,9 @@ public final class ChromePreferenceKeys {
     public static final String PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT =
             "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser";
 
+    /** Whether NTP magic stack cards are enabled (if false, no cards can show). */
+    public static final String HOME_MODULE_CARDS_ENABLED = "Chrome.HomeModules.Enabled";
+
     /**
      * The number at the end should be consistent with {@link
      * org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType}
@@ -1137,6 +1140,7 @@ public final class ChromePreferenceKeys {
                 FIRST_CTA_START_TIMESTAMP,
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HISTORY_APP_SPECIFIC_INFO_SEEN,
+                HOME_MODULE_CARDS_ENABLED,
                 HOME_MODULES_MODULE_TYPE.pattern(),
                 HOME_MODULES_FRESHNESS_COUNT.pattern(),
                 HOME_MODULES_FRESHNESS_TIMESTAMP_MS.pattern(),

@@ -30,6 +30,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -116,6 +119,7 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
     public void testGetEnabledModuleList() {
         registerModuleConfigChecker(1);
 
@@ -132,6 +136,32 @@ public class HomeModulesConfigManagerUnitTest {
         mHomeModulesConfigManager.setPrefModuleTypeEnabled(0, false);
         assertFalse(mHomeModulesConfigManager.getPrefModuleTypeEnabled(0));
         assertTrue(mHomeModulesConfigManager.getEnabledModuleSet().isEmpty());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+    public void testGetEnabledModuleSet_allCardsOff_restoresOnAndOffTypes() {
+        registerModuleConfigCheckerWithEligibility(ModuleType.SINGLE_TAB, true);
+        registerModuleConfigCheckerWithEligibility(ModuleType.PRICE_CHANGE, false);
+
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.SINGLE_TAB, true);
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, false);
+
+        Set<Integer> enabledModulesBeforeToggleOff = Set.of(ModuleType.SINGLE_TAB);
+        Assert.assertEquals(
+                enabledModulesBeforeToggleOff, mHomeModulesConfigManager.getEnabledModuleSet());
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, false);
+
+        Set<Integer> enabledModulesAfterToggleOff = mHomeModulesConfigManager.getEnabledModuleSet();
+        Assert.assertTrue(enabledModulesAfterToggleOff.isEmpty());
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
+        Set<Integer> enabledModulesAfterToggleOn = mHomeModulesConfigManager.getEnabledModuleSet();
+
+        Assert.assertEquals(enabledModulesBeforeToggleOff, enabledModulesAfterToggleOn);
     }
 
     @Test

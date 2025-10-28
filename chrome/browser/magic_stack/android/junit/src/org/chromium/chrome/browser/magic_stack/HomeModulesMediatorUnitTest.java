@@ -36,12 +36,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelperJni;
@@ -94,6 +97,7 @@ public class HomeModulesMediatorUnitTest {
         registerModule(1, ModuleType.PRICE_CHANGE);
         registerModule(2, ModuleType.SAFETY_HUB);
 
+        FeatureOverrides.newBuilder().disable(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR).apply();
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
         assertEquals(0, mHomeModulesConfigManager.getEnabledModuleSet().size());
         mMediator =
@@ -719,6 +723,22 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(
                 INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
                 HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType2));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetFilteredEnabledModuleSet_withRefactorEnabled() {
+        FeatureOverrides.newBuilder().enable(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR).apply();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, false);
+
+        List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 2; i++) {
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(false);
+        }
+        assertEquals(Set.of(), mMediator.getFilteredEnabledModuleSet());
     }
 
     /**

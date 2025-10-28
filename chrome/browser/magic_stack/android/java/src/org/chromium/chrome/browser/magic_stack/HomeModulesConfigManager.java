@@ -12,7 +12,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
@@ -130,6 +132,12 @@ public class HomeModulesConfigManager {
     @ModuleType
     public Set<Integer> getEnabledModuleSet() {
         @ModuleType Set<Integer> enabledModuleList = new HashSet<>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+                && !mSharedPreferencesManager.readBoolean(
+                        ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true)) {
+            return enabledModuleList;
+        }
+
         for (Entry<Integer, ModuleConfigChecker> entry : mModuleConfigCheckerMap.entrySet()) {
             ModuleConfigChecker configChecker = entry.getValue();
             if (configChecker.isEligible() && getPrefModuleTypeEnabled(entry.getKey())) {
