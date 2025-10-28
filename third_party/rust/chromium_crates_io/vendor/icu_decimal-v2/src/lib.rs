@@ -293,6 +293,8 @@ impl DecimalFormatter {
     }
 
     /// Formats a [`Decimal`], returning a [`String`].
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     #[cfg(feature = "alloc")]
     pub fn format_to_string(&self, value: &Decimal) -> alloc::string::String {
         use writeable::Writeable;

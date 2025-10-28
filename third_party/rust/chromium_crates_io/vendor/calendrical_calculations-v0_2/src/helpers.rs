@@ -294,7 +294,8 @@ pub enum I32CastError {
 impl core::error::Error for I32CastError {}
 
 impl I32CastError {
-    pub(crate) const fn saturate(self) -> i32 {
+    /// Recovers the value saturated to `i32:::MIN..=i32::MAX`.
+    pub const fn saturate(self) -> i32 {
         match self {
             I32CastError::BelowMin => i32::MIN,
             I32CastError::AboveMax => i32::MAX,

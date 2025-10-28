@@ -13,11 +13,11 @@
 //! Read more about data providers: [`icu_provider`]
 
 use icu_locale_core::subtags::Script;
-use icu_provider::prelude::*;
+use icu_provider::prelude::{yoke, zerofrom};
 
 use zerotrie::ZeroTrieSimpleAscii;
 use zerovec::ule::NichedOption;
-use zerovec::{VarZeroVec, ZeroMap, ZeroVec};
+use zerovec::{VarZeroVec, ZeroVec};
 
 icu_provider::data_marker!(
     /// `PropertyNameParseBidiClassV1`
@@ -241,12 +241,14 @@ icu_provider::data_marker!(
     PropertyEnumToValueNameLinearMap<'static>,
     is_singleton = true
 );
+#[cfg(feature = "alloc")]
 icu_provider::data_marker!(
     /// `PropertyNameLongCanonicalCombiningClassV1`
     PropertyNameLongCanonicalCombiningClassV1,
     PropertyEnumToValueNameSparseMap<'static>,
     is_singleton = true,
 );
+#[cfg(feature = "alloc")]
 icu_provider::data_marker!(
     /// `PropertyNameShortCanonicalCombiningClassV1`
     PropertyNameShortCanonicalCombiningClassV1,
@@ -295,12 +297,14 @@ icu_provider::data_struct!(
 #[cfg_attr(feature = "datagen", databake(path = icu_properties::provider::names))]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 #[yoke(prove_covariance_manually)]
+#[cfg(feature = "alloc")]
 pub struct PropertyEnumToValueNameSparseMap<'data> {
     /// A map from the value discriminant to the names
     #[cfg_attr(feature = "serde", serde(borrow))]
-    pub map: ZeroMap<'data, u16, str>,
+    pub map: zerovec::ZeroMap<'data, u16, str>,
 }
 
+#[cfg(feature = "alloc")]
 icu_provider::data_struct!(
     PropertyEnumToValueNameSparseMap<'_>,
     #[cfg(feature = "datagen")]

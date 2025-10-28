@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "writeable"
-version = "0.6.1"
+version = "0.6.2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -36,13 +37,15 @@ readme = "README.md"
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.docs.rs]
-all-features = true
-
 [package.metadata.workspaces]
 independent = true
 
+[package.metadata.docs.rs]
+all-features = true
+
 [features]
+alloc = []
+default = ["alloc"]
 either = ["dep:either"]
 
 [lib]
@@ -69,7 +72,7 @@ optional = true
 default-features = false
 
 [dev-dependencies.rand]
-version = "0.8"
+version = "0.9"
 features = ["small_rng"]
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]

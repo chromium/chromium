@@ -10,9 +10,8 @@
 use crate::helpers::{i64_to_i32, k_day_after, I32CastError};
 use crate::rata_die::RataDie;
 
-// Julian epoch is equivalent to fixed_from_iso of December 30th of 0 year
-// 1st Jan of 1st year Julian is equivalent to December 30th of 0th year of ISO year
-const JULIAN_EPOCH: RataDie = RataDie::new(-1);
+// 1st Jan of 1st year proleptic Julian is equivalent to December 30th of 0th year proleptic Gregorian
+const JULIAN_EPOCH: RataDie = crate::gregorian::fixed_from_gregorian(0, 12, 30);
 
 /// Lisp code reference: <https://github.com/EdReingold/calendar-code2/blob/1ee51ecfaae6f856b0d7de3e36e9042100b4f424/calendar.l#L1684-L1687>
 #[inline(always)]
@@ -137,6 +136,6 @@ fn test_easter() {
         (2028, 4, 16),
         (2029, 4, 8),
     ] {
-        assert_eq!(easter(y), crate::iso::fixed_from_iso(y, m, d));
+        assert_eq!(easter(y), crate::gregorian::fixed_from_gregorian(y, m, d));
     }
 }

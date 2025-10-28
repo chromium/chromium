@@ -101,7 +101,6 @@ impl<'data> ListJoinerPattern<'data> {
                     )
                     .with_debug_context(pattern));
                 }
-                #[allow(clippy::indexing_slicing)] // find
                 Ok(ListJoinerPattern {
                     string: VarZeroCow::new_owned(
                         alloc::format!(

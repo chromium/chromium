@@ -140,7 +140,7 @@ impl CanonicalComposition {
     ///
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)]
+    #[expect(clippy::new_ret_no_self)]
     pub const fn new() -> CanonicalCompositionBorrowed<'static> {
         CanonicalCompositionBorrowed::new()
     }
@@ -298,7 +298,7 @@ impl CanonicalDecompositionBorrowed<'_> {
             return Decomposed::Default;
         }
         // The loop is only broken out of as goto forward
-        #[allow(clippy::never_loop)]
+        #[expect(clippy::never_loop)]
         loop {
             let high_zeros = (decomposition & HIGH_ZEROS_MASK) == 0;
             let low_zeros = (decomposition & LOW_ZEROS_MASK) == 0;
@@ -467,7 +467,7 @@ impl CanonicalDecomposition {
     ///
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)]
+    #[expect(clippy::new_ret_no_self)]
     pub const fn new() -> CanonicalDecompositionBorrowed<'static> {
         CanonicalDecompositionBorrowed::new()
     }
@@ -638,7 +638,7 @@ impl CanonicalCombiningClassMap {
     ///
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)]
+    #[expect(clippy::new_ret_no_self)]
     pub const fn new() -> CanonicalCombiningClassMapBorrowed<'static> {
         CanonicalCombiningClassMapBorrowed::new()
     }

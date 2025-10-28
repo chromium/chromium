@@ -176,7 +176,7 @@ impl<'data> SerdeDFA<'data> {
     }
 
     /// Returns the represented [`DFA`]
-    #[allow(clippy::unwrap_used)] // by invariant
+    #[expect(clippy::unwrap_used)] // by invariant
     pub fn deref(&'data self) -> DFA<&'data [u8]> {
         // Safe due to struct invariant.
         unsafe { DFA::from_bytes_unchecked(&self.dfa_bytes).unwrap().0 }

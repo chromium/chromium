@@ -19,11 +19,11 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/coptic.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/error.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/ethiopian.rs",
+    "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/gregorian.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/hebrew.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/hebrew_keviyah.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/helpers.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/islamic.rs",
-    "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/iso.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/julian.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/calendrical_calculations-v0_2/src/persian.rs",
@@ -37,7 +37,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "calendrical_calculations"
   cargo_pkg_description = "Calendrical calculations in Rust"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.2.2"
+  cargo_pkg_version = "0.2.3"
 
   allow_unsafe = false
 

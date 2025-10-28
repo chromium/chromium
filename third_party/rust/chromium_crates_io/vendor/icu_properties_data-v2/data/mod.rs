@@ -13,6 +13,7 @@ include!("property_binary_radical_v1.rs.data");
 include!("property_binary_extender_v1.rs.data");
 include!("property_name_long_indic_syllabic_category_v1.rs.data");
 include!("property_binary_emoji_component_v1.rs.data");
+include!("property_binary_id_compat_math_continue_v1.rs.data");
 include!("property_binary_dash_v1.rs.data");
 include!("property_enum_general_category_v1.rs.data");
 include!("property_name_long_grapheme_cluster_break_v1.rs.data");
@@ -56,6 +57,7 @@ include!("property_binary_variation_selector_v1.rs.data");
 include!("property_enum_word_break_v1.rs.data");
 include!("property_name_short_east_asian_width_v1.rs.data");
 include!("property_name_short_sentence_break_v1.rs.data");
+include!("property_binary_modifier_combining_mark_v1.rs.data");
 include!("property_name_long_bidi_class_v1.rs.data");
 include!("property_binary_prepended_concatenation_mark_v1.rs.data");
 include!("property_name_short_joining_type_v1.rs.data");
@@ -110,10 +112,12 @@ include!("property_binary_emoji_modifier_v1.rs.data");
 include!("property_binary_join_control_v1.rs.data");
 include!("property_enum_joining_type_v1.rs.data");
 include!("property_name_short_line_break_v1.rs.data");
+include!("property_binary_ids_unary_operator_v1.rs.data");
 include!("property_name_parse_word_break_v1.rs.data");
 include!("property_binary_math_v1.rs.data");
 include!("property_binary_pattern_white_space_v1.rs.data");
 include!("property_binary_nfkd_inert_v1.rs.data");
+include!("property_binary_id_compat_math_start_v1.rs.data");
 include!("property_binary_alphabetic_v1.rs.data");
 include!("property_enum_grapheme_cluster_break_v1.rs.data");
 include!("property_binary_blank_v1.rs.data");
@@ -136,7 +140,7 @@ include!("property_name_parse_canonical_combining_class_v1.rs.data");
 #[macro_export]
 macro_rules! __make_provider {
     ($ name : ty) => {
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl $name {
             #[allow(dead_code)]
             pub(crate) const MUST_USE_MAKE_PROVIDER_MACRO: () = ();
@@ -169,6 +173,7 @@ macro_rules! impl_data_provider {
         impl_property_binary_extender_v1!($provider);
         impl_property_name_long_indic_syllabic_category_v1!($provider);
         impl_property_binary_emoji_component_v1!($provider);
+        impl_property_binary_id_compat_math_continue_v1!($provider);
         impl_property_binary_dash_v1!($provider);
         impl_property_enum_general_category_v1!($provider);
         impl_property_name_long_grapheme_cluster_break_v1!($provider);
@@ -212,6 +217,7 @@ macro_rules! impl_data_provider {
         impl_property_enum_word_break_v1!($provider);
         impl_property_name_short_east_asian_width_v1!($provider);
         impl_property_name_short_sentence_break_v1!($provider);
+        impl_property_binary_modifier_combining_mark_v1!($provider);
         impl_property_name_long_bidi_class_v1!($provider);
         impl_property_binary_prepended_concatenation_mark_v1!($provider);
         impl_property_name_short_joining_type_v1!($provider);
@@ -266,10 +272,12 @@ macro_rules! impl_data_provider {
         impl_property_binary_join_control_v1!($provider);
         impl_property_enum_joining_type_v1!($provider);
         impl_property_name_short_line_break_v1!($provider);
+        impl_property_binary_ids_unary_operator_v1!($provider);
         impl_property_name_parse_word_break_v1!($provider);
         impl_property_binary_math_v1!($provider);
         impl_property_binary_pattern_white_space_v1!($provider);
         impl_property_binary_nfkd_inert_v1!($provider);
+        impl_property_binary_id_compat_math_start_v1!($provider);
         impl_property_binary_alphabetic_v1!($provider);
         impl_property_enum_grapheme_cluster_break_v1!($provider);
         impl_property_binary_blank_v1!($provider);

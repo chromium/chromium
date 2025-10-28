@@ -397,7 +397,7 @@ impl<'a> CaseMapperBorrowed<'a> {
     /// assert_eq!(cm.fold_string("नमस्ते दुनिया"), "नमस्ते दुनिया");
     /// assert_eq!(cm.fold_string("Привет мир"), "привет мир");
     /// ```
-    pub fn fold_string(self, src: &str) -> Cow<str> {
+    pub fn fold_string(self, src: &str) -> Cow<'_, str> {
         writeable::to_string_or_borrow(&self.fold(src), src.as_bytes())
     }
 
@@ -427,7 +427,7 @@ impl<'a> CaseMapperBorrowed<'a> {
     /// assert_eq!(cm.fold_turkic_string("नमस्ते दुनिया"), "नमस्ते दुनिया");
     /// assert_eq!(cm.fold_turkic_string("Привет мир"), "привет мир");
     /// ```
-    pub fn fold_turkic_string(self, src: &str) -> Cow<str> {
+    pub fn fold_turkic_string(self, src: &str) -> Cow<'_, str> {
         writeable::to_string_or_borrow(&self.fold_turkic(src), src.as_bytes())
     }
 
@@ -620,7 +620,7 @@ impl CaseMapper {
     /// );
     /// ```
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)] // Intentional
+    #[expect(clippy::new_ret_no_self)] // Intentional
     pub const fn new() -> CaseMapperBorrowed<'static> {
         CaseMapperBorrowed::new()
     }

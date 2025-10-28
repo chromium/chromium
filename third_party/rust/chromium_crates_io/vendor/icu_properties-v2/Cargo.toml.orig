@@ -5,7 +5,7 @@
 [package]
 name = "icu_properties"
 description = "Definitions for Unicode properties"
-version = "2.0.1"
+version.workspace = true
 
 authors.workspace = true
 categories.workspace = true
@@ -20,15 +20,13 @@ rust-version.workspace = true
 all-features = true
 
 [dependencies]
-displaydoc = { workspace = true }
 icu_collections = { workspace = true }
 icu_provider = { workspace = true }
 zerovec = { workspace = true, features = ["derive", "yoke"] }
 zerotrie = { workspace = true, features = ["yoke", "zerofrom"] }
 databake = { workspace = true, features = ["derive"], optional = true}
-serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
 icu_locale_core = { workspace = true, features = ["zerovec"] }
-potential_utf = { workspace = true, features = ["zerovec"]}
 
 unicode-bidi = { workspace = true, optional = true }
 
@@ -39,8 +37,8 @@ icu = { path = "../../components/icu", default-features = false }
 
 [features]
 default = ["compiled_data"]
-serde = ["dep:serde", "icu_locale_core/serde", "potential_utf/serde", "zerovec/serde", "icu_collections/serde", "icu_provider/serde", "zerotrie/serde"]
-datagen = ["serde", "dep:databake", "potential_utf/databake", "zerovec/databake", "icu_collections/databake", "icu_locale_core/databake", "zerotrie/databake", "icu_provider/export"]
+serde = ["dep:serde", "icu_locale_core/serde", "zerovec/serde", "icu_collections/serde", "icu_provider/serde", "zerotrie/serde"]
+datagen = ["serde", "dep:databake", "zerovec/databake", "icu_collections/databake", "icu_locale_core/databake", "zerotrie/databake", "icu_provider/export"]
 unicode_bidi = [ "dep:unicode-bidi" ]
 compiled_data = ["dep:icu_properties_data", "icu_provider/baked"]
-alloc = ["zerovec/alloc", "icu_collections/alloc"]
+alloc = ["zerovec/alloc", "icu_collections/alloc", "serde?/alloc"]

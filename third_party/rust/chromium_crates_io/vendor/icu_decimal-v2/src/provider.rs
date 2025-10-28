@@ -233,6 +233,8 @@ pub struct DecimalSymbolStrsBuilder<'data> {
 #[cfg(feature = "alloc")]
 impl DecimalSymbolStrsBuilder<'_> {
     /// Build a [`DecimalSymbolsStrs`]
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     pub fn build(&self) -> VarZeroCow<'static, DecimalSymbolsStrs> {
         VarZeroCow::from_encodeable(self)
     }

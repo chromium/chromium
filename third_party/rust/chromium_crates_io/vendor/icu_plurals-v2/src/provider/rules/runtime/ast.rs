@@ -281,7 +281,7 @@ impl fmt::Display for Rule<'_> {
 impl RelationULE {
     /// Convert to a Relation
     #[inline]
-    pub fn as_relation(&self) -> Relation {
+    pub fn as_relation(&self) -> Relation<'_> {
         zerofrom::ZeroFrom::zero_from(self)
     }
 }
@@ -409,7 +409,7 @@ mod serde {
         where
             E: de::Error,
         {
-            fn from_str(s: &str) -> Result<Rule, reference::parser::ParseError> {
+            fn from_str(s: &str) -> Result<Rule<'_>, reference::parser::ParseError> {
                 let rule = reference::parser::parse(s.as_bytes())?;
                 Rule::try_from(&rule).map_err(|_| reference::parser::ParseError::ValueTooLarge)
             }

@@ -226,18 +226,18 @@ mod tests {
     #[test]
     fn test_islamic_epoch_friday() {
         let epoch = ISLAMIC_EPOCH_FRIDAY.to_i64_date();
-        // Iso year of Islamic Epoch
-        let epoch_year_from_fixed = crate::iso::iso_year_from_fixed(RataDie::new(epoch)).unwrap();
-        // 622 is the correct ISO year for the Islamic Epoch
+        // Proleptic Gregorian year of Islamic Epoch
+        let epoch_year_from_fixed = crate::gregorian::year_from_fixed(RataDie::new(epoch)).unwrap();
+        // 622 is the correct proleptic Gregorian year for the Islamic Epoch
         assert_eq!(epoch_year_from_fixed, 622);
     }
 
     #[test]
     fn test_islamic_epoch_thursday() {
         let epoch = ISLAMIC_EPOCH_THURSDAY.to_i64_date();
-        // Iso year of Islamic Epoch
-        let epoch_year_from_fixed = crate::iso::iso_year_from_fixed(RataDie::new(epoch)).unwrap();
-        // 622 is the correct ISO year for the Islamic Epoch
+        // Proleptic Gregorian year of Islamic Epoch
+        let epoch_year_from_fixed = crate::gregorian::year_from_fixed(RataDie::new(epoch)).unwrap();
+        // 622 is the correct proleptic Gregorian year for the Islamic Epoch
         assert_eq!(epoch_year_from_fixed, 622);
     }
 

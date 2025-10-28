@@ -6,7 +6,7 @@
 name = "icu_properties_data"
 description = "Data for the icu_properties crate"
 license = "Unicode-3.0"
-version = "2.0.1"
+version.workspace = true
 
 authors.workspace = true
 categories.workspace = true
@@ -17,8 +17,8 @@ repository.workspace = true
 rust-version.workspace = true
 
 [package.metadata.sources]
-cldr = { tagged = "47.0.0" }
-icuexport = { tagged = "icu4x/2025-05-01/77.x" }
+cldr = { tagged = "48.0.0" }
+icuexport = { tagged = "release-78.1rc" }
 segmenter_lstm = { tagged = "v0.1.0" }
 
 [lints.rust]

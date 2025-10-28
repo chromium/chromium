@@ -61,7 +61,6 @@ pub(crate) struct FullCaseWriteable<'a, 'data, const IS_TITLE_CONTEXT: bool> {
 }
 
 impl<'a, const IS_TITLE_CONTEXT: bool> Writeable for FullCaseWriteable<'a, '_, IS_TITLE_CONTEXT> {
-    #[allow(clippy::indexing_slicing)] // last_uncopied_index and i are known to be in bounds
     fn write_to<W: fmt::Write + ?Sized>(&self, sink: &mut W) -> fmt::Result {
         let src = self.src;
         let mut mapping = self.mapping;
@@ -410,7 +409,7 @@ impl<'data> CaseMap<'data> {
         c: char,
         context: ContextIterator,
         locale: CaseMapLocale,
-    ) -> Option<FullMappingResult> {
+    ) -> Option<FullMappingResult<'_>> {
         if locale == CaseMapLocale::Lithuanian {
             // Lithuanian retains the dot in a lowercase i when followed by accents.
             // Introduce an explicit dot above when lowercasing capital I's and J's
@@ -480,7 +479,7 @@ impl<'data> CaseMap<'data> {
         c: char,
         context: ContextIterator,
         locale: CaseMapLocale,
-    ) -> Option<FullMappingResult> {
+    ) -> Option<FullMappingResult<'_>> {
         if locale == CaseMapLocale::Turkish && c == 'i' {
             // In Turkic languages, i turns into a dotted capital I.
             return Some(FullMappingResult::CodePoint('\u{130}'));
@@ -510,7 +509,7 @@ impl<'data> CaseMap<'data> {
         c: char,
         _context: ContextIterator,
         locale: CaseMapLocale,
-    ) -> Option<FullMappingResult> {
+    ) -> Option<FullMappingResult<'_>> {
         let is_turkic = locale == CaseMapLocale::Turkish;
         match (c, is_turkic) {
             // Turkic mappings

@@ -395,7 +395,7 @@ pub struct PluralElementsPackedCow<'data, V: VarULE + ?Sized> {
 /// A bitpacked DST for [`PluralElements`].
 ///
 /// Can be put in a [`Cow`] or a [`VarZeroSlice`].
-#[derive(Debug, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 #[repr(transparent)]
 pub struct PluralElementsPackedULE<V: VarULE + ?Sized> {
     _v: PhantomData<V>,
@@ -414,6 +414,16 @@ pub struct PluralElementsPackedULE<V: VarULE + ?Sized> {
     /// - Bytes 2..(2+L): the default (plural "other") value `V`
     /// - Remainder: [`PluralElementsTupleSliceVarULE`]
     bytes: [u8],
+}
+
+impl<V: VarULE + fmt::Debug + ?Sized> fmt::Debug for PluralElementsPackedULE<V> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let unpacked = self.as_parts();
+        f.debug_struct("PluralElementsPackedULE")
+            .field("parts", &unpacked)
+            .field("bytes", &&self.bytes)
+            .finish()
+    }
 }
 
 impl<V: VarULE + ?Sized> ToOwned for PluralElementsPackedULE<V> {
@@ -477,7 +487,7 @@ where
     /// 2. Bytes corresponding to the default V
     /// 3. Bytes corresponding to the specials slice, if present
     #[inline]
-    fn unpack_bytes(bytes: &[u8]) -> Option<PluralElementsUnpackedBytes> {
+    fn unpack_bytes(bytes: &[u8]) -> Option<PluralElementsUnpackedBytes<'_>> {
         let (lead_byte, remainder) = bytes.split_first()?;
         if lead_byte & 0x80 == 0 {
             Some(PluralElementsUnpackedBytes {
@@ -497,13 +507,13 @@ where
     }
 
     /// Unpacks this structure into the default value and the optional list of specials.
-    fn as_parts(&self) -> PluralElementsUnpacked<V> {
+    fn as_parts(&self) -> PluralElementsUnpacked<'_, V> {
         // Safety: the bytes are valid by invariant
         let unpacked_bytes = unsafe { Self::unpack_bytes(&self.bytes).unwrap_unchecked() };
         let metadata = FourBitMetadata(unpacked_bytes.lead_byte & 0x0F);
         // Safety: the bytes are valid by invariant
         let default = unsafe { V::from_bytes_unchecked(unpacked_bytes.v_bytes) };
-        #[allow(clippy::manual_map)] // more explicit with the unsafe code
+        #[expect(clippy::manual_map)] // more explicit with the unsafe code
         let specials = if let Some(specials_bytes) = unpacked_bytes.specials_bytes {
             // Safety: the bytes are valid by invariant
             Some(unsafe {
@@ -755,6 +765,7 @@ struct PluralElementsPackedBuilder<'a, T> {
 }
 
 /// Internal unpacked and deserialized values from a [`PluralElementsPackedULE`].
+#[derive(Debug)]
 struct PluralElementsUnpacked<'a, V: VarULE + ?Sized> {
     pub default: PluralElementWithMetadata<'a, V>,
     pub specials: Option<&'a PluralElementsTupleSliceVarULE<V>>,
@@ -840,22 +851,22 @@ where
 
     fn encode_var_ule_write(&self, dst: &mut [u8]) {
         let builder = self.0.to_packed_builder();
-        #[allow(clippy::unwrap_used)] // by trait invariant
+        #[expect(clippy::unwrap_used)] // by trait invariant
         let (lead_byte, remainder) = dst.split_first_mut().unwrap();
         *lead_byte = builder.default.0.get();
         if let Some(specials) = builder.specials {
             *lead_byte |= 0x80;
-            #[allow(clippy::unwrap_used)] // by trait invariant
+            #[expect(clippy::unwrap_used)] // by trait invariant
             let (second_byte, remainder) = remainder.split_first_mut().unwrap();
             *second_byte = match u8::try_from(builder.default.1.encode_var_ule_len()) {
                 Ok(x) => x,
                 // TODO: Inform the user more nicely that their data doesn't fit in our packed structure
-                #[allow(clippy::panic)] // for now okay since it is mostly only during datagen
+                #[expect(clippy::panic)] // for now okay since it is mostly only during datagen
                 Err(_) => {
                     panic!("other value too long to be packed: {self:?}")
                 }
             };
-            #[allow(clippy::unwrap_used)] // for now okay since it is mostly only during datagen
+            #[expect(clippy::unwrap_used)] // for now okay since it is mostly only during datagen
             let (v_bytes, specials_bytes) = remainder
                 .split_at_mut_checked(*second_byte as usize)
                 .unwrap();

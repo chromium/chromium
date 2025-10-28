@@ -20,21 +20,19 @@ version.workspace = true
 all-features = true
 
 [dependencies]
-displaydoc = { workspace = true }
 fixed_decimal = { workspace = true }
 icu_provider = { workspace = true, features = ["alloc"] }
 zerovec = { workspace = true, features = ["alloc", "yoke"] }
 
 databake = { workspace = true, features = ["derive"], optional = true}
 serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+displaydoc = { workspace = true, optional = true }
 
 icu_plurals_data = { workspace = true, optional = true }
-icu_normalizer_data = { workspace = true, optional = true }
 icu_locale = { workspace = true, optional = true }
 
 [dev-dependencies]
 icu = { path = "../../components/icu", default-features = false }
-icu_benchmark_macros = { path = "../../tools/benchmark/macros" }
 icu_locale_core = { path = "../../components/locale_core" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -45,10 +43,13 @@ criterion = { workspace = true }
 
 [features]
 default = ["compiled_data"]
-serde = ["dep:serde", "zerovec/serde", "icu_locale_core/serde", "icu_provider/serde"]
+serde = ["dep:serde", "zerovec/serde", "icu_locale_core/serde", "icu_provider/serde", "dep:displaydoc"]
 datagen = ["serde", "zerovec/databake", "dep:databake", "icu_provider/export"]
 experimental = []
 compiled_data = ["dep:icu_plurals_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
+
+# added by accident
+icu_normalizer_data = []
 
 [lib]
 bench = false  # This option is required for Benchmark CI
@@ -78,11 +79,3 @@ required-features = ["serde", "experimental"]
 [[test]]
 name = "rules"
 required-features = ["experimental"]
-
-[[example]]
-name = "unread_emails"
-required-features = ["serde"]
-
-[[example]]
-name = "elevator_floors"
-required-features = ["serde"]

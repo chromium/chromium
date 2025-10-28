@@ -32,18 +32,16 @@ cargo_crate("lib") {
   cargo_pkg_description =
       "API for formatting basic decimal numbers in a locale-sensitive way"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "2.0.0"
+  cargo_pkg_version = "2.1.1"
 
   allow_unsafe = false
 
   deps = [
-    "//third_party/rust/displaydoc/v0_2:lib",
     "//third_party/rust/fixed_decimal/v0_7:lib",
     "//third_party/rust/icu_decimal_data/v2:lib",
     "//third_party/rust/icu_locale/v2:lib",
     "//third_party/rust/icu_locale_core/v2:lib",
     "//third_party/rust/icu_provider/v2:lib",
-    "//third_party/rust/tinystr/v0_8:lib",
     "//third_party/rust/writeable/v0_6:lib",
     "//third_party/rust/zerovec/v0_11:lib",
   ]

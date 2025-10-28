@@ -32,7 +32,7 @@ impl<T: TrieValue> CodePointMapData<T> {
     ///
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)]
+    #[expect(clippy::new_ret_no_self)]
     pub const fn new() -> CodePointMapDataBorrowed<'static, T>
     where
         T: EnumeratedProperty,
@@ -68,6 +68,8 @@ impl<T: TrieValue> CodePointMapData<T> {
     /// Convert this map to a map around another type
     ///
     /// Typically useful for type-erasing maps into maps around integers.
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///
     /// # Panics
     /// Will panic if T and P are different sizes
@@ -162,16 +164,20 @@ impl<'a, T: TrieValue> CodePointMapDataBorrowed<'a, T> {
     /// assert_eq!(gc.get('木'), GeneralCategory::OtherLetter);  // U+6728
     /// assert_eq!(gc.get('🎃'), GeneralCategory::OtherSymbol);  // U+1F383 JACK-O-LANTERN
     /// ```
+    #[inline]
     pub fn get(self, ch: char) -> T {
-        self.map.get32(ch as u32)
+        self.map.get(ch)
     }
 
     /// See [`Self::get`].
+    #[inline]
     pub fn get32(self, ch: u32) -> T {
         self.map.get32(ch)
     }
 
     /// Get a [`CodePointSetData`] for all elements corresponding to a particular value
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///
     /// # Example
     ///
@@ -266,6 +272,8 @@ impl<'a, T: TrieValue> CodePointMapDataBorrowed<'a, T> {
 
 impl CodePointMapDataBorrowed<'_, GeneralCategory> {
     /// Get a [`CodePointSetData`] for all elements corresponding to a particular value group
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///
     /// # Example
     ///

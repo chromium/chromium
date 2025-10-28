@@ -212,7 +212,7 @@ impl Astronomical {
         let year = moment.inner() / 365.2425;
         // Note: Converting to int handles negative number Euclidean division skew.
         let year_int = (if year > 0.0 { year + 1.0 } else { year }) as i32;
-        let fixed_mid_year = crate::iso::fixed_from_iso(year_int, 7, 1);
+        let fixed_mid_year = crate::gregorian::fixed_from_gregorian(year_int, 7, 1);
         let c = ((fixed_mid_year.to_i64_date() as f64) - 693596.0) / 36525.0;
         let y2000 = (year_int - 2000) as f64;
         let y1700 = (year_int - 1700) as f64;

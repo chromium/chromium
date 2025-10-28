@@ -2,9 +2,7 @@
 
 <!-- cargo-rdme start -->
 
-`writeable` is a utility crate of the [`ICU4X`] project.
-
-It includes [`Writeable`], a core trait representing an object that can be written to a
+This crate defines [`Writeable`], a trait representing an object that can be written to a
 sink implementing `std::fmt::Write`. It is an alternative to `std::fmt::Display` with the
 addition of a function indicating the number of bytes to be written.
 
@@ -12,6 +10,18 @@ addition of a function indicating the number of bytes to be written.
 
 1. More efficient, since the sink can pre-allocate bytes.
 2. Smaller code, since the format machinery can be short-circuited.
+
+This crate also exports [`TryWriteable`], a writeable that supports a custom error.
+
+## Benchmarks
+
+The benchmarks to generate the following data can be found in the `benches` directory.
+
+| Case | `Writeable` | `Display` |
+|---|---|---|
+| Create string from single-string message (139 chars) | 15.642 ns | 19.251 ns |
+| Create string from complex message | 35.830 ns | 89.478 ns |
+| Write complex message to buffer | 57.336 ns | 64.408 ns |
 
 ## Examples
 

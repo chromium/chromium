@@ -74,7 +74,10 @@ impl RataDie {
     /// ```
     /// use calendrical_calculations::julian::fixed_from_julian;
     ///
-    /// assert_eq!(fixed_from_julian(1930, 2, 2).since(fixed_from_julian(1930, 1, 1)), 32);
+    /// assert_eq!(
+    ///     fixed_from_julian(1930, 2, 2).since(fixed_from_julian(1930, 1, 1)),
+    ///     32
+    /// );
     /// ```
     pub const fn since(self, rhs: Self) -> i64 {
         self.0 - rhs.0
@@ -85,7 +88,10 @@ impl RataDie {
     /// ```
     /// use calendrical_calculations::julian::fixed_from_julian;
     ///
-    /// assert_eq!(fixed_from_julian(1930, 1, 1).until(fixed_from_julian(1930, 2, 2)), 32);
+    /// assert_eq!(
+    ///     fixed_from_julian(1930, 1, 1).until(fixed_from_julian(1930, 2, 2)),
+    ///     32
+    /// );
     /// ```
     pub const fn until(self, rhs: Self) -> i64 {
         rhs.0 - self.0
@@ -108,7 +114,7 @@ impl RataDie {
 impl fmt::Debug for RataDie {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let rd = self.0;
-        if let Ok((y, m, d)) = crate::iso::iso_from_fixed(*self) {
+        if let Ok((y, m, d)) = crate::gregorian::gregorian_from_fixed(*self) {
             write!(f, "{rd} R.D. ({y}-{m:02}-{d:02})")
         } else {
             write!(f, "{rd} R.D. (out of bounds)")

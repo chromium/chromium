@@ -2863,7 +2863,7 @@ if (enable_rust_translit) {
     visibility = [ ":i18n" ]
     deps = [
       "//third_party/rust/icu_casemap/v2:lib",
-      "//third_party/rust/icu_experimental/v0_3:lib",
+      "//third_party/rust/icu_experimental/v0_4:lib",
       "//third_party/rust/icu_locale_core/v2:lib",
       "//third_party/rust/icu_normalizer/v2:lib",
       "//third_party/rust/icu_properties/v2:lib",

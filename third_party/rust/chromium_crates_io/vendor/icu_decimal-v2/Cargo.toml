@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.83"
 name = "icu_decimal"
-version = "2.0.0"
+version = "2.1.1"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -57,7 +57,6 @@ datagen = [
     "serde",
     "dep:databake",
     "zerovec/databake",
-    "tinystr/databake",
     "icu_provider/export",
     "alloc",
 ]
@@ -67,17 +66,11 @@ serde = [
     "dep:serde",
     "icu_provider/serde",
     "zerovec/serde",
-    "tinystr/serde",
 ]
 
 [lib]
 name = "icu_decimal"
 path = "src/lib.rs"
-
-[[example]]
-name = "code_line_diff"
-path = "examples/code_line_diff.rs"
-required-features = ["serde"]
 
 [[bench]]
 name = "fixed_decimal_format"
@@ -90,40 +83,32 @@ features = ["derive"]
 optional = true
 default-features = false
 
-[dependencies.displaydoc]
-version = "0.2.3"
-default-features = false
-
 [dependencies.fixed_decimal]
 version = "0.7.0"
 default-features = false
 
 [dependencies.icu_decimal_data]
-version = "~2.0.0"
+version = "~2.1.1"
 optional = true
 default-features = false
 
 [dependencies.icu_locale]
-version = "~2.0.0"
+version = "~2.1.1"
 optional = true
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 
 [dependencies.serde]
-version = "1.0.110"
+version = "1.0.220"
 features = ["derive"]
 optional = true
-default-features = false
-
-[dependencies.tinystr]
-version = "0.8.0"
 default-features = false
 
 [dependencies.writeable]
@@ -131,7 +116,8 @@ version = "0.6.0"
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.1"
+version = "0.11.3"
+features = ["alloc"]
 default-features = false
 
 [dev-dependencies.getrandom]

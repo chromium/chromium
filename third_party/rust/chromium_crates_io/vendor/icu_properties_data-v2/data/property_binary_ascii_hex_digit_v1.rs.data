@@ -16,9 +16,9 @@
 #[macro_export]
 macro_rules! __impl_property_binary_ascii_hex_digit_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl $provider {
             #[doc(hidden)]
             pub const SINGLETON_PROPERTY_BINARY_ASCII_HEX_DIGIT_V1: &'static <icu::properties::provider::PropertyBinaryAsciiHexDigitV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::properties::provider::PropertyCodePointSet::InversionList(unsafe {
@@ -26,7 +26,7 @@ macro_rules! __impl_property_binary_ascii_hex_digit_v1 {
                 icu::collections::codepointinvlist::CodePointInversionList::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"0\0\0:\0\0A\0\0G\0\0a\0\0g\0\0") }, 22u32)
             });
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DataProvider<icu::properties::provider::PropertyBinaryAsciiHexDigitV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::properties::provider::PropertyBinaryAsciiHexDigitV1>, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -39,7 +39,7 @@ macro_rules! __impl_property_binary_ascii_hex_digit_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_property_binary_ascii_hex_digit_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyBinaryAsciiHexDigitV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())
@@ -48,7 +48,7 @@ macro_rules! __impl_property_binary_ascii_hex_digit_v1 {
     };
     ($ provider : ty , DRY) => {
         __impl_property_binary_ascii_hex_digit_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyBinaryAsciiHexDigitV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -61,7 +61,7 @@ macro_rules! __impl_property_binary_ascii_hex_digit_v1 {
     };
     ($ provider : ty , DRY , ITER) => {
         __impl_property_binary_ascii_hex_digit_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyBinaryAsciiHexDigitV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -71,7 +71,7 @@ macro_rules! __impl_property_binary_ascii_hex_digit_v1 {
                 }
             }
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyBinaryAsciiHexDigitV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())

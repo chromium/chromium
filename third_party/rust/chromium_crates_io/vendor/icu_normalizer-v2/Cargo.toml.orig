@@ -20,7 +20,6 @@ license.workspace = true
 all-features = true
 
 [dependencies]
-displaydoc = { workspace = true }
 icu_collections = { workspace = true }
 icu_properties = { workspace = true, optional = true }
 icu_provider = { workspace = true }
@@ -41,7 +40,7 @@ arrayvec = { workspace = true }
 atoi = { workspace = true }
 detone = { workspace = true }
 icu = { path = "../../components/icu", default-features = false }
-write16 = { workspace = true, features = ["arrayvec"] }
+write16 = { workspace = true, features = ["arrayvec", "smallvec"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 criterion = { workspace = true }
@@ -56,11 +55,18 @@ experimental = []
 compiled_data = ["dep:icu_normalizer_data", "icu_properties?/compiled_data", "icu_provider/baked"]
 icu_properties = ["dep:icu_properties"]
 # For dealing with UTF16 strings
-utf16_iter = ["dep:utf16_iter", "write16"]
+utf16_iter = ["dep:utf16_iter", "dep:write16"]
 # For dealing with potentially ill-formed UTF8 strings
 utf8_iter = ["dep:utf8_iter"]
+
+# added by accident
+write16 = []
 
 [[bench]]
 name = "bench"
 harness = false
 required-features = ["utf16_iter", "utf8_iter"]
+
+# Lint to avoid complaining about icu4x_unstable_fast_trie_only for now
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(icu4x_unstable_fast_trie_only)'] }

@@ -101,8 +101,13 @@ impl<T: Writeable + ?Sized> Writeable for WithPart<T> {
         self.writeable.writeable_length_hint()
     }
 
+    fn writeable_borrow(&self) -> Option<&str> {
+        self.writeable.writeable_borrow()
+    }
+
     #[inline]
-    fn write_to_string(&self) -> Cow<str> {
+    #[cfg(feature = "alloc")]
+    fn write_to_string(&self) -> Cow<'_, str> {
         self.writeable.write_to_string()
     }
 }

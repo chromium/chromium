@@ -17,14 +17,14 @@
 #[macro_export]
 macro_rules! __impl_property_name_parse_grapheme_cluster_break_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl $provider {
             #[doc(hidden)]
             pub const SINGLETON_PROPERTY_NAME_PARSE_GRAPHEME_CLUSTER_BREAK_V1: &'static <icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::properties::provider::names::PropertyValueNameToEnumMap { map: zerotrie::ZeroTrieSimpleAscii { store: unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"\xCCCEGLOPRSTVXZ\x0E7LUZe{\x8A\x8B\x8C\x8E\xC3NRo\x01\x02\x81\x82ntrol\x81\xC5BMX_x\x03\x04\x05\x1A\x8DG\x8E\x8F\x83\xC2BM\tase\x8D_GAZ\x8Eodifier\x8Ftend\x83\xC2Al\x03Z\x90\0ue_After_Zwj\x90\0\x84\xC2FV\x01\x85\x86T\x87ther\x80\xC2Pr\x01\x8Bepend\x8B\xC2Ie\x01\x8Cgional_Indicator\x8C\xC2Mp\x01\x8AacingMark\x8A\x88\x89X\x80WJ\x90\x01") } } };
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DataProvider<icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1>, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -37,7 +37,7 @@ macro_rules! __impl_property_name_parse_grapheme_cluster_break_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_property_name_parse_grapheme_cluster_break_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())
@@ -46,7 +46,7 @@ macro_rules! __impl_property_name_parse_grapheme_cluster_break_v1 {
     };
     ($ provider : ty , DRY) => {
         __impl_property_name_parse_grapheme_cluster_break_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -59,7 +59,7 @@ macro_rules! __impl_property_name_parse_grapheme_cluster_break_v1 {
     };
     ($ provider : ty , DRY , ITER) => {
         __impl_property_name_parse_grapheme_cluster_break_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -69,7 +69,7 @@ macro_rules! __impl_property_name_parse_grapheme_cluster_break_v1 {
                 }
             }
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyNameParseGraphemeClusterBreakV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())

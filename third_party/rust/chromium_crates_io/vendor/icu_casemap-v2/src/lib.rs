@@ -55,7 +55,7 @@ mod set;
 pub(crate) mod titlecase;
 
 #[doc(hidden)] // testing
-#[allow(clippy::exhaustive_structs, clippy::exhaustive_enums)]
+#[expect(clippy::exhaustive_structs, clippy::exhaustive_enums)]
 pub mod greek_to_me;
 mod internals;
 
