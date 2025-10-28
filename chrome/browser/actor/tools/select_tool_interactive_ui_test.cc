@@ -39,13 +39,10 @@ class ActorSelectToolBrowserTest : public ActorToolsTest {
 // shown, the UI thread is blocked. See `PopupMenuHelper::ShowPopupMenu()`.
 // Disable this test on Mac for now until there is a test-only PopupMenuHelper
 // that's not blocking.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SelectToolCloseDropDownMenu DISABLED_SelectToolCloseDropDownMenu
-#else
-#define MAYBE_SelectToolCloseDropDownMenu SelectToolCloseDropDownMenu
-#endif
+//
+// TODO(crbug.com/439317652): this is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
-                       MAYBE_SelectToolCloseDropDownMenu) {
+                       DISABLED_SelectToolCloseDropDownMenu) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
