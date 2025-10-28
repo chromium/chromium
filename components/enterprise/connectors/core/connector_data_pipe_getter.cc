@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 
 #include <algorithm>
 
@@ -10,11 +10,8 @@
 #include "base/containers/span.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/time/time.h"
-#include "mojo/public/c/system/data_pipe.h"
 #include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -23,7 +20,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #endif
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 namespace {
 const char kDataContentType[] = "Content-Type: application/octet-stream";
@@ -36,8 +33,9 @@ constexpr size_t kMaxSize = 32 * 1024;
 #if BUILDFLAG(IS_POSIX)
 bool ConnectorDataPipeGetter::InternalMemoryMappedFile::Initialize(
     base::File file) {
-  if (IsValid())
+  if (IsValid()) {
     return false;
+  }
 
   file_ = std::move(file);
 
@@ -160,12 +158,14 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file,
 std::unique_ptr<ConnectorDataPipeGetter>
 ConnectorDataPipeGetter::CreateResumablePipeGetter(
     base::ReadOnlySharedMemoryRegion page) {
-  if (!page.IsValid())
+  if (!page.IsValid()) {
     return nullptr;
+  }
 
   base::ReadOnlySharedMemoryMapping mapping = page.Map();
-  if (!mapping.IsValid())
+  if (!mapping.IsValid()) {
     return nullptr;
+  }
 
   return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
                                                    /*metadata*/ std::string(),
@@ -279,10 +279,12 @@ void ConnectorDataPipeGetter::Write() {
   }
 
   if (IsWritePositionInRange(metadata_end, data_end)) {
-    if (is_file_data_pipe() && !WriteFileData())
+    if (is_file_data_pipe() && !WriteFileData()) {
       return;
-    if (is_page_data_pipe() && !WritePageData())
+    }
+    if (is_page_data_pipe() && !WritePageData()) {
       return;
+    }
   }
 
   int64_t last_boundary_end = data_end + last_boundary_.size();
@@ -418,4 +420,4 @@ bool ConnectorDataPipeGetter::is_page_data_pipe() const {
   return !file_data_pipe_;
 }
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors

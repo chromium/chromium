@@ -165,7 +165,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // Called after `data_pipe_getter_` has be
   void OnDataPipeCreated(
       std::unique_ptr<network::ResourceRequest> request,
-      std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter);
+      std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter>
+          data_pipe_getter);
 
   // Called after `data_pipe_getter_` is known to be initialized to a correct
   // state.

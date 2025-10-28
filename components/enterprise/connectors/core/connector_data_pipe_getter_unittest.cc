@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 
 #include <memory>
 
@@ -14,10 +14,11 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 namespace {
 
@@ -64,8 +65,9 @@ class ConnectorDataPipeGetterTest : public testing::Test {
   base::ReadOnlySharedMemoryRegion CreatePage(const std::string& content) {
     base::MappedReadOnlyRegion region =
         base::ReadOnlySharedMemoryRegion::Create(content.size());
-    if (!region.IsValid())
+    if (!region.IsValid()) {
       return base::ReadOnlySharedMemoryRegion();
+    }
 
     UNSAFE_TODO(
         std::memcpy(region.mapping.memory(), content.data(), content.size()));
@@ -109,8 +111,9 @@ class ConnectorDataPipeGetterTest : public testing::Test {
       }
       body.append(std::string_view(buffer).substr(0, read_size));
       ++read_chunks;
-      if (max_chunks != 0 && read_chunks == max_chunks)
+      if (max_chunks != 0 && read_chunks == max_chunks) {
         break;
+      }
     }
 
     return body;
@@ -157,8 +160,9 @@ class ConnectorDataPipeGetterParametrizedTest
       bool is_obfuscated = false) {
     if (is_file_data_pipe()) {
       std::optional<base::File> file = CreateFile(content);
-      if (!file)
+      if (!file) {
         return nullptr;
+      }
 
       return is_resumable_upload()
                  ? ConnectorDataPipeGetter::CreateResumablePipeGetter(
@@ -167,8 +171,9 @@ class ConnectorDataPipeGetterParametrizedTest
                        "boundary", metadata_, std::move(*file), is_obfuscated);
     } else {
       base::ReadOnlySharedMemoryRegion page = CreatePage(content);
-      if (!page.IsValid())
+      if (!page.IsValid()) {
         return nullptr;
+      }
 
       return is_resumable_upload()
                  ? ConnectorDataPipeGetter::CreateResumablePipeGetter(
@@ -235,8 +240,9 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFile) {
       CreateDataPipeGetter(large_file_content);
   // It's possible the large file couldn't be created due to a lack of space
   // on the device, in this case stop the test early.
-  if (!data_pipe_getter)
+  if (!data_pipe_getter) {
     return;
+  }
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
@@ -256,7 +262,12 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
     // resumable upload.
     return;
   }
-  std::string large_data = std::string(100 * 1024 * 1024, 'a');
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  constexpr size_t kLargeDataSize = 50 * 1024 * 1024;
+#else
+  constexpr size_t kLargeDataSize = 100 * 1024 * 1024;
+#endif
+  std::string large_data = std::string(kLargeDataSize, 'a');
   std::string expected_body =
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
@@ -275,8 +286,9 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
       CreateDataPipeGetter(large_data);
   // It's possible the large file couldn't be created due to a lack of space
   // on the device, in this case stop the test early.
-  if (!data_pipe_getter)
+  if (!data_pipe_getter) {
     return;
+  }
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
@@ -334,8 +346,9 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, ResetsCorrectly) {
       CreateDataPipeGetter(large_file_content);
   // It's possible the large file couldn't be created due to a lack of space on
   // the device, in this case stop the test early.
-  if (!data_pipe_getter)
+  if (!data_pipe_getter) {
     return;
+  }
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
@@ -394,4 +407,4 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationTest) {
 
   ASSERT_EQ(original_content, deobfuscated_content);
 }
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors

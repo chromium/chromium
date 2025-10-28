@@ -146,7 +146,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
   // Called after `data_pipe_getter_` has been initialized.
   void DataPipeCreatedCallback(
       std::unique_ptr<network::ResourceRequest> request,
-      std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter);
+      std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter>
+          data_pipe_getter);
 
   // Called by SendFileRequest and SendPageRequest after `data_pipe_getter_`
   // is known to be initialized to a correct state.

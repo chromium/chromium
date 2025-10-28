@@ -91,8 +91,8 @@ ConnectorUploadRequest::~ConnectorUploadRequest() {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
-            [](std::unique_ptr<
-                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
+            [](std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter::
+                                   InternalMemoryMappedFile> file) {},
             std::move(file)));
   }
 }

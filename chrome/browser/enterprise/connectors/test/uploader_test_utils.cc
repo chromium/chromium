@@ -14,7 +14,7 @@
 namespace enterprise_connectors::test {
 
 std::string GetBodyFromFileOrPageRequest(
-    safe_browsing::ConnectorDataPipeGetter* data_pipe_getter) {
+    ConnectorDataPipeGetter* data_pipe_getter) {
   EXPECT_TRUE(data_pipe_getter);
 
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;

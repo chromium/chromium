@@ -10,7 +10,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -81,7 +81,8 @@ class ConnectorUploadRequest {
 
   virtual ~ConnectorUploadRequest();
 
-  ConnectorDataPipeGetter* data_pipe_getter_for_testing() {
+  enterprise_connectors::ConnectorDataPipeGetter*
+  data_pipe_getter_for_testing() {
     return data_pipe_getter_.get();
   }
 
@@ -122,7 +123,8 @@ class ConnectorUploadRequest {
 
   // Data pipe getter used to stream a file or a page. Only populated for the
   // corresponding requests.
-  std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter_;
+  std::unique_ptr<enterprise_connectors::ConnectorDataPipeGetter>
+      data_pipe_getter_;
 
   // Suffix to be used for common histograms broken out by consumer.
   std::string histogram_suffix_;

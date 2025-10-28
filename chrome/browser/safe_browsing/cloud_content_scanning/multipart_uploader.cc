@@ -16,7 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter.h"
+#include "components/enterprise/connectors/core/connector_data_pipe_getter.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -37,6 +37,8 @@
 namespace safe_browsing {
 
 namespace {
+
+using ::enterprise_connectors::ConnectorDataPipeGetter;
 
 // Constants associated with exponential backoff. On each failure, we will
 // increase the backoff by `kBackoffFactor`, starting from

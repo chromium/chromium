@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTOR_DATA_PIPE_GETTER_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTOR_DATA_PIPE_GETTER_H_
 
 #include <stdint.h>
 
@@ -15,12 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/time/time.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors {
 
 // This class implements mojom::DataPipeGetter for:
 //
@@ -199,6 +198,6 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   mojo::ReceiverSet<network::mojom::DataPipeGetter> receivers_;
 };
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONNECTOR_DATA_PIPE_GETTER_H_
