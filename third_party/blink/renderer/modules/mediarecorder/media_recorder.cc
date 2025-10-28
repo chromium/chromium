@@ -235,8 +235,8 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
                                      GetBitrateModeFromOptions(options))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Failed to initialize native MediaRecorder the type provided (" +
-            mime_type_ + ") is not supported.");
+        StrCat({"Failed to initialize native MediaRecorder the type provided (",
+                mime_type_, ") is not supported."}));
   }
 
   audio_bits_per_second_ = bitrates.audio_bps.value_or(kDefaultAudioBitRate);

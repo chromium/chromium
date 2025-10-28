@@ -26,7 +26,7 @@ namespace {
 
 #define THROW_AND_RETURN_IF_ERROR(func, msg)                      \
   RETURN_IF_ERROR(func, [&exception_state](const String& error) { \
-    exception_state.ThrowTypeError(msg + error);                  \
+    exception_state.ThrowTypeError(StrCat({msg, error}));         \
     return;                                                       \
   });
 

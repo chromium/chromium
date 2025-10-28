@@ -33,7 +33,7 @@ int MediaControlRemainingTimeDisplayElement::EstimateElementWidth() const {
 String MediaControlRemainingTimeDisplayElement::FormatTime() const {
   // For the duration display, we prepend a "/ " to deliminate the current time
   // from the duration, e.g. "0:12 / 3:45".
-  return "/ " + MediaControlTimeDisplayElement::FormatTime();
+  return StrCat({"/ ", MediaControlTimeDisplayElement::FormatTime()});
 }
 
 }  // namespace blink

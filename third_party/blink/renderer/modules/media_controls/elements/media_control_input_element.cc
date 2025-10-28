@@ -165,7 +165,7 @@ void MediaControlInputElement::SetOverflowElementIsWanted(bool wanted) {
 void MediaControlInputElement::UpdateOverflowLabelAriaLabel(String subtitle) {
   String full_aria_label = aria_label_;
   if (!subtitle.empty()) {
-    full_aria_label = full_aria_label + " " + subtitle;
+    full_aria_label = StrCat({full_aria_label, " ", subtitle});
   }
 
   overflow_label_element_->setAttribute(html_names::kAriaLabelAttr,

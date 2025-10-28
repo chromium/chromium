@@ -77,10 +77,10 @@ String MediaControlsResourceLoader::GetMediaInterstitialsStyleSheet() {
 
 String MediaControlsResourceLoader::GetUAStyleSheet() {
   if (ShouldLoadAndroidCSS()) {
-    return GetMediaControlsCSS() + GetMediaControlsAndroidCSS() +
-           GetMediaInterstitialsStyleSheet();
+    return StrCat({GetMediaControlsCSS(), GetMediaControlsAndroidCSS(),
+                   GetMediaInterstitialsStyleSheet()});
   }
-  return GetMediaControlsCSS() + GetMediaInterstitialsStyleSheet();
+  return StrCat({GetMediaControlsCSS(), GetMediaInterstitialsStyleSheet()});
 }
 
 void MediaControlsResourceLoader::InjectMediaControlsUAStyleSheet() {

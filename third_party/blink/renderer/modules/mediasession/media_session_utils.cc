@@ -22,8 +22,8 @@ HeapVector<Member<MediaImage>> ProcessArtworkVector(
   for (MediaImage* image : processed_artwork) {
     KURL url = ExecutionContext::From(script_state)->CompleteURL(image->src());
     if (!url.IsValid()) {
-      exception_state.ThrowTypeError("'" + image->src() +
-                                     "' can't be resolved to a valid URL.");
+      exception_state.ThrowTypeError(
+          StrCat({"'", image->src(), "' can't be resolved to a valid URL."}));
       return {};
     }
     image->setSrc(url);

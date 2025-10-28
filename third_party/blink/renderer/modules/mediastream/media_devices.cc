@@ -942,17 +942,17 @@ void MediaDevices::SetPreferredSinkIdResultReceived(
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotFoundError,
-          "Device not found, " + sink_id + "."));
+          StrCat({"Device not found, ", sink_id, "."})));
       break;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
-          "Not authorized to access the device, " + sink_id + "."));
+          StrCat({"Not authorized to access the device, ", sink_id, "."})));
       break;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kTimeoutError,
-          "Timeout to access the device, " + sink_id + "."));
+          StrCat({"Timeout to access the device, ", sink_id, "."})));
       break;
     default:
       NOTREACHED();

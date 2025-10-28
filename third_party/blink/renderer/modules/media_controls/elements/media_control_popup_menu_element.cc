@@ -236,14 +236,14 @@ void MediaControlPopupMenuElement::SetPosition() {
   DCHECK(bounding_client_rect);
   DCHECK(dom_window);
 
-  String bottom_str_value =
-      String::Number(dom_window->innerHeight() -
-                     bounding_client_rect->bottom() + kPopupMenuMarginPx) +
-      kPx;
-  String right_str_value =
-      String::Number(dom_window->innerWidth() - bounding_client_rect->right() +
-                     kPopupMenuMarginPx) +
-      kPx;
+  String bottom_str_value = StrCat(
+      {String::Number(dom_window->innerHeight() -
+                      bounding_client_rect->bottom() + kPopupMenuMarginPx),
+       kPx});
+  String right_str_value = StrCat(
+      {String::Number(dom_window->innerWidth() - bounding_client_rect->right() +
+                      kPopupMenuMarginPx),
+       kPx});
 
   style()->setProperty(dom_window, "bottom", bottom_str_value, kImportant,
                        ASSERT_NO_EXCEPTION);
