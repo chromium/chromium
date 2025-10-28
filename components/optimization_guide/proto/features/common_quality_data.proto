@@ -233,7 +233,7 @@ message AnnotatedPageContent {
   PopupWindow popup_window = 8 [features = { field_presence: EXPLICIT }];
 
   // Information that pertains to the user's profile, not the page.
-  // TODO(b/454610456): This should be moved out of AnnotatedPageContent because
+  // TODO(crbug.com/454610456): This should be moved out of AnnotatedPageContent because
   // it does not semantically belong here.
   ProfileInformation profile_information = 9 [features = { field_presence: EXPLICIT }];
 }
@@ -909,9 +909,17 @@ message PopupWindow {
   int32 opener_common_ancestor_dom_node_id = 4 [features = { field_presence: EXPLICIT }];
 }
 
+// Information that pertains the user's Chrome profile.
+// Next ID: 2
+message ProfileInformation {
+  AutofillInformation autofill_information = 1 [features = { field_presence: EXPLICIT }];
+}
+
 // Autofill information that pertains to Autofill data on the client.
 // Next ID: 2
 message AutofillInformation {
+  repeated FillableData fillable_data = 1;
+
   // The type of data that can be autofilled into a form because the client has
   // corresponding data on file. Note that this is coarse data: A user may have
   // an address on file that does not contain an email address. So the autofill
@@ -919,6 +927,7 @@ message AutofillInformation {
   // triggered on an email field.
   enum FillableData {
     UNSPECIFIED = 0;
+
     // If reported, the user has at least one address on file.
     ADDRESS = 1;
 
@@ -928,14 +937,6 @@ message AutofillInformation {
     // If reported, the user has at least one credit card on file.
     CREDIT_CARD = 6;
   }
-
-  repeated FillableData fillable_data = 1;
-}
-
-// Information that pertains the user's Chrome profile.
-// Next ID: 2
-message ProfileInformation {
-  AutofillInformation autofill_information = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Uniquely identifies a DOM elements across all frames.
@@ -2191,6 +2192,13 @@ enum RedactionDecision {
 
   // Is a password input or was in the past.
   REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD = 2;
+
+  // Empty payment fields are not redacted.
+  REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD = 3;
+
+  // Is a non-empty field that autofill recognized as a sensitive payment field
+  // type and so must be redacted.
+  REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD = 4;
 }
 
 // The type of data that can be autofilled into a form.
