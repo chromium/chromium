@@ -50,7 +50,10 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
 
   // When the top container is floating, it needs to have its layout applied
   // separately.
-  void MaybeLayOutTopContainerOverlay();
+  void MaybeLayoutTopContainerOverlay();
+
+  // Returns whether the top contents separator should go in the top container.
+  bool ContentsSeparatorInTopContainer() const;
 
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;

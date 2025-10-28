@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 
@@ -173,10 +174,10 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
         SetViewVisibility(view, visible);
       });
 
-  MaybeLayOutTopContainerOverlay();
+  MaybeLayoutTopContainerOverlay();
 }
 
-void BrowserViewLayoutImpl::MaybeLayOutTopContainerOverlay() {
+void BrowserViewLayoutImpl::MaybeLayoutTopContainerOverlay() {
   if (!views().top_container ||
       views().top_container->parent() == views().main_container) {
     return;
@@ -220,6 +221,28 @@ void BrowserViewLayoutImpl::MaybeLayOutTopContainerOverlay() {
                    [this](views::View* view, bool visible) {
                      SetViewVisibility(view, visible);
                    });
+}
+
+bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
+  // If there is no multi-contents view, there's nowhere else to put the
+  // separator, so it goes in the top container.
+  if (!views().multi_contents_view) {
+    return true;
+  }
+
+  // In immersive mode, the separator goes with the container to the overlay.
+  if (delegate().GetImmersiveModeController()->IsEnabled()) {
+    // TODO(https://crbug.com/7089871): handle "toolbar always visible" mode.
+    return true;
+  }
+
+  // If the infobar is visible, the separator has to go in the top container.
+  if (IsInfobarVisible()) {
+    return true;
+  }
+
+  // The separator should go in the multi contents view instead.
+  return false;
 }
 
 gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
@@ -350,6 +373,8 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
     y = top_container_layout.bounds.bottom();
   }
 
+  // TODO(https://crbug.com/7089871): handle "toolbar always visible" mode.
+
   // Lay out infobar container.
   if (IsParentedTo(views().infobar_container, views().main_container)) {
     const gfx::Rect infobar_bounds = gfx::Rect(
@@ -403,6 +428,27 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
     Inset(horizontal_space, side_panel_width, side_panel_leading);
   }
 
+  // This will be used to position the separator corner.
+  const int separator_edge =
+      side_panel_leading ? horizontal_space.start() : horizontal_space.end();
+
+  // Maybe show separators in multi-contents view. If this happens, the
+  // separators aren't shown in the main container.
+  if (views().multi_contents_view) {
+    bool show_leading_separator = false;
+    bool show_trailing_separator = false;
+    if (show_left_separator || show_right_separator) {
+      show_leading_separator = side_panel_leading;
+      show_trailing_separator = !side_panel_leading;
+    }
+    views().multi_contents_view->SetShouldShowLeadingSeparator(
+        show_leading_separator);
+    views().multi_contents_view->SetShouldShowTrailingSeparator(
+        show_trailing_separator);
+    show_left_separator = false;
+    show_right_separator = false;
+  }
+
   // Lay out the left side panel separator.
   if (IsParentedTo(views().left_aligned_side_panel_separator,
                    views().main_container)) {
@@ -439,9 +485,29 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
                     separator_bounds, show_right_separator);
   }
 
-  // Lay out contents container.
+  // Lay out the corner separator.
+  if (IsParentedTo(views().side_panel_rounded_corner, views().main_container)) {
+    const bool visible = show_left_separator || show_right_separator;
+    gfx::Rect corner_bounds;
+    if (visible) {
+      const gfx::Size corner_size =
+          views().side_panel_rounded_corner->GetPreferredSize();
+      const gfx::Point corner_pos(side_panel_leading
+                                      ? separator_edge
+                                      : separator_edge - corner_size.width(),
+                                  y - views::Separator::kThickness);
+      corner_bounds = gfx::Rect(corner_pos, corner_size);
+    }
+    layout.AddChild(views().side_panel_rounded_corner, corner_bounds, visible);
+  }
+
+  // Lay out contents container. The contents container contains the multi-
+  // contents view when multi-contents are enabled. The checks here are to
+  // force the logic to be updated when multi-contents is fully rolled-out.
   CHECK(IsParentedToAndVisible(views().contents_container,
                                views().main_container));
+  CHECK(views().multi_contents_view == nullptr ||
+        views().contents_container->Contains(views().multi_contents_view));
   layout.AddChild(
       views().contents_container,
       gfx::Rect(horizontal_space.start(), y, horizontal_space.length(),
@@ -492,13 +558,31 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
     y = bookmark_bounds.bottom();
   }
 
-  // Lay out the separator.
-  if (delegate().IsContentsSeparatorEnabled()) {
-    if (IsParentedTo(views().top_container_separator, views().top_container)) {
-      // TODO(https://crbug.com/453717426): Implement. For now, we won't show
-      // the separator.
-      layout.AddChild(views().top_container_separator, gfx::Rect(), false);
+  // The top separator may need to be shown in the top container or the
+  // multi-contents view.
+  const bool show_top_separator = delegate().IsContentsSeparatorEnabled();
+  const bool separator_in_top_container = ContentsSeparatorInTopContainer();
+
+  // Maybe show the separator in the multi-contents view. If this happens, it
+  // does not appear in the top container.
+  if (views().multi_contents_view) {
+    views().multi_contents_view->SetShouldShowTopSeparator(
+        show_top_separator && !separator_in_top_container);
+  }
+
+  // Maybe show the separator in the top container.
+  if (IsParentedTo(views().top_container_separator, views().top_container)) {
+    const bool separator_visible =
+        show_top_separator && separator_in_top_container;
+    gfx::Rect separator_bounds;
+    if (separator_visible) {
+      separator_bounds = gfx::Rect(
+          params.visual_client_area.x(), y, params.visual_client_area.width(),
+          views().top_container_separator->GetPreferredSize().height());
+      y = separator_bounds.bottom();
     }
+    layout.AddChild(views().top_container_separator, separator_bounds,
+                    separator_visible);
   }
 
   // These are the bounds for the top container.
