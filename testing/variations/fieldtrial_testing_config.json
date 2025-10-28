@@ -13698,11 +13698,11 @@
                     "enable_features": [
                         "EnableReadabilityHeuristic",
                         "EnableReaderMode",
-                        "EnableReaderModeDefaultBrowserPromo",
                         "EnableReaderModeTranslation",
                         "ReaderModeUseReadability"
                     ],
                     "disable_features": [
+                        "EnableReaderModeDefaultBrowserPromo",
                         "EnableReaderModePageEligibilityForToolsMenu"
                     ]
                 }
