@@ -222,6 +222,24 @@ source_set("permissions") {
       "//third_party/jni_zero",
       "//ui/android",
     ]
+  } else if (is_ios) {
+    sources += [
+      "ios/content/permission_prompt/permission_dialog.h",
+      "ios/content/permission_prompt/permission_dialog.mm",
+      "ios/content/permission_prompt/permission_dialog_delegate.h",
+      "ios/content/permission_prompt/permission_dialog_delegate.mm",
+      "ios/content/permission_prompt/permission_prompt_ios.h",
+      "ios/content/permission_prompt/permission_prompt_ios.mm",
+      "ios/content/permission_prompt/permission_prompt_ios_factory.mm",
+    ]
+    deps += [
+      "//base",
+      "//components/content_settings/core/common",
+      "//components/strings:components_strings_grit",
+      "//content/public/browser",
+      "//ui/base",
+      "//url",
+    ]
   } else {
     sources += [
       "bluetooth_chooser_controller.cc",
@@ -308,27 +326,31 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_setting_permission_context_base_unittest.cc",
-    "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
-    "contexts/geolocation_permission_context_unittest.cc",
-    "contexts/keyboard_lock_prompt_unittest.cc",
-    "contexts/midi_permission_context_unittest.cc",
-    "contexts/midi_sysex_permission_context_unittest.cc",
     "contexts/nfc_permission_context_unittest.cc",
     "contexts/wake_lock_permission_context_unittest.cc",
-    "object_permission_context_base_unittest.cc",
-    "pepc_initiated_permission_request_unittest.cc",
-    "permission_actions_history_unittest.cc",
-    "permission_decision_auto_blocker_unittest.cc",
     "permission_indicators_tab_data_unittest.cc",
-    "permission_manager_unittest.cc",
-    "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",
-    "permission_uma_util_unittest.cc",
-    "resolvers/content_setting_permission_resolver_unittest.cc",
     "resolvers/geolocation_permission_resolver_unittest.cc",
   ]
-  if (!is_android) {
+  if (!is_ios) {
+    sources += [
+      "content_setting_permission_context_base_unittest.cc",
+      "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
+      "contexts/geolocation_permission_context_unittest.cc",
+      "contexts/keyboard_lock_prompt_unittest.cc",
+      "contexts/midi_permission_context_unittest.cc",
+      "contexts/midi_sysex_permission_context_unittest.cc",
+      "object_permission_context_base_unittest.cc",
+      "pepc_initiated_permission_request_unittest.cc",
+      "permission_actions_history_unittest.cc",
+      "permission_decision_auto_blocker_unittest.cc",
+      "permission_manager_unittest.cc",
+      "permission_request_manager_unittest.cc",
+      "permission_uma_util_unittest.cc",
+      "resolvers/content_setting_permission_resolver_unittest.cc",
+    ]
+  }
+  if (!is_android && !is_ios) {
     sources += [
       "bluetooth_chooser_controller_unittest.cc",
       "bluetooth_scanning_prompt_controller_unittest.cc",
@@ -340,6 +362,15 @@ source_set("unit_tests") {
       "android/bluetooth_scanning_prompt_android_unittest.cc",
       "android/permission_prompt/permission_dialog_delegate_unittest.cc",
       "android/permissions_reprompt_controller_android_unittest.cc",
+    ]
+  }
+  if (is_ios) {
+    sources += [
+      "ios/content/permission_prompt/permission_dialog_delegate_unittest.mm",
+      "ios/content/permission_prompt/permission_dialog_unittest.mm",
+      "ios/content/permission_prompt/permission_prompt_ios_unittest.mm",
+      "ios/content/permission_prompt/permission_prompt_test_util.h",
+      "ios/content/permission_prompt/permission_prompt_test_util.mm",
     ]
   }
   deps = [

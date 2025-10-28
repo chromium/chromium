@@ -53,7 +53,7 @@ base::WeakPtr<PermissionRequest> PermissionRequest::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 PermissionRequest::AnnotatedMessageText::AnnotatedMessageText(
     std::u16string text,
     std::vector<std::pair<size_t, size_t>> bolded_ranges)
@@ -115,10 +115,12 @@ PermissionRequest::GetDialogAnnotatedMessageText(
     case RequestType::kNotifications:
       message_id = IDS_NOTIFICATIONS_INFOBAR_TEXT;
       break;
+#if BUILDFLAG(IS_ANDROID)
     case RequestType::kProtectedMediaIdentifier:
       message_id =
           IDS_PROTECTED_MEDIA_IDENTIFIER_PER_ORIGIN_PROVISIONING_INFOBAR_TEXT;
       break;
+#endif  // BUILDFLAG(IS_ANDROID)
     case RequestType::kStorageAccess:
       // The SA prompt does not currently bold any part of its message.
       return AnnotatedMessageText(
@@ -175,7 +177,7 @@ PermissionRequest::GetDialogAnnotatedMessageText(
 
   return AnnotatedMessageText(text, bolded_ranges);
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 bool PermissionRequest::IsEmbeddedPermissionElementInitiated() const {
   return data_->IsEmbeddedPermissionElementInitiated();
@@ -193,7 +195,7 @@ std::optional<gfx::Rect> PermissionRequest::GetAnchorElementPosition() const {
   return data_->GetAnchorElementPosition();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool PermissionRequest::IsConfirmationChipSupported() {
   return permissions::IsConfirmationChipSupported(request_type());
@@ -417,7 +419,7 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
   DCHECK_NE(0, message_id);
   return l10n_util::GetStringUTF16(message_id);
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 std::optional<std::u16string> PermissionRequest::GetAllowAlwaysText() const {
   return std::nullopt;

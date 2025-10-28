@@ -119,20 +119,20 @@ bool ShouldShowQuietRequestAgainIfPreempted(
 }
 
 bool IsMediaRequest(RequestType type) {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (type == RequestType::kCameraPanTiltZoom) {
     return true;
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return type == RequestType::kMicStream || type == RequestType::kCameraStream;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool IsExclusiveAccessRequest(RequestType type) {
   return type == RequestType::kPointerLock ||
          type == RequestType::kKeyboardLock;
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
   if (a->requesting_origin() != b->requesting_origin()) {
@@ -142,12 +142,12 @@ bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
   if (IsMediaRequest(a->request_type()) && IsMediaRequest(b->request_type())) {
     return true;
   }
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (IsExclusiveAccessRequest(a->request_type()) &&
       IsExclusiveAccessRequest(b->request_type())) {
     return true;
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return false;
 }
 
@@ -609,7 +609,7 @@ void PermissionRequestManager::Accept() {
     PermissionGrantedIncludingDuplicates(request.get(),
                                          /*is_one_time=*/false);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     std::optional<ContentSettingsType> content_settings_type =
         RequestTypeToContentSettingsType(request->request_type());
     if (content_settings_type.has_value()) {
@@ -618,7 +618,7 @@ void PermissionRequestManager::Accept() {
           PermissionSourceUI::PROMPT, web_contents()->GetBrowserContext(),
           base::Time::Now());
     }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
 
   NotifyRequestDecided(action);
@@ -1611,12 +1611,12 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
 }
 
 bool PermissionRequestManager::IsCurrentRequestExclusiveAccess() const {
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   return IsRequestInProgress() &&
          IsExclusiveAccessRequest(requests_[0]->request_type());
 #else
   return false;
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 bool PermissionRequestManager::ShouldFinalizeRequestAfterDecided(

@@ -561,7 +561,7 @@ std::u16string GeolocationPermissionContextTests::GetPromptText() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
   auto& request = manager->Requests().front();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return request
       ->GetDialogAnnotatedMessageText(
           /*embedding_origin=*/request->requesting_origin())
@@ -569,7 +569,7 @@ std::u16string GeolocationPermissionContextTests::GetPromptText() {
 #else
   return base::ASCIIToUTF16(request->requesting_origin().spec()) +
          request->GetMessageTextFragment();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Tests ----------------------------------------------------------------------

@@ -57,10 +57,10 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
                      PermissionRequestGestureType::NO_GESTURE),
         request_camera_(RequestType::kCameraStream,
                         PermissionRequestGestureType::NO_GESTURE),
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         request_ptz_(RequestType::kCameraPanTiltZoom,
                      PermissionRequestGestureType::NO_GESTURE),
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
         iframe_request_same_domain_(GURL("https://www.google.com/some/url"),
                                     RequestType::kMidiSysex),
         iframe_request_other_domain_(GURL("https://www.youtube.com"),
