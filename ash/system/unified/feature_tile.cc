@@ -18,6 +18,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -134,10 +136,8 @@ void FeatureTile::ProgressBackground::Paint(gfx::Canvas* canvas,
   clip_bounds.Inset(kDownloadProgressBorderThickness);
   int clip_radius =
       std::max(0, tile->corner_radius_ - kDownloadProgressBorderThickness);
-  SkScalar clip_radii[8];
-  std::fill_n(clip_radii, 8, clip_radius);
-  SkPath clip;
-  clip.addRoundRect(gfx::RectToSkRect(clip_bounds), clip_radii);
+  const SkPath clip = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(clip_bounds), clip_radius, clip_radius));
   canvas->ClipPath(clip, /*do_anti_alias=*/true);
 
   // Shrink the width of the progress bar according to the tile's current

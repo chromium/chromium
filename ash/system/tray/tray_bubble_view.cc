@@ -579,7 +579,8 @@ bool TrayBubbleView::WidgetHasHitTestMask() const {
 
 void TrayBubbleView::GetWidgetHitTestMask(SkPath* mask) const {
   DCHECK(mask);
-  mask->addRect(gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
+  *mask = SkPath::Rect(
+      gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
 }
 
 std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {

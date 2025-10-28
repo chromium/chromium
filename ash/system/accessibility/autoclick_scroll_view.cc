@@ -16,6 +16,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -204,7 +206,7 @@ class AutoclickScrollButton : public CustomShapeButton,
     int height = kScrollPadButtonHypotenuseDips;
     int width = height / 2;
     int half_width = width / 2;
-    SkPath path;
+    SkPathBuilder path;
     if (all_edges) {
       path.moveTo(0, 0);
       path.lineTo(0, height);
@@ -225,7 +227,7 @@ class AutoclickScrollButton : public CustomShapeButton,
     }
 
     if (action_ == AutoclickController::ScrollPadAction::kScrollLeft)
-      return path;
+      return path.detach();
 
     SkMatrix matrix;
     if (action_ == AutoclickController::ScrollPadAction::kScrollUp) {
@@ -238,7 +240,7 @@ class AutoclickScrollButton : public CustomShapeButton,
       matrix.postTranslate(half_width, -half_width);
     }
     path.transform(matrix);
-    return path;
+    return path.detach();
   }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
@@ -281,8 +283,7 @@ class AutoclickScrollButton : public CustomShapeButton,
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override {
     DCHECK(mask);
-    gfx::Rect rect(GetContentsBounds());
-    mask->addPath(CreateCustomShapePath(rect));
+    *mask = CreateCustomShapePath(GetContentsBounds());
     return true;
   }
 

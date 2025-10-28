@@ -5,6 +5,9 @@
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
@@ -29,15 +32,17 @@ CalendarUpNextViewBackground::~CalendarUpNextViewBackground() = default;
 
 SkPath CalendarUpNextViewBackground::GetPath(const gfx::Size& size) {
   // First draw a rounded rectangle.
-  SkPath path;
+  SkPathBuilder path;
   gfx::RectF rect_f((gfx::SizeF(size)));
   rect_f.set_y(kTopOffset);
   SkRect rect = SkRect{rect_f.x(), rect_f.y(), rect_f.width(), rect_f.height()};
-  path.addRoundRect(
-      rect, (SkScalar[]){kBackgroundCornerRadius, kBackgroundCornerRadius,
-                         kBackgroundCornerRadius, kBackgroundCornerRadius, 0.f,
-                         0.f, 0.f, 0.f});
-  path.close();
+  path.addRRect(SkRRect::MakeRectRadii(
+      rect, (SkVector[]){
+                {kBackgroundCornerRadius, kBackgroundCornerRadius},
+                {kBackgroundCornerRadius, kBackgroundCornerRadius},
+                {0, 0},
+                {0, 0},
+            }));
 
   // Cache center-x for positioning curves when size changes.
   const float cx = rect_f.CenterPoint().x();
@@ -70,9 +75,8 @@ SkPath CalendarUpNextViewBackground::GetPath(const gfx::Size& size) {
   // Draw circle in the center.
   constexpr float kRadius = 16.f;
   path.addCircle(cx, /*y=*/kRadius, kRadius);
-  path.close();
 
-  return path;
+  return path.detach();
 }
 
 void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,

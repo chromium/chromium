@@ -17,6 +17,7 @@
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -60,7 +61,7 @@ SkPath GetClipPath(gfx::Size size) {
       SkPoint::Make(0.f, mahi_constants::kRefreshBannerStackDepth - 1);
   const auto bottom_horizontal_offset = SkPoint::Make(bottom_radius, 0.f);
 
-  return SkPath()
+  return SkPathBuilder()
       // Start just before the curve of the top-left corner.
       .moveTo(radius, 0.f)
       // Draw the top-left rounded corner.
@@ -76,7 +77,8 @@ SkPath GetClipPath(gfx::Size size) {
       .arcTo(bottom_right - bottom_vertical_offset, bottom_right, bottom_radius)
       .lineTo(bottom_right)
       .lineTo(top_right)
-      .close();
+      .close()
+      .detach();
 }
 
 }  // namespace
