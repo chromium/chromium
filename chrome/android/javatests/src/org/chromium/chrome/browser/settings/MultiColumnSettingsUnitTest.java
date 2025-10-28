@@ -79,13 +79,13 @@ public class MultiColumnSettingsUnitTest {
 
         // Simulate loading the main page at the left pane.
         var mainFragment = new MainSettings();
-        fragmentTracker.onFragmentStarted(fragmentManager, mainFragment);
+        fragmentTracker.onFragmentResumed(fragmentManager, mainFragment);
         // Detailed paget title should be not affected.
         assertEquals(0, fragmentTracker.mTitles.size());
 
         // Load a detailed page.
         var fragment1 = new TestFragment();
-        fragmentTracker.onFragmentStarted(fragmentManager, fragment1);
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment1);
 
         assertEquals(1, fragmentTracker.mTitles.size());
         {
@@ -97,7 +97,7 @@ public class MultiColumnSettingsUnitTest {
         // Load another detailed page.
         var fragment2 = new TestFragment();
         fragmentManager.addBackStack();
-        fragmentTracker.onFragmentStarted(fragmentManager, fragment2);
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment2);
 
         assertEquals(2, fragmentTracker.mTitles.size());
         {
@@ -113,7 +113,7 @@ public class MultiColumnSettingsUnitTest {
         // Load yet another detailed page.
         var fragment3 = new TestFragment();
         fragmentManager.addBackStack();
-        fragmentTracker.onFragmentStarted(fragmentManager, fragment3);
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment3);
 
         assertEquals(3, fragmentTracker.mTitles.size());
         {
@@ -132,7 +132,7 @@ public class MultiColumnSettingsUnitTest {
 
         // Restart the second fragment. The stack should be shrunk.
         fragmentManager.removeBackStack();
-        fragmentTracker.onFragmentStarted(fragmentManager, fragment2);
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment2);
 
         assertEquals(2, fragmentTracker.mTitles.size());
         {
@@ -148,7 +148,7 @@ public class MultiColumnSettingsUnitTest {
         // Emulation of the tap on a menu item in the main menu.
         var fragment4 = new TestFragment();
         fragmentManager.clearBackStack();
-        fragmentTracker.onFragmentStarted(fragmentManager, fragment4);
+        fragmentTracker.onFragmentResumed(fragmentManager, fragment4);
 
         assertEquals(1, fragmentTracker.mTitles.size());
         {
