@@ -1209,10 +1209,10 @@ TEST_F(AudioContextTest, RenderSizeHint) {
   options = AudioContextOptions::Create();
   options->setRenderSizeHint(
       MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
-          8193u));
+          16385u));
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 8192u);
+  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 16384u);
 
   options = AudioContextOptions::Create();
   options->setRenderSizeHint(

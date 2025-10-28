@@ -45,10 +45,10 @@ TEST_F(OfflineAudioContextTest, RenderSizeHint) {
   options->setSampleRate(44100.0);
   options->setRenderSizeHint(
       MakeGarbageCollected<V8UnionAudioContextRenderSizeCategoryOrUnsignedLong>(
-          8193u));
+          16385u));
   context = OfflineAudioContext::Create(GetFrame().DomWindow(), options,
                                         ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 8192u);
+  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 16384u);
 
   options = OfflineAudioContextOptions::Create();
   options->setNumberOfChannels(1);

@@ -137,12 +137,25 @@ float MaxAudioBufferSampleRate() {
 
 uint32_t GetClampedRenderQuantumFrames(uint32_t render_quantum_frames) {
   constexpr uint32_t kMinRenderQuantumFrames = 1;
-  // 8192 was observed as an upper bound for hardware buffer sizes on desktop
-  // platforms, and is generally a "high" value for realtime audio.  Some
-  // Android devices may have very high hardware buffer sizes, and very high
-  // sample rates may also want higher buffer sizes, so this may need to be
-  // re-evaluated in the future.
-  constexpr uint32_t kMaxRenderQuantumFrames = 8192;
+  // We cap the render quantum size to prevent extremely large buffer
+  // allocations.  The value was chosen based on the following factors:
+  //
+  //  - ScriptProcessorNode Compatibility: 16384 is the maximum bufferSize
+  //    supported by ScriptProcessorNode.
+  //
+  //  - Hardware Buffer Sizes: All observed desktop devices and ~98% of observed
+  //    Android devices use WebAudio with a hardware buffer size of 8192 or
+  //    less, although some Android devices use much larger buffers.
+  //
+  //  - High Sample Rates: At the maximum supported sample rate (768000 Hz),
+  //    16384 frames corresponds to ~21ms of latency.  While applications might
+  //    prefer a longer duration to reduce CPU load, this is a reasonable
+  //    compromise.
+  //
+  // This value should be increased if hardware capabilities change and larger
+  // hardware buffer sizes become common.  It should not be decreased, for
+  // backwards compatibility.
+  constexpr uint32_t kMaxRenderQuantumFrames = 16384;
   return ClampTo(render_quantum_frames, kMinRenderQuantumFrames,
                  kMaxRenderQuantumFrames);
 }
