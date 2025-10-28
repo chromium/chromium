@@ -38,6 +38,8 @@ public class DirectWritingSettingsHelper {
 
         // Samsung keyboard supports handwriting in Chrome and Webview from Android S onwards.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
+        // Samsung switched to Android handwriting APIs from Android U onwards.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
         // Check to see if we are able to instantiate the DirectWritingServiceCallback.
         if (!isDirectWritingServiceCallbackAvailable()) return false;
         return isHoneyboardDefault(context) && isFeatureEnabled(context);
