@@ -11382,7 +11382,7 @@
             ]
         }
     ],
-    "GlicActorEnterprisePrefDefault": [
+    "GlicActorRolloutControl": [
         {
             "platforms": [
                 "linux",
@@ -11391,12 +11391,13 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledByDefault_Dogfood",
+                    "name": "Enabled_Dogfood",
                     "params": {
                         "glic_actor_enterprise_pref_default": "enabled_by_default"
                     },
                     "enable_features": [
-                        "GlicActor"
+                        "GlicActor",
+                        "GlicActorUi"
                     ]
                 }
             ]
