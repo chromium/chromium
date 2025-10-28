@@ -21,7 +21,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -48,7 +47,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
@@ -2300,10 +2298,6 @@ public class StripLayoutHelper
         StripLayoutView stripView = determineClickedView(x, y, /* buttons= */ 0);
 
         if (stripView == null) {
-            // Broadcast to start moving the window instance as the user has long pressed on the
-            // open space of the tab strip.
-            sendMoveWindowBroadcast(mToolbarContainerView, x, y);
-
             // Show the tab strip context menu at the long-press position on the empty space.
             showTabStripContextMenu(x, y);
             return;
@@ -5928,32 +5922,6 @@ public class StripLayoutHelper
     private void resetDelayedReorderState() {
         mDelayedReorderView = null;
         mDelayedReorderInitialX = 0.f;
-    }
-
-    private void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
-        if (!DeviceInfo.isXr()) return;
-        if (mWindowAndroid.getActivity().get() == null) return;
-
-        // The start position is in the view coordinate system and related to the top left position
-        // of the toolbar container view. Convert it to the screen coordinate system for window drag
-        // start position.
-        int[] topLeftLocation = new int[2];
-        view.getLocationOnScreen(topLeftLocation);
-        float startXInScreen = topLeftLocation[0] + startXInView;
-        float startYInScreen = topLeftLocation[1] + startYInView;
-
-        int taskId = ApplicationStatus.getTaskId(mWindowAndroid.getActivity().get());
-
-        // Prepare the move window intent for the Android system to initiate move and take over the
-        // user input events. The intent is ignored when not handled with no impact to existing
-        // Android platforms.
-        Intent intent = new Intent();
-        intent.setPackage(view.getContext().getPackageName());
-        intent.setAction("com.android.systemui.MOVE_WINDOW");
-        intent.putExtra("MOVE_WINDOW_TASK_ID", taskId);
-        intent.putExtra("MOVE_WINDOW_START_X", startXInScreen);
-        intent.putExtra("MOVE_WINDOW_START_Y", startYInScreen);
-        mWindowAndroid.sendBroadcast(intent);
     }
 
     /** Returns the keyboard-focused view, or null if there is none. */

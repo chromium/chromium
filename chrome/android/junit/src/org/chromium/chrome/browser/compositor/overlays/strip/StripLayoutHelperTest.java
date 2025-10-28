@@ -4784,20 +4784,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    public void testDrag_sendMoveWindowBroadcast_success() {
-        DeviceInfo.setIsXrForTesting(true);
-        // Setup with tabs and select first tab.
-        setTabStripDragHandlerMock();
-        when(mToolbarContainerView.getContext()).thenReturn(mActivity);
-        initializeTest(false, false, 0, 5);
-
-        // Act and verify the broadcast is sent.
-        onLongPress_OffTab();
-        verify(mWindowAndroid, times(1)).sendBroadcast(any());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_DragOntoSourceStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, 0, 5);
