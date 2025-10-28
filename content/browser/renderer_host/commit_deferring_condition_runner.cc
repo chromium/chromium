@@ -109,9 +109,13 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
                 NavigationRequest::WILL_START_NAVIGATION);
       break;
     case CommitDeferringCondition::NavigationType::kOther:
-      // For other navigations, conditions should run before navigation commit.
-      DCHECK_EQ(navigation_request.state(),
-                NavigationRequest::WILL_PROCESS_RESPONSE);
+      // For other navigations, conditions should run before navigation commit,
+      // which can be either a normal commit or an error page commit.
+      DCHECK(navigation_request.state() ==
+                 NavigationRequest::WILL_PROCESS_RESPONSE ||
+             navigation_request.state() ==
+                 NavigationRequest::WILL_FAIL_REQUEST ||
+             navigation_request.state() == NavigationRequest::CANCELING);
       break;
   }
 

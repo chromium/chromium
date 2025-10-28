@@ -390,14 +390,17 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
       NavigationThrottleRegistry& registry,
       base::OnceClosure on_will_start_request_closure,
       base::RepeatingClosure on_will_redirect_request_closure,
-      base::OnceClosure on_will_process_response_closure)
+      base::OnceClosure on_will_process_response_closure,
+      base::OnceClosure on_will_fail_request_closure)
       : NavigationThrottle(registry),
         on_will_start_request_closure_(
             std::move(on_will_start_request_closure)),
         on_will_redirect_request_closure_(
             std::move(on_will_redirect_request_closure)),
         on_will_process_response_closure_(
-            std::move(on_will_process_response_closure)) {}
+            std::move(on_will_process_response_closure)),
+        on_will_fail_request_closure_(std::move(on_will_fail_request_closure)) {
+  }
   ~TestNavigationManagerThrottle() override {}
 
   const char* GetNameForLogging() override {
@@ -427,9 +430,17 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
     return NavigationThrottle::DEFER;
   }
 
+  NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
+    CHECK(on_will_fail_request_closure_);
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(on_will_fail_request_closure_));
+    return NavigationThrottle::DEFER;
+  }
+
   base::OnceClosure on_will_start_request_closure_;
   base::RepeatingClosure on_will_redirect_request_closure_;
   base::OnceClosure on_will_process_response_closure_;
+  base::OnceClosure on_will_fail_request_closure_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3356,7 +3367,8 @@ void TestNavigationManager::ResumeNavigation() {
   TRACE_EVENT("test", "TestNavigationManager::ResumeNavigation");
   CHECK(current_state_ == NavigationState::REQUEST_STARTED ||
         current_state_ == NavigationState::REDIRECTED ||
-        current_state_ == NavigationState::RESPONSE);
+        current_state_ == NavigationState::RESPONSE ||
+        current_state_ == NavigationState::REQUEST_FAILED);
   CHECK_EQ(current_state_, desired_state_);
   CHECK(navigation_paused_);
   ResumeIfPaused();
@@ -3374,6 +3386,12 @@ ukm::SourceId TestActivationManager::next_page_ukm_source_id() const {
 bool TestNavigationManager::WaitForResponse() {
   TRACE_EVENT("test", "TestNavigationManager::WaitForResponse");
   desired_state_ = NavigationState::RESPONSE;
+  return WaitForDesiredState();
+}
+
+bool TestNavigationManager::WaitForRequestFailed() {
+  TRACE_EVENT("test", "TestNavigationManager::WaitForRequestFailed");
+  desired_state_ = NavigationState::REQUEST_FAILED;
   return WaitForDesiredState();
 }
 
@@ -3416,6 +3434,8 @@ void TestNavigationManager::DidStartNavigation(NavigationHandle* handle) {
       base::BindRepeating(&TestNavigationManager::OnWillRedirectRequest,
                           weak_factory_.GetWeakPtr()),
       base::BindOnce(&TestNavigationManager::OnWillProcessResponse,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&TestNavigationManager::OnWillFailRequest,
                      weak_factory_.GetWeakPtr())));
 
   current_state_ = NavigationState::WILL_START;
@@ -3494,6 +3514,12 @@ void TestNavigationManager::OnWillRedirectRequest() {
 
 void TestNavigationManager::OnWillProcessResponse() {
   current_state_ = NavigationState::RESPONSE;
+  navigation_paused_ = true;
+  OnNavigationStateChanged();
+}
+
+void TestNavigationManager::OnWillFailRequest() {
+  current_state_ = NavigationState::REQUEST_FAILED;
   navigation_paused_ = true;
   OnNavigationStateChanged();
 }

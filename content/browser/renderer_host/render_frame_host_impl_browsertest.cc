@@ -667,7 +667,9 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
     return true;
   }
 
-  void CancelDialogs(WebContents* web_contents, bool reset_state) override {}
+  void CancelDialogs(WebContents* web_contents, bool reset_state) override {
+    did_cancel_dialog_ = true;
+  }
 
   // Keep track of whether the tab has notified us of a navigation state change
   // which invalidates the displayed URL.
@@ -679,6 +681,7 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
 
   int url_invalidate_count() { return url_invalidate_count_; }
   void reset_url_invalidate_count() { url_invalidate_count_ = 0; }
+  bool did_cancel_dialog() { return did_cancel_dialog_; }
 
  private:
   DialogClosedCallback callback_;
@@ -698,6 +701,9 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
 
   // The |proceed| value returned by the last unload event.
   bool proceed_ = false;
+
+  // Whether a dialog has been canceled.
+  bool did_cancel_dialog_ = false;
 };
 
 // A RenderFrameHostImpl that discards callback for BeforeUnload.
@@ -7967,6 +7973,94 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
   // We shouldn't have seen any beforeunload dialogs.
   EXPECT_EQ(0, dialog_manager()->num_beforeunload_dialogs_seen());
+}
+
+// Regression test for https://crbug.com/434224559. Ensure that an error page
+// navigation in a subframe can't be used to dismiss a beforeunload dialog.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
+                       ErrorPageCommitDoesNotDismissDialog) {
+  // This test requires OOPIFs, since it needs to run script in a subframe's
+  // process while the main frame's process is blocked by a beforeunload dialog.
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"b.com"});
+
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  // Set up a URL that will lead to an error page.
+  GURL error_url(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(error_url,
+                                                   net::ERR_DNS_TIMED_OUT);
+
+  // Install a beforeunload handler in the main frame that navigates the first
+  // b.com subframe to `error_url` and also shows a dialog. Also set up an
+  // observer to wait for the subframe navigation to `error_url`.
+  TestNavigationManager error_navigation_manager(web_contents(), error_url);
+  std::string script =
+      "window.onbeforeunload = () => {"
+      "  document.querySelectorAll('iframe')[0].src = $1;"
+      "  return 'x';"
+      "}";
+  EXPECT_TRUE(ExecJs(root, JsReplace(script, error_url)));
+
+  // Disable beforeunload timer to prevent flakiness.
+  PrepContentsForBeforeUnloadTest(web_contents());
+
+  // Start a cross-site navigation in the main frame.
+  GURL cross_site_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  shell()->LoadURL(cross_site_url);
+
+  // Wait for the subframe navigation to the error URL to start and reach
+  // WillFailRequest.
+  EXPECT_TRUE(error_navigation_manager.WaitForRequestFailed());
+
+  // Ensure that the beforeunload dialog is shown before proceeding further.
+  // Depending on how far the subframe navigation got, this may or may not have
+  // happened already.
+  dialog_manager()->Wait();
+
+  // Resume the navigation to `error_url`. After this is done, the navigation
+  // should reach ready-to-commit and then be deferred by
+  // JavaScriptDialogCommitDeferringCondition. Even though this navigation
+  // follows the NavigationRequest::CommitErrorPage() path rather than the
+  // normal CommitNavigation() path, the key point is that
+  // CommitDeferringConditions still need to run and defer this navigation,
+  // since a beforeunload dialog is currently being shown.
+  error_navigation_manager.ResumeNavigation();
+
+  // The `error_url` navigation in the first subframe should now be deferred. If
+  // it incorrectly were allowed to proceed and commit, it would cancel the
+  // dialog, and this test wants to explicitly ensure that this didn't happen by
+  // checking that did_cancel_dialog() is false. However, we need to give enough
+  // time for the `error_url` navigation to potentially commit prior to checking
+  // did_cancel_dialog(). To do that, we make an IPC roundtrip to the b.com
+  // renderer, targeting the second b.com subframe. By the time we receive the
+  // ExecJs response from the second subframe, we would've processed the
+  // DidCommitNavigation() from the first subframe, so it's safe to check that
+  // the dialog wasn't closed after that point. Note that the a.com process is
+  // blocked waiting for the beforeunload dialog response, which is why this
+  // uses OOPIFs in a separate b.com process instead.
+  EXPECT_TRUE(ExecJs(root->child_at(1), ""));
+
+  // Ensure the dialog hasn't been canceled at this point. This failed prior to
+  // fixing https://crbug.com/434224559.
+  ASSERT_FALSE(dialog_manager()->did_cancel_dialog());
+
+  // Ensure the subframe navigation is deferred and not committed yet.
+  EXPECT_FALSE(error_navigation_manager.was_committed());
+  auto* handle = error_navigation_manager.GetNavigationHandle();
+  EXPECT_TRUE(handle->IsCommitDeferringConditionDeferredForTesting());
+
+  // Now, answer the dialog and allow the navigation to proceed. Note that the
+  // main frame navigation will destroy the old subframes, so although the
+  // subframe `error_url` navigation will get resumed as soon as the dialog is
+  // dismissed, it doesn't matter whether or not it actually completes.
+  CloseDialogAndProceed();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(cross_site_url, web_contents()->GetLastCommittedURL());
 }
 
 class RenderFrameHostImplBrowserTestWithStoragePartitioning
