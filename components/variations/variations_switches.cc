@@ -56,6 +56,11 @@ const char kForceFieldTrialParams[] = "force-fieldtrial-params";
 // Forces additional Chrome Variation Ids that will be sent in X-Client-Data
 // header, specified as a 64-bit encoded list of numeric experiment ids. Ids
 // prefixed with the character "t" will be treated as Trigger Variation Ids.
+//
+// IMPORTANT: You can use this switch for test purposes (e.g. a manual command
+// line run or from a unit test), but NOT for production code in the browser, as
+// the latter is not allowed for privacy reasons (except for the current use by
+// about:flags code).
 const char kForceVariationIds[] = "force-variation-ids";
 
 // Forces to remove Chrome Variation Ids from being sent in X-Client-Data
