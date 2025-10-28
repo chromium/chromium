@@ -1864,6 +1864,14 @@ targets.tests.isolated_script_test(
     name = "module_installer_junit_tests",
 )
 
+targets.tests.gtest_test(
+    name = "monochrome_public_smoke_test",
+)
+
+targets.tests.gtest_test(
+    name = "monochrome_public_bundle_smoke_test",
+)
+
 targets.tests.isolated_script_test(
     name = "mojo_python_unittests",
 )
@@ -1874,6 +1882,14 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "mojo_unittests",
+)
+
+targets.tests.isolated_script_test(
+    name = "monochrome_public_apk_checker",
+)
+
+targets.tests.gtest_test(
+    name = "monochrome_public_test_ar_apk",
 )
 
 targets.tests.gtest_test(
@@ -2564,6 +2580,18 @@ targets.tests.isolated_script_test(
 
 targets.tests.isolated_script_test(
     name = "telemetry_gpu_unittests",
+)
+
+targets.tests.isolated_script_test(
+    name = "telemetry_monochrome_minidump_unittests",
+    args = [
+        "BrowserMinidumpTest",
+        "--browser=android-chromium-monochrome",
+        "-v",
+        "--passthrough",
+        "--retry-limit=2",
+    ],
+    binary = "telemetry_perf_unittests_android_monochrome",
 )
 
 targets.tests.isolated_script_test(

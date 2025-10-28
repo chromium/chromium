@@ -1682,6 +1682,22 @@ targets.binaries.generated_script(
     module_scheme = "junit",
 )
 
+targets.binaries.console_test_launcher(
+    name = "monochrome_public_smoke_test",
+    label = "//chrome/android:monochrome_public_smoke_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "gtest",
+)
+
+targets.binaries.console_test_launcher(
+    name = "monochrome_public_bundle_smoke_test",
+    label = "//chrome/android:monochrome_public_bundle_smoke_test",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "junit",
+)
+
 targets.binaries.script(
     name = "mojo_python_unittests",
     label = "//mojo/public/tools:mojo_python_unittests",
@@ -1709,6 +1725,38 @@ targets.binaries.console_test_launcher(
     name = "mojo_unittests",
     label = "//mojo:mojo_unittests",
     module_scheme = "gtest",
+)
+
+targets.binaries.script(
+    name = "monochrome_public_apk_checker",
+    label = "//chrome/android/monochrome:monochrome_public_apk_checker",
+    script = "//testing/scripts/run_isolated_script_test.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    args = [
+        "../../chrome/android/monochrome/scripts/monochrome_python_tests.py",
+        "--chrome-apk",
+        "apks/ChromePublic.apk",
+        "--chrome-pathmap",
+        "apks/ChromePublic.apk.pathmap.txt",
+        "--system-webview-apk",
+        "apks/SystemWebView.apk",
+        "--system-webview-pathmap",
+        "apks/SystemWebView.apk.pathmap.txt",
+        "--monochrome-apk",
+        "apks/MonochromePublic.apk",
+        "--monochrome-pathmap",
+        "apks/MonochromePublic.apk.pathmap.txt",
+    ],
+    module_scheme = "pyunit",
+)
+
+targets.binaries.console_test_launcher(
+    name = "monochrome_public_test_ar_apk",
+    label = "//chrome/android:monochrome_public_test_ar_apk",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "junit",
 )
 
 targets.binaries.generated_script(
@@ -2255,6 +2303,14 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "telemetry_perf_unittests_android_chrome",
     label = "//chrome/test:telemetry_perf_unittests_android_chrome",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "pyunit",
+)
+
+targets.binaries.generated_script(
+    name = "telemetry_perf_unittests_android_monochrome",
+    label = "//chrome/test:telemetry_perf_unittests_android_monochrome",
     # All references have been moved to starlark
     skip_usage_check = True,
     module_scheme = "pyunit",
