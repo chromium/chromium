@@ -145,19 +145,20 @@ webview:not([hidden]) {
 
 #loadingPanel #sidePanelLoading .p4 {
   height: 32px;
-  border-radius: 6px;
   margin-bottom: 8px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
 #loadingPanel #sidePanelLoading .p5 {
   height: 32px;
-  border-radius: 6px;
   margin-bottom: 8px;
 }
 
 #loadingPanel #sidePanelLoading .p6 {
   height: 32px;
-  border-radius: 6px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 #loadingPanel #sidePanelLoading .p7 {
