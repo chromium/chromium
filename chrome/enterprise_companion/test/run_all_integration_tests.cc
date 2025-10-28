@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -70,8 +71,8 @@ int main(int argc, char* argv[]) {
   // Otherwise, don't run branded tests on a developer's system because doing so
   // can break the updater on the system.
   if (!std::getenv("ISOLATED_OUTDIR") &&
-      UNSAFE_TODO(std::strcmp(PRODUCT_FULLNAME_STRING,
-                              "ChromiumEnterpriseCompanion"))) {
+      std::string_view(PRODUCT_FULLNAME_STRING) !=
+          "ChromiumEnterpriseCompanion") {
     VLOG(1) << "Running branded enterprise companion tests can break the "
                "updater for the branded browser. If you don't care about "
                "broken updaters and want to run the branded enterprise "
