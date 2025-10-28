@@ -86,11 +86,11 @@ void BrowserList::AddBrowser(Browser* browser) {
 
   browser->RegisterKeepAlive();
 
+  AddBrowserToActiveList(browser);
+
   for (BrowserListObserver& observer : observers_.Get()) {
     observer.OnBrowserAdded(browser);
   }
-
-  AddBrowserToActiveList(browser);
 
   if (browser->profile()->IsGuestSession()) {
     base::UmaHistogramCounts100("Browser.WindowCount.Guest",
