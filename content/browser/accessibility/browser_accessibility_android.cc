@@ -1559,6 +1559,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     case ax::mojom::Role::kMenuItemSeparator:
     case ax::mojom::Role::kPdfActionableHighlight:
     case ax::mojom::Role::kPdfRoot:
+    case ax::mojom::Role::kWebView:
       NOTREACHED();
 
     case ax::mojom::Role::kFigure:
