@@ -261,6 +261,17 @@ TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidSessionParams) {
       std::move(params), /*wrapped_key=*/std::vector<uint8_t>{1, 2, 3, 4},
       cookies_to_set, cookie_options, create_future.GetCallback());
   EXPECT_FALSE(create_future.Get());
+
+  base::test::TestFuture<const net::CookieAccessResultList&,
+                         const net::CookieAccessResultList&>
+      cookies_future;
+  cookie_manager().GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
+                                 net::CookiePartitionKeyCollection(),
+                                 cookies_future.GetCallback());
+  const auto& cookies = cookies_future.Get<0>();
+  ASSERT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].cookie.Name(), "test_cookie");
+  EXPECT_EQ(cookies[0].cookie.Value(), "value");
 }
 
 TEST_F(DeviceBoundSessionManagerTest, CreateBoundSession_InvalidCookie) {

@@ -136,20 +136,15 @@ void DeviceBoundSessionManager::OnCreateBoundSessionAdded(
     const net::CookieOptions& cookie_options,
     CreateBoundSessionCallback callback,
     bool session_success) {
-  if (!session_success) {
-    std::move(callback).Run(false);
-    return;
-  }
-
   if (cookies_to_set.empty()) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(session_success);
     return;
   }
 
   auto final_callback = base::BindOnce(
-      [](CreateBoundSessionCallback callback,
+      [](CreateBoundSessionCallback callback, bool session_success,
          std::vector<net::CookieAccessResult> results) {
-        bool all_successful = true;
+        bool all_successful = session_success;
         for (const auto& result : results) {
           if (!result.status.IsInclude()) {
             all_successful = false;
@@ -158,7 +153,7 @@ void DeviceBoundSessionManager::OnCreateBoundSessionAdded(
         }
         std::move(callback).Run(all_successful);
       },
-      std::move(callback));
+      std::move(callback), session_success);
 
   auto barrier_callback = base::BarrierCallback<net::CookieAccessResult>(
       cookies_to_set.size(), std::move(final_callback));
