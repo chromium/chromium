@@ -5,9 +5,9 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
@@ -219,9 +219,9 @@ class ConnectorsServiceProfileBrowserTest
   }
 #endif
 
-  void SetPrefs(const char* pref,
-                const char* scope_pref,
-                const char* pref_value,
+  void SetPrefs(std::string_view pref,
+                std::string_view scope_pref,
+                std::string_view pref_value,
                 bool profile_scope = true) {
     browser()->profile()->GetPrefs()->Set(
         pref, *base::JSONReader::Read(pref_value,
@@ -230,8 +230,8 @@ class ConnectorsServiceProfileBrowserTest
         scope_pref, profile_scope ? policy::POLICY_SCOPE_USER
                                   : policy::POLICY_SCOPE_MACHINE);
   }
-  void SetPrefs(const char* pref,
-                const char* scope_pref,
+  void SetPrefs(std::string_view pref,
+                std::string_view scope_pref,
                 int pref_value,
                 bool profile_scope = true) {
     browser()->profile()->GetPrefs()->SetInteger(pref, pref_value);
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<ManagementStatus, const char*, bool>> {
+          std::tuple<ManagementStatus, std::string_view, bool>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
       : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
@@ -309,13 +309,12 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     }
   }
 
-  const char* settings_value() { return std::get<1>(GetParam()); }
+  std::string_view settings_value() { return std::get<1>(GetParam()); }
 
   bool enhanced_fields_enabled() { return std::get<2>(GetParam()); }
 
   bool is_cloud() {
-    return UNSAFE_TODO(
-               strcmp(settings_value(), kNormalCloudAnalysisSettingsPref)) == 0;
+    return settings_value() == kNormalCloudAnalysisSettingsPref;
   }
 
   // Returns the Value the "normal" reporting workflow uses to validate that it
