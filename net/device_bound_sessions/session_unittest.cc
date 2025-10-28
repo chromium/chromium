@@ -383,9 +383,11 @@ TEST_F(SessionTest, DeferredSession) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -408,9 +410,7 @@ TEST_F(SessionTest, NotDeferredAsExcluded) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_FALSE(is_deferred);
+  EXPECT_FALSE(session->IsInScope(request.get()));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -430,9 +430,7 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_FALSE(is_deferred);
+  EXPECT_FALSE(session->IsInScope(request.get()));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -456,8 +454,11 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -471,9 +472,11 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 
   CookieInclusionStatus status;
@@ -484,8 +487,11 @@ TEST_F(SessionTest, NotDeferredWithCookieSession) {
   ASSERT_TRUE(cookie);
   CookieAccessResult access_result;
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_FALSE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   // Even though the second session didn't defer, the request was
   // deferred by the first session.
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
@@ -507,9 +513,7 @@ TEST_F(SessionTest, NotDeferredInsecure) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_FALSE(is_deferred);
+  EXPECT_FALSE(session->IsInScope(request.get()));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -528,9 +532,11 @@ TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -548,9 +554,11 @@ TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
                               &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -570,9 +578,7 @@ TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
   // session on the same site as `request`.
   request->set_device_bound_session_usage(SessionUsage::kNoUsage);
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_FALSE(is_deferred);
+  EXPECT_FALSE(session->IsInScope(request.get()));
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kNoUsage);
 }
 
@@ -589,9 +595,11 @@ TEST_F(SessionTest, DeferredMissingScopeOrigin) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -616,27 +624,39 @@ TEST_F(SessionTestWithoutOriginTrialFeedback,
 
   // Browser-initiated requests can always be deferred
   request->set_initiator(std::nullopt);
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Initiators on the site can always be deferred, despite no matching
   // initiator pattern.
   request->set_initiator(url::Origin::Create(GURL("https://example.test/")));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Initiators matching the pattern can be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://subdomain.not-example.test/")));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Initiators not on the site can be deferred since
   // kDeviceBoundSessionsOriginTrialFeedback is not enabled.
   request->set_initiator(
       url::Origin::Create(GURL("https://some-other-not-example.test/")));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 }
 
 TEST_F(SessionTestWithOriginTrialFeedback, DeferredAllowedRefreshInitiators) {
@@ -659,26 +679,34 @@ TEST_F(SessionTestWithOriginTrialFeedback, DeferredAllowedRefreshInitiators) {
 
   // Browser-initiated requests can always be deferred
   request->set_initiator(std::nullopt);
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Initiators on the site can always be deferred, despite no matching
   // initiator pattern.
   request->set_initiator(url::Origin::Create(GURL("https://example.test/")));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Initiators matching the pattern can be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://subdomain.not-example.test/")));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_TRUE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Initiators not on the site or matching a rule cannot be deferred.
   request->set_initiator(
       url::Origin::Create(GURL("https://some-other-not-example.test/")));
-  EXPECT_FALSE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+  EXPECT_FALSE(session->IsInScope(request.get()));
 }
 
 class InsecureDelegate : public CookieAccessDelegate {
@@ -733,9 +761,11 @@ TEST_F(SessionTest, NotDeferredNotSameSiteForCookies) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_FALSE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_FALSE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(),
             SessionUsage::kInScopeNotDeferred);
 }
@@ -752,9 +782,11 @@ TEST_F(SessionTest, DeferredNotSameSiteDelegate) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -773,9 +805,11 @@ TEST_F(SessionTest, DeferredHostCookie) {
       context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
-  bool is_deferred =
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
-  EXPECT_TRUE(is_deferred);
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(), SessionUsage::kDeferred);
 }
 
@@ -803,8 +837,11 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   std::unique_ptr<URLRequest> request =
       context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
   request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
+  EXPECT_TRUE(session->IsInScope(request.get()));
   EXPECT_FALSE(
-      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(request->device_bound_session_usage(),
             SessionUsage::kInScopeNotDeferred);
 }
@@ -830,7 +867,11 @@ TEST_F(SessionTest, NetLogSessionInfo) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   EXPECT_EQ(
       net_log_observer.GetEntriesWithType(NetLogEventType::DBSC_REQUEST).size(),
       1u);
@@ -848,7 +889,11 @@ TEST_F(SessionTest, NetLogMissingCookie) {
   request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
   ASSERT_EQ(entries.size(), 1u);
@@ -877,7 +922,11 @@ TEST_F(SessionTest, NetLogNoRefresh) {
   request->set_maybe_sent_cookies({{*cookie.get(), access_result}});
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_FALSE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
   std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
   ASSERT_EQ(entries.size(), 1u);
@@ -905,7 +954,11 @@ TEST_F(SessionTestWithoutOriginTrialFeedback, NetLogWrongInitiator) {
       url::Origin::Create(GURL("https://not-example.test/")));
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_TRUE(session->IsInScope(request.get()));
+  EXPECT_TRUE(
+      session
+          ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+          .is_zero());
 
   // Because kDeviceBoundSessionsOriginTrialFeedback is not enabled, we will not
   // enforce the initiators.
@@ -936,7 +989,7 @@ TEST_F(SessionTestWithOriginTrialFeedback, NetLogWrongInitiator) {
       url::Origin::Create(GURL("https://not-example.test/")));
 
   RecordingNetLogObserver net_log_observer;
-  session->ShouldDeferRequest(request.get(), FirstPartySetMetadata());
+  EXPECT_FALSE(session->IsInScope(request.get()));
 
   std::vector<NetLogEntry> entries = net_log_observer.GetEntriesWithType(
       NetLogEventType::CHECK_DBSC_REFRESH_REQUIRED);
@@ -994,8 +1047,11 @@ TEST_F(SessionTest, Backoff) {
       session->InformOfRefreshResult(kSuccess);
     }
     FastForwardBy(base::Seconds(1));
+    EXPECT_TRUE(session->IsInScope(request.get()));
     EXPECT_TRUE(
-        session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+        session
+            ->MinimumBoundCookieLifetime(request.get(), FirstPartySetMetadata())
+            .is_zero());
 
     // Four errors in a row will enter backoff, if necessary
     for (size_t i = 0; i < 4; i++) {

@@ -359,7 +359,13 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
   const base::flat_map<SessionKey, RefreshResult>& previous_deferrals =
       request->device_bound_session_deferrals();
   for (const auto& [_, session] : GetSessionsForSite(site)) {
-    if (session->ShouldDeferRequest(request, first_party_set_metadata)) {
+    if (!session->IsInScope(request)) {
+      continue;
+    }
+
+    base::TimeDelta minimum_lifetime =
+        session->MinimumBoundCookieLifetime(request, first_party_set_metadata);
+    if (minimum_lifetime.is_zero()) {
       SessionKey session_key{site, session->id()};
       auto previous_deferrals_it = previous_deferrals.find(session_key);
       if (previous_deferrals_it != previous_deferrals.end()) {
