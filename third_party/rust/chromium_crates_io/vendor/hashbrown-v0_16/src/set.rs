@@ -117,7 +117,9 @@ pub struct HashSet<T, S = DefaultHashBuilder, A: Allocator = Global> {
 
 impl<T: Clone, S: Clone, A: Allocator + Clone> Clone for HashSet<T, S, A> {
     fn clone(&self) -> Self {
-        HashSet { map: self.map.clone() }
+        HashSet {
+            map: self.map.clone(),
+        }
     }
 
     fn clone_from(&mut self, source: &Self) {
@@ -129,15 +131,15 @@ impl<T: Clone, S: Clone, A: Allocator + Clone> Clone for HashSet<T, S, A> {
 impl<T> HashSet<T, DefaultHashBuilder> {
     /// Creates an empty `HashSet`.
     ///
-    /// The hash set is initially created with a capacity of 0, so it will not
-    /// allocate until it is first inserted into.
+    /// The hash set is initially created with a capacity of 0, so it will not allocate until it
+    /// is first inserted into.
     ///
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`], for example with
     /// [`with_hasher`](HashSet::with_hasher) method.
     ///
@@ -152,7 +154,9 @@ impl<T> HashSet<T, DefaultHashBuilder> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn new() -> Self {
-        Self { map: HashMap::new() }
+        Self {
+            map: HashMap::new(),
+        }
     }
 
     /// Creates an empty `HashSet` with the specified capacity.
@@ -163,9 +167,9 @@ impl<T> HashSet<T, DefaultHashBuilder> {
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`], for example with
     /// [`with_capacity_and_hasher`](HashSet::with_capacity_and_hasher) method.
     ///
@@ -181,7 +185,9 @@ impl<T> HashSet<T, DefaultHashBuilder> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn with_capacity(capacity: usize) -> Self {
-        Self { map: HashMap::with_capacity(capacity) }
+        Self {
+            map: HashMap::with_capacity(capacity),
+        }
     }
 }
 
@@ -189,15 +195,15 @@ impl<T> HashSet<T, DefaultHashBuilder> {
 impl<T: Hash + Eq, A: Allocator> HashSet<T, DefaultHashBuilder, A> {
     /// Creates an empty `HashSet`.
     ///
-    /// The hash set is initially created with a capacity of 0, so it will not
-    /// allocate until it is first inserted into.
+    /// The hash set is initially created with a capacity of 0, so it will not allocate until it
+    /// is first inserted into.
     ///
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`], for example with
     /// [`with_hasher_in`](HashSet::with_hasher_in) method.
     ///
@@ -212,7 +218,9 @@ impl<T: Hash + Eq, A: Allocator> HashSet<T, DefaultHashBuilder, A> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn new_in(alloc: A) -> Self {
-        Self { map: HashMap::new_in(alloc) }
+        Self {
+            map: HashMap::new_in(alloc),
+        }
     }
 
     /// Creates an empty `HashSet` with the specified capacity.
@@ -223,12 +231,11 @@ impl<T: Hash + Eq, A: Allocator> HashSet<T, DefaultHashBuilder, A> {
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`], for example with
-    /// [`with_capacity_and_hasher_in`](HashSet::with_capacity_and_hasher_in)
-    /// method.
+    /// [`with_capacity_and_hasher_in`](HashSet::with_capacity_and_hasher_in) method.
     ///
     /// [`HashDoS`]: https://en.wikipedia.org/wiki/Collision_attack
     /// [`std::collections::hash_map::RandomState`]: https://doc.rust-lang.org/std/collections/hash_map/struct.RandomState.html
@@ -242,7 +249,9 @@ impl<T: Hash + Eq, A: Allocator> HashSet<T, DefaultHashBuilder, A> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn with_capacity_in(capacity: usize, alloc: A) -> Self {
-        Self { map: HashMap::with_capacity_in(capacity, alloc) }
+        Self {
+            map: HashMap::with_capacity_in(capacity, alloc),
+        }
     }
 }
 
@@ -279,7 +288,9 @@ impl<T, S, A: Allocator> HashSet<T, S, A> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn iter(&self) -> Iter<'_, T> {
-        Iter { iter: self.map.keys() }
+        Iter {
+            iter: self.map.keys(),
+        }
     }
 
     /// Returns the number of elements in the set.
@@ -335,13 +346,14 @@ impl<T, S, A: Allocator> HashSet<T, S, A> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn drain(&mut self) -> Drain<'_, T, A> {
-        Drain { iter: self.map.drain() }
+        Drain {
+            iter: self.map.drain(),
+        }
     }
 
     /// Retains only the elements specified by the predicate.
     ///
-    /// In other words, remove all elements `e` such that `f(&e)` returns
-    /// `false`.
+    /// In other words, remove all elements `e` such that `f(&e)` returns `false`.
     ///
     /// # Examples
     ///
@@ -363,13 +375,12 @@ impl<T, S, A: Allocator> HashSet<T, S, A> {
     /// Drains elements which are true under the given predicate,
     /// and returns an iterator over the removed items.
     ///
-    /// In other words, move all elements `e` such that `f(&e)` returns `true`
-    /// out into another iterator.
+    /// In other words, move all elements `e` such that `f(&e)` returns `true` out
+    /// into another iterator.
     ///
-    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped
-    /// without iterating or the iteration short-circuits, then the
-    /// remaining elements will be retained. Use [`retain()`] with a negated
-    /// predicate if you do not need the returned iterator.
+    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped without iterating
+    /// or the iteration short-circuits, then the remaining elements will be retained.
+    /// Use [`retain()`] with a negated predicate if you do not need the returned iterator.
     ///
     /// [`retain()`]: HashSet::retain
     ///
@@ -431,9 +442,9 @@ impl<T, S> HashSet<T, S, Global> {
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`].
     ///
     /// The `hash_builder` passed should implement the [`BuildHasher`] trait for
@@ -456,7 +467,9 @@ impl<T, S> HashSet<T, S, Global> {
     #[cfg_attr(feature = "inline-more", inline)]
     #[cfg_attr(feature = "rustc-dep-of-std", rustc_const_stable_indirect)]
     pub const fn with_hasher(hasher: S) -> Self {
-        Self { map: HashMap::with_hasher(hasher) }
+        Self {
+            map: HashMap::with_hasher(hasher),
+        }
     }
 
     /// Creates an empty `HashSet` with the specified capacity, using
@@ -468,9 +481,9 @@ impl<T, S> HashSet<T, S, Global> {
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`].
     ///
     /// The `hash_builder` passed should implement the [`BuildHasher`] trait for
@@ -492,7 +505,9 @@ impl<T, S> HashSet<T, S, Global> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn with_capacity_and_hasher(capacity: usize, hasher: S) -> Self {
-        Self { map: HashMap::with_capacity_and_hasher(capacity, hasher) }
+        Self {
+            map: HashMap::with_capacity_and_hasher(capacity, hasher),
+        }
     }
 }
 
@@ -515,9 +530,9 @@ where
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`].
     ///
     /// The `hash_builder` passed should implement the [`BuildHasher`] trait for
@@ -540,7 +555,9 @@ where
     #[cfg_attr(feature = "inline-more", inline)]
     #[cfg_attr(feature = "rustc-dep-of-std", rustc_const_stable_indirect)]
     pub const fn with_hasher_in(hasher: S, alloc: A) -> Self {
-        Self { map: HashMap::with_hasher_in(hasher, alloc) }
+        Self {
+            map: HashMap::with_hasher_in(hasher, alloc),
+        }
     }
 
     /// Creates an empty `HashSet` with the specified capacity, using
@@ -552,9 +569,9 @@ where
     /// # HashDoS resistance
     ///
     /// The `hash_builder` normally use a fixed key by default and that does
-    /// not allow the `HashSet` to be protected against attacks such as
-    /// [`HashDoS`]. Users who require HashDoS resistance should explicitly
-    /// use [`std::collections::hash_map::RandomState`]
+    /// not allow the `HashSet` to be protected against attacks such as [`HashDoS`].
+    /// Users who require HashDoS resistance should explicitly use
+    /// [`std::collections::hash_map::RandomState`]
     /// as the hasher when creating a [`HashSet`].
     ///
     /// The `hash_builder` passed should implement the [`BuildHasher`] trait for
@@ -576,7 +593,9 @@ where
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn with_capacity_and_hasher_in(capacity: usize, hasher: S, alloc: A) -> Self {
-        Self { map: HashMap::with_capacity_and_hasher_in(capacity, hasher, alloc) }
+        Self {
+            map: HashMap::with_capacity_and_hasher_in(capacity, hasher, alloc),
+        }
     }
 
     /// Returns a reference to the set's [`BuildHasher`].
@@ -611,10 +630,9 @@ where
     ///
     /// # Panics
     ///
-    /// Panics if the new capacity exceeds [`isize::MAX`] bytes and [`abort`]
-    /// the program in case of allocation error. Use
-    /// [`try_reserve`](HashSet::try_reserve) instead if you want to handle
-    /// memory allocation failure.
+    /// Panics if the new capacity exceeds [`isize::MAX`] bytes and [`abort`] the program
+    /// in case of allocation error. Use [`try_reserve`](HashSet::try_reserve) instead
+    /// if you want to handle memory allocation failure.
     ///
     /// [`isize::MAX`]: https://doc.rust-lang.org/std/primitive.isize.html
     /// [`abort`]: https://doc.rust-lang.org/alloc/alloc/fn.handle_alloc_error.html
@@ -632,14 +650,14 @@ where
         self.map.reserve(additional);
     }
 
-    /// Tries to reserve capacity for at least `additional` more elements to be
-    /// inserted in the given `HashSet<K,V>`. The collection may reserve
-    /// more space to avoid frequent reallocations.
+    /// Tries to reserve capacity for at least `additional` more elements to be inserted
+    /// in the given `HashSet<K,V>`. The collection may reserve more space to avoid
+    /// frequent reallocations.
     ///
     /// # Errors
     ///
-    /// If the capacity overflows, or the allocator reports a failure, then an
-    /// error is returned.
+    /// If the capacity overflows, or the allocator reports a failure, then an error
+    /// is returned.
     ///
     /// # Examples
     ///
@@ -675,9 +693,8 @@ where
     }
 
     /// Shrinks the capacity of the set with a lower limit. It will drop
-    /// down no lower than the supplied limit while maintaining the internal
-    /// rules and possibly leaving some space in accordance with the resize
-    /// policy.
+    /// down no lower than the supplied limit while maintaining the internal rules
+    /// and possibly leaving some space in accordance with the resize policy.
     ///
     /// Panics if the current capacity is smaller than the supplied
     /// minimum capacity.
@@ -726,7 +743,10 @@ where
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn difference<'a>(&'a self, other: &'a Self) -> Difference<'a, T, S, A> {
-        Difference { iter: self.iter(), other }
+        Difference {
+            iter: self.iter(),
+            other,
+        }
     }
 
     /// Visits the values representing the symmetric difference,
@@ -752,7 +772,9 @@ where
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn symmetric_difference<'a>(&'a self, other: &'a Self) -> SymmetricDifference<'a, T, S, A> {
-        SymmetricDifference { iter: self.difference(other).chain(other.difference(self)) }
+        SymmetricDifference {
+            iter: self.difference(other).chain(other.difference(self)),
+        }
     }
 
     /// Visits the values representing the intersection,
@@ -775,9 +797,15 @@ where
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn intersection<'a>(&'a self, other: &'a Self) -> Intersection<'a, T, S, A> {
-        let (smaller, larger) =
-            if self.len() <= other.len() { (self, other) } else { (other, self) };
-        Intersection { iter: smaller.iter(), other: larger }
+        let (smaller, larger) = if self.len() <= other.len() {
+            (self, other)
+        } else {
+            (other, self)
+        };
+        Intersection {
+            iter: smaller.iter(),
+            other: larger,
+        }
     }
 
     /// Visits the values representing the union,
@@ -800,12 +828,16 @@ where
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn union<'a>(&'a self, other: &'a Self) -> Union<'a, T, S, A> {
-        // We'll iterate one set in full, and only the remaining difference from the
-        // other. Use the smaller set for the difference in order to reduce hash
-        // lookups.
-        let (smaller, larger) =
-            if self.len() <= other.len() { (self, other) } else { (other, self) };
-        Union { iter: larger.iter().chain(smaller.difference(larger)) }
+        // We'll iterate one set in full, and only the remaining difference from the other.
+        // Use the smaller set for the difference in order to reduce hash lookups.
+        let (smaller, larger) = if self.len() <= other.len() {
+            (self, other)
+        } else {
+            (other, self)
+        };
+        Union {
+            iter: larger.iter().chain(smaller.difference(larger)),
+        }
     }
 
     /// Returns `true` if the set contains a value.
@@ -834,8 +866,7 @@ where
         self.map.contains_key(value)
     }
 
-    /// Returns a reference to the value in the set, if any, that is equal to
-    /// the given value.
+    /// Returns a reference to the value in the set, if any, that is equal to the given value.
     ///
     /// The value may be any borrowed form of the set's value type, but
     /// [`Hash`] and [`Eq`] on the borrowed form *must* match those for
@@ -932,8 +963,7 @@ where
         unsafe { &bucket.as_ref().0 }
     }
 
-    /// Gets the given value's corresponding entry in the set for in-place
-    /// manipulation.
+    /// Gets the given value's corresponding entry in the set for in-place manipulation.
     ///
     /// # Examples
     ///
@@ -1063,11 +1093,10 @@ where
         self.map.insert(value, ()).is_none()
     }
 
-    /// Insert a value the set without checking if the value already exists in
-    /// the set.
+    /// Insert a value the set without checking if the value already exists in the set.
     ///
-    /// This operation is faster than regular insert, because it does not
-    /// perform lookup before insertion.
+    /// This operation is faster than regular insert, because it does not perform
+    /// lookup before insertion.
     ///
     /// This operation is useful during initial population of the set.
     /// For example, when constructing a set from another set, we know
@@ -1077,10 +1106,9 @@ where
     ///
     /// This operation is safe if a value does not exist in the set.
     ///
-    /// However, if a value exists in the set already, the behavior is
-    /// unspecified: this operation may panic, loop forever, or any
-    /// following operation with the set may panic, loop forever or return
-    /// arbitrary result.
+    /// However, if a value exists in the set already, the behavior is unspecified:
+    /// this operation may panic, loop forever, or any following operation with the set
+    /// may panic, loop forever or return arbitrary result.
     ///
     /// That said, this operation (and following operations) are guaranteed to
     /// not violate memory safety.
@@ -1093,8 +1121,8 @@ where
         self.map.insert_unique_unchecked(value, ()).0
     }
 
-    /// Adds a value to the set, replacing the existing value, if any, that is
-    /// equal to the given one. Returns the replaced value.
+    /// Adds a value to the set, replacing the existing value, if any, that is equal to the given
+    /// one. Returns the replaced value.
     ///
     /// # Examples
     ///
@@ -1151,8 +1179,7 @@ where
         self.map.remove(value).is_some()
     }
 
-    /// Removes and returns the value in the set, if any, that is equal to the
-    /// given one.
+    /// Removes and returns the value in the set, if any, that is equal to the given one.
     ///
     /// The value may be any borrowed form of the set's value type, but
     /// [`Hash`] and [`Eq`] on the borrowed form *must* match those for
@@ -1323,11 +1350,12 @@ where
     S: Default,
     A: Default + Allocator,
 {
-    /// Creates an empty `HashSet<T, S>` with the `Default` value for the
-    /// hasher.
+    /// Creates an empty `HashSet<T, S>` with the `Default` value for the hasher.
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        Self { map: HashMap::default() }
+        Self {
+            map: HashMap::default(),
+        }
     }
 }
 
@@ -1405,8 +1433,7 @@ where
 {
     type Output = HashSet<T, S, A>;
 
-    /// Returns the symmetric difference of `self` and `rhs` as a new
-    /// `HashSet<T, S>`.
+    /// Returns the symmetric difference of `self` and `rhs` as a new `HashSet<T, S>`.
     ///
     /// # Examples
     ///
@@ -1536,8 +1563,7 @@ where
     S: BuildHasher,
     A: Allocator,
 {
-    /// Modifies this set to contain the symmetric difference of `self` and
-    /// `rhs`.
+    /// Modifies this set to contain the symmetric difference of `self` and `rhs`.
     ///
     /// # Examples
     ///
@@ -1565,7 +1591,9 @@ where
                     self.map.table.remove(bucket);
                 },
                 Err(slot) => unsafe {
-                    self.map.table.insert_in_slot(hash, slot, (item.clone(), ()));
+                    self.map
+                        .table
+                        .insert_in_slot(hash, slot, (item.clone(), ()));
                 },
             }
         }
@@ -1642,11 +1670,10 @@ pub struct Drain<'a, K, A: Allocator = Global> {
     iter: map::Drain<'a, K, (), A>,
 }
 
-/// A draining iterator over entries of a `HashSet` which don't satisfy the
-/// predicate `f`.
+/// A draining iterator over entries of a `HashSet` which don't satisfy the predicate `f`.
 ///
-/// This `struct` is created by the [`extract_if`] method on [`HashSet`]. See
-/// its documentation for more.
+/// This `struct` is created by the [`extract_if`] method on [`HashSet`]. See its
+/// documentation for more.
 ///
 /// [`extract_if`]: struct.HashSet.html#method.extract_if
 /// [`HashSet`]: struct.HashSet.html
@@ -1684,8 +1711,7 @@ pub struct Difference<'a, T, S, A: Allocator = Global> {
     other: &'a HashSet<T, S, A>,
 }
 
-/// A lazy iterator producing elements in the symmetric difference of
-/// `HashSet`s.
+/// A lazy iterator producing elements in the symmetric difference of `HashSet`s.
 ///
 /// This `struct` is created by the [`symmetric_difference`] method on
 /// [`HashSet`]. See its documentation for more.
@@ -1743,20 +1769,26 @@ impl<T, S, A: Allocator> IntoIterator for HashSet<T, S, A> {
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_iter(self) -> IntoIter<T, A> {
-        IntoIter { iter: self.map.into_iter() }
+        IntoIter {
+            iter: self.map.into_iter(),
+        }
     }
 }
 
 impl<K> Clone for Iter<'_, K> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Iter { iter: self.iter.clone() }
+        Iter {
+            iter: self.iter.clone(),
+        }
     }
 }
 impl<K> Default for Iter<'_, K> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        Iter { iter: Default::default() }
+        Iter {
+            iter: Default::default(),
+        }
     }
 }
 impl<'a, K> Iterator for Iter<'a, K> {
@@ -1796,7 +1828,9 @@ impl<K: fmt::Debug> fmt::Debug for Iter<'_, K> {
 impl<K, A: Allocator> Default for IntoIter<K, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        IntoIter { iter: Default::default() }
+        IntoIter {
+            iter: Default::default(),
+        }
     }
 }
 impl<K, A: Allocator> Iterator for IntoIter<K, A> {
@@ -1885,7 +1919,9 @@ where
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn next(&mut self) -> Option<Self::Item> {
-        self.inner.next(|&mut (ref k, ())| (self.f)(k)).map(|(k, ())| k)
+        self.inner
+            .next(|&mut (ref k, ())| (self.f)(k))
+            .map(|(k, ())| k)
     }
 
     #[inline]
@@ -1899,7 +1935,10 @@ impl<K, F, A: Allocator> FusedIterator for ExtractIf<'_, K, F, A> where F: FnMut
 impl<T, S, A: Allocator> Clone for Intersection<'_, T, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Intersection { iter: self.iter.clone(), ..*self }
+        Intersection {
+            iter: self.iter.clone(),
+            ..*self
+        }
     }
 }
 
@@ -1933,7 +1972,13 @@ where
         Self: Sized,
         F: FnMut(B, Self::Item) -> B,
     {
-        self.iter.fold(init, |acc, elt| if self.other.contains(elt) { f(acc, elt) } else { acc })
+        self.iter.fold(init, |acc, elt| {
+            if self.other.contains(elt) {
+                f(acc, elt)
+            } else {
+                acc
+            }
+        })
     }
 }
 
@@ -1959,7 +2004,10 @@ where
 impl<T, S, A: Allocator> Clone for Difference<'_, T, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Difference { iter: self.iter.clone(), ..*self }
+        Difference {
+            iter: self.iter.clone(),
+            ..*self
+        }
     }
 }
 
@@ -1993,7 +2041,13 @@ where
         Self: Sized,
         F: FnMut(B, Self::Item) -> B,
     {
-        self.iter.fold(init, |acc, elt| if self.other.contains(elt) { acc } else { f(acc, elt) })
+        self.iter.fold(init, |acc, elt| {
+            if self.other.contains(elt) {
+                acc
+            } else {
+                f(acc, elt)
+            }
+        })
     }
 }
 
@@ -2019,7 +2073,9 @@ where
 impl<T, S, A: Allocator> Clone for SymmetricDifference<'_, T, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        SymmetricDifference { iter: self.iter.clone() }
+        SymmetricDifference {
+            iter: self.iter.clone(),
+        }
     }
 }
 
@@ -2073,7 +2129,9 @@ where
 impl<T, S, A: Allocator> Clone for Union<'_, T, S, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Union { iter: self.iter.clone() }
+        Union {
+            iter: self.iter.clone(),
+        }
     }
 }
 
@@ -2246,7 +2304,9 @@ pub struct OccupiedEntry<'a, T, S, A: Allocator = Global> {
 
 impl<T: fmt::Debug, S, A: Allocator> fmt::Debug for OccupiedEntry<'_, T, S, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("OccupiedEntry").field("value", self.get()).finish()
+        f.debug_struct("OccupiedEntry")
+            .field("value", self.get())
+            .finish()
     }
 }
 
@@ -2471,7 +2531,9 @@ impl<'a, T, S, A: Allocator> VacantEntry<'a, T, S, A> {
         T: Hash,
         S: BuildHasher,
     {
-        OccupiedEntry { inner: self.inner.insert_entry(()) }
+        OccupiedEntry {
+            inner: self.inner.insert_entry(()),
+        }
     }
 }
 

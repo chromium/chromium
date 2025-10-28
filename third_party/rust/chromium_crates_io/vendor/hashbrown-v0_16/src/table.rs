@@ -54,8 +54,8 @@ where
 impl<T> HashTable<T, Global> {
     /// Creates an empty `HashTable`.
     ///
-    /// The hash table is initially created with a capacity of 0, so it will not
-    /// allocate until it is first inserted into.
+    /// The hash table is initially created with a capacity of 0, so it will not allocate until it
+    /// is first inserted into.
     ///
     /// # Examples
     ///
@@ -66,7 +66,9 @@ impl<T> HashTable<T, Global> {
     /// assert_eq!(table.capacity(), 0);
     /// ```
     pub const fn new() -> Self {
-        Self { raw: RawTable::new() }
+        Self {
+            raw: RawTable::new(),
+        }
     }
 
     /// Creates an empty `HashTable` with the specified capacity.
@@ -83,7 +85,9 @@ impl<T> HashTable<T, Global> {
     /// assert!(table.capacity() >= 10);
     /// ```
     pub fn with_capacity(capacity: usize) -> Self {
-        Self { raw: RawTable::with_capacity(capacity) }
+        Self {
+            raw: RawTable::with_capacity(capacity),
+        }
     }
 }
 
@@ -93,8 +97,8 @@ where
 {
     /// Creates an empty `HashTable` using the given allocator.
     ///
-    /// The hash table is initially created with a capacity of 0, so it will not
-    /// allocate until it is first inserted into.
+    /// The hash table is initially created with a capacity of 0, so it will not allocate until it
+    /// is first inserted into.
     ///
     /// # Examples
     ///
@@ -129,11 +133,12 @@ where
     /// # }
     /// ```
     pub const fn new_in(alloc: A) -> Self {
-        Self { raw: RawTable::new_in(alloc) }
+        Self {
+            raw: RawTable::new_in(alloc),
+        }
     }
 
-    /// Creates an empty `HashTable` with the specified capacity using the given
-    /// allocator.
+    /// Creates an empty `HashTable` with the specified capacity using the given allocator.
     ///
     /// The hash table will be able to hold at least `capacity` elements without
     /// reallocating. If `capacity` is 0, the hash table will not allocate.
@@ -176,7 +181,9 @@ where
     /// # }
     /// ```
     pub fn with_capacity_in(capacity: usize, alloc: A) -> Self {
-        Self { raw: RawTable::with_capacity_in(capacity, alloc) }
+        Self {
+            raw: RawTable::with_capacity_in(capacity, alloc),
+        }
     }
 
     /// Returns a reference to the underlying allocator.
@@ -295,7 +302,11 @@ where
         eq: impl FnMut(&T) -> bool,
     ) -> Result<OccupiedEntry<'_, T, A>, AbsentEntry<'_, T, A>> {
         match self.raw.find(hash, eq) {
-            Some(bucket) => Ok(OccupiedEntry { hash, bucket, table: self }),
+            Some(bucket) => Ok(OccupiedEntry {
+                hash,
+                bucket,
+                table: self,
+            }),
             None => Err(AbsentEntry { table: self }),
         }
     }
@@ -352,8 +363,16 @@ where
         hasher: impl Fn(&T) -> u64,
     ) -> Entry<'_, T, A> {
         match self.raw.find_or_find_insert_slot(hash, eq, hasher) {
-            Ok(bucket) => Entry::Occupied(OccupiedEntry { hash, bucket, table: self }),
-            Err(insert_slot) => Entry::Vacant(VacantEntry { hash, insert_slot, table: self }),
+            Ok(bucket) => Entry::Occupied(OccupiedEntry {
+                hash,
+                bucket,
+                table: self,
+            }),
+            Err(insert_slot) => Entry::Vacant(VacantEntry {
+                hash,
+                insert_slot,
+                table: self,
+            }),
         }
     }
 
@@ -389,7 +408,11 @@ where
         hasher: impl Fn(&T) -> u64,
     ) -> OccupiedEntry<'_, T, A> {
         let bucket = self.raw.insert(hash, value, hasher);
-        OccupiedEntry { hash, bucket, table: self }
+        OccupiedEntry {
+            hash,
+            bucket,
+            table: self,
+        }
     }
 
     /// Clears the table, removing all values.
@@ -452,9 +475,8 @@ where
     }
 
     /// Shrinks the capacity of the table with a lower limit. It will drop
-    /// down no lower than the supplied limit while maintaining the internal
-    /// rules and possibly leaving some space in accordance with the resize
-    /// policy.
+    /// down no lower than the supplied limit while maintaining the internal rules
+    /// and possibly leaving some space in accordance with the resize policy.
     ///
     /// `hasher` is called if entries need to be moved or copied to a new table.
     /// This must return the same hash value that each entry was inserted with.
@@ -499,10 +521,9 @@ where
     ///
     /// # Panics
     ///
-    /// Panics if the new capacity exceeds [`isize::MAX`] bytes and [`abort`]
-    /// the program in case of allocation error. Use
-    /// [`try_reserve`](HashTable::try_reserve) instead if you want to
-    /// handle memory allocation failure.
+    /// Panics if the new capacity exceeds [`isize::MAX`] bytes and [`abort`] the program
+    /// in case of allocation error. Use [`try_reserve`](HashTable::try_reserve) instead
+    /// if you want to handle memory allocation failure.
     ///
     /// [`isize::MAX`]: https://doc.rust-lang.org/std/primitive.isize.html
     /// [`abort`]: https://doc.rust-lang.org/alloc/alloc/fn.handle_alloc_error.html
@@ -530,17 +551,17 @@ where
         self.raw.reserve(additional, hasher)
     }
 
-    /// Tries to reserve capacity for at least `additional` more elements to be
-    /// inserted in the given `HashTable`. The collection may reserve more
-    /// space to avoid frequent reallocations.
+    /// Tries to reserve capacity for at least `additional` more elements to be inserted
+    /// in the given `HashTable`. The collection may reserve more space to avoid
+    /// frequent reallocations.
     ///
     /// `hasher` is called if entries need to be moved or copied to a new table.
     /// This must return the same hash value that each entry was inserted with.
     ///
     /// # Errors
     ///
-    /// If the capacity overflows, or the allocator reports a failure, then an
-    /// error is returned.
+    /// If the capacity overflows, or the allocator reports a failure, then an error
+    /// is returned.
     ///
     /// # Examples
     ///
@@ -663,7 +684,10 @@ where
     /// # }
     /// ```
     pub fn iter(&self) -> Iter<'_, T> {
-        Iter { inner: unsafe { self.raw.iter() }, marker: PhantomData }
+        Iter {
+            inner: unsafe { self.raw.iter() },
+            marker: PhantomData,
+        }
     }
 
     /// An iterator visiting all elements in arbitrary order,
@@ -711,7 +735,10 @@ where
     /// # }
     /// ```
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
-        IterMut { inner: unsafe { self.raw.iter() }, marker: PhantomData }
+        IterMut {
+            inner: unsafe { self.raw.iter() },
+            marker: PhantomData,
+        }
     }
 
     /// An iterator visiting all elements which may match a hash.
@@ -747,7 +774,10 @@ where
     /// # }
     /// ```
     pub fn iter_hash(&self, hash: u64) -> IterHash<'_, T> {
-        IterHash { inner: unsafe { self.raw.iter_hash(hash) }, marker: PhantomData }
+        IterHash {
+            inner: unsafe { self.raw.iter_hash(hash) },
+            marker: PhantomData,
+        }
     }
 
     /// A mutable iterator visiting all elements which may match a hash.
@@ -797,13 +827,15 @@ where
     /// # }
     /// ```
     pub fn iter_hash_mut(&mut self, hash: u64) -> IterHashMut<'_, T> {
-        IterHashMut { inner: unsafe { self.raw.iter_hash(hash) }, marker: PhantomData }
+        IterHashMut {
+            inner: unsafe { self.raw.iter_hash(hash) },
+            marker: PhantomData,
+        }
     }
 
     /// Retains only the elements specified by the predicate.
     ///
-    /// In other words, remove all elements `e` such that `f(&e)` returns
-    /// `false`.
+    /// In other words, remove all elements `e` such that `f(&e)` returns `false`.
     ///
     /// # Examples
     ///
@@ -869,19 +901,20 @@ where
     /// # }
     /// ```
     pub fn drain(&mut self) -> Drain<'_, T, A> {
-        Drain { inner: self.raw.drain() }
+        Drain {
+            inner: self.raw.drain(),
+        }
     }
 
     /// Drains elements which are true under the given predicate,
     /// and returns an iterator over the removed items.
     ///
-    /// In other words, move all elements `e` such that `f(&e)` returns `true`
-    /// out into another iterator.
+    /// In other words, move all elements `e` such that `f(&e)` returns `true` out
+    /// into another iterator.
     ///
-    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped
-    /// without iterating or the iteration short-circuits, then the
-    /// remaining elements will be retained. Use [`retain()`] with a negated
-    /// predicate if you do not need the returned iterator.
+    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped without iterating
+    /// or the iteration short-circuits, then the remaining elements will be retained.
+    /// Use [`retain()`] with a negated predicate if you do not need the returned iterator.
     ///
     /// [`retain()`]: HashTable::retain
     ///
@@ -920,18 +953,20 @@ where
     {
         ExtractIf {
             f,
-            inner: RawExtractIf { iter: unsafe { self.raw.iter() }, table: &mut self.raw },
+            inner: RawExtractIf {
+                iter: unsafe { self.raw.iter() },
+                table: &mut self.raw,
+            },
         }
     }
 
     /// Attempts to get mutable references to `N` values in the map at once.
     ///
-    /// The `eq` argument should be a closure such that `eq(i, k)` returns true
-    /// if `k` is equal to the `i`th key to be looked up.
+    /// The `eq` argument should be a closure such that `eq(i, k)` returns true if `k` is equal to
+    /// the `i`th key to be looked up.
     ///
-    /// Returns an array of length `N` with the results of each query. For
-    /// soundness, at most one mutable reference will be returned to any
-    /// value. `None` will be used if the key is missing.
+    /// Returns an array of length `N` with the results of each query. For soundness, at most one
+    /// mutable reference will be returned to any value. `None` will be used if the key is missing.
     ///
     /// # Panics
     ///
@@ -1011,21 +1046,21 @@ where
         self.raw.get_many_mut(hashes, eq)
     }
 
-    /// Attempts to get mutable references to `N` values in the map at once,
-    /// without validating that the values are unique.
+    /// Attempts to get mutable references to `N` values in the map at once, without validating that
+    /// the values are unique.
     ///
-    /// The `eq` argument should be a closure such that `eq(i, k)` returns true
-    /// if `k` is equal to the `i`th key to be looked up.
+    /// The `eq` argument should be a closure such that `eq(i, k)` returns true if `k` is equal to
+    /// the `i`th key to be looked up.
     ///
-    /// Returns an array of length `N` with the results of each query. `None`
-    /// will be returned if any of the keys are missing.
+    /// Returns an array of length `N` with the results of each query. `None` will be returned if
+    /// any of the keys are missing.
     ///
     /// For a safe alternative see [`get_many_mut`](`HashTable::get_many_mut`).
     ///
     /// # Safety
     ///
-    /// Calling this method with overlapping keys is *[undefined behavior]* even
-    /// if the resulting references are not used.
+    /// Calling this method with overlapping keys is *[undefined behavior]* even if the resulting
+    /// references are not used.
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     ///
@@ -1094,7 +1129,9 @@ where
     type IntoIter = IntoIter<T, A>;
 
     fn into_iter(self) -> IntoIter<T, A> {
-        IntoIter { inner: self.raw.into_iter() }
+        IntoIter {
+            inner: self.raw.into_iter(),
+        }
     }
 }
 
@@ -1127,7 +1164,9 @@ where
     A: Allocator + Default,
 {
     fn default() -> Self {
-        Self { raw: Default::default() }
+        Self {
+            raw: Default::default(),
+        }
     }
 }
 
@@ -1137,7 +1176,9 @@ where
     A: Allocator + Clone,
 {
     fn clone(&self) -> Self {
-        Self { raw: self.raw.clone() }
+        Self {
+            raw: self.raw.clone(),
+        }
     }
 }
 
@@ -1151,8 +1192,7 @@ where
     }
 }
 
-/// A view into a single entry in a table, which may either be vacant or
-/// occupied.
+/// A view into a single entry in a table, which may either be vacant or occupied.
 ///
 /// This `enum` is constructed from the [`entry`] method on [`HashTable`].
 ///
@@ -1361,8 +1401,7 @@ where
         }
     }
 
-    /// Ensures a value is in the entry by inserting the result of the default
-    /// function if empty..
+    /// Ensures a value is in the entry by inserting the result of the default function if empty..
     ///
     /// Returns an [`OccupiedEntry`] pointing to the now-occupied entry.
     ///
@@ -1529,7 +1568,9 @@ where
 
 impl<T: fmt::Debug, A: Allocator> fmt::Debug for OccupiedEntry<'_, T, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("OccupiedEntry").field("value", self.get()).finish()
+        f.debug_struct("OccupiedEntry")
+            .field("value", self.get())
+            .finish()
     }
 }
 
@@ -1577,7 +1618,14 @@ where
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn remove(self) -> (T, VacantEntry<'a, T, A>) {
         let (val, slot) = unsafe { self.table.raw.remove(self.bucket) };
-        (val, VacantEntry { hash: self.hash, insert_slot: slot, table: self.table })
+        (
+            val,
+            VacantEntry {
+                hash: self.hash,
+                insert_slot: slot,
+                table: self.table,
+            },
+        )
     }
 
     /// Gets a reference to the value in the entry.
@@ -1664,8 +1712,8 @@ where
         unsafe { self.bucket.as_mut() }
     }
 
-    /// Converts the `OccupiedEntry` into a mutable reference to the value in
-    /// the entry with a lifetime bound to the table itself.
+    /// Converts the `OccupiedEntry` into a mutable reference to the value in the entry
+    /// with a lifetime bound to the table itself.
     ///
     /// If you need multiple references to the `OccupiedEntry`, see [`get_mut`].
     ///
@@ -1813,8 +1861,16 @@ where
     /// ```
     #[inline]
     pub fn insert(self, value: T) -> OccupiedEntry<'a, T, A> {
-        let bucket = unsafe { self.table.raw.insert_in_slot(self.hash, self.insert_slot, value) };
-        OccupiedEntry { hash: self.hash, bucket, table: self.table }
+        let bucket = unsafe {
+            self.table
+                .raw
+                .insert_in_slot(self.hash, self.insert_slot, value)
+        };
+        OccupiedEntry {
+            hash: self.hash,
+            bucket,
+            table: self.table,
+        }
     }
 
     /// Converts the `VacantEntry` into a mutable reference to the underlying
@@ -1824,8 +1880,7 @@ where
     }
 }
 
-/// Type representing the absence of an entry, as returned by
-/// [`HashTable::find_entry`].
+/// Type representing the absence of an entry, as returned by [`HashTable::find_entry`].
 ///
 /// This type only exists due to [limitations] in Rust's NLL borrow checker. In
 /// the future, `find_entry` will return an `Option<OccupiedEntry>` and this
@@ -1906,7 +1961,10 @@ pub struct Iter<'a, T> {
 impl<T> Default for Iter<'_, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        Iter { inner: Default::default(), marker: PhantomData }
+        Iter {
+            inner: Default::default(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -1930,7 +1988,8 @@ impl<'a, T> Iterator for Iter<'a, T> {
         Self: Sized,
         F: FnMut(B, Self::Item) -> B,
     {
-        self.inner.fold(init, |acc, bucket| unsafe { f(acc, bucket.as_ref()) })
+        self.inner
+            .fold(init, |acc, bucket| unsafe { f(acc, bucket.as_ref()) })
     }
 }
 
@@ -1946,7 +2005,10 @@ impl<T> FusedIterator for Iter<'_, T> {}
 impl<'a, T> Clone for Iter<'a, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Iter<'a, T> {
-        Iter { inner: self.inner.clone(), marker: PhantomData }
+        Iter {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -1959,8 +2021,8 @@ impl<T: fmt::Debug> fmt::Debug for Iter<'_, T> {
 /// A mutable iterator over the entries of a `HashTable` in arbitrary order.
 /// The iterator element type is `&'a mut T`.
 ///
-/// This `struct` is created by the [`iter_mut`] method on [`HashTable`]. See
-/// its documentation for more.
+/// This `struct` is created by the [`iter_mut`] method on [`HashTable`]. See its
+/// documentation for more.
 ///
 /// [`iter_mut`]: struct.HashTable.html#method.iter_mut
 /// [`HashTable`]: struct.HashTable.html
@@ -1972,7 +2034,10 @@ pub struct IterMut<'a, T> {
 impl<T> Default for IterMut<'_, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        IterMut { inner: Default::default(), marker: PhantomData }
+        IterMut {
+            inner: Default::default(),
+            marker: PhantomData,
+        }
     }
 }
 impl<'a, T> Iterator for IterMut<'a, T> {
@@ -1995,7 +2060,8 @@ impl<'a, T> Iterator for IterMut<'a, T> {
         Self: Sized,
         F: FnMut(B, Self::Item) -> B,
     {
-        self.inner.fold(init, |acc, bucket| unsafe { f(acc, bucket.as_mut()) })
+        self.inner
+            .fold(init, |acc, bucket| unsafe { f(acc, bucket.as_mut()) })
     }
 }
 
@@ -2012,15 +2078,20 @@ where
     T: fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(Iter { inner: self.inner.clone(), marker: PhantomData }).finish()
+        f.debug_list()
+            .entries(Iter {
+                inner: self.inner.clone(),
+                marker: PhantomData,
+            })
+            .finish()
     }
 }
 
 /// An iterator over the entries of a `HashTable` that could match a given hash.
 /// The iterator element type is `&'a T`.
 ///
-/// This `struct` is created by the [`iter_hash`] method on [`HashTable`]. See
-/// its documentation for more.
+/// This `struct` is created by the [`iter_hash`] method on [`HashTable`]. See its
+/// documentation for more.
 ///
 /// [`iter_hash`]: struct.HashTable.html#method.iter_hash
 /// [`HashTable`]: struct.HashTable.html
@@ -2032,7 +2103,10 @@ pub struct IterHash<'a, T> {
 impl<T> Default for IterHash<'_, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        IterHash { inner: Default::default(), marker: PhantomData }
+        IterHash {
+            inner: Default::default(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -2052,7 +2126,8 @@ impl<'a, T> Iterator for IterHash<'a, T> {
         Self: Sized,
         F: FnMut(B, Self::Item) -> B,
     {
-        self.inner.fold(init, |acc, bucket| unsafe { f(acc, bucket.as_ref()) })
+        self.inner
+            .fold(init, |acc, bucket| unsafe { f(acc, bucket.as_ref()) })
     }
 }
 
@@ -2062,7 +2137,10 @@ impl<T> FusedIterator for IterHash<'_, T> {}
 impl<'a, T> Clone for IterHash<'a, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> IterHash<'a, T> {
-        IterHash { inner: self.inner.clone(), marker: PhantomData }
+        IterHash {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -2075,11 +2153,11 @@ where
     }
 }
 
-/// A mutable iterator over the entries of a `HashTable` that could match a
-/// given hash. The iterator element type is `&'a mut T`.
+/// A mutable iterator over the entries of a `HashTable` that could match a given hash.
+/// The iterator element type is `&'a mut T`.
 ///
-/// This `struct` is created by the [`iter_hash_mut`] method on [`HashTable`].
-/// See its documentation for more.
+/// This `struct` is created by the [`iter_hash_mut`] method on [`HashTable`]. See its
+/// documentation for more.
 ///
 /// [`iter_hash_mut`]: struct.HashTable.html#method.iter_hash_mut
 /// [`HashTable`]: struct.HashTable.html
@@ -2091,7 +2169,10 @@ pub struct IterHashMut<'a, T> {
 impl<T> Default for IterHashMut<'_, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        IterHashMut { inner: Default::default(), marker: PhantomData }
+        IterHashMut {
+            inner: Default::default(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -2111,7 +2192,8 @@ impl<'a, T> Iterator for IterHashMut<'a, T> {
         Self: Sized,
         F: FnMut(B, Self::Item) -> B,
     {
-        self.inner.fold(init, |acc, bucket| unsafe { f(acc, bucket.as_mut()) })
+        self.inner
+            .fold(init, |acc, bucket| unsafe { f(acc, bucket.as_mut()) })
     }
 }
 
@@ -2122,7 +2204,12 @@ where
     T: fmt::Debug,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(IterHash { inner: self.inner.clone(), marker: PhantomData }).finish()
+        f.debug_list()
+            .entries(IterHash {
+                inner: self.inner.clone(),
+                marker: PhantomData,
+            })
+            .finish()
     }
 }
 
@@ -2146,7 +2233,9 @@ where
 impl<T, A: Allocator> Default for IntoIter<T, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn default() -> Self {
-        IntoIter { inner: Default::default() }
+        IntoIter {
+            inner: Default::default(),
+        }
     }
 }
 
@@ -2190,7 +2279,12 @@ where
     A: Allocator,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(Iter { inner: self.inner.iter(), marker: PhantomData }).finish()
+        f.debug_list()
+            .entries(Iter {
+                inner: self.inner.iter(),
+                marker: PhantomData,
+            })
+            .finish()
     }
 }
 
@@ -2235,12 +2329,16 @@ impl<T, A: Allocator> FusedIterator for Drain<'_, T, A> {}
 
 impl<T: fmt::Debug, A: Allocator> fmt::Debug for Drain<'_, T, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(Iter { inner: self.inner.iter(), marker: PhantomData }).finish()
+        f.debug_list()
+            .entries(Iter {
+                inner: self.inner.iter(),
+                marker: PhantomData,
+            })
+            .finish()
     }
 }
 
-/// A draining iterator over entries of a `HashTable` which don't satisfy the
-/// predicate `f`.
+/// A draining iterator over entries of a `HashTable` which don't satisfy the predicate `f`.
 ///
 /// This `struct` is created by [`HashTable::extract_if`]. See its
 /// documentation for more.

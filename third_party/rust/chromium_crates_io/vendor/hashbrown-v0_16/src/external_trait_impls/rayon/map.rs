@@ -43,7 +43,10 @@ impl<'a, K: Sync, V: Sync> ParallelIterator for ParIter<'a, K, V> {
 impl<K, V> Clone for ParIter<'_, K, V> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Self { inner: self.inner.clone(), marker: PhantomData }
+        Self {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -77,14 +80,19 @@ impl<'a, K: Sync, V: Sync> ParallelIterator for ParKeys<'a, K, V> {
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.inner.map(|x| unsafe { &x.as_ref().0 }).drive_unindexed(consumer)
+        self.inner
+            .map(|x| unsafe { &x.as_ref().0 })
+            .drive_unindexed(consumer)
     }
 }
 
 impl<K, V> Clone for ParKeys<'_, K, V> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Self { inner: self.inner.clone(), marker: PhantomData }
+        Self {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -115,14 +123,19 @@ impl<'a, K: Sync, V: Sync> ParallelIterator for ParValues<'a, K, V> {
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.inner.map(|x| unsafe { &x.as_ref().1 }).drive_unindexed(consumer)
+        self.inner
+            .map(|x| unsafe { &x.as_ref().1 })
+            .drive_unindexed(consumer)
     }
 }
 
 impl<K, V> Clone for ParValues<'_, K, V> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Self { inner: self.inner.clone(), marker: PhantomData }
+        Self {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -166,7 +179,11 @@ impl<'a, K: Sync, V: Send> ParallelIterator for ParIterMut<'a, K, V> {
 
 impl<K: fmt::Debug + Eq + Hash, V: fmt::Debug> fmt::Debug for ParIterMut<'_, K, V> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParIter { inner: self.inner.clone(), marker: PhantomData }.fmt(f)
+        ParIter {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
@@ -190,13 +207,19 @@ impl<'a, K: Sync, V: Send> ParallelIterator for ParValuesMut<'a, K, V> {
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.inner.map(|x| unsafe { &mut x.as_mut().1 }).drive_unindexed(consumer)
+        self.inner
+            .map(|x| unsafe { &mut x.as_mut().1 })
+            .drive_unindexed(consumer)
     }
 }
 
 impl<K: Eq + Hash, V: fmt::Debug> fmt::Debug for ParValuesMut<'_, K, V> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParValues { inner: self.inner.clone(), marker: PhantomData }.fmt(f)
+        ParValues {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
@@ -227,7 +250,11 @@ impl<K: Send, V: Send, A: Allocator + Send> ParallelIterator for IntoParIter<K, 
 
 impl<K: fmt::Debug + Eq + Hash, V: fmt::Debug, A: Allocator> fmt::Debug for IntoParIter<K, V, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParIter { inner: unsafe { self.inner.par_iter() }, marker: PhantomData }.fmt(f)
+        ParIter {
+            inner: unsafe { self.inner.par_iter() },
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
@@ -256,39 +283,51 @@ impl<K: Send, V: Send, A: Allocator + Sync> ParallelIterator for ParDrain<'_, K,
 
 impl<K: fmt::Debug + Eq + Hash, V: fmt::Debug, A: Allocator> fmt::Debug for ParDrain<'_, K, V, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParIter { inner: unsafe { self.inner.par_iter() }, marker: PhantomData }.fmt(f)
+        ParIter {
+            inner: unsafe { self.inner.par_iter() },
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
 impl<K: Sync, V: Sync, S, A: Allocator> HashMap<K, V, S, A> {
-    /// Visits (potentially in parallel) immutably borrowed keys in an arbitrary
-    /// order.
+    /// Visits (potentially in parallel) immutably borrowed keys in an arbitrary order.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_keys(&self) -> ParKeys<'_, K, V> {
-        ParKeys { inner: unsafe { self.table.par_iter() }, marker: PhantomData }
+        ParKeys {
+            inner: unsafe { self.table.par_iter() },
+            marker: PhantomData,
+        }
     }
 
-    /// Visits (potentially in parallel) immutably borrowed values in an
-    /// arbitrary order.
+    /// Visits (potentially in parallel) immutably borrowed values in an arbitrary order.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_values(&self) -> ParValues<'_, K, V> {
-        ParValues { inner: unsafe { self.table.par_iter() }, marker: PhantomData }
+        ParValues {
+            inner: unsafe { self.table.par_iter() },
+            marker: PhantomData,
+        }
     }
 }
 
 impl<K: Send, V: Send, S, A: Allocator> HashMap<K, V, S, A> {
-    /// Visits (potentially in parallel) mutably borrowed values in an arbitrary
-    /// order.
+    /// Visits (potentially in parallel) mutably borrowed values in an arbitrary order.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_values_mut(&mut self) -> ParValuesMut<'_, K, V> {
-        ParValuesMut { inner: unsafe { self.table.par_iter() }, marker: PhantomData }
+        ParValuesMut {
+            inner: unsafe { self.table.par_iter() },
+            marker: PhantomData,
+        }
     }
 
     /// Consumes (potentially in parallel) all values in an arbitrary order,
     /// while preserving the map's allocated memory for reuse.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_drain(&mut self) -> ParDrain<'_, K, V, A> {
-        ParDrain { inner: self.table.par_drain() }
+        ParDrain {
+            inner: self.table.par_drain(),
+        }
     }
 }
 
@@ -317,7 +356,9 @@ impl<K: Send, V: Send, S, A: Allocator + Send> IntoParallelIterator for HashMap<
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        IntoParIter { inner: self.table.into_par_iter() }
+        IntoParIter {
+            inner: self.table.into_par_iter(),
+        }
     }
 }
 
@@ -327,7 +368,10 @@ impl<'a, K: Sync, V: Sync, S, A: Allocator> IntoParallelIterator for &'a HashMap
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        ParIter { inner: unsafe { self.table.par_iter() }, marker: PhantomData }
+        ParIter {
+            inner: unsafe { self.table.par_iter() },
+            marker: PhantomData,
+        }
     }
 }
 
@@ -337,7 +381,10 @@ impl<'a, K: Sync, V: Send, S, A: Allocator> IntoParallelIterator for &'a mut Has
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        ParIterMut { inner: unsafe { self.table.par_iter() }, marker: PhantomData }
+        ParIterMut {
+            inner: unsafe { self.table.par_iter() },
+            marker: PhantomData,
+        }
     }
 }
 

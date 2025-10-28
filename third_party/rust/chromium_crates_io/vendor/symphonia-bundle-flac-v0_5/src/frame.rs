@@ -29,33 +29,27 @@ pub enum BlockSequence {
     ByFrame(u32),
 }
 
-/// `ChannelAssignment` describes the mapping between the samples decoded from a
-/// subframe and the channel those samples belong to. It is also through the
-/// `ChannelAssignment` that the decoder is instructed on how to decorrelate
-/// stereo channels.
+/// `ChannelAssignment` describes the mapping between the samples decoded from a subframe and the
+/// channel those samples belong to. It is also through the `ChannelAssignment` that the decoder is
+/// instructed on how to decorrelate stereo channels.
 //
-/// For LeftSide or RightSide channel assignments, one channel is stored
-/// independently while the other stores a difference. The Difference is always
-/// stored as Left - Right. For the MidSide channel assignment, no channels are
-/// stored independently, rather, a Mid (average) channel and a Difference
-/// channel are stored.
+/// For LeftSide or RightSide channel assignments, one channel is stored independently while the
+/// other stores a difference. The Difference is always stored as Left - Right. For the MidSide
+/// channel assignment, no channels are stored independently, rather, a Mid (average) channel and a
+/// Difference channel are stored.
 #[derive(Debug)]
 pub enum ChannelAssignment {
-    /// All channels are independantly coded and no decorrelation step is
-    /// required.
+    /// All channels are independantly coded and no decorrelation step is required.
     Independant(u32),
-    /// Channel 0 is the Left channel, and channel 1 is a Difference channel.
-    /// The Right channel is restored by subtracting the Difference channel
-    /// from the Left channel (R = L - D).
+    /// Channel 0 is the Left channel, and channel 1 is a Difference channel. The Right channel
+    /// is restored by subtracting the Difference channel from the Left channel (R = L - D).
     LeftSide,
-    /// Channel 0 is the Mid channel (Left/2 + Right/2), and channel 1 is the
-    /// Difference channel (Left - Right). Therefore, if M = L/2 + R/2 and D
-    /// = L - R, solving for L and R the left and right channels are: L =
-    /// S/2 + M, and R = M - S/2.
+    /// Channel 0 is the Mid channel (Left/2 + Right/2), and channel 1 is the Difference channel
+    /// (Left - Right). Therefore, if M = L/2 + R/2 and D = L - R, solving for L and R the left
+    /// and right channels are: L = S/2 + M, and R = M - S/2.
     MidSide,
-    /// Channel 0 is the Difference channel, and channel 1 is the Right channel.
-    /// The Left channel is restored by adding the Difference channel to the
-    /// Right channel (L = R + D).
+    /// Channel 0 is the Difference channel, and channel 1 is the Right channel. The Left channel
+    /// is restored by adding the Difference channel to the Right channel (L = R + D).
     RightSide,
 }
 
@@ -70,10 +64,9 @@ pub struct FrameHeader {
 pub fn sync_frame<B: ReadBytes>(reader: &mut B) -> Result<u16> {
     let mut sync = 0u16;
 
-    // Synchronize stream to Frame Header. FLAC specifies a byte-aligned 14 bit sync
-    // code of `0b11_1111_1111_1110`. This would be difficult to find on its
-    // own. Expand the search to a 16-bit field of `0b1111_1111_1111_10xx` and
-    // search a word at a time.
+    // Synchronize stream to Frame Header. FLAC specifies a byte-aligned 14 bit sync code of
+    // `0b11_1111_1111_1110`. This would be difficult to find on its own. Expand the search to
+    // a 16-bit field of `0b1111_1111_1111_10xx` and search a word at a time.
     while (sync & 0xfffc) != 0xfff8 {
         sync = sync.wrapping_shl(8) | u16::from(reader.read_u8()?);
     }
@@ -82,8 +75,7 @@ pub fn sync_frame<B: ReadBytes>(reader: &mut B) -> Result<u16> {
 }
 
 pub fn read_frame_header<B: ReadBytes>(reader: &mut B, sync: u16) -> Result<FrameHeader> {
-    // The header is checksummed with a CRC8 hash. Include the sync code in this
-    // CRC.
+    // The header is checksummed with a CRC8 hash. Include the sync code in this CRC.
     let mut crc8 = Crc8Ccitt::new(0);
     crc8.process_buf_bytes(&sync.to_be_bytes());
 
@@ -95,8 +87,8 @@ pub fn read_frame_header<B: ReadBytes>(reader: &mut B, sync: u16) -> Result<Fram
         _ => BlockingStrategy::Variable,
     };
 
-    // Read all the standard frame description fields as one 16-bit value and
-    // extract the fields.
+    // Read all the standard frame description fields as one 16-bit value and extract the
+    // fields.
     let desc = reader_crc8.read_be_u16()?;
 
     let block_size_enc = u32::from((desc & 0xf000) >> 12);
@@ -116,9 +108,9 @@ pub fn read_frame_header<B: ReadBytes>(reader: &mut B, sync: u16) -> Result<Fram
                 None => return decode_error("flac: frame sequence number is not valid"),
             };
 
-            // The frame number should only be 31-bits. Since it is UTF8 encoded, the actual
-            // length cannot be enforced by the decoder. Return an error if the
-            // frame number exceeds the maximum 31-bit value.
+            // The frame number should only be 31-bits. Since it is UTF8 encoded, the actual length
+            // cannot be enforced by the decoder. Return an error if the frame number exceeds the
+            // maximum 31-bit value.
             if frame > 0x7fff_ffff {
                 return decode_error("flac: frame sequence number exceeds 31-bits");
             }
@@ -132,9 +124,9 @@ pub fn read_frame_header<B: ReadBytes>(reader: &mut B, sync: u16) -> Result<Fram
                 None => return decode_error("flac: sample sequence number is not valid"),
             };
 
-            // The sample number should only be 36-bits. Since it is UTF8 encoded, the
-            // actual length cannot be enforced by the decoder. Return an error
-            // if the frame number exceeds the maximum 36-bit value.
+            // The sample number should only be 36-bits. Since it is UTF8 encoded, the actual length
+            // cannot be enforced by the decoder. Return an error if the frame number exceeds the
+            // maximum 36-bit value.
             if sample > 0x000f_ffff_ffff {
                 return decode_error("flac: sample sequence number exceeds 36-bits");
             }
@@ -273,19 +265,18 @@ pub fn is_likely_frame_header(buf: &[u8]) -> bool {
     true
 }
 
-/// Decodes a big-endian unsigned integer encoded via extended UTF8. In this
-/// context, extended UTF8 simply means the encoded UTF8 value may be up to 7
-/// bytes for a maximum integer bit width of 36-bits.
+/// Decodes a big-endian unsigned integer encoded via extended UTF8. In this context, extended UTF8
+/// simply means the encoded UTF8 value may be up to 7 bytes for a maximum integer bit width of
+/// 36-bits.
 fn utf8_decode_be_u64<B: ReadBytes>(src: &mut B) -> Result<Option<u64>> {
     // Read the first byte of the UTF8 encoded integer.
     let mut state = u64::from(src.read_u8()?);
 
-    // UTF8 prefixes 1s followed by a 0 to indicate the total number of bytes within
-    // the multi-byte sequence. Using ranges, determine the mask that will
-    // overlap the data bits within the first byte of the sequence. For values
-    // 0-128, return the value immediately. If the value falls out
-    // of range return None as this is either not the start of a UTF8 sequence or
-    // the prefix is incorrect.
+    // UTF8 prefixes 1s followed by a 0 to indicate the total number of bytes within the multi-byte
+    // sequence. Using ranges, determine the mask that will overlap the data bits within the first
+    // byte of the sequence. For values 0-128, return the value immediately. If the value falls out
+    // of range return None as this is either not the start of a UTF8 sequence or the prefix is
+    // incorrect.
     let mask: u8 = match state {
         0x00..=0x7f => return Ok(Some(state)),
         0xc0..=0xdf => 0x1f,
@@ -300,16 +291,15 @@ fn utf8_decode_be_u64<B: ReadBytes>(src: &mut B) -> Result<Option<u64>> {
     // Obtain the data bits from the first byte by using the data mask.
     state &= u64::from(mask);
 
-    // Read the remaining bytes within the UTF8 sequence. Since the mask 0s out the
-    // UTF8 prefix of 1s which indicate the length of the multi-byte sequence in
-    // bytes, plus an additional 0 bit, the number of remaining bytes to read is
-    // the number of zeros in the mask minus 2. To avoid extra computation,
-    // simply loop from 2 to the number of zeros.
+    // Read the remaining bytes within the UTF8 sequence. Since the mask 0s out the UTF8 prefix
+    // of 1s which indicate the length of the multi-byte sequence in bytes, plus an additional 0
+    // bit, the number of remaining bytes to read is the number of zeros in the mask minus 2.
+    // To avoid extra computation, simply loop from 2 to the number of zeros.
     for _i in 2..mask.leading_zeros() {
-        // Each subsequent byte after the first in UTF8 is prefixed with 0b10xx_xxxx,
-        // therefore only 6 bits are useful. Append these six bits to the result
-        // by shifting the result left by 6 bit positions, and appending the
-        // next subsequent byte with the first two high-order bits masked out.
+        // Each subsequent byte after the first in UTF8 is prefixed with 0b10xx_xxxx, therefore
+        // only 6 bits are useful. Append these six bits to the result by shifting the result left
+        // by 6 bit positions, and appending the next subsequent byte with the first two high-order
+        // bits masked out.
         state = (state << 6) | u64::from(src.read_u8()? & 0x3f);
 
         // TODO: Validation? Invalid if the byte is greater than 0x3f.

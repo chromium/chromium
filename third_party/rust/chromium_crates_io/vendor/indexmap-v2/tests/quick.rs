@@ -517,7 +517,10 @@ where
 
     // Check both iteration order and hash lookups
     assert!(map.keys().eq(vec.iter()));
-    assert!(vec.iter().enumerate().all(|(i, x)| { map.get_index_of(x) == Some(i) }));
+    assert!(vec
+        .iter()
+        .enumerate()
+        .all(|(i, x)| { map.get_index_of(x) == Some(i) }));
     TestResult::passed()
 }
 
@@ -541,7 +544,10 @@ where
 
     // Check both iteration order and hash lookups
     assert!(map.keys().eq(vec.iter()));
-    assert!(vec.iter().enumerate().all(|(i, x)| { map.get_index_of(x) == Some(i) }));
+    assert!(vec
+        .iter()
+        .enumerate()
+        .all(|(i, x)| { map.get_index_of(x) == Some(i) }));
     TestResult::passed()
 }
 
@@ -567,7 +573,10 @@ where
 
     // Check both iteration order and hash lookups
     assert!(map.keys().eq(vec.iter()));
-    assert!(vec.iter().enumerate().all(|(i, x)| { map.get_index_of(x) == Some(i) }));
+    assert!(vec
+        .iter()
+        .enumerate()
+        .all(|(i, x)| { map.get_index_of(x) == Some(i) }));
     TestResult::passed()
 }
 
@@ -846,7 +855,11 @@ impl Arbitrary for Alpha {
     fn arbitrary(g: &mut Gen) -> Self {
         let len = usize::arbitrary(g) % g.size();
         let len = min(len, 16);
-        Alpha((0..len).map(|_| ALPHABET[usize::arbitrary(g) % ALPHABET.len()] as char).collect())
+        Alpha(
+            (0..len)
+                .map(|_| ALPHABET[usize::arbitrary(g) % ALPHABET.len()] as char)
+                .collect(),
+        )
     }
 
     fn shrink(&self) -> Box<dyn Iterator<Item = Self>> {

@@ -47,8 +47,14 @@ fn map_seq_par_equivalence_iter() {
     assert_eq!(vec_seq, vec_par);
 
     // Do not depend on the exact order of values
-    let expected_sorted =
-        [(&'a', &10), (&'b', &20), (&'c', &30), (&'d', &40), (&'e', &50), (&'f', &60)];
+    let expected_sorted = [
+        (&'a', &10),
+        (&'b', &20),
+        (&'c', &30),
+        (&'d', &40),
+        (&'e', &50),
+        (&'f', &60),
+    ];
 
     vec_seq.sort_unstable();
     vec_par.sort_unstable();
@@ -193,7 +199,14 @@ fn map_seq_par_equivalence_into_iter() {
     assert_eq!(vec_seq, vec_par);
 
     // Do not depend on the exact order of values
-    let expected_sorted = [('a', 10), ('b', 20), ('c', 30), ('d', 40), ('e', 50), ('f', 60)];
+    let expected_sorted = [
+        ('a', 10),
+        ('b', 20),
+        ('c', 30),
+        ('d', 40),
+        ('e', 50),
+        ('f', 60),
+    ];
 
     vec_seq.sort_unstable();
     vec_par.sort_unstable();
@@ -203,15 +216,24 @@ fn map_seq_par_equivalence_into_iter() {
 
 lazy_static! {
     static ref MAP_VEC_EMPTY: Vec<(char, u32)> = vec![];
-    static ref MAP_VEC: Vec<(char, u32)> =
-        vec![('b', 20), ('a', 10), ('c', 30), ('e', 50), ('f', 60), ('d', 40),];
+    static ref MAP_VEC: Vec<(char, u32)> = vec![
+        ('b', 20),
+        ('a', 10),
+        ('c', 30),
+        ('e', 50),
+        ('f', 60),
+        ('d', 40),
+    ];
 }
 
 #[test]
 fn map_seq_par_equivalence_collect_empty() {
     let map_expected = MAP_EMPTY.clone();
     let map_seq = MAP_VEC_EMPTY.clone().into_iter().collect::<HashMap<_, _>>();
-    let map_par = MAP_VEC_EMPTY.clone().into_par_iter().collect::<HashMap<_, _>>();
+    let map_par = MAP_VEC_EMPTY
+        .clone()
+        .into_par_iter()
+        .collect::<HashMap<_, _>>();
 
     assert_eq!(map_seq, map_par);
     assert_eq!(map_seq, map_expected);
@@ -364,7 +386,10 @@ lazy_static! {
 fn set_seq_par_equivalence_collect_empty() {
     let set_expected = SET_EMPTY.clone();
     let set_seq = SET_VEC_EMPTY.clone().into_iter().collect::<HashSet<_>>();
-    let set_par = SET_VEC_EMPTY.clone().into_par_iter().collect::<HashSet<_>>();
+    let set_par = SET_VEC_EMPTY
+        .clone()
+        .into_par_iter()
+        .collect::<HashSet<_>>();
 
     assert_eq!(set_seq, set_par);
     assert_eq!(set_seq, set_expected);
@@ -456,20 +481,32 @@ lazy_static! {
 #[test]
 fn set_seq_par_equivalence_difference() {
     let diff_ab_seq = SET_A.difference(&*SET_B).copied().collect::<HashSet<_>>();
-    let diff_ab_par = SET_A.par_difference(&*SET_B).copied().collect::<HashSet<_>>();
+    let diff_ab_par = SET_A
+        .par_difference(&*SET_B)
+        .copied()
+        .collect::<HashSet<_>>();
 
     assert_eq3!(diff_ab_seq, diff_ab_par, *SET_DIFF_AB);
 
     let diff_ba_seq = SET_B.difference(&*SET_A).copied().collect::<HashSet<_>>();
-    let diff_ba_par = SET_B.par_difference(&*SET_A).copied().collect::<HashSet<_>>();
+    let diff_ba_par = SET_B
+        .par_difference(&*SET_A)
+        .copied()
+        .collect::<HashSet<_>>();
 
     assert_eq3!(diff_ba_seq, diff_ba_par, *SET_DIFF_BA);
 }
 
 #[test]
 fn set_seq_par_equivalence_symmetric_difference() {
-    let symm_diff_ab_seq = SET_A.symmetric_difference(&*SET_B).copied().collect::<HashSet<_>>();
-    let symm_diff_ab_par = SET_A.par_symmetric_difference(&*SET_B).copied().collect::<HashSet<_>>();
+    let symm_diff_ab_seq = SET_A
+        .symmetric_difference(&*SET_B)
+        .copied()
+        .collect::<HashSet<_>>();
+    let symm_diff_ab_par = SET_A
+        .par_symmetric_difference(&*SET_B)
+        .copied()
+        .collect::<HashSet<_>>();
 
     assert_eq3!(symm_diff_ab_seq, symm_diff_ab_par, *SET_SYMM_DIFF_AB);
 }
@@ -477,9 +514,16 @@ fn set_seq_par_equivalence_symmetric_difference() {
 #[test]
 fn set_seq_par_equivalence_intersection() {
     let intersection_ab_seq = SET_A.intersection(&*SET_B).copied().collect::<HashSet<_>>();
-    let intersection_ab_par = SET_A.par_intersection(&*SET_B).copied().collect::<HashSet<_>>();
+    let intersection_ab_par = SET_A
+        .par_intersection(&*SET_B)
+        .copied()
+        .collect::<HashSet<_>>();
 
-    assert_eq3!(intersection_ab_seq, intersection_ab_par, *SET_INTERSECTION_AB);
+    assert_eq3!(
+        intersection_ab_seq,
+        intersection_ab_par,
+        *SET_INTERSECTION_AB
+    );
 }
 
 #[test]

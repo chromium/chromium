@@ -9,8 +9,7 @@ use rayon::iter::{
     ParallelIterator,
 };
 
-/// Parallel iterator which returns a raw pointer to every full bucket in the
-/// table.
+/// Parallel iterator which returns a raw pointer to every full bucket in the table.
 pub struct RawParIter<T> {
     iter: RawIterRange<T>,
 }
@@ -25,7 +24,9 @@ impl<T> RawParIter<T> {
 impl<T> Clone for RawParIter<T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Self { iter: self.iter.clone() }
+        Self {
+            iter: self.iter.clone(),
+        }
     }
 }
 
@@ -206,7 +207,9 @@ impl<T, A: Allocator> RawTable<T, A> {
     /// Returns a parallel iterator over the elements in a `RawTable`.
     #[cfg_attr(feature = "inline-more", inline)]
     pub unsafe fn par_iter(&self) -> RawParIter<T> {
-        RawParIter { iter: self.iter().iter }
+        RawParIter {
+            iter: self.iter().iter,
+        }
     }
 
     /// Returns a parallel iterator over the elements in a `RawTable`.
@@ -219,6 +222,9 @@ impl<T, A: Allocator> RawTable<T, A> {
     /// without freeing its memory allocation.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_drain(&mut self) -> RawParDrain<'_, T, A> {
-        RawParDrain { table: NonNull::from(self), marker: PhantomData }
+        RawParDrain {
+            table: NonNull::from(self),
+            marker: PhantomData,
+        }
     }
 }

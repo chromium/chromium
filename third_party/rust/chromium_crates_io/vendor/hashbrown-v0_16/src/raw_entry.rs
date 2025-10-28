@@ -16,31 +16,27 @@ impl<K, V, S, A: Allocator> HashMap<K, V, S, A> {
     /// Raw entries are useful for such exotic situations as:
     ///
     /// * Hash memoization
-    /// * Deferring the creation of an owned key until it is known to be
-    ///   required
+    /// * Deferring the creation of an owned key until it is known to be required
     /// * Using a search key that doesn't work with the Borrow trait
     /// * Using custom comparison logic without newtype wrappers
     ///
-    /// Because raw entries provide much more low-level control, it's much
-    /// easier to put the `HashMap` into an inconsistent state which, while
-    /// memory-safe, will cause the map to produce seemingly random results.
-    /// Higher-level and more foolproof APIs like `entry` should be
-    /// preferred when possible.
+    /// Because raw entries provide much more low-level control, it's much easier
+    /// to put the `HashMap` into an inconsistent state which, while memory-safe,
+    /// will cause the map to produce seemingly random results. Higher-level and
+    /// more foolproof APIs like `entry` should be preferred when possible.
     ///
     /// In particular, the hash used to initialized the raw entry must still be
-    /// consistent with the hash of the key that is ultimately stored in the
-    /// entry. This is because implementations of `HashMap` may need to
-    /// recompute hashes when resizing, at which point only the keys are
-    /// available.
+    /// consistent with the hash of the key that is ultimately stored in the entry.
+    /// This is because implementations of `HashMap` may need to recompute hashes
+    /// when resizing, at which point only the keys are available.
     ///
     /// Raw entries give mutable access to the keys. This must not be used
-    /// to modify how the key would compare or hash, as the map will not
-    /// re-evaluate where the key should go, meaning the keys may become
-    /// "lost" if their location does not reflect their state. For instance,
-    /// if you change a key so that the map now contains keys which compare
-    /// equal, search may start acting erratically, with two keys randomly
-    /// masking each other. Implementations are free to assume this doesn't
-    /// happen (within the limits of memory-safety).
+    /// to modify how the key would compare or hash, as the map will not re-evaluate
+    /// where the key should go, meaning the keys may become "lost" if their
+    /// location does not reflect their state. For instance, if you change a key
+    /// so that the map now contains keys which compare equal, search may start
+    /// acting erratically, with two keys randomly masking each other. Implementations
+    /// are free to assume this doesn't happen (within the limits of memory-safety).
     ///
     /// # Examples
     ///
@@ -123,11 +119,10 @@ impl<K, V, S, A: Allocator> HashMap<K, V, S, A> {
     /// * Using a search key that doesn't work with the Borrow trait
     /// * Using custom comparison logic without newtype wrappers
     ///
-    /// Unless you are in such a situation, higher-level and more foolproof APIs
-    /// like `get` should be preferred.
+    /// Unless you are in such a situation, higher-level and more foolproof APIs like
+    /// `get` should be preferred.
     ///
-    /// Immutable raw entries have very limited use; you might instead want
-    /// `raw_entry_mut`.
+    /// Immutable raw entries have very limited use; you might instead want `raw_entry_mut`.
     ///
     /// # Examples
     ///
@@ -163,8 +158,7 @@ impl<K, V, S, A: Allocator> HashMap<K, V, S, A> {
     }
 }
 
-/// A builder for computing where in a [`HashMap`] a key-value pair would be
-/// stored.
+/// A builder for computing where in a [`HashMap`] a key-value pair would be stored.
 ///
 /// See the [`HashMap::raw_entry_mut`] docs for usage examples.
 ///
@@ -227,8 +221,8 @@ pub struct RawEntryBuilderMut<'a, K, V, S, A: Allocator = Global> {
 ///
 /// This is a lower-level version of [`Entry`].
 ///
-/// This `enum` is constructed through the [`raw_entry_mut`] method on
-/// [`HashMap`], then calling one of the methods of that [`RawEntryBuilderMut`].
+/// This `enum` is constructed through the [`raw_entry_mut`] method on [`HashMap`],
+/// then calling one of the methods of that [`RawEntryBuilderMut`].
 ///
 /// [`HashMap`]: struct.HashMap.html
 /// [`Entry`]: enum.Entry.html
@@ -474,8 +468,7 @@ pub struct RawVacantEntryMut<'a, K, V, S, A: Allocator = Global> {
     hash_builder: &'a S,
 }
 
-/// A builder for computing where in a [`HashMap`] a key-value pair would be
-/// stored.
+/// A builder for computing where in a [`HashMap`] a key-value pair would be stored.
 ///
 /// See the [`HashMap::raw_entry`] docs for usage examples.
 ///
@@ -742,8 +735,8 @@ impl<'a, K, V, S, A: Allocator> RawEntryMut<'a, K, V, S, A> {
         }
     }
 
-    /// Ensures a value is in the entry by inserting the default if empty, and
-    /// returns mutable references to the key and value in the entry.
+    /// Ensures a value is in the entry by inserting the default if empty, and returns
+    /// mutable references to the key and value in the entry.
     ///
     /// # Examples
     ///
@@ -770,9 +763,8 @@ impl<'a, K, V, S, A: Allocator> RawEntryMut<'a, K, V, S, A> {
         }
     }
 
-    /// Ensures a value is in the entry by inserting the result of the default
-    /// function if empty, and returns mutable references to the key and
-    /// value in the entry.
+    /// Ensures a value is in the entry by inserting the result of the default function if empty,
+    /// and returns mutable references to the key and value in the entry.
     ///
     /// # Examples
     ///
@@ -1013,8 +1005,8 @@ impl<'a, K, V, S, A: Allocator> RawOccupiedEntryMut<'a, K, V, S, A> {
         unsafe { &self.elem.as_ref().1 }
     }
 
-    /// Converts the `OccupiedEntry` into a mutable reference to the value in
-    /// the entry with a lifetime bound to the map itself.
+    /// Converts the `OccupiedEntry` into a mutable reference to the value in the entry
+    /// with a lifetime bound to the map itself.
     ///
     /// # Examples
     ///
@@ -1117,8 +1109,8 @@ impl<'a, K, V, S, A: Allocator> RawOccupiedEntryMut<'a, K, V, S, A> {
         }
     }
 
-    /// Converts the `OccupiedEntry` into a mutable reference to the key and
-    /// value in the entry with a lifetime bound to the map itself.
+    /// Converts the `OccupiedEntry` into a mutable reference to the key and value in the entry
+    /// with a lifetime bound to the map itself.
     ///
     /// # Examples
     ///
@@ -1290,8 +1282,9 @@ impl<'a, K, V, S, A: Allocator> RawOccupiedEntryMut<'a, K, V, S, A> {
         F: FnOnce(&K, V) -> Option<V>,
     {
         unsafe {
-            let still_occupied =
-                self.table.replace_bucket_with(self.elem.clone(), |(key, value)| {
+            let still_occupied = self
+                .table
+                .replace_bucket_with(self.elem.clone(), |(key, value)| {
                     f(&key, value).map(|new_value| (key, new_value))
                 });
 
@@ -1372,8 +1365,11 @@ impl<'a, K, V, S, A: Allocator> RawVacantEntryMut<'a, K, V, S, A> {
         K: Hash,
         S: BuildHasher,
     {
-        let &mut (ref mut k, ref mut v) =
-            self.table.insert_entry(hash, (key, value), make_hasher::<_, V, S>(self.hash_builder));
+        let &mut (ref mut k, ref mut v) = self.table.insert_entry(
+            hash,
+            (key, value),
+            make_hasher::<_, V, S>(self.hash_builder),
+        );
         (k, v)
     }
 
@@ -1424,8 +1420,9 @@ impl<'a, K, V, S, A: Allocator> RawVacantEntryMut<'a, K, V, S, A> {
     where
         H: Fn(&K) -> u64,
     {
-        let &mut (ref mut k, ref mut v) =
-            self.table.insert_entry(hash, (key, value), |x| hasher(&x.0));
+        let &mut (ref mut k, ref mut v) = self
+            .table
+            .insert_entry(hash, (key, value), |x| hasher(&x.0));
         (k, v)
     }
 
@@ -1436,8 +1433,16 @@ impl<'a, K, V, S, A: Allocator> RawVacantEntryMut<'a, K, V, S, A> {
         S: BuildHasher,
     {
         let hash = make_hash::<K, S>(self.hash_builder, &key);
-        let elem = self.table.insert(hash, (key, value), make_hasher::<_, V, S>(self.hash_builder));
-        RawOccupiedEntryMut { elem, table: self.table, hash_builder: self.hash_builder }
+        let elem = self.table.insert(
+            hash,
+            (key, value),
+            make_hasher::<_, V, S>(self.hash_builder),
+        );
+        RawOccupiedEntryMut {
+            elem,
+            table: self.table,
+            hash_builder: self.hash_builder,
+        }
     }
 }
 
@@ -1490,8 +1495,11 @@ mod test_map {
         let value = "an initial value";
         let new_value = "a new value";
 
-        let entry =
-            a.raw_entry_mut().from_key(&key).insert(key, value).replace_entry_with(|k, v| {
+        let entry = a
+            .raw_entry_mut()
+            .from_key(&key)
+            .insert(key, value)
+            .replace_entry_with(|k, v| {
                 assert_eq!(k, &key);
                 assert_eq!(v, value);
                 Some(new_value)
@@ -1534,7 +1542,10 @@ mod test_map {
         let value = "an initial value";
         let new_value = "a new value";
 
-        let entry = a.raw_entry_mut().from_key(&key).and_replace_entry_with(|_, _| panic!());
+        let entry = a
+            .raw_entry_mut()
+            .from_key(&key)
+            .and_replace_entry_with(|_, _| panic!());
 
         match entry {
             RawEntryMut::Vacant(_) => {}
@@ -1543,11 +1554,14 @@ mod test_map {
 
         a.insert(key, value);
 
-        let entry = a.raw_entry_mut().from_key(&key).and_replace_entry_with(|k, v| {
-            assert_eq!(k, &key);
-            assert_eq!(v, value);
-            Some(new_value)
-        });
+        let entry = a
+            .raw_entry_mut()
+            .from_key(&key)
+            .and_replace_entry_with(|k, v| {
+                assert_eq!(k, &key);
+                assert_eq!(v, value);
+                Some(new_value)
+            });
 
         match entry {
             RawEntryMut::Occupied(e) => {
@@ -1560,11 +1574,14 @@ mod test_map {
         assert_eq!(a[key], new_value);
         assert_eq!(a.len(), 1);
 
-        let entry = a.raw_entry_mut().from_key(&key).and_replace_entry_with(|k, v| {
-            assert_eq!(k, &key);
-            assert_eq!(v, new_value);
-            None
-        });
+        let entry = a
+            .raw_entry_mut()
+            .from_key(&key)
+            .and_replace_entry_with(|k, v| {
+                assert_eq!(k, &key);
+                assert_eq!(v, new_value);
+                None
+            });
 
         match entry {
             RawEntryMut::Vacant(_) => {}
@@ -1597,8 +1614,14 @@ mod test_map {
         }
         let hash1 = compute_hash(&map, 1);
         assert_eq!(map.raw_entry().from_key(&1).unwrap(), (&1, &100));
-        assert_eq!(map.raw_entry().from_hash(hash1, |k| *k == 1).unwrap(), (&1, &100));
-        assert_eq!(map.raw_entry().from_key_hashed_nocheck(hash1, &1).unwrap(), (&1, &100));
+        assert_eq!(
+            map.raw_entry().from_hash(hash1, |k| *k == 1).unwrap(),
+            (&1, &100)
+        );
+        assert_eq!(
+            map.raw_entry().from_key_hashed_nocheck(hash1, &1).unwrap(),
+            (&1, &100)
+        );
         assert_eq!(map.len(), 6);
 
         // Existing key (update)
@@ -1612,8 +1635,14 @@ mod test_map {
         }
         let hash2 = compute_hash(&map, 2);
         assert_eq!(map.raw_entry().from_key(&2).unwrap(), (&2, &200));
-        assert_eq!(map.raw_entry().from_hash(hash2, |k| *k == 2).unwrap(), (&2, &200));
-        assert_eq!(map.raw_entry().from_key_hashed_nocheck(hash2, &2).unwrap(), (&2, &200));
+        assert_eq!(
+            map.raw_entry().from_hash(hash2, |k| *k == 2).unwrap(),
+            (&2, &200)
+        );
+        assert_eq!(
+            map.raw_entry().from_key_hashed_nocheck(hash2, &2).unwrap(),
+            (&2, &200)
+        );
         assert_eq!(map.len(), 6);
 
         // Existing key (take)

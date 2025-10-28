@@ -14,17 +14,18 @@ use crate::{Bucket, IndexMap, IndexSet};
 
 /// Limit our preallocated capacity from a deserializer `size_hint()`.
 ///
-/// We do account for the `Bucket` overhead from its saved `hash` field, but we
-/// don't count the `RawTable` allocation or the fact that its raw capacity will
-/// be rounded up to a power of two. The "max" is an arbitrary choice anyway,
-/// not something that needs precise adherence.
+/// We do account for the `Bucket` overhead from its saved `hash` field, but we don't count the
+/// `RawTable` allocation or the fact that its raw capacity will be rounded up to a power of two.
+/// The "max" is an arbitrary choice anyway, not something that needs precise adherence.
 ///
-/// This is based on the internal `serde::de::size_hint::cautious(hint)`
-/// function.
+/// This is based on the internal `serde::de::size_hint::cautious(hint)` function.
 pub(crate) fn cautious_capacity<K, V>(hint: Option<usize>) -> usize {
     const MAX_PREALLOC_BYTES: usize = 1024 * 1024;
 
-    Ord::min(hint.unwrap_or(0), MAX_PREALLOC_BYTES / size_of::<Bucket<K, V>>())
+    Ord::min(
+        hint.unwrap_or(0),
+        MAX_PREALLOC_BYTES / size_of::<Bucket<K, V>>(),
+    )
 }
 
 impl<K, V, S> Serialize for IndexMap<K, V, S>

@@ -57,8 +57,8 @@ use crate::{Bucket, Equivalent, GetDisjointMutError, HashValue, TryReserveError}
 /// All iterators traverse the map in *the order*.
 ///
 /// The insertion order is preserved, with **notable exceptions** like the
-/// [`.remove()`][Self::remove] or [`.swap_remove()`][Self::swap_remove]
-/// methods. Methods such as [`.sort_by()`][Self::sort_by] of
+/// [`.remove()`][Self::remove] or [`.swap_remove()`][Self::swap_remove] methods.
+/// Methods such as [`.sort_by()`][Self::sort_by] of
 /// course result in a new order, depending on the sorting order.
 ///
 /// # Indices
@@ -102,7 +102,10 @@ where
     S: Clone,
 {
     fn clone(&self) -> Self {
-        IndexMap { core: self.core.clone(), hash_builder: self.hash_builder.clone() }
+        IndexMap {
+            core: self.core.clone(),
+            hash_builder: self.hash_builder.clone(),
+        }
     }
 
     fn clone_from(&mut self, other: &Self) {
@@ -124,7 +127,9 @@ where
     #[cfg(feature = "test_debug")]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // Let the inner `IndexMapCore` print all of its details
-        f.debug_struct("IndexMap").field("core", &self.core).finish()
+        f.debug_struct("IndexMap")
+            .field("core", &self.core)
+            .finish()
     }
 }
 
@@ -157,7 +162,10 @@ impl<K, V, S> IndexMap<K, V, S> {
         if n == 0 {
             Self::with_hasher(hash_builder)
         } else {
-            IndexMap { core: IndexMapCore::with_capacity(n), hash_builder }
+            IndexMap {
+                core: IndexMapCore::with_capacity(n),
+                hash_builder,
+            }
         }
     }
 
@@ -166,7 +174,10 @@ impl<K, V, S> IndexMap<K, V, S> {
     /// This function is `const`, so it
     /// can be called in `static` contexts.
     pub const fn with_hasher(hash_builder: S) -> Self {
-        IndexMap { core: IndexMapCore::new(), hash_builder }
+        IndexMap {
+            core: IndexMapCore::new(),
+            hash_builder,
+        }
     }
 
     #[inline]
@@ -265,8 +276,7 @@ impl<K, V, S> IndexMap<K, V, S> {
         self.core.clear();
     }
 
-    /// Shortens the map, keeping the first `len` elements and dropping the
-    /// rest.
+    /// Shortens the map, keeping the first `len` elements and dropping the rest.
     ///
     /// If `len` is greater than the map's current length, this has no effect.
     pub fn truncate(&mut self, len: usize) {
@@ -294,25 +304,24 @@ impl<K, V, S> IndexMap<K, V, S> {
         Drain::new(self.core.drain(range))
     }
 
-    /// Creates an iterator which uses a closure to determine if an element
-    /// should be removed, for all elements in the given range.
+    /// Creates an iterator which uses a closure to determine if an element should be removed,
+    /// for all elements in the given range.
     ///
-    /// If the closure returns true, the element is removed from the map and
-    /// yielded. If the closure returns false, or panics, the element
-    /// remains in the map and will not be yielded.
+    /// If the closure returns true, the element is removed from the map and yielded.
+    /// If the closure returns false, or panics, the element remains in the map and will not be
+    /// yielded.
     ///
-    /// Note that `extract_if` lets you mutate every value in the filter
-    /// closure, regardless of whether you choose to keep or remove it.
+    /// Note that `extract_if` lets you mutate every value in the filter closure, regardless of
+    /// whether you choose to keep or remove it.
     ///
     /// The range may be any type that implements [`RangeBounds<usize>`],
     /// including all of the `std::ops::Range*` types, or even a tuple pair of
     /// `Bound` start and end values. To check the entire map, use `RangeFull`
     /// like `map.extract_if(.., predicate)`.
     ///
-    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped
-    /// without iterating or the iteration short-circuits, then the
-    /// remaining elements will be retained. Use [`retain`] with a negated
-    /// predicate if you do not need the returned iterator.
+    /// If the returned `ExtractIf` is not exhausted, e.g. because it is dropped without iterating
+    /// or the iteration short-circuits, then the remaining elements will be retained.
+    /// Use [`retain`] with a negated predicate if you do not need the returned iterator.
     ///
     /// [`retain`]: IndexMap::retain
     ///
@@ -356,7 +365,10 @@ impl<K, V, S> IndexMap<K, V, S> {
     where
         S: Clone,
     {
-        Self { core: self.core.split_off(at), hash_builder: self.hash_builder.clone() }
+        Self {
+            core: self.core.split_off(at),
+            hash_builder: self.hash_builder.clone(),
+        }
     }
 
     /// Reserve capacity for `additional` more key-value pairs.
@@ -366,13 +378,11 @@ impl<K, V, S> IndexMap<K, V, S> {
         self.core.reserve(additional);
     }
 
-    /// Reserve capacity for `additional` more key-value pairs, without
-    /// over-allocating.
+    /// Reserve capacity for `additional` more key-value pairs, without over-allocating.
     ///
-    /// Unlike `reserve`, this does not deliberately over-allocate the entry
-    /// capacity to avoid frequent re-allocations. However, the underlying
-    /// data structures may still have internal capacity requirements, and
-    /// the allocator itself may give more space than requested, so this
+    /// Unlike `reserve`, this does not deliberately over-allocate the entry capacity to avoid
+    /// frequent re-allocations. However, the underlying data structures may still have internal
+    /// capacity requirements, and the allocator itself may give more space than requested, so this
     /// cannot be relied upon to be precisely minimal.
     ///
     /// Computes in **O(n)** time.
@@ -387,13 +397,11 @@ impl<K, V, S> IndexMap<K, V, S> {
         self.core.try_reserve(additional)
     }
 
-    /// Try to reserve capacity for `additional` more key-value pairs, without
-    /// over-allocating.
+    /// Try to reserve capacity for `additional` more key-value pairs, without over-allocating.
     ///
-    /// Unlike `try_reserve`, this does not deliberately over-allocate the entry
-    /// capacity to avoid frequent re-allocations. However, the underlying
-    /// data structures may still have internal capacity requirements, and
-    /// the allocator itself may give more space than requested, so this
+    /// Unlike `try_reserve`, this does not deliberately over-allocate the entry capacity to avoid
+    /// frequent re-allocations. However, the underlying data structures may still have internal
+    /// capacity requirements, and the allocator itself may give more space than requested, so this
     /// cannot be relied upon to be precisely minimal.
     ///
     /// Computes in **O(n)** time.
@@ -456,8 +464,7 @@ where
         self.core.insert_full(hash, key, value)
     }
 
-    /// Insert a key-value pair in the map at its ordered position among sorted
-    /// keys.
+    /// Insert a key-value pair in the map at its ordered position among sorted keys.
     ///
     /// This is equivalent to finding the position with
     /// [`binary_search_keys`][Self::binary_search_keys], then either updating
@@ -473,9 +480,8 @@ where
     /// pair is moved to or inserted at that position regardless.
     ///
     /// Computes in **O(n)** time (average). Instead of repeating calls to
-    /// `insert_sorted`, it may be faster to call batched
-    /// [`insert`][Self::insert] or [`extend`][Self::extend] and only call
-    /// [`sort_keys`][Self::sort_keys]
+    /// `insert_sorted`, it may be faster to call batched [`insert`][Self::insert]
+    /// or [`extend`][Self::extend] and only call [`sort_keys`][Self::sort_keys]
     /// or [`sort_unstable_keys`][Self::sort_unstable_keys] once.
     pub fn insert_sorted(&mut self, key: K, value: V) -> (usize, Option<V>)
     where
@@ -511,9 +517,8 @@ where
     /// using a sort-key extraction function.
     ///
     /// This is equivalent to finding the position with
-    /// [`binary_search_by_key`][Self::binary_search_by_key] with
-    /// `sort_key(key)`, then calling [`insert_before`][Self::insert_before]
-    /// with the given key and value.
+    /// [`binary_search_by_key`][Self::binary_search_by_key] with `sort_key(key)`, then
+    /// calling [`insert_before`][Self::insert_before] with the given key and value.
     ///
     /// If the existing keys are **not** already sorted, then the insertion
     /// index is unspecified (like [`slice::binary_search`]), but the key-value
@@ -535,14 +540,12 @@ where
         self.insert_before(i, key, value)
     }
 
-    /// Insert a key-value pair in the map before the entry at the given index,
-    /// or at the end.
+    /// Insert a key-value pair in the map before the entry at the given index, or at the end.
     ///
     /// If an equivalent key already exists in the map: the key remains and
-    /// is moved to the new position in the map, its corresponding value is
-    /// updated with `value`, and the older value is returned inside
-    /// `Some(_)`. The returned index will either be the given index or one
-    /// less, depending on how the entry moved.
+    /// is moved to the new position in the map, its corresponding value is updated
+    /// with `value`, and the older value is returned inside `Some(_)`. The returned index
+    /// will either be the given index or one less, depending on how the entry moved.
     /// (See [`shift_insert`](Self::shift_insert) for different behavior here.)
     ///
     /// If no equivalent key existed in the map: the new key-value pair is
@@ -554,8 +557,7 @@ where
     /// Computes in **O(n)** time (average).
     ///
     /// See also [`entry`][Self::entry] if you want to insert *or* modify,
-    /// perhaps only using the index for new entries with
-    /// [`VacantEntry::shift_insert`].
+    /// perhaps only using the index for new entries with [`VacantEntry::shift_insert`].
     ///
     /// # Examples
     ///
@@ -617,24 +619,22 @@ where
     /// Insert a key-value pair in the map at the given index.
     ///
     /// If an equivalent key already exists in the map: the key remains and
-    /// is moved to the given index in the map, its corresponding value is
-    /// updated with `value`, and the older value is returned inside
-    /// `Some(_)`. Note that existing entries **cannot** be moved to `index
-    /// == map.len()`! (See [`insert_before`](Self::insert_before) for
-    /// different behavior here.)
+    /// is moved to the given index in the map, its corresponding value is updated
+    /// with `value`, and the older value is returned inside `Some(_)`.
+    /// Note that existing entries **cannot** be moved to `index == map.len()`!
+    /// (See [`insert_before`](Self::insert_before) for different behavior here.)
     ///
     /// If no equivalent key existed in the map: the new key-value pair is
     /// inserted at the given index, and `None` is returned.
     ///
     /// ***Panics*** if `index` is out of bounds.
-    /// Valid indices are `0..map.len()` (exclusive) when moving an existing
-    /// entry, or `0..=map.len()` (inclusive) when inserting a new key.
+    /// Valid indices are `0..map.len()` (exclusive) when moving an existing entry, or
+    /// `0..=map.len()` (inclusive) when inserting a new key.
     ///
     /// Computes in **O(n)** time (average).
     ///
     /// See also [`entry`][Self::entry] if you want to insert *or* modify,
-    /// perhaps only using the index for new entries with
-    /// [`VacantEntry::shift_insert`].
+    /// perhaps only using the index for new entries with [`VacantEntry::shift_insert`].
     ///
     /// # Examples
     ///
@@ -778,8 +778,7 @@ where
         Splice::new(self, range, replace_with.into_iter())
     }
 
-    /// Moves all key-value pairs from `other` into `self`, leaving `other`
-    /// empty.
+    /// Moves all key-value pairs from `other` into `self`, leaving `other` empty.
     ///
     /// This is equivalent to calling [`insert`][Self::insert] for each
     /// key-value pair from `other` in order, which means that for keys that
@@ -941,8 +940,7 @@ where
         }
     }
 
-    /// Return the values for `N` keys. If any key is duplicated, this function
-    /// will panic.
+    /// Return the values for `N` keys. If any key is duplicated, this function will panic.
     ///
     /// # Examples
     ///
@@ -971,11 +969,9 @@ where
     /// Remove the key-value pair equivalent to `key` and return
     /// its value.
     ///
-    /// **NOTE:** This is equivalent to
-    /// [`.swap_remove(key)`][Self::swap_remove], replacing this
-    /// entry's position with the last element, and it is deprecated in favor of
-    /// calling that explicitly. If you need to preserve the relative order
-    /// of the keys in the map, use
+    /// **NOTE:** This is equivalent to [`.swap_remove(key)`][Self::swap_remove], replacing this
+    /// entry's position with the last element, and it is deprecated in favor of calling that
+    /// explicitly. If you need to preserve the relative order of the keys in the map, use
     /// [`.shift_remove(key)`][Self::shift_remove] instead.
     #[deprecated(note = "`remove` disrupts the map order -- \
         use `swap_remove` or `shift_remove` for explicit behavior.")]
@@ -988,11 +984,9 @@ where
 
     /// Remove and return the key-value pair equivalent to `key`.
     ///
-    /// **NOTE:** This is equivalent to
-    /// [`.swap_remove_entry(key)`][Self::swap_remove_entry], replacing this
-    /// entry's position with the last element, and it is deprecated in favor of
-    /// calling that explicitly. If you need to preserve the relative order of
-    /// the keys in the map,
+    /// **NOTE:** This is equivalent to [`.swap_remove_entry(key)`][Self::swap_remove_entry],
+    /// replacing this entry's position with the last element, and it is deprecated in favor of
+    /// calling that explicitly. If you need to preserve the relative order of the keys in the map,
     /// use [`.shift_remove_entry(key)`][Self::shift_remove_entry] instead.
     #[deprecated(note = "`remove_entry` disrupts the map order -- \
         use `swap_remove_entry` or `shift_remove_entry` for explicit behavior.")]
@@ -1187,10 +1181,9 @@ impl<K, V, S> IndexMap<K, V, S> {
 
     /// Sort the map's key-value pairs by the default ordering of the keys.
     ///
-    /// This is a stable sort -- but equivalent keys should not normally coexist
-    /// in a map at all, so [`sort_unstable_keys`][Self::sort_unstable_keys]
-    /// is preferred because it is generally faster and doesn't allocate
-    /// auxiliary memory.
+    /// This is a stable sort -- but equivalent keys should not normally coexist in
+    /// a map at all, so [`sort_unstable_keys`][Self::sort_unstable_keys] is preferred
+    /// because it is generally faster and doesn't allocate auxiliary memory.
     ///
     /// See [`sort_by`](Self::sort_by) for details.
     pub fn sort_keys(&mut self)
@@ -1232,8 +1225,7 @@ impl<K, V, S> IndexMap<K, V, S> {
         IntoIter::new(entries)
     }
 
-    /// Sort the map's key-value pairs in place using a sort-key extraction
-    /// function.
+    /// Sort the map's key-value pairs in place using a sort-key extraction function.
     ///
     /// Computes in **O(n log n + c)** time and **O(n)** space where *n* is
     /// the length of the map and *c* the capacity. The sort is stable.
@@ -1260,8 +1252,8 @@ impl<K, V, S> IndexMap<K, V, S> {
         });
     }
 
-    /// Sort the map's key-value pairs in place using the comparison function
-    /// `cmp`, but may not preserve the order of equal elements.
+    /// Sort the map's key-value pairs in place using the comparison function `cmp`, but
+    /// may not preserve the order of equal elements.
     ///
     /// The comparison function receives two key and value pairs to compare (you
     /// can sort by keys or values or their combination as needed).
@@ -1291,8 +1283,7 @@ impl<K, V, S> IndexMap<K, V, S> {
         IntoIter::new(entries)
     }
 
-    /// Sort the map's key-value pairs in place using a sort-key extraction
-    /// function.
+    /// Sort the map's key-value pairs in place using a sort-key extraction function.
     ///
     /// Computes in **O(n log n + c)** time where *n* is
     /// the length of the map and *c* is the capacity. The sort is unstable.
@@ -1306,17 +1297,14 @@ impl<K, V, S> IndexMap<K, V, S> {
         });
     }
 
-    /// Sort the map's key-value pairs in place using a sort-key extraction
-    /// function.
+    /// Sort the map's key-value pairs in place using a sort-key extraction function.
     ///
-    /// During sorting, the function is called at most once per entry, by using
-    /// temporary storage to remember the results of its evaluation. The
-    /// order of calls to the function is unspecified and may change between
-    /// versions of `indexmap` or the standard library.
+    /// During sorting, the function is called at most once per entry, by using temporary storage
+    /// to remember the results of its evaluation. The order of calls to the function is
+    /// unspecified and may change between versions of `indexmap` or the standard library.
     ///
-    /// Computes in **O(m n + n log n + c)** time () and **O(n)** space, where
-    /// the function is **O(m)**, *n* is the length of the map, and *c* the
-    /// capacity. The sort is stable.
+    /// Computes in **O(m n + n log n + c)** time () and **O(n)** space, where the function is
+    /// **O(m)**, *n* is the length of the map, and *c* the capacity. The sort is stable.
     pub fn sort_by_cached_key<T, F>(&mut self, mut sort_key: F)
     where
         T: Ord,
@@ -1329,13 +1317,11 @@ impl<K, V, S> IndexMap<K, V, S> {
 
     /// Search over a sorted map for a key.
     ///
-    /// Returns the position where that key is present, or the position where it
-    /// can be inserted to maintain the sort. See [`slice::binary_search`]
-    /// for more details.
+    /// Returns the position where that key is present, or the position where it can be inserted to
+    /// maintain the sort. See [`slice::binary_search`] for more details.
     ///
-    /// Computes in **O(log(n))** time, which is notably less scalable than
-    /// looking the key up using [`get_index_of`][IndexMap::get_index_of],
-    /// but this can also position missing keys.
+    /// Computes in **O(log(n))** time, which is notably less scalable than looking the key up
+    /// using [`get_index_of`][IndexMap::get_index_of], but this can also position missing keys.
     pub fn binary_search_keys(&self, x: &K) -> Result<usize, usize>
     where
         K: Ord,
@@ -1345,9 +1331,8 @@ impl<K, V, S> IndexMap<K, V, S> {
 
     /// Search over a sorted map with a comparator function.
     ///
-    /// Returns the position where that value is present, or the position where
-    /// it can be inserted to maintain the sort. See
-    /// [`slice::binary_search_by`] for more details.
+    /// Returns the position where that value is present, or the position where it can be inserted
+    /// to maintain the sort. See [`slice::binary_search_by`] for more details.
     ///
     /// Computes in **O(log(n))** time.
     #[inline]
@@ -1360,9 +1345,8 @@ impl<K, V, S> IndexMap<K, V, S> {
 
     /// Search over a sorted map with an extraction function.
     ///
-    /// Returns the position where that value is present, or the position where
-    /// it can be inserted to maintain the sort. See
-    /// [`slice::binary_search_by_key`] for more details.
+    /// Returns the position where that value is present, or the position where it can be inserted
+    /// to maintain the sort. See [`slice::binary_search_by_key`] for more details.
     ///
     /// Computes in **O(log(n))** time.
     #[inline]
@@ -1402,9 +1386,8 @@ impl<K, V, S> IndexMap<K, V, S> {
         self.as_slice().is_sorted_by_key(sort_key)
     }
 
-    /// Returns the index of the partition point of a sorted map according to
-    /// the given predicate (the index of the first element of the second
-    /// partition).
+    /// Returns the index of the partition point of a sorted map according to the given predicate
+    /// (the index of the first element of the second partition).
     ///
     /// See [`slice::partition_point`] for more details.
     ///
@@ -1477,8 +1460,7 @@ impl<K, V, S> IndexMap<K, V, S> {
 
     /// Get an array of `N` key-value pairs by `N` indices
     ///
-    /// Valid indices are *0 <= index < self.len()* and each index needs to be
-    /// unique.
+    /// Valid indices are *0 <= index < self.len()* and each index needs to be unique.
     ///
     /// # Examples
     ///
@@ -1504,8 +1486,7 @@ impl<K, V, S> IndexMap<K, V, S> {
         entries.get(range).map(Slice::from_slice)
     }
 
-    /// Returns a mutable slice of key-value pairs in the given range of
-    /// indices.
+    /// Returns a mutable slice of key-value pairs in the given range of indices.
     ///
     /// Valid indices are `0 <= index < self.len()`.
     ///
@@ -1589,10 +1570,8 @@ impl<K, V, S> IndexMap<K, V, S> {
     /// Moves the position of a key-value pair from one index to another
     /// by shifting all other pairs in-between.
     ///
-    /// * If `from < to`, the other pairs will shift down while the targeted
-    ///   pair moves up.
-    /// * If `from > to`, the other pairs will shift up while the targeted pair
-    ///   moves down.
+    /// * If `from < to`, the other pairs will shift down while the targeted pair moves up.
+    /// * If `from > to`, the other pairs will shift up while the targeted pair moves down.
     ///
     /// ***Panics*** if `from` or `to` are out of bounds.
     ///
@@ -1684,8 +1663,7 @@ where
     Q: Hash + Equivalent<K>,
     S: BuildHasher,
 {
-    /// Returns a mutable reference to the value corresponding to the supplied
-    /// `key`.
+    /// Returns a mutable reference to the value corresponding to the supplied `key`.
     ///
     /// ***Panics*** if `key` is not present in the map.
     fn index_mut(&mut self, key: &Q) -> &mut V {
@@ -1748,8 +1726,7 @@ impl<K, V, S> Index<usize> for IndexMap<K, V, S> {
 /// Mutable indexing allows changing / updating indexed values
 /// that are already present.
 ///
-/// You can **not** insert new values with index syntax -- use
-/// [`.insert()`][IndexMap::insert].
+/// You can **not** insert new values with index syntax -- use [`.insert()`][IndexMap::insert].
 ///
 /// # Examples
 ///
@@ -1849,7 +1826,11 @@ where
         // will only resize twice in the worst case.
         let iter = iterable.into_iter();
         let (lower_len, _) = iter.size_hint();
-        let reserve = if self.is_empty() { lower_len } else { lower_len.div_ceil(2) };
+        let reserve = if self.is_empty() {
+            lower_len
+        } else {
+            lower_len.div_ceil(2)
+        };
         self.reserve(reserve);
         iter.for_each(move |(k, v)| {
             self.insert(k, v);
@@ -1893,7 +1874,8 @@ where
             return false;
         }
 
-        self.iter().all(|(key, value)| other.get(key).map_or(false, |v| *value == *v))
+        self.iter()
+            .all(|(key, value)| other.get(key).map_or(false, |v| *value == *v))
     }
 }
 

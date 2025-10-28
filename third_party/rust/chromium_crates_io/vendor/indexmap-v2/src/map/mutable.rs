@@ -108,8 +108,8 @@ where
 pub trait MutableEntryKey: Sealed {
     type Key;
 
-    /// Gets a mutable reference to the entry's key, either within the map if
-    /// occupied, or else the new key that was used to find the entry.
+    /// Gets a mutable reference to the entry's key, either within the map if occupied,
+    /// or else the new key that was used to find the entry.
     fn key_mut(&mut self) -> &mut Self::Key;
 }
 

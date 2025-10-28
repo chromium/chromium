@@ -44,9 +44,8 @@ impl Iterator for RandomKeys {
     }
 }
 
-// Just an arbitrary side effect to make the maps not shortcircuit to the
-// non-dropping path when dropping maps/entries (most real world usages likely
-// have drop in the key or value)
+// Just an arbitrary side effect to make the maps not shortcircuit to the non-dropping path
+// when dropping maps/entries (most real world usages likely have drop in the key or value)
 static SIDE_EFFECT: AtomicUsize = AtomicUsize::new(0);
 
 #[derive(Clone)]
@@ -63,8 +62,16 @@ macro_rules! bench_suite {
      $bench_foldhash_random:ident, $bench_std_random:ident) => {
         $bench_macro!($bench_foldhash_serial, FoldHashMap, 0..);
         $bench_macro!($bench_std_serial, StdHashMap, 0..);
-        $bench_macro!($bench_foldhash_highbits, FoldHashMap, (0..).map(usize::swap_bytes));
-        $bench_macro!($bench_std_highbits, StdHashMap, (0..).map(usize::swap_bytes));
+        $bench_macro!(
+            $bench_foldhash_highbits,
+            FoldHashMap,
+            (0..).map(usize::swap_bytes)
+        );
+        $bench_macro!(
+            $bench_std_highbits,
+            StdHashMap,
+            (0..).map(usize::swap_bytes)
+        );
         $bench_macro!($bench_foldhash_random, FoldHashMap, RandomKeys::new());
         $bench_macro!($bench_std_random, StdHashMap, RandomKeys::new());
     };

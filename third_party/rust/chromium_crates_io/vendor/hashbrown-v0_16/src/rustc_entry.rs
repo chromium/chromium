@@ -11,8 +11,7 @@ where
     S: BuildHasher,
     A: Allocator,
 {
-    /// Gets the given key's corresponding entry in the map for in-place
-    /// manipulation.
+    /// Gets the given key's corresponding entry in the map for in-place manipulation.
     ///
     /// # Examples
     ///
@@ -35,14 +34,21 @@ where
     pub fn rustc_entry(&mut self, key: K) -> RustcEntry<'_, K, V, A> {
         let hash = make_hash(&self.hash_builder, &key);
         if let Some(elem) = self.table.find(hash, |q| q.0.eq(&key)) {
-            RustcEntry::Occupied(RustcOccupiedEntry { elem, table: &mut self.table })
+            RustcEntry::Occupied(RustcOccupiedEntry {
+                elem,
+                table: &mut self.table,
+            })
         } else {
             // Ideally we would put this in VacantEntry::insert, but Entry is not
             // generic over the BuildHasher and adding a generic parameter would be
             // a breaking change.
             self.reserve(1);
 
-            RustcEntry::Vacant(RustcVacantEntry { hash, key, table: &mut self.table })
+            RustcEntry::Vacant(RustcVacantEntry {
+                hash,
+                key,
+                table: &mut self.table,
+            })
         }
     }
 }
@@ -102,7 +108,10 @@ where
 
 impl<K: Debug, V: Debug, A: Allocator> Debug for RustcOccupiedEntry<'_, K, V, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("OccupiedEntry").field("key", self.key()).field("value", self.get()).finish()
+        f.debug_struct("OccupiedEntry")
+            .field("key", self.key())
+            .field("value", self.get())
+            .finish()
     }
 }
 
@@ -148,8 +157,8 @@ impl<'a, K, V, A: Allocator> RustcEntry<'a, K, V, A> {
         }
     }
 
-    /// Ensures a value is in the entry by inserting the default if empty, and
-    /// returns a mutable reference to the value in the entry.
+    /// Ensures a value is in the entry by inserting the default if empty, and returns
+    /// a mutable reference to the value in the entry.
     ///
     /// # Examples
     ///
@@ -175,9 +184,8 @@ impl<'a, K, V, A: Allocator> RustcEntry<'a, K, V, A> {
         }
     }
 
-    /// Ensures a value is in the entry by inserting the result of the default
-    /// function if empty, and returns a mutable reference to the value in
-    /// the entry.
+    /// Ensures a value is in the entry by inserting the result of the default function if empty,
+    /// and returns a mutable reference to the value in the entry.
     ///
     /// # Examples
     ///
@@ -345,8 +353,8 @@ impl<'a, K, V, A: Allocator> RustcOccupiedEntry<'a, K, V, A> {
 
     /// Gets a mutable reference to the value in the entry.
     ///
-    /// If you need a reference to the `RustcOccupiedEntry` which may outlive
-    /// the destruction of the `RustcEntry` value, see [`into_mut`].
+    /// If you need a reference to the `RustcOccupiedEntry` which may outlive the
+    /// destruction of the `RustcEntry` value, see [`into_mut`].
     ///
     /// [`into_mut`]: #method.into_mut
     ///
@@ -375,11 +383,10 @@ impl<'a, K, V, A: Allocator> RustcOccupiedEntry<'a, K, V, A> {
         unsafe { &mut self.elem.as_mut().1 }
     }
 
-    /// Converts the RustcOccupiedEntry into a mutable reference to the value in
-    /// the entry with a lifetime bound to the map itself.
+    /// Converts the RustcOccupiedEntry into a mutable reference to the value in the entry
+    /// with a lifetime bound to the map itself.
     ///
-    /// If you need multiple references to the `RustcOccupiedEntry`, see
-    /// [`get_mut`].
+    /// If you need multiple references to the `RustcOccupiedEntry`, see [`get_mut`].
     ///
     /// [`get_mut`]: #method.get_mut
     ///
@@ -528,7 +535,10 @@ impl<'a, K, V, A: Allocator> RustcVacantEntry<'a, K, V, A> {
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn insert_entry(self, value: V) -> RustcOccupiedEntry<'a, K, V, A> {
         let bucket = unsafe { self.table.insert_no_grow(self.hash, (self.key, value)) };
-        RustcOccupiedEntry { elem: bucket, table: self.table }
+        RustcOccupiedEntry {
+            elem: bucket,
+            table: self.table,
+        }
     }
 }
 

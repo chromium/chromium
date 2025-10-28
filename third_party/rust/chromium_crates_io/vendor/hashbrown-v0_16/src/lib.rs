@@ -38,8 +38,14 @@
 #![warn(missing_docs)]
 #![warn(rust_2018_idioms)]
 #![cfg_attr(feature = "nightly", warn(fuzzy_provenance_casts))]
-#![cfg_attr(feature = "nightly", allow(clippy::incompatible_msrv, internal_features))]
-#![cfg_attr(all(feature = "nightly", target_arch = "loongarch64"), feature(stdarch_loongarch))]
+#![cfg_attr(
+    feature = "nightly",
+    allow(clippy::incompatible_msrv, internal_features)
+)]
+#![cfg_attr(
+    all(feature = "nightly", target_arch = "loongarch64"),
+    feature(stdarch_loongarch)
+)]
 #![cfg_attr(
     all(feature = "nightly", feature = "default-hasher"),
     feature(hasher_prefixfree_extras)

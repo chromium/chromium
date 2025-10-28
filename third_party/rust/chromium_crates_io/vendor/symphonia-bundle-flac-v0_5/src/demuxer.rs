@@ -53,8 +53,8 @@ impl FlacReader {
         loop {
             let header = MetadataBlockHeader::read(&mut reader)?;
 
-            // Create a scoped bytestream to error if the metadata block read functions
-            // exceed the stated length of the block.
+            // Create a scoped bytestream to error if the metadata block read functions exceed the
+            // stated length of the block.
             let mut block_stream = ScopedStream::new(&mut reader, u64::from(header.block_len));
 
             match header.block_type {
@@ -71,7 +71,8 @@ impl FlacReader {
                         let mut new_index = SeekIndex::new();
                         read_seek_table_block(&mut block_stream, header.block_len, &mut new_index)?;
                         index = Some(new_index);
-                    } else {
+                    }
+                    else {
                         return decode_error("flac: found more than one seek table block");
                     }
                 }
@@ -103,8 +104,8 @@ impl FlacReader {
                 }
             }
 
-            // If the stated block length is longer than the number of bytes from the block
-            // read, ignore the remaining unread data.
+            // If the stated block length is longer than the number of bytes from the block read,
+            // ignore the remaining unread data.
             let block_unread_len = block_stream.bytes_available();
 
             if block_unread_len > 0 {
@@ -125,8 +126,8 @@ impl FlacReader {
         // Synchronize the packet parser to the first audio frame.
         let _ = parser.resync(&mut reader)?;
 
-        // The first frame offset is the byte offset from the beginning of the stream
-        // after all the metadata blocks have been read.
+        // The first frame offset is the byte offset from the beginning of the stream after all the
+        // metadata blocks have been read.
         let first_frame_offset = reader.pos();
 
         Ok(FlacReader { reader, metadata, tracks, cues, index, first_frame_offset, parser })
@@ -151,19 +152,17 @@ impl QueryDescriptor for FlacReader {
 
 impl FormatReader for FlacReader {
     fn try_new(mut source: MediaSourceStream, _options: &FormatOptions) -> Result<Self> {
-        // Read the first 4 bytes of the stream. Ideally this will be the FLAC stream
-        // marker.
+        // Read the first 4 bytes of the stream. Ideally this will be the FLAC stream marker.
         let marker = source.read_quad_bytes()?;
 
         if marker != FLAC_STREAM_MARKER {
             return unsupported_error("flac: missing flac stream marker");
         }
 
-        // Strictly speaking, the first metadata block must be a StreamInfo block. There
-        // is no technical need for this from the reader's point of view.
-        // Additionally, if the reader is fed a stream mid-way there is no
-        // StreamInfo block. Therefore, just read all metadata blocks and handle
-        // the StreamInfo block as it comes.
+        // Strictly speaking, the first metadata block must be a StreamInfo block. There is
+        // no technical need for this from the reader's point of view. Additionally, if the
+        // reader is fed a stream mid-way there is no StreamInfo block. Therefore, just read
+        // all metadata blocks and handle the StreamInfo block as it comes.
         let flac = Self::init_with_metadata(source)?;
 
         // Make sure that there is atleast one StreamInfo block.
@@ -207,7 +206,8 @@ impl FormatReader for FlacReader {
                 // known, the seek cannot be completed.
                 if let Some(sample_rate) = params.sample_rate {
                     TimeBase::new(1, sample_rate).calc_timestamp(time)
-                } else {
+                }
+                else {
                     return seek_error(SeekErrorKind::Unseekable);
                 }
             }
@@ -215,22 +215,21 @@ impl FormatReader for FlacReader {
 
         debug!("seeking to frame_ts={}", ts);
 
-        // If the total number of frames in the stream is known, verify the desired
-        // frame timestamp does not exceed it.
+        // If the total number of frames in the stream is known, verify the desired frame timestamp
+        // does not exceed it.
         if let Some(n_frames) = params.n_frames {
             if ts > n_frames {
                 return seek_error(SeekErrorKind::OutOfRange);
             }
         }
 
-        // If the reader supports seeking, coarsely seek to the nearest packet with a
-        // timestamp lower than the desired timestamp using a binary search.
+        // If the reader supports seeking, coarsely seek to the nearest packet with a timestamp
+        // lower than the desired timestamp using a binary search.
         if self.reader.is_seekable() {
-            // The range formed by start_byte_offset..end_byte_offset defines an area where
-            // the binary search for the packet containing the desired timestamp
-            // will be performed. The lower bound is set to the byte offset of
-            // the first frame, while the upper bound is set to the length of
-            // the stream.
+            // The range formed by start_byte_offset..end_byte_offset defines an area where the
+            // binary search for the packet containing the desired timestamp will be performed. The
+            // lower bound is set to the byte offset of the first frame, while the upper bound is
+            // set to the length of the stream.
             let mut start_byte_offset = self.first_frame_offset;
             let mut end_byte_offset =
                 self.reader.byte_len().ok_or(Error::SeekError(SeekErrorKind::Unseekable))?;
@@ -257,11 +256,10 @@ impl FormatReader for FlacReader {
                 }
             }
 
-            // Binary search the range of bytes formed by start_by_offset..end_byte_offset
-            // for the desired frame timestamp. When the difference of the range
-            // reaches 2x the maximum frame size, exit the loop and search from
-            // the start_byte_offset linearly. The binary search becomes
-            // inefficient when the range is small.
+            // Binary search the range of bytes formed by start_by_offset..end_byte_offset for the
+            // desired frame timestamp. When the difference of the range reaches 2x the maximum
+            // frame size, exit the loop and search from the start_byte_offset linearly. The binary
+            // search becomes inefficient when the range is small.
             while end_byte_offset - start_byte_offset > 2 * 8096 {
                 let mid_byte_offset = (start_byte_offset + end_byte_offset) / 2;
                 self.reader.seek(SeekFrom::Start(mid_byte_offset))?;
@@ -270,26 +268,26 @@ impl FormatReader for FlacReader {
 
                 if ts < sync.ts {
                     end_byte_offset = mid_byte_offset;
-                } else if ts >= sync.ts && ts < sync.ts + sync.dur {
+                }
+                else if ts >= sync.ts && ts < sync.ts + sync.dur {
                     debug!("seeked to ts={} (delta={})", sync.ts, sync.ts as i64 - ts as i64);
 
                     return Ok(SeekedTo { track_id: 0, actual_ts: sync.ts, required_ts: ts });
-                } else {
+                }
+                else {
                     start_byte_offset = mid_byte_offset;
                 }
             }
 
-            // The binary search did not find an exact frame, but the range has been
-            // narrowed. Seek to the start of the range, and continue with a
-            // linear search.
+            // The binary search did not find an exact frame, but the range has been narrowed. Seek
+            // to the start of the range, and continue with a linear search.
             self.reader.seek(SeekFrom::Start(start_byte_offset))?;
         }
 
-        // Linearly search the stream packet-by-packet for the packet that contains the
-        // desired timestamp. This search is used to find the exact packet
-        // containing the desired timestamp after the search range was narrowed
-        // by the binary search. It is also the ONLY way for a unseekable stream
-        // to be "seeked" forward.
+        // Linearly search the stream packet-by-packet for the packet that contains the desired
+        // timestamp. This search is used to find the exact packet containing the desired timestamp
+        // after the search range was narrowed by the binary search. It is also the ONLY way for a
+        // unseekable stream to be "seeked" forward.
         let packet = loop {
             let sync = self.parser.resync(&mut self.reader)?;
 
@@ -310,8 +308,7 @@ impl FormatReader for FlacReader {
                 break sync;
             }
 
-            // Advance the reader such that the next iteration will sync to a different
-            // frame.
+            // Advance the reader such that the next iteration will sync to a different frame.
             self.reader.read_byte()?;
         };
 
@@ -331,17 +328,16 @@ fn read_stream_info_block<B: ReadBytes + FiniteStream>(
     tracks: &mut Vec<Track>,
     parser: &mut PacketParser,
 ) -> Result<()> {
-    // Only one StreamInfo block, and therefore only one Track, is allowed per media
-    // source stream.
+    // Only one StreamInfo block, and therefore only one Track, is allowed per media source stream.
     if tracks.is_empty() {
-        // Ensure the block length is correct for a stream information block before
-        // allocating a buffer for it.
+        // Ensure the block length is correct for a stream information block before allocating a
+        // buffer for it.
         if !StreamInfo::is_valid_size(reader.byte_len()) {
             return decode_error("flac: invalid stream info block size");
         }
 
-        // Read the stream information block as a boxed slice so that it may be attached
-        // as extra data on the codec parameters.
+        // Read the stream information block as a boxed slice so that it may be attached as extra
+        // data on the codec parameters.
         let extra_data = reader.read_boxed_slice_exact(reader.byte_len() as usize)?;
 
         // Parse the stream info block.
@@ -373,7 +369,8 @@ fn read_stream_info_block<B: ReadBytes + FiniteStream>(
 
         // Add the track.
         tracks.push(Track::new(0, codec_params));
-    } else {
+    }
+    else {
         return decode_error("flac: found more than one stream info block");
     }
 

@@ -5,8 +5,8 @@ use crate::map::MutableKeys;
 
 /// Opt-in mutable access to [`IndexSet`] values.
 ///
-/// These methods expose `&mut T`, mutable references to the value as it is
-/// stored in the set.
+/// These methods expose `&mut T`, mutable references to the value as it is stored
+/// in the set.
 /// You are allowed to modify the values in the set **if the modification
 /// does not change the value's hash and equality**.
 ///

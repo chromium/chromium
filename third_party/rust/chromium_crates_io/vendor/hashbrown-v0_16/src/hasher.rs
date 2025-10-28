@@ -22,12 +22,13 @@ impl BuildHasher for DefaultHashBuilder {
 
     #[inline(always)]
     fn build_hasher(&self) -> Self::Hasher {
-        DefaultHasher { inner: self.inner.build_hasher() }
+        DefaultHasher {
+            inner: self.inner.build_hasher(),
+        }
     }
 }
 
-/// Default hasher for [`HashMap`](crate::HashMap) and
-/// [`HashSet`](crate::HashSet).
+/// Default hasher for [`HashMap`](crate::HashMap) and [`HashSet`](crate::HashSet).
 #[cfg(feature = "default-hasher")]
 #[derive(Clone)]
 pub struct DefaultHasher {

@@ -28,8 +28,8 @@
 //! * `std`: Enables features which require the Rust standard library. For more
 //!   information see the section on [`no_std`].
 //! * `rayon`: Enables parallel iteration and other parallel methods.
-//! * `serde`: Adds implementations for [`Serialize`] and [`Deserialize`] to
-//!   [`IndexMap`] and [`IndexSet`]. Alternative implementations for
+//! * `serde`: Adds implementations for [`Serialize`] and [`Deserialize`]
+//!   to [`IndexMap`] and [`IndexSet`]. Alternative implementations for
 //!   (de)serializing [`IndexMap`] as an ordered sequence are available in the
 //!   [`map::serde_seq`] module.
 //! * `arbitrary`: Adds implementations for the [`arbitrary::Arbitrary`] trait
@@ -92,11 +92,10 @@
 //!   [`with_capacity`][IndexMap::with_capacity] is unavailable without `std`.
 //!   Use methods [`IndexMap::default`], [`with_hasher`][IndexMap::with_hasher],
 //!   [`with_capacity_and_hasher`][IndexMap::with_capacity_and_hasher] instead.
-//!   A no-std compatible hasher will be needed as well, for example from the
-//!   crate `twox-hash`.
+//!   A no-std compatible hasher will be needed as well, for example
+//!   from the crate `twox-hash`.
 //! - Macros [`indexmap!`] and [`indexset!`] are unavailable without `std`. Use
-//!   the macros [`indexmap_with_default!`] and [`indexset_with_default!`]
-//!   instead.
+//!   the macros [`indexmap_with_default!`] and [`indexset_with_default!`] instead.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -156,7 +155,11 @@ where
     V: Clone,
 {
     fn clone(&self) -> Self {
-        Bucket { hash: self.hash, key: self.key.clone(), value: self.value.clone() }
+        Bucket {
+            hash: self.hash,
+            key: self.key.clone(),
+            value: self.value.clone(),
+        }
     }
 
     fn clone_from(&mut self, other: &Self) {
@@ -214,7 +217,9 @@ enum TryReserveErrorKind {
 // These are not `From` so we don't expose them in our public API.
 impl TryReserveError {
     fn from_alloc(error: alloc::collections::TryReserveError) -> Self {
-        Self { kind: TryReserveErrorKind::Std(error) }
+        Self {
+            kind: TryReserveErrorKind::Std(error),
+        }
     }
 
     fn from_hashbrown(error: hashbrown::TryReserveError) -> Self {
@@ -250,8 +255,7 @@ impl core::fmt::Display for TryReserveError {
 impl core::error::Error for TryReserveError {}
 
 // NOTE: This is copied from the slice module in the std lib.
-/// The error type returned by
-/// [`get_disjoint_indices_mut`][`IndexMap::get_disjoint_indices_mut`].
+/// The error type returned by [`get_disjoint_indices_mut`][`IndexMap::get_disjoint_indices_mut`].
 ///
 /// It indicates one of two possible errors:
 /// - An index is out-of-bounds.

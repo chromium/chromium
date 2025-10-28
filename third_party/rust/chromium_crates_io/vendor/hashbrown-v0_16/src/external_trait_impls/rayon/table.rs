@@ -30,14 +30,19 @@ impl<'a, T: Sync> ParallelIterator for ParIter<'a, T> {
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.inner.map(|x| unsafe { x.as_ref() }).drive_unindexed(consumer)
+        self.inner
+            .map(|x| unsafe { x.as_ref() })
+            .drive_unindexed(consumer)
     }
 }
 
 impl<T> Clone for ParIter<'_, T> {
     #[cfg_attr(feature = "inline-more", inline)]
     fn clone(&self) -> Self {
-        Self { inner: self.inner.clone(), marker: PhantomData }
+        Self {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
     }
 }
 
@@ -70,13 +75,19 @@ impl<'a, T: Send> ParallelIterator for ParIterMut<'a, T> {
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.inner.map(|x| unsafe { x.as_mut() }).drive_unindexed(consumer)
+        self.inner
+            .map(|x| unsafe { x.as_mut() })
+            .drive_unindexed(consumer)
     }
 }
 
 impl<T: fmt::Debug> fmt::Debug for ParIterMut<'_, T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParIter { inner: self.inner.clone(), marker: PhantomData }.fmt(f)
+        ParIter {
+            inner: self.inner.clone(),
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
@@ -107,7 +118,11 @@ impl<T: Send, A: Allocator + Send> ParallelIterator for IntoParIter<T, A> {
 
 impl<T: fmt::Debug, A: Allocator> fmt::Debug for IntoParIter<T, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParIter { inner: unsafe { self.inner.par_iter() }, marker: PhantomData }.fmt(f)
+        ParIter {
+            inner: unsafe { self.inner.par_iter() },
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
@@ -136,7 +151,11 @@ impl<T: Send, A: Allocator + Sync> ParallelIterator for ParDrain<'_, T, A> {
 
 impl<T: fmt::Debug, A: Allocator> fmt::Debug for ParDrain<'_, T, A> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        ParIter { inner: unsafe { self.inner.par_iter() }, marker: PhantomData }.fmt(f)
+        ParIter {
+            inner: unsafe { self.inner.par_iter() },
+            marker: PhantomData,
+        }
+        .fmt(f)
     }
 }
 
@@ -145,7 +164,9 @@ impl<T: Send, A: Allocator> HashTable<T, A> {
     /// while preserving the map's allocated memory for reuse.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_drain(&mut self) -> ParDrain<'_, T, A> {
-        ParDrain { inner: self.raw.par_drain() }
+        ParDrain {
+            inner: self.raw.par_drain(),
+        }
     }
 }
 
@@ -155,7 +176,9 @@ impl<T: Send, A: Allocator + Send> IntoParallelIterator for HashTable<T, A> {
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        IntoParIter { inner: self.raw.into_par_iter() }
+        IntoParIter {
+            inner: self.raw.into_par_iter(),
+        }
     }
 }
 
@@ -165,7 +188,10 @@ impl<'a, T: Sync, A: Allocator> IntoParallelIterator for &'a HashTable<T, A> {
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        ParIter { inner: unsafe { self.raw.par_iter() }, marker: PhantomData }
+        ParIter {
+            inner: unsafe { self.raw.par_iter() },
+            marker: PhantomData,
+        }
     }
 }
 
@@ -175,7 +201,10 @@ impl<'a, T: Send, A: Allocator> IntoParallelIterator for &'a mut HashTable<T, A>
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        ParIterMut { inner: unsafe { self.raw.par_iter() }, marker: PhantomData }
+        ParIterMut {
+            inner: unsafe { self.raw.par_iter() },
+            marker: PhantomData,
+        }
     }
 }
 

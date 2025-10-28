@@ -11,15 +11,13 @@ impl Tag {
     /// Control tag value for a deleted bucket.
     pub(crate) const DELETED: Tag = Tag(0b1000_0000);
 
-    /// Checks whether a control tag represents a full bucket (top bit is
-    /// clear).
+    /// Checks whether a control tag represents a full bucket (top bit is clear).
     #[inline]
     pub(crate) const fn is_full(self) -> bool {
         self.0 & 0x80 == 0
     }
 
-    /// Checks whether a control tag represents a special value (top bit is
-    /// set).
+    /// Checks whether a control tag represents a special value (top bit is set).
     #[inline]
     pub(crate) const fn is_special(self) -> bool {
         self.0 & 0x80 != 0
@@ -79,8 +77,7 @@ pub(crate) trait TagSliceExt {
 impl TagSliceExt for [Tag] {
     #[inline]
     fn fill_tag(&mut self, tag: Tag) {
-        // SAFETY: We have access to the entire slice, so, we can write to the entire
-        // slice.
+        // SAFETY: We have access to the entire slice, so, we can write to the entire slice.
         unsafe { self.as_mut_ptr().write_bytes(tag.0, self.len()) }
     }
 }

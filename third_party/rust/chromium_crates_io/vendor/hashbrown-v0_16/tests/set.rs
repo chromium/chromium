@@ -10,10 +10,14 @@ fn test_hashset_insert_remove() {
     let seed = u64::from_le_bytes(*b"testseed");
 
     let rng = &mut SmallRng::seed_from_u64(seed);
-    let tx: Vec<Vec<char>> =
-        iter::repeat_with(|| rng.sample_iter(&Alphanumeric).take(32).map(char::from).collect())
-            .take(4096)
-            .collect();
+    let tx: Vec<Vec<char>> = iter::repeat_with(|| {
+        rng.sample_iter(&Alphanumeric)
+            .take(32)
+            .map(char::from)
+            .collect()
+    })
+    .take(4096)
+    .collect();
 
     // more readable with explicit `true` / `false`
     #[allow(clippy::bool_assert_comparison)]

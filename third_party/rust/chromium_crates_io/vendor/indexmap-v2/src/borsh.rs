@@ -11,11 +11,9 @@ use borsh::{BorshDeserialize, BorshSerialize};
 use crate::map::IndexMap;
 use crate::set::IndexSet;
 
-// NOTE: the real `#[deprecated]` attribute doesn't work for trait
-// implementations, but we can get close by mimicking the message style for
-// documentation.
-/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated:
-/// use borsh's <code>indexmap</code> feature instead.</span></div>
+// NOTE: the real `#[deprecated]` attribute doesn't work for trait implementations,
+// but we can get close by mimicking the message style for documentation.
+/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: use borsh's <code>indexmap</code> feature instead.</span></div>
 impl<K, V, S> BorshSerialize for IndexMap<K, V, S>
 where
     K: BorshSerialize,
@@ -27,7 +25,9 @@ where
 
         let iterator = self.iter();
 
-        u32::try_from(iterator.len()).map_err(|_| ErrorKind::InvalidData)?.serialize(writer)?;
+        u32::try_from(iterator.len())
+            .map_err(|_| ErrorKind::InvalidData)?
+            .serialize(writer)?;
 
         for (key, value) in iterator {
             key.serialize(writer)?;
@@ -38,8 +38,7 @@ where
     }
 }
 
-/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated:
-/// use borsh's <code>indexmap</code> feature instead.</span></div>
+/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: use borsh's <code>indexmap</code> feature instead.</span></div>
 impl<K, V, S> BorshDeserialize for IndexMap<K, V, S>
 where
     K: BorshDeserialize + Eq + Hash,
@@ -54,8 +53,7 @@ where
     }
 }
 
-/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated:
-/// use borsh's <code>indexmap</code> feature instead.</span></div>
+/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: use borsh's <code>indexmap</code> feature instead.</span></div>
 impl<T, S> BorshSerialize for IndexSet<T, S>
 where
     T: BorshSerialize,
@@ -66,7 +64,9 @@ where
 
         let iterator = self.iter();
 
-        u32::try_from(iterator.len()).map_err(|_| ErrorKind::InvalidData)?.serialize(writer)?;
+        u32::try_from(iterator.len())
+            .map_err(|_| ErrorKind::InvalidData)?
+            .serialize(writer)?;
 
         for item in iterator {
             item.serialize(writer)?;
@@ -76,8 +76,7 @@ where
     }
 }
 
-/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated:
-/// use borsh's <code>indexmap</code> feature instead.</span></div>
+/// <div class="stab deprecated"><span class="emoji">👎</span><span>Deprecated: use borsh's <code>indexmap</code> feature instead.</span></div>
 impl<T, S> BorshDeserialize for IndexSet<T, S>
 where
     T: BorshDeserialize + Eq + Hash,

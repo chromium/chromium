@@ -102,7 +102,10 @@ where
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.a.into_par_iter().filter(|&x| !self.b.contains(x)).drive_unindexed(consumer)
+        self.a
+            .into_par_iter()
+            .filter(|&x| !self.b.contains(x))
+            .drive_unindexed(consumer)
     }
 }
 
@@ -132,7 +135,10 @@ where
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.a.par_difference(self.b).chain(self.b.par_difference(self.a)).drive_unindexed(consumer)
+        self.a
+            .par_difference(self.b)
+            .chain(self.b.par_difference(self.a))
+            .drive_unindexed(consumer)
     }
 }
 
@@ -161,7 +167,10 @@ where
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        self.a.into_par_iter().filter(|&x| self.b.contains(x)).drive_unindexed(consumer)
+        self.a
+            .into_par_iter()
+            .filter(|&x| self.b.contains(x))
+            .drive_unindexed(consumer)
     }
 }
 
@@ -189,12 +198,17 @@ where
     where
         C: UnindexedConsumer<Self::Item>,
     {
-        // We'll iterate one set in full, and only the remaining difference from the
-        // other. Use the smaller set for the difference in order to reduce hash
-        // lookups.
-        let (smaller, larger) =
-            if self.a.len() <= self.b.len() { (self.a, self.b) } else { (self.b, self.a) };
-        larger.into_par_iter().chain(smaller.par_difference(larger)).drive_unindexed(consumer)
+        // We'll iterate one set in full, and only the remaining difference from the other.
+        // Use the smaller set for the difference in order to reduce hash lookups.
+        let (smaller, larger) = if self.a.len() <= self.b.len() {
+            (self.a, self.b)
+        } else {
+            (self.b, self.a)
+        };
+        larger
+            .into_par_iter()
+            .chain(smaller.par_difference(larger))
+            .drive_unindexed(consumer)
     }
 }
 
@@ -219,8 +233,7 @@ where
     }
 
     /// Visits (potentially in parallel) the values representing the symmetric
-    /// difference, i.e. the values that are in `self` or in `other` but not in
-    /// both.
+    /// difference, i.e. the values that are in `self` or in `other` but not in both.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_symmetric_difference<'a>(
         &'a self,
@@ -282,7 +295,9 @@ where
     /// while preserving the set's allocated memory for reuse.
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn par_drain(&mut self) -> ParDrain<'_, T, A> {
-        ParDrain { inner: self.map.par_drain() }
+        ParDrain {
+            inner: self.map.par_drain(),
+        }
     }
 }
 
@@ -292,7 +307,9 @@ impl<T: Send, S, A: Allocator + Send> IntoParallelIterator for HashSet<T, S, A> 
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        IntoParIter { inner: self.map.into_par_iter() }
+        IntoParIter {
+            inner: self.map.into_par_iter(),
+        }
     }
 }
 
@@ -302,7 +319,9 @@ impl<'a, T: Sync, S, A: Allocator> IntoParallelIterator for &'a HashSet<T, S, A>
 
     #[cfg_attr(feature = "inline-more", inline)]
     fn into_par_iter(self) -> Self::Iter {
-        ParIter { inner: self.map.par_keys() }
+        ParIter {
+            inner: self.map.par_keys(),
+        }
     }
 }
 

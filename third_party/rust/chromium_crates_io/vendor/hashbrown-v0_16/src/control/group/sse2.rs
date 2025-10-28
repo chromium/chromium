@@ -38,8 +38,10 @@ impl Group {
             _align: [Group; 0],
             tags: [Tag; Group::WIDTH],
         }
-        const ALIGNED_TAGS: AlignedTags =
-            AlignedTags { _align: [], tags: [Tag::EMPTY; Group::WIDTH] };
+        const ALIGNED_TAGS: AlignedTags = AlignedTags {
+            _align: [],
+            tags: [Tag::EMPTY; Group::WIDTH],
+        };
         &ALIGNED_TAGS.tags
     }
 
@@ -135,7 +137,10 @@ impl Group {
         unsafe {
             let zero = x86::_mm_setzero_si128();
             let special = x86::_mm_cmpgt_epi8(zero, self.0);
-            Group(x86::_mm_or_si128(special, x86::_mm_set1_epi8(Tag::DELETED.0 as i8)))
+            Group(x86::_mm_or_si128(
+                special,
+                x86::_mm_set1_epi8(Tag::DELETED.0 as i8),
+            ))
         }
     }
 }

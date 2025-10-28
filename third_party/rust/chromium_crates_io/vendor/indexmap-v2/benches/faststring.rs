@@ -132,7 +132,9 @@ fn lookup_hashmap_10_000_exist_string_oneshot(b: &mut Bencher) {
     for &key in &keys {
         map.insert(OneShot(key.to_string()), 1);
     }
-    let lookups = (5000..c).map(|x| OneShot(x.to_string())).collect::<Vec<_>>();
+    let lookups = (5000..c)
+        .map(|x| OneShot(x.to_string()))
+        .collect::<Vec<_>>();
     b.iter(|| {
         let mut found = 0;
         for key in &lookups {
@@ -168,7 +170,9 @@ fn lookup_indexmap_10_000_exist_string_oneshot(b: &mut Bencher) {
     for &key in &keys {
         map.insert(OneShot(key.to_string()), 1);
     }
-    let lookups = (5000..c).map(|x| OneShot(x.to_string())).collect::<Vec<_>>();
+    let lookups = (5000..c)
+        .map(|x| OneShot(x.to_string()))
+        .collect::<Vec<_>>();
     b.iter(|| {
         let mut found = 0;
         for key in &lookups {
