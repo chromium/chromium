@@ -24773,6 +24773,29 @@
             ]
         }
     ],
+    "SyncBookmarksLimit": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Limit250k",
+                    "params": {
+                        "sync-bookmarks-limit-value": "250000"
+                    },
+                    "enable_features": [
+                        "SyncBookmarksLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncDetermineAccountManagedStatus": [
         {
             "platforms": [
