@@ -748,12 +748,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       # defines what wrapper we use in OS infra. e.g. for gtest it's
       # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
       if 'autotest_name' not in test and not has_ctp_tag_criteria:
-        if 'tast_expr' in test:
-          if 'lacros' in test['name']:
-            test['autotest_name'] = 'tast.lacros-from-gcs'
-          else:
-            test['autotest_name'] = 'tast.chrome-from-gcs'
-        elif 'benchmark' in test:
+        if 'benchmark' in test:
           test['autotest_name'] = 'chromium_Telemetry'
         else:
           test['autotest_name'] = 'chromium'

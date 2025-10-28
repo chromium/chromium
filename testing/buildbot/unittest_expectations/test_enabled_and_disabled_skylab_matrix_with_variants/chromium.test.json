@@ -4,15 +4,13 @@
   "Fake Tester": {
     "skylab_tests": [
       {
-        "autotest_name": "tast.chrome-from-gcs",
+        "autotest_name": "chromium",
         "cros_board": "octopus",
         "cros_img": "octopus-release/R89-13655.0.0",
         "dut_pool": "chromium",
-        "name": "tast.basic OCTOPUS_TOT",
-        "shard_level_retries_on_ctp": 2,
-        "suite": "tast.basic",
-        "tast_expr": "dummy expr",
-        "test": "tast.basic",
+        "name": "autotest_suites OCTOPUS_TOT",
+        "shard_level_retries_on_ctp": 1,
+        "test": "autotest_suites",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT"
       }

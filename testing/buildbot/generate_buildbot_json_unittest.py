@@ -4422,7 +4422,6 @@ MATRIX_COMPOUND_SKYLAB_TFC_REF = """\
   'basic_suites': {
     'cros_skylab_basic': {
       'chrome_all_tast_tests': {
-        'tast_expr': 'dummy expr',
         'timeout': 3600,
         'cros_test_tags': ['group:mainline'],
         'cros_test_tags_exclude': ['informational'],
@@ -4450,15 +4449,7 @@ MATRIX_COMPOUND_SKYLAB_REF = """\
       'benchmark_suite': {
         'benchmark': 'something',
       },
-      'chrome_all_tast_tests': {
-        'tast_expr': 'dummy expr',
-        'timeout': 3600,
-      },
       'gtest_suite': { },
-      'lacros_all_tast_tests': {
-        'tast_expr': 'lacros expr',
-        'timeout': 3600,
-      },
     },
   },
   'compound_suites': {},
@@ -4470,7 +4461,6 @@ MATRIX_COMPOUND_SKYLAB_REF = """\
         ],
       },
       'cros_skylab_basic': {
-        'tast_expr': 'dummy expr',
         'variants': [
           'octopus-89',
           'octopus-88',
@@ -4543,22 +4533,18 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
 {
   'basic_suites': {
     'cros_skylab_basic': {
-      'tast.basic': {
+      'autotest_suites': {
         'skylab': {
-          'tast_expr': 'dummy expr',
-          'shard_level_retries_on_ctp': 2,
         },
-        'suite': 'tast.basic',
         'timeout': 3600,
       },
       'tast.foo': {
         'skylab': {
-          'tast_expr': 'dummy expr',
         },
-        'suite': 'tast.foo',
         'timeout': 3600,
       },
     },
+
   },
   'compound_suites': {},
   'matrix_compound_suites': {
