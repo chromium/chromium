@@ -65,11 +65,9 @@ QuickInsertGifView::~QuickInsertGifView() = default;
 void QuickInsertGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::ImageView::OnBoundsChanged(previous_bounds);
 
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(GetImageBounds()),
-                    SkIntToScalar(kQuickInsertGifCornerRadius),
-                    SkIntToScalar(kQuickInsertGifCornerRadius));
-  SetClipPath(path);
+  SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(GetImageBounds()), kQuickInsertGifCornerRadius,
+      kQuickInsertGifCornerRadius)));
 }
 
 void QuickInsertGifView::UpdateFrame() {

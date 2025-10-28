@@ -28,6 +28,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -210,9 +212,9 @@ class GifsButton : public views::LabelButton {
 
     if (is_checked_ &&
         GetState() == views::Button::ButtonState::STATE_HOVERED) {
-      SkPath mask;
-      mask.addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                        kGifsButtonCornerRadius, kGifsButtonCornerRadius);
+      const SkPath mask = SkPath::RRect(SkRRect::MakeRectXY(
+          gfx::RectToSkRect(GetLocalBounds()), kGifsButtonCornerRadius,
+          kGifsButtonCornerRadius));
       canvas->ClipPath(mask, true);
       canvas->DrawColor(
           GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle));

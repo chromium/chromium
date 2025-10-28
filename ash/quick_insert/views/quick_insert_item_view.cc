@@ -14,6 +14,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -159,7 +161,8 @@ void QuickInsertItemView::UpdateClipPathForFocusRingWithInsetGap() {
     const SkScalar radius =
         SkIntToScalar(corner_radius_ - kPseudoFocusClipInset);
     inset_bounds.Inset(kPseudoFocusClipInset);
-    clip_path.addRoundRect(gfx::RectFToSkRect(inset_bounds), radius, radius);
+    clip_path = SkPath::RRect(
+        SkRRect::MakeRectXY(gfx::RectFToSkRect(inset_bounds), radius, radius));
   }
   SetClipPath(clip_path);
 }
