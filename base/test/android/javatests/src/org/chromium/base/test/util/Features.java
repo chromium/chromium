@@ -4,6 +4,9 @@
 
 package org.chromium.base.test.util;
 
+import android.content.SharedPreferences;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
 import org.chromium.base.cached_flags.ValuesReturned;
@@ -50,6 +53,15 @@ public class Features {
     private Features() {}
 
     static void resetCachedFlags() {
+        SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        for (String key : sharedPreferences.getAll().keySet()) {
+            if (key.startsWith("Chrome.Flags.")) {
+                editor.remove(key);
+            }
+        }
+        editor.apply();
+
         ValuesReturned.clearForTesting();
         Flag.resetAllInMemoryCachedValuesForTesting();
         FeatureParam.resetAllInMemoryCachedValuesForTesting();

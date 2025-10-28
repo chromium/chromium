@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -62,6 +63,8 @@ public class PartnerHomepageIntegrationTest {
 
     @Before
     public void setUp() {
+        // TODO(crbug.com/447670141): Figure out why this is necessary.
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
         mActivityTestRule.startMainActivityFromLauncher();
     }
 

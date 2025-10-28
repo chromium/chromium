@@ -442,17 +442,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         boolean firstTestMethod = ResettersForTesting.getState() != State.BETWEEN_METHODS;
         ResettersForTesting.beforeHooksWillExecute();
         if (firstTestMethod) {
-            BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
-                    .createSharedPreferencesSnapshot();
             mJniZeroSnapshot = JniTestInstancesSnapshot.snapshotOverridesForTesting();
         } else {
-            BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext
-                    .restoreSharedPreferencesSnapshot();
             JniTestInstancesSnapshot.restoreSnapshotForTesting(mJniZeroSnapshot);
         }
-
-        // TODO: Might be slow to do this before every test.
-        SharedPreferencesTestUtil.deleteOnDiskSharedPreferences(getApplication());
 
         Class<?> testClass = getTestClass().getJavaClass();
         CommandLineFlags.reset(testClass.getAnnotations(), method.getAnnotations());
@@ -470,9 +463,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     protected void onBeforeTestClass() {
         Class<?> testClass = getTestClass().getJavaClass();
         ResettersForTesting.beforeClassHooksWillExecute();
-        BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
-        JniTestInstancesSnapshot.clearAllForTesting();
 
+        // Reset SharedPreferences only between test classes (not methods) since some tests rely
+        // on state persisting between methods (e.g. when an Activity remains open).
+        // Clear between classes to ensure that one test class cannot impact another.
+        BaseChromiumAndroidJUnitRunner.sInMemorySharedPreferencesContext.resetSharedPreferences();
+        SharedPreferencesTestUtil.deleteOnDiskSharedPreferences(getApplication());
+
+        JniTestInstancesSnapshot.clearAllForTesting();
         CommandLineFlags.reset(testClass.getAnnotations(), null);
         TestAnimations.reset(testClass, null);
 
