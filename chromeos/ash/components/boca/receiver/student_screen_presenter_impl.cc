@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_request.h"
 #include "chromeos/ash/components/boca/proto/receiver.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -78,6 +79,9 @@ void StudentScreenPresenterImpl::Start(
     base::OnceClosure disconnected_cb) {
   if (IsPresenting(/*student_id=*/std::nullopt)) {
     LOG(ERROR) << "[Boca] Trying to present more than one student screen";
+    RecordPresentStudentScreenResult(/* failure */ false);
+    RecordPresentStudentScreenFailureReason(
+        BocaPresentStudentScreenFailureReason::kStudentScreenShareActive);
     std::move(success_cb).Run(false);
     return;
   }
@@ -169,11 +173,16 @@ void StudentScreenPresenterImpl::OnStartResponse(
     base::OnceCallback<void(bool)> success_cb,
     std::optional<std::string> connection_id) {
   if (!connection_id.has_value()) {
+    RecordPresentStudentScreenResult(/* failure */ false);
+    RecordPresentStudentScreenFailureReason(
+        BocaPresentStudentScreenFailureReason::
+            kStartKioskConnectionRequestFailed);
     std::move(success_cb).Run(false);
     Reset();
     return;
   }
   connection_id_ = connection_id;
+  RecordPresentStudentScreenResult(/* success */ true);
   std::move(success_cb).Run(true);
 }
 

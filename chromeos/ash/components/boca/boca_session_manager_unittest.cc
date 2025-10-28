@@ -230,6 +230,7 @@ class MockTeacherScreenPresenter : public TeacherScreenPresenter {
               Start,
               (std::string_view,
                ::boca::UserIdentity,
+               bool,
                base::OnceCallback<void(bool)>,
                base::OnceClosure),
               (override));

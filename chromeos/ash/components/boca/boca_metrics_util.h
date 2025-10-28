@@ -67,6 +67,50 @@ inline static constexpr char kPollingResult[] = "Ash.Boca.PollingResult";
 inline static constexpr char kBocaTokenRetrievalIsValidation[] =
     "Ash.Boca.TokenRetrievalIsValidation";
 inline constexpr char kBocaUploadToken[] = "UploadToken";
+inline constexpr char kBocaScreenSharePresentOwnScreenInSessionResult[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenInSession.Result";
+inline constexpr char kBocaScreenSharePresentOwnScreenOutOfSessionResult[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenOutOfSession.Result";
+inline constexpr char kBocaScreenSharePresentStudentScreenResult[] =
+    "Ash.Boca.ScreenShare.PresentStudentScreen.Result";
+inline constexpr char kBocaScreenSharePresentOwnScreenInSessionFailureReason[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenInSession.FailureReason";
+inline constexpr char
+    kBocaScreenSharePresentOwnScreenOutOfSessionFailureReason[] =
+        "Ash.Boca.ScreenShare.PresentOwnScreenOutOfSession.FailureReason";
+inline constexpr char kBocaScreenSharePresentStudentScreenFailureReason[] =
+    "Ash.Boca.ScreenShare.PresentStudentScreen.FailureReason";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BocaPresentOwnScreenFailureReason {
+  kFeatureDisabled = 0,
+  kStudentScreenShareActive = 1,
+  kTeacherScreenShareActive = 2,
+  kStartKioskConnectionRequestFailed = 3,
+  kGetReceiverRequestFailed = 4,
+  kGetCrdConnectionCodeFailed = 5,
+
+  // NOTE: Do not reorder existing entries, and add entries only immediately
+  // above this line.
+  kMaxValue = kGetCrdConnectionCodeFailed,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BocaPresentStudentScreenFailureReason {
+  kFeatureDisabled = 0,
+  kStudentScreenShareActive = 1,
+  kTeacherScreenShareActive = 2,
+  kStartKioskConnectionRequestFailed = 3,
+  kEndSpotlightFailed = 4,
+  kNoActiveStudentDevice = 5,
+  kNoSession = 6,
+
+  // NOTE: Do not reorder existing entries, and add entries only immediately
+  // above this line.
+  kMaxValue = kNoSession,
+};
 
 // Records the percentage of the duration that a session was in a particular
 // locked or unlocked state.
@@ -177,6 +221,24 @@ void RecordPollingResult(const ::boca::Session* previous_session,
 
 // Records the token retrieval is validation status.
 void RecordTokenRetrievalIsValidation(const bool is_validation);
+
+// Records the result (success / failure) of presenting own screen, and whether
+// the attempt was made during a session or not.
+void RecordPresentOwnScreenResult(const bool result,
+                                  const bool is_session_active);
+
+// Records the result (success / failure) of presenting student screen.
+void RecordPresentStudentScreenResult(const bool result);
+
+// Records the reason that presenting own screen failed, and whether the attempt
+// was made during a session or not.
+void RecordPresentOwnScreenFailureReason(
+    BocaPresentOwnScreenFailureReason reason,
+    const bool is_session_active);
+
+// Records the reason that presenting a student screen failed.
+void RecordPresentStudentScreenFailureReason(
+    BocaPresentStudentScreenFailureReason reason);
 
 }  // namespace ash::boca
 

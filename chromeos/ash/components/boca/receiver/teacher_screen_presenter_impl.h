@@ -52,6 +52,7 @@ class TeacherScreenPresenterImpl : public TeacherScreenPresenter {
   // TeacherScreenPresenter:
   void Start(std::string_view receiver_id,
              ::boca::UserIdentity teacher_identity,
+             const bool is_session_active,
              base::OnceCallback<void(bool)> success_cb,
              base::OnceClosure disconnected_cb) override;
   void Stop(base::OnceCallback<void(bool)> success_cb) override;
@@ -76,6 +77,7 @@ class TeacherScreenPresenterImpl : public TeacherScreenPresenter {
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   std::optional<std::string> receiver_id_;
+  bool is_session_active_;
   base::OnceCallback<void(bool)> start_success_cb_;
   base::OnceClosure disconnected_cb_;
   std::unique_ptr<google_apis::RequestSender> get_receiver_request_sender_;

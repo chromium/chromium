@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -40,6 +41,15 @@ constexpr std::string_view kTeacherDeviceId = "teacher_device_id";
 constexpr std::string_view kReceiverId = "receiver_id";
 constexpr std::string_view kConnectionCode = "connection_code";
 
+constexpr char kBocaPresentOwnScreenOutOfSessionResultUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenOutOfSession.Result";
+constexpr char kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenOutOfSession.FailureReason";
+constexpr char kBocaPresentOwnScreenInSessionResultUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenInSession.Result";
+constexpr char kBocaPresentOwnScreenInSessionFailureReasonUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentOwnScreenInSession.FailureReason";
+
 class MockSharedCrdSessionWrapper : public SharedCrdSessionWrapper {
  public:
   MockSharedCrdSessionWrapper() = default;
@@ -62,10 +72,14 @@ struct TeacherScreenPresenterStartTestCase {
   net::HttpStatusCode start_status_code;
   bool start_success;
   bool disconnected_called;
+  bool is_in_session;
+  std::string metrics_result_uma;
+  int metrics_result_bucket;
+  std::string metrics_reason_uma;
+  int metrics_reason_bucket;
 };
 
-class TeacherScreenPresenterImplTest
-    : public testing::TestWithParam<TeacherScreenPresenterStartTestCase> {
+class TeacherScreenPresenterImplTest : public testing::Test {
  protected:
   void SetUp() override {
     teacher_identity_.set_email("teacher@email.com");
@@ -100,27 +114,6 @@ class TeacherScreenPresenterImplTest
       std::make_unique<NiceMock<MockSharedCrdSessionWrapper>>();
 };
 
-TEST_F(TeacherScreenPresenterImplTest, StartFailureOnGetConnectionCode) {
-  base::test::TestFuture<bool> start_future;
-  EXPECT_CALL(*crd_session_wrapper_, StartCrdHost)
-      .WillOnce([](std::string_view,
-                   base::OnceCallback<void(const std::string&)>,
-                   base::OnceClosure, base::OnceClosure error_callback) {
-        std::move(error_callback).Run();
-      });
-  TeacherScreenPresenterImpl presenter(kTeacherDeviceId,
-                                       std::move(crd_session_wrapper_),
-                                       url_loader_factory_.GetSafeWeakWrapper(),
-                                       identity_test_env_.identity_manager());
-  url_loader_factory_.AddResponse(GetReceiverUrl(kReceiverId).spec(),
-                                  R"({"robotEmail":"robot@email.com"})");
-  presenter.Start(kReceiverId, teacher_identity_, start_future.GetCallback(),
-                  base::DoNothing());
-
-  EXPECT_FALSE(start_future.Get());
-  EXPECT_FALSE(presenter.IsPresenting());
-}
-
 TEST_F(TeacherScreenPresenterImplTest, Stop) {
   base::test::TestFuture<bool> start_future;
   base::test::TestFuture<bool> stop_future1;
@@ -142,7 +135,8 @@ TEST_F(TeacherScreenPresenterImplTest, Stop) {
                                   R"({"robotEmail":"robot@email.com"})");
   url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
                                   R"({"connectionId":"id"})");
-  presenter.Start(kReceiverId, teacher_identity_, start_future.GetCallback(),
+  presenter.Start(kReceiverId, teacher_identity_, false,
+                  start_future.GetCallback(),
                   base::BindLambdaForTesting([&disconnected_called]() {
                     disconnected_called = true;
                   }));
@@ -164,7 +158,7 @@ TEST_F(TeacherScreenPresenterImplTest, StopFailsWhenStartInProgress) {
                                        std::move(crd_session_wrapper_),
                                        url_loader_factory_.GetSafeWeakWrapper(),
                                        identity_test_env_.identity_manager());
-  presenter.Start(kReceiverId, teacher_identity_, base::DoNothing(),
+  presenter.Start(kReceiverId, teacher_identity_, false, base::DoNothing(),
                   base::DoNothing());
   presenter.Stop(stop_future.GetCallback());
 
@@ -178,16 +172,22 @@ TEST_F(TeacherScreenPresenterImplTest, OverlapStartShouldFail) {
                                        std::move(crd_session_wrapper_),
                                        url_loader_factory_.GetSafeWeakWrapper(),
                                        identity_test_env_.identity_manager());
-  presenter.Start(kReceiverId, teacher_identity_, start_future1.GetCallback(),
-                  base::DoNothing());
-  presenter.Start(kReceiverId, teacher_identity_, start_future2.GetCallback(),
-                  base::DoNothing());
+  presenter.Start(kReceiverId, teacher_identity_, false,
+                  start_future1.GetCallback(), base::DoNothing());
+  presenter.Start(kReceiverId, teacher_identity_, false,
+                  start_future2.GetCallback(), base::DoNothing());
 
   EXPECT_FALSE(start_future2.Get());
   EXPECT_FALSE(start_future1.IsReady());
 }
 
-TEST_P(TeacherScreenPresenterImplTest, Start) {
+class StartParamsTeacherScreenPresenterImplTest
+    : public TeacherScreenPresenterImplTest,
+      public testing::WithParamInterface<TeacherScreenPresenterStartTestCase> {
+};
+
+TEST_P(StartParamsTeacherScreenPresenterImplTest, Start) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> start_future;
   base::OnceClosure session_finished_callback = base::DoNothing();
   bool disconnected_called = false;
@@ -211,7 +211,8 @@ TEST_P(TeacherScreenPresenterImplTest, Start) {
   url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
                                   GetParam().start_response,
                                   GetParam().start_status_code);
-  presenter.Start(kReceiverId, teacher_identity_, start_future.GetCallback(),
+  presenter.Start(kReceiverId, teacher_identity_, GetParam().is_in_session,
+                  start_future.GetCallback(),
                   base::BindLambdaForTesting([&disconnected_called]() {
                     disconnected_called = true;
                   }));
@@ -219,13 +220,23 @@ TEST_P(TeacherScreenPresenterImplTest, Start) {
   EXPECT_TRUE(presenter.IsPresenting());
   EXPECT_EQ(start_future.Get(), GetParam().start_success);
 
+  int failure_count = 1 - GetParam().start_success;
+  histogram_tester.ExpectTotalCount(GetParam().metrics_reason_uma,
+                                    failure_count);
+  histogram_tester.ExpectBucketCount(GetParam().metrics_reason_uma,
+                                     GetParam().metrics_reason_bucket,
+                                     failure_count);
+  histogram_tester.ExpectTotalCount(GetParam().metrics_result_uma, 1);
+  histogram_tester.ExpectBucketCount(GetParam().metrics_result_uma,
+                                     GetParam().metrics_result_bucket, 1);
+
   std::move(session_finished_callback).Run();
   EXPECT_EQ(disconnected_called, GetParam().disconnected_called);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    TeacherScreenPresenterImplTest,
+    StartParamsTeacherScreenPresenterImplTest,
     testing::ValuesIn<TeacherScreenPresenterStartTestCase>({
         {.test_name = "Success",
          .get_response = R"({"robotEmail":"robot@email.com"})",
@@ -233,24 +244,171 @@ INSTANTIATE_TEST_SUITE_P(
          .start_response = R"({"connectionId":"id"})",
          .start_status_code = net::HTTP_OK,
          .start_success = true,
-         .disconnected_called = true},
+         .disconnected_called = true,
+         .is_in_session = true,
+         .metrics_result_uma = kBocaPresentOwnScreenInSessionResultUmaPath,
+         .metrics_result_bucket = 1,
+         .metrics_reason_uma =
+             kBocaPresentOwnScreenInSessionFailureReasonUmaPath,
+         .metrics_reason_bucket = 0},
+        {.test_name = "SuccessOutOfSession",
+         .get_response = R"({"robotEmail":"robot@email.com"})",
+         .get_status_code = net::HTTP_OK,
+         .start_response = R"({"connectionId":"id"})",
+         .start_status_code = net::HTTP_OK,
+         .start_success = true,
+         .disconnected_called = true,
+         .is_in_session = false,
+         .metrics_result_uma = kBocaPresentOwnScreenOutOfSessionResultUmaPath,
+         .metrics_result_bucket = 1,
+         .metrics_reason_uma =
+             kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath,
+         .metrics_reason_bucket = 0},
         {.test_name = "FailureOnGetReceiver",
          .get_response = "",
          .get_status_code = net::HTTP_INTERNAL_SERVER_ERROR,
          .start_response = R"({"connectionId":"id"})",
          .start_status_code = net::HTTP_OK,
          .start_success = false,
-         .disconnected_called = false},
+         .disconnected_called = false,
+         .is_in_session = true,
+         .metrics_result_uma = kBocaPresentOwnScreenInSessionResultUmaPath,
+         .metrics_result_bucket = 0,
+         .metrics_reason_uma =
+             kBocaPresentOwnScreenInSessionFailureReasonUmaPath,
+         .metrics_reason_bucket = 4},
+        {.test_name = "FailureOnGetReceiverOutOfSession",
+         .get_response = "",
+         .get_status_code = net::HTTP_INTERNAL_SERVER_ERROR,
+         .start_response = R"({"connectionId":"id"})",
+         .start_status_code = net::HTTP_OK,
+         .start_success = false,
+         .disconnected_called = false,
+         .is_in_session = false,
+         .metrics_result_uma = kBocaPresentOwnScreenOutOfSessionResultUmaPath,
+         .metrics_result_bucket = 0,
+         .metrics_reason_uma =
+             kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath,
+         .metrics_reason_bucket = 4},
         {.test_name = "FailureOnStartReceiver",
          .get_response = R"({"robotEmail":"robot@email.com"})",
          .get_status_code = net::HTTP_OK,
          .start_response = "",
          .start_status_code = net::HTTP_INTERNAL_SERVER_ERROR,
          .start_success = false,
-         .disconnected_called = false},
+         .disconnected_called = false,
+         .is_in_session = true,
+         .metrics_result_uma = kBocaPresentOwnScreenInSessionResultUmaPath,
+         .metrics_result_bucket = 0,
+         .metrics_reason_uma =
+             kBocaPresentOwnScreenInSessionFailureReasonUmaPath,
+         .metrics_reason_bucket = 3},
+        {.test_name = "FailureOnStartReceiverOutOfSession",
+         .get_response = R"({"robotEmail":"robot@email.com"})",
+         .get_status_code = net::HTTP_OK,
+         .start_response = "",
+         .start_status_code = net::HTTP_INTERNAL_SERVER_ERROR,
+         .start_success = false,
+         .disconnected_called = false,
+         .is_in_session = false,
+         .metrics_result_uma = kBocaPresentOwnScreenOutOfSessionResultUmaPath,
+         .metrics_result_bucket = 0,
+         .metrics_reason_uma =
+             kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath,
+         .metrics_reason_bucket = 3},
     }),
-    [](const testing::TestParamInfo<TeacherScreenPresenterImplTest::ParamType>&
-           info) { return info.param.test_name; });
+    [](const testing::TestParamInfo<
+        StartParamsTeacherScreenPresenterImplTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+class MetricsTeacherScreenPresenterImplTest
+    : public TeacherScreenPresenterImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool IsSessionActive() const { return GetParam(); }
+
+  std::string ResultUmaPath() {
+    if (IsSessionActive()) {
+      return kBocaPresentOwnScreenInSessionResultUmaPath;
+    }
+    return kBocaPresentOwnScreenOutOfSessionResultUmaPath;
+  }
+
+  std::string FailureReasonUmaPath() {
+    if (IsSessionActive()) {
+      return kBocaPresentOwnScreenInSessionFailureReasonUmaPath;
+    }
+    return kBocaPresentOwnScreenOutOfSessionFailureReasonUmaPath;
+  }
+};
+
+TEST_P(MetricsTeacherScreenPresenterImplTest, StartFailureOnGetConnectionCode) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> start_future;
+  EXPECT_CALL(*crd_session_wrapper_, StartCrdHost)
+      .WillOnce([](std::string_view,
+                   base::OnceCallback<void(const std::string&)>,
+                   base::OnceClosure, base::OnceClosure error_callback) {
+        std::move(error_callback).Run();
+      });
+  TeacherScreenPresenterImpl presenter(kTeacherDeviceId,
+                                       std::move(crd_session_wrapper_),
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  url_loader_factory_.AddResponse(GetReceiverUrl(kReceiverId).spec(),
+                                  R"({"robotEmail":"robot@email.com"})");
+  presenter.Start(kReceiverId, teacher_identity_, IsSessionActive(),
+                  start_future.GetCallback(), base::DoNothing());
+
+  EXPECT_FALSE(start_future.Get());
+  EXPECT_FALSE(presenter.IsPresenting());
+  histogram_tester.ExpectTotalCount(FailureReasonUmaPath(), 1);
+  histogram_tester.ExpectBucketCount(FailureReasonUmaPath(),
+                                     /* kGetCrdConnectionCodeFailed */ 5, 1);
+  histogram_tester.ExpectTotalCount(ResultUmaPath(), 1);
+  histogram_tester.ExpectBucketCount(ResultUmaPath(), /* failure*/ 0, 1);
+}
+
+TEST_P(MetricsTeacherScreenPresenterImplTest, StartFailureAlreadyPresenting) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> start_future_1;
+  base::test::TestFuture<bool> start_future_2;
+  base::OnceClosure session_finished_callback = base::DoNothing();
+  EXPECT_CALL(*crd_session_wrapper_, StartCrdHost("robot@email.com", _, _, _))
+      .WillOnce(
+          [](std::string_view,
+             base::OnceCallback<void(const std::string&)> success_callback,
+             base::OnceClosure, base::OnceClosure session_finished_cb) {
+            std::move(success_callback).Run(std::string(kConnectionCode));
+          });
+  TeacherScreenPresenterImpl presenter(kTeacherDeviceId,
+                                       std::move(crd_session_wrapper_),
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  url_loader_factory_.AddResponse(GetReceiverUrl(kReceiverId).spec(),
+                                  R"({"robotEmail":"robot@email.com"})");
+  url_loader_factory_.AddResponse(GetStartReceiverUrl(kReceiverId).spec(),
+                                  R"({"connectionId":"id"})");
+  presenter.Start(kReceiverId, teacher_identity_, IsSessionActive(),
+                  start_future_1.GetCallback(), base::DoNothing());
+
+  presenter.Start(kReceiverId, teacher_identity_, IsSessionActive(),
+                  start_future_2.GetCallback(), base::DoNothing());
+
+  EXPECT_TRUE(start_future_1.Get());
+  EXPECT_FALSE(start_future_2.Get());
+  histogram_tester.ExpectTotalCount(FailureReasonUmaPath(), 1);
+  histogram_tester.ExpectBucketCount(FailureReasonUmaPath(),
+                                     /* kTeacherScreenShareActive */ 2, 1);
+  // Called for each call to `Start`.
+  histogram_tester.ExpectTotalCount(ResultUmaPath(), 2);
+  histogram_tester.ExpectBucketCount(ResultUmaPath(), /* failure */ 0, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MetricsTeacherScreenPresenterImplTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace ash::boca

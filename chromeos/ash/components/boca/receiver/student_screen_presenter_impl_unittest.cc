@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -40,6 +41,11 @@ constexpr std::string_view kConnectionIdPair =
     R"({"connectionId": "connection-id"})";
 constexpr std::string_view kDisconnectedState = "DISCONNECTED";
 constexpr std::string_view kStopRequestedState = "STOP_REQUESTED";
+
+constexpr char kBocaPresentStudentScreenResultUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentStudentScreen.Result";
+constexpr char kBocaPresentStudentScreenFailureReasonUmaPath[] =
+    "Ash.Boca.ScreenShare.PresentStudentScreen.FailureReason";
 
 class StudentScreenPresenterImplTest : public testing::Test {
  protected:
@@ -149,6 +155,7 @@ TEST_F(StudentScreenPresenterImplTest, IsPresentingInitiallyFalse) {
 }
 
 TEST_F(StudentScreenPresenterImplTest, StartSuccess) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> start_future;
   StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
                                        kTeacherDeviceId,
@@ -172,9 +179,15 @@ TEST_F(StudentScreenPresenterImplTest, StartSuccess) {
   VerifyUserDeviceInfo(
       request_dict->FindDictByDottedPath("connection.presenter"),
       student_identity_, kStudentDeviceId);
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 0);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* success */ 1, 1);
 }
 
 TEST_F(StudentScreenPresenterImplTest, StartFailure) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> start_future1;
   base::test::TestFuture<bool> start_future2;
   StudentScreenPresenterImpl presenter(kSessionId, teacher_identity_,
@@ -189,6 +202,14 @@ TEST_F(StudentScreenPresenterImplTest, StartFailure) {
   EXPECT_FALSE(start_future1.Get());
   EXPECT_FALSE(presenter.IsPresenting(/*student_id=*/std::nullopt));
   EXPECT_FALSE(presenter.IsPresenting(student_identity_.gaia_id()));
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kStartKioskConnectionRequestFailed */ 3, 1);
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 1);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure */ 0, 1);
 
   // Verify that a new request will be accepted.
   presenter.Start(kReceiverId, student_identity_, kStudentDeviceId,
@@ -199,6 +220,7 @@ TEST_F(StudentScreenPresenterImplTest, StartFailure) {
 }
 
 TEST_F(StudentScreenPresenterImplTest, OverlappingStartWillFail) {
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<bool> start_future1;
   base::test::TestFuture<bool> start_future2;
   ::boca::UserIdentity other_student_identity;
@@ -222,6 +244,15 @@ TEST_F(StudentScreenPresenterImplTest, OverlappingStartWillFail) {
 
   WaitAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
   EXPECT_TRUE(start_future1.Get());
+  histogram_tester.ExpectTotalCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath, 1);
+  histogram_tester.ExpectBucketCount(
+      kBocaPresentStudentScreenFailureReasonUmaPath,
+      /* kStudentScreenShareActive */ 1, 1);
+  // Recorded for each call to `Start`.
+  histogram_tester.ExpectTotalCount(kBocaPresentStudentScreenResultUmaPath, 2);
+  histogram_tester.ExpectBucketCount(kBocaPresentStudentScreenResultUmaPath,
+                                     /* failure */ 0, 1);
 }
 
 TEST_F(StudentScreenPresenterImplTest, CheckConnectionDisconnected) {

@@ -1326,6 +1326,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Boca.ScreenShare.PresentStudentScreen.FailureReason"
+    enum="BocaPresentStudentScreenFailureReason" expires_after="2026-04-25">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the reason that attempting to start a screen share presentation of
+    type PresentStudentScreen failed. Recorded once per failed screen share
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Boca.ScreenShare.{PresentOwnScreenType}.FailureReason"
+    enum="BocaPresentOwnScreenFailureReason" expires_after="2026-04-25">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the reason that attempting to start a screen share presentation of
+    type {PresentOwnScreenType} failed. Recorded once per failed screen share
+    attempt.
+  </summary>
+  <token key="PresentOwnScreenType">
+    <variant name="PresentOwnScreenInSession"/>
+    <variant name="PresentOwnScreenOutOfSession"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Boca.ScreenShare.{ScreenShareType}.Result"
+    enum="BooleanSuccess" expires_after="2026-04-25">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the result of attempting to start a screen share presentation of
+    type {ScreenShareType}. Recorded once per screen share attempt.
+  </summary>
+  <token key="ScreenShareType">
+    <variant name="PresentOwnScreenInSession"/>
+    <variant name="PresentOwnScreenOutOfSession"/>
+    <variant name="PresentStudentScreen"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Boca.Spotlight.{Request}.ErrorCode" enum="ApiErrorCode"
     expires_after="2026-04-25">
   <owner>caott@google.com</owner>

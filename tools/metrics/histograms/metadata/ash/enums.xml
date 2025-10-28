@@ -357,6 +357,27 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3" label="Polling causes in-session update"/>
 </enum>
 
+<enum name="BocaPresentOwnScreenFailureReason">
+  <int value="0" label="Feature disabled"/>
+  <int value="1" label="Student screen share already active"/>
+  <int value="2" label="Teacher screen share already active"/>
+  <int value="3"
+      label="Failed to start the connection on the the receiver device"/>
+  <int value="4" label="Failed to get receiver"/>
+  <int value="5" label="Failed to get CRD connection code"/>
+</enum>
+
+<enum name="BocaPresentStudentScreenFailureReason">
+  <int value="0" label="Feature disabled"/>
+  <int value="1" label="Student screen share already active"/>
+  <int value="2" label="Teacher screen share already active"/>
+  <int value="3"
+      label="Failed to start the connection on the the receiver device"/>
+  <int value="4" label="Failed to end spotlight for student"/>
+  <int value="5" label="No active device for student"/>
+  <int value="6" label="No active session"/>
+</enum>
+
 <enum name="BooleanMuted">
   <int value="0" label="Muted"/>
   <int value="1" label="Unmuted"/>

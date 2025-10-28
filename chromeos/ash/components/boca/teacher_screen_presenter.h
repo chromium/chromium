@@ -24,6 +24,7 @@ class TeacherScreenPresenter {
 
   virtual void Start(std::string_view receiver_id,
                      ::boca::UserIdentity teacher_identity,
+                     const bool is_session_active,
                      base::OnceCallback<void(bool)> success_cb,
                      base::OnceClosure disconnected_cb) = 0;
 
