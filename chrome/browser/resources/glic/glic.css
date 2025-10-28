@@ -152,9 +152,15 @@ webview:not([hidden]) {
 #loadingPanel #sidePanelLoading .p5 {
   height: 32px;
   border-radius: 6px;
+  margin-bottom: 8px;
 }
 
 #loadingPanel #sidePanelLoading .p6 {
+  height: 32px;
+  border-radius: 6px;
+}
+
+#loadingPanel #sidePanelLoading .p7 {
   height: 132px;
   border-radius: 12px;
 }
@@ -174,6 +180,11 @@ webview:not([hidden]) {
 }
 
 #loadingPanel #sidePanelLoading.from-fre .p5 {
+  margin-bottom: 2px;
+  height: 64px;
+}
+
+#loadingPanel #sidePanelLoading.from-fre .p6 {
   height: 64px;
 }
 
@@ -327,78 +338,44 @@ cr-progress {
 }
 
 .placeholder {
-  background-color: #35383b;
-  background-image:
-    linear-gradient(110deg, #161617 0%,
-                            #161617 10%,
-                            #1e1f20 30%,
-                            #35383b 50%,
-                            #1e1f20 70%,
-                            #161617 90%,
-                            #161617 100%);
-  background-size: calc(200cqw);
-  background-position: center;
-  animation: 1.5s infinite linear gradient-move,
-      1.5s infinite linear pulsedark;
+  background-color: var(--color--surface-container);
+  animation: 1s infinite ease-in-out opacity-fade;
 }
 
-@media (prefers-color-scheme: light) {
-  .placeholder {
-    background-image:
-      linear-gradient(110deg, #CDCDCD 0%,
-                              #CDCDCD 25%,
-                              #696B6C 33%,
-                              #727676 65%,
-                              #CDCDCD 75%,
-                              #CDCDCD 100%);
-      animation: 1.5s infinite linear gradient-move,
-          1.5s infinite linear pulselight;
-  }
-}
-
-@keyframes pulselight {
+@keyframes opacity-fade {
   0% {
-    opacity: 0.1;
+    opacity: 100%;
   }
-  22% {
-    opacity: 0.14;
-  }
-  67% {
-    opacity: 0.14;
-  }
-  80% {
-    opacity: 0.1;
+  33% {
+    opacity: 50%;
   }
   100% {
-    opacity: 0.1;
+    opacity: 100%;
   }
 }
 
-@keyframes pulsedark {
-  0% {
-    opacity: 0;
-  }
-  22% {
-    opacity: 1;
-  }
-  67% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
+.p2 {
+  animation-delay: 0.1s;
 }
 
-@keyframes gradient-move {
-  0% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
+.p3 {
+  animation-delay: 0.2s;
+}
+
+.p4 {
+  animation-delay: 0.3s;
+}
+
+.p5 {
+  animation-delay: 0.4s;
+}
+
+.p6 {
+  animation-delay: 0.5s;
+}
+
+.p7 {
+  animation-delay: 0.6s;
 }
 
 .overlay {
