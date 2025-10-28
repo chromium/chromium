@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -241,38 +240,7 @@ bool MaybeGetFirstErrorMessageFromListenerResult(
   return false;
 }
 
-base::debug::CrashKeyString* GetPromiseRejectFeatureEnabledCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ext_promise_reject_feature_enabled", base::debug::CrashKeySize::Size256);
-  return crash_key;
-}
-
 }  // namespace
-
-namespace debug {
-
-// Helper for adding a crash keys when we encounter unexpected state in promise
-// support for rejections.
-//
-// It is only created when the callback for a promise rejection is called to
-// process the rejection's reason/value.
-//
-// All keys are logged every time this class is instantiated.
-class ScopedPromiseRejectedResponseCrashKeys {
- public:
-  explicit ScopedPromiseRejectedResponseCrashKeys(
-      bool promise_support_feature_enabled)
-      : promise_reject_feature_enabled_crash_key_(
-            GetPromiseRejectFeatureEnabledCrashKey(),
-            promise_support_feature_enabled ? "true" : "false") {}
-  ~ScopedPromiseRejectedResponseCrashKeys() = default;
-
- private:
-  // Records if the promise support feature was enabled as "true" or "false".
-  base::debug::ScopedCrashKeyString promise_reject_feature_enabled_crash_key_;
-};
-
-}  // namespace debug
 
 // A helper class to manage the creation and tracking of callbacks for
 // one-time messages, such as the message response callback.
@@ -1066,8 +1034,6 @@ void OneTimeMessageHandler::OnPromiseRejectedResponse(
     return;
   }
 
-  debug::ScopedPromiseRejectedResponseCrashKeys promise_rejected_crash_keys(
-      /*promise_support_feature_enabled=*/IsMessagePolyfillSupportEnabled());
   v8::Local<v8::Value> promise_reject_value;
   // This is safe to CHECK() because when a promise rejects it always provides a
   // value. Even if `reject()` (with no argument) is called we see `undefined`
