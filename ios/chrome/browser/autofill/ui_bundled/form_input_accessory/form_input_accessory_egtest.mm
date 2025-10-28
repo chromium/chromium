@@ -223,6 +223,13 @@ void SlowlyTypeText(NSString* text) {
 
 @implementation FormInputAccessoryEGTest
 
+// Returns whether the two-bubble feature should be enabled for the current
+// test. `NO` is returned to verify all tests pass when the two-bubble feature
+// is disabled.
+- (BOOL)shouldEnableTwoBubbleFeature {
+  return NO;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -305,6 +312,12 @@ void SlowlyTypeText(NSString* text) {
   if ([self isRunningTest:@selector(testUseBackupPassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSFillRecoveryPassword);
+  }
+
+  if ([self shouldEnableTwoBubbleFeature]) {
+    config.features_enabled.push_back(kIOSKeyboardAccessoryTwoBubble);
+  } else {
+    config.features_disabled.push_back(kIOSKeyboardAccessoryTwoBubble);
   }
 
   return config;
@@ -1095,6 +1108,23 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   [self verifyFieldsHaveBeenFilledWithUsername:username
                                       password:backupPassword];
+}
+
+@end
+
+// Reruns all the tests in this file but with the two-bubble feature enabled by
+// default.
+@interface FormInputAccessoryTwoBubbleTestCase : FormInputAccessoryEGTest
+
+@end
+
+@implementation FormInputAccessoryTwoBubbleTestCase
+
+// Returns whether the two-bubble feature should be enabled for the current
+// test. It returns `YES` to rerun tests defined in
+// `FormInputAccessoryEGTest`.
+- (BOOL)shouldEnableTwoBubbleFeature {
+  return YES;
 }
 
 @end
