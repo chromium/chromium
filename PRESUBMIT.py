@@ -7392,14 +7392,6 @@ def _IsMiraclePtrDisallowed(input_api, affected_file):
             or "third_party/blink/renderer/platform/fonts/" in path):
         return True
 
-    # The below paths are an explicitly listed subset of Renderer-only code,
-    # because the plan is to Oilpanize it.
-    # TODO(crbug.com/330759291): Remove once Oilpanization is completed or
-    # abandoned.
-    if ("third_party/blink/renderer/core/paint/" in path or
-            "third_party/blink/renderer/platform/graphics/compositing/" in path
-            or "third_party/blink/renderer/platform/graphics/paint/" in path):
-        return True
 
     # We assume that everything else may be used outside of Renderer processes.
     return False
