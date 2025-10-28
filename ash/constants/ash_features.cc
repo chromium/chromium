@@ -1250,9 +1250,6 @@ BASE_FEATURE(kJupiterScreensaver, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKerberosRememberPasswordByDefault,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables IME button in the floating accessibility menu for the Kiosk session.
-BASE_FEATURE(kKioskEnableImeButton, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables automatic downloading and installing fonts via language packs, based
 // on the user's preferences.
 BASE_FEATURE(kLanguagePacksFonts, base::FEATURE_ENABLED_BY_DEFAULT);
