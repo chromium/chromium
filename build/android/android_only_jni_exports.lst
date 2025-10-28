@@ -8,6 +8,7 @@
   global:
     JNI_OnLoad;
     Java_*;
+    NativeChildProcessService_onCreate;
   local:
     *;
 };

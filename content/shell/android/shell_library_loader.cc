@@ -3,15 +3,24 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
+#include "base/android/library_loader/library_loader_hooks.h"
 #include "content/public/app/content_jni_onload.h"
 #include "content/public/app/content_main.h"
 #include "content/shell/app/shell_main_delegate.h"
 
+bool NativeInitializationHook(
+    base::android::LibraryProcessType library_process_type) {
+  if (!content::android::OnJNIOnLoadInit()) {
+    return false;
+  }
+
+  content::SetContentMainDelegate(new content::ShellMainDelegate());
+  return true;
+}
+
 // This is called by the VM when the shared library is first loaded.
 JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
-  if (!content::android::OnJNIOnLoadInit())
-    return -1;
-  content::SetContentMainDelegate(new content::ShellMainDelegate());
+  base::android::SetNativeInitializationHook(NativeInitializationHook);
   return JNI_VERSION_1_4;
 }
