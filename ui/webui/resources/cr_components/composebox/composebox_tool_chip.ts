@@ -27,11 +27,13 @@ export class ComposeboxToolChipElement extends CrLitElement {
       icon: {type: String},
       label: {type: String},
       visible: {type: Boolean},
+      removeChipAriaLabel: {type: String},
     };
   }
   protected accessor icon:string = '';
   protected accessor label:string = '';
   protected accessor visible:boolean = false;
+  protected accessor removeChipAriaLabel: string = '';
 
   override render() {
     if (!this.visible) {
