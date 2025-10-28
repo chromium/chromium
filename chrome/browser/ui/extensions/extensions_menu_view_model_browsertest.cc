@@ -43,6 +43,7 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void OnAccessRequestsCleared() override {}
   void OnAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id) override {}
+  void OnPermissionsSettingsChanged() override {}
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
 };
 

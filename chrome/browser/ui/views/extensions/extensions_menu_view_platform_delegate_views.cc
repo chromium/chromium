@@ -380,6 +380,33 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
   InsertMenuItemMainPage(main_page, action_id, index);
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnPermissionsSettingsChanged() {
+  CHECK(current_page_);
+
+  if (GetSitePermissionsPage(current_page_.view())) {
+    // Site permissions page can only be opened when site setting is set to
+    // "customize by extension". Thus, when site settings changed, we have to
+    // return to main page.
+    DCHECK_NE(PermissionsManager::Get(browser_->profile())
+                  ->GetUserSiteSetting(GetActiveWebContents()
+                                           ->GetPrimaryMainFrame()
+                                           ->GetLastCommittedOrigin()),
+              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+    OpenMainPage();
+    return;
+  }
+
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  CHECK(main_page);
+  UpdateMainPage(main_page, GetActiveWebContents());
+
+  // TODO(crbug.com/40879945): Update the "highlighted section" based on the
+  // `site_setting` and whether a page refresh is needed.
+
+  // TODO(crbug.com/40879945): Run blocked actions for extensions that only have
+  // blocked actions that don't require a page refresh to run.
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OpenMainPage() {
   auto main_page = std::make_unique<ExtensionsMenuMainPageView>(browser_, this);
   UpdateMainPage(main_page.get(), GetActiveWebContents());
@@ -760,33 +787,6 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnUserPermissionsSettingsChanged(
-    const PermissionsManager::UserPermissionsSettings& settings) {
-  DCHECK(current_page_);
-
-  if (GetSitePermissionsPage(current_page_.view())) {
-    // Site permissions page can only be opened when site setting is set to
-    // "customize by extension". Thus, when site settings changed, we have to
-    // return to main page.
-    DCHECK_NE(PermissionsManager::Get(browser_->profile())
-                  ->GetUserSiteSetting(GetActiveWebContents()
-                                           ->GetPrimaryMainFrame()
-                                           ->GetLastCommittedOrigin()),
-              PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-    OpenMainPage();
-    return;
-  }
-
-  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  DCHECK(main_page);
-  UpdateMainPage(main_page, GetActiveWebContents());
-
-  // TODO(crbug.com/40879945): Update the "highlighted section" based on the
-  // `site_setting` and whether a page refresh is needed.
-
-  // TODO(crbug.com/40879945): Run blocked actions for extensions that only have
-  // blocked actions that don't require a page refresh to run.
-}
 
 void ExtensionsMenuViewPlatformDelegateViews::
     OnShowAccessRequestsInToolbarChanged(

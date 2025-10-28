@@ -325,6 +325,11 @@ void ExtensionsMenuViewModel::OnHostAccessRequestDismissedByUser(
   platform_delegate_->OnAccessRequestDismissedByUser(extension_id);
 }
 
+void ExtensionsMenuViewModel::OnUserPermissionsSettingsChanged(
+    const extensions::PermissionsManager::UserPermissionsSettings& settings) {
+  platform_delegate_->OnPermissionsSettingsChanged();
+}
+
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   platform_delegate_->OnActionAdded(action_id);

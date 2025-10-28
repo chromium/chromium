@@ -63,6 +63,7 @@ class ExtensionsMenuViewPlatformDelegateViews
   void OnAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id) override;
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnPermissionsSettingsChanged() override;
 
   // ExtensionsMenuHandler:
   void OpenMainPage() override;
@@ -106,9 +107,6 @@ class ExtensionsMenuViewPlatformDelegateViews
   void OnToolbarPinnedActionsChanged() override;
 
   // PermissionsManager::Observer:
-  void OnUserPermissionsSettingsChanged(
-      const extensions::PermissionsManager::UserPermissionsSettings& settings)
-      override;
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
