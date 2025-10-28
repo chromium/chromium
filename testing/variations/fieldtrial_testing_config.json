@@ -28357,7 +28357,7 @@
             ]
         }
     ],
-    "WebrtcAcceleratedScaling": [
+    "WebrtcEncodeReadbackOptimization": [
         {
             "platforms": [
                 "chromeos",
@@ -28369,8 +28369,29 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_acc_scaling",
                     "enable_features": [
+                        "WebrtcAcceleratedScaling"
+                    ],
+                    "disable_features": [
+                        "BreakoutBoxConversionWithoutSinkSignal"
+                    ]
+                },
+                {
+                    "name": "Enabled_si_encoding",
+                    "enable_features": [
+                        "MediaFoundationD3DVideoProcessing",
+                        "MediaFoundationSharedImageEncode"
+                    ],
+                    "disable_features": [
+                        "BreakoutBoxConversionWithoutSinkSignal"
+                    ]
+                },
+                {
+                    "name": "Enabled_acc_scaling_and_si_encoding",
+                    "enable_features": [
+                        "MediaFoundationD3DVideoProcessing",
+                        "MediaFoundationSharedImageEncode",
                         "WebrtcAcceleratedScaling"
                     ],
                     "disable_features": [
