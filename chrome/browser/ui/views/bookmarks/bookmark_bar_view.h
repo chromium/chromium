@@ -258,10 +258,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   friend class BookmarkBarViewEventTestBase;
 
   // Used to identify what the user is dropping onto.
-  enum DropButtonType {
-    DROP_BOOKMARK,
-    DROP_ALL_BOOKMARKS_FOLDER,
-    DROP_OVERFLOW
+  enum class DropButtonType {
+    kDropBookmark,
+    kDropAllBookmarksFolder,
+    kDropOverflow
   };
 
   // Creates recent bookmark button and when visible button as well as

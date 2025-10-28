@@ -322,7 +322,7 @@ struct BookmarkBarView::DropLocation {
   bool on = false;
 
   // Type of button.
-  DropButtonType button_type = DROP_BOOKMARK;
+  DropButtonType button_type = DropButtonType::kDropBookmark;
 };
 
 // DropInfo -------------------------------------------------------------------
@@ -939,7 +939,7 @@ void BookmarkBarView::PaintChildren(const views::PaintInfo& paint_info) {
   if (drop_info_ && drop_info_->valid &&
       drop_info_->location.operation != DragOperation::kNone &&
       drop_info_->location.index.has_value() &&
-      drop_info_->location.button_type != DROP_OVERFLOW &&
+      drop_info_->location.button_type != DropButtonType::kDropOverflow &&
       !drop_info_->location.on) {
     size_t index = drop_info_->location.index.value();
     DCHECK_LE(index, bookmark_buttons_.size());
@@ -1051,9 +1051,9 @@ int BookmarkBarView::OnDragUpdated(const ui::DropTargetEvent& event) {
     drop_info_->is_menu_showing = false;
   }
 
-  if (location.button_type == DROP_ALL_BOOKMARKS_FOLDER) {
+  if (location.button_type == DropButtonType::kDropAllBookmarksFolder) {
     StartShowFolderDropMenuTimer(BookmarkParentFolder::OtherFolder());
-  } else if (location.button_type == DROP_OVERFLOW) {
+  } else if (location.button_type == DropButtonType::kDropOverflow) {
     StartShowFolderDropMenuTimer(BookmarkParentFolder::BookmarkBarFolder());
   } else if (location.on) {
     CHECK_LE(*location.index, bookmark_buttons_.size());
@@ -1951,7 +1951,7 @@ void BookmarkBarView::CalculateDropLocation(
   if (all_bookmarks_button_->GetVisible() && other_delta_x >= 0 &&
       other_delta_x < all_bookmarks_button_->width()) {
     // Mouse is over 'other' folder.
-    location->button_type = DROP_ALL_BOOKMARKS_FOLDER;
+    location->button_type = DropButtonType::kDropAllBookmarksFolder;
     location->on = true;
     found = true;
   } else if (bookmark_buttons_.empty()) {
@@ -2002,7 +2002,7 @@ void BookmarkBarView::CalculateDropLocation(
           overflow_delta_x < overflow_button_->width()) {
         // Mouse is over overflow button.
         location->index = first_hidden_node_idx_;
-        location->button_type = DROP_OVERFLOW;
+        location->button_type = DropButtonType::kDropOverflow;
       } else if (overflow_delta_x < 0) {
         // Mouse is after the last visible button but before overflow button;
         // use the last visible index.
@@ -2022,7 +2022,7 @@ void BookmarkBarView::CalculateDropLocation(
 
   if (location->on) {
     const BookmarkParentFolder parent_folder = [&]() -> BookmarkParentFolder {
-      if (location->button_type == DROP_ALL_BOOKMARKS_FOLDER) {
+      if (location->button_type == DropButtonType::kDropAllBookmarksFolder) {
         return BookmarkParentFolder::OtherFolder();
       }
       const BookmarkNode* const node =
@@ -2233,7 +2233,8 @@ BookmarkParentFolder BookmarkBarView::GetParentFolderAndIndexForDrop(
     SchedulePaint();
   }
 
-  if (drop_info_->location.button_type == DROP_ALL_BOOKMARKS_FOLDER) {
+  if (drop_info_->location.button_type ==
+      DropButtonType::kDropAllBookmarksFolder) {
     BookmarkParentFolder other_folder = BookmarkParentFolder::OtherFolder();
     index = bookmark_service_->GetChildrenCount(other_folder);
     return other_folder;
