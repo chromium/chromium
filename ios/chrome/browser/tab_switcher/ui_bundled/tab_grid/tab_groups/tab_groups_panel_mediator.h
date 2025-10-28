@@ -39,6 +39,7 @@ class ShareKitService;
 @protocol TabGroupsPanelConsumer;
 @protocol TabGroupsPanelMediatorDelegate;
 class WebStateList;
+@protocol TabGroupsCommands;
 
 // TabGroupsPanelMediator controls the Tab Groups panel in Tab Grid.
 @interface TabGroupsPanelMediator : NSObject <TabGridPageMutator,
@@ -59,6 +60,9 @@ class WebStateList;
 
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
+// Tab Groups command handler.
+@property(nonatomic, weak) id<TabGroupsCommands> tabGroupsCommands;
 
 // - `tabGroupSyncService`: the data source for the Tab Groups panel.
 // - `regularWebStateList`: used to configure the Done button. Must not be null.

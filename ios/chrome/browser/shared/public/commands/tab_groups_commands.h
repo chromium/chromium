@@ -27,6 +27,9 @@ class WebStateID;
 - (void)showTabGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers;
 
+// Shows the tab group creation view and creates a new tab for the group.
+- (void)showTabGroupCreationWithoutTabs;
+
 // Hides the tab group creation view.
 - (void)hideTabGroupCreationAnimated:(BOOL)animated;
 

@@ -41,6 +41,8 @@
   raw_ptr<const TabGroup> _tabGroup;
   // Transition delegate for the animation to show/hide.
   CreateTabGroupTransitionDelegate* _transitionDelegate;
+  // Whether a new tab should be inserted into the new group.
+  BOOL _createNewTabForGroup;
 }
 
 #pragma mark - Public
@@ -56,6 +58,18 @@
   if (self) {
     _identifiers = identifiers;
     _animatedDismissal = YES;
+  }
+  return self;
+}
+
+- (instancetype)initEmptyTabGroupCreationWithBaseViewController:
+                    (UIViewController*)viewController
+                                                        browser:
+                                                            (Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _animatedDismissal = YES;
+    _createNewTabForGroup = YES;
   }
   return self;
 }
@@ -98,9 +112,10 @@
   BOOL tabSynced =
       syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kTabs);
-  _viewController =
-      [[CreateTabGroupViewController alloc] initWithEditMode:editMode
-                                                   tabSynced:tabSynced];
+  _viewController = [[CreateTabGroupViewController alloc]
+          initWithEditMode:editMode
+                 tabSynced:tabSynced
+      createNewTabForGroup:_createNewTabForGroup];
 
   FaviconLoader* faviconLoader = nil;
   collaboration::CollaborationService* collaborationService =
@@ -119,6 +134,11 @@
                                 browser:browser
                           faviconLoader:faviconLoader];
     _mediator.delegate = self;
+  } else if (_createNewTabForGroup) {
+    _mediator = [[CreateTabGroupMediator alloc]
+        initEmptyTabGroupCreationWithConsumer:_viewController
+                                      browser:browser
+                                faviconLoader:faviconLoader];
   } else {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
@@ -126,6 +146,7 @@
                                  browser:browser
                            faviconLoader:faviconLoader];
   }
+
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
 

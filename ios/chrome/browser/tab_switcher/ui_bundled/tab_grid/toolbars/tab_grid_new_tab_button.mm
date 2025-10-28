@@ -30,7 +30,8 @@ const CGFloat kLargeSize = 44;
 const CGFloat kLargeSymbolSizeIPad = 34;
 // Size of the button when using a large symbol.
 const CGFloat kLargeSizeIPad = 52;
-
+// The corner radius to display the button in a square container.
+const CGFloat kSquareCornerRadius = 10;
 }  // namespace
 
 @implementation TabGridNewTabButton {
@@ -106,6 +107,8 @@ const CGFloat kLargeSizeIPad = 52;
       if (@available(iOS 26, *)) {
         UIButtonConfiguration* config = self.configuration;
         config.background.backgroundColor = UIColor.whiteColor;
+        // Set the corner style to display a circle button.
+        config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
         self.configuration = config;
       } else {
         _imageContainer.image = SymbolWithPalette(_symbol, @[
@@ -123,6 +126,8 @@ const CGFloat kLargeSizeIPad = 52;
         UIButtonConfiguration* config = self.configuration;
         config.background.backgroundColor =
             [UIColor colorNamed:kStaticBlue400Color];
+        // Set the corner style to display a circle button.
+        config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
         self.configuration = config;
       } else {
         _imageContainer.image = SymbolWithPalette(
@@ -132,6 +137,24 @@ const CGFloat kLargeSizeIPad = 52;
 
       break;
     case TabGridPageTabGroups:
+      if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
+        self.accessibilityLabel =
+            l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP);
+
+        if (@available(iOS 26, *)) {
+          UIButtonConfiguration* config = self.configuration;
+          config.background.backgroundColor =
+              [UIColor colorNamed:kStaticBlue400Color];
+          // Set the corner style and radius to display a square button.
+          config.cornerStyle = UIButtonConfigurationCornerStyleFixed;
+          config.background.cornerRadius = kSquareCornerRadius;
+          self.configuration = config;
+        } else {
+          _imageContainer.image = SymbolWithPalette(_symbol, @[
+            UIColor.blackColor, [UIColor colorNamed:kStaticBlue400Color]
+          ]);
+        }
+      }
       break;
   }
   _page = page;
