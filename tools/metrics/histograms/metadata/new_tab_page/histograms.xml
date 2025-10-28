@@ -83,6 +83,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".microsoft_files" summary="Module ID for Microsoft Files"/>
   <variant name=".outlook_calendar" summary="Module ID for Outlook Calendar"/>
   <variant name=".shopping_tasks" summary="Module ID for Shopping Tasks"/>
+  <variant name=".tab_groups" summary="Module ID for Tab Group"/>
   <variant name=".tab_resumption" summary="Module ID for Tab Resumption"/>
 </variants>
 
