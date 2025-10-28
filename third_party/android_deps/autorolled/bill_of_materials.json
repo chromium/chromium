@@ -1182,7 +1182,7 @@
     {
         "name": "lottie",
         "group": "com.airbnb.android",
-        "version": "6.6.10"
+        "version": "6.7.0"
     },
     {
         "name": "sqlite4java",
