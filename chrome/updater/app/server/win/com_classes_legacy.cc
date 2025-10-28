@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -1326,6 +1327,13 @@ IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::AddRef() {
 IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::Release() {
   const ULONG count = IDispatchImpl<IAppCommandWeb>::Release();
   VLOG(2) << __func__ << ": " << this << ": count: " << count;
+
+  // TODO(crbug.com/438803980): Remove this stack trace printing once the bug is
+  // fixed.
+  if (!count) {
+    VLOG(2) << base::debug::StackTrace();
+  }
+
   return count;
 }
 
