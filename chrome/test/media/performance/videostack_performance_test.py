@@ -452,7 +452,7 @@ def main():
     Returns:
         int: The exit code for the script, typically 0 for success.
     """
-    logging.basicConfig(level=logging.INFO)
+    logging.getLogger().setLevel(logging.INFO)
 
     if os.path.exists(RECORDINGS_DIR):
         shutil.rmtree(RECORDINGS_DIR)
