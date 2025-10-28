@@ -125,6 +125,10 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
   void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
   void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
 
+  void Initialize();
+
+  bool is_initialized_ = false;
+
   raw_ref<GlicInstance::UIDelegate> window_controller_;
 
   BrowserState browser_state_;

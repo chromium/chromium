@@ -45,36 +45,53 @@ bool IsWeakPtrSame(const base::WeakPtr<T>& a, const base::WeakPtr<T>& b) {
 
 GlicFocusedTabManager::GlicFocusedTabManager(
     GlicFocusedBrowserManager* focused_browser_manager)
-    : focused_browser_manager_(focused_browser_manager) {
+    : focused_browser_manager_(focused_browser_manager) {}
+
+GlicFocusedTabManager::~GlicFocusedTabManager() = default;
+
+void GlicFocusedTabManager::Initialize() {
   focused_browser_subscription_ =
       focused_browser_manager_->AddFocusedBrowserChangedCallback(
           base::BindRepeating(&GlicFocusedTabManager::OnFocusedBrowserChanged,
                               base::Unretained(this)));
+  OnFocusedBrowserChanged(focused_browser_manager_->GetFocusedBrowser(),
+                          focused_browser_manager_->GetCandidateBrowser());
+  MaybeUpdateFocusedTab();
 }
-
-GlicFocusedTabManager::~GlicFocusedTabManager() = default;
 
 base::CallbackListSubscription
 GlicFocusedTabManager::AddFocusedTabChangedCallback(
     FocusedTabChangedCallback callback) {
+  if (!focused_browser_subscription_) {
+    Initialize();
+  }
   return focused_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
 GlicFocusedTabManager::AddFocusedTabInstanceChangedCallback(
     FocusedTabInstanceChangedCallback callback) {
+  if (!focused_browser_subscription_) {
+    Initialize();
+  }
   return focused_instance_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
 GlicFocusedTabManager::AddFocusedTabOrCandidateInstanceChangedCallback(
     FocusedTabOrCandidateInstanceChangedCallback callback) {
+  if (!focused_browser_subscription_) {
+    Initialize();
+  }
   return focused_or_candidate_instance_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
 GlicFocusedTabManager::AddFocusedTabDataChangedCallback(
     FocusedTabDataChangedCallback callback) {
+  if (!focused_browser_subscription_) {
+    Initialize();
+  }
   return focused_data_callback_list_.Add(std::move(callback));
 }
 

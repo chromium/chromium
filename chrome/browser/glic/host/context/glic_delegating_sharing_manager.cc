@@ -285,7 +285,7 @@ GlicStablePinningDelegatingSharingManager::
     GlicStablePinningDelegatingSharingManager(
         GlicSharingManagerImpl* sharing_manager_delegate) {
   CHECK(sharing_manager_delegate &&
-        sharing_manager_delegate->pinned_tab_manager_);
+        sharing_manager_delegate->pinned_tab_manager());
   GlicDelegatingSharingManagerBase::SetDelegate(sharing_manager_delegate);
 }
 
@@ -297,9 +297,9 @@ void GlicStablePinningDelegatingSharingManager::SetDelegate(
   GlicSharingManagerImpl* old_delegate =
       static_cast<GlicSharingManagerImpl*>(GetDelegate());
   CHECK(sharing_manager_delegate && old_delegate);
-  CHECK(sharing_manager_delegate->pinned_tab_manager_ &&
-        sharing_manager_delegate->pinned_tab_manager_ ==
-            old_delegate->pinned_tab_manager_);
+  CHECK(sharing_manager_delegate->pinned_tab_manager() &&
+        sharing_manager_delegate->pinned_tab_manager() ==
+            old_delegate->pinned_tab_manager());
   GlicDelegatingSharingManagerBase::SetDelegate(sharing_manager_delegate);
 
   // Make sure Glic window activation state is current since multi-instance
