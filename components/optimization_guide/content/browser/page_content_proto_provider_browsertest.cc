@@ -123,6 +123,35 @@ ContentRootNodeForFrameActionableMode(
   return body;
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+// Helper function to generate a click on the given RenderWidgetHost. The
+// mouse event is forwarded directly to the RenderWidgetHost without any
+// hit-testing.
+void SimulateMouseClickAt(content::RenderWidgetHost* rwh, gfx::PointF point) {
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_event.SetPositionInWidget(point.x(), point.y());
+  rwh->ForwardMouseEvent(mouse_event);
+}
+
+bool HasTextNode(const optimization_guide::proto::ContentNode& node,
+                 const std::string& text) {
+  if (node.content_attributes().has_text_data() &&
+      node.content_attributes().text_data().text_content() == text) {
+    return true;
+  }
+  for (const auto& child : node.children_nodes()) {
+    if (HasTextNode(child, text)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  public:
   PageContentProtoProviderBrowserTest() = default;
@@ -215,6 +244,21 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
 
   const optimization_guide::proto::ContentNode& ActionableContentRootNode() {
     return ContentRootNodeForFrameActionableMode(page_content().root_node());
+  }
+
+  // TODO: b/450618828 - Consider replacing this with an explicit hook to know
+  // when a popup is opened.
+  void WaitForPopup() {
+    while (true) {
+      LoadData();
+      if (page_content().has_popup_window()) {
+        break;
+      }
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+      run_loop.Run();
+    }
   }
 
  private:
@@ -875,6 +919,12 @@ class PageContentProtoProviderBrowserTestMultiProcess
     : public PageContentProtoProviderBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
+  PageContentProtoProviderBrowserTestMultiProcess() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAIPageContentIncludePopupWindows);
+  }
+  ~PageContentProtoProviderBrowserTestMultiProcess() override = default;
+
   bool EnableProcessIsolation() const { return GetParam(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -893,6 +943,9 @@ class PageContentProtoProviderBrowserTestMultiProcess
 
  protected:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/438250758): Test is flaky.
@@ -1169,6 +1222,45 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
       ukm::builders::OptimizationGuide_AIPageContentAgent::kEntryName);
   EXPECT_EQ(0u, entries.size());
 }
+
+// Popups may be rendered as native OS-level widgets on Android and MacOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       SelectInCrossOriginIframe) {
+  LoadPage(https_server()->GetURL(
+      "a.com", "/open_popup_iframe.html?domain=/cross-site/b.com/"));
+
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  // showPicker() is not allowed from cross-origin iframe for security reasons,
+  // therefore simulating a user click.
+  SimulateMouseClickAt(
+      iframe->GetRenderWidgetHost(),
+      GetCenterCoordinatesOfElementWithId(iframe, "select_input"));
+
+  WaitForPopup();
+
+  const auto& popup_window = page_content().popup_window();
+
+  const auto& iframe_node = page_content().root_node().children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
+            iframe_node.content_attributes()
+                .iframe_data()
+                .frame_data()
+                .document_identifier()
+                .serialized_token());
+
+  EXPECT_EQ(iframe_node.children_nodes().size(), 1);
+  const auto& iframe_node_root = iframe_node.children_nodes()[0];
+  const auto& select_node = iframe_node_root.children_nodes()[0];
+  EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
+            select_node.content_attributes().common_ancestor_dom_node_id());
+
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
+  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 class ScaledPageContentProtoProviderBrowserTest
     : public PageContentProtoProviderBrowserTest {
@@ -1585,38 +1677,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
 // Popups may be rendered as native OS-level widgets on Android and MacOS.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-
-namespace {
-
-// Helper function to generate a click on the given RenderWidgetHost. The
-// mouse event is forwarded directly to the RenderWidgetHost without any
-// hit-testing.
-void SimulateMouseClickAt(content::RenderWidgetHost* rwh, gfx::PointF point) {
-  blink::WebMouseEvent mouse_event(
-      blink::WebInputEvent::Type::kMouseDown,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
-  mouse_event.SetPositionInWidget(point.x(), point.y());
-  rwh->ForwardMouseEvent(mouse_event);
-}
-
-bool HasTextNode(const optimization_guide::proto::ContentNode& node,
-                 const std::string& text) {
-  if (node.content_attributes().has_text_data() &&
-      node.content_attributes().text_data().text_content() == text) {
-    return true;
-  }
-  for (const auto& child : node.children_nodes()) {
-    if (HasTextNode(child, text)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
-
 class PageContentProtoProviderPopupBrowserTest
     : public PageContentProtoProviderBrowserTest {
  public:
@@ -1625,22 +1685,6 @@ class PageContentProtoProviderPopupBrowserTest
         blink::features::kAIPageContentIncludePopupWindows);
   }
   ~PageContentProtoProviderPopupBrowserTest() override = default;
-
- protected:
-  // TODO: b/450618828 - Consider replacing this with an explicit hook to know
-  // when a popup is opened.
-  void WaitForPopup() {
-    while (true) {
-      LoadData();
-      if (page_content().has_popup_window()) {
-        break;
-      }
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-      run_loop.Run();
-    }
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
