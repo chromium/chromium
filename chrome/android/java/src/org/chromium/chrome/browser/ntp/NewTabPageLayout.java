@@ -1132,10 +1132,9 @@ public class NewTabPageLayout extends LinearLayout
                     isLensButtonVisible || isComposeplateButtonVisible);
         }
 
-        ComposeplateMetricsUtils.recordFakeSearchBoxImpression();
-        if (isComposeplateButtonVisible) {
-            ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression();
-        }
+        ComposeplateMetricsUtils.recordFakeSearchBoxImpression2();
+        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression2(
+                isComposeplateButtonVisible);
 
         mPreviousVoiceSearchButtonVisible = isVoiceSearchButtonVisible;
         mPreviousLensButtonVisible = isLensButtonVisible;
