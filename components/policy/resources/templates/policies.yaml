@@ -1403,6 +1403,8 @@ policies:
   1402: GeminiActOnWebSettings
   1403: LocalAuthFactorsComplexity
   1404: ProxyOverrideRules
+  1405: LocalAuthFactors
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess

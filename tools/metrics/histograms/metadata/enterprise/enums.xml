@@ -2325,6 +2325,7 @@ chromium-metrics-reviews@google.com.
   <int value="1402" label="GeminiActOnWebSettings"/>
   <int value="1403" label="LocalAuthFactorsComplexity"/>
   <int value="1404" label="ProxyOverrideRules"/>
+  <int value="1405" label="LocalAuthFactors"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

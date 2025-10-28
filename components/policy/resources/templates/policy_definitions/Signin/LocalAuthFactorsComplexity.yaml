@@ -23,7 +23,7 @@ future_on:
 
 features:
   dynamic_refresh: true
-  per_profile: true
+  per_profile: false
 
 type: int-enum
 
