@@ -468,13 +468,15 @@ bool IsAimQuery(const GURL& url) {
   return param_value == kAimModeParameterValue;
 }
 
-bool ShouldOpenSearchURLInNewTab(const GURL& url) {
+bool ShouldOpenSearchURLInNewTab(const GURL& url, bool is_aim_feature_enabled) {
   std::string param_value;
   net::GetValueForKeyInQuery(url, kModeParameterKey, &param_value);
   const bool is_shopping_mode = param_value == kShoppingModeParameterValue;
+  const bool is_aim_in_side_panel_enabled =
+      is_aim_feature_enabled && lens::features::ShouldShowAimInSidePanel();
   return IsValidSearchResultsUrl(url) &&
          (is_shopping_mode ||
-          (IsAimQuery(url) && !lens::features::ShouldShowAimInSidePanel()));
+          (IsAimQuery(url) && !is_aim_in_side_panel_enabled));
 }
 
 GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
@@ -589,7 +591,8 @@ std::optional<base::TimeDelta> ExtractTimeInSecondsFromQueryIfExists(
     const GURL& target) {
   // Make sure that the target specifies a t=.
   std::string t_string;
-  if (!net::GetValueForKeyInQuery(target, kVideoTimestampQueryParameter, &t_string)) {
+  if (!net::GetValueForKeyInQuery(target, kVideoTimestampQueryParameter,
+                                  &t_string)) {
     return {};
   }
 
