@@ -115,7 +115,6 @@ cr-input.password-input::part(input) {
 .cr-row-action-button {
   height: auto;
   margin-inline-start: 16px;
-  padding: 3px 16px;
 }
 
 .back-button {
