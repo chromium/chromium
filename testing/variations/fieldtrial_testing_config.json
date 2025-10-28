@@ -24168,32 +24168,6 @@
             ]
         }
     ],
-    "SlimScheduler": [
-        {
-            "platforms": [
-                "android",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "pending_frames": "1"
-                    },
-                    "enable_features": [
-                        "DisplaySchedulerAsClient",
-                        "NoCompositorFrameAcks",
-                        "NoLateBeginFrames"
-                    ],
-                    "disable_features": [
-                        "AckOnSurfaceActivationWhenInteractive"
-                    ]
-                }
-            ]
-        }
-    ],
     "SlopBucket": [
         {
             "platforms": [

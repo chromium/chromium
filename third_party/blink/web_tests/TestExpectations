@@ -9858,9 +9858,6 @@ crbug.com/453916409 [ Mac12 ] wpt_internal/shared-worker/back-forward-cache/shar
 # Gardener 2025-10-24
 crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification.html [ Pass Timeout ]
 
-# Linux sends early synthetic mouse that races with beginframes, breaking expectations
-crbug.com/444170116 [ Linux ] external/wpt/uievents/mouse/mouseenter-mouseleave-on-drag.html [ Failure ]
-
 # Gardener 2025-10-28
 crbug.com/364315665 media/controls/closed-captions-single-track.html [ Failure Pass ]
 crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html [ Pass Failure ]
