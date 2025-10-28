@@ -475,11 +475,13 @@ TEST_F(SigninUtilHistorySyncOptinTest,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(SigninUtilHistorySyncOptinTest, HasExplicitlyDisabledHistorySync) {
   SignInAndSetUpSyncService();
-  EXPECT_FALSE(signin_util::HasExplicitlyDisabledHistorySync(*profile()));
+  EXPECT_FALSE(signin_util::HasExplicitlyDisabledHistorySync(
+      test_sync_service(), IdentityManagerFactory::GetForProfile(profile())));
 
   test_sync_service()->GetUserSettings()->SetDisabledType(
       syncer::UserSelectableType::kHistory);
-  EXPECT_TRUE(signin_util::HasExplicitlyDisabledHistorySync(*profile()));
+  EXPECT_TRUE(signin_util::HasExplicitlyDisabledHistorySync(
+      test_sync_service(), IdentityManagerFactory::GetForProfile(profile())));
 }
 
 TEST_F(SigninUtilHistorySyncOptinTest,

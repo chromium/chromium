@@ -208,7 +208,9 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
 // groups through the settings.
 // This method does not take into account the feature flag
 // `ReplaceSyncPromosWithSignInPromos`.
-bool HasExplicitlyDisabledHistorySync(Profile& profile);
+bool HasExplicitlyDisabledHistorySync(
+    const syncer::SyncService* sync_service,
+    const signin::IdentityManager* identity_manager);
 
 // Returns the value `ShouldShowHistorySyncOptinResult::kShow`
 // if the necessary conditions to show the History Sync Optin screen

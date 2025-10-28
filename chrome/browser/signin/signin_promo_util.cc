@@ -181,7 +181,9 @@ void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
   // History sync promo.
   if (signin_util::ShouldShowHistorySyncOptinScreen(*profile) ==
           signin_util::ShouldShowHistorySyncOptinResult::kShow &&
-      !signin_util::HasExplicitlyDisabledHistorySync(*profile)) {
+      !signin_util::HasExplicitlyDisabledHistorySync(
+          SyncServiceFactory::GetForProfile(profile),
+          IdentityManagerFactory::GetForProfile(profile))) {
     std::move(result_callback)
         .Run(ProfileMenuAvatarButtonPromoInfo{
             .type = ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,

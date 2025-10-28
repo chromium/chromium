@@ -400,14 +400,14 @@ bool IsSyncingUserSelectableTypesAllowedByPolicy(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-bool HasExplicitlyDisabledHistorySync(Profile& profile) {
+bool HasExplicitlyDisabledHistorySync(
+    const syncer::SyncService* sync_service,
+    const signin::IdentityManager* identity_manager) {
   // If the user is signed out, we cannot know if the toggles were interacted
   // with or not.
-  CHECK(GetSignedInState(IdentityManagerFactory::GetForProfile(&profile)) ==
+  CHECK(GetSignedInState(identity_manager) ==
         signin_util::SignedInState::kSignedIn);
 
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(&profile);
   if (!sync_service) {
     return false;
   }
