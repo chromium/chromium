@@ -2557,10 +2557,8 @@ void InputHandler::ClearAnimatingSnapTargetsForElement(ElementId element_id) {
   SetAnimatingSnapTargetsForElement(element_id);
 }
 
-void InputHandler::EnsureSnapAnimationData(ElementId element_id) {
-  if (!snap_animation_data_map_.contains(element_id)) {
-    snap_animation_data_map_.insert_or_assign(element_id, SnapAnimationData());
-  }
+inline void InputHandler::EnsureSnapAnimationData(ElementId element_id) {
+  snap_animation_data_map_.try_emplace(element_id);
 }
 
 }  // namespace cc
