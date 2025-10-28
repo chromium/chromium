@@ -37,8 +37,6 @@ void ResetGemini() {}
 void UpdatePageAttachmentState(
     BWGPageContextAttachmentState bwg_attachment_state) {}
 
-void SetZeroStateSuggestions(NSArray<NSString*>* suggestions) {}
-
 bool IsProtectedUrl(std::string url) {
   return false;
 }

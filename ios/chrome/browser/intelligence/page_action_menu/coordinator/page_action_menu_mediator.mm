@@ -561,8 +561,8 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   }
 
   tabHelper->ExecuteZeroStateSuggestions(
-      base::BindOnce(^(NSArray<NSString*>* suggestions) {
-        ios::provider::SetZeroStateSuggestions(suggestions);
+      base::BindOnce(^(NSArray<NSString*>* suggestions){
+          // No-op.
       }));
 }
 
