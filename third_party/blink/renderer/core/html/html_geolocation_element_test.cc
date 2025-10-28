@@ -699,6 +699,27 @@ TEST_F(HTMLGeolocationElementTest,
                   /*is_spinning*/ true);
 }
 
+TEST_F(HTMLGeolocationElementTest, PermissionStatusChangeAfterDecided) {
+  auto* geolocation_element = CreateGeolocationElement();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return geolocation_element->is_registered_in_browser_process();
+  }));
+  geolocation_element->OnEmbeddedPermissionsDecided(
+      mojom::EmbeddedPermissionControlResult::kGranted);
+  CheckAppearance(geolocation_element, kGeolocationString,
+                  /*is_spinning*/ false);
+
+  // Simulate a system permission update.
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::GEOLOCATION, MojoPermissionStatus::GRANTED);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Request location should trigger.
+  CheckAppearance(geolocation_element, kUsingLocationString,
+                  /*is_spinning*/ true);
+}
+
 class HTMLGeolocationElementSimTest : public SimTest {
  public:
   HTMLGeolocationElementSimTest()

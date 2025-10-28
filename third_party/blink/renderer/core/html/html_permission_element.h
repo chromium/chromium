@@ -188,6 +188,8 @@ class CORE_EXPORT HTMLPermissionElement
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationAccuracyModeCaseInsensitive);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, GeolocationStatusChange);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           PermissionStatusChangeAfterDecided);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
                            GeolocationInitializeGrantedText);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,

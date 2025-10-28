@@ -136,6 +136,10 @@ void HTMLGeolocationElement::DefaultEventHandler(Event& event) {
 void HTMLGeolocationElement::OnPermissionStatusChange(
     mojom::blink::PermissionName permission_name,
     mojom::blink::PermissionStatus status) {
+  // This function may be triggered when there is a delayed system permission
+  // update. If this occurs, we will check whether the user has previously given
+  // permission to determine if a geolocation search should be initiated.
+  bool has_made_permission_decision_granted = PermissionsGranted();
   HTMLPermissionElement::OnPermissionStatusChange(permission_name, status);
   if (status != mojom::blink::PermissionStatus::GRANTED) {
     did_autolocate_trigger_request = false;
@@ -147,7 +151,8 @@ void HTMLGeolocationElement::OnPermissionStatusChange(
     MaybeTriggerAutolocate(HasPendingPermissionRequest()
                                ? ForceAutolocate::kYes
                                : ForceAutolocate::kNo);
-  } else if (HasPendingPermissionRequest()) {
+  } else if (HasPendingPermissionRequest() ||
+             has_made_permission_decision_granted) {
     RequestGeolocation();
   }
 }
