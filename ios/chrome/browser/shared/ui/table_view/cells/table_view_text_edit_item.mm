@@ -172,6 +172,10 @@ const CGFloat kSymbolSize = 15;
 }
 
 - (void)updateTextFieldValue:(NSString*)textFieldValue {
+  if ((_textFieldValue == nil && textFieldValue == nil) ||
+      [_textFieldValue isEqualToString:textFieldValue]) {
+    return;
+  }
   _textFieldValue = textFieldValue;
   [self.delegate tableViewItemDidChange:self];
 }
