@@ -317,13 +317,6 @@ extern const char kEnableFeedCardMenuSignInPromoDescription[];
 extern const char kEnableFeedHeaderSettingsName[];
 extern const char kEnableFeedHeaderSettingsDescription[];
 
-extern const char kEnableFingerprintingProtectionBlocklistInIncognitoName[];
-extern const char
-    kEnableFingerprintingProtectionBlocklistInIncognitoDescription[];
-
-extern const char kEnableFingerprintingProtectionBlocklistName[];
-extern const char kEnableFingerprintingProtectionBlocklistDescription[];
-
 extern const char kEnableIdentityInAuthErrorName[];
 extern const char kEnableIdentityInAuthErrorDescription[];
 
