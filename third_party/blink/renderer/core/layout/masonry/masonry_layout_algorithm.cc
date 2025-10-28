@@ -273,7 +273,6 @@ LayoutUnit MasonryLayoutAlgorithm::CalculateItemInlineContribution(
                                                               : sizes.max_size;
 }
 
-// TODO(almaher): Item margins aren't being taken into account for placement.
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
     GridItems& masonry_items,
