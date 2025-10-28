@@ -673,6 +673,11 @@ const char kGeminiOnboardingCardsName[] = "GeminiOnboardingCards";
 const char kGeminiOnboardingCardsDescription[] =
     "Enables the discovery onboarding cards for new Gemini users.";
 
+const char kHandleMdmErrorsForDasherAccountsName[] =
+    "Mdm error handling for dasher accounts";
+const char kHandleMdmErrorsForDasherAccountsDescription[] =
+    "Enables the mdm error handling feature for dasher accounts";
+
 const char kHideToolbarsInOverflowMenuName[] = "Hide Toolbars in Overflow menu";
 const char kHideToolbarsInOverflowMenuDescription[] =
     "When enabled, adds a button in the overflow menu that force the "

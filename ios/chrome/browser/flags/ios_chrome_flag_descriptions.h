@@ -399,6 +399,9 @@ extern const char kGeminiLoadingStateRedesignDescription[];
 extern const char kGeminiOnboardingCardsName[];
 extern const char kGeminiOnboardingCardsDescription[];
 
+extern const char kHandleMdmErrorsForDasherAccountsName[];
+extern const char kHandleMdmErrorsForDasherAccountsDescription[];
+
 extern const char kHideToolbarsInOverflowMenuName[];
 extern const char kHideToolbarsInOverflowMenuDescription[];
 
