@@ -20850,6 +20850,7 @@ from previous Chrome versions.
   <int value="17" label="Request cancelled (?)"/>
   <int value="18" label="Start timeout (AbortError)"/>
   <int value="19" label="Permission denied by user (NotAllowedError)"/>
+  <int value="20" label="Audio device socket error (NotReadableError)"/>
 </enum>
 
 <enum name="MediaStreamType">
