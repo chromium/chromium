@@ -8,6 +8,8 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -41,6 +43,13 @@ class CONTENT_EXPORT GuestFrame {
   // Called by the embedder to synchronize visual properties with the guest.
   virtual void OnSynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) = 0;
+
+  // Forwards a single keyboard event to the embedded frame.
+  virtual void ForwardKeyboardEvent(
+      const blink::WebKeyboardEvent& keyboard_event) = 0;
+
+  // Either sets or clears focus on the embedded frame.
+  virtual void SetFocus(bool focused, blink::mojom::FocusType focus_type) = 0;
 
   // Gets the FrameSinkId of the guest's view.
   virtual const viz::FrameSinkId& GetFrameSinkId() const = 0;

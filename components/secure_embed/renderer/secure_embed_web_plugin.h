@@ -60,6 +60,7 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
 
   // mojom::SecureEmbed:
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
+  void RequestFocus() override;
 
  private:
   explicit SecureEmbedWebPlugin(

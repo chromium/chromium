@@ -6,6 +6,7 @@
 
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
+#include "components/secure_embed/browser/secure_embed_host.h"
 #include "components/secure_embed/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -78,6 +79,13 @@ void Browser::BindInterface(
 
 content::WebContents* Browser::GetEmbedderWebContents() {
   return web_ui()->GetWebContents();
+}
+
+void Browser::FocusInEmbedder(content::WebContents* embedded) {
+  auto* secure_embed_host = secure_embed::SecureEmbedHost::GetFrom(embedded);
+  if (secure_embed_host) {
+    secure_embed_host->RequestFocus();
+  }
 }
 
 void Browser::CreatePageHandler(

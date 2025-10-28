@@ -10219,6 +10219,10 @@ void WebContentsImpl::FocusOwningWebContents(
   RenderWidgetHostImpl* focused_widget =
       GetFocusedRenderWidgetHost(main_frame_widget_host);
 
+  if (secure_embed_delegate_) {
+    secure_embed_delegate_->FocusInEmbedder(this);
+  }
+
   if (focused_widget != render_widget_host &&
       (!focused_widget ||
        focused_widget->delegate() != render_widget_host->delegate())) {

@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/secure_embed/browser/secure_embed_host.h"
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -438,6 +439,13 @@ void WebUIBrowserWindow::OnWidgetBoundsChanged(views::Widget* widget,
 
 content::WebContents* WebUIBrowserWindow::GetEmbedderWebContents() {
   return GetUIWebContents();
+}
+
+void WebUIBrowserWindow::FocusInEmbedder(content::WebContents* embedded) {
+  auto* secure_embed_host = secure_embed::SecureEmbedHost::GetFrom(embedded);
+  if (secure_embed_host) {
+    secure_embed_host->RequestFocus();
+  }
 }
 
 gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {

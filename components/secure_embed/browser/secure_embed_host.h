@@ -16,6 +16,7 @@
 
 namespace content {
 class RenderFrameHost;
+class WebContents;
 }  // namespace content
 
 namespace secure_embed {
@@ -33,6 +34,10 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
       content::RenderFrameHost* render_frame_host,
       mojo::PendingAssociatedReceiver<mojom::SecureEmbedHost> receiver);
 
+  // Returns an instance of SecureEmbedHost if it's embedding `web_contents`,
+  // null otherwise.
+  static SecureEmbedHost* GetFrom(content::WebContents* web_contents);
+
   static size_t GetInstanceCountForTesting();
 
   // mojom::SecureEmbedHost implementation:
@@ -41,9 +46,21 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   void Attach(int64_t content_id) override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties) override;
+  void DispatchKeyboardEvent(
+      std::unique_ptr<blink::WebCoalescedInputEvent> key_event) override;
+  void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;
 
   // content::GuestFrame::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+
+  // Requests that the <embed> element hosting the plugin be focused
+  // (which will in turn cause the embedded page to receive page focus),
+  // unless it's already known to have focus.
+  //
+  // This should be called by implementations of
+  // `SecureEmbedDelegate::FocusInEmbedder()`, in order to help give
+  // focus to embedded page in response to mouse clicks.
+  void RequestFocus();
 
  private:
   explicit SecureEmbedHost(content::RenderFrameHost*);
@@ -53,7 +70,9 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
 
+  raw_ptr<content::WebContents> guest_contents_ = nullptr;
   std::unique_ptr<content::GuestFrame> guest_frame_;
+  bool know_have_focus_ = false;
 
   mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;
 };

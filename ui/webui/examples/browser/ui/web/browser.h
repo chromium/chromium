@@ -40,6 +40,7 @@ class Browser : public ui::MojoWebUIController,
 
   // SecureEmbedDelegate:
   content::WebContents* GetEmbedderWebContents() override;
+  void FocusInEmbedder(content::WebContents* embedded) override;
 
  private:
   // webui_examples::mojom::PageHandlerFactory:

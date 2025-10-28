@@ -22,6 +22,10 @@ class CONTENT_EXPORT SecureEmbedDelegate {
 
   // Returns the WebContents that currently owns this guest.
   virtual WebContents* GetEmbedderWebContents() = 0;
+
+  // Requests that the representation of this WebContents in the embedder be
+  // given focus, if it doesn't already have it.
+  virtual void FocusInEmbedder(content::WebContents* embedded) = 0;
 };
 
 }  // namespace content

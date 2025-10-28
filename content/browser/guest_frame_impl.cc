@@ -4,13 +4,9 @@
 
 #include "content/browser/guest_frame_impl.h"
 
-#include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
-#include "base/synchronization/lock.h"
-#include "base/threading/thread_local.h"
 #include "components/input/cursor_manager.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -85,6 +81,33 @@ GuestFrameImpl::GuestFrameImpl(WebContents* guest_web_contents,
 GuestFrameImpl::~GuestFrameImpl() {
   // Notify the view of this object being destroyed, if the view still exists.
   SetView(nullptr, /*allow_paint_holding=*/false);
+}
+
+void GuestFrameImpl::ForwardKeyboardEvent(
+    const blink::WebKeyboardEvent& keyboard_event) {
+  input::NativeWebKeyboardEvent native_event(
+      keyboard_event, GetParentRenderWidgetHostView()->GetNativeView());
+
+  RenderWidgetHostImpl* target_host = view_->host();
+
+  // If there are multiple widgets on the page (such as when there are
+  // out-of-process iframes), pick the one that should process this event.
+  if (target_host->delegate()) {
+    target_host =
+        target_host->delegate()->GetFocusedRenderWidgetHost(target_host);
+  }
+  if (!target_host) {
+    return;
+  }
+
+  target_host->ForwardKeyboardEvent(native_event);
+}
+
+void GuestFrameImpl::SetFocus(bool focused,
+                              blink::mojom::FocusType focus_type) {
+  // TODO(secure-embed): Pay attention to traversal `focus_type` values once
+  // we enable tab-focus; we may need to focus either first or last element.
+  view_->host()->SetPageFocus(focused);
 }
 
 const viz::FrameSinkId& GuestFrameImpl::GetFrameSinkId() const {
@@ -506,13 +529,11 @@ void GuestFrameImpl::OnSynchronizeVisualProperties(
 }
 
 input::RenderWidgetHostViewInput* GuestFrameImpl::GetParentViewInput() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return GetParentRenderWidgetHostView();
 }
 
 input::RenderWidgetHostViewInput* GuestFrameImpl::GetRootViewInput() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return GetRootRenderWidgetHostView();
 }
 
 void GuestFrameImpl::OnRenderViewReady() {

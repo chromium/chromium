@@ -6,12 +6,16 @@ module secure_embed.mojom;
 
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "third_party/blink/public/mojom/input/focus_type.mojom";
+import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/frame/frame_visual_properties.mojom";
 
 // Implemented in Renderer by SecureEmbedWebPlugin.
 interface SecureEmbed {
   // TODO(secure-embed): Implement allow_paint_holding.
   SetFrameSinkId(viz.mojom.FrameSinkId frame_sink_id);
+
+  RequestFocus();
 };
 
 // Implemented by Browser. Available on RenderFrameHost.
@@ -23,4 +27,11 @@ interface SecureEmbedHost {
   Attach(int64 content_id);
 
   SynchronizeVisualProperties(blink.mojom.FrameVisualProperties visual_properties);
+
+  // Asks for a keyboard event delivered to the plugin to be forwarded to
+  // the embedded frame.
+  DispatchKeyboardEvent(blink.mojom.Event key_event);
+
+  // Notifies that the plugin either gained or lost focus.
+  SetFocus(bool focused, blink.mojom.FocusType focus_type);
 };

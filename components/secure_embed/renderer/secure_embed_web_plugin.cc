@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_url_error.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
@@ -221,13 +222,24 @@ void SecureEmbedWebPlugin::SendVisualProperties() {
 }
 
 void SecureEmbedWebPlugin::UpdateFocus(bool focused,
-                                       blink::mojom::FocusType focus_type) {}
+                                       blink::mojom::FocusType focus_type) {
+  host_->SetFocus(focused, focus_type);
+}
 
 void SecureEmbedWebPlugin::UpdateVisibility(bool is_visible) {}
 
 blink::WebInputEventResult SecureEmbedWebPlugin::HandleInputEvent(
-    const blink::WebCoalescedInputEvent& event,
+    const blink::WebCoalescedInputEvent& coalesced_event,
     ui::Cursor* cursor) {
+  const blink::WebInputEvent& event = coalesced_event.Event();
+  if (blink::WebInputEvent::IsKeyboardEventType(event.GetType())) {
+    // We don't expect any actual coalescing here.
+    DCHECK_EQ(coalesced_event.CoalescedEventSize(), 1u);
+    host_->DispatchKeyboardEvent(
+        std::make_unique<blink::WebCoalescedInputEvent>(
+            event, coalesced_event.latency_info()));
+    return blink::WebInputEventResult::kHandledSystem;
+  }
   return blink::WebInputEventResult::kNotHandled;
 }
 
@@ -260,6 +272,12 @@ void SecureEmbedWebPlugin::SetFrameSinkId(
   frame_sink_id_changed_ = true;
 
   SendVisualProperties();
+}
+
+void SecureEmbedWebPlugin::RequestFocus() {
+  if (container_) {
+    container_->GetElement().Focus();
+  }
 }
 
 }  // namespace secure_embed
