@@ -378,7 +378,8 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                                     kWebStoreExtensionTitle);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableSWAs) {
+// TODO(crbug.com/455906558): Deflake and reenable this test.
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DISABLED_DisableSWAs) {
   InstallSWAs();
 
   // Disable Camera app.
@@ -694,7 +695,8 @@ IN_PROC_BROWSER_TEST_F(MgsSystemFeaturesPolicyTest,
                                     kWebStoreExtensionTitle);
 }
 
-IN_PROC_BROWSER_TEST_F(MgsSystemFeaturesPolicyTest, DisableSWAs) {
+// TODO(crbug.com/455906558): Deflake and reenable this test.
+IN_PROC_BROWSER_TEST_F(MgsSystemFeaturesPolicyTest, DISABLED_DisableSWAs) {
   InstallSWAs();
 
   // Disable Camera app.
