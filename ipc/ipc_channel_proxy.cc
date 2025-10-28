@@ -177,12 +177,6 @@ void ChannelProxy::Context::OnDispatchError() {
 }
 
 // Called on the listener's thread
-void ChannelProxy::Context::OnDispatchBadMessage() {
-  if (listener_)
-    listener_->OnBadMessageReceived();
-}
-
-// Called on the listener's thread
 void ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {

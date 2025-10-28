@@ -261,7 +261,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy {
     // Methods called on the listener thread.
     void OnDispatchConnected();
     void OnDispatchError();
-    void OnDispatchBadMessage();
     void OnDispatchAssociatedInterfaceRequest(
         const std::string& interface_name,
         mojo::ScopedInterfaceEndpointHandle handle);

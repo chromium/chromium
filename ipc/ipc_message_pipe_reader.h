@@ -50,7 +50,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   class Delegate {
    public:
     virtual void OnPeerPidReceived(int32_t peer_pid) = 0;
-    virtual void OnBrokenDataReceived() = 0;
     virtual void OnPipeError() = 0;
     virtual void OnAssociatedInterfaceRequest(
         mojo::GenericPendingAssociatedReceiver receiver) = 0;

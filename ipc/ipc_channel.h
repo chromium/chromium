@@ -193,7 +193,6 @@ class COMPONENT_EXPORT(IPC) Channel final
 
   // MessagePipeReader::Delegate
   void OnPeerPidReceived(int32_t peer_pid) override;
-  void OnBrokenDataReceived() override;
   void OnPipeError() override;
   void OnAssociatedInterfaceRequest(
       mojo::GenericPendingAssociatedReceiver receiver) override;

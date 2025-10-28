@@ -263,10 +263,6 @@ void Channel::OnPeerPidReceived(int32_t peer_pid) {
   listener_->OnChannelConnected(peer_pid);
 }
 
-void Channel::OnBrokenDataReceived() {
-  listener_->OnBadMessageReceived();
-}
-
 void Channel::AddGenericAssociatedInterface(
     const std::string& name,
     const GenericAssociatedInterfaceFactory& factory) {
