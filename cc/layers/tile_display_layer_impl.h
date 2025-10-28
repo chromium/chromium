@@ -141,7 +141,6 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
 
   Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
   void RemoveTiling(float scale_key);
-  void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
   void SetIsDirectlyCompositedImage(bool is_directly_composited_image) {
     is_directly_composited_image_ = is_directly_composited_image;
   }
@@ -177,7 +176,7 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
 
   // For testing
   std::optional<SkColor4f> solid_color_for_testing() const {
-    return solid_color_;
+    return solid_color();
   }
 
  private:
@@ -186,7 +185,6 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
                                  viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data) override;
 
-  std::optional<SkColor4f> solid_color_;
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;
   gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;

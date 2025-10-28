@@ -34,6 +34,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
+  void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
+
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id);
 
@@ -41,6 +43,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
                        AppendQuadsData* append_quads_data,
                        SkColor4f color);
+
+  std::optional<SkColor4f> solid_color() const { return solid_color_; }
 
  private:
   // Called when AppendQuads() goes through a flow for which behavior is
@@ -52,6 +56,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       AppendQuadsData* append_quads_data) = 0;
 
   bool is_backdrop_filter_mask_ : 1 = false;
+  std::optional<SkColor4f> solid_color_;
 };
 
 }  // namespace cc

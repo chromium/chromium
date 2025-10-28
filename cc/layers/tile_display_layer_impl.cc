@@ -190,9 +190,9 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
-  if (solid_color_) {
+  if (solid_color()) {
     CHECK(tilings_.empty());
-    AppendSolidQuad(render_pass, append_quads_data, *solid_color_);
+    AppendSolidQuad(render_pass, append_quads_data, *solid_color());
     return;
   }
 
