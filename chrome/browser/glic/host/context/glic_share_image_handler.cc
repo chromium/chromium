@@ -28,12 +28,13 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
     const GURL& frame_url,
     const url::Origin& frame_origin,
     base::span<const uint8_t> thumbnail_data,
-    tabs::TabHandle handle) {
+    tabs::TabHandle handle,
+    const std::string& mime_type) {
   // TODO(b:448726704): update to use an Image part.
   auto context = glic::mojom::AdditionalContext::New();
   std::vector<glic::mojom::AdditionalContextPartPtr> parts;
   auto context_data = mojom::ContextData::New();
-  context_data->mime_type = "image/png";
+  context_data->mime_type = mime_type;
   context_data->data = mojo_base::BigBuffer(thumbnail_data);
   parts.push_back(
       mojom::AdditionalContextPart::NewData(std::move(context_data)));
@@ -106,7 +107,7 @@ void GlicShareImageHandler::ShareCapturedImage(
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
     const gfx::Size& downscaled_size,
-    const std::string& image_extension,
+    const std::string& mime_type,
     std::vector<lens::mojom::LatencyLogPtr> log_data) {
   // Close the remote since we've received our thumbnail.
   chrome_render_frame_remote_.reset();
@@ -131,7 +132,7 @@ void GlicShareImageHandler::ShareCapturedImage(
 
   additional_context_ = CreateAdditionalContext(
       src_url, frame_url, frame_origin,
-      base::span<const uint8_t>(thumbnail_data), tab_handle);
+      base::span<const uint8_t>(thumbnail_data), tab_handle, mime_type);
 
   auto* instance = service_->GetInstanceForTab(tab);
   if (!instance || !instance->IsShowing()) {

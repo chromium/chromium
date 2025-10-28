@@ -116,10 +116,10 @@ static const bool kDiscardTransparencyForContextMenu = false;
 
 namespace {
 
-const char kGifExtension[] = ".gif";
-const char kPngExtension[] = ".png";
-const char kJpgExtension[] = ".jpg";
-const char kWebpExtension[] = ".webp";
+const char kImageGif[] = "image/gif";
+const char kImageJpeg[] = "image/jpeg";
+const char kImagePng[] = "image/png";
+const char kImageWebp[] = "image/webp";
 
 #if BUILDFLAG(IS_ANDROID)
 base::Lock& GetFrameHeaderMapLock() {
@@ -393,7 +393,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
   std::vector<uint8_t> image_data;
   gfx::Size original_size;
-  std::string image_extension;
+  std::string mime_type;
   std::vector<lens::mojom::LatencyLogPtr> latency_logs;
 
   // Map for converting between multiple mojom ImageFormat structures to
@@ -412,24 +412,24 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     // The downscaled size is the original size, since no downscaling was
     // required.
     std::move(callback).Run(image_data, original_size,
-                            /*downscaled_size=*/original_size, image_extension,
+                            /*downscaled_size=*/original_size, mime_type,
                             std::move(latency_logs));
     return;
   }
 
   WebElement web_element = context_node.To<WebElement>();
   original_size = web_element.GetImageSize();
-  image_extension = "." + web_element.ImageExtension();
+  mime_type = web_element.ImageMimeType().Utf8();
   bool needs_downscale = NeedsDownscale(
       original_size, thumbnail_min_area_pixels, thumbnail_max_size_pixels);
-  bool needs_encode = NeedsEncodeImage(image_extension, image_format) ||
+  bool needs_encode = NeedsEncodeImage(mime_type, image_format) ||
                       IsAnimatedWebp(web_element.CopyOfImageData());
   if (!needs_encode && !needs_downscale) {
     image_data = web_element.CopyOfImageData();
     // The downscaled size is the original size, since no downscaling was
     // required.
     std::move(callback).Run(std::move(image_data), original_size,
-                            /*downscaled_size=*/original_size, image_extension,
+                            /*downscaled_size=*/original_size, mime_type,
                             std::move(latency_logs));
     return;
   }
@@ -463,9 +463,9 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
   if (image_format == chrome::mojom::ImageFormat::ORIGINAL) {
     // ORIGINAL will only fall back to here if the image needs to downscale.
     // Let's PNG downscale to PNG and JEPG downscale to JPEG.
-    if (image_extension == kPngExtension) {
+    if (mime_type == kImagePng) {
       image_format = chrome::mojom::ImageFormat::PNG;
-    } else if (image_extension == kJpgExtension) {
+    } else if (mime_type == kImageJpeg) {
       image_format = chrome::mojom::ImageFormat::JPEG;
     }
   }
@@ -483,14 +483,14 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
           bitmap, kDiscardTransparencyForContextMenu);
       if (data) {
         image_data.swap(data.value());
-        image_extension = kPngExtension;
+        mime_type = kImagePng;
       }
       break;
     case chrome::mojom::ImageFormat::WEBP:
       data = gfx::WebpCodec::Encode(bitmap, quality);
       if (data) {
         image_data.swap(data.value());
-        image_extension = kWebpExtension;
+        mime_type = kImageWebp;
       }
       break;
     case chrome::mojom::ImageFormat::ORIGINAL:
@@ -499,7 +499,7 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
       data = gfx::JPEGCodec::Encode(bitmap, quality);
       if (data) {
         image_data.swap(data.value());
-        image_extension = kJpgExtension;
+        mime_type = kImageJpeg;
       }
       break;
   }
@@ -510,8 +510,8 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
         sizeof(uint8_t) * image_data.size()));
   }
 
-  std::move(callback).Run(image_data, original_size, downscaled_size,
-                          image_extension, std::move(latency_logs));
+  std::move(callback).Run(image_data, original_size, downscaled_size, mime_type,
+                          std::move(latency_logs));
 }
 
 void ChromeRenderFrameObserver::RequestBitmapForContextNode(
@@ -824,21 +824,18 @@ SkBitmap ChromeRenderFrameObserver::Downscale(
 
 // static
 bool ChromeRenderFrameObserver::NeedsEncodeImage(
-    const std::string& image_extension,
+    const std::string& mime_type,
     chrome::mojom::ImageFormat image_format) {
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
-      return !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
+      return mime_type != kImagePng;
     case chrome::mojom::ImageFormat::WEBP:
-      return !base::EqualsCaseInsensitiveASCII(image_extension, kWebpExtension);
+      return mime_type != kImageWebp;
     case chrome::mojom::ImageFormat::JPEG:
-      return !base::EqualsCaseInsensitiveASCII(image_extension, kJpgExtension);
+      return mime_type != kImageJpeg;
     case chrome::mojom::ImageFormat::ORIGINAL:
-      return !base::EqualsCaseInsensitiveASCII(image_extension,
-                                               kGifExtension) &&
-             !base::EqualsCaseInsensitiveASCII(image_extension,
-                                               kJpgExtension) &&
-             !base::EqualsCaseInsensitiveASCII(image_extension, kPngExtension);
+      return mime_type != kImageGif && mime_type != kImageJpeg &&
+             mime_type != kImagePng;
   }
 
   // Should never hit this code since all cases were handled above.

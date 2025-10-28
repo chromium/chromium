@@ -161,8 +161,8 @@ class BLINK_EXPORT WebElement : public WebNode {
   // if there isn't any.
   std::vector<uint8_t> CopyOfImageData();
 
-  // Returns the original image file extension.
-  std::string ImageExtension();
+  // Returns the original image mime type.
+  WebString ImageMimeType();
 
   // Returns the original image size.
   gfx::Size GetImageSize();

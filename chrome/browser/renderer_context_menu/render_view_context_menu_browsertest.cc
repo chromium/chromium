@@ -372,7 +372,7 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
       chrome::mojom::ImageFormat request_image_format,
       gfx::Size expected_original_size,
       gfx::Size expected_size,
-      std::string expected_extension) {
+      std::string expected_mime_type) {
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame;
     browser()
@@ -385,17 +385,16 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
     auto callback =
         [](std::vector<uint8_t>* response_image_data,
            gfx::Size* response_original_size,
-           gfx::Size* response_downscaled_size,
-           std::string* response_file_extension,
+           gfx::Size* response_downscaled_size, std::string* response_mime_type,
            std::vector<lens::mojom::LatencyLogPtr>* response_log_data,
            base::OnceClosure quit, const std::vector<uint8_t>& image_data,
            const gfx::Size& original_size, const gfx::Size& downscaled_size,
-           const std::string& file_extension,
+           const std::string& mime_type,
            std::vector<lens::mojom::LatencyLogPtr> log_data) {
           *response_image_data = image_data;
           *response_original_size = original_size;
           *response_downscaled_size = downscaled_size;
-          *response_file_extension = file_extension;
+          *response_mime_type = mime_type;
           *response_log_data = std::move(log_data);
           std::move(quit).Run();
         };
@@ -404,12 +403,12 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
     std::vector<uint8_t> response_image_data;
     gfx::Size response_original_size;
     gfx::Size response_downscaled_size;
-    std::string response_file_extension;
+    std::string response_mime_type;
     std::vector<lens::mojom::LatencyLogPtr> response_log_data;
     chrome_render_frame->RequestImageForContextNode(
         0, request_size, request_image_format, chrome::mojom::kDefaultQuality,
         base::BindOnce(callback, &response_image_data, &response_original_size,
-                       &response_downscaled_size, &response_file_extension,
+                       &response_downscaled_size, &response_mime_type,
                        &response_log_data, run_loop.QuitClosure()));
     run_loop.Run();
 
@@ -417,20 +416,20 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
     ASSERT_EQ(expected_original_size.height(), response_original_size.height());
     ASSERT_EQ(expected_size.width(), response_downscaled_size.width());
     ASSERT_EQ(expected_size.height(), response_downscaled_size.height());
-    ASSERT_EQ(expected_extension, response_file_extension);
+    ASSERT_EQ(expected_mime_type, response_mime_type);
 
     SkBitmap decoded_bitmap;
-    if (response_file_extension == ".png") {
+    if (response_mime_type == "image/png") {
       decoded_bitmap = gfx::PNGCodec::Decode(response_image_data);
       ASSERT_FALSE(decoded_bitmap.isNull());
       ASSERT_EQ(expected_size.width(), decoded_bitmap.width());
       ASSERT_EQ(expected_size.height(), decoded_bitmap.height());
-    } else if (response_file_extension == ".jpg") {
+    } else if (response_mime_type == "image/jpeg") {
       decoded_bitmap = gfx::JPEGCodec::Decode(response_image_data);
       ASSERT_FALSE(decoded_bitmap.isNull());
       ASSERT_EQ(expected_size.width(), decoded_bitmap.width());
       ASSERT_EQ(expected_size.height(), decoded_bitmap.height());
-    } else if (response_file_extension == ".webp") {
+    } else if (response_mime_type == "image/webp") {
       int width;
       int height;
       EXPECT_TRUE(WebPGetInfo(&response_image_data.front(),
@@ -3234,14 +3233,15 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, GifImageShare) {
   OpenImagePageAndContextMenu("/google/logo.gif");
   RequestImageAndVerifyResponse(
       gfx::Size(2048, 2048), chrome::mojom::ImageFormat::ORIGINAL,
-      gfx::Size(276, 110), gfx::Size(276, 110), ".gif");
+      gfx::Size(276, 110), gfx::Size(276, 110), "image/gif");
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, GifImageDownscaleToJpeg) {
   OpenImagePageAndContextMenu("/google/logo.gif");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::ORIGINAL,
-      gfx::Size(276, 110), gfx::Size(100, /* 100 / 480 * 320 =  */ 39), ".jpg");
+      gfx::Size(276, 110), gfx::Size(100, /* 100 / 480 * 320 =  */ 39),
+      "image/jpeg");
 }
 
 // TODO(crbug.com/40273673): Enable the test.
@@ -3254,7 +3254,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_RequestPngForGifImage) {
   OpenImagePageAndContextMenu("/google/logo.gif");
   RequestImageAndVerifyResponse(
       gfx::Size(2048, 2048), chrome::mojom::ImageFormat::PNG,
-      gfx::Size(276, 110), gfx::Size(276, 110), ".png");
+      gfx::Size(276, 110), gfx::Size(276, 110), "image/png");
 }
 
 // TODO(crbug.com/40273673): Enable the test.
@@ -3267,14 +3267,14 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_PngImageDownscaleToPng) {
   OpenImagePageAndContextMenu("/image_search/valid.png");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::PNG, gfx::Size(200, 100),
-      gfx::Size(100, 50), ".png");
+      gfx::Size(100, 50), "image/png");
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, PngImageOriginalDownscaleToPng) {
   OpenImagePageAndContextMenu("/image_search/valid.png");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::ORIGINAL,
-      gfx::Size(200, 100), gfx::Size(100, 50), ".png");
+      gfx::Size(200, 100), gfx::Size(100, 50), "image/png");
 }
 
 // TODO(crbug.com/40273673): Enable the test.
@@ -3287,7 +3287,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_JpgImageDownscaleToJpg) {
   OpenImagePageAndContextMenu("/android/watch.jpg");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::ORIGINAL,
-      gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66), ".jpg");
+      gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66),
+      "image/jpeg");
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, JpgImageDownscaleToWebp) {
@@ -3295,7 +3296,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, JpgImageDownscaleToWebp) {
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
       gfx::Size(480, 320), gfx::Size(100, /* 100 / 480 * 320 =  */ 66),
-      ".webp");
+      "image/webp");
 }
 
 // TODO(crbug.com/40273673): Enable the test.
@@ -3308,7 +3309,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_PngImageDownscaleToWebp) {
   OpenImagePageAndContextMenu("/image_search/valid.png");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
-      gfx::Size(200, 100), gfx::Size(100, 50), ".webp");
+      gfx::Size(200, 100), gfx::Size(100, 50), "image/webp");
 }
 
 // TODO(crbug.com/40273673): Enable the test.
@@ -3322,7 +3323,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_GifImageDownscaleToWebp) {
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
       gfx::Size(276, 110), gfx::Size(100, /* 100 / 275 * 110 =  */ 39),
-      ".webp");
+      "image/webp");
 }
 
 // TODO(crbug.com/40273673): Enable the test.
@@ -3335,7 +3336,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_WebpImageDownscaleToWebp) {
   OpenImagePageAndContextMenu("/banners/webp-icon.webp");
   RequestImageAndVerifyResponse(
       gfx::Size(100, 100), chrome::mojom::ImageFormat::WEBP,
-      gfx::Size(192, 192), gfx::Size(100, 100), ".webp");
+      gfx::Size(192, 192), gfx::Size(100, 100), "image/webp");
 }
 
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,

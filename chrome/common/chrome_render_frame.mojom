@@ -74,7 +74,7 @@ interface ChromeRenderFrame {
       => (array<uint8> image_data,
           gfx.mojom.Size original_size,
           gfx.mojom.Size downscaled_size,
-          string encoded_extension,
+          string mime_type,
           array<lens.mojom.LatencyLog> log_data);
 
   // For WebUI testing, this message requests JavaScript to be executed at a

@@ -177,7 +177,7 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
                             const gfx::Size& requested_image_max_size);
 
   // Check if the image need to encode to fit requested image format.
-  static bool NeedsEncodeImage(const std::string& image_extension,
+  static bool NeedsEncodeImage(const std::string& mime_type,
                                chrome::mojom::ImageFormat image_format);
 
   // Check if the image is an animated Webp image by looking for animation

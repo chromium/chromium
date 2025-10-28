@@ -25,10 +25,9 @@ class ChromeRenderFrameObserverTest : public testing::Test,
         requested_image_max_size);
   }
 
-  bool NeedsEncodeImage(const std::string& image_extension,
+  bool NeedsEncodeImage(const std::string& mime_type,
                         chrome::mojom::ImageFormat image_format) {
-    return ChromeRenderFrameObserver::NeedsEncodeImage(image_extension,
-                                                       image_format);
+    return ChromeRenderFrameObserver::NeedsEncodeImage(mime_type, image_format);
   }
 
   bool IsAnimatedWebp(const std::vector<uint8_t>& image_data) {
@@ -70,74 +69,74 @@ TEST_P(ChromeRenderFrameObserverTest, NeedsDownscale_OnlyAreaSmallReturnFalse) {
 }
 
 TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_JpegFormat) {
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".png",
-                       /* image_format */ chrome::mojom::ImageFormat::JPEG));
-  EXPECT_FALSE(
-      NeedsEncodeImage(/* image_extension */ ".jpg",
-                       /* image_format */ chrome::mojom::ImageFormat::JPEG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".gif",
-                       /* image_format */ chrome::mojom::ImageFormat::JPEG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".bmp",
-                       /* image_format */ chrome::mojom::ImageFormat::JPEG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".webp",
-                       /* image_format */ chrome::mojom::ImageFormat::JPEG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/png",
+      /* image_format */ chrome::mojom::ImageFormat::JPEG));
+  EXPECT_FALSE(NeedsEncodeImage(
+      /* mime_type */ "image/jpeg",
+      /* image_format */ chrome::mojom::ImageFormat::JPEG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/gif",
+      /* image_format */ chrome::mojom::ImageFormat::JPEG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/bmp",
+      /* image_format */ chrome::mojom::ImageFormat::JPEG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/webp",
+      /* image_format */ chrome::mojom::ImageFormat::JPEG));
 }
 
 TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_PngFormat) {
-  EXPECT_FALSE(
-      NeedsEncodeImage(/* image_extension */ ".png",
-                       /* image_format */ chrome::mojom::ImageFormat::PNG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".jpg",
-                       /* image_format */ chrome::mojom::ImageFormat::PNG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".gif",
-                       /* image_format */ chrome::mojom::ImageFormat::PNG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".bmp",
-                       /* image_format */ chrome::mojom::ImageFormat::PNG));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".webp",
-                       /* image_format */ chrome::mojom::ImageFormat::PNG));
+  EXPECT_FALSE(NeedsEncodeImage(
+      /* mime_type */ "image/png",
+      /* image_format */ chrome::mojom::ImageFormat::PNG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/jpeg",
+      /* image_format */ chrome::mojom::ImageFormat::PNG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/gif",
+      /* image_format */ chrome::mojom::ImageFormat::PNG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/bmp",
+      /* image_format */ chrome::mojom::ImageFormat::PNG));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/webp",
+      /* image_format */ chrome::mojom::ImageFormat::PNG));
 }
 
 TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_WebpFormat) {
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".png",
-                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".jpg",
-                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".gif",
-                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
-  EXPECT_TRUE(
-      NeedsEncodeImage(/* image_extension */ ".bmp",
-                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
-  EXPECT_FALSE(
-      NeedsEncodeImage(/* image_extension */ ".webp",
-                       /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/png",
+      /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/jpeg",
+      /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/gif",
+      /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_TRUE(NeedsEncodeImage(
+      /* mime_type */ "image/bmp",
+      /* image_format */ chrome::mojom::ImageFormat::WEBP));
+  EXPECT_FALSE(NeedsEncodeImage(
+      /* mime_type */ "image/webp",
+      /* image_format */ chrome::mojom::ImageFormat::WEBP));
 }
 
 TEST_P(ChromeRenderFrameObserverTest, NeedsEncodeImage_OriginalFormat) {
   EXPECT_FALSE(NeedsEncodeImage(
-      /* image_extension */ ".png",
+      /* mime_type */ "image/png",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
   EXPECT_FALSE(NeedsEncodeImage(
-      /* image_extension */ ".jpg",
+      /* mime_type */ "image/jpeg",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
   EXPECT_FALSE(NeedsEncodeImage(
-      /* image_extension */ ".gif",
+      /* mime_type */ "image/gif",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
   EXPECT_TRUE(NeedsEncodeImage(
-      /* image_extension */ ".bmp",
+      /* mime_type */ "image/bmp",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
   EXPECT_TRUE(NeedsEncodeImage(
-      /* image_extension */ ".webp",
+      /* mime_type */ "image/webp",
       /* image_format */ chrome::mojom::ImageFormat::ORIGINAL));
 }
 

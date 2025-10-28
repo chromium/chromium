@@ -403,11 +403,12 @@ std::vector<uint8_t> WebElement::CopyOfImageData() {
   return image->Data()->CopyAs<std::vector<uint8_t>>();
 }
 
-std::string WebElement::ImageExtension() {
+WebString WebElement::ImageMimeType() {
   Image* image = GetImage();
-  if (!image)
-    return std::string();
-  return image->FilenameExtension().Utf8();
+  if (!image) {
+    return WebString();
+  }
+  return image->MimeType();
 }
 
 gfx::Size WebElement::GetImageSize() {

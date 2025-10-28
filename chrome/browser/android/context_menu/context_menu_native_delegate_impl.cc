@@ -82,6 +82,24 @@ chrome::mojom::ImageFormat ToChromeMojomImageFormat(int image_format) {
   NOTREACHED();
 }
 
+// TODO(crbug.com/b/455400488) - Remove image_extension once the Java side is
+// updated to only use mime_type.
+std::string GetExtensionFromMimeType(const std::string& mime_type) {
+  if (mime_type == "image/png") {
+    return ".png";
+  }
+  if (mime_type == "image/jpeg") {
+    return ".jpg";
+  }
+  if (mime_type == "image/webp") {
+    return ".webp";
+  }
+  if (mime_type == "image/gif") {
+    return ".gif";
+  }
+  return "";
+}
+
 void OnRetrieveImageForShare(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
@@ -89,10 +107,11 @@ void OnRetrieveImageForShare(
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
     const gfx::Size& downscaled_size,
-    const std::string& image_extension,
+    const std::string& mime_type,
     const std::vector<lens::mojom::LatencyLogPtr>) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_data = base::android::ToJavaByteArray(env, thumbnail_data);
+  std::string image_extension = GetExtensionFromMimeType(mime_type);
   base::android::RunObjectCallbackAndroid(
       jcallback, Java_ContextMenuNativeDelegateImpl_createImageCallbackResult(
                      env, j_data, image_extension));
@@ -105,7 +124,7 @@ void OnRetrieveImageForContextMenu(
     const std::vector<uint8_t>& thumbnail_data,
     const gfx::Size& original_size,
     const gfx::Size& downscaled_size,
-    const std::string& filename_extension,
+    const std::string& mime_type,
     const std::vector<lens::mojom::LatencyLogPtr>) {
   ContextMenuImageRequest::Start(jcallback, thumbnail_data);
 }
