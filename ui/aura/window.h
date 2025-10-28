@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -110,6 +111,9 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                            public ui::PropertyHandler,
                            public ui::metadata::MetaDataProvider,
                            public viz::HostFrameSinkClient {
+  // TODO(crbug.com/376575664): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   METADATA_HEADER_BASE(Window);
 
