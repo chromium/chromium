@@ -27,12 +27,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
-#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-#include "third_party/blink/public/mojom/fingerprinting_protection/canvas_interventions.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
@@ -282,14 +280,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
   GetDipReporter();
 
-  // Canvas noise tokens can be updated through user bypass or removing browsing
-  // data. A new token value will be regenerated. This function ensures this new
-  // token is updated on the renderer.
-  void UpdateCanvasNoiseToken();
-
-  // Helper to get or create a new canvas noise token for this worker.
-  std::optional<blink::NoiseToken> GetOrCreateCanvasNoiseToken();
-
  private:
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
   struct StartInfo;
@@ -449,12 +439,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter_;
   mojo::PendingReceiver<blink::mojom::ReportingObserver>
       dip_reporting_observer_receiver_;
-
-  // Remote to handle updates of the canvas noise token to its respective
-  // service worker. This is bounded when the ServiceWorker is started, and
-  // unbound when released.
-  mojo::Remote<blink::mojom::CanvasNoiseTokenUpdater>
-      canvas_noise_token_updater_;
 
   bool in_dtor_{false};
 

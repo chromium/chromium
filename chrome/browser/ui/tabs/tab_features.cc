@@ -382,7 +382,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     fingerprinting_protection_interventions::
         CanvasInterventionsWebContentsHelper::CreateForWebContents(
             tab.GetContents(),
-            TrackingProtectionSettingsFactory::GetForProfile(profile),
             profile->IsIncognitoProfile());
   }
 

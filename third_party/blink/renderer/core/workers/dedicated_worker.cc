@@ -610,8 +610,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetStorageAccessApiStatus(),
       /*require_cross_site_request_for_cookies=*/false,
       origin_ ? origin_->IsolatedCopy() : nullptr,
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      execution_context->CanvasNoiseToken());
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
   params->dedicated_worker_start_time = start_time_;
   return params;
 }

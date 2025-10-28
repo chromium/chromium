@@ -389,7 +389,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     fingerprinting_protection_interventions::
         CanvasInterventionsWebContentsHelper::CreateForWebContents(
             web_contents,
-            TrackingProtectionSettingsFactory::GetForProfile(profile),
             profile->IsIncognitoProfile());
   }
 

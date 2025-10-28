@@ -8,9 +8,7 @@
 
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -77,46 +75,15 @@ class CanvasInterventionsWebContentsHelperLauncher
     : public RenderViewHostTestHarness,
       public testing::WithParamInterface<TestParam> {
  public:
-  CanvasInterventionsWebContentsHelperLauncher()
-      : content::RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  CanvasInterventionsWebContentsHelperLauncher() = default;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    privacy_sandbox::tracking_protection::RegisterProfilePrefs(
-        prefs_.registry());
-    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
-    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
-        &prefs_, /*is_off_the_record=*/!GetParam().run_in_regular_mode,
-        /*store_last_modified=*/false,
-        /*restore_session=*/false,
-        /*should_record_metrics=*/false);
-    management_service_ = std::make_unique<policy::ManagementService>(
-        std::vector<std::unique_ptr<policy::ManagementStatusProvider>>());
-    tracking_protection_settings_ =
-        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_,
-            /*host_content_settings_map=*/host_content_settings_map_.get(),
-            /*management_service=*/management_service_.get(),
-            /*is_incognito=*/!GetParam().run_in_regular_mode);
   }
 
   void TearDown() override {
-    host_content_settings_map_->ShutdownOnUIThread();
-    tracking_protection_settings_->Shutdown();
     RenderViewHostTestHarness::TearDown();
   }
-
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return tracking_protection_settings_.get();
-  }
-
- private:
-  sync_preferences::TestingPrefServiceSyncable prefs_;
-  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-  std::unique_ptr<policy::ManagementService> management_service_;
-  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
-      tracking_protection_settings_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -130,8 +97,7 @@ TEST_P(CanvasInterventionsWebContentsHelperLauncher,
   TestParam param = GetParam();
   fingerprinting_protection_interventions::
       CanvasInterventionsWebContentsHelper::CreateForWebContents(
-          web_contents, tracking_protection_settings(),
-          !param.run_in_regular_mode);
+          web_contents, !param.run_in_regular_mode);
 
   EXPECT_NE(nullptr, CanvasInterventionsWebContentsHelper::FromWebContents(
                          RenderViewHostTestHarness::web_contents()));

@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -698,8 +697,7 @@ WorkerGlobalScope::WorkerGlobalScope(
           thread->GetWorkerReportingProxy(),
           creation_params->script_url.ProtocolIsData(),
           /*is_default_world_of_isolate=*/
-          creation_params->is_default_world_of_isolate,
-          creation_params->canvas_noise_token),
+          creation_params->is_default_world_of_isolate),
       ActiveScriptWrappable<WorkerGlobalScope>({}),
       script_type_(creation_params->script_type),
       user_agent_(creation_params->user_agent),
@@ -751,11 +749,6 @@ WorkerGlobalScope::WorkerGlobalScope(
   if (creation_params->dip_reporting_observer) {
     ReportingContext::From(this)->Bind(
         std::move(creation_params->dip_reporting_observer));
-  }
-
-  if (creation_params->canvas_noise_token_observer) {
-    CanvasInterventionsHelper::From(this)->Bind(
-        std::move(creation_params->canvas_noise_token_observer));
   }
 
   // A PermissionsPolicy is created by

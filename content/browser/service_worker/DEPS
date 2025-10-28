@@ -1,6 +1,5 @@
 include_rules = [
   "+components/services/storage",
-  "+components/fingerprinting_protection_filter/interventions/common",
   "+third_party/leveldatabase",
 ]
 

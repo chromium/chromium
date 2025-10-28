@@ -11,11 +11,7 @@ if (use_blink) {
       "canvas_interventions_web_contents_helper.cc",
       "canvas_interventions_web_contents_helper.h",
     ]
-    public_deps = [
-      "//components/content_settings/core/browser",
-      "//components/privacy_sandbox:tracking_protection_settings",
-      "//content/public/browser",
-    ]
+    public_deps = [ "//content/public/browser" ]
     deps = [
       "../common:features",
       "//base",
@@ -30,7 +26,6 @@ if (use_blink) {
       ":browser",
       "../common:features",
       "//base",
-      "//components/sync_preferences:test_support",
       "//content/test:test_support",
       "//testing/gtest",
     ]

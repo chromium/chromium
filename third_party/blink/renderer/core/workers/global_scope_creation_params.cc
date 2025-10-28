@@ -59,10 +59,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
-        dip_reporting_observer,
-    std::optional<NoiseToken> canvas_noise_token,
-    mojo::PendingReceiver<mojom::blink::CanvasNoiseTokenUpdater>
-        canvas_noise_token_observer)
+        dip_reporting_observer)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),
@@ -118,9 +115,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       require_cross_site_request_for_cookies(
           require_cross_site_request_for_cookies),
       coep_reporting_observer(std::move(coep_reporting_observer)),
-      dip_reporting_observer(std::move(dip_reporting_observer)),
-      canvas_noise_token(std::move(canvas_noise_token)),
-      canvas_noise_token_observer(std::move(canvas_noise_token_observer)) {
+      dip_reporting_observer(std::move(dip_reporting_observer)) {
   this->inherited_trial_features =
       std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
   if (inherited_trial_features) {

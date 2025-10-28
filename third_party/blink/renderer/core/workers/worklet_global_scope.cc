@@ -89,8 +89,7 @@ WorkletGlobalScope::WorkletGlobalScope(
           reporting_proxy,
           /*is_worker_loaded_from_data_url=*/false,
           /*is_default_world_of_isolate=*/
-          creation_params->is_default_world_of_isolate,
-          /*canvas_noise_token=*/std::nullopt),
+          creation_params->is_default_world_of_isolate),
       ActiveScriptWrappable<WorkletGlobalScope>({}),
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),

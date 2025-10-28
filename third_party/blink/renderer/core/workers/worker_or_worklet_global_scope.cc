@@ -224,8 +224,7 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     WorkerReportingProxy& reporting_proxy,
     bool is_worker_loaded_from_data_url,
-    bool is_default_world_of_isolate,
-    std::optional<NoiseToken> canvas_noise_token)
+    bool is_default_world_of_isolate)
     : ExecutionContext(isolate, agent),
       is_creator_secure_context_(is_creator_secure_context),
       name_(name),
@@ -244,7 +243,6 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
   GetSecurityContext().SetSecurityOrigin(std::move(origin));
 
   SetPolicyContainer(PolicyContainer::CreateEmpty());
-  SetCanvasNoiseToken(std::move(canvas_noise_token));
   if (worker_clients_)
     worker_clients_->ReattachThread();
 }
