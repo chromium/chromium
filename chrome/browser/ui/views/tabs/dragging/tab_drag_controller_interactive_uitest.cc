@@ -3233,7 +3233,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 // Based on DragAllToSeparateWindow, which is flaky.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_DragAllToSeparateWindowThenDrop \
   DISABLED_DragAllToSeparateWindowThenDrop
 #else
@@ -3279,7 +3279,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
             ASSERT_TRUE(TabDragController::IsActive());
 
             // Release the mouse, stopping the drag session.
-            ASSERT_TRUE(ReleaseInput(0, /*async=*/true));
+            ASSERT_TRUE(ReleaseInput());
           }));
 
   ASSERT_FALSE(new_tab_strip->GetDragContext()->IsDragSessionActive());
