@@ -150,6 +150,8 @@ CGFloat kSectionFooterHeight = 8.;
       [[TableViewImageItem alloc] initWithType:AddAccountItemType];
   item.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT);
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.isAccessibilityElement = YES;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:item toSectionWithIdentifier:AddAccountSectionIdentifier];
 }
 
