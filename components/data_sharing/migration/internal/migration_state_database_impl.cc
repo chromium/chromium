@@ -53,8 +53,7 @@ bool InitOnDBSequence(
 }  // namespace
 
 MigrationStateDatabaseImpl::MigrationStateDatabaseImpl(
-    const base::FilePath& profile_dir,
-    InitCallback callback)
+    const base::FilePath& profile_dir)
     : profile_path_(profile_dir),
       db_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,

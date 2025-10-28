@@ -28,8 +28,7 @@ namespace data_sharing {
 // cached in memory for synchronous reads.
 class MigrationStateDatabaseImpl : public MigrationStateDatabase {
  public:
-  explicit MigrationStateDatabaseImpl(const base::FilePath& profile_dir,
-                                      InitCallback callback);
+  explicit MigrationStateDatabaseImpl(const base::FilePath& profile_dir);
   ~MigrationStateDatabaseImpl() override;
   MigrationStateDatabaseImpl(const MigrationStateDatabaseImpl&) = delete;
   MigrationStateDatabaseImpl& operator=(const MigrationStateDatabaseImpl&) =

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_sharing/migration/internal/migratable_sync_service_coordinator_impl.h"
+#include "content/public/browser/browser_context.h"
 
 namespace data_sharing {
 
@@ -40,8 +41,9 @@ MigratableSyncServiceCoordinatorFactory::BuildServiceInstanceForBrowserContext(
   if (context->IsOffTheRecord()) {
     return nullptr;
   }
-
-  return std::make_unique<data_sharing::MigratableSyncServiceCoordinatorImpl>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<data_sharing::MigratableSyncServiceCoordinatorImpl>(
+      profile->GetPath());
 }
 
 }  // namespace data_sharing

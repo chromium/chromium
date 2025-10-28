@@ -26,16 +26,9 @@ class MigrationStateDatabaseImplTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(MigrationStateDatabaseImplTest, TestConstructionAndDestruction) {
-  auto migration_state_db = std::make_unique<MigrationStateDatabaseImpl>(
-      temp_dir_.GetPath(),
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
-}
-
 TEST_F(MigrationStateDatabaseImplTest, TestInitialization) {
   auto migration_state_db = std::make_unique<MigrationStateDatabaseImpl>(
-      temp_dir_.GetPath(),
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      temp_dir_.GetPath());
 
   base::test::TestFuture<bool> future;
   migration_state_db->Init(future.GetCallback());
@@ -44,8 +37,7 @@ TEST_F(MigrationStateDatabaseImplTest, TestInitialization) {
 
 TEST_F(MigrationStateDatabaseImplTest, TestUpdateGetDelete) {
   auto migration_state_db = std::make_unique<MigrationStateDatabaseImpl>(
-      temp_dir_.GetPath(),
-      base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
+      temp_dir_.GetPath());
 
   base::test::TestFuture<bool> future;
   migration_state_db->Init(future.GetCallback());
