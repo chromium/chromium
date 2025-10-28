@@ -10,6 +10,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,12 +25,14 @@ public class TabStateStorageService {
     public static class LoadedTabState {
         public final @TabId int tabId;
         public final TabState tabState;
-        public final Callback<@Nullable Tab> onTabCreationCallback;
+
+        /** This must always be run or destroyed to avoid leaks. */
+        public final JniOnceCallback<@Nullable Tab> onTabCreationCallback;
 
         public LoadedTabState(
                 @TabId int tabId,
                 TabState tabState,
-                Callback<@Nullable Tab> onTabCreationCallback) {
+                JniOnceCallback<@Nullable Tab> onTabCreationCallback) {
             this.tabId = tabId;
             this.tabState = tabState;
             this.onTabCreationCallback = onTabCreationCallback;
@@ -74,7 +77,9 @@ public class TabStateStorageService {
 
     @CalledByNative
     public static LoadedTabState createLoadedTabState(
-            @TabId int tabId, TabState tabState, Callback<@Nullable Tab> onTabCreationCallback) {
+            @TabId int tabId,
+            TabState tabState,
+            JniOnceCallback<@Nullable Tab> onTabCreationCallback) {
         return new LoadedTabState(tabId, tabState, onTabCreationCallback);
     }
 
