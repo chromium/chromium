@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_app_interface.h"
 
 #import "ios/testing/earl_grey/earl_grey_test.h"
 

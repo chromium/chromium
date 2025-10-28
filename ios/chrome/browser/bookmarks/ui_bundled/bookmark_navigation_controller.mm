@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_navigation_controller.h"
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 

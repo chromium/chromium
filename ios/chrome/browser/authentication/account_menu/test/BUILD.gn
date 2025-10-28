@@ -13,7 +13,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",

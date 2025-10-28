@@ -143,7 +143,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",

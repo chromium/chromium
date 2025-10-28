@@ -17,7 +17,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bookmarks/folder_chooser/ui",
     "//ios/chrome/browser/bookmarks/folder_editor:coordinator_headers",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/public:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
     "//ios/chrome/browser/bookmarks/ui_bundled:utils",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

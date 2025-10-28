@@ -302,7 +302,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/bubble/ui_bundled:constants",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:constants",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:test_utils",

@@ -112,7 +112,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin",
-    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/public:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:core",
     "//ios/chrome/browser/bookmarks/ui_bundled/home",
     "//ios/chrome/browser/content_suggestions/ui_bundled:coordinator",

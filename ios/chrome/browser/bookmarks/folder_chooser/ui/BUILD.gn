@@ -19,7 +19,7 @@ source_set("ui") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/public:constants",
     "//ios/chrome/browser/bookmarks/ui_bundled:utils",
     "//ios/chrome/browser/bookmarks/ui_bundled/cells",
     "//ios/chrome/browser/shared/model/browser",

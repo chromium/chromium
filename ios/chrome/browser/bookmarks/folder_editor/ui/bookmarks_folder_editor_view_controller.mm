@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_parent_folder_item.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_text_field_item.h"

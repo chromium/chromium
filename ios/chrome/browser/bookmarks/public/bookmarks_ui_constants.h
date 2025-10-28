@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_BOOKMARK_UI_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_BOOKMARK_UI_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_PUBLIC_BOOKMARKS_UI_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_PUBLIC_BOOKMARKS_UI_CONSTANTS_H_
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
@@ -89,4 +89,4 @@ extern NSString* const kBookmarksHomeBatchUploadRecommendationItemIdentifier;
 extern NSString* const kBookmarksHomeBatchUploadButtonIdentifier;
 extern NSString* const kBookmarksHomeBatchUploadAlertIdentifier;
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_BOOKMARK_UI_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_PUBLIC_BOOKMARKS_UI_CONSTANTS_H_
