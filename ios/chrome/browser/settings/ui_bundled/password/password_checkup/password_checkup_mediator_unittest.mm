@@ -211,7 +211,7 @@ TEST_F(PasswordCheckupMediatorTest,
       passwordCheckStateDidChange:PasswordCheckState::kSignedOut];
 
   // Add a weak password. This password shouldn't be taken into account in the
-  // `insecurePasswordCounts` passed to the conusmer since an error occured.
+  // `insecurePasswordCounts` passed to the conusmer since an error occurred.
   PasswordForm form2 = CreatePasswordForm();
   AddIssueToForm(&form2, InsecureType::kWeak);
   GetTestStore().AddLogin(form2);
