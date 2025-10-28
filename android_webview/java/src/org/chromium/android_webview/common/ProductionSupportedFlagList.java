@@ -1134,6 +1134,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "WebViewFetchOriginTrialsComponent",
                 "Enable fetching the Origin Trials configuration update component."),
+        Flag.baseFeature(
+                "WebViewPersistentMetricsInNoBackupDir",
+                "Migrate the persistent metrics file to the nobackupfiles directory."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
