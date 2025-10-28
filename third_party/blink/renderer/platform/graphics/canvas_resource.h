@@ -50,7 +50,6 @@ class RasterInterface;
 
 namespace blink {
 
-class CanvasResourceProvider;
 class CanvasResourceProviderSharedImage;
 class StaticBitmapImage;
 
@@ -362,60 +361,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   viz::ReleaseCallback release_callback_;
   bool resource_is_lost_ = false;
   const SkAlphaType alpha_type_;
-};
-
-class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
- public:
-  // The passed-in WeakPtrs must be non-null.
-  static scoped_refptr<CanvasResourceSwapChain> Create(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<CanvasResourceProvider>);
-  ~CanvasResourceSwapChain() override;
-  bool IsValid() const override;
-  bool CreatesAcceleratedTransferableResources() const override { return true; }
-  void NotifyResourceLost() override {
-    // Used for single buffering mode which doesn't need to care about sync
-    // token synchronization.
-  }
-
-  scoped_refptr<StaticBitmapImage> Bitmap() override;
-
-  scoped_refptr<gpu::ClientSharedImage> GetBackBufferClientSharedImage() {
-    CHECK(back_buffer_shared_image_);
-    return back_buffer_shared_image_;
-  }
-  void PresentSwapChain();
-  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
-      const override;
-  void WaitSyncToken(const gpu::SyncToken&) override;
-
- private:
-  bool UsesAcceleratedRaster() const final { return true; }
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const override;
-
-  CanvasResourceSwapChain(gfx::Size size,
-                          viz::SharedImageFormat format,
-                          SkAlphaType alpha_type,
-                          const gfx::ColorSpace& color_space,
-                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-                          base::WeakPtr<CanvasResourceProvider>);
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
-  const gpu::SyncToken& sync_token() const override { return sync_token_; }
-
-  const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-      context_provider_wrapper_;
-  scoped_refptr<gpu::ClientSharedImage> front_buffer_shared_image_;
-  scoped_refptr<gpu::ClientSharedImage> back_buffer_shared_image_;
-  gpu::SyncToken sync_token_;
-  const SkAlphaType alpha_type_;
-  base::WeakPtr<CanvasResourceProvider> provider_;
-
-  CanvasResourceProvider* Provider();
 };
 
 }  // namespace blink
