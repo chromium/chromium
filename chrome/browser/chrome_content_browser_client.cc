@@ -6843,7 +6843,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
 
 #if !BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = web_contents_getter.Run();
-  if (ShouldDisallowCredentialRequest(web_contents)) {
+  if (web_contents && IsActorActingOnWebContents(web_contents)) {
     // If actor is active, bail out early to prevent it from launching external
     // applications.
     return false;
