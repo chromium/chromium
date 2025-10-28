@@ -9249,6 +9249,8 @@
                 {
                     "name": "Sql",
                     "params": {
+                        "SqlDiskCacheShardCount": "3",
+                        "SqlDiskCacheSynchronousOff": "true",
                         "backend": "sql"
                     },
                     "enable_features": [
