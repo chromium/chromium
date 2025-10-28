@@ -8307,8 +8307,10 @@ void Document::RequestResizeResponsiveIframe(ExceptionState* exception_state) {
     return;
   }
   if (auto* owner = GetFrame()->Owner()) {
+    LocalFrameView* view = View();
+    LocalFrameView::NaturalSizeLayoutScope natural_size_scope(view);
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
-    if (View()->RecordNaturalDimensions()) {
+    if (view->RecordNaturalDimensions()) {
       owner->NaturalSizingInfoChanged();
     }
   } else if (exception_state) {
