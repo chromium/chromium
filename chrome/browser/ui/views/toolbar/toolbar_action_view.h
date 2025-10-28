@@ -7,8 +7,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -29,7 +29,7 @@ class WebContents;
 // A wrapper around a ToolbarActionViewController to display a toolbar action
 // action in the browser's toolbar.
 class ToolbarActionView : public views::MenuButton,
-                          public ToolbarActionViewDelegateViews {
+                          public ToolbarActionViewDelegate {
   METADATA_HEADER(ToolbarActionView, views::MenuButton)
 
  public:
@@ -94,7 +94,7 @@ class ToolbarActionView : public views::MenuButton,
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
 
-  // ToolbarActionViewDelegateViews:
+  // ToolbarActionViewDelegate:
   void UpdateState() override;
 
   ToolbarActionViewController* view_controller() { return view_controller_; }

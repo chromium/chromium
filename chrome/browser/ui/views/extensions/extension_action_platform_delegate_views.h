@@ -14,7 +14,6 @@
 
 class BrowserWindowInterface;
 class ExtensionsContainerViews;
-class ToolbarActionViewDelegateViews;
 
 namespace extensions {
 class ExtensionViewHost;
@@ -88,8 +87,6 @@ class ExtensionActionPlatformDelegateViews
 
   // ExtensionHostObserver:
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override;
-
-  ToolbarActionViewDelegateViews* GetDelegateViews() const;
 
   // The corresponding browser window.
   const raw_ptr<BrowserWindowInterface> browser_;

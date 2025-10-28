@@ -149,7 +149,6 @@ class ExtensionActionViewController
   const extensions::ExtensionAction* extension_action() const {
     return extension_action_;
   }
-  ToolbarActionViewDelegate* view_delegate() { return view_delegate_; }
   ExtensionActionPlatformDelegate* platform_delegate() {
     return platform_delegate_.get();
   }

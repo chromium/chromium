@@ -15,10 +15,10 @@
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "extensions/browser/extension_action.h"
@@ -222,10 +222,4 @@ bool ExtensionActionPlatformDelegateViews::CanHandleAccelerators() const {
 void ExtensionActionPlatformDelegateViews::OnExtensionHostDestroyed(
     extensions::ExtensionHost* host) {
   OnPopupClosed();
-}
-
-ToolbarActionViewDelegateViews*
-ExtensionActionPlatformDelegateViews::GetDelegateViews() const {
-  return static_cast<ToolbarActionViewDelegateViews*>(
-      controller_->view_delegate());
 }

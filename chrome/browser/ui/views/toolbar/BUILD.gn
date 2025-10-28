@@ -31,7 +31,6 @@ source_set("toolbar") {
     "toolbar_action_hover_card_bubble_view.h",
     "toolbar_action_hover_card_controller.h",
     "toolbar_action_view.h",
-    "toolbar_action_view_delegate_views.h",
     "toolbar_button.h",
     "toolbar_button_menu_highlighter.h",
     "toolbar_chip_button.h",

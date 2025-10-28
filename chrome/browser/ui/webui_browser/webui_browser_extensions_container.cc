@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
@@ -37,7 +36,7 @@ GURL GetDataUrlForImageModel(ui::ImageModel icon_model,
 }  // namespace
 
 class WebUIBrowserExtensionsContainer::ActionInfo
-    : public ToolbarActionViewDelegateViews {
+    : public ToolbarActionViewDelegate {
  public:
   ActionInfo(WebUIBrowserExtensionsContainer& extensions_container,
              Browser& browser,
