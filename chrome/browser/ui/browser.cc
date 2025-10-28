@@ -586,7 +586,8 @@ Browser::Browser(const CreateParams& params)
       session_id_(SessionID::NewUnique()),
       omit_from_session_restore_(params.omit_from_session_restore),
       should_trigger_session_restore_(params.should_trigger_session_restore),
-      cancel_download_confirmation_state_(NOT_PROMPTED),
+      cancel_download_confirmation_state_(
+          CancelDownloadConfirmationState::kNotPrompted),
       override_bounds_(params.initial_bounds),
       initial_show_state_(params.initial_show_state),
       initial_workspace_(params.initial_workspace),
@@ -1030,13 +1031,15 @@ bool Browser::HandleBeforeClose() {
 bool Browser::TryToCloseWindow(
     bool skip_beforeunload,
     const base::RepeatingCallback<void(bool)>& on_close_confirmed) {
-  cancel_download_confirmation_state_ = RESPONSE_RECEIVED;
+  cancel_download_confirmation_state_ =
+      CancelDownloadConfirmationState::kResponseReceived;
   return unload_controller_.TryToCloseWindow(skip_beforeunload,
                                              on_close_confirmed);
 }
 
 void Browser::ResetTryToCloseWindow() {
-  cancel_download_confirmation_state_ = NOT_PROMPTED;
+  cancel_download_confirmation_state_ =
+      CancelDownloadConfirmationState::kNotPrompted;
   unload_controller_.ResetTryToCloseWindow();
 }
 
@@ -3067,7 +3070,7 @@ void Browser::OnTabDetached(WebContents* contents, bool was_active) {
     }
   }
 
-  TabDetachedAtImpl(contents, was_active, DETACH_TYPE_DETACH);
+  TabDetachedAtImpl(contents, was_active, DetachType::kDetach);
 
   window_->OnTabDetached(contents, was_active);
 }
@@ -3191,7 +3194,7 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
   if (was_active) {
     did_active_tab_change_callback_list_.Notify(this);
   }
-  TabDetachedAtImpl(old_contents, was_active, DETACH_TYPE_REPLACE);
+  TabDetachedAtImpl(old_contents, was_active, DetachType::kReplace);
   browser_window_features()->exclusive_access_manager()->OnTabClosing(
       old_contents);
   SessionServiceBase* session_service =
@@ -3468,8 +3471,10 @@ bool Browser::CanCloseWithInProgressDownloads() {
 
   // If we've prompted, we need to hear from the user before we
   // can close.
-  if (cancel_download_confirmation_state_ != NOT_PROMPTED) {
-    return cancel_download_confirmation_state_ != WAITING_FOR_RESPONSE;
+  if (cancel_download_confirmation_state_ !=
+      CancelDownloadConfirmationState::kNotPrompted) {
+    return cancel_download_confirmation_state_ !=
+           CancelDownloadConfirmationState::kWaitingForResponse;
   }
 
   int num_downloads_blocking;
@@ -3481,7 +3486,8 @@ bool Browser::CanCloseWithInProgressDownloads() {
 
   // Closing this window will kill some downloads; prompt to make sure
   // that's ok.
-  cancel_download_confirmation_state_ = WAITING_FOR_RESPONSE;
+  cancel_download_confirmation_state_ =
+      CancelDownloadConfirmationState::kWaitingForResponse;
   window_->ConfirmBrowserCloseWithPendingDownloads(
       num_downloads_blocking, dialog_type,
       base::BindOnce(&Browser::InProgressDownloadResponse,
@@ -3494,7 +3500,8 @@ bool Browser::CanCloseWithInProgressDownloads() {
 
 void Browser::InProgressDownloadResponse(bool cancel_downloads) {
   if (cancel_downloads) {
-    cancel_download_confirmation_state_ = RESPONSE_RECEIVED;
+    cancel_download_confirmation_state_ =
+        CancelDownloadConfirmationState::kResponseReceived;
 
     if (ShouldShowCookieMigrationNoticeForBrowser(*this)) {
       ShowCookieClearOnExitMigrationNotice(
@@ -3507,9 +3514,11 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
     return;
   }
 
-  // Sets the confirmation state to NOT_PROMPTED so that if the user tries to
+  // Sets the confirmation state to
+  // CancelDownloadConfirmationState::kNotPrompted so that if the user tries to
   // close again we'll show the warning again.
-  cancel_download_confirmation_state_ = NOT_PROMPTED;
+  cancel_download_confirmation_state_ =
+      CancelDownloadConfirmationState::kNotPrompted;
 
   // Show the download page so the user can figure-out what downloads are still
   // in-progress.
@@ -3565,7 +3574,7 @@ void Browser::SetAsDelegate(WebContents* web_contents, bool set_delegate) {
 void Browser::TabDetachedAtImpl(content::WebContents* contents,
                                 bool was_active,
                                 DetachType type) {
-  if (type == DETACH_TYPE_DETACH) {
+  if (type == DetachType::kDetach) {
     // Save the current location bar state, but only if the tab being detached
     // is the selected tab.  Because saving state can conditionally revert the
     // location bar, saving the current tab's location bar state to a
