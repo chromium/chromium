@@ -696,10 +696,6 @@ void AuthenticatorRequestDialogController::PasskeyUpgradeFailed() {
   CancelAuthenticatorRequest();
 }
 
-void AuthenticatorRequestDialogController::HideDialog() {
-  SetCurrentStep(Step::kNotStarted);
-}
-
 bool AuthenticatorRequestDialogController::is_request_complete() const {
   return model_->step() == Step::kTimedOut ||
          model_->step() == Step::kKeyNotRegistered ||
@@ -973,7 +969,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
 void AuthenticatorRequestDialogController::
     HideDialogAndDispatchToPlatformAuthenticator(
         std::optional<AuthenticatorType> type) {
-  HideDialog();
+  SetCurrentStep(Step::kPlatformAuthenticator);
 
   std::vector<AuthenticatorReference>& authenticators =
       ephemeral_state_.saved_authenticators_.authenticator_list();

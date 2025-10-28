@@ -52,6 +52,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kPasskeyAutofill:
     case AuthenticatorRequestDialogModel::Step::kPasskeyUpgrade:
     case AuthenticatorRequestDialogModel::Step::kPasswordOsAuth:
+    case AuthenticatorRequestDialogModel::Step::kPlatformAuthenticator:
       return StepUIType::NONE;
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
@@ -315,8 +316,9 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kGPMLockedPin, "kGPMLockedPin"},
       {Step::kErrorFetchingChallenge, "kErrorFetchingChallenge"},
       {Step::kPasswordOsAuth, "kPasswordAuth"},
+      {Step::kPlatformAuthenticator, "kPlatformAuthenticator"},
   });
-  static_assert(Step::kMaxValue == Step::kPasswordOsAuth &&
+  static_assert(Step::kMaxValue == Step::kPlatformAuthenticator &&
                     kStepNames.size() - 1 == static_cast<int>(Step::kMaxValue),
                 "implement operator<< overload when adding new Step values");
   return os << kStepNames.at(step);

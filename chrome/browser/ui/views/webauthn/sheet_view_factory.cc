@@ -393,6 +393,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kRecoverSecurityDomain:
     case Step::kGPMReauthForPinReset:
     case Step::kPasswordOsAuth:
+    case Step::kPlatformAuthenticator:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));
       break;

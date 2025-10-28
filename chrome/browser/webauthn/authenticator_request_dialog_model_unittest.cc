@@ -507,7 +507,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain();
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
-  const auto plat_ui = Step::kNotStarted;
+  const auto plat_ui = Step::kPlatformAuthenticator;
   const auto cable_ui = Step::kCableActivate;
   [[maybe_unused]] const auto create_pk = Step::kCreatePasskey;
   const auto create_pk_or_mss =
@@ -520,7 +520,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
 #if BUILDFLAG(IS_MAC)
       Step::kCreatePasskey;
 #else
-      Step::kNotStarted;
+      Step::kPlatformAuthenticator;
 #endif
   const auto create_pk_or_qr =
 #if BUILDFLAG(IS_MAC)
@@ -1316,7 +1316,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
         continue;
       }
 
-      EXPECT_EQ(model->step(), Step::kNotStarted);
+      EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
 
       if (win_webauthn_api_version >= 7) {
         // Windows handles hybrid itself starting with this version, so
@@ -1369,7 +1369,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.StartFlow(std::move(tai), {});
 
   // The Windows native UI should have been triggered.
-  EXPECT_EQ(model->step(), Step::kNotStarted);
+  EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
 
   // Canceling the Windows native UI should be handled.
   EXPECT_TRUE(controller.OnWinUserCancelled());
@@ -1430,7 +1430,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCredMatchEmptyAllowList) {
         FAIL() << "Should not have narrowed the allow list";
       }));
   controller.StartFlow(std::move(tai), {});
-  EXPECT_EQ(model->step(), Step::kNotStarted);
+  EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
   run_loop.Run();
 }
 #endif
@@ -2435,7 +2435,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
           device::AuthenticatorType::kICloudKeychain);
       controller.OnUserConsentDenied();
 
-      EXPECT_EQ(model->step(), Step::kNotStarted);
+      EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
     }
   }
 }
@@ -2477,7 +2477,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 
-    EXPECT_EQ(model->step(), Step::kNotStarted);
+    EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
     device::DiscoverableCredentialMetadata descriptor =
         account_preselected_callback.WaitForResult();
     if (credential_source == device::AuthenticatorType::kTouchID) {
@@ -2713,7 +2713,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       EXPECT_EQ(win_button_it, model->mechanisms.end());
     } else if (test_case.expected_button == kNoChromeUI) {
       // In these cases, Chrome should have invoked the Windows UI immediately.
-      EXPECT_EQ(model->step(), Step::kNotStarted);
+      EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
     } else {
       ASSERT_NE(win_button_it, model->mechanisms.end());
       EXPECT_EQ(win_button_it->name,
@@ -2888,7 +2888,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.HideDialogAndDispatchToPlatformAuthenticator(
       device::AuthenticatorType::kICloudKeychain);
   controller.OnUserConsentDenied();
-  EXPECT_EQ(model->step(), Step::kNotStarted);
+  EXPECT_EQ(model->step(), Step::kPlatformAuthenticator);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

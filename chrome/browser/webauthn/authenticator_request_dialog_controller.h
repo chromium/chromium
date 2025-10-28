@@ -93,9 +93,6 @@ class AuthenticatorRequestDialogController
   void PasskeyUpgradeSucceeded() override;
   void PasskeyUpgradeFailed() override;
 
-  // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
-  void HideDialog();
-
   // Returns whether the UI is in a state at which the |request_| member of
   // AuthenticatorImpl has completed processing. Note that the request callback
   // is only resolved after the UI is dismissed.

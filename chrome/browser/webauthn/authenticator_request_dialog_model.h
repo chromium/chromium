@@ -288,7 +288,9 @@ struct AuthenticatorRequestDialogModel
     kErrorFetchingChallenge,
     // OS authentication after selecting a password.
     kPasswordOsAuth,
-    kMaxValue = kPasswordOsAuth,
+    // The request is being dispatched to a platform authenticator.
+    kPlatformAuthenticator,
+    kMaxValue = kPlatformAuthenticator,
   };
 
   // Views and controllers implement this interface to receive events, which
