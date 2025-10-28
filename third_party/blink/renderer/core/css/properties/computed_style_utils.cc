@@ -2186,11 +2186,11 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     const ComputedStyle& style,
     bool force_computed_value) {
   if (style.IsDisplayMasonryBox()) {
-    return ValueForGridTrackList<LayoutMasonry>(direction, layout_object, style,
-                                                force_computed_value);
+    return blink::ValueForGridTrackList<LayoutMasonry>(
+        direction, layout_object, style, force_computed_value);
   }
-  return ValueForGridTrackList<LayoutGrid>(direction, layout_object, style,
-                                           force_computed_value);
+  return blink::ValueForGridTrackList<LayoutGrid>(direction, layout_object,
+                                                  style, force_computed_value);
 }
 
 CSSValue* ComputedStyleUtils::ValueForGridPosition(
