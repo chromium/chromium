@@ -31,9 +31,6 @@ ci.defaults.set(
     gardener_rotations = gardener_rotations.ANDROID,
     tree_closing_notifiers = ci_constants.DEFAULT_TREE_CLOSING_NOTIFIERS,
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
     health_spec = health_spec.default(),
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,

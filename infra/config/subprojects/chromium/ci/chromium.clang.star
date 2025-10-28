@@ -30,9 +30,6 @@ ci.defaults.set(
     # Naturally the runtime will be ~4-8h on average for basic builds.
     # Complex (e.g. sanitizer), CFI builds can take much longer.
     execution_timeout = 16 * time.hour,
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
     health_spec = health_spec.modified_default({
         "Unhealthy": health_spec.unhealthy_thresholds(
             fail_rate = struct(),
