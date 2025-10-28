@@ -25,18 +25,16 @@ void TabStateStorageUpdater::Add(std::unique_ptr<StorageUpdateUnit> unit) {
 bool TabStateStorageUpdater::Execute(TabStateStorageDatabase* db) {
   OpenTransaction* transaction = db->CreateTransaction();
 
-  if (transaction->HasFailed()) {
-    return false;
-  }
-
-  for (auto& op : updates_) {
-    if (!op->Execute(db, transaction)) {
-      transaction->MarkFailed();
-      break;
+  if (!transaction->HasFailed()) {
+    for (auto& op : updates_) {
+      if (!op->Execute(db, transaction)) {
+        transaction->MarkFailed();
+        break;
+      }
     }
   }
 
-  return db->CloseTransaction(std::move(transaction));
+  return db->CloseTransaction(transaction);
 }
 
 }  // namespace tabs
