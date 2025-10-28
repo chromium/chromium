@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/pickle.h"
@@ -22,9 +21,7 @@ class SecureHashSHA256 : public SecureHash {
  public:
   SecureHashSHA256() { SHA256_Init(&ctx_); }
 
-  SecureHashSHA256(const SecureHashSHA256& other) {
-    UNSAFE_TODO(memcpy(&ctx_, &other.ctx_, sizeof(ctx_)));
-  }
+  SecureHashSHA256(const SecureHashSHA256& other) : ctx_(other.ctx_) {}
 
   ~SecureHashSHA256() override {
     OPENSSL_cleanse(&ctx_, sizeof(ctx_));
@@ -54,9 +51,7 @@ class SecureHashSHA512 : public SecureHash {
  public:
   SecureHashSHA512() { SHA512_Init(&ctx_); }
 
-  SecureHashSHA512(const SecureHashSHA512& other) {
-    UNSAFE_TODO(memcpy(&ctx_, &other.ctx_, sizeof(ctx_)));
-  }
+  SecureHashSHA512(const SecureHashSHA512& other) : ctx_(other.ctx_) {}
 
   ~SecureHashSHA512() override { OPENSSL_cleanse(&ctx_, sizeof(ctx_)); }
 
