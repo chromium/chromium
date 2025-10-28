@@ -7,11 +7,11 @@ chrome.test.getConfig(async (config) => {
 
   chrome.test.runTests([
 
-    // Tests that when multiple listeners are registered for runtime.onMessage
-    // and the first registered throws an error, the sender's promise reacts
-    // similar to github.com/mozilla/webextension-polyfill (if
-    // polyfillSupportEnabled is `true`), and vice versa.
-    async function oneTimeMessageHandlerErrorThrownFirstError() {
+    // Tests that when a single listener is registered for runtime.onMessage and
+    // it throws an error the sender's promise reacts similar to
+    // github.com/mozilla/webextension-polyfill (if polyfillSupportEnabled is
+    // `true`), and vice versa.
+    async function oneTimeMessageHandlerListenerErrors() {
       if (polyfillSupportEnabled) {
         await chrome.test.assertPromiseRejects(
             chrome.runtime.sendMessage('test'),
@@ -19,7 +19,7 @@ chrome.test.getConfig(async (config) => {
         chrome.test.succeed();
       } else {
         const response = await chrome.runtime.sendMessage('test');
-        chrome.test.assertEq('response from listener', response);
+        chrome.test.assertEq(undefined, response);
         chrome.test.succeed();
       }
     },

@@ -157,9 +157,18 @@ class OneTimeMessageHandler {
   std::unique_ptr<OneTimeMessageCallback> CreatePromiseRejectedCallback(
       const PortId& port_id);
 
-  // Creates a callback to be called after an event is dispatched.
-  std::unique_ptr<OneTimeMessageCallback> CreateEventDispatchCallback(
+  // Creates a callback to handle when a listener throws an error while it is
+  // processing the message dispatched to it.
+  std::unique_ptr<OneTimeMessageCallback> CreateListenerErrorCallback(
       const PortId& port_id);
+
+  // Creates a callback to be called after an event is dispatched.
+  // `listener_error_callback_id` is provided if
+  // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport is
+  // enabled to help cleanup the listener error callback.
+  std::unique_ptr<OneTimeMessageCallback> CreateEventDispatchCallback(
+      const PortId& port_id,
+      std::optional<CallbackID> listener_error_callback_id);
 
   // Close the message port because all possible message response callbacks have
   // been collected and can no longer be called in v8. Doesn't close the channel
@@ -191,17 +200,42 @@ class OneTimeMessageHandler {
                                          bool close_channel,
                                          std::optional<std::string> error);
 
-  // Triggered when a receiver responds to a message.
+  // Returns the message response from v8 back to the message sender. Triggered
+  // the first time a receiver responds to a message. Will immediately send the
+  // response if another response or error wasn't already returned to the
+  // sender. Otherwise no response is returned.
   void OnOneTimeMessageResponse(const PortId& port_id,
                                 gin::Arguments* arguments);
 
-  // Triggered when a receiver's returned promise rejects.
+  // Returns the JS `.message` property from `possible_error_value`.
+  // If `possible_error_value->IsNativeError` is not true, the message cannot be
+  // found, or the message is empty then `std::nullopt` is returned.
+  std::optional<std::string> GetErrorMessageFromValue(
+      v8::Isolate* isolate,
+      v8::Local<v8::Value> possible_error_value);
+
+  // Returns the promise reject response from v8 back to the message sender.
+  // Triggered the first time  a receiver's returned promise rejects. Will
+  // immediately send the error if another response or error wasn't already
+  // returned to the sender. Otherwise no error is returned.
   void OnPromiseRejectedResponse(const PortId& port_id,
                                  gin::Arguments* arguments);
 
+  // Returns an error thrown in a listener from v8 back to the message sender.
+  // Triggered the first time a listener throws an error synchronously while it
+  // is processing the message dispatched to it. Will immediately send the error
+  // if another response or error wasn't already returned to the sender.
+  // Otherwise no error is returned.
+  void OnListenerThrowsError(const PortId& port_id, gin::Arguments* arguments);
+
   // Called when the messaging event has been dispatched with the result of the
   // listeners.
-  void OnEventFired(const PortId& port_id, gin::Arguments* arguments);
+  // `listener_error_callback_id` is provided if
+  // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport is
+  // enabled to help cleanup the listener error callback.
+  void OnEventFired(const PortId& port_id,
+                    std::optional<CallbackID> listener_error_callback_id,
+                    gin::Arguments* arguments);
 
   // Returns true if any of the listeners responded with `true` or (if enabled)
   // a Promise, indicating they will respond to the call asynchronously. If a
