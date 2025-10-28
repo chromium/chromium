@@ -107,6 +107,14 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+////////////////////////////////////////////////////////////////////////////////
+// NOTE: If you are working on these tests using an Android emulator (e.g. via
+// avd.py) be sure *not* to pass --enable-network to the emulator. The test bots
+// do not run with networking enabled. Some of these tests will fail locally
+// you enable networking in your emulator. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/android_emulator.md
+////////////////////////////////////////////////////////////////////////////////
+
 using content::BrowserContext;
 using content::BrowserThread;
 using content::DownloadManager;
