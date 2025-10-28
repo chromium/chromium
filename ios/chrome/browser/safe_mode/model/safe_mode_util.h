@@ -6,15 +6,15 @@
 #define IOS_CHROME_BROWSER_SAFE_MODE_MODEL_SAFE_MODE_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace safe_mode_util {
 
-// Returns a list of the paths of all images (e.g., dynamic libraries)
-// currently loaded.
-// If `path_filter` is non-NULL, only paths starting with `path_filter` will be
-// returned.
-std::vector<std::string> GetLoadedImages(const char* path_filter);
+// Returns a list of the paths of all images (e.g., dynamic libraries) currently
+// loaded. If `path_filter` is non-empty, only paths starting with `path_filter`
+// will be returned.
+std::vector<std::string> GetLoadedImages(std::string_view path_filter);
 
 }  // namespace safe_mode_util
 

@@ -6,6 +6,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import <string_view>
+
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/safe_mode/model/safe_mode_crashing_modules_config.h"
@@ -23,6 +25,8 @@ const CGFloat kVerticalSpacing = 20;
 const CGFloat kUploadProgressSpacing = 5;
 const NSTimeInterval kUploadPumpInterval = 0.1;
 const NSTimeInterval kUploadTotalTime = 5;
+constexpr std::string_view kThirdPartyModsDirectory =
+    "/Library/MobileSubstrate/DynamicLibraries/";
 }  // anonymous namespace
 
 @interface SafeModeViewController ()
@@ -73,8 +77,8 @@ const NSTimeInterval kUploadTotalTime = 5;
 }
 
 + (BOOL)detectedThirdPartyMods {
-  std::vector<std::string> thirdPartyMods = safe_mode_util::GetLoadedImages(
-      "/Library/MobileSubstrate/DynamicLibraries/");
+  std::vector<std::string> thirdPartyMods =
+      safe_mode_util::GetLoadedImages(kThirdPartyModsDirectory);
   return (thirdPartyMods.size() > 0);
 }
 
@@ -88,13 +92,13 @@ const NSTimeInterval kUploadTotalTime = 5;
 
 // Return any jailbroken library that appears in SafeModeCrashingModulesConfig.
 - (NSArray*)startupCrashModules {
-  std::vector<std::string> modules = safe_mode_util::GetLoadedImages(
-      "/Library/MobileSubstrate/DynamicLibraries/");
+  std::vector<std::string> modules =
+      safe_mode_util::GetLoadedImages(kThirdPartyModsDirectory);
   NSMutableArray* array = [NSMutableArray arrayWithCapacity:modules.size()];
   SafeModeCrashingModulesConfig* config =
       [SafeModeCrashingModulesConfig sharedInstance];
-  for (size_t i = 0; i < modules.size(); i++) {
-    NSString* path = base::SysUTF8ToNSString(modules[i]);
+  for (const std::string& module_name : modules) {
+    NSString* path = base::SysUTF8ToNSString(module_name);
     NSString* friendlyName = [config startupCrashModuleFriendlyName:path];
     if (friendlyName != nil) {
       [array addObject:friendlyName];
