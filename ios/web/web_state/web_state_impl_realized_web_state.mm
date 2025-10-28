@@ -1007,6 +1007,10 @@ void WebStateImpl::RealizedWebState::GoToBackForwardListItem(
                                    hasUserGesture:has_user_gesture];
 }
 
+void WebStateImpl::RealizedWebState::UpdateSSLStatusForCurrentNavigationItem() {
+  [web_controller_ updateSSLStatusForCurrentNavigationItem];
+}
+
 void WebStateImpl::RealizedWebState::RemoveWebView() {
   return [web_controller_ removeWebView];
 }

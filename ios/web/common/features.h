@@ -107,6 +107,12 @@ bool IsWebInspectorSupportEnabled();
 // Returns whether the TabHelpers should only be created for realized WebStates.
 bool CreateTabHelperOnlyForRealizedWebStates();
 
+// TODO(crbug.com/449156290): Clean up the kill switch for updating SSL status
+// on navigation item creation.
+// When enabled, trigger an update of the SSL status on navigation item
+// lazy creation. This is intended to be used as a kill switch.
+BASE_DECLARE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation);
+
 }  // namespace web::features
 
 #endif  // IOS_WEB_COMMON_FEATURES_H_
