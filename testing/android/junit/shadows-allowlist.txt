@@ -32,7 +32,6 @@
 +org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper
 +org.chromium.chrome.browser.tab.TabBuilder
 +org.chromium.chrome.browser.tab.TabUtils
-+org.chromium.chrome.browser.tab.TrustedCdn
 +org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController$Delegate
 +org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory
 +org.chromium.chrome.browser.ui.hats.MessageSurveyUiDelegate
