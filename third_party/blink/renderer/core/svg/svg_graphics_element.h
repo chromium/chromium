@@ -63,8 +63,7 @@ class CORE_EXPORT SVGGraphicsElement : public SVGTransformableElement,
                      ConstructionType = kCreateSVGElement);
 
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override {
-    if (RuntimeEnabledFeatures::RestrictTabFocusForHiddenSVGElementsEnabled() &&
-        IsNonRendered(GetLayoutObject())) {
+    if (IsNonRendered(GetLayoutObject())) {
       return FocusableState::kNotFocusable;
     }
 

@@ -238,8 +238,7 @@ FocusableState SVGAElement::SupportsFocus(
     return SVGGraphicsElement::SupportsFocus(update_behavior);
   }
   if (IsLink()) {
-    if (RuntimeEnabledFeatures::RestrictTabFocusForHiddenSVGElementsEnabled() &&
-        IsNonRendered(GetLayoutObject())) {
+    if (IsNonRendered(GetLayoutObject())) {
       return FocusableState::kNotFocusable;
     }
 

@@ -4242,10 +4242,6 @@
       status: "stable",
     },
     {
-      name: "RestrictTabFocusForHiddenSVGElements",
-      status: "stable",
-    },
-    {
       // Constrains text selections to stay within table cell boundaries
       // (e.g., triple-click paragraph selection)
       // See crbug.com/40852213.
