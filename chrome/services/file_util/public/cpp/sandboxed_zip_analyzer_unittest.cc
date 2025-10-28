@@ -7,11 +7,13 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -47,7 +49,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   struct BinaryData {
     const char* file_path;
     safe_browsing::ClientDownloadRequest_DownloadType download_type;
-    const uint8_t* sha256_digest;
+    base::raw_span<const uint8_t> sha256_digest;
     int64_t length;
     bool is_signed;
   };
@@ -162,10 +164,9 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
     ASSERT_TRUE(binary.digests().has_sha256());
-    UNSAFE_TODO(
-        EXPECT_EQ(std::string(data.sha256_digest,
-                              data.sha256_digest + crypto::kSHA256Length),
-                  binary.digests().sha256()));
+    auto actual_digest_span =
+        base::as_bytes(base::span(binary.digests().sha256()));
+    EXPECT_EQ(data.sha256_digest, actual_digest_span);
     EXPECT_FALSE(binary.digests().has_sha1());
     EXPECT_FALSE(binary.digests().has_md5());
     ASSERT_TRUE(binary.has_length());
@@ -228,7 +229,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kUnsignedExe = {
         "unsigned.exe",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kUnsignedDigest[0],
+        kUnsignedDigest,
         36864,
         false,  // !is_signed
 };
@@ -236,7 +237,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kSignedExe = {
         "signed.exe",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kSignedDigest[0],
+        kSignedDigest,
         37768,
         true,  // is_signed
 };
@@ -244,7 +245,7 @@ const SandboxedZipAnalyzerTest::BinaryData SandboxedZipAnalyzerTest::kJSEFile =
     {
         "hello.jse",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kJSEFileDigest[0],
+        kJSEFileDigest,
         6,
         false,  // is_signed
 };
@@ -258,7 +259,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kUnsignedMachO = {
         "app-with-executables.app/Contents/MacOS/executablefat",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kUnsignedMachODigest[0],
+        kUnsignedMachODigest,
         16640,
         false,  // !is_signed
 };
@@ -270,7 +271,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kSignedMachO = {
         "app-with-executables.app/Contents/MacOS/signedexecutablefat",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kSignedMachODigest[0],
+        kSignedMachODigest,
         34176,
         true,  // !is_signed
 };
