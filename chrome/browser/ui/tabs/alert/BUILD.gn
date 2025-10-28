@@ -56,6 +56,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":tab_alert",
+    "//chrome/browser/permissions/system",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support",

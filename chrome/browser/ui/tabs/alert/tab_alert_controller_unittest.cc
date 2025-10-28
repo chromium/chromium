@@ -6,13 +6,21 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -26,8 +34,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "media/mojo/mojom/display_media_information.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace tabs {
@@ -244,4 +254,121 @@ TEST_F(TabAlertControllerTest, MutedStateReliesOnRecentlyAudible) {
   task_environment()->FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
 }
+
+TEST_F(TabAlertControllerTest, MediaStatesUpdate) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Need to mock the system settings to allow audio and video capture on
+  // ChromeOS.
+  base::AutoReset<bool> mock_system_settings =
+      system_permission_settings::MockShowSystemSettingsForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  scoped_refptr<MediaStreamCaptureIndicator> indicator =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  // Simulate audio being captured
+  blink::mojom::StreamDevices audio_device;
+  audio_device.audio_device = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "audio_device",
+      "audio_device");
+  auto audio_stream_ui = indicator->RegisterMediaStream(
+      tab_interface()->GetContents(), audio_device);
+  audio_stream_ui->OnStarted(base::DoNothing(), base::DoNothing(),
+                             std::string(), {}, base::DoNothing());
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::AUDIO_RECORDING);
+
+  // Simulate video also being captured.
+  blink::mojom::StreamDevices video_device;
+  video_device.video_device = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, "video_device",
+      "video_device");
+  ;
+  auto video_stream_ui = indicator->RegisterMediaStream(
+      tab_interface()->GetContents(), video_device);
+  video_stream_ui->OnStarted(base::DoNothing(), base::DoNothing(),
+                             std::string(), {}, base::DoNothing());
+
+  // The tab alert should be MEDIA_RECORDING because the tab's audio and video
+  // is being captured.
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::MEDIA_RECORDING);
+
+  // Resetting the audio capture should leave only the video capture alert as
+  // active.
+  audio_stream_ui.reset();
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::VIDEO_RECORDING);
+
+  video_stream_ui.reset();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, DesktopCapturingUpdates) {
+  scoped_refptr<MediaStreamCaptureIndicator> indicator =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  // Simulate the display monitor being captured.
+  blink::mojom::StreamDevices video_device;
+  blink::MediaStreamDevice display_monitor_video_stream(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, "video_device",
+      "video_device");
+  display_monitor_video_stream.display_media_info =
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::MONITOR, true,
+          media::mojom::CursorCaptureType::NEVER, nullptr, 100);
+  video_device.video_device = display_monitor_video_stream;
+
+  auto video_stream_ui = indicator->RegisterMediaStream(
+      tab_interface()->GetContents(), video_device);
+  video_stream_ui->OnStarted(base::DoNothing(), base::DoNothing(),
+                             std::string(), {}, base::DoNothing());
+
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::DESKTOP_CAPTURING);
+
+  // Start a second stream but capture the window instead.
+  blink::mojom::StreamDevices second_video_device;
+  blink::MediaStreamDevice display_window_video_stream(
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, "video_device",
+      "video_device");
+  display_window_video_stream.display_media_info =
+      media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::WINDOW, true,
+          media::mojom::CursorCaptureType::NEVER, nullptr, 100);
+  second_video_device.video_device = display_window_video_stream;
+  auto second_video_stream_ui = indicator->RegisterMediaStream(
+      tab_interface()->GetContents(), second_video_device);
+  second_video_stream_ui->OnStarted(base::DoNothing(), base::DoNothing(),
+                                    std::string(), {}, base::DoNothing());
+
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::DESKTOP_CAPTURING);
+
+  // Even though the first stream has stopped, the desktop capturing alert
+  // should remain active because the is still being captured by the window.
+  video_stream_ui.reset();
+  EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
+            TabAlert::DESKTOP_CAPTURING);
+
+  // The desktop capturing alert should no longer be active after the second
+  // video stream stopped.
+  second_video_stream_ui.reset();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
 }  // namespace tabs

@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -264,7 +265,7 @@ void TabAlertController::OnIsCapturingVideoChanged(
     content::WebContents* contents,
     bool is_capturing_video) {
   if (contents == web_contents()) {
-    UpdateAlertState(TabAlert::MEDIA_RECORDING, is_capturing_video);
+    UpdateAlertState(TabAlert::VIDEO_RECORDING, is_capturing_video);
   }
 }
 
@@ -272,7 +273,7 @@ void TabAlertController::OnIsCapturingAudioChanged(
     content::WebContents* contents,
     bool is_capturing_audio) {
   if (contents == web_contents()) {
-    UpdateAlertState(TabAlert::MEDIA_RECORDING, is_capturing_audio);
+    UpdateAlertState(TabAlert::AUDIO_RECORDING, is_capturing_audio);
   }
 }
 
@@ -288,7 +289,11 @@ void TabAlertController::OnIsCapturingWindowChanged(
     content::WebContents* contents,
     bool is_capturing_window) {
   if (contents == web_contents()) {
-    UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_capturing_window);
+    const bool is_desktop_capturing_active =
+        is_capturing_window || MediaCaptureDevicesDispatcher::GetInstance()
+                                   ->GetMediaStreamCaptureIndicator()
+                                   ->IsCapturingDisplay(contents);
+    UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_desktop_capturing_active);
   }
 }
 
@@ -296,7 +301,11 @@ void TabAlertController::OnIsCapturingDisplayChanged(
     content::WebContents* contents,
     bool is_capturing_display) {
   if (contents == web_contents()) {
-    UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_capturing_display);
+    const bool is_desktop_capturing_active =
+        is_capturing_display || MediaCaptureDevicesDispatcher::GetInstance()
+                                    ->GetMediaStreamCaptureIndicator()
+                                    ->IsCapturingWindow(contents);
+    UpdateAlertState(TabAlert::DESKTOP_CAPTURING, is_desktop_capturing_active);
   }
 }
 
@@ -328,15 +337,46 @@ void TabAlertController::OnRecentlyAudibleStateChanged(bool was_audible) {
 
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
   std::optional<TabAlert> previous_alert = GetAlertToShow();
-  if (is_active) {
-    active_alerts_.insert(alert);
+
+  if (alert == TabAlert::AUDIO_RECORDING ||
+      alert == TabAlert::VIDEO_RECORDING) {
+    UpdateMediaAlert();
   } else {
-    active_alerts_.erase(alert);
+    if (is_active) {
+      active_alerts_.insert(alert);
+    } else {
+      active_alerts_.erase(alert);
+    }
   }
 
   std::optional<TabAlert> updated_alert = GetAlertToShow();
   if (previous_alert != updated_alert) {
     alert_to_show_changed_callbacks_.Notify(updated_alert);
+  }
+}
+
+void TabAlertController::UpdateMediaAlert() {
+  MediaStreamCaptureIndicator* const media_stream_capture_indicator =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          .get();
+  content::WebContents* const web_contents = tab().GetContents();
+
+  const bool is_capturing_audio =
+      media_stream_capture_indicator->IsCapturingAudio(web_contents);
+  const bool is_capturing_video =
+      media_stream_capture_indicator->IsCapturingVideo(web_contents);
+
+  active_alerts_.erase(TabAlert::MEDIA_RECORDING);
+  active_alerts_.erase(TabAlert::VIDEO_RECORDING);
+  active_alerts_.erase(TabAlert::AUDIO_RECORDING);
+
+  if (is_capturing_video && is_capturing_audio) {
+    active_alerts_.insert(TabAlert::MEDIA_RECORDING);
+  } else if (is_capturing_video) {
+    active_alerts_.insert(TabAlert::VIDEO_RECORDING);
+  } else if (is_capturing_audio) {
+    active_alerts_.insert(TabAlert::AUDIO_RECORDING);
   }
 }
 }  // namespace tabs
