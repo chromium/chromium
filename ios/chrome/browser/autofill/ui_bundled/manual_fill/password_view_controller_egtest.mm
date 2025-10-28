@@ -979,6 +979,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   DISABLED_testPasswordGenerationFallbackSignedInEncryptionError
 #endif
 - (void)MAYBE_testPasswordGenerationFallbackSignedInEncryptionError {
+  // TODO(crbug.com/455768802): Re-enable the test.
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
