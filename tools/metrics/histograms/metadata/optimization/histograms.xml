@@ -89,6 +89,8 @@ chromium-metrics-reviews@google.com.
   <variant name="TextSafety" summary="Text Safety"/>
   <variant name="Unknown" summary="Unknown"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
+  <variant name="WebRTCNeuralResidualEchoEstimator"
+      summary="WebRTC Neural Residual Echo Estimator"/>
   <variant name="WritingAssistance" summary="Writing Assistance APIs"/>
   <variant name="ZeroStateSuggestions" summary="GLIC Zero State Suggestions"/>
 </variants>
