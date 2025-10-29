@@ -105,8 +105,7 @@ void ContextualTask::AddTabId(SessionID tab_id) {
 }
 
 void ContextualTask::RemoveTabId(SessionID tab_id) {
-  tab_ids_.erase(std::remove(tab_ids_.begin(), tab_ids_.end(), tab_id),
-                 tab_ids_.end());
+  std::erase(tab_ids_, tab_id);
 }
 
 void ContextualTask::ClearTabIds() {
