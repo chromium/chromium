@@ -127,9 +127,7 @@ BookmarkDataTypeProcessor::BookmarkDataTypeProcessor(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior)
     : wipe_model_upon_sync_disabled_behavior_(
-          wipe_model_upon_sync_disabled_behavior),
-      max_bookmarks_till_sync_enabled_(syncer::kSyncBookmarksLimitValue.Get()) {
-}
+          wipe_model_upon_sync_disabled_behavior) {}
 
 BookmarkDataTypeProcessor::~BookmarkDataTypeProcessor() {
   if (bookmark_model_ && bookmark_model_observer_) {
@@ -467,6 +465,20 @@ void BookmarkDataTypeProcessor::ConnectIfReady() {
   std::move(start_callback_).Run(std::move(activation_context));
 }
 
+bool BookmarkDataTypeProcessor::DoesCountExceedBookmarksSyncLimit(
+    size_t count,
+    size_t offset) const {
+  if (sync_bookmarks_limit_for_tests_.has_value()) {
+    return count > sync_bookmarks_limit_for_tests_.value() + offset;
+  }
+  // Count is less than the default limit so should not bother checking against
+  // `kSyncBookmarksLimitValue` which is bound to be >= the default limit.
+  if (count <= syncer::kDefaultSyncBookmarksLimit + offset) {
+    return false;
+  }
+  return count > syncer::kSyncBookmarksLimitValue.Get() + offset;
+}
+
 bool BookmarkDataTypeProcessor::MaybeReportBookmarkCountLimitExceededError(
     syncer::ModelError::Type error_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -479,7 +491,7 @@ bool BookmarkDataTypeProcessor::MaybeReportBookmarkCountLimitExceededError(
   const size_t count = bookmark_tracker_
                            ? bookmark_tracker_->TrackedBookmarksCount()
                            : CountSyncableBookmarksFromModel(bookmark_model_);
-  if (count > max_bookmarks_till_sync_enabled_) {
+  if (DoesCountExceedBookmarksSyncLimit(count)) {
     // For the case where a tracker already
     // exists, local changes will continue
     // to be tracked in order order to allow users to delete bookmarks and
@@ -569,15 +581,13 @@ void BookmarkDataTypeProcessor::OnInitialUpdateReceived(
 
   TRACE_EVENT0("sync", "BookmarkDataTypeProcessor::OnInitialUpdateReceived");
 
+  // Report error if count of remote updates is more than the limit.
   // `updates` can contain an additional root folder. The server may or may not
   // deliver a root node - it is not guaranteed, but this works as an
   // approximated safeguard.
-  const size_t max_initial_updates_count = max_bookmarks_till_sync_enabled_ + 1;
-
-  // Report error if count of remote updates is more than the limit.
   // Note that we are not having this check for incremental updates as it is
   // very unlikely that there will be many updates downloaded.
-  if (updates.size() > max_initial_updates_count) {
+  if (DoesCountExceedBookmarksSyncLimit(updates.size(), /*offset=*/1)) {
     DisconnectSync();
     last_initial_merge_remote_updates_exceeded_limit_ = true;
     activation_request_.error_handler.Run(syncer::ModelError(
@@ -771,7 +781,7 @@ void BookmarkDataTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
 
 void BookmarkDataTypeProcessor::SetMaxBookmarksTillSyncEnabledForTest(
     size_t limit) {
-  max_bookmarks_till_sync_enabled_ = limit;
+  sync_bookmarks_limit_for_tests_ = limit;
 }
 
 void BookmarkDataTypeProcessor::ClearMetadataIfStopped() {

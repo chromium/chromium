@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_DATA_TYPE_PROCESSOR_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -122,6 +123,11 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   // entities.
   void NudgeForCommitIfNeeded();
 
+  // Returns true if the given `count` of bookmarks exceeds the sync limit. An
+  // `offset` can be provided for cases where the exact count is not known.
+  bool DoesCountExceedBookmarksSyncLimit(size_t count,
+                                         size_t offset = 0) const;
+
   // Performs the required clean up when bookmark model is being deleted.
   void OnBookmarkModelBeingDeleted();
 
@@ -212,7 +218,7 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   std::unique_ptr<BookmarkModelObserverImpl> bookmark_model_observer_;
 
   // This member variable exists only to allow tests to override the limit.
-  size_t max_bookmarks_till_sync_enabled_;
+  std::optional<size_t> sync_bookmarks_limit_for_tests_;
 
   // Marks whether metadata should be cleared upon ModelReadyToSync(). True if
   // ClearMetadataIfStopped() is called before ModelReadyToSync().

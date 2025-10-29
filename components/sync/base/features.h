@@ -64,10 +64,12 @@ BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 
-// If enabled, the bookmarks count limit is controlled by a finch parameter.
+// If enabled, the bookmarks count limit is controlled by a Finch parameter.
 BASE_DECLARE_FEATURE(kSyncBookmarksLimit);
+constexpr size_t kDefaultSyncBookmarksLimit = 100000;
 inline constexpr base::FeatureParam<size_t> kSyncBookmarksLimitValue{
-    &kSyncBookmarksLimit, "sync-bookmarks-limit-value", 100000};
+    &kSyncBookmarksLimit, "sync-bookmarks-limit-value",
+    kDefaultSyncBookmarksLimit};
 
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
