@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_state/login_state_api.h"
@@ -111,6 +110,13 @@ class AuthenticationScreenLoginStateApiTest
     return &extension_force_install_mixin_;
   }
 
+  bool IsExtensionInstalledOnLockScreen(const std::string& extension_id) const {
+    const auto* const registry =
+        extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile());
+    CHECK(registry);
+    return registry->GetInstalledExtension(extension_id) != nullptr;
+  }
+
   void SetCustomTestArg(const std::string custom_arg) {
     config_.Set("customArg", custom_arg);
     extensions::TestGetConfigFunction::set_test_config_state(&config_);
@@ -145,14 +151,8 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
 
 // Test that `loginState.getProfileType()` returns `LOCK_PROFILE` for
 // extensions running in the lock profile.
-// TODO(crbug.com/454412467): Fix flakiness and re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_GetProfileType_LockProfile DISABLED_GetProfileType_LockProfile
-#else
-#define MAYBE_GetProfileType_LockProfile GetProfileType_LockProfile
-#endif
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
-                       MAYBE_GetProfileType_LockProfile) {
+                       GetProfileType_LockProfile) {
   chromeos::AuthenticationScreenExtensionsExternalLoader::
       SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
 
@@ -170,6 +170,9 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
   // Force install on the sign-in profile as the same policy is applied to the
   // lock screen profile, and do it in-session so the sign-in extension doesn't
   // run.
+  extensions::TestExtensionRegistryObserver observer(
+      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
+      kExtensionId);
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kExtensionPath),
@@ -178,12 +181,9 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
       ExtensionForceInstallMixin::WaitMode::kLoad));
 
   ash::ScreenLockerTester().Lock();
-  ash::SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
-
-  extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
-      kExtensionId);
-  observer.WaitForExtensionLoaded();
+  if (!IsExtensionInstalledOnLockScreen(kExtensionId)) {
+    observer.WaitForExtensionLoaded();
+  }
 
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
