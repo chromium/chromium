@@ -240,6 +240,10 @@
   }
 
   if (omnibox::ForceBottomOmniboxInEditState()) {
+    if (IsCompactHeight(_toolbarTraitCollection)) {
+      return ToolbarType::kPrimary;
+    }
+
     return ToolbarType::kSecondary;
   }
 
