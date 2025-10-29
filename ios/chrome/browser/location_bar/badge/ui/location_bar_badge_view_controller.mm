@@ -59,11 +59,11 @@
   // entrypoint and Infobar badges, if present.
   UIView* _separator;
 
-  // Constraints for the two states of the trailing edge of the entrypoint
+  // Constraints for the two states of the trailing edge of the badge
   // container. They are activated/deactivated as needed when the label is
   // shown/hidden.
-  NSLayoutConstraint* _largeTrailingConstraint;
-  NSLayoutConstraint* _smallTrailingConstraint;
+  NSLayoutConstraint* _expandedContainerTrailingConstraint;
+  NSLayoutConstraint* _collapsedContainerTrailingConstraint;
 
   // Whether the badge is tapped. Used to update the badge's colors.
   BOOL _badgeTapped;
@@ -372,15 +372,15 @@
   [_badgeContentView addLayoutGuide:labelLeadingSpace];
   [_badgeContentView addLayoutGuide:labelTrailingSpace];
 
-  _smallTrailingConstraint = [_buttonContainer.trailingAnchor
+  _collapsedContainerTrailingConstraint = [_buttonContainer.trailingAnchor
       constraintEqualToAnchor:_badgeIcon.trailingAnchor];
-  _largeTrailingConstraint = [_buttonContainer.trailingAnchor
+  _expandedContainerTrailingConstraint = [_buttonContainer.trailingAnchor
       constraintEqualToAnchor:labelTrailingSpace.trailingAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
     [self.view.widthAnchor
         constraintGreaterThanOrEqualToAnchor:self.view.heightAnchor],
-    _smallTrailingConstraint,
+    _collapsedContainerTrailingConstraint,
     // The entrypoint doesn't fully fill the height of the location bar, so to
     // make it exactly follow the curvature of the location bar's corner radius,
     // it must be placed with the same amount of margin space horizontally that
@@ -436,14 +436,14 @@
   AddSameConstraints(_badgeContentView, _buttonContainer);
 }
 
-- (void)activateLargeEntrypointTrailingConstraint {
-  _smallTrailingConstraint.active = NO;
-  _largeTrailingConstraint.active = YES;
+- (void)activateExpandedContainerConstraint {
+  _collapsedContainerTrailingConstraint.active = NO;
+  _expandedContainerTrailingConstraint.active = YES;
 }
 
-- (void)activateSmallEntrypointTrailingConstraint {
-  _largeTrailingConstraint.active = NO;
-  _smallTrailingConstraint.active = YES;
+- (void)activateCollapsedContainerConstraint {
+  _expandedContainerTrailingConstraint.active = NO;
+  _collapsedContainerTrailingConstraint.active = YES;
 }
 
 - (void)updateLabelFont {
@@ -466,9 +466,9 @@
       UIContentSizeCategoryAccessibilityLarge);
 }
 
-// Refreshes the VoiceOver bounding box and notifies the mutator
-// that the animation to transition to a small entrypoint has completed.
-- (void)didCompleteTransitionToSmallEntrypoint {
+// Refreshes the VoiceOver bounding box and notifies the mutator that the
+// animation to collapse the badge container is complete.
+- (void)didCollapseBadgeContainer {
   [self refreshVoiceOverBoundingBoxIfFocused];
   if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
     [self.contextualPanelEntryPointMutator
@@ -476,7 +476,7 @@
   }
 
   if (_badgeConfig.shouldHideBadgeAfterChipCollapse) {
-    [self hideEntrypoint];
+    [self hideBadge];
   }
 }
 
@@ -513,24 +513,23 @@
   _separator.hidden = !_infobarBadgesCurrentlyShown;
 }
 
-// Applies the correct color to the entrypoint (highlighted blue when the
+// Applies the correct color to the badge (highlighted blue when the
 // in-product help is present), otherwise back to the normal colorset.
-- (void)styleEntrypointForColoredState:(BOOL)colored {
-  _badgeIcon.tintColor = colored ? [UIColor colorNamed:kBackgroundColor]
-                                 : [UIColor colorNamed:kBlue600Color];
+- (void)updateBadgeHighlight:(BOOL)higlighted {
+  _badgeIcon.tintColor = higlighted ? [UIColor colorNamed:kBackgroundColor]
+                                    : [UIColor colorNamed:kBlue600Color];
 
   // Update entrypoint container background.
   UIColor* buttonContainerBackgroundColor =
-      colored ? [UIColor colorNamed:kBlue600Color]
-              : [UIColor colorNamed:kBackgroundColor];
+      higlighted ? [UIColor colorNamed:kBlue600Color]
+                 : [UIColor colorNamed:kBackgroundColor];
   _buttonContainer.configuration = [self
       buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
 }
 
-// User swiped the large entrypoint chip towards the leading edge, intending to
-// dismiss it.
-- (void)largeEntrypointChipSwiped {
-  [self transitionToSmallEntrypoint];
+// User swiped the expanded badge towards the leading edge to dismiss it.
+- (void)expandedBadgeSwiped {
+  [self collapseBadgeContainer];
   // TODO(crbug.com/450006763): Create and use a metric for Location Bar Badge.
   base::RecordAction(base::UserMetricsAction(
       "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
@@ -552,7 +551,7 @@
 - (void)userTappedBadge {
   _badgeTapped = YES;
   [self refreshEntrypointVisualElements];
-  [self transitionToSmallEntrypoint];
+  [self collapseBadgeContainer];
   if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
     [self.contextualPanelEntryPointMutator entrypointTapped];
   } else {
@@ -655,10 +654,57 @@
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
   _infobarBadgesCurrentlyShown = infobarBadgesCurrentlyShown;
   [self refreshEntrypointVisualElements];
-  [self transitionToSmallEntrypoint];
+  [self collapseBadgeContainer];
 }
 
 - (void)showEntrypoint {
+  [self showBadge];
+}
+
+- (void)hideEntrypoint {
+  if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
+    [self hideBadge];
+  }
+}
+
+- (void)transitionToLargeEntrypoint {
+  [self expandBadgeContainer];
+}
+
+- (void)transitionToSmallEntrypoint {
+  [self collapseBadgeContainer];
+}
+
+- (void)transitionToContextualPanelOpenedState:(BOOL)opened {
+  _badgeTapped = opened;
+  [self refreshEntrypointVisualElements];
+  [self collapseBadgeContainer];
+}
+
+- (void)setEntrypointColored:(BOOL)colored {
+  [self highlightBadge:colored];
+}
+
+#pragma mark - LocationBarBadgeConsumer
+
+- (void)highlightBadge:(BOOL)highlight {
+  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
+    return;
+  }
+
+  __weak LocationBarBadgeViewController* weakSelf = self;
+
+  [UIView animateWithDuration:kBadgeDisplayingAnimationTime
+                        delay:0
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
+                   animations:^{
+                     [weakSelf updateBadgeHighlight:highlight];
+                   }
+                   completion:nil];
+}
+
+- (void)showBadge {
   if (_locationBarBadgeShouldBeVisible) {
     return;
   }
@@ -671,11 +717,11 @@
     return;
   }
 
-  // Animate the entrypoint appearance.
+  // Animate the badge appearance.
   self.view.alpha = 0;
   self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
-  [self setContextualPanelEntrypointHidden:NO];
+  [self setLocationBarBadgeHidden:NO];
 
   _buttonContainer.isAccessibilityElement = !self.view.hidden;
 
@@ -694,12 +740,12 @@
       }];
 }
 
-- (void)hideEntrypoint {
-  [self transitionToSmallEntrypoint];
+- (void)hideBadge {
+  [self collapseBadgeContainer];
   [self transitionToContextualPanelOpenedState:NO];
 
   _locationBarBadgeShouldBeVisible = NO;
-  [self setContextualPanelEntrypointHidden:YES];
+  [self setLocationBarBadgeHidden:YES];
 
   _buttonContainer.isAccessibilityElement = !self.view.hidden;
   [self setLocationBarLabelCenteredBetweenContent:NO];
@@ -709,8 +755,42 @@
   [self refreshVoiceOverBoundingBoxIfFocused];
 }
 
-- (void)transitionToLargeEntrypoint {
-  if (_largeTrailingConstraint.active) {
+- (void)collapseBadgeContainer {
+  if (_collapsedContainerTrailingConstraint.active) {
+    return;
+  }
+
+  __weak LocationBarBadgeViewController* weakSelf = self;
+
+  void (^animateBadgeContainerCollapse)() = ^{
+    LocationBarBadgeViewController* strongSelf = weakSelf;
+
+    if (!strongSelf) {
+      return;
+    }
+
+    [strongSelf activateCollapsedContainerConstraint];
+    [strongSelf setLocationBarLabelCenteredBetweenContent:NO];
+    [strongSelf.view layoutIfNeeded];
+  };
+
+  [UIView animateWithDuration:kBadgeContainerCollapseAnimationTime
+                        delay:0
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
+                   animations:animateBadgeContainerCollapse
+                   completion:^(BOOL completed) {
+                     [weakSelf didCollapseBadgeContainer];
+                   }];
+
+  [_buttonContainer removeGestureRecognizer:_swipeRecognizer];
+
+  [_layoutGuideCenter referenceView:nil
+                          underName:kLocationBarBadgeLargeEntrypointGuide];
+}
+
+- (void)expandBadgeContainer {
+  if (_expandedContainerTrailingConstraint.active) {
     return;
   }
 
@@ -719,7 +799,7 @@
 
   _swipeRecognizer = [[UISwipeGestureRecognizer alloc]
       initWithTarget:self
-              action:@selector(largeEntrypointChipSwiped)];
+              action:@selector(expandedBadgeSwiped)];
   _swipeRecognizer.cancelsTouchesInView = YES;
   _swipeRecognizer.direction = base::i18n::IsRTL()
                                    ? UISwipeGestureRecognizerDirectionRight
@@ -735,12 +815,12 @@
       return;
     }
 
-    [strongSelf activateLargeEntrypointTrailingConstraint];
+    [strongSelf activateExpandedContainerConstraint];
     [strongSelf setLocationBarLabelCenteredBetweenContent:YES];
     [strongSelf.view layoutIfNeeded];
   };
 
-  [UIView animateWithDuration:kLargeBadgeAppearingAnimationTime
+  [UIView animateWithDuration:kBadgeContainerExpandAnimationTime
                         delay:0
                       options:(UIViewAnimationOptionCurveEaseOut |
                                UIViewAnimationOptionAllowUserInteraction)
@@ -750,92 +830,16 @@
                    }];
 }
 
-- (void)transitionToSmallEntrypoint {
-  if (_smallTrailingConstraint.active) {
-    return;
-  }
-
-  __weak LocationBarBadgeViewController* weakSelf = self;
-
-  void (^animateTransitionToSmallEntrypoint)() = ^{
-    LocationBarBadgeViewController* strongSelf = weakSelf;
-
-    if (!strongSelf) {
-      return;
-    }
-
-    [strongSelf activateSmallEntrypointTrailingConstraint];
-    [strongSelf setLocationBarLabelCenteredBetweenContent:NO];
-    [strongSelf.view layoutIfNeeded];
-  };
-
-  [UIView animateWithDuration:kLargeBadgeDisappearingAnimationTime
-                        delay:0
-                      options:(UIViewAnimationOptionCurveEaseOut |
-                               UIViewAnimationOptionAllowUserInteraction)
-                   animations:animateTransitionToSmallEntrypoint
-                   completion:^(BOOL completed) {
-                     [weakSelf didCompleteTransitionToSmallEntrypoint];
-                   }];
-
-  [_buttonContainer removeGestureRecognizer:_swipeRecognizer];
-
-  [_layoutGuideCenter referenceView:nil
-                          underName:kLocationBarBadgeLargeEntrypointGuide];
-}
-
-- (void)transitionToContextualPanelOpenedState:(BOOL)opened {
-  _badgeTapped = opened;
-  [self refreshEntrypointVisualElements];
-  [self transitionToSmallEntrypoint];
-}
-
-- (void)setEntrypointColored:(BOOL)colored {
-  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
-    return;
-  }
-
-  __weak LocationBarBadgeViewController* weakSelf = self;
-
-  [UIView animateWithDuration:kBadgeDisplayingAnimationTime
-                        delay:0
-                      options:(UIViewAnimationOptionCurveEaseOut |
-                               UIViewAnimationOptionAllowUserInteraction)
-                   animations:^{
-                     [weakSelf styleEntrypointForColoredState:colored];
-                   }
-                   completion:nil];
-}
-
-#pragma mark - LocationBarBadgeConsumer
-
-- (void)highlightBadge:(BOOL)highlight {
-  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
-    return;
-  }
-
-  __weak LocationBarBadgeViewController* weakSelf = self;
-
-  [UIView animateWithDuration:kBadgeDisplayingAnimationTime
-                        delay:0
-                      options:(UIViewAnimationOptionCurveEaseOut |
-                               UIViewAnimationOptionAllowUserInteraction)
-                   animations:^{
-                     [weakSelf styleEntrypointForColoredState:highlight];
-                   }
-                   completion:nil];
-}
-
 #pragma mark FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _shouldCollapseForFullscreen = progress <= kFullscreenProgressThreshold;
   if (_shouldCollapseForFullscreen) {
-    [self setContextualPanelEntrypointHidden:YES];
+    [self setLocationBarBadgeHidden:YES];
   } else {
-    [self setContextualPanelEntrypointHidden:!_locationBarBadgeShouldBeVisible];
+    [self setLocationBarBadgeHidden:!_locationBarBadgeShouldBeVisible];
 
-    // Fade in/out the entrypoint badge.
+    // Fade in/out the badge.
     CGFloat alphaValue = fmax((progress - kFullscreenProgressThreshold) /
                                   (1 - kFullscreenProgressThreshold),
                               0);

@@ -16,6 +16,7 @@
 @protocol BWGCommands;
 @protocol LocationBarBadgeConsumer;
 @protocol LocationBarBadgeMediatorDelegate;
+class WebStateList;
 
 // Mediator for the location bar badge.
 @interface LocationBarBadgeMediator
@@ -25,12 +26,20 @@
                 LocationBarBadgeCommands,
                 LocationBarBadgeMutator>
 
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
 // The consumer for this mediator.
 @property(nonatomic, weak) id<LocationBarBadgeConsumer> consumer;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<LocationBarBadgeMediatorDelegate> delegate;
 // The command handler for Gemini commands.
 @property(nonatomic, weak) id<BWGCommands> BWGCommandHandler;
+
+// Cleans up mediator properties and variables.
+- (void)disconnect;
 
 @end
 

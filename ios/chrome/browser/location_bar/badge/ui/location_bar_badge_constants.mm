@@ -14,8 +14,8 @@ const CGFloat kSeparatorWidthConstant = 1;
 
 const NSTimeInterval kBadgeDisplayingAnimationTime = 0.3;
 
-const NSTimeInterval kLargeBadgeAppearingAnimationTime = 0.2;
-const NSTimeInterval kLargeBadgeDisappearingAnimationTime = 0.3;
+const NSTimeInterval kBadgeContainerExpandAnimationTime = 0.2;
+const NSTimeInterval kBadgeContainerCollapseAnimationTime = 0.3;
 
 const float kBadgeContainerShadowOpacity = 0.09f;
 const float kBadgeContainerShadowRadius = 5.0f;

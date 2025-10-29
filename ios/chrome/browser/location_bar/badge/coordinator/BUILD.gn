@@ -24,9 +24,11 @@ source_set("coordinator") {
     "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util:omnibox_util",
+    "//ios/web/public",
   ]
   frameworks = [ "UIKit.framework" ]
 }

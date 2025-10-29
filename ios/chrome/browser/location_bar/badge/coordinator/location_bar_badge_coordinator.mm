@@ -32,7 +32,7 @@
 
 @implementation LocationBarBadgeCoordinator {
   // The mediator for location bar badge.
-  LocationBarBadgeMediator* _locationBarBadgeMediator;
+  LocationBarBadgeMediator* _mediator;
   // The mediator for contextual panel badge and chip.
   ContextualPanelEntrypointMediator* _contextualPanelEntryPointMediator;
   // Observer that updates LocationBarBadgeViewController for
@@ -52,23 +52,25 @@
   if (IsContextualPanelEnabled()) {
     [self createContextualPanelEntryPointMediator];
   }
-  _locationBarBadgeMediator = [[LocationBarBadgeMediator alloc] init];
-  _locationBarBadgeMediator.consumer = _viewController;
-  _locationBarBadgeMediator.delegate = self;
-  _viewController.mutator = _locationBarBadgeMediator;
+  _mediator = [[LocationBarBadgeMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()];
+  _mediator.consumer = _viewController;
+  _mediator.delegate = self;
+  _viewController.mutator = _mediator;
   id<BWGCommands> BWGCommandHandler =
       HandlerForProtocol(_dispatcher, BWGCommands);
-  _locationBarBadgeMediator.BWGCommandHandler = BWGCommandHandler;
-  [_dispatcher startDispatchingToTarget:_locationBarBadgeMediator
+  _mediator.BWGCommandHandler = BWGCommandHandler;
+  [_dispatcher startDispatchingToTarget:_mediator
                             forProtocol:@protocol(LocationBarBadgeCommands)];
 }
 
 - (void)stop {
   _viewController = nil;
   [self stopContextualPanelEntrypointMediator];
-  [_dispatcher stopDispatchingToTarget:_locationBarBadgeMediator];
+  [_dispatcher stopDispatchingToTarget:_mediator];
   _dispatcher = nil;
-  _locationBarBadgeMediator = nil;
+  [_mediator disconnect];
+  _mediator = nil;
   _locationBarBadgeFullscreenUIUpdater = nullptr;
   _animatedFullscreenDisabler = nullptr;
 }
