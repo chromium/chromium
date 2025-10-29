@@ -24,6 +24,7 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
@@ -646,6 +647,39 @@ void BrowsingHistoryService::ReturnResultsToDriver(
   // results at the same time as we have pending local.
   if (!state->remote_results.empty()) {
     MergeDuplicateResults(state.get(), &results);
+
+    const base::Time local_expiry_threshold =
+        clock_->Now() - base::Days(HistoryBackend::kExpireDaysThreshold);
+    base::flat_map<HistoryEntry::EntryType, size_t> pre_expiry_counts;
+    base::flat_map<HistoryEntry::EntryType, size_t> post_expiry_counts;
+    for (const HistoryEntry& entry : results) {
+      if (entry.time < local_expiry_threshold) {
+        ++pre_expiry_counts[entry.entry_type];
+      } else {
+        ++post_expiry_counts[entry.entry_type];
+      }
+    }
+    // Note: The histogram max of 150 is chosen to match `RESULTS_PER_PAGE` from
+    // chrome/browser/resources/history/constants.ts and `kMaxQueryCount` from
+    // chrome/browser/android/history/browsing_history_bridge.cc.
+    base::UmaHistogramCustomCounts(
+        "History.WebHistoryMergeResult.LocalOnly.PreExpiryThreshold",
+        pre_expiry_counts[HistoryEntry::LOCAL_ENTRY], 0, 150, 50);
+    base::UmaHistogramCustomCounts(
+        "History.WebHistoryMergeResult.LocalOnly.PostExpiryThreshold",
+        post_expiry_counts[HistoryEntry::LOCAL_ENTRY], 0, 150, 50);
+    base::UmaHistogramCustomCounts(
+        "History.WebHistoryMergeResult.RemoteOnly.PreExpiryThreshold",
+        pre_expiry_counts[HistoryEntry::REMOTE_ENTRY], 0, 150, 50);
+    base::UmaHistogramCustomCounts(
+        "History.WebHistoryMergeResult.RemoteOnly.PostExpiryThreshold",
+        post_expiry_counts[HistoryEntry::REMOTE_ENTRY], 0, 150, 50);
+    base::UmaHistogramCustomCounts(
+        "History.WebHistoryMergeResult.Combined.PreExpiryThreshold",
+        pre_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
+    base::UmaHistogramCustomCounts(
+        "History.WebHistoryMergeResult.Combined.PostExpiryThreshold",
+        post_expiry_counts[HistoryEntry::COMBINED_ENTRY], 0, 150, 50);
   } else {
     // TODO(skym): Is the optimization to skip merge on local only results worth
     // the complexity increase here?
