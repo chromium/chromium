@@ -135,6 +135,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
 void VerticalTabStripRegionView::OnCollapsedStateChanged(
     tabs::VerticalTabStripStateController* state_controller) {
   tab_strip_view_->SetCollapsedState(state_controller->IsCollapsed());
+  bottom_button_container_->OnCollapsedStateChanged(state_controller);
 }
 
 BEGIN_METADATA(VerticalTabStripRegionView)

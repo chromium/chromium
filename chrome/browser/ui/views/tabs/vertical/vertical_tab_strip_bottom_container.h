@@ -38,6 +38,9 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
 
   void ShowEverythingMenu();
 
+  void OnCollapsedStateChanged(
+      tabs::VerticalTabStripStateController* state_controller);
+
  private:
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::LabelButton> new_tab_button_ = nullptr;

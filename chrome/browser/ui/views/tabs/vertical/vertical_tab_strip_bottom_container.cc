@@ -22,8 +22,6 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
     BrowserWindowInterface* browser)
     : browser_(browser),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
-  // TODO (crbug.com/439961053): Set up a callback subscription for the state
-  // controller
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
   // Setting Button's layout based on collapsed state
@@ -106,6 +104,12 @@ void VerticalTabStripBottomContainer::ShowEverythingMenu() {
       tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
 
   everything_menu_->RunMenu();
+}
+
+void VerticalTabStripBottomContainer::OnCollapsedStateChanged(
+    tabs::VerticalTabStripStateController* controller) {
+  // TODO(crbug.com/439961053): Add styling for bottom container buttons in
+  // collapsed state.
 }
 
 BEGIN_METADATA(VerticalTabStripBottomContainer)
