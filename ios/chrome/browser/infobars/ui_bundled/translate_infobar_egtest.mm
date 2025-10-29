@@ -1434,6 +1434,11 @@ void TestResponseProvider::GetLanguageResponse(
 // Tests that translation settings in Reader Mode is displayed and that
 // translation is applied when selected.
 - (void)testTranslateInReaderMode {
+  // TODO(crbug.com/456123877): Re-enable the test.
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
