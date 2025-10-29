@@ -4,4 +4,5 @@
 
 include_rules = [
     "+ios/components/enterprise/data_controls",
+    "+ios/chrome/browser/browser_container/model/edit_menu_builder.h",
 ]
