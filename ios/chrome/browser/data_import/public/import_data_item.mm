@@ -2,7 +2,7 @@
 /// Use of this source code is governed by a BSD-style license that can be
 /// found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
+#import "ios/chrome/browser/data_import/public/import_data_item.h"
 
 #import "base/check_op.h"
 #import "base/notreached.h"

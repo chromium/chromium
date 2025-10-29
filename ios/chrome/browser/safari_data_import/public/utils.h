@@ -11,14 +11,6 @@
 /// page.
 NSString* GetSafariDataEntryPointAccessibilityIdentifier();
 
-/// Returns the accessibility identifier to set on a `SafariDataItemTableView`.
-NSString* GetSafariDataItemTableViewAccessibilityIdentifier();
-
-/// Returns the accessibility identifier to set on a cell in the
-/// `SafariDataItemTableView`.
-NSString* GetSafariDataItemTableViewCellAccessibilityIdentifier(
-    NSUInteger cell_index);
-
 /// Returns the accessibility identifier to set on the table view for password
 /// conflict resolution.
 NSString* GetPasswordConflictResolutionTableViewAccessibilityIdentifier();

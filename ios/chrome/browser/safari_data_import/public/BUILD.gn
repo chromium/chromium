@@ -10,9 +10,6 @@ source_set("public") {
     "safari_data_import_entry_point.h",
     "safari_data_import_stage.h",
     "safari_data_import_ui_handler.h",
-    "safari_data_item.h",
-    "safari_data_item.mm",
-    "safari_data_item_consumer.h",
     "utils.h",
     "utils.mm",
   ]

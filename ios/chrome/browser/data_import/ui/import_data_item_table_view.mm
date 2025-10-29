@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
+#import "ios/chrome/browser/data_import/ui/import_data_item_table_view.h"
 
 #import "base/check_op.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
-#import "ios/chrome/browser/safari_data_import/public/utils.h"
-#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
+#import "ios/chrome/browser/data_import/public/accessibility_utils.h"
+#import "ios/chrome/browser/data_import/public/import_data_item.h"
+#import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"

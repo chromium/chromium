@@ -1,0 +1,15 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "accessibility_utils.h",
+    "accessibility_utils.mm",
+    "import_data_item.h",
+    "import_data_item.mm",
+    "import_data_item_consumer.h",
+  ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}

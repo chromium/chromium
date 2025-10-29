@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/safari_data_import/model/ios_safari_data_import_client.h"
 
 #import "components/password_manager/core/browser/import/import_results.h"
+#import "ios/chrome/browser/data_import/public/import_data_item.h"
+#import "ios/chrome/browser/data_import/public/import_data_item_consumer.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

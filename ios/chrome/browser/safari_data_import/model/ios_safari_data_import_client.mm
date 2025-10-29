@@ -9,9 +9,9 @@
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/url_formatter/elide_url.h"
 #import "components/url_formatter/url_fixer.h"
+#import "ios/chrome/browser/data_import/public/import_data_item.h"
+#import "ios/chrome/browser/data_import/public/import_data_item_consumer.h"
 #import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
-#import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "url/gurl.h"
 

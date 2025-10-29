@@ -8,7 +8,6 @@ source_set("ui") {
     "safari_data_import_entry_point_view_controller.mm",
     "safari_data_import_export_view_controller.h",
     "safari_data_import_export_view_controller.mm",
-    "safari_data_import_import_stage_transition_handler.h",
     "safari_data_import_import_view_controller.h",
     "safari_data_import_import_view_controller.mm",
     "safari_data_import_password_conflict_mutator.h",
@@ -16,8 +15,6 @@ source_set("ui") {
     "safari_data_import_password_conflict_resolution_view_controller.mm",
     "safari_data_invalid_passwords_view_controller.h",
     "safari_data_invalid_passwords_view_controller.mm",
-    "safari_data_item_table_view.h",
-    "safari_data_item_table_view.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/shared/ui/animated_promo",
@@ -30,6 +27,7 @@ source_set("ui") {
     "//base:i18n",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/ui",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",

@@ -7,7 +7,6 @@
 namespace {
 
 /// Accessibility identifier prefixes.
-NSString* const kSafariDataItemTableViewAXidPrefix = @"SafariDataItemTableView";
 NSString* const kSafariDataImportPasswordConflictResolutionAXidPrefix =
     @"SafariDataImportPasswordConflictResolution";
 NSString* const kSafariDataImportInvalidPasswordsAXidPrefix =
@@ -17,18 +16,6 @@ NSString* const kSafariDataImportInvalidPasswordsAXidPrefix =
 
 NSString* GetSafariDataEntryPointAccessibilityIdentifier() {
   return @"SafariDataEntryPointAccessibilityIdentifier";
-}
-
-NSString* GetSafariDataItemTableViewAccessibilityIdentifier() {
-  return [NSString stringWithFormat:@"%@%@", kSafariDataItemTableViewAXidPrefix,
-                                    @"AccessibilityIdentifier"];
-}
-
-NSString* GetSafariDataItemTableViewCellAccessibilityIdentifier(
-    NSUInteger cell_index) {
-  return
-      [NSString stringWithFormat:@"%@-%ld", kSafariDataItemTableViewAXidPrefix,
-                                 cell_index];
 }
 
 NSString* GetPasswordConflictResolutionTableViewAccessibilityIdentifier() {
