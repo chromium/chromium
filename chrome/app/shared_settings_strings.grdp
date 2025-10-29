@@ -449,7 +449,7 @@
     </message>
   </if>
   <message name="IDS_SETTINGS_THEME_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes between multiple browser instances.">
-    Theme
+    Themes
   </message>
 
   <!-- Password Prompt Dialog -->
