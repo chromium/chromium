@@ -1373,7 +1373,9 @@ void IdpNetworkRequestManager::FetchClientMetadata(
   std::string parameters =
       "?client_id=" + base::EscapeQueryParamValue(client_id, true);
   if (IsCrossSiteIframe()) {
-    parameters += "&top_frame_origin=" + rp_embedding_origin_.Serialize();
+    parameters += "&top_frame_origin=" +
+                  base::EscapeQueryParamValue(rp_embedding_origin_.Serialize(),
+                                              /*use_plus=*/false);
   }
   GURL target_url = endpoint.Resolve(parameters);
 
