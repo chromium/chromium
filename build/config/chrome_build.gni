@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/gclient_args.gni")
+import("//build_overrides/build.gni")
 
 declare_args() {
   # Select the desired branding flavor. False means normal Chromium branding,
@@ -11,7 +12,9 @@ declare_args() {
   is_chrome_branded = false
 
   # Whether to enable Google internal-only sources.
-  enable_src_internal = checkout_src_internal
+  enable_src_internal =
+      (build_with_chromium && checkout_src_internal) ||
+      (defined(checkout_src_internal) && checkout_src_internal)
 
   # Whether to enable the Chrome for Testing (CfT) flavor. This arg is not
   # compatible with `is_chrome_branded`.
