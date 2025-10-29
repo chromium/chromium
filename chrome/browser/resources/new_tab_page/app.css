@@ -105,8 +105,8 @@ cr-most-visited {
   z-index: 1000;
 }
 
-/* When a dropdown menu is opened, scrim is applied and OGB is behind it. */
-:host([dropdown-is-visible_]) #oneGoogleBarStackingContext {
+/* When scrim is applied, OGB must be behind it. */
+:host([show-scrim_]) #oneGoogleBarStackingContext {
   z-index: 0;
 }
 
@@ -154,7 +154,7 @@ cr-most-visited {
 }
 
 :host([show-composebox_]) #logo,
-:host([ntp-realbox-next-enabled_][dropdown-is-visible_]) #logo{
+:host([ntp-realbox-next-enabled_][show-scrim_]) #logo {
   z-index: 2;
 }
 
@@ -316,32 +316,6 @@ ntp-lens-upload-dialog {
   position: fixed;
   transition: all 250ms ease;
   z-index: 1;
-}
-
-/**
- * When NTP Realbox Next is enabled, we want to ensure the following behavior
- * way for Composebox:
- * - when the dropdown is shown, clicking on any part of the half-opaque scrim
- *   covering the whole viewport exits Composebox.
- * - when the dropdown is not shown, clicking on (virtually) anywhere exits
- *   Composebox.
- *
- * An additional (natural) constraint in the latter is that when a click is on
- * an element triggering an action (e.g., MV tiles), its on-click behavior
- * should be triggered.
- * To achieve the latter behavior, the elements are placed at the following
- * z-index:
- * - transparent scrim: 0
- * - OGB: -1
- * - everything else: 1+
- *
- * With this, clicking on any interactive element, except OGB, shows the
- * element's on-click behavior, while clicking on the other parts removes the
- * scrim layer.
- */
-:host([ntp-realbox-next-enabled_][show-composebox_]:not([dropdown-is-visible_])) #scrim {
-  z-index: 0;
-  opacity: 0;
 }
 
 #webstoreToast {

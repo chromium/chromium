@@ -37,7 +37,8 @@ export function getHtml(this: ComposeboxElement) {
             .value="${this.input_}"
             @input=${this.handleInput_}
             @scroll="${this.handleScroll_}"
-            @focusin="${this.handleInputFocusIn_}"></textarea>
+            @focusin="${this.handleInputFocusIn_}"
+            @focusout="${this.handleInputFocusOut_}"></textarea>
           ${this.shouldShowSmartComposeInlineHint_() ? html`
             <div id="smartCompose">
               <!-- Comments in between spans to eliminate spacing between

@@ -34,9 +34,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
       .theme="${this.theme_}" ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
-  ${this.ntpRealboxNextEnabled_ && (this.dropdownIsVisible_ || this.showComposebox_) ? html`
+  ${this.ntpRealboxNextEnabled_ ? html`
     <div id="scrim"
-        @click="${this.showComposebox_ && this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"></div>
+        @click="${this.showComposebox_ && this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"
+        ?hidden="${!this.showScrim_}"></div>
   ` : ''}
   <div id="searchboxContainer">
     <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
@@ -53,7 +54,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         realbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
-        @dropdown-visible-changed="${this.onDropdownVisibleChanged_}">
+        @dropdown-visible-changed="${this.onDropdownVisibleChanged_}"
+        @searchbox-input-focus-changed="${this.onInputFocusChanged_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
       <ntp-composebox id="composebox" ?is_collapsible="false"
@@ -61,6 +63,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
           @composebox-initialized="${this.onComposeboxInitialized_}"
           @close-composebox="${this.closeComposebox_}"
           @composebox-dropdown-visible-changed="${this.onDropdownVisibleChanged_}"
+          @composebox-input-focus-changed="${this.onInputFocusChanged_}"
           realbox-layout-mode="${this.realboxLayoutMode_}">
       </ntp-composebox>
     ` : ''}
