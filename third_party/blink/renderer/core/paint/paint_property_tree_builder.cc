@@ -2755,7 +2755,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
       const PhysicalRect inner_reference_rect =
           border_shape_rects ? border_shape_rects->inner : box_rect;
       const Path inner_path =
-          *BorderShapePainter::InnerPath(box.StyleRef(), inner_reference_rect);
+          BorderShapePainter::InnerPath(box.StyleRef(), inner_reference_rect);
       gfx::RectF layout_clip_rect(box_rect);
       PhysicalOffset offset = -OffsetInStitchedFragments(BoxFragment());
       layout_clip_rect.Offset(gfx::Vector2dF(offset));

@@ -34,14 +34,12 @@ class BorderShapePainter {
                     const PhysicalRect& outer_reference_rect,
                     const PhysicalRect& inner_reference_rect);
 
-  static std::optional<Path> InnerPath(
-      const ComputedStyle&,
-      const PhysicalRect& inner_reference_rect);
-  static std::optional<Path> OuterPath(
-      const ComputedStyle&,
-      const PhysicalRect& outer_reference_rect);
+  static Path InnerPath(const ComputedStyle&,
+                        const PhysicalRect& inner_reference_rect);
+  static Path OuterPath(const ComputedStyle&,
+                        const PhysicalRect& outer_reference_rect);
 
-  static std::optional<PhysicalBoxStrut> VisualOutsets(
+  static PhysicalBoxStrut VisualOutsets(
       const ComputedStyle&,
       const PhysicalRect& border_rect,
       const PhysicalRect& outer_reference_rect,

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
@@ -260,9 +261,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
   ContouredRect border = ContouredBorderGeometry::PixelSnappedContouredBorder(
       style, paint_rect, sides_to_include);
 
-  const std::optional<Path> border_shape_outer_path =
-      BorderShapePainter::OuterPath(style, paint_rect);
-  bool has_border_radius = style.HasBorderRadius() && !border_shape_outer_path;
+  bool has_border_radius = style.HasBorderRadius() && !style.HasBorderShape();
   bool has_opaque_background =
       !background_is_skipped &&
       style.VisitedDependentColor(GetCSSPropertyBackgroundColor()).IsOpaque();
@@ -301,8 +300,10 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     // The clip does not depend on any shadow-specific properties.
     if (!state_saver.Saved()) {
       state_saver.Save();
-      if (border_shape_outer_path) {
-        context.ClipPath(border_shape_outer_path->GetSkPath(), kAntiAliased,
+      if (style.HasBorderShape()) {
+        const Path border_shape_outer_path =
+            BorderShapePainter::OuterPath(style, paint_rect);
+        context.ClipPath(border_shape_outer_path.GetSkPath(), kAntiAliased,
                          SkClipOp::kDifference);
       } else {
         ClipToBorderEdge(context, border, has_border_radius,
@@ -314,7 +315,7 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     // border-radius case.
     fill_rect = border.Rect();
     GraphicsContextStateSaver sides_clip_saver(context, false);
-    if (!sides_to_include.HasAllSides() && !border_shape_outer_path) {
+    if (!sides_to_include.HasAllSides() && !style.HasBorderShape()) {
       sides_clip_saver.Save();
       ClipToSides(context, border.Rect(), shadow, sides_to_include);
       AdjustRectForSideClipping(fill_rect, shadow, sides_to_include);
@@ -331,10 +332,12 @@ void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
     const AutoDarkMode auto_dark_mode =
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground);
 
-    if (border_shape_outer_path) {
+    if (style.HasBorderShape()) {
       context.SetFillColor(Color::kBlack);
       // TODO(nrosenthal): apply spread to border-shape once the spec is clear.
-      context.FillPath(*border_shape_outer_path, auto_dark_mode);
+      const Path border_shape_outer_path =
+          BorderShapePainter::OuterPath(style, paint_rect);
+      context.FillPath(border_shape_outer_path, auto_dark_mode);
     } else if (has_border_radius) {
       ContouredRect rounded_fill_rect(
           FloatRoundedRect(fill_rect, border.GetRadii()),
@@ -1332,9 +1335,22 @@ void BoxPainterBase::PaintFillLayer(
   if (border_shape) {
     DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     border_shape_saver.emplace(context);
-    context.ClipPath(border_shape->InnerShape()
-                         .GetPath(gfx::RectF(rect), style_.EffectiveZoom(), 1)
-                         .GetSkPath());
+    // Compute reference rects for border-shape clipping using geometry boxes.
+    std::optional<BorderShapeReferenceRects> shape_ref_rects =
+        ComputeBorderShapeReferenceRects(rect, style_,
+                                         *node_->GetLayoutObject());
+
+    const bool use_inner_shape = border_shape->HasSeparateInnerShape();
+    const BasicShape& clip_shape = use_inner_shape ? border_shape->InnerShape()
+                                                   : border_shape->OuterShape();
+    const PhysicalRect& clip_ref_rect =
+        use_inner_shape && shape_ref_rects
+            ? shape_ref_rects->inner
+            : (shape_ref_rects ? shape_ref_rects->outer : rect);
+
+    context.ClipPath(
+        clip_shape.GetPath(gfx::RectF(clip_ref_rect), style_.EffectiveZoom(), 1)
+            .GetSkPath());
   } else if (fill_layer_info.is_rounded_fill) {
     DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
     clip_to_border.emplace(context, rect, border_rect);
