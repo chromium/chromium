@@ -139,20 +139,6 @@ gfx::GpuMemoryBufferType GetNativeBufferType() {
 #endif
 }
 
-bool WillGetGmbConfigFromGpu() {
-#if BUILDFLAG(IS_OZONE)
-  // Ozone/X11 requires gpu initialization to be done before it can determine
-  // what formats gmb can use. This limitation comes from the requirement to
-  // have GLX bindings initialized. The buffer formats will be passed through
-  // gpu extra info.
-  return ui::OzonePlatform::GetInstance()
-      ->GetPlatformProperties()
-      .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return false;
-#endif
-}
-
 }  // namespace
 
 SharedImageFactory::SharedImageFactory(
@@ -394,7 +380,14 @@ bool SharedImageFactory::IsNativeBufferSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  if (WillGetGmbConfigFromGpu()) {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/X11 requires gpu initialization to be done before it can determine
+  // what formats gmb can use. This limitation comes from the requirement to
+  // have GLX bindings initialized. The buffer formats will be passed through
+  // gpu extra info.
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .fetch_buffer_formats_for_gmb_on_gpu) {
 #if BUILDFLAG(IS_OZONE_X11)
     return base::Contains(
         gpu_extra_info.gpu_memory_buffer_support_x11,
@@ -403,10 +396,11 @@ bool SharedImageFactory::IsNativeBufferSupported(
 #else
     return false;
 #endif  // BUILDFLAG(IS_OZONE_X11)
-  } else {
-    return gpu::GpuMemoryBufferSupport::
-        IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
   }
+#endif  // BUILDFLAG(IS_OZONE)
+
+  return gpu::GpuMemoryBufferSupport::
+      IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
