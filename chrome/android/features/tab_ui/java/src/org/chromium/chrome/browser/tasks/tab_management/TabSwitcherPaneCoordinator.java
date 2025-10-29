@@ -180,6 +180,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     }
                 }
             };
+    private final View.OnLayoutChangeListener mOnLayoutChangedAfterInitialScrollListener =
+            new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(
+                        View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
+                    if (mPinnedTabsCoordinator != null) {
+                        updatePinnedTabsStripOnScroll(true, true);
+                    }
+                    mTabListCoordinator.getContainerView().removeOnLayoutChangeListener(this);
+                }
+            };
 
     private final TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener
             mLongPressItemEventListener = this::onLongPressOnTabCard;
@@ -226,14 +237,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private @Nullable Function<Integer, View> mFetchViewByIndex;
     private @Nullable Supplier<Pair<Integer, Integer>> mGetVisibleIndex;
-
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
-
     private TabListCoordinator.@Nullable DragObserver mDragObserver;
     private @Nullable TabSwitcherGroupSuggestionService mTabSwitcherGroupSuggestionService;
     private @Nullable PinnedTabStripCoordinator mPinnedTabsCoordinator;
     private @Nullable DirectionalScrollListener mSearchBoxVisibilityScrollListener;
-
     private int mEdgeToEdgeBottomInsets;
 
     /**
@@ -382,7 +390,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             isAnimatingSupplier,
                             onTabClickCallback,
                             this::getNthTabIndexInModel,
-                            bottomSheetController);
+                            bottomSheetController,
+                            this::addOnLayoutChangedAfterInitialScrollListener);
 
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
@@ -1103,6 +1112,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         tabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         showTabListEditor);
+    }
+
+    private void addOnLayoutChangedAfterInitialScrollListener() {
+        mTabListCoordinator
+                .getContainerView()
+                .addOnLayoutChangeListener(mOnLayoutChangedAfterInitialScrollListener);
     }
 
     private void updatePinnedTabsStripOnScroll(boolean show, boolean forced) {

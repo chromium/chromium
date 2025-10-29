@@ -84,6 +84,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Mock private View mCustomView;
     @Mock private Runnable mCustomViewBackPressRunnable;
     @Mock private Callback<Integer> mOnTabClickedCallback;
+    @Mock private Runnable mAllOnLayoutChangedAfterInitialScrollListener;
     @Mock private TabIndexLookup mTabIndexLookup;
     @Mock private BottomSheetController mBottomSheetController;
 
@@ -174,7 +175,8 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
                         mTabIndexLookup,
-                        mBottomSheetController);
+                        mBottomSheetController,
+                        mAllOnLayoutChangedAfterInitialScrollListener);
 
         assertTrue(mTabGroupModelFilterSupplier.hasObservers());
         assertTrue(mIsVisibleSupplier.hasObservers());
@@ -266,7 +268,8 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
                         mTabIndexLookup,
-                        mBottomSheetController);
+                        mBottomSheetController,
+                        mAllOnLayoutChangedAfterInitialScrollListener);
         ShadowLooper.runUiThreadTasks();
 
         mIsVisibleSupplier.set(true);
@@ -408,6 +411,7 @@ public class TabSwitcherPaneMediatorUnitTest {
 
         mMediator.scrollToTabById(GROUPED_TAB_2_ID);
         assertEquals(overrideIndex, mModel.get(INITIAL_SCROLL_INDEX).intValue());
+        verify(mAllOnLayoutChangedAfterInitialScrollListener, times(6)).run();
     }
 
     @Test
