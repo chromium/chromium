@@ -18,7 +18,6 @@ source_set("crash_report_private") {
   deps = [
     "//base",
     "//chrome/browser/extensions",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/web_applications",
     "//chrome/common",
     "//components/crash/content/browser/error_reporting",
