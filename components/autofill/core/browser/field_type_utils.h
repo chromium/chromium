@@ -6,10 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 
 #include "base/notreached.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
+
+class AutofillField;
 
 // Return true if the `field` has at least one possible field type. A possible
 // field type is every type that is neither UNKNOWN_TYPE or EMPTY_TYPE. The

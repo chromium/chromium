@@ -7,7 +7,6 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {
