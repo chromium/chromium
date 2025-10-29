@@ -10,6 +10,8 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -38,6 +40,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     private final Context mContext;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
+    private final BottomControlsStacker mBottomControlsStacker;
 
     /**
      * @param scrimManager Coordinator responsible for showing and hiding the scrim view.
@@ -56,9 +59,11 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
             LocationBarDataProvider locationBarDataProvider,
             Runnable clickDelegate,
             View scrimTarget,
-            ObservableSupplier<Integer> tabStripHeightSupplier) {
+            ObservableSupplier<Integer> tabStripHeightSupplier,
+            BottomControlsStacker bottomControlsStacker) {
         mScrimManager = scrimManager;
         mLocationBarDataProvider = locationBarDataProvider;
+        mBottomControlsStacker = bottomControlsStacker;
         mClickDelegate = clickDelegate;
         mContext = context;
 
@@ -96,6 +101,9 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
         mScrimModel.set(
                 ScrimProperties.BACKGROUND_COLOR,
                 useLightColor ? mLightScrimColor : ScrimProperties.INVALID_COLOR);
+        mScrimModel.set(
+                ScrimProperties.BOTTOM_MARGIN,
+                mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN));
 
         if (hasFocus && !showScrimAfterAnimationCompletes()) {
             mScrimManager.showScrim(mScrimModel);

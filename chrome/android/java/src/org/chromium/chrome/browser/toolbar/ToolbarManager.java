@@ -1271,7 +1271,8 @@ public class ToolbarManager
                         mLocationBarModel,
                         clickDelegate,
                         scrimTarget,
-                        mTabStripHeightSupplier);
+                        mTabStripHeightSupplier,
+                        mBottomControlsStacker);
 
         var omnibox = mLocationBar.getOmniboxStub();
         if (omnibox != null) {
