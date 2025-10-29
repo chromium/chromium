@@ -87,7 +87,7 @@ void URLProvisionFetcher::Retrieve(
     content_type = "application/x-www-form-urlencoded";
   } else {
     const std::string request_string =
-        default_url.spec() + "&signedRequest=" + request_data;
+        default_url.spec() + "?signedRequest=" + request_data;
     resource_request->url = GURL(request_string);
     post_body = "";
     content_type = "application/json";
