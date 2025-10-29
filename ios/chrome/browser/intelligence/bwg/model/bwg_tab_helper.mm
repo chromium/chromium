@@ -190,7 +190,7 @@ void BwgTabHelper::DeactivateBWGSession() {
   cached_snapshot_ = nil;
 }
 
-bool BwgTabHelper::ShouldShowZeroState() {
+bool BwgTabHelper::IsLastInteractionUrlDifferent() {
   std::optional<std::string> last_interaction_url;
 
   if (IsGeminiCrossTabEnabled()) {
@@ -202,13 +202,10 @@ bool BwgTabHelper::ShouldShowZeroState() {
     last_interaction_url = GetURLOnLastInteraction();
   }
 
-  // Show zero-state if no last interaction URL was found.
   if (!last_interaction_url.has_value()) {
     return true;
   }
 
-  // Show zero-state if the last interaction URL is different from the current
-  // one.
   return !web_state_->GetVisibleURL().EqualsIgnoringRef(
       GURL(last_interaction_url.value()));
 }

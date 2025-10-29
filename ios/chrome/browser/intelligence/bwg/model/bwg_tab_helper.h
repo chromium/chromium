@@ -42,9 +42,9 @@ class BwgTabHelper : public web::WebStateObserver,
   // Deactivates the BWG associated to this WebState.
   void DeactivateBWGSession();
 
-  // Whether BWG should show the zero-state input box UI for the current Web
-  // State and visible URL.
-  bool ShouldShowZeroState();
+  // Returns true if the URL of last recorded interaction is not the same as the
+  // current URL (ignoring URL fragments).
+  bool IsLastInteractionUrlDifferent();
 
   // Whether BWG should show the suggestion chips for the current Web State and
   // visible URL.

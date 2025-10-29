@@ -97,21 +97,21 @@ TEST_F(BwgTabHelperTest, TestPrepareBwgFreBackgrounding) {
   ASSERT_FALSE(IsBwgSessionActiveInBackground());
 }
 
-TEST_F(BwgTabHelperTest, TestShouldShowZeroState_NoLastInteraction) {
-  ASSERT_TRUE(tab_helper_->ShouldShowZeroState());
+TEST_F(BwgTabHelperTest, TestIsLastInteractionUrlDifferent_NoLastInteraction) {
+  ASSERT_TRUE(tab_helper_->IsLastInteractionUrlDifferent());
 }
 
-TEST_F(BwgTabHelperTest, TestShouldShowZeroState_SameURL) {
+TEST_F(BwgTabHelperTest, TestIsLastInteractionUrlDifferent_SameURL) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{kPageActionMenu},
       /*disabled_features=*/{kGeminiCrossTab});
   GURL url("https://www.chromium.org");
   web_state_->SetCurrentURL(url);
   tab_helper_->CreateOrUpdateBwgSessionInStorage("server_id");
-  ASSERT_FALSE(tab_helper_->ShouldShowZeroState());
+  ASSERT_FALSE(tab_helper_->IsLastInteractionUrlDifferent());
 }
 
-TEST_F(BwgTabHelperTest, TestShouldShowZeroState_DifferentURL) {
+TEST_F(BwgTabHelperTest, TestIsLastInteractionUrlDifferent_DifferentURL) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{kPageActionMenu},
       /*disabled_features=*/{kGeminiCrossTab});
@@ -121,22 +121,22 @@ TEST_F(BwgTabHelperTest, TestShouldShowZeroState_DifferentURL) {
 
   GURL url2("https://www.google.com");
   web_state_->SetCurrentURL(url2);
-  ASSERT_TRUE(tab_helper_->ShouldShowZeroState());
+  ASSERT_TRUE(tab_helper_->IsLastInteractionUrlDifferent());
 }
 
 TEST_F(BwgTabHelperTest,
-       TestShouldShowZeroState_GeminiCrossTabEnabled_SameURL) {
+       TestIsLastInteractionUrlDifferent_GeminiCrossTabEnabled_SameURL) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab},
       /*disabled_features=*/{});
   GURL url("https://www.chromium.org");
   web_state_->SetCurrentURL(url);
   tab_helper_->CreateOrUpdateBwgSessionInStorage("server_id");
-  ASSERT_FALSE(tab_helper_->ShouldShowZeroState());
+  ASSERT_FALSE(tab_helper_->IsLastInteractionUrlDifferent());
 }
 
 TEST_F(BwgTabHelperTest,
-       TestShouldShowZeroState_GeminiCrossTabEnabled_DifferentURL) {
+       TestIsLastInteractionUrlDifferent_GeminiCrossTabEnabled_DifferentURL) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab},
       /*disabled_features=*/{});
@@ -146,7 +146,7 @@ TEST_F(BwgTabHelperTest,
 
   GURL url2("https://www.google.com");
   web_state_->SetCurrentURL(url2);
-  ASSERT_TRUE(tab_helper_->ShouldShowZeroState());
+  ASSERT_TRUE(tab_helper_->IsLastInteractionUrlDifferent());
 }
 
 // TODO(crbug.com/430313339): Add a test for the last interaction case.

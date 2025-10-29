@@ -76,9 +76,14 @@ class PageContext;
 // Whether to animate the presentation of the BWG UI.
 @property(nonatomic, assign) BOOL shouldAnimatePresentation;
 
+// TODO(crbug.com/434725381): Clean up when internal CLs have landed.
 // Whether the zero-state UI for the input box should be shown (i.e. page
 // context information about the web page).
 @property(nonatomic, assign) BOOL shouldShowZeroState;
+
+// Whether the last interaction was completed on a different URL (ignoring
+// fragments).
+@property(nonatomic, assign) BOOL lastInteractionURLDifferent;
 
 // Whether the zero-state suggestion chips should be shown.
 @property(nonatomic, assign) BOOL shouldShowSuggestionChips;

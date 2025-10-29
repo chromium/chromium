@@ -101,7 +101,8 @@ void BwgBrowserAgent::PresentBwgOverlay(
       maybe_server_id ? base::SysUTF8ToNSString(*maybe_server_id) : nil;
   config.shouldAnimatePresentation =
       !bwg_tab_helper->GetIsBwgSessionActiveInBackground();
-  config.shouldShowZeroState = bwg_tab_helper->ShouldShowZeroState();
+  config.lastInteractionURLDifferent =
+      bwg_tab_helper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =
       bwg_tab_helper->ShouldShowSuggestionChips();
 
