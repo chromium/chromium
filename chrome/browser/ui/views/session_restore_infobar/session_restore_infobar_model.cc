@@ -33,13 +33,13 @@ SessionRestoreInfobarModel::GetSessionRestoreMessageValue() const {
   // Get the value for chrome session restore.
   switch (restore_on_startup_value) {
     case 1:
-      return ContinueWhereLeftOff;
+      return SessionRestoreMessageValue::kContinueWhereLeftOff;
     case 4:
-      return OpenSpecificPages;
+      return SessionRestoreMessageValue::kOpenSpecificPages;
     case 5:
-      return OpenNewTabPage;
+      return SessionRestoreMessageValue::kOpenNewTabPage;
     default:
-      return OpenNewTabPage;
+      return SessionRestoreMessageValue::kOpenNewTabPage;
   }
 }
 
@@ -50,8 +50,8 @@ bool SessionRestoreInfobarModel::ShouldShowOnStartup() const {
 
   SessionRestoreMessageValue message_value = GetSessionRestoreMessageValue();
 
-  return message_value == SessionRestoreMessageValue::ContinueWhereLeftOff ||
-         message_value == SessionRestoreMessageValue::OpenNewTabPage;
+  return message_value == SessionRestoreMessageValue::kContinueWhereLeftOff ||
+         message_value == SessionRestoreMessageValue::kOpenNewTabPage;
 }
 
 

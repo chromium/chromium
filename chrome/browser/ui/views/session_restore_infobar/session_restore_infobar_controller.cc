@@ -86,17 +86,17 @@ SessionRestoreInfoBarDelegate::InfobarMessageType
 SessionRestoreInfobarController::GetInfobarMessageType() {
   switch (model_->GetSessionRestoreMessageValue()) {
     case SessionRestoreInfobarModel::SessionRestoreMessageValue::
-        ContinueWhereLeftOff:
+        kContinueWhereLeftOff:
         return SessionRestoreInfoBarDelegate::InfobarMessageType::
             kTurnOffFromRestart;
-    case SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenNewTabPage:
+    case SessionRestoreInfobarModel::SessionRestoreMessageValue::kOpenNewTabPage:
       if (model_->IsDefaultSessionRestorePref()) {
         return SessionRestoreInfoBarDelegate::InfobarMessageType::
             kTurnOnSessionRestore;
       }
       return SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
     case SessionRestoreInfobarModel::SessionRestoreMessageValue::
-        OpenSpecificPages:
+        kOpenSpecificPages:
       return SessionRestoreInfoBarDelegate::InfobarMessageType::kNone;
   }
   NOTREACHED();

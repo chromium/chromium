@@ -36,19 +36,19 @@ TEST_F(SessionRestoreInfobarModelTest, GetSessionRestoreMessageValue_Prefs) {
   // Test case 1: ContinueWhereLeftOff.
   profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
   EXPECT_EQ(SessionRestoreInfobarModel::SessionRestoreMessageValue::
-                ContinueWhereLeftOff,
+                kContinueWhereLeftOff,
             model.GetSessionRestoreMessageValue());
 
   // Test case 2: OpenSpecificPages.
   profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
   EXPECT_EQ(
-      SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenSpecificPages,
+      SessionRestoreInfobarModel::SessionRestoreMessageValue::kOpenSpecificPages,
       model.GetSessionRestoreMessageValue());
 
   // Test case 3: OpenNewTabPage.
   profile.GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 5);
   EXPECT_EQ(
-      SessionRestoreInfobarModel::SessionRestoreMessageValue::OpenNewTabPage,
+      SessionRestoreInfobarModel::SessionRestoreMessageValue::kOpenNewTabPage,
       model.GetSessionRestoreMessageValue());
 }
 

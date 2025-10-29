@@ -23,10 +23,10 @@ class SessionRestoreInfobarModel {
  public:
   // Enum for session restore message values. Based on the message value, there
   // will be a different message displayed on the infobar.
-  enum SessionRestoreMessageValue {
-    OpenNewTabPage,
-    ContinueWhereLeftOff,
-    OpenSpecificPages
+  enum class SessionRestoreMessageValue {
+    kOpenNewTabPage,
+    kContinueWhereLeftOff,
+    kOpenSpecificPages
   };
 
   explicit SessionRestoreInfobarModel(Profile& profile,
