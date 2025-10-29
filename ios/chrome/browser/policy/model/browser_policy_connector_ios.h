@@ -10,7 +10,7 @@
 
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
-#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/common/local_test_policy_provider.h"

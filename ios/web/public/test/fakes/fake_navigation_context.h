@@ -6,7 +6,7 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_NAVIGATION_CONTEXT_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "url/gurl.h"
 

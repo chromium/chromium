@@ -10,7 +10,7 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #import "ios/web/public/navigation/navigation_context.h"

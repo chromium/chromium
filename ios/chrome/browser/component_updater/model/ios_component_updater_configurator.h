@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMPONENT_UPDATER_MODEL_IOS_COMPONENT_UPDATER_CONFIGURATOR_H_
 #define IOS_CHROME_BROWSER_COMPONENT_UPDATER_MODEL_IOS_COMPONENT_UPDATER_CONFIGURATOR_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/update_client/configurator.h"
 
 namespace base {
