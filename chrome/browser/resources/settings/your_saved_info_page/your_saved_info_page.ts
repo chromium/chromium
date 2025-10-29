@@ -200,7 +200,7 @@ export class SettingsYourSavedInfoPageElement extends
         {
           type: DataType.FLIGHT_RESERVATION,
           label: this.i18n('yourSavedInfoFlightReservationsChip'),
-          icon: 'firstLevelTopics20:travel',
+          icon: 'settings20:travel',
           isAvailable: true,
         },
         {
@@ -212,7 +212,7 @@ export class SettingsYourSavedInfoPageElement extends
         {
           type: DataType.VEHICLE,
           label: this.i18n('yourSavedInfoVehiclesChip'),
-          icon: 'firstLevelTopics20:directions-car',
+          icon: 'settings20:directions-car',
           isAvailable: true,
         },
       ],
