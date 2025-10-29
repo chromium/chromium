@@ -101,7 +101,7 @@
         Browser::CreateParams(aProfile, /*user_gesture=*/false));
     // TODO(crbug.com/452431839): Make a new NewTabTypes enum value
     // for new tabs made with AppleScript requests.
-    chrome::NewTab(browser, NewTabTypes::NEW_TAB_COMMAND);
+    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
     browser->window()->Show();
 
     _browser = browser->AsWeakPtr();

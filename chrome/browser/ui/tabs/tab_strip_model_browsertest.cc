@@ -657,9 +657,9 @@ IN_PROC_BROWSER_TEST_F(TabStripModelTestTabGroupEntryPointsEnabled,
   ASSERT_TRUE(tab_group_model);
 
   TabStripController* tab_strip_controller = tabstrip()->controller();
-  tab_strip_controller->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
-  tab_strip_controller->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
-  tab_strip_controller->CreateNewTab(NewTabTypes::NEW_TAB_COMMAND);
+  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
+  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
+  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
 
   ASSERT_TRUE(tab_strip_model->count() == 4);
 

@@ -2256,7 +2256,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
       hover_card_controller_->PreventImmediateReshow();
     }
   }
-  controller_->CreateNewTab(NewTabTypes::NEW_TAB_BUTTON);
+  controller_->CreateNewTab(NewTabTypes::kNewTabButton);
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
@@ -2309,7 +2309,7 @@ void TabStrip::CloseTabInternal(int model_index, CloseTabSource source) {
     if (controller_->GetCount() == 1) {
       // Prevent the browser from closing when the last grouped tab is closed
       // from the browser by adding a new tab.
-      controller_->CreateNewTab(NewTabTypes::NO_USER_ACTION);
+      controller_->CreateNewTab(NewTabTypes::kNoUserAction);
       // In some situations the new tab is assigned a group. So if it is in a
       // group, we remove it from the group so that after closing the tab at
       // `model_index`, the browser shows a tab without a group.

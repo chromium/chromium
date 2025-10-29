@@ -107,9 +107,8 @@ void Stop(Browser* browser);
 void NewWindow(BrowserWindowInterface* browser);
 void NewIncognitoWindow(Profile* profile);
 void CloseWindow(BrowserWindowInterface* browser);
-content::WebContents& NewTab(
-    Browser* browser,
-    NewTabTypes context = NewTabTypes::NEW_TAB_COMMAND);
+content::WebContents& NewTab(Browser* browser,
+                             NewTabTypes context = NewTabTypes::kNewTabCommand);
 void NewTabToRight(Browser* browser);
 void CloseTab(BrowserWindowInterface* browser);
 bool CanZoomIn(content::WebContents* contents);

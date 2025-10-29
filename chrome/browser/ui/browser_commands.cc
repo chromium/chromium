@@ -1106,12 +1106,12 @@ void CloseWindow(BrowserWindowInterface* browser) {
 }
 
 content::WebContents& NewTab(Browser* browser, NewTabTypes context) {
-  if (context != NewTabTypes::NO_USER_ACTION) {
+  if (context != NewTabTypes::kNoUserAction) {
     base::RecordAction(base::UserMetricsAction("NewTab"));
   }
 
   UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", context,
-                            NewTabTypes::NEW_TAB_ENUM_COUNT);
+                            NewTabTypes::kNewTabEnumCount);
 
   browser->profile()->SetUserData(
       NewTabGroupingUserData::kNewTabGroupingUserDataKey,

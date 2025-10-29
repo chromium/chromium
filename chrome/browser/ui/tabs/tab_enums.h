@@ -61,34 +61,34 @@ enum AddTabTypes {
 // existing links or searches in a new tab, only to brand new empty tabs.
 // KEEP IN SYNC WITH THE NewTabType ENUM IN enums.xml.
 // NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.
-enum NewTabTypes {
+enum class NewTabTypes {
   // New tab was opened using the new tab button on the tab strip.
-  NEW_TAB_BUTTON = 0,
+  kNewTabButton = 0,
 
   // New tab was opened using the menu command - either through the keyboard
   // shortcut, or by opening the menu and selecting the command. Applies to
   // both app menu and the menu bar's File menu (on platforms that have one).
-  NEW_TAB_COMMAND = 1,
+  kNewTabCommand = 1,
 
   // New tab was opened through the context menu on the tab strip.
-  NEW_TAB_CONTEXT_MENU = 2,
+  kNewTabContextMenu = 2,
 
   // New tab was opened through the new tab button in the toolbar for the
   // WebUI touch-optimized tab strip.
-  NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH = 3,
+  kNewTabButtonInToolbarForTouch = 3,
 
   // New tab was opened through the new tab button inside of the WebUI tab
   // strip.
-  NEW_TAB_BUTTON_IN_WEBUI_TAB_STRIP = 4,
+  kNewTabButtonInWebuiTabStrip = 4,
 
   // Value for opening tabs without specifying a user action. We may use this
   // in situations where we implicitly make a new tab for the user. For
   // example, when the user deletes a tab group and there are no other tabs
   // in the browser to keep it running.
-  NO_USER_ACTION = 5,
+  kNoUserAction = 5,
 
   // Number of enum entries, used for UMA histogram reporting macros.
-  NEW_TAB_ENUM_COUNT = 6,
+  kNewTabEnumCount = 6,
 };
 
 // Enumerates different types of tab activation. Mainly used for

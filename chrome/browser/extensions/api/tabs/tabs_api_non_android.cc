@@ -603,7 +603,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // TODO(crbug.com/452431839) Make a new NewTabTypes value for
     // when new tabs are made because of an empty window.
     chrome::NewTab(new_window->GetBrowserForMigrationOnly(),
-                   NewTabTypes::NEW_TAB_COMMAND);
+                   NewTabTypes::kNewTabCommand);
   }
   chrome::SelectNumberedTab(
       new_window->GetBrowserForMigrationOnly(), 0,

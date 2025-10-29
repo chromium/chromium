@@ -906,7 +906,7 @@ void ToolbarView::ActiveStateChanged() {
 
 void ToolbarView::NewTabButtonPressed(const ui::Event& event) {
   chrome::NewTab(browser_view_->browser(),
-                 NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH);
+                 NewTabTypes::kNewTabButtonInToolbarForTouch);
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
