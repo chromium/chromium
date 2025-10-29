@@ -11,6 +11,9 @@ include_rules = [
   "+v8/include/v8-value-serializer-version.h",
 
   "+components/base32",
+
+  "+third_party/snappy",
+  "+third_party/zstd",
 ]
 
 specific_include_rules = {

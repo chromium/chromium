@@ -310,6 +310,8 @@ chromium-metrics-reviews@google.com.
   <int value="16"
       label="A value in the DB that represents a UTF16 string was the wrong
              length"/>
+  <int value="17"
+      label="Failed to decompress a value when reading from the DB"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->

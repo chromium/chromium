@@ -246,6 +246,12 @@ class CONTENT_EXPORT DatabaseConnection {
       IndexedDBValue value,
       int64_t record_row_id);
 
+  // Decompresses bytes found in the database. Will return an error and mark the
+  // database as corrupt on failure.
+  StatusOr<std::vector<uint8_t>> Decompress(
+      base::span<const uint8_t> compressed,
+      int compression_type);
+
   // Changes the size at which blobs are chunked.
   static void OverrideMaxBlobSizeForTesting(base::ByteCount size);
 
@@ -340,8 +346,9 @@ class CONTENT_EXPORT DatabaseConnection {
     kBlobTypeUnknown = 14,
     kV8FormatTooNewOrMissing = 15,
     kUtf16StringUnreadable = 16,
+    kDecompressionFailure = 17,
 
-    kMaxValue = kUtf16StringUnreadable,
+    kMaxValue = kDecompressionFailure,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbSqliteSpecificEvent)
 

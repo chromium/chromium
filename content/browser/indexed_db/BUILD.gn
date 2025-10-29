@@ -109,9 +109,15 @@ source_set("indexed_db") {
     "//storage/browser",
     "//third_party/blink/public/common",
     "//third_party/leveldatabase",
+    "//third_party/snappy",
     "//third_party/zlib/google:zip",
+    "//third_party/zstd:decompress",
     "//v8:v8_version",
   ]
+
+  if (!is_android && !is_fuchsia) {
+    deps += [ "//third_party/zstd:compress" ]
+  }
 
   configs += [ "//content:content_implementation" ]
 

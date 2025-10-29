@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -40,6 +42,8 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/snappy/src/snappy.h"
+#include "third_party/zstd/src/lib/zstd.h"
 
 // TODO(crbug.com/40253999): Rename the file to indicate that it contains
 // backend-agnostic utils to encode/decode IDB types, and potentially move the
@@ -76,6 +80,13 @@
 
 namespace content::indexed_db::sqlite {
 namespace {
+
+// Persisted to disk; do not reuse or change values.
+enum class CompressionType : uint8_t {
+  kUncompressed = 0,  // Not compressed.
+  kZstd = 1,          // Standalone ZSTD with no dictionary.
+  kSnappy = 2,        // Snappy.
+};
 
 // Used for tests.
 std::optional<base::ByteCount> g_max_blob_size_override;
@@ -143,6 +154,52 @@ StatusOr<blink::IndexedDBKeyPath> ColumnKeyPath(sql::Statement& statement,
   return blink::IndexedDBKeyPath(std::move(parts));
 }
 
+StatusOr<std::vector<uint8_t>> DoDecompress(
+    base::span<const uint8_t> compressed,
+    int compression_type) {
+  if (compression_type == static_cast<int>(CompressionType::kUncompressed)) {
+    return base::ToVector(compressed);
+  }
+
+  if (compression_type == static_cast<int>(CompressionType::kZstd)) {
+    uint64_t decompressed_size =
+        ZSTD_getFrameContentSize(compressed.data(), compressed.size());
+    if (decompressed_size == ZSTD_CONTENTSIZE_UNKNOWN ||
+        decompressed_size == ZSTD_CONTENTSIZE_ERROR) {
+      return base::unexpected(Status::Corruption("ZSTD decompression failed"));
+    }
+
+    std::vector<uint8_t> decompressed(decompressed_size);
+    if (ZSTD_isError(ZSTD_decompress(decompressed.data(), decompressed.size(),
+                                     compressed.data(), compressed.size()))) {
+      return base::unexpected(Status::Corruption("ZSTD decompression failed"));
+    }
+
+    return std::move(decompressed);
+  }
+
+  if (compression_type == static_cast<int>(CompressionType::kSnappy)) {
+    size_t decompressed_length;
+    base::span<const char> src = base::as_chars(compressed);
+    if (!snappy::GetUncompressedLength(src.data(), src.size(),
+                                       &decompressed_length)) {
+      return base::unexpected(
+          Status::Corruption("Snappy decompression failed"));
+    }
+
+    std::vector<uint8_t> decompressed(decompressed_length);
+    base::span<char> dest = base::as_writable_chars(base::span(decompressed));
+    if (!snappy::RawUncompress(src.data(), src.size(), dest.data())) {
+      return base::unexpected(
+          Status::Corruption("Snappy decompression failed"));
+    }
+
+    return std::move(decompressed);
+  }
+
+  return base::unexpected(Status::Corruption("unknown compression type"));
+}
+
 // Key used in MetaTable to track the data encoding version used by Blink/V8.
 constexpr std::string_view kV8DataVersionKey = "v8_data_version";
 
@@ -205,6 +262,7 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
                                      "CREATE TABLE records "
                                      "(row_id INTEGER PRIMARY KEY,"
                                      " object_store_id INTEGER NOT NULL,"
+                                     " compression_type INTEGER NOT NULL,"
                                      " key BLOB NOT NULL,"
                                      " value BLOB NOT NULL)");
   // Create the index separately so it can be given a name (which is referenced
@@ -402,7 +460,8 @@ class ObjectStoreCursorImpl : public BackingStoreCursorImpl {
       bool key_only,
       bool ascending_order) {
     std::vector<std::string_view> query_pieces = StartRecordRangeQuery(
-        key_only ? "SELECT key" : "SELECT key, value, row_id", key_range);
+        key_only ? "SELECT key" : "SELECT key, value, compression_type, row_id",
+        key_range);
     if (ascending_order) {
       query_pieces.push_back(
           " AND (@is_first_seek = 1 OR key > @position)"
@@ -478,9 +537,11 @@ class ObjectStoreCursorImpl : public BackingStoreCursorImpl {
     if (key_only_) {
       return std::make_unique<ObjectStoreKeyOnlyRecord>(std::move(key));
     }
+    base::span<const uint8_t> bits = statement.ColumnBlob(1);
+    int compression_type = statement.ColumnInt(2);
     IndexedDBValue value;
-    value.bits = statement.ColumnBlobAsVector(1);
-    int64_t record_row_id = statement.ColumnInt64(2);
+    ASSIGN_OR_RETURN(value.bits, db()->Decompress(bits, compression_type));
+    int64_t record_row_id = statement.ColumnInt64(3);
     return db()
         ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
         .transform([&](IndexedDBValue value_with_metadata) {
@@ -536,6 +597,7 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
     } else {
       query_pieces.push_back(
           ", records.value"
+          ", records.compression_type"
           ", records.row_id"
           " FROM index_references INNER JOIN records"
           "  ON index_references.record_row_id = records.row_id");
@@ -703,9 +765,14 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
       return std::make_unique<IndexKeyOnlyRecord>(std::move(key),
                                                   std::move(primary_key));
     }
+
+    base::span<const uint8_t> bits = statement.ColumnBlob(2);
+    int compression_type = statement.ColumnInt(3);
     IndexedDBValue value;
-    value.bits = statement.ColumnBlobAsVector(2);
-    int64_t record_row_id = statement.ColumnInt64(3);
+    ASSIGN_OR_RETURN(value.bits, db()->Decompress(bits, compression_type));
+
+    int64_t record_row_id = statement.ColumnInt64(4);
+
     return db()
         ->AddExternalObjectMetadataToValue(std::move(value), record_row_id)
         .transform([&](IndexedDBValue value_with_metadata) {
@@ -1466,10 +1533,10 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
   int64_t record_row_id;
 
   {
-    sql::Statement statement(
-        db_->GetCachedStatement(SQL_FROM_HERE,
-                                "SELECT row_id, value FROM records "
-                                "WHERE object_store_id = ? AND key = ?"));
+    sql::Statement statement(db_->GetCachedStatement(
+        SQL_FROM_HERE,
+        "SELECT row_id, value, compression_type FROM records "
+        "WHERE object_store_id = ? AND key = ?"));
     statement.BindInt64(0, object_store_id);
     statement.BindBlob(1, EncodeSortableIDBKey(key));
     if (!statement.Step()) {
@@ -1477,7 +1544,10 @@ StatusOr<IndexedDBValue> DatabaseConnection::GetValue(
       return IndexedDBValue();
     }
     record_row_id = statement.ColumnInt64(0);
-    value.bits = statement.ColumnBlobAsVector(1);
+
+    base::span<const uint8_t> bits = statement.ColumnBlob(1);
+    int compression_type = statement.ColumnInt(2);
+    ASSIGN_OR_RETURN(value.bits, Decompress(bits, compression_type));
   }
 
   return AddExternalObjectMetadataToValue(std::move(value), record_row_id);
@@ -1584,10 +1654,48 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE,
         "INSERT OR REPLACE INTO records "
-        "(object_store_id, key, value) VALUES (?, ?, ?)"));
+        "(object_store_id, key, compression_type, value) VALUES (?, ?, ?, ?)"));
     statement.BindInt64(0, object_store_id);
     statement.BindBlob(1, encoded_key);
-    statement.BindBlob(2, std::move(value.bits));
+
+    CompressionType compression_type = CompressionType::kUncompressed;
+
+    static constexpr base::ByteSize kMinimumCompressionSize(64);
+    static constexpr float kMinimumCompressionRatio = 0.8f;
+
+    if (value.bits.size() >= kMinimumCompressionSize.InBytes()) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+      size_t max_compressed_size = ZSTD_compressBound(value.bits.size());
+      std::vector<uint8_t> compressed_bits(max_compressed_size);
+      // Compression level of -4 yields compression output similar to Snappy.
+      size_t compressed_length = ZSTD_compress(
+          compressed_bits.data(), compressed_bits.size(), value.bits.data(),
+          value.bits.size(), /*compressionLevel=*/-4);
+      compression_type = CompressionType::kZstd;
+#else
+      size_t max_compressed_size =
+          snappy::MaxCompressedLength(value.bits.size());
+      std::vector<uint8_t> compressed_bits(max_compressed_size);
+      size_t compressed_length = 0;
+      base::span<const char> src = base::as_chars(base::span(value.bits));
+      base::span<char> dest =
+          base::as_writable_chars(base::span(compressed_bits));
+      snappy::RawCompress(src.data(), src.size(), dest.data(),
+                          &compressed_length);
+      compression_type = CompressionType::kSnappy;
+#endif
+      if (compressed_length <= value.bits.size() * kMinimumCompressionRatio) {
+        compressed_bits.resize(compressed_length);
+        statement.BindBlob(3, std::move(compressed_bits));
+      } else {
+        compression_type = CompressionType::kUncompressed;
+      }
+    }
+
+    statement.BindInt(2, static_cast<int>(compression_type));
+    if (compression_type == CompressionType::kUncompressed) {
+      statement.BindBlob(3, std::move(value.bits));
+    }
     RUN_STATEMENT_RETURN_ON_ERROR(statement);
   }
   const int64_t record_row_id = db_->GetLastInsertRowId();
@@ -2134,6 +2242,15 @@ void DatabaseConnection::ValidateInputs(int64_t object_store_id,
   auto iter = metadata_.object_stores.find(object_store_id);
   CHECK(iter != metadata_.object_stores.end());
   CHECK(iter->second.indexes.contains(index_id));
+}
+
+StatusOr<std::vector<uint8_t>> DatabaseConnection::Decompress(
+    base::span<const uint8_t> compressed,
+    int compression_type) {
+  return DoDecompress(compressed, compression_type)
+      .transform_error([&](Status status) {
+        return Fatal(status, SpecificEvent::kDecompressionFailure);
+      });
 }
 
 // static
