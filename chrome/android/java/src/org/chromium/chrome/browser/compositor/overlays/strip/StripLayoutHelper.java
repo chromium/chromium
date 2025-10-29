@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTit
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripIphController.IphType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate;
@@ -2429,7 +2430,7 @@ public class StripLayoutHelper
                             mWindowAndroid,
                             mContext,
                             (ids, toLeft) -> {
-                                assert ids.size() == 1
+                                assert ids.getAllTabIds().size() == 1
                                         : "Expected to only be able to reorder individual tabs";
                                 // Don't use anchorTab here, since that will be the anchor of the
                                 // first-opened tab context menu (it won't change when a new context
@@ -2439,7 +2440,7 @@ public class StripLayoutHelper
                                         mStripViews,
                                         mStripGroupTitles,
                                         mStripTabs,
-                                        assumeNonNull(findTabById(ids.get(0))),
+                                        assumeNonNull(findTabById(ids.getAnchorTabId())),
                                         toLeft);
                             });
         }
@@ -2447,7 +2448,8 @@ public class StripLayoutHelper
         anchorTab.getAnchorRect(anchorRectProvider.getRect());
         getAdjustedAnchorRect(anchorRectProvider);
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
-        mTabContextMenuCoordinator.showMenu(anchorRectProvider, tabIds);
+        mTabContextMenuCoordinator.showMenu(
+                anchorRectProvider, new AnchorInfo(anchorTab.getTabId(), tabIds));
     }
 
     /**

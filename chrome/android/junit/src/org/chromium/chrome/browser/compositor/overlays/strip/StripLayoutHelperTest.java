@@ -2242,7 +2242,11 @@ public class StripLayoutHelperTest {
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab context menu is showing.
-        verify(mTabContextMenuCoordinator).showMenu(rectProviderArgumentCaptor.capture(), any());
+        List<Integer> expectedTabIds = Collections.singletonList(tabs[1].getTabId());
+        verify(mTabContextMenuCoordinator)
+                .showMenu(
+                        rectProviderArgumentCaptor.capture(),
+                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
         // Verify anchorView coordinates.
         StripLayoutView view = mStripLayoutHelper.getViewAtPositionX(10f, true);
         assertThat(view, instanceOf(StripLayoutTab.class));
@@ -6583,7 +6587,10 @@ public class StripLayoutHelperTest {
         // Verify
         List<Integer> expectedTabIds =
                 List.of(tabs[0].getTabId(), tabs[1].getTabId(), tabs[3].getTabId());
-        verify(mTabContextMenuCoordinator).showMenu(any(), eq(expectedTabIds));
+        verify(mTabContextMenuCoordinator)
+                .showMenu(
+                        any(),
+                        argThat(anchorInfo -> anchorInfo.getAllTabIds().equals(expectedTabIds)));
     }
 
     @Test

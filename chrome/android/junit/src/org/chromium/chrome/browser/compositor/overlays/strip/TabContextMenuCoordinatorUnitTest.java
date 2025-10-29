@@ -58,6 +58,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -171,7 +172,7 @@ public class TabContextMenuCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     private TabContextMenuCoordinator mTabContextMenuCoordinator;
-    private OnItemClickedCallback<List<Integer>> mOnItemClickedCallback;
+    private OnItemClickedCallback<AnchorInfo> mOnItemClickedCallback;
     private MockTabModel mTabModel;
     private final LocalTabGroupId mLocalId = new LocalTabGroupId(TAB_GROUP_ID);
     private final SavedTabGroup mSavedTabGroup = new SavedTabGroup();
@@ -205,7 +206,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private Tab mChromeSchemeTabWithoutWebContents;
     @Mock private Tab mChromeNativeSchemeTabWithWebContents;
     @Mock private Tab mChromeNativeSchemeTabWithoutWebContents;
-    @Mock private BiConsumer<List<Integer>, Boolean> mReorderFunction;
+    @Mock private BiConsumer<AnchorInfo, Boolean> mReorderFunction;
     private Activity mActivity;
 
     @Before
@@ -328,7 +329,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testListMenuItems_tabInGroup() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -398,7 +399,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testListMenuItems_submenuCreateNewTabGroup() {
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         // Add to group submenu
         ListItem addToGroupItem = modelList.get(0);
@@ -428,7 +429,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testListMenuItems_tabInGroup_multipleTabs() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_ID, NON_URL_TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, NON_URL_TAB_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -495,7 +496,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -531,7 +535,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -561,7 +568,10 @@ public class TabContextMenuCoordinatorUnitTest {
         mSavedTabGroup.title = "";
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -581,7 +591,10 @@ public class TabContextMenuCoordinatorUnitTest {
         mSavedTabGroup.title = "";
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -600,7 +613,10 @@ public class TabContextMenuCoordinatorUnitTest {
 
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -643,7 +659,10 @@ public class TabContextMenuCoordinatorUnitTest {
 
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -675,7 +694,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -707,7 +729,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 3, modelList.size());
 
@@ -731,7 +756,8 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(NON_URL_TAB_ID));
+                modelList,
+                new AnchorInfo(NON_URL_TAB_ID, Collections.singletonList(NON_URL_TAB_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -758,7 +784,10 @@ public class TabContextMenuCoordinatorUnitTest {
         initializeCoordinator();
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -807,7 +836,10 @@ public class TabContextMenuCoordinatorUnitTest {
         initializeCoordinator();
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
@@ -845,7 +877,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
 
@@ -889,7 +924,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -931,7 +969,10 @@ public class TabContextMenuCoordinatorUnitTest {
         // Pin tab to show unpin option.
         when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
 
@@ -978,7 +1019,10 @@ public class TabContextMenuCoordinatorUnitTest {
         // Pin tab to show unpin option.
         when(mTabOutsideOfGroup.getIsPinned()).thenReturn(true);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -1011,7 +1055,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testRemoveFromGroup() {
         mOnItemClickedCallback.onClick(
                 R.id.remove_from_tab_group,
-                Collections.singletonList(TAB_ID),
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
         verify(mTabUngrouper, times(1)).ungroupTabs(Collections.singletonList(mTab1), true, true);
@@ -1022,7 +1066,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testShareUrl() {
         mOnItemClickedCallback.onClick(
                 R.id.share_tab,
-                Collections.singletonList(TAB_ID),
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
         verify(mShareDelegate, times(1)).share(mTab1, false, TAB_STRIP_CONTEXT_MENU);
@@ -1066,7 +1110,7 @@ public class TabContextMenuCoordinatorUnitTest {
             @Nullable ListViewTouchTracker listViewTouchTracker, boolean shouldAllowUndo) {
         mOnItemClickedCallback.onClick(
                 R.id.close_tab,
-                Collections.singletonList(TAB_ID),
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
                 COLLABORATION_ID,
                 listViewTouchTracker);
         verify(mTabRemover, times(1))
@@ -1084,7 +1128,7 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testAddToTabGroup_newTabGroup() {
         mOnItemClickedCallback.onClick(
                 R.id.add_to_tab_group,
-                Collections.singletonList(TAB_ID),
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
                 COLLABORATION_ID,
                 /* listViewTouchTracker= */ null);
         verify(mBottomSheetCoordinator, times(1)).showBottomSheet(List.of(mTab1));
@@ -1101,7 +1145,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
         verify(mMultiInstanceManager, times(1))
                 .moveTabsToNewWindow(
@@ -1122,7 +1169,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
                 modelList, 1, WINDOW_TITLE_2, mView);
@@ -1148,7 +1198,8 @@ public class TabContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset(
                 (rectProvider) ->
                         mTabContextMenuCoordinator.showMenu(
-                                rectProvider, Collections.singletonList(TAB_ID)),
+                                rectProvider,
+                                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID))),
                 mTabContextMenuCoordinator::destroyMenuForTesting);
     }
 
@@ -1159,7 +1210,8 @@ public class TabContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset_incognito(
                 (rectProvider) ->
                         mTabContextMenuCoordinator.showMenu(
-                                rectProvider, Collections.singletonList(TAB_ID)),
+                                rectProvider,
+                                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID))),
                 mTabContextMenuCoordinator::destroyMenuForTesting);
     }
 
@@ -1171,7 +1223,8 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testMuteSite_singleTab() {
         when(mTabModel.isMuted(mTab1)).thenReturn(false);
         var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, List.of(TAB_ID));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID)));
 
         ListItem muteItem = findItemByMenuId(modelList, R.id.mute_site_menu_id);
         assertNotNull(muteItem);
@@ -1179,7 +1232,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 mActivity.getResources().getQuantityString(R.plurals.mute_sites_menu_item, 1),
                 muteItem.model.get(TITLE));
 
-        mOnItemClickedCallback.onClick(R.id.mute_site_menu_id, List.of(TAB_ID), null, null);
+        mOnItemClickedCallback.onClick(
+                R.id.mute_site_menu_id, new AnchorInfo(TAB_ID, List.of(TAB_ID)), null, null);
         verify(mTabModel).setMuteSetting(List.of(mTab1), true);
     }
 
@@ -1191,7 +1245,8 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testUnmuteSite_singleTab() {
         when(mTabModel.isMuted(mTab1)).thenReturn(true);
         var modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, List.of(TAB_ID));
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID)));
 
         ListItem unmuteItem = findItemByMenuId(modelList, R.id.unmute_site_menu_id);
         assertNotNull(unmuteItem);
@@ -1199,7 +1254,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 mActivity.getResources().getQuantityString(R.plurals.unmute_sites_menu_item, 1),
                 unmuteItem.model.get(TITLE));
 
-        mOnItemClickedCallback.onClick(R.id.unmute_site_menu_id, List.of(TAB_ID), null, null);
+        mOnItemClickedCallback.onClick(
+                R.id.unmute_site_menu_id, new AnchorInfo(TAB_ID, List.of(TAB_ID)), null, null);
         verify(mTabModel).setMuteSetting(List.of(mTab1), false);
     }
 
@@ -1213,7 +1269,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.isMuted(mTab2)).thenReturn(false);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_ID, TAB_ID_2));
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
 
         ListItem muteItem = findItemByMenuId(modelList, R.id.mute_site_menu_id);
         assertNotNull(muteItem);
@@ -1222,7 +1278,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 muteItem.model.get(TITLE));
 
         mOnItemClickedCallback.onClick(
-                R.id.mute_site_menu_id, List.of(TAB_ID, TAB_ID_2), null, null);
+                R.id.mute_site_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                null,
+                null);
         verify(mTabModel).setMuteSetting(List.of(mTab1, mTab2), true);
     }
 
@@ -1236,7 +1295,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.isMuted(mTab2)).thenReturn(true);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_ID, TAB_ID_2));
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
 
         ListItem unmuteItem = findItemByMenuId(modelList, R.id.unmute_site_menu_id);
         assertNotNull(unmuteItem);
@@ -1245,7 +1304,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 unmuteItem.model.get(TITLE));
 
         mOnItemClickedCallback.onClick(
-                R.id.unmute_site_menu_id, List.of(TAB_ID, TAB_ID_2), null, null);
+                R.id.unmute_site_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                null,
+                null);
         verify(mTabModel).setMuteSetting(List.of(mTab1, mTab2), false);
     }
 
@@ -1259,7 +1321,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.isMuted(mTab2)).thenReturn(false);
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, List.of(TAB_ID, TAB_ID_2));
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
 
         ListItem muteItem = findItemByMenuId(modelList, R.id.mute_site_menu_id);
         assertNotNull(muteItem);
@@ -1268,7 +1330,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 muteItem.model.get(TITLE));
 
         mOnItemClickedCallback.onClick(
-                R.id.mute_site_menu_id, List.of(TAB_ID, TAB_ID_2), null, null);
+                R.id.mute_site_menu_id,
+                new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)),
+                null,
+                null);
         verify(mTabModel).setMuteSetting(List.of(mTab1, mTab2), true);
     }
 
@@ -1439,9 +1504,13 @@ public class TabContextMenuCoordinatorUnitTest {
     public void testSubmenuSelection() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
         mTabContextMenuCoordinator.showMenu(
-                new RectProvider(new Rect(0, 0, 100, 100)), List.of(TAB_ID));
+                new RectProvider(new Rect(0, 0, 100, 100)),
+                new AnchorInfo(TAB_ID, List.of(TAB_ID)));
 
         // Click into "Add to group" submenu.
         var addToGroupItem = modelList.get(0);
@@ -1480,7 +1549,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getCount()).thenReturn(3);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
@@ -1512,7 +1581,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getCount()).thenReturn(3);
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
@@ -1541,13 +1610,13 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabModel.indexOf(mTab1)).thenReturn(1);
         when(mTabModel.getCount()).thenReturn(3);
 
-        var modelList = new ModelList();
+        ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
     }
 
     @Test
@@ -1560,7 +1629,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
             if (!listItem.model.containsKey(TITLE_ID)) continue;
@@ -1581,11 +1650,11 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), false);
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
     }
 
     @Test
@@ -1598,7 +1667,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
             if (!listItem.model.containsKey(TITLE_ID)) continue;
@@ -1620,12 +1689,12 @@ public class TabContextMenuCoordinatorUnitTest {
 
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         // In RTL, the item to move toward the start is visually "Move right". It's at the same
         // position as "Move left" in LTR.
         modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
-        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), false);
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), false);
     }
 
     @Test
@@ -1639,7 +1708,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         // In RTL, moving toward the start is "Move right". This option should not be available for
         // the first tab.
@@ -1663,13 +1732,13 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         // In RTL, the item to move toward the end is visually "Move left". It's at the same
         // position as "Move right" in LTR.
         modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
     }
 
     @Test
@@ -1683,7 +1752,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         // In RTL, moving toward the end is "Move left". This option should not be available for
         // the last tab.
@@ -1707,7 +1776,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
             if (!listItem.model.containsKey(TITLE_ID)) continue;
@@ -1729,7 +1798,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
             if (!listItem.model.containsKey(TITLE_ID)) continue;
@@ -1755,11 +1824,11 @@ public class TabContextMenuCoordinatorUnitTest {
 
         ModelList modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, Collections.singletonList(TAB_ID));
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
 
-        verify(mReorderFunction, times(1)).accept(List.of(TAB_ID), true);
+        verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
     }
 
     @Test

@@ -40,6 +40,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -100,7 +101,44 @@ import java.util.function.Supplier;
  * the menu, and displaying the menu.
  */
 @NullMarked
-public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Integer>> {
+public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorInfo> {
+
+    /** Stores the primary anchor tab of the context menu & ids of all multiselected tabs. */
+    public static class AnchorInfo {
+        private final int mAnchorTabId;
+        private final List<Integer> mAllTabIds;
+
+        public AnchorInfo(int anchorTabId, List<Integer> allTabIds) {
+            mAnchorTabId = anchorTabId;
+            mAllTabIds = allTabIds;
+        }
+
+        public int getAnchorTabId() {
+            return mAnchorTabId;
+        }
+
+        public List<Integer> getAllTabIds() {
+            return mAllTabIds;
+        }
+
+        @Override
+        public boolean equals(Object otherObject) {
+            if (!(otherObject instanceof AnchorInfo)) return false;
+            AnchorInfo other = (AnchorInfo) otherObject;
+            return other.mAnchorTabId == mAnchorTabId && other.mAllTabIds.equals(mAllTabIds);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(List.of(mAnchorTabId, mAllTabIds));
+        }
+
+        @Override
+        public String toString() {
+            return List.of(mAnchorTabId, mAllTabIds).toString();
+        }
+    }
+
     @SuppressWarnings("HidingField")
     private final Supplier<TabModel> mTabModelSupplier;
 
@@ -120,7 +158,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
             Context context,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            BiConsumer<List<Integer>, Boolean> reorderFunction) {
+            BiConsumer<AnchorInfo, Boolean> reorderFunction) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
@@ -166,7 +204,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
             Supplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Context context,
-            BiConsumer<List<Integer>, Boolean> reorderFunction) {
+            BiConsumer<AnchorInfo, Boolean> reorderFunction) {
         Profile profile = assumeNonNull(tabModelSupplier.get().getProfile());
 
         @Nullable TabGroupSyncService tabGroupSyncService =
@@ -190,13 +228,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
     }
 
     @VisibleForTesting
-    static OnItemClickedCallback<List<Integer>> getMenuItemClickedCallback(
+    static OnItemClickedCallback<AnchorInfo> getMenuItemClickedCallback(
             Supplier<TabModel> tabModelSupplier,
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             MultiInstanceManager multiInstanceManager,
             Supplier<ShareDelegate> shareDelegateSupplier) {
-        return (menuId, tabIds, collaborationId, listViewTouchTracker) -> {
+        return (menuId, anchorInfo, collaborationId, listViewTouchTracker) -> {
+            List<Integer> tabIds = anchorInfo.getAllTabIds();
             assert !tabIds.isEmpty() : "Empty tab id list provided";
             TabModel tabModel = tabModelSupplier.get();
             List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
@@ -270,45 +309,47 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
      *
      * @param anchorViewRectProvider The context menu's anchor view rect provider. These are screen
      *     coordinates.
-     * @param tabIds The tab ids of the interacting tabs.
+     * @param anchorInfo The {@link AnchorInfo} for the context menu to be shown.
      */
-    protected void showMenu(RectProvider anchorViewRectProvider, List<Integer> tabIds) {
+    protected void showMenu(RectProvider anchorViewRectProvider, AnchorInfo anchorInfo) {
         createAndShowMenu(
                 anchorViewRectProvider,
-                tabIds,
+                anchorInfo,
                 /* horizontalOverlapAnchor= */ true,
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ Resources.ID_NULL,
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 assumeNonNull(mWindowAndroid.getActivity().get()));
-        recordUserAction("Shown", tabIds.size() > 1);
+        recordUserAction("Shown", anchorInfo.getAllTabIds().size() > 1);
     }
 
     @Override
-    protected void buildMenuActionItems(ModelList itemList, List<Integer> ids) {
+    protected void buildMenuActionItems(ModelList itemList, AnchorInfo anchorInfo) {
+        List<Integer> ids = anchorInfo.getAllTabIds();
         assert !ids.isEmpty() : "Empty tab id list provided";
         TabModel tabModel = mTabModelSupplier.get();
         List<Tab> tabs = TabModelUtils.getTabsById(ids, tabModel, /* allowClosing= */ false);
         assert !tabs.isEmpty() : "Empty tab list provided";
         boolean isIncognito = tabModel.isIncognitoBranded();
         if (tabs.size() == 1) {
-            buildMenuActionItemsForSingleTab(itemList, tabs, isIncognito);
+            buildMenuActionItemsForSingleTab(itemList, anchorInfo, tabs, isIncognito);
         } else {
-            buildMenuActionItemsForMultipleTabs(itemList, tabs, isIncognito);
+            buildMenuActionItemsForMultipleTabs(itemList, anchorInfo, tabs, isIncognito);
         }
     }
 
     @Override
-    protected boolean canItemMoveTowardStart(List<Integer> tabs) {
+    protected boolean canItemMoveTowardStart(AnchorInfo anchorInfo) {
         TabModel tabModel = mTabModelSupplier.get();
-        @Nullable Tab tab = tabModel.getTabById(tabs.get(0));
+        @Nullable Tab tab = tabModel.getTabById(anchorInfo.getAllTabIds().get(0));
         if (tab == null) return false;
         int idx = tabModel.indexOf(tab);
         return tab.getIsPinned() ? idx > 0 : idx > tabModel.findFirstNonPinnedTabIndex();
     }
 
     @Override
-    protected boolean canItemMoveTowardEnd(List<Integer> tabs) {
+    protected boolean canItemMoveTowardEnd(AnchorInfo anchorInfo) {
+        List<Integer> tabs = anchorInfo.getAllTabIds();
         TabModel tabModel = mTabModelSupplier.get();
         @Nullable Tab tab = tabModel.getTabById(tabs.get(tabs.size() - 1));
         if (tab == null) return false;
@@ -319,19 +360,16 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
     }
 
     private void buildMenuActionItemsForSingleTab(
-            ModelList itemList, List<Tab> tabs, boolean isIncognito) {
+            ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
         if (shouldShowMoveToWindowItem(tabs)) {
-            itemList.add(createMoveToWindowItem(TabModelUtils.getTabIds(tabs), isIncognito));
+            itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
         List<ListItem> reorderItems =
-                createReorderItems(
-                        List.of(tabs.get(0).getId()),
-                        R.string.move_tab_left,
-                        R.string.move_tab_right);
+                createReorderItems(anchorInfo, R.string.move_tab_left, R.string.move_tab_right);
         // Need to check list is non-empty before calling addAll; otherwise we get assertion error.
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
@@ -349,13 +387,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
     }
 
     private void buildMenuActionItemsForMultipleTabs(
-            ModelList itemList, List<Tab> tabs, boolean isIncognito) {
+            ModelList itemList, AnchorInfo anchorInfo, List<Tab> tabs, boolean isIncognito) {
         itemList.add(createMoveToTabGroupItem(tabs, isIncognito));
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
         if (shouldShowMoveToWindowItem(tabs)) {
-            itemList.add(createMoveToWindowItem(TabModelUtils.getTabIds(tabs), isIncognito));
+            itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
         itemList.add(buildMenuDivider(isIncognito));
         if (isTabPinningFromStripEnabled()) {
@@ -445,12 +483,12 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
                 .build();
     }
 
-    private ListItem createMoveToWindowItem(List<Integer> tabIds, boolean isIncognito) {
+    private ListItem createMoveToWindowItem(AnchorInfo anchorInfo, boolean isIncognito) {
         assumeNonNull(mMultiInstanceManager);
         return createMoveToWindowItem(
-                tabIds,
+                anchorInfo,
                 isIncognito,
-                tabIds.size() > 1
+                anchorInfo.getAllTabIds().size() > 1
                         ? R.plurals.move_tabs_to_another_window
                         : R.plurals.move_tab_to_another_window,
                 R.id.move_to_other_window_menu_id);
@@ -673,15 +711,17 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
     }
 
     @Override
-    protected @Nullable String getCollaborationIdOrNull(List<Integer> ids) {
-        if (ids.isEmpty() || ids.size() > 1) return null;
-        var tab = mTabModelSupplier.get().getTabById(ids.get(0));
+    protected @Nullable String getCollaborationIdOrNull(AnchorInfo anchorInfo) {
+        List<Integer> tabIds = anchorInfo.getAllTabIds();
+        if (tabIds.isEmpty() || tabIds.size() > 1) return null;
+        var tab = mTabModelSupplier.get().getTabById(tabIds.get(0));
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
     }
 
     @Override
-    protected void moveToNewWindow(List<Integer> tabIds) {
+    protected void moveToNewWindow(AnchorInfo anchorInfo) {
+        List<Integer> tabIds = anchorInfo.getAllTabIds();
         if (tabIds.isEmpty()) return;
         TabModel tabModel = mTabModelSupplier.get();
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
@@ -692,7 +732,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
     }
 
     @Override
-    protected void moveToWindow(InstanceInfo instanceInfo, List<Integer> tabIds) {
+    protected void moveToWindow(InstanceInfo instanceInfo, AnchorInfo anchorInfo) {
+        List<Integer> tabIds = anchorInfo.getAllTabIds();
         if (tabIds.isEmpty()) return;
         TabModel tabModel = mTabModelSupplier.get();
         List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, /* allowClosing= */ false);
