@@ -213,9 +213,6 @@ NSString* const kUploadCrashReports = @"UploadCrashReports";
 // Constants for deferring the enterprise managed device check.
 NSString* const kEnterpriseManagedDeviceCheck = @"EnterpriseManagedDeviceCheck";
 
-// Constants for deferred deletion of leftover session state files.
-NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
-
 // Constant for deffered memory experimentation.
 NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
 
