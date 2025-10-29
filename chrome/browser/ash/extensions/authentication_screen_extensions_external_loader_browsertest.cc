@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -50,7 +49,7 @@ Profile* GetOriginalSigninProfile() {
       ->GetOriginalProfile();
 }
 
-// Returns the profile into which login-screen extensions are force-installed.
+// Returns the profile into which lock-screen extensions are force-installed.
 Profile* GetOriginalLockScreenProfile() {
   return Profile::FromBrowserContext(
              ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext())
@@ -173,9 +172,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
   EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
 
   LogIn();
-  ash::SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
   LockSession();
-  locked_waiter.Wait();
   // Even if the session is locked, the lock screen profile doesn't get created
   // unless needed.
   ASSERT_FALSE(ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext());
@@ -198,9 +195,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
 
   LogIn();
   EnsureLockProfileExists();
-  ash::SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
   LockSession();
-  locked_waiter.Wait();
 
   // Even though the lock profile exists, "ICC" isn't enabled so the extension
   // remains on the sign-in profile.
@@ -210,15 +205,8 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
 
 // Tests that sign-in screen extensions are unloaded when the session is locked
 // if the lock screen profile already exists and Badge Based Auth is enabled.
-// TODO(crbug.com/454402093): Fix flakiness and re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_UnloadedWhenLockProfileExists \
-  DISABLED_UnloadedWhenLockProfileExists
-#else
-#define MAYBE_UnloadedWhenLockProfileExists UnloadedWhenLockProfileExists
-#endif
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
-                       MAYBE_UnloadedWhenLockProfileExists) {
+                       UnloadedWhenLockProfileExists) {
   AuthenticationScreenExtensionsExternalLoader::
       SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
 
@@ -233,23 +221,21 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
 
   LogIn();
   EnsureLockProfileExists();
-  ash::SessionStateWaiter locked_waiter(session_manager::SessionState::LOCKED);
-  LockSession();
-  locked_waiter.Wait();
-
   extensions::TestExtensionRegistryObserver observer(
       extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
       kExtensionId);
-  observer.WaitForExtensionLoaded();
-
+  LockSession();
+  if (!IsExtensionInstalledOnLockScreen(kExtensionId)) {
+    observer.WaitForExtensionLoaded();
+  }
   EXPECT_FALSE(IsExtensionInstalledOnSigninScreen(kExtensionId));
   EXPECT_TRUE(IsExtensionInstalledOnLockScreen(kExtensionId));
   EXPECT_TRUE(IsExtensionEnabledOnLockScreen(kExtensionId));
 
-  ash::SessionStateWaiter active_waiter(session_manager::SessionState::ACTIVE);
   UnlockSession();
-  active_waiter.Wait();
-  observer.WaitForExtensionUnloaded();
+  if (IsExtensionInstalledOnLockScreen(kExtensionId)) {
+    observer.WaitForExtensionUnloaded();
+  }
   EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kExtensionId));
 }
 
@@ -270,17 +256,12 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
 
   LogIn();
   EnsureLockProfileExists();
-  ash::SessionStateWaiter locked_waiter_1(
-      session_manager::SessionState::LOCKED);
   LockSession();
-  locked_waiter_1.Wait();
   // The extension stays on the sign-in profile before Badge Auth is enabled.
   EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kOtherExtensionId));
   EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kOtherExtensionId));
 
-  ash::SessionStateWaiter active_waiter(session_manager::SessionState::ACTIVE);
   UnlockSession();
-  active_waiter.Wait();
 
   // Install the Badge Auth extension to enable the feature.
   EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
@@ -298,10 +279,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
       extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
       kOtherExtensionId);
 
-  ash::SessionStateWaiter locked_waiter_2(
-      session_manager::SessionState::LOCKED);
   ash::ScreenLockerTester().Lock();
-  locked_waiter_2.Wait();
 
   // Both extensions are loaded on the lock screen profile.
   if (!IsExtensionInstalledOnLockScreen(kExtensionId)) {
