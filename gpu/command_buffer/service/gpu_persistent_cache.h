@@ -7,12 +7,12 @@
 
 #include <dawn/platform/DawnPlatform.h>
 
+#include <atomic>
 #include <memory>
 #include <string_view>
 
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
+#include "base/synchronization/atomic_flag.h"
 #include "components/persistent_cache/backend_params.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -33,6 +33,7 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   GpuPersistentCache(const GpuPersistentCache&) = delete;
   GpuPersistentCache& operator=(const GpuPersistentCache&) = delete;
 
+  // This can only be called once but is thread safe w.r.t loads and stores.
   void InitializeCache(persistent_cache::BackendParams backend_params);
 
   // dawn::platform::CachingInterface implementation.
@@ -53,12 +54,12 @@ class GPU_GLES2_EXPORT GpuPersistentCache
   // Prefix to prepend to UMA histogram's name. e.g GraphiteDawn, WebGPU
   const std::string cache_prefix_;
 
-  size_t load_count_ = 0;
-  size_t store_count_ = 0;
+  std::atomic<size_t> load_count_ = 0;
+  std::atomic<size_t> store_count_ = 0;
 
-  base::Lock lock_;
-  std::unique_ptr<persistent_cache::PersistentCache> persistent_cache_
-      GUARDED_BY(lock_);
+  // `persistent_cache_` should only be accessed after `initialized_` is set.
+  base::AtomicFlag initialized_;
+  std::unique_ptr<persistent_cache::PersistentCache> persistent_cache_;
 };
 
 }  // namespace gpu
