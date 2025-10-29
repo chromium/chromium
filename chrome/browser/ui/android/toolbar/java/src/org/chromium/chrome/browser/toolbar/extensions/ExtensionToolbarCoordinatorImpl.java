@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
@@ -42,6 +44,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             Context context,
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
+            OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
@@ -56,6 +59,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         context,
                         container.findViewById(R.id.extension_action_list),
                         windowAndroid,
+                        taskSupplier,
                         profileSupplier,
                         currentTabSupplier);
         mExtensionsMenuCoordinator =

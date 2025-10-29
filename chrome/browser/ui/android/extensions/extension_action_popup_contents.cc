@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
@@ -135,9 +136,13 @@ void ExtensionActionPopupContents::HandleCloseExtensionHost(
 // popup.
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
     JNIEnv* env,
-    Profile* profile,
+    jlong browser_window_interface_ptr,
     std::string& action_id,
     int tab_id) {
+  BrowserWindowInterface* browser =
+      reinterpret_cast<BrowserWindowInterface*>(browser_window_interface_ptr);
+  Profile* profile = browser->GetProfile();
+
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   DCHECK(registry);
 
@@ -154,7 +159,7 @@ static ScopedJavaLocalRef<jobject> JNI_ExtensionActionPopupContents_Create(
   GURL popup_url = action->GetPopupUrl(tab_id);
 
   std::unique_ptr<ExtensionViewHost> host =
-      ExtensionViewHostFactory::CreatePopupHost(popup_url, profile);
+      ExtensionViewHostFactory::CreatePopupHost(popup_url, browser);
   DCHECK(host);
 
   // The ExtensionActionPopupContents C++ object's lifetime is managed by its

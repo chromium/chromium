@@ -39,12 +39,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
@@ -86,6 +88,7 @@ public class ExtensionActionListMediatorTest {
     private FakeExtensionActionsBridge.ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
+    private OneshotSupplierImpl<ChromeAndroidTask> mTaskSupplier;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
     private ModelList mModels;
@@ -108,12 +111,18 @@ public class ExtensionActionListMediatorTest {
         mTab2 = new MockTab(TAB2_ID, mProfile);
         mTab1.setWebContentsOverrideForTesting(mWebContents);
         mTab2.setWebContentsOverrideForTesting(mWebContents);
+        mTaskSupplier = new OneshotSupplierImpl<>();
         mProfileSupplier = new ObservableSupplierImpl<>();
         mCurrentTabSupplier = new ObservableSupplierImpl<>();
         mModels = new ModelList();
         mMediator =
                 new ExtensionActionListMediator(
-                        context, mWindowAndroid, mModels, mProfileSupplier, mCurrentTabSupplier);
+                        context,
+                        mWindowAndroid,
+                        mModels,
+                        mTaskSupplier,
+                        mProfileSupplier,
+                        mCurrentTabSupplier);
 
         // Wait for the main thread to settle.
         shadowOf(Looper.getMainLooper()).idle();

@@ -12,6 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.extensions.ContextMenuSource;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
@@ -38,6 +40,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final ModelList mModels;
+    private final OneshotSupplier<ChromeAndroidTask> mTaskSupplier;
     private final ExtensionActionsUpdateHelper mExtensionActionsUpdateHelper;
 
     private final ActionsUpdateDelegate mActionsUpdateDelegate = new ActionsUpdateDelegate();
@@ -50,11 +53,13 @@ class ExtensionActionListMediator implements Destroyable {
             Context context,
             WindowAndroid windowAndroid,
             ModelList models,
+            OneshotSupplier<ChromeAndroidTask> taskSupplier,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> currentTabSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
+        mTaskSupplier = taskSupplier;
 
         mExtensionActionsUpdateHelper =
                 new ExtensionActionsUpdateHelper(
@@ -103,16 +108,19 @@ class ExtensionActionListMediator implements Destroyable {
         // button while its popup is open.
         closePopup();
 
-        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
-        Profile profile = mExtensionActionsUpdateHelper.getProfile();
+        ChromeAndroidTask task = mTaskSupplier.get();
+        if (task == null) {
+            return;
+        }
 
-        if (profile == null || currentTab == null) {
+        Tab currentTab = mExtensionActionsUpdateHelper.getCurrentTab();
+        if (currentTab == null) {
             return;
         }
         int tabId = currentTab.getId();
 
         ExtensionActionPopupContents contents =
-                ExtensionActionPopupContents.create(profile, actionId, tabId);
+                ExtensionActionPopupContents.create(task, actionId, tabId);
         assert mCurrentPopup == null;
         mCurrentPopup =
                 new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
