@@ -61,7 +61,7 @@ id<GREYMatcher> UseSuggestedPasswordButton() {
 // Returns the matcher for the use keyboard button.
 id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
 }
 
 }  // namespace

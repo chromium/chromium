@@ -1816,6 +1816,33 @@
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
       </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE" desc="The action button to use the selected credentials to fill the username on a username only form without password.">
+        Continue
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME" desc="Text shown for an option in a list of the user's saved passwords, when the user did not save a username along with the password.">
+        No username ••••••••
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_PASSWORD_MANAGER" desc="The credential bottom sheet's long press menu item to open the password manager.">
+        Password Manager
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL" desc="Text shown for a recovery password suggestion available in the Credential Bottom Sheet. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. A recovery password is a temporary backup of an old password that is kept after an automated password change occurred. It acts as a safety net in case the new password doesn't work. [iOS only]">
+        Temp recovery in case of trouble
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SELECT_PASSWORD" desc="This message is mentioned right after the title when the Credential Bottom Sheet opens. For example, in English, it would say: 'Google Password Manager. Select a password to fill.'. This is spoken by VoiceOver. [iOS only]">
+        Select a password to fill.
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SHOW_DETAILS" desc="The credential bottom sheet's long press menu item to open the password details page, which displays more information, like username, password and associated website.">
+        Show details
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE" desc="Shown on the credential bottom sheet to inform users that, upon accepting the prompt, their username and password will be shared with the given website. [iOS only]" meaning="A string under the title logo of the credential bottom sheet.">
+        You'll sign in to <ph name="URL">$1<ex>chromium.org</ex></ph>
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the credential bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
+              Use keyboard
+            </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD" desc="The action button to use the selected credentials to fill the username and password fields on the webpage.">
+        Use password
+      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_SUGGEST_STRONG_PASSWORD" desc="Button allowing users to request Chrome suggest a strong password">
         Suggest strong password
       </message>
@@ -4481,33 +4508,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_PASSKEY_WELCOME_SCREEN_NEXT_BUTTON" desc="Used as a title for a 'Next' button." meaning="Go to the next step.">
         Next
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE" desc="The action button to use the selected credentials to fill the username on a username only form without password.">
-        Continue
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME" desc="Text shown for an option in a list of the user's saved passwords, when the user did not save a username along with the password.">
-        No username ••••••••
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER" desc="The password bottom sheet's long press menu item to open the password manager.">
-        Password Manager
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL" desc="Text shown for a recovery password suggestion available in the Password Bottom Sheet. Indicates to the user that the recovery password can be used to log in if the main password doesn't work. A recovery password is a temporary backup of an old password that is kept after an automated password change occurred. It acts as a safety net in case the new password doesn't work. [iOS only]">
-        Temp recovery in case of trouble
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SELECT_PASSWORD" desc="This message is mentioned right after the title when the Password Bottom Sheet opens. For example, in English, it would say: 'Google Password Manager. Select a password to fill.'. This is spoken by VoiceOver. [iOS only]">
-        Select a password to fill.
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS" desc="The password bottom sheet's long press menu item to open the password details page, which displays more information, like username, password and associated website.">
-        Show details
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE" desc="Shown on the password bottom sheet to inform users that, upon accepting the prompt, their username and password will be shared with the given website. [iOS only]" meaning="A string under the title logo of the password bottom sheet.">
-        You'll sign in to <ph name="URL">$1<ex>chromium.org</ex></ph>
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD" desc="The action button to dismiss the password bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
-              Use keyboard
-            </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD" desc="The action button to use the selected credentials to fill the username and password fields on the webpage.">
-        Use password
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP" desc="Title for the item in Settings for Password Checkup feature." meaning="Label tells the user about status of Password Checkup [CHAR_LIMIT=25] [iOS only]">
         Password Checkup

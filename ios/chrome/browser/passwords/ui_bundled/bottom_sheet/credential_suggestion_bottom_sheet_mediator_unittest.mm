@@ -78,12 +78,12 @@ FormSuggestion* SuggestionForSingleUsernameForm() {
 
 // Gets the primary action label localized string for password fill.
 NSString* PrimaryActionLabelForPasswordFill() {
-  return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
+  return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD);
 }
 
 // Gets the primary action label localized string for password fill.
 NSString* PrimaryActionLabelForUsernameFill() {
-  return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE);
+  return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE);
 }
 
 // Creates PasswordFormFillData to be processed for offering password

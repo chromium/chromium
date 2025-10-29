@@ -131,7 +131,7 @@ void TypeText(NSString* nsText) {
 void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
   id<GREYMatcher> buttonMatcher =
       chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(username)];
   [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];

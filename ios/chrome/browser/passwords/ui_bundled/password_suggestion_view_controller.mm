@@ -74,7 +74,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
       l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
   if (_proactive) {
     self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
     self.secondaryActionImage =
         DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
   } else {

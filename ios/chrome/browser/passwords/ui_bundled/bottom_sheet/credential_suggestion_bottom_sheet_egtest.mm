@@ -56,7 +56,7 @@ id<GREYMatcher> ButtonWithAccessibilityID(NSString* id) {
 
 id<GREYMatcher> SubtitleString(const GURL& url) {
   return grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE,
+      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE,
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           url)));
 }
@@ -72,26 +72,26 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Returns the matcher for the use password button.
 id<GREYMatcher> UsePasswordButton() {
   return chrome_test_util::StaticTextWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD));
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD));
 }
 
 // Returns the matcher for the open keyboard button.
 id<GREYMatcher> OpenKeyboardButton() {
   return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
 }
 
 // Returns the matcher for the "Show details" context menu item.
 id<GREYMatcher> ShowDetailsContextMenuItem() {
   return grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                        IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
+                        IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SHOW_DETAILS),
                     grey_interactable(), nullptr);
 }
 
 // Returns the matcher for the "Password Manager" context menu item.
 id<GREYMatcher> PasswordManagerContextMenuItem() {
   return grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
-                        IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER),
+                        IDS_IOS_CREDENTIAL_BOTTOM_SHEET_PASSWORD_MANAGER),
                     grey_interactable(), nullptr);
 }
 
@@ -101,7 +101,7 @@ id<GREYMatcher> BackupPasswordSuggestion(NSString* suggestion_username) {
   id<GREYMatcher> backup_icon = grey_accessibilityID(
       kRecoveryPasswordSuggestionIconAccessibilityIdentifier);
   id<GREYMatcher> backup_text = grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL));
+      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL));
   return grey_allOf(grey_accessibilityID(suggestion_username),
                     grey_descendant(backup_icon), grey_descendant(backup_text),
                     nullptr);
@@ -921,11 +921,11 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(l10n_util::GetNSString(
-                          IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME))];
+                          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME))];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
-                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(l10n_util::GetNSString(
+                     IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME))]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:UsePasswordButton()]

@@ -37,10 +37,10 @@ TEST_F(UseAutofillInstructionalViewControllerTest,
 
   EXPECT_NSEQ(
       view_controller_.animationTextProvider[@"use_keyboard"],
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD));
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD));
   EXPECT_NSEQ(
       view_controller_.animationTextProvider[@"use_password"],
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD));
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD));
 
   EXPECT_NSEQ(
       [view_controller_ titleString],

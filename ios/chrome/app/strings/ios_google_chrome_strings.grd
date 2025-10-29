@@ -270,6 +270,9 @@
     <message name="IDS_IOS_CONTEXTUAL_PANEL_BRANDING_TITLE" desc="Branded title on the Contextual Panel screen. The string is lowercase on purpose.">
         chrome
       </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_TITLE" desc="Title of the credential bottom sheet. [iOS only]">
+          Google Password Manager
+      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE" desc="Subitle text of the instructions page on how to set up Chrome as the Credential Provider. [iOS only]">
         From "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password Options</ex></ph>" settings, toggle "Chrome" on
       </message>
@@ -869,9 +872,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         To keep your passkeys safe, you’ll first need to create a recovery PIN.
 
         Passkeys are saved in Google Password Manager, which lets you use them in Chrome on any device.
-      </message>
-      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
-          Google Password Manager
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Google Password Manager can't check your passwords.

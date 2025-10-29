@@ -43,9 +43,9 @@ NSString* const kUsePasswordKeypath = @"use_password";
 
   // Set the text localization.
   NSString* useKeyboardTitle =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
   NSString* usePasswordTitle =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD);
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD);
   self.animationTextProvider = @{
     kUseKeyboardKeypath : useKeyboardTitle,
     kUsePasswordKeypath : usePasswordTitle,

@@ -47,7 +47,8 @@ CGFloat const kSpacingBetweenCellLabels = 2;
 NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   NSString* username = suggestion.value;
   return ([username length] == 0)
-             ? l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME)
+             ? l10n_util::GetNSString(
+                   IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME)
              : username;
 }
 
@@ -140,7 +141,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   self.titleTextStyle = UIFontTextStyleTitle2;
 
   self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_KEYBOARD);
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
   self.secondaryActionImage =
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
@@ -152,7 +153,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
         url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
             _URL);
     self.subtitleString = l10n_util::GetNSStringF(
-        IDS_IOS_PASSWORD_BOTTOM_SHEET_SUBTITLE, formattedURL);
+        IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE, formattedURL);
   }
 
   [super viewDidLoad];
@@ -336,13 +337,14 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 // Configures the title view of this ViewController.
 - (UIView*)setUpTitleView {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_TITLE);
   UIView* titleView = password_manager::CreatePasswordManagerTitleView(title);
   titleView.backgroundColor = self.mainBackgroundColor;
   titleView.accessibilityLabel = [NSString
       stringWithFormat:@"%@. %@", title,
                        l10n_util::GetNSString(
-                           IDS_IOS_PASSWORD_BOTTOM_SHEET_SELECT_PASSWORD)];
+                           IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SELECT_PASSWORD)];
   return titleView;
 }
 
@@ -381,7 +383,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
       CustomSymbolWithPointSize(kPasswordSymbol, kSymbolActionPointSize);
   return [UIAction
       actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER)
+                          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_PASSWORD_MANAGER)
                 image:keyIcon
            identifier:nil
               handler:passwordManagerButtonTapHandler];
@@ -399,12 +401,12 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
   UIImage* infoIcon =
       DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
-  return
-      [UIAction actionWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS)
-                          image:infoIcon
-                     identifier:nil
-                        handler:showDetailsButtonTapHandler];
+  return [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SHOW_DETAILS)
+                image:infoIcon
+           identifier:nil
+              handler:showDetailsButtonTapHandler];
 }
 
 // Returns the accessibility value for the cell at the provided index path.
@@ -435,7 +437,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   cell.URLLabel.hidden = NO;
   if (formSuggestion.type == SuggestionType::kBackupPasswordEntry) {
     cell.thirdRowLabel.text = l10n_util::GetNSString(
-        IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
+        IDS_IOS_CREDENTIAL_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
     cell.thirdRowLabel.hidden = NO;
   }
   if (base::FeatureList::IsEnabled(
