@@ -490,6 +490,7 @@ chromium-metrics-reviews@google.com.
   <int value="-686834549" label="/downloads"/>
   <int value="-655433489" label="/payments"/>
   <int value="-590688273" label="/content/sensors"/>
+  <int value="-587521019" label="/identityDocs"/>
   <int value="-570956986" label="/personalization"/>
   <int value="-565073397" label="/performance"/>
   <int value="-512116630" label="/search"/>

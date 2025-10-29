@@ -7,8 +7,8 @@ import 'chrome://settings/settings.js';
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
-import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -37,8 +37,6 @@ suite('YourSavedInfoPage', function() {
   });
 
   setup(async function() {
-    Router.resetInstanceForTesting(new Router(routes));
-
     // Override for testing.
     autofillManager = new TestAutofillManager();
     autofillManager.data.addresses = [createAddressEntry()];
@@ -51,11 +49,14 @@ suite('YourSavedInfoPage', function() {
     await setupPage({
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
+      enableYourSavedInfoSettingsPage: true,
     });
   });
 
   async function setupPage(overrides: {[key: string]: boolean}) {
     loadTimeData.overrideValues(overrides);
+    resetRouterForTesting();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     yourSavedInfoPage = document.createElement('settings-your-saved-info-page');
     setDefaultPrefs(settingsPrefs);
@@ -134,13 +135,17 @@ suite('YourSavedInfoPage', function() {
     assertEquals(PasswordManagerPage.PASSWORDS, page);
   });
 
-  [
-    {cardTitle: 'paymentsTitle', expectedRoute: routes.PAYMENTS},
-    {cardTitle: 'contactInfoTitle', expectedRoute: routes.ADDRESSES},
-    // TODO(crbug.com/438666322): Update routing once the Identity docs subpage is created.
-    {cardTitle: 'identityDocsCardTitle', expectedRoute: routes.BASIC},
-    // TODO(crbug.com/438666322): Update routing once the Travel subpage is created.
-    {cardTitle: 'travelCardTitle', expectedRoute: routes.BASIC},
+  // Do not use route constants (like `routes.PAYMENTS`) as expectedRoute
+  // values. The `expectedRoute` is calculated and cached before `setup()` or
+  // `suiteSetup()` when the `yourSavedInfo` feature flag is disabled, which
+  // results in some path values being undefined. Instead, use the literal
+  // string path, e.g., use `'/payments'` instead of `routes.PAYMENTS`.
+  [{cardTitle: 'paymentsTitle', expectedRoute: '/payments'},
+   {cardTitle: 'contactInfoTitle', expectedRoute: '/addresses'},
+   {cardTitle: 'identityDocsCardTitle', expectedRoute: '/identityDocs'},
+   // TODO(crbug.com/438666322): Update routing once the Travel subpage is
+   // created.
+   {cardTitle: 'travelCardTitle', expectedRoute: '/'},
   ].forEach(({cardTitle, expectedRoute}) => {
     test(`${cardTitle} card navigates to the correct route`, function() {
       const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
@@ -149,7 +154,7 @@ suite('YourSavedInfoPage', function() {
       assertTrue(!!card);
 
       card.shadowRoot!.querySelector('cr-link-row')!.click();
-      assertEquals(expectedRoute, Router.getInstance().currentRoute);
+      assertEquals(expectedRoute, Router.getInstance().currentRoute.path);
     });
   });
 

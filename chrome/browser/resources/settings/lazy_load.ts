@@ -115,6 +115,7 @@ import './reset_page/reset_page.js';
 import './system_page/system_page.js';
 
 // </if>
+import './your_saved_info_page/identity_docs_page.js';
 
 // <if expr="not is_chromeos">
 export {ScreenAiInstallStatus} from '/shared/settings/a11y_page/ax_annotations_browser_proxy.js';
@@ -310,3 +311,4 @@ export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxy, SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';
 
 // </if>
+export {SettingsIdentityDocsPageElement} from './your_saved_info_page/identity_docs_page.js';

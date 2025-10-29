@@ -114,6 +114,7 @@ export interface SettingsRoutes {
   SYSTEM: Route;
   TRIGGERED_RESET_DIALOG: Route;
   YOUR_SAVED_INFO: Route;
+  YOUR_SAVED_INFO_IDENTITY_DOCS: Route;
 
   // <if expr="not is_chromeos">
   ACCOUNT: Route;
