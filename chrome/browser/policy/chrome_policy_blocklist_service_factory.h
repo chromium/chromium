@@ -10,7 +10,7 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/policy/content/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 
 namespace content {
 class BrowserContext;

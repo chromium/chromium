@@ -87,6 +87,7 @@ source_set("internal") {
     "//components/strings",
     "//components/url_formatter",
     "//components/url_matcher",
+    "//components/user_prefs",
     "//components/version_info",
     "//extensions/buildflags",
     "//net",
@@ -102,6 +103,15 @@ source_set("internal") {
       "android/policy_cache_updater_android.h",
     ]
     deps += [ "//components/policy/android:jni_headers" ]
+  }
+
+  # TODO(crbug.com/452575535): Move this to general sources after removing
+  # iOS-specific implementation of PolicyBlocklistService.
+  if (!is_ios) {
+    sources += [
+      "url_list/policy_blocklist_service.cc",
+      "url_list/policy_blocklist_service.h",
+    ]
   }
 
   public_deps += [ "//components/policy/core/common:internal" ]

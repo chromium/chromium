@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_SERVICE_H_
-#define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_SERVICE_H_
+#ifndef COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_POLICY_BLOCKLIST_SERVICE_H_
+#define COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_POLICY_BLOCKLIST_SERVICE_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/policy_export.h"
 
-// PolicyBlocklistService and PolicyBlocklistFactory provide a way for
-// us to access URLBlocklistManager, a policy block list service based on
-// the Preference Service. The URLBlocklistManager responds to permission
-// changes and is per-Profile.
-class PolicyBlocklistService : public KeyedService {
+// PolicyBlocklistService provides a way for us to access URLBlocklistManager,
+// a policy block list service based on the Preference Service. The
+// URLBlocklistManager responds to permission changes and is per-Profile.
+// An instance of this KeyedService is created and managed by an
+// embedder-specific factory. For example, ChromePolicyBlocklistServiceFactory
+// is used in Chrome.
+class POLICY_EXPORT PolicyBlocklistService : public KeyedService {
  public:
   PolicyBlocklistService(
       std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager,
@@ -42,4 +45,4 @@ class PolicyBlocklistService : public KeyedService {
   raw_ptr<PrefService> user_prefs_;
 };
 
-#endif  // COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_SERVICE_H_
+#endif  // COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_POLICY_BLOCKLIST_SERVICE_H_

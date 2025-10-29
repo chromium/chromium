@@ -35,8 +35,6 @@ source_set("content") {
   sources = [
     "policy_blocklist_navigation_throttle.cc",
     "policy_blocklist_navigation_throttle.h",
-    "policy_blocklist_service.cc",
-    "policy_blocklist_service.h",
   ]
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [

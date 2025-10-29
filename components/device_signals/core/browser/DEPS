@@ -3,7 +3,6 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/signin/public",
   "+components/policy/core",
-  "+components/policy/content",
   "+components/policy/proto",
   "+components/prefs",
   "+components/safe_browsing/android",
