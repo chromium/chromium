@@ -17822,6 +17822,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.TabGroupInGridOnStart.Show">
+  <owner>achara@google.com</owner>
+  <owner>ewannpv@google.com</owner>
+  <description>
+    Recorded when showing the tab group in grid view on start. iOS only.
+  </description>
+</action>
+
 <action name="IOS.UnitConversion.SourceUnitValueChange">
   <owner>erahmaoui@google.com</owner>
   <owner>olivierrobin@google.com</owner>
