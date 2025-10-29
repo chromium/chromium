@@ -330,14 +330,7 @@ Animation* Animation::Create(AnimationEffect* effect,
   DCHECK(IsA<DocumentTimeline>(timeline) || timeline->IsScrollTimeline());
 
   if (effect && timeline->IsScrollTimeline()) {
-    if (effect->timing_.iteration_duration) {
-      if (effect->timing_.iteration_duration->is_inf()) {
-        exception_state.ThrowTypeError(
-            "Effect duration cannot be Infinity when used with Scroll "
-            "Timelines");
-        return nullptr;
-      }
-    } else {
+    if (!effect->timing_.iteration_duration) {
       // TODO(crbug.com/1216527)
       // Eventually we hope to be able to be more flexible with
       // iteration_duration "auto" and its interaction with start_delay and

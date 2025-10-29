@@ -277,16 +277,8 @@ void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
   if (GetAnimation() && GetAnimation()->TimelineInternal() &&
       GetAnimation()->TimelineInternal()->IsProgressBased()) {
     if (optional_timing->hasDuration()) {
-      if (optional_timing->duration()->IsUnrestrictedDouble()) {
-        double duration =
-            optional_timing->duration()->GetAsUnrestrictedDouble();
-        if (duration == std::numeric_limits<double>::infinity()) {
-          exception_state.ThrowTypeError(
-              "Effect duration cannot be Infinity when used with Scroll "
-              "Timelines");
-          return;
-        }
-      } else if (optional_timing->duration()->GetAsString() == "auto") {
+      if (optional_timing->duration()->IsString() &&
+          optional_timing->duration()->GetAsString() == "auto") {
         // TODO(crbug.com/1216527)
         // Eventually we hope to be able to be more flexible with
         // iteration_duration "auto" and its interaction with start_delay and
