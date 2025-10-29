@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/time_range_selector_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/prefs/pref_member.h"
@@ -36,23 +32,74 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeBeginningOfTime,
 };
 
-const int kStringIDS[] = {
-    IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR,
-    IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_DAY,
-    IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK,
-    IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS,
-    IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME,
-    IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_OLDER_THAN_30_DAYS};
+// Returns ItemType from the browsing_data::TimePeriod value stored as
+// an int in PrefService.
+std::optional<ItemType> ItemTypeFromTimePeriodAsInt(int time_period_as_int) {
+  switch (time_period_as_int) {
+    case base::to_underlying(browsing_data::TimePeriod::LAST_HOUR):
+      return ItemTypePastHour;
 
-const browsing_data::TimePeriod kTimePeriodUnused[]{
-    // Last 15 Minutes is not yet available on iOS.
-    browsing_data::TimePeriod::LAST_15_MINUTES};
+    case base::to_underlying(browsing_data::TimePeriod::LAST_DAY):
+      return ItemTypePastDay;
 
-static_assert(
-    std::size(kStringIDS) ==
-        static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST) -
-            std::size(kTimePeriodUnused) + 1,
-    "Strings have to match the enum values.");
+    case base::to_underlying(browsing_data::TimePeriod::LAST_WEEK):
+      return ItemTypePastWeek;
+
+    case base::to_underlying(browsing_data::TimePeriod::FOUR_WEEKS):
+      return ItemTypeLastFourWeeks;
+
+    case base::to_underlying(browsing_data::TimePeriod::ALL_TIME):
+      return ItemTypeBeginningOfTime;
+
+    default:
+      return std::nullopt;
+  }
+}
+
+// Converts `item_type` into the corresponding browsing_data::TimePeriod
+// value.
+browsing_data::TimePeriod TimePeriodFromItemType(ItemType item_type) {
+  switch (item_type) {
+    case ItemTypePastHour:
+      return browsing_data::TimePeriod::LAST_HOUR;
+
+    case ItemTypePastDay:
+      return browsing_data::TimePeriod::LAST_DAY;
+
+    case ItemTypePastWeek:
+      return browsing_data::TimePeriod::LAST_WEEK;
+
+    case ItemTypeLastFourWeeks:
+      return browsing_data::TimePeriod::FOUR_WEEKS;
+
+    case ItemTypeBeginningOfTime:
+      return browsing_data::TimePeriod::ALL_TIME;
+  }
+
+  NOTREACHED();
+}
+
+// Returns the string to display for `item_type`.
+int StringIdentifierForItemType(ItemType item_type) {
+  switch (item_type) {
+    case ItemTypePastHour:
+      return IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR;
+
+    case ItemTypePastDay:
+      return IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_DAY;
+
+    case ItemTypePastWeek:
+      return IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_WEEK;
+
+    case ItemTypeLastFourWeeks:
+      return IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_FOUR_WEEKS;
+
+    case ItemTypeBeginningOfTime:
+      return IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME;
+  }
+
+  NOTREACHED();
+}
 
 }  // namespace
 
@@ -89,40 +136,37 @@ static_assert(
 
   [model addSectionWithIdentifier:SectionIdentifierOptions];
 
-  [model addItem:[self timeRangeItemWithOption:ItemTypePastHour
-                                 textMessageID:kStringIDS[0]]
+  [model addItem:[self timeRangeItemWithOption:ItemTypePastHour]
       toSectionWithIdentifier:SectionIdentifierOptions];
 
-  [model addItem:[self timeRangeItemWithOption:ItemTypePastDay
-                                 textMessageID:kStringIDS[1]]
+  [model addItem:[self timeRangeItemWithOption:ItemTypePastDay]
       toSectionWithIdentifier:SectionIdentifierOptions];
 
-  [model addItem:[self timeRangeItemWithOption:ItemTypePastWeek
-                                 textMessageID:kStringIDS[2]]
+  [model addItem:[self timeRangeItemWithOption:ItemTypePastWeek]
       toSectionWithIdentifier:SectionIdentifierOptions];
 
-  [model addItem:[self timeRangeItemWithOption:ItemTypeLastFourWeeks
-                                 textMessageID:kStringIDS[3]]
+  [model addItem:[self timeRangeItemWithOption:ItemTypeLastFourWeeks]
       toSectionWithIdentifier:SectionIdentifierOptions];
 
-  [model addItem:[self timeRangeItemWithOption:ItemTypeBeginningOfTime
-                                 textMessageID:kStringIDS[4]]
+  [model addItem:[self timeRangeItemWithOption:ItemTypeBeginningOfTime]
       toSectionWithIdentifier:SectionIdentifierOptions];
 
   [self updateCheckedState];
 }
 
 - (void)updateCheckedState {
-  int timeRangePrefValue = _timeRangePref.GetValue();
   TableViewModel* model = self.tableViewModel;
+  const std::optional<ItemType> wantedType =
+      ItemTypeFromTimePeriodAsInt(_timeRangePref.GetValue());
 
   NSMutableArray* modifiedItems = [NSMutableArray array];
   for (TableViewItem* item in
        [model itemsInSectionWithIdentifier:SectionIdentifierOptions]) {
-    NSInteger itemPrefValue = item.type - kItemTypeEnumZero;
-    UITableViewCellAccessoryType desiredType =
-        itemPrefValue == timeRangePrefValue ? UITableViewCellAccessoryCheckmark
-                                            : UITableViewCellAccessoryNone;
+    const ItemType itemType = static_cast<ItemType>(item.type);
+    const UITableViewCellAccessoryType desiredType =
+        itemType == wantedType ? UITableViewCellAccessoryCheckmark
+                               : UITableViewCellAccessoryNone;
+
     if (item.accessoryType != desiredType) {
       item.accessoryType = desiredType;
       [modifiedItems addObject:item];
@@ -132,16 +176,15 @@ static_assert(
   [self reconfigureCellsForItems:modifiedItems];
 }
 
-- (void)updatePrefValue:(int)prefValue {
-  _timeRangePref.SetValue(prefValue);
+- (void)updatePrefValue:(browsing_data::TimePeriod)prefValue {
+  _timeRangePref.SetValue(base::to_underlying(prefValue));
   [self updateCheckedState];
 }
 
-- (TableViewDetailTextItem*)timeRangeItemWithOption:(ItemType)itemOption
-                                      textMessageID:(int)textMessageID {
+- (TableViewDetailTextItem*)timeRangeItemWithOption:(ItemType)itemOption {
   TableViewDetailTextItem* item =
       [[TableViewDetailTextItem alloc] initWithType:itemOption];
-  item.text = l10n_util::GetNSString(textMessageID);
+  item.text = l10n_util::GetNSString(StringIdentifierForItemType(itemOption));
   item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
@@ -150,26 +193,10 @@ static_assert(
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  int timePeriod = itemType - kItemTypeEnumZero;
-  DCHECK_LE(timePeriod,
-            static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
-  [self updatePrefValue:timePeriod];
+  const ItemType itemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
+  [self updatePrefValue:TimePeriodFromItemType(itemType)];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-#pragma mark - Class methods
-
-+ (NSString*)timePeriodLabelForPrefs:(PrefService*)prefs {
-  if (!prefs) {
-    return nil;
-  }
-  int prefValue = prefs->GetInteger(browsing_data::prefs::kDeleteTimePeriod);
-  if (prefValue < 0 ||
-      static_cast<size_t>(prefValue) >= std::size(kStringIDS)) {
-    return nil;
-  }
-  return l10n_util::GetNSString(kStringIDS[prefValue]);
 }
 
 @end

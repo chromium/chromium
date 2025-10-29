@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/time_range_selector_table_view_controller.h"
 
+#import <array>
+
 #import "base/files/file_path.h"
 #import "base/test/task_environment.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -93,10 +95,21 @@ TEST_F(TimeRangeSelectorTableViewControllerTest, TestUpdateCheckedState) {
   ASSERT_EQ(1, NumberOfSections());
   ASSERT_EQ(kNumberOfItems, NumberOfItemsInSection(0));
 
-  for (NSInteger checkedItem = 0; checkedItem < kNumberOfItems; ++checkedItem) {
-    [time_range_selector_controller_ updatePrefValue:checkedItem];
+  static constexpr auto kTimePeriods =
+      std::to_array<browsing_data::TimePeriod>({
+          browsing_data::TimePeriod::LAST_HOUR,
+          browsing_data::TimePeriod::LAST_DAY,
+          browsing_data::TimePeriod::LAST_WEEK,
+          browsing_data::TimePeriod::FOUR_WEEKS,
+          browsing_data::TimePeriod::ALL_TIME,
+      });
+
+  for (auto iter = kTimePeriods.begin(); iter != kTimePeriods.end(); ++iter) {
+    const size_t checkedItem = std::distance(kTimePeriods.begin(), iter);
+    [time_range_selector_controller_ updatePrefValue:*iter];
+
     for (NSInteger item = 0; item < kNumberOfItems; ++item) {
-      if (item == checkedItem) {
+      if (static_cast<size_t>(item) == checkedItem) {
         CheckTextItemAccessoryType(UITableViewCellAccessoryCheckmark, 0, item);
       } else {
         CheckTextItemAccessoryType(UITableViewCellAccessoryNone, 0, item);
