@@ -1,6 +1,7 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "media/filters/ffmpeg_h265_to_annex_b_bitstream_converter.h"
 
 #include <stdint.h>
@@ -38,8 +39,8 @@ bool FFmpegH265ToAnnexBBitstreamConverter::ConvertPacket(AVPacket* packet) {
 
     hevc_config_ = std::make_unique<mp4::HEVCDecoderConfigurationRecord>();
 
-    if (!hevc_config_->Parse(stream_codec_parameters_->extradata,
-                             stream_codec_parameters_->extradata_size)) {
+    if (!hevc_config_->Parse(
+            AVCodecParametersExtraDataToSpan(stream_codec_parameters_.get()))) {
       DVLOG(1) << "Parsing HEVCDecoderConfiguration failed";
       return false;
     }

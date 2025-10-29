@@ -110,7 +110,7 @@ TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordTakenFromStream) {
       0xca, 0xe0, 0x10, 0x00, 0x00, 0x06, 0x40, 0x00, 0x00, 0xbb, 0x50, 0x80,
       0x22, 0x00, 0x01, 0x00, 0x06, 0x44, 0x01, 0xc1, 0x73, 0xd1, 0x89};
   HEVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
   std::vector<uint8_t> output;
   EXPECT_TRUE(record.Serialize(output));
   EXPECT_TRUE(test_data == output);

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder_helper.h"
 
+#include "base/containers/span_writer.h"
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/filters/h264_to_annex_b_bitstream_converter.h"  // nogncheck
 #include "media/formats/mp4/box_definitions.h"                  // nogncheck
@@ -80,9 +82,8 @@ VideoDecoderHelper::Status VideoDecoderHelper::Initialize(
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
-    initialized = h265_converter_->ParseConfiguration(
-        configuration_record.data(), configuration_record.size(),
-        h265_hvcc_.get());
+    initialized = h265_converter_->ParseConfiguration(configuration_record,
+                                                      h265_hvcc_.get());
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
   if (initialized) {
@@ -107,8 +108,7 @@ uint32_t VideoDecoderHelper::CalculateNeededOutputBufferSize(
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
     output_size = h265_converter_->CalculateNeededOutputBufferSize(
-        input.data(), input.size(),
-        is_first_chunk ? h265_hvcc_.get() : nullptr);
+        input, is_first_chunk ? h265_hvcc_.get() : nullptr);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -129,9 +129,10 @@ VideoDecoderHelper::Status VideoDecoderHelper::ConvertNalUnitStreamToByteStream(
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
+    base::SpanWriter writer(output);
     converted = h265_converter_->ConvertNalUnitStreamToByteStream(
-        input.data(), input.size(), is_first_chunk ? h265_hvcc_.get() : nullptr,
-        output.data(), output_size);
+        input, is_first_chunk ? h265_hvcc_.get() : nullptr, writer);
+    *output_size = writer.num_written();
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

@@ -624,8 +624,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       // should always be FF_PROFILE_UNKNOWN (-99) here
       if (codec_context->extradata && codec_context->extradata_size) {
         mp4::HEVCDecoderConfigurationRecord hevc_config;
-        if (hevc_config.Parse(codec_context->extradata,
-                              codec_context->extradata_size)) {
+        if (hevc_config.Parse(
+                AVCodecContextExtraDataToSpan(codec_context.get()))) {
           hevc_profile = hevc_config.general_profile_idc;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
           if (!color_space.IsSpecified()) {

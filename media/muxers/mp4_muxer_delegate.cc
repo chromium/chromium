@@ -203,8 +203,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
     mp4::writable_boxes::HEVCDecoderConfiguration hevc_config;
     mp4::HEVCDecoderConfigurationRecord hevc_config_record;
-    bool result = hevc_config_record.Parse(codec_description.value().data(),
-                                           codec_description.value().size());
+    bool result = hevc_config_record.Parse(codec_description.value());
     DCHECK(result);
 
     hevc_config.hevc_config_record = std::move(hevc_config_record);
