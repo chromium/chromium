@@ -17,7 +17,6 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
-  CHECK(IsSafetyCheckMagicStackEnabled());
   const scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::SequencedTaskRunner::GetCurrentDefault();
 

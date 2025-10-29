@@ -843,9 +843,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   // Otherwise start a check.
   self.checkStartTime = base::Time::Now();
 
-  if (IsSafetyCheckMagicStackEnabled()) {
-    [self updateTimestampOfLastRun];
-  }
+  [self updateTimestampOfLastRun];
 
   // Record the current state of the checks.
   self.previousUpdateCheckRowState = self.updateCheckRowState;
@@ -964,9 +962,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   if (self.checkDidRun && issuesFound) {
     [self updateTimestampOfLastCheck];
 
-    if (IsSafetyCheckMagicStackEnabled()) {
-      [self updateTimestampOfLastRun];
-    }
+    [self updateTimestampOfLastRun];
 
     self.checkDidRun = NO;
   } else if (self.checkDidRun && !issuesFound) {
@@ -976,9 +972,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
            forKey:kTimestampOfLastIssueFoundKey];
     self.checkDidRun = NO;
 
-    if (IsSafetyCheckMagicStackEnabled()) {
-      [self updateTimestampOfLastRun];
-    }
+    [self updateTimestampOfLastRun];
   }
   // If no checks are still running, reset `checkStartItem`.
   self.checkStartState = CheckStartStateDefault;

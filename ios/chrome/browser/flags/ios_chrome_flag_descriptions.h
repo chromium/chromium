@@ -858,9 +858,6 @@ extern const char kSafeBrowsingRealTimeLookupDescription[];
 extern const char kSafeBrowsingTrustedURLName[];
 extern const char kSafeBrowsingTrustedURLDescription[];
 
-extern const char kSafetyCheckMagicStackName[];
-extern const char kSafetyCheckMagicStackDescription[];
-
 extern const char kSafetyCheckNotificationsName[];
 extern const char kSafetyCheckNotificationsDescription[];
 

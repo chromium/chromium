@@ -67,6 +67,7 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
+  deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
 

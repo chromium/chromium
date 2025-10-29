@@ -436,7 +436,6 @@ using segmentation_platform::TipIdentifier;
     _shopCardMediator.shopCardActionDelegate = self;
   }
 
-  if (IsSafetyCheckMagicStackEnabled()) {
     IOSChromeSafetyCheckManager* safetyCheckManager =
         IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
@@ -446,7 +445,6 @@ using segmentation_platform::TipIdentifier;
                       profileState:self.browser->GetSceneState().profileState];
     _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
-  }
 
   if (send_tab_to_self::
           IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
@@ -1120,8 +1118,6 @@ using segmentation_platform::TipIdentifier;
 // Safety Check item `type`, this method fires a UI command to present the
 // Update Chrome page, Password Checkup, or Safety Check half sheet.
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
-  CHECK(IsSafetyCheckMagicStackEnabled());
-
   [self.NTPActionsDelegate safetyCheckOpened];
   Browser* browser = self.browser;
   [_magicStackRankingModel logMagicStackEngagementForType:

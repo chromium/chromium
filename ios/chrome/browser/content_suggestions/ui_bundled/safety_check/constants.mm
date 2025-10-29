@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
 
+#import "base/time/time.h"
+
 namespace safety_check {
 
 constexpr NSString* const kAllSafeItemID = @"safety_check::kAllSafeItemID";
@@ -16,5 +18,7 @@ constexpr NSString* const kSafeBrowsingItemID =
 constexpr NSString* const kDefaultItemID = @"safety_check::kDefaultItemID";
 constexpr NSString* const kSafetyCheckViewID =
     @"safety_check::kSafetyCheckViewID";
+
+const base::TimeDelta kTimeDelayForSafetyCheckAutorun = base::Hours(720);
 
 }  // namespace safety_check

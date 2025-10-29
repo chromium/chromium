@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace safety_check {
 
 // Accessibility IDs used for various UI items.
@@ -17,6 +21,9 @@ extern NSString* const kPasswordItemID;
 extern NSString* const kSafeBrowsingItemID;
 extern NSString* const kDefaultItemID;
 extern NSString* const kSafetyCheckViewID;
+
+// Duration between each autorun of the Safety Check in the Magic Stack.
+extern const base::TimeDelta kTimeDelayForSafetyCheckAutorun;
 
 }  // namespace safety_check
 

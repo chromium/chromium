@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_consumer.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_consumer.h"
@@ -469,7 +470,7 @@ int ImpressionsCount(const base::Value::List& impressions,
   base::TimeDelta lastRunAge = base::Time::Now() - lastRunTime;
 
   // Only return the Last Run Time if the run happened within the last 24hr.
-  if (lastRunAge <= TimeDelayForSafetyCheckAutorun()) {
+  if (lastRunAge <= safety_check::kTimeDelayForSafetyCheckAutorun) {
     return lastRunTime;
   }
 

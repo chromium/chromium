@@ -9,6 +9,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/types.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
@@ -165,7 +166,7 @@ bool CanRunSafetyCheck(std::optional<base::Time> last_run_time) {
 
   base::TimeDelta last_run_age = base::Time::Now() - last_run_time.value();
 
-  return last_run_age > TimeDelayForSafetyCheckAutorun();
+  return last_run_age > safety_check::kTimeDelayForSafetyCheckAutorun;
 }
 
 NSString* FormatElapsedTimeSinceLastSafetyCheck(

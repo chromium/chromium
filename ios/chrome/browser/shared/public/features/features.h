@@ -28,9 +28,6 @@ BASE_DECLARE_FEATURE(kTestFeature);
 // the Safety Check module in the Magic Stack.
 BASE_DECLARE_FEATURE(kSafetyCheckAutorunByManagerKillswitch);
 
-// Feature to add the Safety Check module to the Magic Stack.
-BASE_DECLARE_FEATURE(kSafetyCheckMagicStack);
-
 // Killswitch for conditionally hiding the Safety Check module in the Magic
 // Stack if no issues are found.
 BASE_DECLARE_FEATURE(kSafetyCheckModuleHiddenIfNoIssuesKillswitch);
@@ -62,13 +59,6 @@ const base::TimeDelta SuppressDelayForSafetyCheckNotificationsIfPresent();
 // Returns the time duration of user inactivity that must elapse before Safety
 // Check notifications are displayed.
 const base::TimeDelta InactiveThresholdForSafetyCheckNotifications();
-
-// A parameter representing how many hours must elapse before the Safety Check
-// is automatically run in the Magic Stack.
-extern const char kSafetyCheckMagicStackAutorunHoursThreshold[];
-
-// How many hours between each autorun of the Safety Check in the Magic Stack.
-const base::TimeDelta TimeDelayForSafetyCheckAutorun();
 
 // Feature to enable the refactored implementation of the `OmahaService`, using
 // new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.
@@ -430,9 +420,6 @@ BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
 // Whether the Safety Check Manager can automatically trigger Safety Checks.
 bool IsSafetyCheckAutorunByManagerEnabled();
-
-// Whether the Safety Check module should be shown in the Magic Stack.
-bool IsSafetyCheckMagicStackEnabled();
 
 // Whether the Safety Check module is hidden when no issues are found.
 bool ShouldHideSafetyCheckModuleIfNoIssues();

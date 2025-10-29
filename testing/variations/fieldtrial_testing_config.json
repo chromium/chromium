@@ -21598,11 +21598,7 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "SafetyCheckMagicStackAutorunHoursThreshold": "720"
-                    },
                     "enable_features": [
-                        "SafetyCheckMagicStack",
                         "SegmentationPlatformIosModuleRankerSplitBySurface"
                     ]
                 }

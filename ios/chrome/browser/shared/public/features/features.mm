@@ -23,8 +23,6 @@
 
 BASE_FEATURE(kTestFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSafetyCheckMagicStack, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafetyCheckAutorunByManagerKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -56,9 +54,6 @@ const char kSafetyCheckAllowSafeBrowsingNotifications[] =
 
 const char kSafetyCheckAllowUpdateChromeNotifications[] =
     "SafetyCheckAllowUpdateChromeNotifications";
-
-const char kSafetyCheckMagicStackAutorunHoursThreshold[] =
-    "SafetyCheckMagicStackAutorunHoursThreshold";
 
 const char kSafetyCheckNotificationsProvisionalEnabled[] =
     "SafetyCheckNotificationsProvisionalEnabled";
@@ -112,14 +107,6 @@ const base::TimeDelta InactiveThresholdForSafetyCheckNotifications() {
       kSafetyCheckNotifications, kSafetyCheckNotificationsUserInactiveThreshold,
       /*default_value=*/
       kSafetyCheckNotificationDefaultDelay);
-}
-
-// How many hours between each autorun of the Safety Check in the Magic Stack.
-const base::TimeDelta TimeDelayForSafetyCheckAutorun() {
-  int delay = base::GetFieldTrialParamByFeatureAsInt(
-      kSafetyCheckMagicStack, kSafetyCheckMagicStackAutorunHoursThreshold,
-      /*default_value=*/720);
-  return base::Hours(delay);
 }
 
 BASE_FEATURE(kHideToolbarsInOverflowMenu, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -342,10 +329,6 @@ BASE_FEATURE(kOnlyAccessClipboardAsync, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSafetyCheckAutorunByManagerEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckAutorunByManagerKillswitch);
-}
-
-bool IsSafetyCheckMagicStackEnabled() {
-  return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
 
 bool ShouldHideSafetyCheckModuleIfNoIssues() {

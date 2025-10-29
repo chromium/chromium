@@ -439,7 +439,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 // Adds the Safety Check module to `order` based on the current Safety Check
 // state.
 - (void)addSafetyCheckToMagicStackOrder:(NSMutableArray*)order {
-  CHECK(IsSafetyCheckMagicStackEnabled());
   [order addObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))];
 }
 
@@ -778,10 +777,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     // signal for Start.
     BOOL hasNoFreshnessSignal = shortcutsFreshnessImpressionCount != 0 &&
                                 parcelTrackingFreshnessImpressionCount != 0;
-    if (IsSafetyCheckMagicStackEnabled()) {
       hasNoFreshnessSignal =
           hasNoFreshnessSignal && safetyCheckFreshnessImpressionCount != 0;
-    }
     if (hasNoFreshnessSignal && [self.homeStartDataSource isStartSurface]) {
       options = segmentation_platform::PredictionOptions::ForCached(true);
     } else {
@@ -976,11 +973,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         // - No current or previous issues, to avoid consistently displaying the
         // "All Safe" state and taking up carousel space for other modules.
         // - Irrelevant modules are hidden and it's not the first ranked module.
-        BOOL disabled =
-            !IsSafetyCheckMagicStackEnabled() ||
-            safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_prefService);
-
-        if (disabled) {
+        if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
+                _prefService)) {
           base::UmaHistogramEnumeration(
               kIOSSafetyCheckMagicStackHiddenReason,
               IOSSafetyCheckHiddenReason::kManuallyDisabled);

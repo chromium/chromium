@@ -1449,11 +1449,6 @@ const char kSafeBrowsingTrustedURLName[] =
 const char kSafeBrowsingTrustedURLDescription[] =
     "When enabled, chrome://safe-browsing will be accessible.";
 
-const char kSafetyCheckMagicStackName[] = "Enable Safety Check (Magic Stack)";
-const char kSafetyCheckMagicStackDescription[] =
-    "When enabled, the Safety Check module will be displayed in the Magic "
-    "Stack.";
-
 const char kSafetyCheckNotificationsName[] =
     "Enable Safety Check Push Notifications";
 const char kSafetyCheckNotificationsDescription[] =
