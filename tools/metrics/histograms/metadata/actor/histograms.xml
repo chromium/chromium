@@ -275,7 +275,10 @@ chromium-metrics-reviews@google.com.
   <owner>kenok@google.com</owner>
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
-  <summary>Recorded when a task is triggered for the first time.</summary>
+  <summary>
+    Recorded when a task is triggered for the first time. If the browser has
+    actuation capability, this will be recorded as true, else it will be false.
+  </summary>
 </histogram>
 
 <histogram name="Actor.Task.Duration.Cancelled" units="ms"
