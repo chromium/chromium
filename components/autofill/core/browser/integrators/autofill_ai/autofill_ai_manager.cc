@@ -388,19 +388,19 @@ void AutofillAiManager::HandlePromptResult(
 std::vector<Suggestion> AutofillAiManager::GetSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field) {
-  AutofillAiSuggestionGenerator suggestion_generator(*client_);
+  AutofillAiSuggestionGenerator suggestion_generator;
   std::vector<Suggestion> suggestions;
   const AutofillField* autofill_field =
       form.GetFieldById(trigger_field.global_id());
 
   auto on_suggestion_data_returned =
-      [&form, &autofill_field, &trigger_field, &suggestions,
+      [&form, &autofill_field, &trigger_field, &suggestions, this,
        &suggestion_generator](
           std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         suggestion_generator.GenerateSuggestions(
-            form.ToFormData(), trigger_field, &form, autofill_field,
+            form.ToFormData(), trigger_field, &form, autofill_field, *client_,
             {std::move(suggestion_data)},
             [&suggestions](
                 SuggestionGenerator::ReturnedSuggestions returned_suggestions) {

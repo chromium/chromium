@@ -45,13 +45,13 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
 
   auto on_suggestion_data_returned =
       [&on_suggestions_generated, &field, &form_structure, &autofill_field,
-       &merchant_promo_code_suggestion_generator](
+       &client, &merchant_promo_code_suggestion_generator](
           std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         merchant_promo_code_suggestion_generator.GenerateSuggestions(
             form_structure.ToFormData(), field, &form_structure,
-            &autofill_field, {std::move(suggestion_data)},
+            &autofill_field, client, {std::move(suggestion_data)},
             on_suggestions_generated);
       };
 

@@ -56,12 +56,12 @@ ContentIdentityCredentialDelegate::GetVerifiedAutofillSuggestions(
 
   auto on_suggestion_data_returned =
       [&on_suggestions_generated, &form, &field, &form_structure,
-       &autofill_field, &identity_credential_suggestion_generator](
+       &autofill_field, &client, &identity_credential_suggestion_generator](
           std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         identity_credential_suggestion_generator.GenerateSuggestions(
-            form, field, form_structure, autofill_field,
+            form, field, form_structure, autofill_field, client,
             {std::move(suggestion_data)}, on_suggestions_generated);
       };
 

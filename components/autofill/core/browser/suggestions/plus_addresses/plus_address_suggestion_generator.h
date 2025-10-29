@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 
 namespace autofill {
@@ -16,7 +17,7 @@ namespace autofill {
 class PlusAddressSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit PlusAddressSuggestionGenerator(
-      AutofillClient* client,
+      AutofillPlusAddressDelegate* plus_address_delegate,
       PasswordFormClassification password_form_classification,
       bool is_manually_triggered);
 
@@ -37,16 +38,13 @@ class PlusAddressSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
+      const AutofillClient& client,
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
 
  private:
-  AutofillPlusAddressDelegate* plus_address_delegate() const {
-    return client_->GetPlusAddressDelegate();
-  }
-
-  const raw_ptr<AutofillClient> client_;
+  raw_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
 
   PasswordFormClassification password_form_classification_;
 

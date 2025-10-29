@@ -99,7 +99,7 @@ TEST_F(PasskeySuggestionGeneratorTest, FetchCreatesValidSuggestionForGenerate) {
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb,
               Run(Pair(FillingProduct::kPasskey, ElementsAre(suggestion))));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr,
+  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
                                   {{fetched_suggestions}}, generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -124,7 +124,7 @@ TEST_F(PasskeySuggestionGeneratorTest, NoHybridPasskeyAvailability) {
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr,
+  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
                                   {{fetched_suggestions}}, generate_cb.Get());
 }
 
@@ -154,7 +154,7 @@ TEST_F(PasskeySuggestionGeneratorTest,
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr,
+  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
                                   {{fetched_suggestions}}, generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -180,7 +180,7 @@ TEST_F(PasskeySuggestionGeneratorTest,
 
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
-  generator().GenerateSuggestions(form(), field(), nullptr, nullptr,
+  generator().GenerateSuggestions(form(), field(), nullptr, nullptr, client(),
                                   {{fetched_suggestions}}, generate_cb.Get());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -200,7 +200,7 @@ TEST_F(PasskeySuggestionGeneratorTest,
   base::MockOnceCallback<void(ReturnedSuggestions)> generate_cb;
   EXPECT_CALL(generate_cb, Run(Pair(FillingProduct::kPasskey, IsEmpty())));
   generator().GenerateSuggestions(
-      form(), field(), nullptr, nullptr,
+      form(), field(), nullptr, nullptr, client(),
       {{SuggestionGenerator::SuggestionDataSource::kPasskey, {}}},
       generate_cb.Get());
 }

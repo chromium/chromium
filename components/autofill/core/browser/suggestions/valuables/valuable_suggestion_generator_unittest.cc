@@ -589,9 +589,7 @@ TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  LoyaltyCardSuggestionGenerator generator(
-      client().GetValuablesDataManager()->GetWeakPtr(),
-      client().GetLastCommittedPrimaryMainFrameURL());
+  LoyaltyCardSuggestionGenerator generator;
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
       savedCallbackArgument;
@@ -618,7 +616,7 @@ TEST_F(ValuableSuggestionGeneratorTest, GeneratesLoyaltyCardSuggestions) {
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsManageLoyaltyCardsSuggestion()))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                {savedCallbackArgument},
+                                test_autofill_client(), {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
 }
 

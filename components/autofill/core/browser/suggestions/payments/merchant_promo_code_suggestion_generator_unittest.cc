@@ -114,7 +114,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
               Field(&Suggestion::type, SuggestionType::kSeparator),
               Field(&Suggestion::main_text, footer_suggestion.main_text)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                {savedCallbackArgument},
+                                client(), {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
 }
 

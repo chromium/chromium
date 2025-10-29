@@ -135,7 +135,7 @@ class AddressSuggestionGeneratorTest : public testing::Test {
 
     std::vector<Suggestion> suggestions;
     AddressSuggestionGenerator address_suggestion_generator(
-        autofill_client_, /*plus_address_email_override=*/std::nullopt,
+        /*plus_address_email_override=*/std::nullopt,
         /*log_manager=*/nullptr);
 
     auto on_suggestions_generated =
@@ -152,7 +152,8 @@ class AddressSuggestionGeneratorTest : public testing::Test {
                 suggestion_data) {
           address_suggestion_generator.GenerateSuggestions(
               form_data, field_data, form_structure_.get(), &field(),
-              {std::move(suggestion_data)}, on_suggestions_generated);
+              *autofill_client(), {std::move(suggestion_data)},
+              on_suggestions_generated);
         };
 
     // Since the `on_suggestions_generated` callback is called synchronously,
@@ -1343,7 +1344,7 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
   test_api(*form_structure).SetFieldTypes({NAME_FULL});
 
   AddressSuggestionGenerator generator(
-      *autofill_client(), /*plus_address_email_override=*/std::nullopt,
+      /*plus_address_email_override=*/std::nullopt,
       /*log_manager=*/nullptr);
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
@@ -1366,9 +1367,10 @@ TEST_F(AddressSuggestionGeneratorTest, GeneratesSuggestions) {
               EqualsSuggestion(SuggestionType::kAddressEntry, u"John H. Doe"),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageAddress)))));
-  generator.GenerateSuggestions(
-      form_data, field, form_structure.get(), form_structure->field(0),
-      {savedCallbackArgument}, suggestions_generated_callback.Get());
+  generator.GenerateSuggestions(form_data, field, form_structure.get(),
+                                form_structure->field(0), *autofill_client(),
+                                {savedCallbackArgument},
+                                suggestions_generated_callback.Get());
 }
 
 }  // namespace

@@ -111,8 +111,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
                   testing::SizeIs(2))))
       .WillOnce(
           testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form_data, field_data, /*form=*/nullptr,
-                                  /*field=*/nullptr, client(),
+  generator().FetchSuggestionData(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   suggestion_data_callback.Get());
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
@@ -126,8 +127,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, GenerateAutocompleteSuggestions) {
                       HasSingleSuggestionWithMainText(u"SomePrefixOne"),
                       HasSingleSuggestionWithMainText(u"SomePrefixTwo")))))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
-  generator().GenerateSuggestions(form_data, field_data, /*form=*/nullptr,
-                                  /*field=*/nullptr,
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(
@@ -176,8 +178,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
                   testing::IsEmpty())))
       .WillOnce(
           testing::SaveArg<0>(&saved_on_suggestion_data_returned_argument));
-  generator().FetchSuggestionData(form_data, field_data, /*form=*/nullptr,
-                                  /*field=*/nullptr, client(),
+  generator().FetchSuggestionData(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   suggestion_data_callback.Get());
   EXPECT_TRUE(
       base::test::RunUntil([&saved_on_suggestion_data_returned_argument]() {
@@ -189,8 +192,9 @@ TEST_F(AutocompleteSuggestionGeneratorTest, EmptyResult) {
       suggestions_generated_callback,
       Run(testing::Pair(FillingProduct::kAutocomplete, testing::IsEmpty())))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
-  generator().GenerateSuggestions(form_data, field_data, /*form=*/nullptr,
-                                  /*field=*/nullptr,
+  generator().GenerateSuggestions(form_data, field_data,
+                                  /*form_structure=*/nullptr,
+                                  /*trigger_autofill_field=*/nullptr, client(),
                                   {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(

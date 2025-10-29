@@ -200,7 +200,7 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
                       MatchesTextAndSuggestionType(separator_suggestion),
                       MatchesTextAndSuggestionType(footer_suggestion)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                {savedCallbackArgument},
+                                client(), {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
   task_environment().RunUntilIdle();
 }

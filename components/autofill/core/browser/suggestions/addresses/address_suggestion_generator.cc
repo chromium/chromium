@@ -874,11 +874,9 @@ bool ContainsProfileSuggestionWithRecordType(
 }
 
 AddressSuggestionGenerator::AddressSuggestionGenerator(
-    const AutofillClient& client,
     const std::optional<std::string>& plus_address_email_override,
     LogManager* log_manager)
     : plus_address_email_override_(plus_address_email_override),
-      client_(client),
       log_manager_(log_manager) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
@@ -907,11 +905,12 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::OnceCallback<void(ReturnedSuggestions)> callback) {
   GenerateSuggestions(
-      form, trigger_field, form_structure, trigger_autofill_field,
+      form, trigger_field, form_structure, trigger_autofill_field, client,
       all_suggestion_data,
       [&callback](ReturnedSuggestions returned_suggestions) {
         std::move(callback).Run(std::move(returned_suggestions));
@@ -930,7 +929,7 @@ void AddressSuggestionGenerator::FetchSuggestionData(
         callback) {
   std::vector<AutofillProfile> profiles_to_suggest =
       MaybeFetchRegularAddressSuggestionData(
-          form, trigger_field, form_structure, trigger_autofill_field);
+          form, trigger_field, form_structure, trigger_autofill_field, client);
   if (!profiles_to_suggest.empty()) {
     std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
         base::ToVector(
@@ -950,6 +949,7 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
     const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
@@ -966,7 +966,7 @@ void AddressSuggestionGenerator::GenerateSuggestions(
         });
     callback({FillingProduct::kAddress,
               GenerateAddressSuggestions(form, trigger_field, form_structure,
-                                         trigger_autofill_field,
+                                         trigger_autofill_field, client,
                                          profiles_to_suggest)});
     return;
   }
@@ -980,7 +980,8 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
     const FormData& form,
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
-    const AutofillField* trigger_autofill_field) {
+    const AutofillField* trigger_autofill_field,
+    const AutofillClient& client) {
   if (!form_structure || !trigger_autofill_field) {
     return {};
   }
@@ -990,7 +991,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   bool should_suppress =
-      client_->GetPersonalDataManager()
+      client.GetPersonalDataManager()
           .address_data_manager()
           .AreAddressSuggestionsBlocked(
               CalculateFormSignature(form),
@@ -1024,7 +1025,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
       skip_reasons = FormFiller::GetFieldFillingSkipReasons(
           form.fields(), *form_structure, *trigger_autofill_field,
           FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
-          *client_);
+          client);
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure->field_count(); ++i) {
@@ -1037,12 +1038,12 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
   }();
 
   std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
-      client_->GetPersonalDataManager().address_data_manager(), trigger_field,
+      client.GetPersonalDataManager().address_data_manager(), trigger_field,
       trigger_autofill_field->Type().GetAddressType(), field_types_);
 
   // Add devtools test addresses if it exists. A test addresses will
   // exist if devtools is open and therefore test addresses were set.
-  base::Extend(profiles_to_suggest, client_->GetTestAddresses());
+  base::Extend(profiles_to_suggest, client.GetTestAddresses());
   return profiles_to_suggest;
 }
 
@@ -1051,9 +1052,10 @@ std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
     const FormFieldData& trigger_field,
     const FormStructure* form_structure,
     const AutofillField* trigger_autofill_field,
+    const AutofillClient& client,
     std::vector<AutofillProfile>& profiles_to_suggest) {
   if (!form_structure || !trigger_autofill_field ||
-      !client_->GetIdentityManager()) {
+      !client.GetIdentityManager()) {
     return {};
   }
 
@@ -1064,19 +1066,19 @@ std::vector<Suggestion> AddressSuggestionGenerator::GenerateAddressSuggestions(
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       std::vector(std::make_move_iterator(profiles_to_suggest.begin()),
                   std::make_move_iterator(partition_it)),
-      client_->GetIdentityManager()
+      client.GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email,
       field_types_, GetSuggestionType(trigger_field),
       trigger_autofill_field->Type().GetAddressType(), trigger_field,
-      plus_address_email_override_, client_->GetAppLocale());
+      plus_address_email_override_, client.GetAppLocale());
 
   // Add devtools test addresses suggestion if it exists.
   if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(
               std::vector(std::make_move_iterator(partition_it),
                           std::make_move_iterator(profiles_to_suggest.end())),
-              client_->GetAppLocale())) {
+              client.GetAppLocale())) {
     suggestions.push_back(std::move(*test_addresses_suggestion));
   }
   if (suggestions.empty()) {

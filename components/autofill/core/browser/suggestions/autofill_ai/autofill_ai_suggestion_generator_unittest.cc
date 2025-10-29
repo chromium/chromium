@@ -91,8 +91,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
     autofill_client_.SetUpPrefsAndIdentityForAutofillAi();
-    generator_ =
-        std::make_unique<AutofillAiSuggestionGenerator>(autofill_client_);
+    generator_ = std::make_unique<AutofillAiSuggestionGenerator>();
   }
 
   // Sets the form to one whose `i`th field has type `field_types[i]`.
@@ -242,7 +241,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
                               HasType(kManageAutofillAi)))))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
-                                  &field(),
+                                  &field(), client(),
                                   {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(
@@ -318,7 +317,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest, NoSuggestionsIfNoEntities) {
               Run(testing::Pair(FillingProduct::kAutofillAi, IsEmpty())))
       .WillOnce(testing::SaveArg<0>(&saved_on_suggestions_generated_argument));
   generator().GenerateSuggestions(form(), field_data(), &form_structure(),
-                                  &field(),
+                                  &field(), client(),
                                   {saved_on_suggestion_data_returned_argument},
                                   suggestions_generated_callback.Get());
   EXPECT_TRUE(

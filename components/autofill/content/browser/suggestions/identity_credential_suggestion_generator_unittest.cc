@@ -135,7 +135,7 @@ TEST_F(IdentityCredentialSuggestionGeneratorTest, GeneratesSuggestion) {
                                 testing::SizeIs(1))))
       .WillOnce(testing::SaveArg<0>(&generated_suggestions));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                {saved_suggestion_data},
+                                client(), {saved_suggestion_data},
                                 suggestions_generated_callback.Get());
 
   const Suggestion& suggestion = generated_suggestions.second[0];

@@ -41,9 +41,7 @@ void ExtendEmailSuggestionsWithLoyaltyCardSuggestions(
 
 class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
  public:
-  LoyaltyCardSuggestionGenerator(
-      base::WeakPtr<const ValuablesDataManager> valuables_manager,
-      GURL main_frame_url);
+  LoyaltyCardSuggestionGenerator();
   ~LoyaltyCardSuggestionGenerator() override;
 
   void FetchSuggestionData(
@@ -62,6 +60,7 @@ class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
+      const AutofillClient& client,
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
@@ -88,15 +87,12 @@ class LoyaltyCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
+      const AutofillClient& client,
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
 
  private:
-  base::WeakPtr<const ValuablesDataManager> valuables_manager_;
-  // The URL of the main frame containing the form.
-  GURL main_frame_url_;
-
   base::WeakPtrFactory<LoyaltyCardSuggestionGenerator> weak_ptr_factory_{this};
 };
 

@@ -74,7 +74,7 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
                         suggestion_data) {
         generator().GenerateSuggestions(
             form, form.fields()[0], &form_structure, form_structure.field(0),
-            {suggestion_data}, suggestions_generated_callback.Get());
+            client(), {suggestion_data}, suggestions_generated_callback.Get());
       });
 
   generator().FetchSuggestionData(form, form.fields()[0], &form_structure,

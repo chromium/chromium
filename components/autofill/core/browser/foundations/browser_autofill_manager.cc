@@ -743,12 +743,12 @@ std::optional<Suggestion> GenerateComposeSuggestion(
   std::vector<Suggestion> suggestions;
 
   auto on_suggestion_data_returned =
-      [&form, &field, &suggestions, &suggestion_generator](
+      [&form, &field, &client, &suggestions, &suggestion_generator](
           std::pair<autofill::SuggestionGenerator::SuggestionDataSource,
                     std::vector<autofill::SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         suggestion_generator.GenerateSuggestions(
-            form, field, nullptr, nullptr, {std::move(suggestion_data)},
+            form, field, nullptr, nullptr, client, {std::move(suggestion_data)},
             [&suggestions](autofill::SuggestionGenerator::ReturnedSuggestions
                                returned_suggestions) {
               suggestions = std::move(returned_suggestions.second);
@@ -1274,8 +1274,8 @@ void BrowserAutofillManager::OnSuggestionDataFetched(
   for (const std::unique_ptr<SuggestionGenerator>& suggestion_generator :
        suggestion_generators_) {
     suggestion_generator->GenerateSuggestions(
-        form, field, form_structure, autofill_field, all_suggestion_data,
-        barrier_callback);
+        form, field, form_structure, autofill_field, client(),
+        all_suggestion_data, barrier_callback);
   }
 }
 
@@ -2931,7 +2931,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     std::optional<std::string> plus_address_email_override) {
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
-      client(), plus_address_email_override, log_manager());
+      plus_address_email_override, log_manager());
 
   auto on_suggestions_generated =
       [&suggestions](
@@ -2940,14 +2940,14 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
       };
 
   auto on_suggestion_data_returned =
-      [&on_suggestions_generated, &form, &trigger_field, &form_structure,
+      [&on_suggestions_generated, &form, &trigger_field, &form_structure, this,
        &trigger_autofill_field, &address_suggestion_generator](
           std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         address_suggestion_generator.GenerateSuggestions(
             form, trigger_field, &form_structure, &trigger_autofill_field,
-            {std::move(suggestion_data)}, on_suggestions_generated);
+            client(), {std::move(suggestion_data)}, on_suggestions_generated);
       };
 
   address_suggestion_generator.FetchSuggestionData(
@@ -3544,7 +3544,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
 
   if (relevant_filling_products.contains(FillingProduct::kAutofillAi)) {
     suggestion_generators_.push_back(
-        std::make_unique<AutofillAiSuggestionGenerator>(client()));
+        std::make_unique<AutofillAiSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kIban)) {
     suggestion_generators_.push_back(
@@ -3563,9 +3563,7 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   if (relevant_filling_products.contains(FillingProduct::kLoyaltyCard) &&
       client().GetValuablesDataManager()) {
     suggestion_generators_.push_back(
-        std::make_unique<LoyaltyCardSuggestionGenerator>(
-            client().GetValuablesDataManager()->GetWeakPtr(),
-            client().GetLastCommittedPrimaryMainFrameURL()));
+        std::make_unique<LoyaltyCardSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kCompose) &&
       client().GetComposeDelegate()) {

@@ -30,7 +30,6 @@
 namespace autofill {
 
 class AutofillClient;
-class PaymentsDataManager;
 class FormFieldData;
 
 // A `SuggestionGenerator` for `FillingProduct::kCreditCard`.
@@ -41,10 +40,10 @@ class FormFieldData;
 class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
-      AutofillClient* client,
       const std::vector<std::string>& four_digit_combinations_in_dom,
       autofill_metrics::CreditCardFormEventLogger*
           credit_card_form_event_logger,
+      payments::SaveAndFillManager* save_and_fill_manager,
       autofill_metrics::AddressFormEventLogger* address_form_event_logger);
   ~CreditCardSuggestionGenerator() override;
 
@@ -64,6 +63,7 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
+      const AutofillClient& client,
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::OnceCallback<void(ReturnedSuggestions)> callback) override;
@@ -88,6 +88,7 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       const FormFieldData& trigger_field,
       const FormStructure* form_structure,
       const AutofillField* trigger_autofill_field,
+      const AutofillClient& client,
       const base::flat_map<SuggestionDataSource, std::vector<SuggestionData>>&
           all_suggestion_data,
       base::FunctionRef<void(ReturnedSuggestions)> callback);
@@ -97,17 +98,21 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   }
 
  private:
-  bool ShouldShowCreditCardSaveAndFill(bool is_complete_form,
+  bool ShouldShowCreditCardSaveAndFill(const AutofillClient& client,
+                                       bool is_complete_form,
                                        const FormFieldData& trigger_field);
 
-  bool ShouldShowScanCreditCard(const FormData& form,
+  bool ShouldShowScanCreditCard(const AutofillClient& client,
+                                const FormData& form,
                                 const FormFieldData& trigger_field,
                                 const AutofillField* autofill_field);
 
-  bool IsFormNonSecure(const FormData& form) const;
+  bool IsFormNonSecure(const AutofillClient& client,
+                       const FormData& form) const;
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-  GetVirtualCreditCardsForStandaloneCvcField(const url::Origin&);
+  GetVirtualCreditCardsForStandaloneCvcField(const AutofillClient& client,
+                                             const url::Origin&);
 
   std::vector<CreditCard> FetchCreditCardsForCreditCardOrCvcField(
       const AutofillClient& client,
@@ -117,7 +122,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       FieldType trigger_field_type,
       bool should_show_scan_credit_card);
 
-  std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers();
+  std::map<std::string, const AutofillOfferData*> GetCardLinkedOffers(
+      const AutofillClient& client);
 
   void FilterCardsToSuggestForCvcFields(
       FieldType trigger_field_type,
@@ -125,29 +131,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
       std::vector<CreditCard>& cards_to_suggest);
 
   std::vector<CreditCard> FetchVirtualCardsForStandaloneCvcField(
+      const AutofillClient& client,
       const FormFieldData& trigger_field);
-
-  PaymentsDataManager* payments_data_manager() const {
-    return &client_->GetPersonalDataManager().payments_data_manager();
-  }
-
-  payments::SaveAndFillManager* save_and_fill_manager() const {
-    return client_->GetPaymentsAutofillClient()->GetSaveAndFillManager();
-  }
-
-  PrefService* pref_service() const { return client_->GetPrefs(); }
-
-  syncer::SyncService* sync_service() const {
-    return client_->GetSyncService();
-  }
-
-  LogManager* log_manager() const { return client_->GetCurrentLogManager(); }
-
-  payments::PaymentsAutofillClient* payments_autofill_client() const {
-    return client_->GetPaymentsAutofillClient();
-  }
-
-  raw_ptr<AutofillClient> client_;
 
   const std::vector<std::string> four_digit_combinations_in_dom_;
 
@@ -156,6 +141,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
       virtual_card_guid_to_last_four_map_;
+
+  raw_ptr<payments::SaveAndFillManager> save_and_fill_manager_;
 
   base::WeakPtrFactory<CreditCardSuggestionGenerator> weak_ptr_factory_{this};
 };

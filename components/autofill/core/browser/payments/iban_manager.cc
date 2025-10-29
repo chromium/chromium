@@ -49,13 +49,13 @@ bool IbanManager::OnGetSingleFieldSuggestions(
       };
 
   auto on_suggestion_data_returned =
-      [&on_suggestions_generated, &field, &form, &autofill_field,
+      [&on_suggestions_generated, &field, &form, &autofill_field, &client,
        &iban_suggestion_generator](
           std::pair<SuggestionGenerator::SuggestionDataSource,
                     std::vector<SuggestionGenerator::SuggestionData>>
               suggestion_data) {
         iban_suggestion_generator.GenerateSuggestions(
-            form.ToFormData(), field, &form, &autofill_field,
+            form.ToFormData(), field, &form, &autofill_field, client,
             {std::move(suggestion_data)}, on_suggestions_generated);
       };
 

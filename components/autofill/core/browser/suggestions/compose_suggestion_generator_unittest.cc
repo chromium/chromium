@@ -79,7 +79,7 @@ TEST_F(ComposeSuggestionGeneratorTest, GeneratesComposeSuggestion) {
   EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(FillingProduct::kCompose, testing::SizeIs(1))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                {savedCallbackArgument},
+                                client(), {savedCallbackArgument},
                                 suggestions_generated_callback.Get());
 }
 
@@ -117,7 +117,7 @@ TEST_F(ComposeSuggestionGeneratorTest,
   EXPECT_CALL(suggestions_generated_callback,
               Run(testing::Pair(FillingProduct::kCompose, testing::IsEmpty())));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                {other_generated_suggestion_data},
+                                client(), {other_generated_suggestion_data},
                                 suggestions_generated_callback.Get());
 }
 
