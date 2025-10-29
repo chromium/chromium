@@ -217,6 +217,10 @@ class PdfCaret {
   // Whether the caret is visible on screen, taking into account blinking.
   bool is_blink_visible_ = false;
 
+  // Whether the caret has been drawn on screen at least once. Only used to
+  // report metrics.
+  mutable bool first_visible_ = false;
+
   // How often the caret should blink. 0 if the caret should not blink. Never
   // negative.
   base::TimeDelta blink_interval_ = kDefaultBlinkInterval;

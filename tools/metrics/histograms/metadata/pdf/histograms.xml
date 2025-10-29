@@ -36,6 +36,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.Caret.FirstVisible" enum="Boolean"
+    expires_after="2026-10-27">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the PDF caret becoming visible for the first time when caret browsing
+    mode is enabled. Logged only once per document. Always records true. Not
+    recorded for Print Preview, since caret browsing mode is always disabled
+    there.
+  </summary>
+</histogram>
+
 <histogram name="PDF.DefaultState" enum="DefaultBrowserState"
     expires_after="2026-04-25">
   <owner>jessemckenna@google.com</owner>

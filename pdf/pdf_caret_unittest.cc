@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "pdf/accessibility_structs.h"
@@ -33,6 +34,8 @@ using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::Return;
 using ::testing::StrictMock;
+
+constexpr char kCaretFirstVisibleHistogram[] = "PDF.Caret.FirstVisible";
 
 constexpr base::TimeDelta kOneMs = base::Milliseconds(1);
 
@@ -303,13 +306,16 @@ class PdfCaretTest : public testing::Test {
 };
 
 TEST_F(PdfCaretTest, NoTextPage) {
+  base::HistogramTester histograms;
   SetUpNoTextPageTest();
   InitializeVisibleCaretAtChar(kTestChar0);
 
   TestDrawCaret(kDefaultCaret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 }
 
 TEST_F(PdfCaretTest, SetEnabled) {
+  base::HistogramTester histograms;
   SetUpSingleCharLineTest();
   InitializeCaretAtChar(kTestChar0);
 
@@ -317,19 +323,31 @@ TEST_F(PdfCaretTest, SetEnabled) {
 
   // Default disabled.
   TestDrawCaretFails(kTestChar0Caret);
+  histograms.ExpectTotalCount(kCaretFirstVisibleHistogram, 0);
 
   caret().SetEnabled(true);
 
   TestDrawCaret(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 
   caret().SetEnabled(false);
+
   TestDrawCaretFails(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 
   GetPdfTestTaskEnvironment().FastForwardBy(PdfCaret::kDefaultBlinkInterval);
+
   TestDrawCaretFails(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
+
+  caret().SetEnabled(true);
+
+  TestDrawCaret(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 }
 
 TEST_F(PdfCaretTest, SetVisible) {
+  base::HistogramTester histograms;
   SetUpSingleCharLineTest();
   InitializeCaretAtChar(kTestChar0);
 
@@ -337,16 +355,26 @@ TEST_F(PdfCaretTest, SetVisible) {
 
   // Default not visible.
   TestDrawCaretFails(kTestChar0Caret);
+  histograms.ExpectTotalCount(kCaretFirstVisibleHistogram, 0);
 
   caret().SetVisible(true);
 
   TestDrawCaret(kTestChar0Caret);
 
   caret().SetVisible(false);
+
   TestDrawCaretFails(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 
   GetPdfTestTaskEnvironment().FastForwardBy(PdfCaret::kDefaultBlinkInterval);
+
   TestDrawCaretFails(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
+
+  caret().SetVisible(true);
+
+  TestDrawCaret(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 }
 
 TEST_F(PdfCaretTest, SetBlinkIntervalWhileNotVisible) {
@@ -422,12 +450,14 @@ TEST_F(PdfCaretTest, SetBlinkIntervalNegative) {
 }
 
 TEST_F(PdfCaretTest, MaybeDrawCaret) {
+  base::HistogramTester histograms;
   SetUpSingleCharLineTest();
   InitializeCaretAtChar(kTestChar0);
 
   // Not yet visible.
   EXPECT_FALSE(caret().MaybeDrawCaret(GetRegionData(kTestChar0Caret.origin()),
                                       kTestChar0Caret));
+  histograms.ExpectTotalCount(kCaretFirstVisibleHistogram, 0);
 
   caret().SetEnabled(true);
   caret().SetVisible(true);
@@ -435,18 +465,21 @@ TEST_F(PdfCaretTest, MaybeDrawCaret) {
   // Not dirty in screen.
   EXPECT_FALSE(caret().MaybeDrawCaret(GetRegionData(gfx::Point(70, 70)),
                                       gfx::Rect(70, 70, 20, 30)));
+  histograms.ExpectTotalCount(kCaretFirstVisibleHistogram, 0);
 
   // Partially dirty in screen. For testing purposes, origin is bottom left
   // instead of top right.
   EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(gfx::Point(5, 5)),
                                      gfx::Rect(5, 5, 20, 30)));
   VerifyCaretRendering(gfx::Rect(5, 5, 1, 9));
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
   ResetBitmap();
 
   // Fully dirty in screen.
   EXPECT_TRUE(caret().MaybeDrawCaret(GetRegionData(kTestChar0Caret.origin()),
                                      kTestChar0Caret));
   VerifyCaretRendering(kTestChar0Caret);
+  histograms.ExpectUniqueSample(kCaretFirstVisibleHistogram, true, 1);
 }
 
 TEST_F(PdfCaretTest, Blink) {

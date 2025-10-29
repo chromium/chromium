@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"
@@ -307,6 +308,11 @@ void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
             static_cast<uint8_t>(row[pixel_index + 2] * kCaretColor.fR);
       }
     }
+  }
+
+  if (!first_visible_) {
+    base::UmaHistogramBoolean("PDF.Caret.FirstVisible", true);
+    first_visible_ = true;
   }
 }
 
