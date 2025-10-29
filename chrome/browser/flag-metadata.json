@@ -3966,7 +3966,7 @@
   {
     "name": "enable-mac-pwas-notification-attribution",
     "owners": [ "mek@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 144
+    "expiry_milestone": 150
   },
   {
     "name": "enable-machine-learning-model-loader-web-platform-api",
@@ -10162,7 +10162,7 @@
       "markrowe@chromium.org",
       "chrome-platform-security@google.com"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "use-ahardwarebuffer-usage-flags-from-vulkan",
