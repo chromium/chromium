@@ -72,21 +72,8 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
     kRestrictDispatchGroup_None = 0,
   };
 
-  // Creates and initializes a sync channel. If create_pipe_now is specified,
-  // the channel will be initialized synchronously.
-  // The naming pattern follows IPC::Channel.
-  static std::unique_ptr<SyncChannel> Create(
-      const mojo::MessagePipeHandle& channel_handle,
-      IPC::Channel::Mode mode,
-      Listener* listener,
-      const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner,
-      bool create_pipe_now,
-      base::WaitableEvent* shutdown_event);
-
-  // Creates an uninitialized sync channel. Call ChannelProxy::Init to
-  // initialize the channel. This two-step setup allows message filters to be
-  // added before any messages are sent or received.
+  // Creates an uninitialized sync channel. Call ChannelProxy::Init() to
+  // initialize the channel after creation.
   static std::unique_ptr<SyncChannel> Create(
       Listener* listener,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,

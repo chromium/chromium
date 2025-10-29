@@ -129,9 +129,10 @@ class Worker : public Listener {
 
   virtual SyncChannel* CreateChannel() {
     std::unique_ptr<SyncChannel> channel = SyncChannel::Create(
-        TakeChannelHandle(), mode_, this, ipc_thread_->task_runner(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(), true,
-        &shutdown_event_);
+        this, ipc_thread_->task_runner(),
+        base::SingleThreadTaskRunner::GetCurrentDefault(), &shutdown_event_);
+
+    channel->Init(TakeChannelHandle(), mode_, true);
     return channel.release();
   }
 

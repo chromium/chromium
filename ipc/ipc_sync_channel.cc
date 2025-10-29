@@ -166,26 +166,6 @@ void SyncChannel::SyncContext::OnShutdownEventSignaled(WaitableEvent* event) {
 
 // static
 std::unique_ptr<SyncChannel> SyncChannel::Create(
-    const mojo::MessagePipeHandle& channel_handle,
-    Channel::Mode mode,
-    Listener* listener,
-    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner,
-    bool create_pipe_now,
-    base::WaitableEvent* shutdown_event) {
-  // TODO(tobiasjs): The shutdown_event object is passed to a refcounted
-  // Context object, and as a result it is not easy to ensure that it
-  // outlives the Context.  There should be some way to either reset
-  // the shutdown_event when it is destroyed, or allow the Context to
-  // control the lifetime of shutdown_event.
-  std::unique_ptr<SyncChannel> channel =
-      Create(listener, ipc_task_runner, listener_task_runner, shutdown_event);
-  channel->Init(channel_handle, mode, create_pipe_now);
-  return channel;
-}
-
-// static
-std::unique_ptr<SyncChannel> SyncChannel::Create(
     Listener* listener,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
     const scoped_refptr<base::SingleThreadTaskRunner>& listener_task_runner,
