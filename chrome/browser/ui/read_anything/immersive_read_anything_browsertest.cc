@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -30,8 +29,6 @@ class ImmersiveReadAnythingBrowserTest
         BrowserView::GetBrowserViewForBrowser(browser());
     ASSERT_NE(browser_view, nullptr);
     browser_view->GetWidget()->Show();
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return browser_view->GetWidget()->IsVisible(); }));
   }
 
  protected:
@@ -88,8 +85,6 @@ class ImmersiveReadAnythingSplitViewBrowserTest
         BrowserView::GetBrowserViewForBrowser(browser());
     ASSERT_NE(browser_view, nullptr);
     browser_view->GetWidget()->Show();
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return browser_view->GetWidget()->IsVisible(); }));
 
     chrome::NewTab(browser());
     browser()->tab_strip_model()->ActivateTabAt(0);

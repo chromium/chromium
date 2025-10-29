@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/read_anything/immersive_read_anything_overlay_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -101,11 +102,8 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
       AddChildView(std::make_unique<enterprise_watermark::WatermarkView>());
 
   if (features::IsImmersiveReadAnythingEnabled()) {
-    auto immersive_read_anything_overlay_view = std::make_unique<views::View>();
-    immersive_read_anything_overlay_view->SetID(VIEW_ID_READ_ANYTHING_OVERLAY);
-    immersive_read_anything_overlay_view->SetVisible(false);
-    immersive_read_anything_overlay_view->SetLayoutManager(
-        std::make_unique<views::FillLayout>());
+    auto immersive_read_anything_overlay_view =
+        std::make_unique<ImmersiveReadAnythingOverlayView>();
     immersive_read_anything_overlay_view_ =
         AddChildView(std::move(immersive_read_anything_overlay_view));
   }

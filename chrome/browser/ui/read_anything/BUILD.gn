@@ -11,6 +11,8 @@ import("//testing/test.gni")
 
 source_set("read_anything") {
   sources = [
+    "immersive_read_anything_overlay_view.cc",
+    "immersive_read_anything_overlay_view.h",
     "read_anything_controller.cc",
     "read_anything_controller.h",
     "read_anything_service.cc",
@@ -44,6 +46,7 @@ source_set("read_anything") {
     "//chrome/browser:browser_process",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/side_panel",
     "//components/accessibility:reading",
