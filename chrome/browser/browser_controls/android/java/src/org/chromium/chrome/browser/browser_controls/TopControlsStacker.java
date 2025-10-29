@@ -598,7 +598,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
             if (type == stopLayer) {
                 return height;
-            } else if (layer != null) {
+            } else if (!isLayerHidden(layer) && layer.contributesToTotalHeight()) {
                 height += layer.getTopControlHeight();
             }
         }

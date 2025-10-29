@@ -46,6 +46,7 @@ public class TopControlsStackerUnitTest {
         private static final int LAYER_HEIGHT_TAB_STRIP = 50;
         private static final int LAYER_HEIGHT_TOOLBAR = 100;
         private static final int LAYER_HEIGHT_BOOKMARK_BAR = 120;
+        private static final int LAYER_HEIGHT_HAIRLINE = 1;
         private static final int LAYER_HEIGHT_PROGRESS_BAR = 5;
 
         private final String mName;
@@ -176,6 +177,16 @@ public class TopControlsStackerUnitTest {
                     ScrollBehavior.DEFAULT_SCROLLABLE,
                     /* contributesToTotalHeight= */ true,
                     LAYER_HEIGHT_BOOKMARK_BAR);
+        }
+
+        static TestLayer hairlineLayer() {
+            return new TestLayer(
+                    "HAIRLINE",
+                    TopControlType.HAIRLINE,
+                    TopControlVisibility.VISIBLE,
+                    ScrollBehavior.DEFAULT_SCROLLABLE,
+                    /* contributesToTotalHeight= */ false,
+                    LAYER_HEIGHT_HAIRLINE);
         }
 
         static TestLayer progressBarLayer() {
@@ -388,6 +399,33 @@ public class TopControlsStackerUnitTest {
                 offsetTagsInfo, newOffsetTagsInfo, BrowserControlsState.SHOWN, false);
         // Assert new offset tags are populated.
         toolbar.assertHasOffsetTags(newOffsetTagsInfo);
+    }
+
+    @Test
+    public void getHeightFromLayerToTop() {
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer bookmarkBar = TestLayer.bookmarkLayer();
+        TestLayer hairline = TestLayer.hairlineLayer();
+        TestLayer progressBar = TestLayer.progressBarLayer();
+
+        tabStrip.mVisibility = TopControlVisibility.HIDDEN;
+
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.addControl(bookmarkBar);
+        mTopControlsStacker.addControl(hairline);
+        mTopControlsStacker.addControl(progressBar);
+
+        mTopControlsStacker.requestLayerUpdate(false);
+
+        assertControlsHeight(220, 0);
+
+        assertEquals(0, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TABSTRIP));
+        assertEquals(0, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.TOOLBAR));
+        assertEquals(100, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.BOOKMARK_BAR));
+        assertEquals(220, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.HAIRLINE));
+        assertEquals(220, mTopControlsStacker.getHeightFromLayerToTop(TopControlType.PROGRESS_BAR));
     }
 
     @Test
