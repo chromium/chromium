@@ -14,6 +14,7 @@ source_set("auto_deletion") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/util",

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -101,14 +102,14 @@ UIView* CreateIconContainer() {
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_TITLE);
   _iphScreen.subtitleString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_DESCRIPTION);
-  _iphScreen.primaryActionString =
+  _iphScreen.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_PRIMARY_ACTION);
-  _iphScreen.secondaryActionString =
+  _iphScreen.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_AUTO_DELETION_IPH_REJECTION);
+  [_iphScreen reloadConfiguration];
   _iphScreen.aboveTitleView = CreateIconContainer();
   _iphScreen.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
   _iphScreen.actionHandler = self;
-  _iphScreen.presentationController.delegate = self;
 
   [self addChildViewController:_iphScreen];
   [self.view addSubview:_iphScreen.view];
