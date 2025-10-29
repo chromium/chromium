@@ -140,10 +140,6 @@ BASE_FEATURE(kBatterySaverAlwaysOn,
              "CrosBatterySaverAlwaysOn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the usage of fixed Bluetooth A2DP packet size to improve
-// audio performance in noisy environment.
-BASE_FEATURE(kBluetoothFixA2dpPacketSize, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the Bluetooth Quality Report feature.
 BASE_FEATURE(kBluetoothQualityReport, base::FEATURE_DISABLED_BY_DEFAULT);
 

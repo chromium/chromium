@@ -62,8 +62,6 @@ extern const base::FeatureParam<BatterySaverNotificationBehavior>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kBatterySaverActivationChargePercent;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBatterySaverAlwaysOn);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kBluetoothFixA2dpPacketSize);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBluetoothQualityReport);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBluetoothWbsDogfood);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBoca);
