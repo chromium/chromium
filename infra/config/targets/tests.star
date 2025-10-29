@@ -1889,7 +1889,7 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.gtest_test(
-    name = "monochrome_public_test_ar_apk",
+    name = "chrome_public_test_ar_apk",
 )
 
 targets.tests.gtest_test(

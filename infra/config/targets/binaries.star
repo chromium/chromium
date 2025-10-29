@@ -1752,8 +1752,8 @@ targets.binaries.script(
 )
 
 targets.binaries.console_test_launcher(
-    name = "monochrome_public_test_ar_apk",
-    label = "//chrome/android:monochrome_public_test_ar_apk",
+    name = "chrome_public_test_ar_apk",
+    label = "//chrome/android:chrome_public_test_ar_apk",
     # All references have been moved to starlark
     skip_usage_check = True,
     module_scheme = "junit",

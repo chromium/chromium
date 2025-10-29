@@ -338,7 +338,7 @@ targets.bundle(
 targets.bundle(
     name = "android_ar_gtests",
     targets = [
-        "monochrome_public_test_ar_apk",
+        "chrome_public_test_ar_apk",
         # Name is vr_*, but actually has AR tests.
         "vr_android_unittests",
     ],
