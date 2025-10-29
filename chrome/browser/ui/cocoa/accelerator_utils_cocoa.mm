@@ -12,8 +12,6 @@
 #import "ui/base/accelerators/platform_accelerator_cocoa.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
-namespace chrome {
-
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   NSUInteger modifiers =
       (accelerator.IsCtrlDown() ? NSEventModifierFlagControl : 0) |
@@ -56,5 +54,3 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
 ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser);
 }
-
-}  // namespace chrome

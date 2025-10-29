@@ -12,8 +12,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/KeyboardShortcuts_jni.h"
 
-namespace chrome {
-
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   ui::KeyEvent key_event = accelerator.ToKeyEvent();
   ui::PlatformEvent platform_event = ui::NativeEventFromEvent(key_event);
@@ -22,5 +20,3 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   return Java_KeyboardShortcuts_isChromeAccelerator(
       env, platform_event.AsKeyboardEventAndroid()->GetJavaObject());
 }
-
-}  // namespace chrome

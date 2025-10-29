@@ -104,7 +104,7 @@ class ExclusiveAccessBubbleViewsTest : public InProcessBrowserTest {
     return u"Fullscreen";
 #else
     ui::Accelerator accelerator;
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &accelerator);
     return accelerator.GetShortcutText();
 #endif

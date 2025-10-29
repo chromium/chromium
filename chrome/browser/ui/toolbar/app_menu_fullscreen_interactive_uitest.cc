@@ -69,10 +69,10 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
     fullscreen_accelerator_ =
         ui::Accelerator(ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 #else
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &fullscreen_accelerator_);
 #endif
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_CLOSE_TAB, &close_tab_accelerator_);
   }
 

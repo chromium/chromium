@@ -280,8 +280,8 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
 
         // Set current_accelerator_ to chosen id's accelerator then add it to
         // input
-        chrome::AcceleratorProviderForBrowser(browser())
-            ->GetAcceleratorForCommandId(chosen_id, &current_accelerator_);
+        AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+            chosen_id, &current_accelerator_);
         AddStep(input_buffer,
                 SendAccelerator(kBrowserViewElementId, current_accelerator_));
         break;

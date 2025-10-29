@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(
   fullscreen_accelerator =
       ui::Accelerator(ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 #else
-  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+  AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
       IDC_FULLSCREEN, &fullscreen_accelerator);
 #endif
 

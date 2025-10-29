@@ -12,8 +12,6 @@
 #include "ash/public/cpp/accelerators.h"
 #endif
 
-namespace chrome {
-
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
 #if BUILDFLAG(IS_CHROMEOS)
   for (const ash::AcceleratorData& accel_data : ash::kAcceleratorData) {
@@ -38,5 +36,3 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
 ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser);
 }
-
-}  // namespace chrome

@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoMenuItem) {
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
   ui::Accelerator incognito_accelerator;
-  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+  AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
       IDC_NEW_INCOGNITO_WINDOW, &incognito_accelerator);
 
   RunTestSequence(
