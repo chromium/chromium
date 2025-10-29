@@ -183,7 +183,8 @@ void GlicEnabling::OnGlicSettingsPolicyChanged() {
 }
 
 bool GlicEnabling::IsUnifiedFreEnabled(Profile* profile) {
-  return base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen);
+  return base::FeatureList::IsEnabled(features::kGlicMultiInstance) &&
+         base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen);
 }
 
 GlicEnabling::GlicEnabling(Profile* profile,
