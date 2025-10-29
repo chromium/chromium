@@ -33,6 +33,7 @@ namespace {
 
 using ::base::Bucket;
 using ::base::BucketsAre;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
 
@@ -75,7 +76,7 @@ std::string GetTestSuffix(
 
 class MockSyncService : public syncer::TestSyncService {
  public:
-  MOCK_CONST_METHOD0(GetActiveDataTypes, syncer::DataTypeSet());
+  MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const override));
 };
 
 // A test fixture that sets up default state so that all AutofillAI-related
@@ -116,7 +117,7 @@ class AutofillAiPermissionUtilsTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
-  MockSyncService sync_service_;
+  NiceMock<MockSyncService> sync_service_;
   TestAutofillClient client_;
 };
 
@@ -725,15 +726,16 @@ TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
 }
 
 TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
-       FalseWhenSyncFeatureIsNotEnabled) {
-  sync_service().SetSignedOut();
+       FalseWhenValuablesDatatypeIsOff) {
+  ON_CALL(sync_service(), GetActiveDataTypes())
+      .WillByDefault(Return(syncer::DataTypeSet{}));
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
       EntityType(GetParam())));
 }
 
 TEST_P(AutofillAiMayPerformAddServerEntityInstanceInSettingsTest,
-       TrueWhenSyncingWallet) {
+       TrueWhenValuablesDatatypeIsOn) {
   EXPECT_TRUE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kAddServerEntityInstanceInSettings,
       EntityType(GetParam())));
