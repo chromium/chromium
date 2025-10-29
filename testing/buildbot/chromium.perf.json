@@ -64,32 +64,6 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "resource_sizes_monochrome_minimal_apks",
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "expiration": 7200,
-          "hard_timeout": 14400,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "resource_sizes_monochrome_minimal_apks"
-      },
-      {
-        "args": [],
-        "merge": {
-          "args": [
-            "--upload-skia-json"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
         "name": "resource_sizes_system_webview_google_bundle",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -1062,32 +1036,6 @@
   },
   "android_arm64-builder-perf": {
     "isolated_scripts": [
-      {
-        "args": [],
-        "merge": {
-          "args": [
-            "--upload-skia-json"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "resource_sizes_monochrome_minimal_apks",
-        "resultdb": {
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "cpu": "x86",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "expiration": 7200,
-          "hard_timeout": 14400,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "resource_sizes_monochrome_minimal_apks"
-      },
       {
         "args": [],
         "merge": {

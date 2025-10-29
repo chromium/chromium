@@ -85,7 +85,6 @@ _TEST_TARGET_ALLOWLIST = [
     '//chrome/test:unit_tests',
     '//clank/javatests:chrome_apk_baseline_profile_generator',
     '//clank/javatests:chrome_smoke_test',
-    '//clank/javatests:monochrome_bundle_smoke_test',
     '//clank/javatests:trichrome_chrome_google_bundle_smoke_test',
     '//components/chromeos_camera:jpeg_decode_accelerator_unittest',
     '//components/exo/wayland:wayland_client_compatibility_tests',

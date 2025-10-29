@@ -385,14 +385,6 @@ BUILDERS = {
     'android-builder-perf': {
         'tests': [
             {
-                'name': 'resource_sizes_monochrome_minimal_apks',
-                'isolate': 'resource_sizes_monochrome_minimal_apks',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
-            {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
                 'type': TEST_TYPES.GENERIC,
@@ -427,14 +419,6 @@ BUILDERS = {
     },
     'android_arm64-builder-perf': {
         'tests': [
-            {
-                'name': 'resource_sizes_monochrome_minimal_apks',
-                'isolate': 'resource_sizes_monochrome_minimal_apks',
-                'type': TEST_TYPES.GENERIC,
-                'resultdb': {
-                    'has_native_resultdb_integration': True,
-                },
-            },
             {
                 'name': 'resource_sizes_trichrome_google',
                 'isolate': 'resource_sizes_trichrome_google',
@@ -1525,7 +1509,6 @@ RESOURCE_SIZES_METADATA = BenchmarkMetadata(
      'tools/binary_size/README.md#resource_sizes_py'))
 
 OTHER_BENCHMARKS = {
-    'resource_sizes_monochrome_minimal_apks': RESOURCE_SIZES_METADATA,
     'resource_sizes_trichrome_google': RESOURCE_SIZES_METADATA,
     'resource_sizes_system_webview_google_bundle': RESOURCE_SIZES_METADATA,
 }
