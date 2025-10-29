@@ -100,7 +100,7 @@ enum WebCryptoAlgorithmParamsType {
   kWebCryptoAlgorithmParamsTypeHmacKeyGenParams,
   kWebCryptoAlgorithmParamsTypeRsaHashedKeyGenParams,
   kWebCryptoAlgorithmParamsTypeRsaHashedImportParams,
-  kWebCryptoAlgorithmParamsTypeAesGcmParams,
+  kWebCryptoAlgorithmParamsTypeAeadParams,
   kWebCryptoAlgorithmParamsTypeRsaOaepParams,
   kWebCryptoAlgorithmParamsTypeAesCtrParams,
   kWebCryptoAlgorithmParamsTypeRsaPssParams,
@@ -131,7 +131,7 @@ class WebCryptoAesCbcParams;
 class WebCryptoAesKeyGenParams;
 class WebCryptoHmacImportParams;
 class WebCryptoHmacKeyGenParams;
-class WebCryptoAesGcmParams;
+class WebCryptoAeadParams;
 class WebCryptoRsaOaepParams;
 class WebCryptoAesCtrParams;
 class WebCryptoRsaHashedKeyGenParams;
@@ -191,7 +191,7 @@ class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
   const WebCryptoAesKeyGenParams* AesKeyGenParams() const;
   const WebCryptoHmacImportParams* HmacImportParams() const;
   const WebCryptoHmacKeyGenParams* HmacKeyGenParams() const;
-  const WebCryptoAesGcmParams* AesGcmParams() const;
+  const WebCryptoAeadParams* AeadParams() const;
   const WebCryptoRsaOaepParams* RsaOaepParams() const;
   const WebCryptoAesCtrParams* AesCtrParams() const;
   const WebCryptoRsaHashedImportParams* RsaHashedImportParams() const;

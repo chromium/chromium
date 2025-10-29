@@ -154,8 +154,8 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
     {// Index 7
      "AES-GCM",
      {
-         kWebCryptoAlgorithmParamsTypeAesGcmParams,         // Encrypt
-         kWebCryptoAlgorithmParamsTypeAesGcmParams,         // Decrypt
+         kWebCryptoAlgorithmParamsTypeAeadParams,           // Encrypt
+         kWebCryptoAlgorithmParamsTypeAeadParams,           // Decrypt
          WebCryptoAlgorithmInfo::kUndefined,                // Sign
          WebCryptoAlgorithmInfo::kUndefined,                // Verify
          WebCryptoAlgorithmInfo::kUndefined,                // Digest
@@ -163,8 +163,8 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,                 // ImportKey
          kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                // DeriveBits
-         kWebCryptoAlgorithmParamsTypeAesGcmParams,         // WrapKey
-         kWebCryptoAlgorithmParamsTypeAesGcmParams          // UnwrapKey
+         kWebCryptoAlgorithmParamsTypeAeadParams,           // WrapKey
+         kWebCryptoAlgorithmParamsTypeAeadParams            // UnwrapKey
      }},
     {// Index 8
      "RSA-OAEP",
@@ -548,10 +548,11 @@ const WebCryptoHmacKeyGenParams* WebCryptoAlgorithm::HmacKeyGenParams() const {
   return nullptr;
 }
 
-const WebCryptoAesGcmParams* WebCryptoAlgorithm::AesGcmParams() const {
+const WebCryptoAeadParams* WebCryptoAlgorithm::AeadParams() const {
   DCHECK(!IsNull());
-  if (ParamsType() == kWebCryptoAlgorithmParamsTypeAesGcmParams)
-    return static_cast<WebCryptoAesGcmParams*>(private_->params.get());
+  if (ParamsType() == kWebCryptoAlgorithmParamsTypeAeadParams) {
+    return static_cast<WebCryptoAeadParams*>(private_->params.get());
+  }
   return nullptr;
 }
 

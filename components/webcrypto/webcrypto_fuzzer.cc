@@ -50,7 +50,7 @@ auto AesGcmAlgorithm() {
          unsigned char tag_length_bits) {
         return blink::WebCryptoAlgorithm::AdoptParamsAndCreate(
             blink::kWebCryptoAlgorithmIdAesGcm,
-            new blink::WebCryptoAesGcmParams(
+            new blink::WebCryptoAeadParams(
                 std::move(iv), has_additional_data, std::move(additional_data),
                 has_tag_length_bits, tag_length_bits));
       },

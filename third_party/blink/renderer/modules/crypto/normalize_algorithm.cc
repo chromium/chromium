@@ -733,15 +733,15 @@ bool ParseAesCtrParams(const Dictionary& raw,
 
 // Defined by the WebCrypto spec as:
 //
-//     dictionary AesGcmParams : Algorithm {
+//     dictionary AeadParams : Algorithm {
 //       required BufferSource iv;
 //       BufferSource additionalData;
 //       [EnforceRange] octet tagLength;
 //     }
-bool ParseAesGcmParams(const Dictionary& raw,
-                       std::unique_ptr<WebCryptoAlgorithmParams>& params,
-                       const ErrorContext& context,
-                       ExceptionState& exception_state) {
+bool ParseAeadParams(const Dictionary& raw,
+                     std::unique_ptr<WebCryptoAlgorithmParams>& params,
+                     const ErrorContext& context,
+                     ExceptionState& exception_state) {
   std::vector<uint8_t> iv;
   if (!GetBufferSource(raw, "iv", iv, context, exception_state))
     return false;
@@ -758,7 +758,7 @@ bool ParseAesGcmParams(const Dictionary& raw,
                         exception_state))
     return false;
 
-  params = std::make_unique<WebCryptoAesGcmParams>(
+  params = std::make_unique<WebCryptoAeadParams>(
       std::move(iv), has_additional_data, std::move(additional_data),
       has_tag_length, tag_length);
   return true;
@@ -1042,9 +1042,9 @@ bool ParseAlgorithmParams(v8::Isolate* isolate,
     case kWebCryptoAlgorithmParamsTypeAesCtrParams:
       context.Add("AesCtrParams");
       return ParseAesCtrParams(raw, params, context, exception_state);
-    case kWebCryptoAlgorithmParamsTypeAesGcmParams:
-      context.Add("AesGcmParams");
-      return ParseAesGcmParams(raw, params, context, exception_state);
+    case kWebCryptoAlgorithmParamsTypeAeadParams:
+      context.Add("AeadParams");
+      return ParseAeadParams(raw, params, context, exception_state);
     case kWebCryptoAlgorithmParamsTypeRsaOaepParams:
       context.Add("RsaOaepParams");
       return ParseRsaOaepParams(raw, params, context, exception_state);

@@ -179,13 +179,13 @@ class WebCryptoHmacKeyGenParams : public WebCryptoAlgorithmParamsWithHash {
   const unsigned optional_length_bits_;
 };
 
-class WebCryptoAesGcmParams : public WebCryptoAlgorithmParams {
+class WebCryptoAeadParams : public WebCryptoAlgorithmParams {
  public:
-  WebCryptoAesGcmParams(std::vector<unsigned char> iv,
-                        bool has_additional_data,
-                        std::vector<unsigned char> additional_data,
-                        bool has_tag_length_bits,
-                        unsigned char tag_length_bits)
+  WebCryptoAeadParams(std::vector<unsigned char> iv,
+                      bool has_additional_data,
+                      std::vector<unsigned char> additional_data,
+                      bool has_tag_length_bits,
+                      unsigned char tag_length_bits)
       : iv_(std::move(iv)),
         has_additional_data_(has_additional_data),
         optional_additional_data_(std::move(additional_data)),
@@ -196,7 +196,7 @@ class WebCryptoAesGcmParams : public WebCryptoAlgorithmParams {
   }
 
   WebCryptoAlgorithmParamsType GetType() const override {
-    return kWebCryptoAlgorithmParamsTypeAesGcmParams;
+    return kWebCryptoAlgorithmParamsTypeAeadParams;
   }
 
   const std::vector<unsigned char>& Iv() const { return iv_; }
