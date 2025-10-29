@@ -50,6 +50,8 @@ class ContextualTasksSidePanelCoordinator {
   content::WebContents* GetActiveWebContentsForTesting();
 
  private:
+  int GetPreferredDefaultSidePanelWidth();
+
   // Handle swapping WebContents if thread changes.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
 

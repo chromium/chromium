@@ -42,7 +42,8 @@ void ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  if (ui_service->HandleNavigation(
+  if (ui_service &&
+      ui_service->HandleNavigation(
           registry.GetNavigationHandle().GetURL(),
           web_contents->GetResponsibleWebContents()->GetLastCommittedURL(),
           web_contents, /*is_to_new_tab=*/false)) {

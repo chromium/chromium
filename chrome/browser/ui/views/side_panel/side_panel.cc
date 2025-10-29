@@ -76,7 +76,7 @@ gfx::Insets GetBorderInsets() {
                            border_thickness, border_thickness);
 }
 
-constexpr int kAnimationDurationMs = 450;
+constexpr base::TimeDelta kAnimationDurationMs = base::Milliseconds(450);
 
 // This border paints the toolbar color around the side panel content and draws
 // a roundrect viewport around the side panel content. The border can have
@@ -344,8 +344,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
                           base::Unretained(browser_view)));
 
   animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
-
-  animation_.SetSlideDuration(base::Milliseconds(kAnimationDurationMs));
+  animation_.SetSlideDuration(kAnimationDurationMs);
 
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());

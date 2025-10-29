@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -29,6 +30,7 @@ END_METADATA
 
 namespace {
 inline constexpr char kContextualTasksUrl[] = "chrome://contextual-tasks/";
+inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 std::unique_ptr<content::WebContents> CreateWebContents(
     content::BrowserContext* context) {
@@ -81,11 +83,14 @@ void ContextualTasksSidePanelCoordinator::CreateAndRegisterEntry(
   }
 
   auto entry = std::make_unique<SidePanelEntry>(
+      SidePanelEntry::PanelType::kToolbar,
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks),
       base::BindRepeating(
           &ContextualTasksSidePanelCoordinator::CreateSidePanelView,
           base::Unretained(this)),
-      /*default_content_width_callback=*/base::NullCallback());
+      base::BindRepeating(&ContextualTasksSidePanelCoordinator::
+                              GetPreferredDefaultSidePanelWidth,
+                          base::Unretained(this)));
   entry->set_should_show_header(false);
   entry->set_should_show_outline(false);
   global_registry->Register(std::move(entry));
@@ -99,6 +104,10 @@ void ContextualTasksSidePanelCoordinator::Show() {
 content::WebContents*
 ContextualTasksSidePanelCoordinator::GetActiveWebContentsForTesting() {
   return web_view_ ? web_view_->web_contents() : nullptr;
+}
+
+int ContextualTasksSidePanelCoordinator::GetPreferredDefaultSidePanelWidth() {
+  return kSidePanelPreferredDefaultWidth;
 }
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(

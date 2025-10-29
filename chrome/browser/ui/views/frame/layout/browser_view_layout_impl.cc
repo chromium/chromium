@@ -330,21 +330,23 @@ BrowserViewLayoutImpl::CalculateProposedLayout() const {
   // Lay out toolbar-height side panel.
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
-    if (const int width =
-            views().toolbar_height_side_panel->GetPreferredSize().width();
-        width > 0) {
+    const int preferred_width =
+        views().toolbar_height_side_panel->GetPreferredSize().width();
+    int animated_width = preferred_width *
+                         views().toolbar_height_side_panel->GetAnimationValue();
+    if (animated_width > 0) {
       const int top = std::max(
           y, params.visual_client_area.y() +
                  base::ClampCeil(
                      params.leading_exclusion.ContentWithPadding().height()));
       const gfx::Rect toolbar_height_bounds(
-          x, top, width, params.visual_client_area.bottom() - top);
+          x, top, animated_width, params.visual_client_area.bottom() - top);
       x = toolbar_height_bounds.right();
       layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
     }
   }
 
-  // Lay out the main container of the browser.
+  // Layout the main container.
   const gfx::Rect main_bounds(x, y, params.visual_client_area.width() - x,
                               params.visual_client_area.height() - y);
   const BrowserLayoutParams main_params =
