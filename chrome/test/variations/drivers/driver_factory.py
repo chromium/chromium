@@ -89,9 +89,9 @@ class DriverFactory:
     """Waits for the window handle to be available."""
     start_time = time.time()
     while time.time() - start_time <= timeout:
-      # Check if current window handle is set.
+      # Check if current window handle is set by changing the window size.
       try:
-        driver.current_window_handle
+        driver.set_window_size(800, 600)
         return
       except WebDriverException:
         pass
@@ -100,7 +100,7 @@ class DriverFactory:
       # Try manually setting window handle to the first available window.
       try:
         driver.switch_to.window(driver.window_handles[0])
-        driver.current_window_handle
+        driver.set_window_size(800, 600)
         return
       except (IndexError, WebDriverException):
         logging.info('continue to wait on window handles.')
