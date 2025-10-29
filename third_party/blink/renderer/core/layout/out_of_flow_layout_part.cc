@@ -1990,10 +1990,12 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
       const LayoutObject* container_object =
           container_builder_->GetLayoutObject();
       CHECK(container_object);
+      WritingDirectionMode writing_direction =
+          container_object->Style()->GetWritingDirection();
 
       FragmentBuilder::PropagateChildAnchors(
-          fragment, stitched_offset, *container_object, stitched_container_size,
-          options, &stitched_anchor_query);
+          fragment, stitched_offset, *container_object, writing_direction,
+          stitched_container_size, options, &stitched_anchor_query);
       if (const auto* break_token =
               To<BlockBreakToken>(fragment.GetBreakToken())) {
         stitched_offset.block_offset = break_token->ConsumedBlockSize();
