@@ -27,8 +27,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kExternalNavigationDebugLogs,       &kBlockIntentsToSelf,
     &kNavigationCaptureRefactorAndroid,  &kAuxiliaryNavigationStaysInBrowser,
-    &kReparentTopLevelNavigationFromPWA, &kReparentAuxiliaryNavigationFromPWA,
-    &kAuxiliaryNavigationStaysInPWA};
+    &kReparentTopLevelNavigationFromPWA, &kReparentAuxiliaryNavigationFromPWA};
 
 }  // namespace
 
@@ -49,8 +48,6 @@ BASE_FEATURE(kReparentTopLevelNavigationFromPWA,
 
 BASE_FEATURE(kReparentAuxiliaryNavigationFromPWA,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAuxiliaryNavigationStaysInPWA, base::FEATURE_DISABLED_BY_DEFAULT);
 
 static jlong JNI_ExternalIntentsFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);

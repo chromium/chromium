@@ -708,13 +708,6 @@ public class ExternalNavigationHandler {
         RecordHistogram.recordTimesHistogram(
                 "Android.StrictMode.OverrideUrlLoadingTime", SystemClock.elapsedRealtime() - time);
 
-        // Measure how many navigations would be affected if enabling feature flag
-        // AUXILIARY_NAVIGATION_STAYS_IN_BROWSER for all windowing modes.
-        RecordHistogram.recordBooleanHistogram(
-                "Android.Intent.OverrideBrowserAuxiliaryNavigation",
-                isBrowserAuxiliaryNavigation(params)
-                        && result.getResultType() != OverrideUrlLoadingResultType.NO_OVERRIDE);
-
         if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
             result =
                     handleFallbackUrl(
@@ -1741,25 +1734,6 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    // A new auxiliary browsing context navigation starting in the PWA should not be captured.
-    private boolean isPWAAuxiliaryNavigationInFullscreenWM(ExternalNavigationParams params) {
-        WebContents webContents = mDelegate.getWebContents();
-        if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_PWA.isEnabled()
-                && params.isTabInPWA()
-                && !params.isInDesktopWindowingMode()
-                && webContents != null
-                && webContents.hasOpener()
-                && webContents.getOriginalWindowOpenDisposition()
-                        == WindowOpenDisposition.NEW_FOREGROUND_TAB
-                && UrlUtilities.isHttpOrHttps(params.getUrl())) {
-            if (debug()) {
-                Log.i(TAG, "Do not override auxiliary browsing context navigation from a PWA.");
-            }
-            return true;
-        }
-        return false;
-    }
-
     private OverrideUrlLoadingResult shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params,
             Intent targetIntent,
@@ -1832,10 +1806,6 @@ public class ExternalNavigationHandler {
         if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
                 params.isInDesktopWindowingMode()) &&
                 isBrowserAuxiliaryNavigation(params)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
-        if (isPWAAuxiliaryNavigationInFullscreenWM(params)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 

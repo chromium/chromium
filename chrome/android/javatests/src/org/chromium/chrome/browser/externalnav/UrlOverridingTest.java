@@ -1397,14 +1397,14 @@ public class UrlOverridingTest {
     public void testNoRedirectWithBFCache() throws Exception {
         final CallbackHelper finishCallback = new CallbackHelper();
         final CallbackHelper syncHelper = new CallbackHelper();
-        AtomicReference<NavigationHandle> mLastNavigationHandle = new AtomicReference<>(null);
+        AtomicReference<NavigationHandle> lastNavigationHandle = new AtomicReference<>(null);
         EmptyTabObserver observer =
                 new EmptyTabObserver() {
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
                         int callCount = syncHelper.getCallCount();
-                        mLastNavigationHandle.set(navigation);
+                        lastNavigationHandle.set(navigation);
                         finishCallback.notifyCalled();
                         try {
                             syncHelper.waitForCallback(callCount);
@@ -1447,7 +1447,7 @@ public class UrlOverridingTest {
         ThreadUtils.runOnUiThreadBlocking(
                 mTabbedActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
         finishCallback.waitForCallback(1);
-        Assert.assertTrue(mLastNavigationHandle.get().isPageActivation());
+        Assert.assertTrue(lastNavigationHandle.get().isPageActivation());
         // Page activations should clear the RedirectHandler so future navigations aren't part of
         // the same navigation chain.
         Mockito.verify(spyHandler, Mockito.times(1)).clear();
@@ -1461,7 +1461,7 @@ public class UrlOverridingTest {
         // external navigation.
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, lastResultValue.get());
-        Assert.assertTrue(mLastNavigationHandle.get().getUrl().getSpec().startsWith("intent://"));
+        Assert.assertTrue(lastNavigationHandle.get().getUrl().getSpec().startsWith("intent://"));
         syncHelper.notifyCalled();
 
         Assert.assertNotNull(getCurrentExternalNavigationMessage());
@@ -2280,8 +2280,8 @@ public class UrlOverridingTest {
 
         mTabbedActivityTestRule.startOnBlankPage();
 
-        String url_external = mTestServer.getURL(HELLO_PAGE);
-        String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK, url_external);
+        String urlExternal = mTestServer.getURL(HELLO_PAGE);
+        String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK, urlExternal);
         TestParams testParams = new TestParams(url, true, false);
         testParams.createsNewTab = true;
         testParams.expectedFinalUrl = null;
@@ -2298,7 +2298,7 @@ public class UrlOverridingTest {
                             Matchers.is(2));
                     Criteria.checkThat(
                             activity.getActivityTab().getUrl().getSpec(),
-                            Matchers.equalTo(new GURL(url_external).getSpec()));
+                            Matchers.equalTo(new GURL(urlExternal).getSpec()));
                 },
                 10000L,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -2322,8 +2322,8 @@ public class UrlOverridingTest {
 
         mTabbedActivityTestRule.startOnBlankPage();
 
-        String url_external = mTestServer.getURL(HELLO_PAGE);
-        String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, url_external);
+        String urlExternal = mTestServer.getURL(HELLO_PAGE);
+        String url = getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_LINK, urlExternal);
         TestParams testParams = new TestParams(url, true, true);
         testParams.createsNewTab = true;
         testParams.expectedFinalUrl = null;
@@ -2362,15 +2362,15 @@ public class UrlOverridingTest {
 
         mTabbedActivityTestRule.startOnBlankPage();
 
-        String page_with_self_link =
+        String pageWithSelfLink =
                 getUrlWithParam(NAVIGATION_FROM_TARGET_SELF_LINK, mTestServer.getURL(HELLO_PAGE));
-        String page_with_blank_opener_link =
-                getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK, page_with_self_link);
+        String pageWithBlankOpenerLink =
+                getUrlWithParam(NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK, pageWithSelfLink);
 
         // open first tab and new auxiliary tab
-        TestParams testParams = new TestParams(page_with_blank_opener_link, true, false);
+        TestParams testParams = new TestParams(pageWithBlankOpenerLink, true, false);
         testParams.createsNewTab = true;
-        testParams.expectedFinalUrl = new GURL(page_with_self_link).getSpec();
+        testParams.expectedFinalUrl = new GURL(pageWithSelfLink).getSpec();
         testParams.shouldFailNavigation = false;
         testParams.willNavigateTwice = true;
         loadUrlAndWaitForIntentUrl(testParams);
@@ -2458,24 +2458,6 @@ public class UrlOverridingTest {
 
         Tab tab = ThreadUtils.runOnUiThreadBlocking(newActivity::getActivityTab);
         Assert.assertFalse(tab.isTabInPWA());
-        Assert.assertFalse(tab.getWebContents().hasOpener());
-    }
-
-    @Test
-    @EnableFeatures({ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_PWA_NAME})
-    @LargeTest
-    public void testAuxiliaryNavigationFromPWAStaysInPWA() throws TimeoutException {
-        InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(false);
-
-        String url =
-                getUrlWithParam(
-                        NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK,
-                        mTestServer.getURL(HELLO_PAGE));
-
-        launchTwa("com.foo.bar", url);
-
-        Tab tab = mCustomTabActivityRule.getActivityTab();
-        Assert.assertTrue(tab.isTabInPWA());
         Assert.assertFalse(tab.getWebContents().hasOpener());
     }
 

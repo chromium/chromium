@@ -5182,12 +5182,6 @@ inline constexpr char kAuxiliaryNavigationStaysInBrowserDescription[] =
     "If enabled, any new auxiliary browsing context navigation started in "
     "the browser will open in a new tab.";
 
-inline constexpr char kAuxiliaryNavigationStaysInPWAName[] =
-    "Prevent app opening for auxiliary navigations that start in a PWA";
-inline constexpr char kAuxiliaryNavigationStaysInPWADescription[] =
-    "If enabled, any new auxiliary browsing context navigation started in "
-    "any PWA will open a new tab in the same PWA.";
-
 inline constexpr char kBackgroundNotPerceptibleBindingName[] =
     "Enable not perceptible binding without cpu priority boosting";
 inline constexpr char kBackgroundNotPerceptibleBindingDescription[] =
