@@ -4,15 +4,15 @@
 
 module whats_new.mojom;
 
-import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI page's |BrowserProxy| singleton calls this method when the
   // page is first initialized.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> handler);
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
 };
 
 // Enum used to depict what quartile of the page the user scrolled to.
@@ -26,9 +26,8 @@ enum ScrollDepth {
   // 75%
   k75 = 75,
   // 100% (Bottom of the page)
-  k100 = 100
+  k100 = 100,
 };
-
 
 // Enum used to depict the module position within its section.
 // There are 4 possible positions in "Spotlight" and 6 positions in the
@@ -44,7 +43,7 @@ enum ModulePosition {
   kExploreMore4 = 8,
   kExploreMore5 = 9,
   kExploreMore6 = 10,
-  kUndefined = 11
+  kUndefined = 11,
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -94,6 +93,27 @@ interface PageHandler {
 
   // Record metric when browser commands are executed.
   RecordBrowserCommandExecuted();
+
+  // Record metric when the QR code toggle is expanded/collapsed.
+  RecordQrCodeToggled(bool expanded);
+
+  // Record metric when the user clicks any navigation.
+  RecordNavClick();
+
+  // Record metric when the user clicks on a feature tile.
+  RecordFeatureTileNavigation();
+
+  // Record metric when the user clicks on a carousel scroll button.
+  RecordCarouselScrollButtonClick();
+
+  // Record metric when the user expands/collapses media.
+  RecordExpandMediaToggled(string module_name, bool expanded);
+
+  // Record metric when the user clicks on a CTA.
+  RecordCtaClick();
+
+  // Record metric when the user clicks on the next button.
+  RecordNextButtonClick();
 };
 
 // WebUI-side handler for requests from the browser.

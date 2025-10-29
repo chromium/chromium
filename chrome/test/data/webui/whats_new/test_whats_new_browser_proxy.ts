@@ -34,6 +34,13 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordModulePauseClicked',
       'recordModuleRestartClicked',
       'recordBrowserCommandExecuted',
+      'recordQrCodeToggled',
+      'recordNavClick',
+      'recordFeatureTileNavigation',
+      'recordCarouselScrollButtonClick',
+      'recordExpandMediaToggled',
+      'recordCtaClick',
+      'recordNextButtonClick',
     ]);
 
     this.url_ = {url};
@@ -98,6 +105,34 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
 
   recordBrowserCommandExecuted() {
     this.methodCalled('recordBrowserCommandExecuted');
+  }
+
+  recordQrCodeToggled(expanded: boolean) {
+    this.methodCalled('recordQrCodeToggled', expanded);
+  }
+
+  recordNavClick() {
+    this.methodCalled('recordNavClick');
+  }
+
+  recordFeatureTileNavigation() {
+    this.methodCalled('recordFeatureTileNavigation');
+  }
+
+  recordCarouselScrollButtonClick() {
+    this.methodCalled('recordCarouselScrollButtonClick');
+  }
+
+  recordExpandMediaToggled(moduleName: string, expanded: boolean) {
+    this.methodCalled('recordExpandMediaToggled', moduleName, expanded);
+  }
+
+  recordCtaClick() {
+    this.methodCalled('recordCtaClick');
+  }
+
+  recordNextButtonClick() {
+    this.methodCalled('recordNextButtonClick');
   }
 }
 

@@ -48271,6 +48271,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.WhatsNew.CarouselScrollButtonClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on a carousel scroll button.</description>
+</action>
+
+<action name="UserEducation.WhatsNew.CtaClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on a CTA.</description>
+</action>
+
 <action name="UserEducation.WhatsNew.EditionShown">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
@@ -48278,6 +48290,12 @@ should be able to be added at any place in this file.
     A What's New edition page was shown to the user, either by automatically
     opening on startup or by direct user navigation.
   </description>
+</action>
+
+<action name="UserEducation.WhatsNew.FeatureTileNavigation">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on a feature tile.</description>
 </action>
 
 <action name="UserEducation.WhatsNew.ModuleLinkClicked">
@@ -48294,6 +48312,18 @@ should be able to be added at any place in this file.
   <description>
     A module on the What's New page was visible to the user.
   </description>
+</action>
+
+<action name="UserEducation.WhatsNew.NavClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked any navigation.</description>
+</action>
+
+<action name="UserEducation.WhatsNew.NextButtonClick">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>The user clicked on the next button.</description>
 </action>
 
 <action name="UserEducation.WhatsNew.PauseClicked">

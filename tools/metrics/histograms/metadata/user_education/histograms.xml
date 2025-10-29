@@ -489,6 +489,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
+<histogram name="UserEducation.WhatsNew.ExpandMedia.{ModuleName}"
+    enum="BooleanYesNo" expires_after="never">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the media in the {ModuleName} module on the What's New page was
+    expanded/collapsed.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
 <!-- expires-never: since the content of the "What's New" page changes from
      release to release, this is an important health metric for the performance
      of any particular release. It should not be allowed to expire. -->
@@ -567,6 +583,20 @@ chromium-metrics-reviews@google.com.
     section.
   </summary>
   <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<!-- expires-never: since the content of the "What's New" page changes from
+     release to release, this is an important health metric for the performance
+     of any particular release. It should not be allowed to expire. -->
+
+<histogram name="UserEducation.WhatsNew.QrCodeExpanded" enum="BooleanYesNo"
+    expires_after="never">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the user expands or collapses the QR code section of the What's
+    New page.
+  </summary>
 </histogram>
 
 <!-- expires-never: this is a meta-histogram that provides performance data for
