@@ -108,7 +108,7 @@ ExtensionAPI* ExtensionAPI::CreateWithDefaultConfiguration() {
 }
 
 // static
-void ExtensionAPI::SplitDependencyName(const std::string& full_name,
+void ExtensionAPI::SplitDependencyName(std::string_view full_name,
                                        std::string* feature_type,
                                        std::string* feature_name) {
   size_t colon_index = full_name.find(':');
@@ -209,7 +209,7 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
 }
 
 Feature::Availability ExtensionAPI::IsAvailable(
-    const std::string& full_name,
+    std::string_view full_name,
     const Extension* extension,
     mojom::ContextType context,
     const GURL& url,
@@ -219,7 +219,7 @@ Feature::Availability ExtensionAPI::IsAvailable(
   const Feature* feature = GetFeatureDependency(full_name);
   if (!feature) {
     return Feature::Availability(Feature::NOT_PRESENT,
-                                 std::string("Unknown feature: ") + full_name);
+                                 "Unknown feature: " + std::string(full_name));
   }
 
   Feature::Availability availability = feature->IsAvailableToContext(
@@ -267,8 +267,7 @@ const base::Value::Dict* ExtensionAPI::GetSchema(const std::string& full_name) {
   return result;
 }
 
-const Feature* ExtensionAPI::GetFeatureDependency(
-    const std::string& full_name) {
+const Feature* ExtensionAPI::GetFeatureDependency(std::string_view full_name) {
   std::string feature_type;
   std::string feature_name;
   SplitDependencyName(full_name, &feature_type, &feature_name);
@@ -288,7 +287,7 @@ const Feature* ExtensionAPI::GetFeatureDependency(
   return feature;
 }
 
-std::string ExtensionAPI::GetAPINameFromFullName(const std::string& full_name,
+std::string ExtensionAPI::GetAPINameFromFullName(std::string_view full_name,
                                                  std::string* child_name) {
   base::AutoLock lock(lock_);
   return GetAPINameFromFullNameUnsafe(full_name, child_name);
@@ -301,7 +300,7 @@ bool ExtensionAPI::IsKnownAPI(const std::string& name,
 }
 
 Feature::Availability ExtensionAPI::IsAliasAvailable(
-    const std::string& full_name,
+    std::string_view full_name,
     const Feature& feature,
     const Extension* extension,
     mojom::ContextType context,
@@ -354,10 +353,10 @@ std::string_view ExtensionAPI::GetSchemaStringPieceUnsafe(
 }
 
 std::string ExtensionAPI::GetAPINameFromFullNameUnsafe(
-    const std::string& full_name,
+    std::string_view full_name,
     std::string* child_name) {
   lock_.AssertAcquired();
-  std::string api_name_candidate = full_name;
+  std::string api_name_candidate(full_name);
   ExtensionsClient* extensions_client = ExtensionsClient::Get();
   DCHECK(extensions_client);
   while (true) {

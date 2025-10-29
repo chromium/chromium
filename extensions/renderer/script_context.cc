@@ -266,12 +266,12 @@ void ScriptContext::SafeCallFunction(
 }
 
 Feature::Availability ScriptContext::GetAvailability(
-    const std::string& api_name) {
+    std::string_view api_name) {
   return GetAvailability(api_name, CheckAliasStatus::ALLOWED);
 }
 
 Feature::Availability ScriptContext::GetAvailability(
-    const std::string& api_name,
+    std::string_view api_name,
     CheckAliasStatus check_alias) {
   DCHECK(thread_checker_.CalledOnValidThread());
 

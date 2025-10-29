@@ -61,7 +61,7 @@ class ExtensionAPI {
   // "permission", or "api". The second part is the full name of the feature.
   //
   // TODO(kalman): ExtensionAPI isn't really the right place for this function.
-  static void SplitDependencyName(const std::string& full_name,
+  static void SplitDependencyName(std::string_view full_name,
                                   std::string* feature_type,
                                   std::string* feature_name);
 
@@ -104,7 +104,7 @@ class ExtensionAPI {
   // TODO(kalman): This is just an unnecessary combination of finding a Feature
   // then calling Feature::IsAvailableToContext(..) on it. Just provide that
   // FindFeature function and let callers compose if they want.
-  Feature::Availability IsAvailable(const std::string& api_full_name,
+  Feature::Availability IsAvailable(std::string_view api_full_name,
                                     const Extension* extension,
                                     mojom::ContextType context,
                                     const GURL& url,
@@ -144,12 +144,12 @@ class ExtensionAPI {
   // "<unknown-api>.monkey" -> ("", "")
   //
   // The `child_name` parameter can be be NULL if you don't need that part.
-  std::string GetAPINameFromFullName(const std::string& full_name,
+  std::string GetAPINameFromFullName(std::string_view full_name,
                                      std::string* child_name);
 
   // Gets a feature from any dependency provider registered with ExtensionAPI.
   // Returns NULL if the feature could not be found.
-  const Feature* GetFeatureDependency(const std::string& dependency_name);
+  const Feature* GetFeatureDependency(std::string_view dependency_name);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionAPITest, DefaultConfigurationFeatures);
@@ -162,7 +162,7 @@ class ExtensionAPI {
 
   // Checks if `full_name` is available to provided context and extension under
   // associated API's alias name.
-  Feature::Availability IsAliasAvailable(const std::string& full_name,
+  Feature::Availability IsAliasAvailable(std::string_view full_name,
                                          const Feature& feature,
                                          const Extension* extension,
                                          mojom::ContextType context,
@@ -177,7 +177,7 @@ class ExtensionAPI {
   std::string_view GetSchemaStringPieceUnsafe(const std::string& api_name);
 
   // Same as GetAPINameFromFullName() but doesn't acquire `lock_`.
-  std::string GetAPINameFromFullNameUnsafe(const std::string& full_name,
+  std::string GetAPINameFromFullNameUnsafe(std::string_view full_name,
                                            std::string* child_name);
 
   bool default_configuration_initialized_ = false;
