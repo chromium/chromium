@@ -141,7 +141,7 @@ class ContextualCueingService
   void OnPinnedTabsSuggestionsReceived(
       bool is_fre,
       base::TimeTicks fetch_begin_time,
-      ZeroStateSuggestionsRequest* pinned_tabs_request,
+      base::WeakPtr<ZeroStateSuggestionsRequest> pinned_tabs_request,
       GlicSuggestionsCallback callback,
       std::vector<std::string> suggestions);
 
