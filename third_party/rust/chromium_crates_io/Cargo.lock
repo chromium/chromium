@@ -272,7 +272,7 @@ dependencies = [
 
 [[package]]
 name = "diplomat"
-version = "0.14.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat_core",
@@ -283,12 +283,12 @@ dependencies = [
 
 [[package]]
 name = "diplomat-runtime"
-version = "0.14.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "diplomat_core"
-version = "0.14.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "proc-macro2",
@@ -1081,7 +1081,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_capi"
-version = "0.1.1"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "diplomat",

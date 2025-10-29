@@ -13,7 +13,7 @@
 # It is not mandatory to update the `defines` list every time temporal_capi
 # updates; it is just a convenient tool to use as needed.
 config("temporal_capi_versioning_defines") {
-  defines = [ "TEMPORAL_CAPI_VERSION_0_1_1" ]
+  defines = [ "TEMPORAL_CAPI_VERSION_0_1" ]
 }
 
 # v8 includes headers and targets from paths that include a specific crate

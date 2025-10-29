@@ -1,0 +1,11 @@
+Name: diplomat_core
+URL: https://crates.io/crates/diplomat_core
+Version: 0.13.0
+Revision: f05fabd1bd2a23b2e28f3cbba812f3719b4748c8
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/diplomat_core-v0_13/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Shared utilities between Diplomat macros and code generation
