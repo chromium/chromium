@@ -321,10 +321,12 @@ void NetLog::AddEntryAtTimeWithMaterializedParams(NetLogEventType type,
   // Notify all of the log observers, regardless of capture mode.
   base::AutoLock lock(lock_);
   for (net::NetLog::ThreadSafeObserver* observer : observers_) {
-    observer->OnAddEntry(observer->capture_mode() ==
-                                 NetLogCaptureMode::kHeavilyRedacted
-                             ? *heavily_redacted_entry
-                             : *non_heavily_redacted_entry);
+    const std::optional<NetLogEntry>& entry =
+        observer->capture_mode() == NetLogCaptureMode::kHeavilyRedacted
+            ? heavily_redacted_entry
+            : non_heavily_redacted_entry;
+    CHECK(entry);
+    observer->OnAddEntry(*entry);
   }
 }
 
