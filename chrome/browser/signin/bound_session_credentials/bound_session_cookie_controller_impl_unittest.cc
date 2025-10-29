@@ -140,7 +140,7 @@ class BoundSessionCookieControllerImplTest
     return *key_id;
   }
 
-  std::vector<uint8_t> GetWrappedKey(const UnexportableKeyId& key_id) {
+  std::vector<uint8_t> GetWrappedKey(UnexportableKeyId key_id) {
     ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_.GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());
@@ -312,7 +312,7 @@ class BoundSessionCookieControllerImplTest
         ->session_binding_helper_->key_loader_.get();
   }
 
-  const UnexportableKeyId& key_id() { return key_id_; }
+  UnexportableKeyId key_id() { return key_id_; }
 
   size_t on_bound_session_throttler_params_changed_call_count() {
     return on_bound_session_throttler_params_changed_call_count_;

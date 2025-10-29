@@ -49,7 +49,7 @@ unexportable_keys::UnexportableKeyId GenerateNewKey(
 
 std::vector<uint8_t> GetWrappedKey(
     unexportable_keys::UnexportableKeyService& key_service,
-    const unexportable_keys::UnexportableKeyId& key_id) {
+    unexportable_keys::UnexportableKeyId key_id) {
   unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
       key_service.GetWrappedKey(key_id);
   CHECK(wrapped_key.has_value());

@@ -40,7 +40,7 @@ class MockUnexportableKeyService : public UnexportableKeyService {
   MOCK_METHOD(
       void,
       SignSlowlyAsync,
-      (const UnexportableKeyId& key_id,
+      (UnexportableKeyId key_id,
        base::span<const uint8_t> data,
        BackgroundTaskPriority priority,
        base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback),

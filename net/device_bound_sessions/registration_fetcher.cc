@@ -79,7 +79,7 @@ void OnDataSigned(
 void SignChallengeWithKey(
     bool is_for_refresh,
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    unexportable_keys::UnexportableKeyId& key_id,
+    unexportable_keys::UnexportableKeyId key_id,
     const GURL& registration_url,
     std::string_view challenge,
     std::optional<std::string> authorization,

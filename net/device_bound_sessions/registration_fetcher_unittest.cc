@@ -202,7 +202,7 @@ class RegistrationTestBase : public TestWithTaskEnvironment {
 
   RegistrationResult FetchWithFederatedKey(
       RegistrationRequestParam param,
-      const unexportable_keys::UnexportableKeyId& key,
+      unexportable_keys::UnexportableKeyId key,
       const GURL& provider_url) {
     base::test::TestFuture<RegistrationFetcher*, RegistrationResult> future;
     std::unique_ptr<RegistrationFetcher> fetcher =

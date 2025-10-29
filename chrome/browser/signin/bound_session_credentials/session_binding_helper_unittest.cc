@@ -56,7 +56,7 @@ class SessionBindingHelperTest : public testing::Test {
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      const unexportable_keys::UnexportableKeyId& key_id) {
+      unexportable_keys::UnexportableKeyId key_id) {
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_.GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());
