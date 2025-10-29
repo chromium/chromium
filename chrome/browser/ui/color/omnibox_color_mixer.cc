@@ -56,6 +56,9 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
       kColorOmniboxResultsTextPositive};
   mixer[kColorOmniboxResultsTextSecondarySelected] = {
       kColorOmniboxResultsTextSecondary};
+
+  // Context menu text colors.
+  mixer[kColorOmniboxContextEntrypointText] = {ui::kColorSysOnSurface};
 }
 
 // Not called when using high contrast mode or a custom theme.
@@ -140,6 +143,10 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
 
   // Update starter pack icon color.
   mixer[kColorOmniboxResultsStarterPackIcon] = {ui::kColorSysOnTonalContainer};
+
+  // Context menu hover color.
+  mixer[kColorOmniboxContextEntrypointHoverBackground] = {
+      ui::kColorSysStateHoverOnSubtle};
 }
 
 // Apply fallback Omnibox color mappings for CR2023 clients who are not eligible
@@ -164,6 +171,10 @@ void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
       kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.10f * 255.0f))};
   mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {ui::SetAlpha(
       kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.16f * 255.0f))};
+
+  mixer[kColorOmniboxContextEntrypointText] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxContextEntrypointHoverBackground] = {
+      ui::kColorSysStateHoverOnSubtle};
 }
 
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.

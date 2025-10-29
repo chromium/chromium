@@ -11,21 +11,35 @@
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
-OmniboxContextMenu::OmniboxContextMenu(
-    base::WeakPtr<TopChromeWebUIController::Embedder> embedder)
-    : ui::SimpleMenuModel(this),
-      embedder_(embedder),
-      controller_(base::WrapUnique(new OmniboxContextMenuController())) {}
+OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget)
+    : parent_widget_(parent_widget),
+      controller_(std::make_unique<OmniboxContextMenuController>()) {
+  std::unique_ptr<views::MenuItemView> menu =
+      std::make_unique<views::MenuItemView>(this);
+  menu_ = menu.get();
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      std::move(menu), views::MenuRunner::HAS_MNEMONICS |
+                           views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
+  ui::SimpleMenuModel* menu_model = controller_->menu_model();
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    views::MenuModelAdapter::AppendMenuItemFromModel(
+        menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+  }
+}
 
 OmniboxContextMenu::~OmniboxContextMenu() = default;
 
-void OmniboxContextMenu::ExecuteCommand(int command_id, int event_flags) {
-  controller_->ExecuteCommand(command_id, event_flags);
+void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
+                                   ui::mojom::MenuSourceType source_type) {
+  menu_runner_->RunMenuAt(parent_widget_, nullptr,
+                          gfx::Rect(point, gfx::Size()),
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
-void OmniboxContextMenu::CloseMenu() {
-  if (embedder_) {
-    embedder_->HideContextMenu();
-  }
+void OmniboxContextMenu::ExecuteCommand(int command_id, int event_flags) {
+  controller_->ExecuteCommand(command_id, event_flags);
 }

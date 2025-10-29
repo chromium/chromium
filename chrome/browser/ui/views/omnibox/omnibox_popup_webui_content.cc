@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -22,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
@@ -87,14 +89,8 @@ void OmniboxPopupWebUIContent::ShowCustomContextMenu(
     gfx::Point point,
     std::unique_ptr<ui::MenuModel> menu_model) {
   ConvertPointToScreen(this, &point);
-  context_menu_model_ = std::move(menu_model);
-  context_menu_runner_ = std::make_unique<views::MenuRunner>(
-      context_menu_model_.get(),
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
-  context_menu_runner_->RunMenuAt(
-      GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse,
-      contents_wrapper_->web_contents()->GetContentNativeView());
+  context_menu_ = std::make_unique<OmniboxContextMenu>(GetWidget());
+  context_menu_->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);
 }
 
 void OmniboxPopupWebUIContent::ResizeDueToAutoResize(

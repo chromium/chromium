@@ -60,6 +60,16 @@
   --cr-searchbox-secondary-side-display: block;
 }
 
+#addContextButton {
+  --cr-button-text-color: var(--color-omnibox-context-entrypoint-text);
+  --cr-hover-background-color:
+      var(--color-omnibox-context-entrypoint-hover-background);
+  --cr-icon-button-fill-color: var(--cr-button-text-color);
+  margin-inline-start: 6px;
+  margin-bottom: 10px;
+  border: initial;
+}
+
 /**
  * In debug mode, make the element take up 50% of the viewport width.
  */

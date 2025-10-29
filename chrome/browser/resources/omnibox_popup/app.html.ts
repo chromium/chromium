@@ -15,6 +15,14 @@ export function getHtml(this: OmniboxPopupAppElement) {
     @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
     @dom-change="${this.onResultRepaint_}">
 </cr-searchbox-dropdown>
+${this.showContextEntrypoint_ ? html`
+<cr-button id="addContextButton"
+    @click="${this.onAddContextButtonClick_}"
+    title="${this.i18n('addContextTitle')}">
+  <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
+  <span id="description">${this.i18n('addContext')}</span>
+</cr-button>
+`: ``}
 <!--_html_template_end_-->`;
   // clang-format on
 }

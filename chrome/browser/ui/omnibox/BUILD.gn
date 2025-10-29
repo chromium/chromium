@@ -50,6 +50,7 @@ source_set("omnibox") {
       "//ui/base/unowned_user_data",
       "//ui/gfx",
       "//ui/gfx/geometry",
+      "//ui/menus",
     ]
   }
 }
@@ -149,6 +150,7 @@ source_set("impl") {
       "//ui/base/clipboard",
       "//ui/base/data_transfer_policy",
       "//ui/gfx",
+      "//ui/menus",
       "//url",
     ]
   }

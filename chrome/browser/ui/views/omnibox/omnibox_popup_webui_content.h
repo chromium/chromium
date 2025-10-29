@@ -21,14 +21,7 @@
 class LocationBarView;
 class OmniboxController;
 class OmniboxPopupPresenter;
-
-namespace views {
-class MenuRunner;
-}  // namespace views
-
-namespace ui {
-class MenuModel;
-}  // namespace ui
+class OmniboxContextMenu;
 
 // The content WebView for the popup of a WebUI Omnibox.
 class OmniboxPopupWebUIContent : public views::WebView,
@@ -72,8 +65,7 @@ class OmniboxPopupWebUIContent : public views::WebView,
   bool include_location_bar_cutout_ = true;
 
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents_wrapper_;
-  std::unique_ptr<views::MenuRunner> context_menu_runner_;
-  std::unique_ptr<ui::MenuModel> context_menu_model_;
+  std::unique_ptr<OmniboxContextMenu> context_menu_;
 
   base::WeakPtrFactory<OmniboxPopupWebUIContent> weak_factory_{this};
 };

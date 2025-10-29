@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
@@ -173,9 +172,7 @@ void WebuiOmniboxHandler::ActivateKeyword(
 void WebuiOmniboxHandler::ShowContextMenu(const gfx::Point& point) {
   auto embedder = omnibox_popup_ui_->embedder();
   if (embedder) {
-    std::unique_ptr<OmniboxContextMenu> context_menu =
-        std::make_unique<OmniboxContextMenu>(embedder);
-    embedder->ShowContextMenu(point, std::move(context_menu));
+    embedder->ShowContextMenu(point, nullptr);
   }
 }
 
