@@ -33,7 +33,7 @@
           {
             "builder_id": {
               "bucket": "webrtc",
-              "builder": "WebRTC Chromium Win10 Tester",
+              "builder": "WebRTC Chromium Win Tester",
               "project": "chromium"
             },
             "builder_spec": {
@@ -64,11 +64,11 @@
       "builder_ids": [
         {
           "bucket": "webrtc",
-          "builder": "WebRTC Chromium Win10 Tester",
+          "builder": "WebRTC Chromium Win Tester",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Win10 Tester/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Win Tester/targets"
     }
   },
   "$build/siso": {

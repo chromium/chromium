@@ -316,7 +316,7 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium Win10 Tester",
+    name = "WebRTC Chromium Win Tester",
     description_html = "Testing WebRTC inside Chromium",
     parent = "WebRTC Chromium Win Builder",
     builder_spec = builder_config.builder_spec(
@@ -341,7 +341,7 @@ builder(
             targets.mixin(
                 swarming = targets.swarming(
                     dimensions = {
-                        "os": "Windows-10",
+                        "os": "Windows-11",
                     },
                 ),
             ),

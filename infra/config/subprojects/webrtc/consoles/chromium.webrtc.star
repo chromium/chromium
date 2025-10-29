@@ -45,7 +45,7 @@ luci.console_view(
             short_name = "bld",
         ),
         luci.console_view_entry(
-            builder = "webrtc/WebRTC Chromium Win10 Tester",
+            builder = "webrtc/WebRTC Chromium Win Tester",
             category = "win",
             short_name = "tst",
         ),

@@ -493,7 +493,7 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Win10 Tester",
+    name = "WebRTC Chromium FYI Win Tester",
     description_html = "Testing WebRTC inside Chromium at each WebRTC commit",
     parent = "WebRTC Chromium FYI Win Builder",
     builder_spec = builder_config.builder_spec(
@@ -516,7 +516,7 @@ builder(
         ],
         mixins = [
             "x86-64",
-            "win10",
+            "win11",
         ],
     ),
     os = os.WINDOWS_DEFAULT,

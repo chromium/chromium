@@ -36,7 +36,7 @@
           {
             "builder_id": {
               "bucket": "webrtc",
-              "builder": "WebRTC Chromium Win10 Tester",
+              "builder": "WebRTC Chromium Win Tester",
               "project": "chromium"
             },
             "builder_spec": {
@@ -74,7 +74,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "webrtc",
-          "builder": "WebRTC Chromium Win10 Tester",
+          "builder": "WebRTC Chromium Win Tester",
           "project": "chromium"
         }
       ],
