@@ -193,7 +193,8 @@ class Signer:
         tmp = tempfile.mkdtemp(dir=self._tmpdir)
         subprocess.run([self._lzma_exe, 'x', in_file,
                         '-o%s' % tmp],
-                       check=True)
+                       check=True,
+                       stdout=subprocess.DEVNULL)
         signable_exts = frozenset([
             '.exe', '.dll', '.msi', '.cat', '.ps1', '.psm1', '.psd1', '.ps1xml'
         ])
@@ -212,7 +213,8 @@ class Signer:
                                                    manifest_dict_replacements)
         subprocess.run([self._lzma_exe, 'a', '-mx0', in_file, '*'],
                        check=True,
-                       cwd=tmp)
+                       cwd=tmp,
+                       stdout=subprocess.DEVNULL)
 
     def sign_metainstaller(self,
                            in_file,
