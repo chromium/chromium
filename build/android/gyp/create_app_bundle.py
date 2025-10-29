@@ -243,9 +243,6 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
   data = {
       'optimizations': {
           'resourceOptimizations': {
-              'collapsedResourceNames': {
-                  'deduplicateResourceEntries': True,
-              },
               'sparseEncoding': 'VARIANT_FOR_SDK_32',
           },
           'splitsConfig': {
