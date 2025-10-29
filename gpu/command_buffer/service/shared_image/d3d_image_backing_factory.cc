@@ -601,42 +601,6 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
   return true;
 }
 
-D3DImageBackingFactory::SwapChainBackings
-D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
-                                        const Mailbox& back_buffer_mailbox,
-                                        viz::SharedImageFormat format,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        gpu::SharedImageUsageSet usage) {
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
-  if (!CreateSwapChainInternal(swap_chain, back_buffer_texture,
-                               front_buffer_texture, format, size)) {
-    return {nullptr, nullptr};
-  }
-
-  auto back_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
-      back_buffer_mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, std::move(back_buffer_texture), swap_chain,
-      gl_format_caps_, /*is_back_buffer=*/true);
-  if (!back_buffer_backing)
-    return {nullptr, nullptr};
-  back_buffer_backing->SetCleared();
-
-  auto front_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
-      front_buffer_mailbox, format, size, color_space, surface_origin,
-      alpha_type, usage, std::move(front_buffer_texture), swap_chain,
-      gl_format_caps_, /*is_back_buffer=*/false);
-  if (!front_buffer_backing)
-    return {nullptr, nullptr};
-  front_buffer_backing->SetCleared();
-
-  return {std::move(front_buffer_backing), std::move(back_buffer_backing)};
-}
-
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
     viz::SharedImageFormat format,

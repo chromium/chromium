@@ -94,17 +94,6 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
     std::unique_ptr<SharedImageBacking> back_buffer;
   };
 
-  // Creates IDXGI Swap Chain and exposes front and back buffers as Shared Image
-  // mailboxes.
-  SwapChainBackings CreateSwapChain(const Mailbox& front_buffer_mailbox,
-                                    const Mailbox& back_buffer_mailbox,
-                                    viz::SharedImageFormat format,
-                                    const gfx::Size& size,
-                                    const gfx::ColorSpace& color_space,
-                                    GrSurfaceOrigin surface_origin,
-                                    SkAlphaType alpha_type,
-                                    gpu::SharedImageUsageSet usage);
-
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,

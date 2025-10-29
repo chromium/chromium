@@ -105,18 +105,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool HasImages() const { return !shared_images_.empty(); }
   void DestroyAllSharedImages(bool have_context);
 
-#if BUILDFLAG(IS_WIN)
-  bool CreateSwapChain(const Mailbox& front_buffer_mailbox,
-                       const Mailbox& back_buffer_mailbox,
-                       viz::SharedImageFormat format,
-                       const gfx::Size& size,
-                       const gfx::ColorSpace& color_space,
-                       GrSurfaceOrigin surface_origin,
-                       SkAlphaType alpha_type,
-                       gpu::SharedImageUsageSet usage);
-  bool PresentSwapChain(const Mailbox& mailbox);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,

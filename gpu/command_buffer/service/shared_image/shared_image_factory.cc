@@ -635,40 +635,6 @@ bool SharedImageFactory::IsD3DSharedImageSupported() const {
   return D3DImageBackingFactory::IsD3DSharedImageSupported(
       context_state_->GetD3D11Device().Get(), gpu_preferences_);
 }
-
-bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
-                                         const Mailbox& back_buffer_mailbox,
-                                         viz::SharedImageFormat format,
-                                         const gfx::Size& size,
-                                         const gfx::ColorSpace& color_space,
-                                         GrSurfaceOrigin surface_origin,
-                                         SkAlphaType alpha_type,
-                                         gpu::SharedImageUsageSet usage) {
-  if (!D3DImageBackingFactory::IsSwapChainSupported(
-          gpu_preferences_, context_state_->dawn_context_provider())) {
-    return false;
-  }
-
-  auto backings = d3d_backing_factory_->CreateSwapChain(
-      front_buffer_mailbox, back_buffer_mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage);
-  return RegisterBacking(std::move(backings.front_buffer)) &&
-         RegisterBacking(std::move(backings.back_buffer));
-}
-
-bool SharedImageFactory::PresentSwapChain(const Mailbox& mailbox) {
-  if (!D3DImageBackingFactory::IsSwapChainSupported(
-          gpu_preferences_, context_state_->dawn_context_provider())) {
-    return false;
-  }
-  auto* shared_image = GetFactoryRef(mailbox);
-  if (!shared_image) {
-    DLOG(ERROR) << "PresentSwapChain: Could not find shared image mailbox";
-    return false;
-  }
-  shared_image->PresentSwapChain();
-  return true;
-}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_FUCHSIA)
