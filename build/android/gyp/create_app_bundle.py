@@ -242,9 +242,6 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
 
   data = {
       'optimizations': {
-          'resourceOptimizations': {
-              'sparseEncoding': 'VARIANT_FOR_SDK_32',
-          },
           'splitsConfig': {
               'splitDimension': split_dimensions,
           },
@@ -254,8 +251,7 @@ def _GenerateBundleConfigJson(uncompressed_assets, compress_dex,
           },
           'uncompressDexFiles': {
               'enabled': True,  # Applies only for P+.
-          },
-          'inject_min_sdk': True,  # Required for sparseEncoding
+          }
       },
       'compression': {
           'uncompressedGlob': sorted(uncompressed_globs),
