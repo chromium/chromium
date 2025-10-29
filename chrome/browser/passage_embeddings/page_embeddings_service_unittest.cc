@@ -397,6 +397,67 @@ TEST_F(PageEmbeddingsServiceTest, CancelledEmbeddingsAreIgnored) {
   EXPECT_THAT(embeddings[0].embedding.GetData(), ElementsAre(1.0f));
 }
 
+TEST_F(PageEmbeddingsServiceTest, DoesNotCrashOnCancel) {
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+
+  Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback1;
+  Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback2;
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings).Times(2);
+
+  EXPECT_THAT(page_embeddings_service().GetEmbeddings(web_contents.get()),
+              IsEmpty());
+
+  EXPECT_CALL(embedder_mock(), TryCancel(1));
+
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault([&](PassagePriority priority,
+                         std::vector<std::string> passages,
+                         Embedder::ComputePassagesEmbeddingsCallback callback) {
+        compute_passages_embeddings_callback1 = std::move(callback);
+        return 1;
+      });
+
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  ON_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillByDefault([&](PassagePriority priority,
+                         std::vector<std::string> passages,
+                         Embedder::ComputePassagesEmbeddingsCallback callback) {
+        compute_passages_embeddings_callback2 = std::move(callback);
+        return 2;
+      });
+
+  // Providing page content a second time should try to cancel the first
+  // embedding computation.
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(),
+      optimization_guide::proto::AnnotatedPageContent());
+
+  // Mimic real cancelling.
+  std::move(compute_passages_embeddings_callback1)
+      .Run({"passage text 1"}, {}, 1, ComputeEmbeddingsStatus::kCanceled);
+
+  EXPECT_TRUE(
+      page_embeddings_service().GetEmbeddings(web_contents.get()).empty());
+
+  std::move(compute_passages_embeddings_callback2)
+      .Run({"passage text 2"}, {Embedding({1.0f})}, 2,
+           ComputeEmbeddingsStatus::kSuccess);
+
+  std::vector<PassageEmbedding> embeddings =
+      page_embeddings_service().GetEmbeddings(web_contents.get());
+  ASSERT_EQ(1u, embeddings.size());
+  EXPECT_EQ("passage text 2", embeddings[0].passage.first);
+  EXPECT_EQ(PassageType::kTitle, embeddings[0].passage.second);
+  EXPECT_THAT(embeddings[0].embedding.GetData(), ElementsAre(1.0f));
+}
+
 // Validates that the embeddings are computed with the priority of the highest
 // priority observer.
 TEST_F(PageEmbeddingsServiceTest, PrioritySetBasedOnHighestPriorityObserver) {

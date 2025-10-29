@@ -260,17 +260,6 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
     return;
   }
 
-  CHECK_EQ(passage_types.size(), embeddings.size());
-  CHECK_EQ(passage_strings.size(), embeddings.size());
-
-  std::vector<PassageEmbedding> passage_embeddings;
-  for (size_t i = 0; i < passage_types.size(); ++i) {
-    passage_embeddings.emplace_back(
-        std::make_pair(std::move(passage_strings[i]),
-                       std::move(passage_types[i])),
-        std::move(embeddings[i]));
-  }
-
   const auto loc = web_contents_state_.find(web_contents.get());
   DCHECK(loc != web_contents_state_.end());
 
@@ -283,6 +272,17 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
     loc->second.passage_embeddings.clear();
     return;
+  }
+
+  CHECK_EQ(passage_types.size(), embeddings.size());
+  CHECK_EQ(passage_strings.size(), embeddings.size());
+
+  std::vector<PassageEmbedding> passage_embeddings;
+  for (size_t i = 0; i < passage_types.size(); ++i) {
+    passage_embeddings.emplace_back(
+        std::make_pair(std::move(passage_strings[i]),
+                       std::move(passage_types[i])),
+        std::move(embeddings[i]));
   }
   loc->second.passage_embeddings = std::move(passage_embeddings);
 
