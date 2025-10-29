@@ -4,8 +4,11 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.content_public.browser.HostZoomMap.DESKTOP_PLATFORM_SCALE_FACTOR;
 import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
+import static org.chromium.content_public.browser.HostZoomMap.getPlatformScale;
 import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
+import static org.chromium.content_public.browser.HostZoomMap.setPlatformScale;
 import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
 import org.jni_zero.CalledByNative;
@@ -15,10 +18,13 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.content_public.browser.WebContents;
@@ -106,7 +112,13 @@ public class HostZoomMapImpl {
         if (!shouldAdjustForOSLevel()) {
             systemFontScale = 1;
         }
-        return adjustZoomLevel(zoomLevel, systemFontScale);
+        // The platform adjustment only applies to Desktop devices currently.
+        // TODO(crbug.com/450281745): Add treatment for external monitors on per tab basis.
+        if (DeviceInfo.isDesktop()) {
+            // TODO(crbug.com/450281745): Add tunable FeatureParam to test value.
+            setPlatformScale(DESKTOP_PLATFORM_SCALE_FACTOR);
+        }
+        return adjustZoomLevel(zoomLevel, systemFontScale, getPlatformScale());
     }
 
     @CalledByNative
@@ -137,16 +149,24 @@ public class HostZoomMapImpl {
      *
      * @param zoomLevel The zoom level to adjust.
      * @param systemFontScale User selected font scale value.
+     * @param platformAdjustment Platform/hardware-specific additional scaling factor.
      * @return double The adjusted zoom level.
      */
-    public static double adjustZoomLevel(double zoomLevel, float systemFontScale) {
+    public static double adjustZoomLevel(
+            double zoomLevel, float systemFontScale, float platformAdjustment) {
         // If we are not supposed to adjust for OS-level font scale, set the effective scale to 1.
         float effectiveSystemFontScale = systemFontScale;
         if (!shouldAdjustForOSLevel()) {
             effectiveSystemFontScale = 1.0f;
         }
 
-        float scaleAdjustment = effectiveSystemFontScale;
+        // When the Desktop zoom scaling flag is not enabled, set the effective adjustment to 1.
+        float effectivePlatformAdjustment = platformAdjustment;
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DESKTOP_ZOOM_SCALING)) {
+            effectivePlatformAdjustment = 1.0f;
+        }
+
+        float scaleAdjustment = effectiveSystemFontScale * effectivePlatformAdjustment;
 
         // No calculation to do if the |scaleAdjustment| is 1.0 (default).
         if (MathUtils.areFloatsEqual(scaleAdjustment, 1.0f)) {

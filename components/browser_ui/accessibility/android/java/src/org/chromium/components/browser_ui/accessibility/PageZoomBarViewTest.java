@@ -50,6 +50,8 @@ import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.ContentFeatureMapJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -60,7 +62,11 @@ import java.util.List;
 /** Unit tests for the PageZoom view and view binder. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-@DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2, ContentFeatureList.SMART_ZOOM})
+@DisableFeatures({
+    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
+    ContentFeatureList.SMART_ZOOM,
+    ContentFeatureList.ANDROID_DESKTOP_ZOOM_SCALING
+})
 @Batch(Batch.PER_CLASS)
 public class PageZoomBarViewTest {
     @ParameterAnnotations.ClassParameter
@@ -79,6 +85,7 @@ public class PageZoomBarViewTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapJniMock;
+    @Mock private ContentFeatureMap.Natives mContentFeatureListMapMock;
     @Mock private PageZoomMetrics.Natives mPageZoomMetricsJniMock;
     @Mock private BrowserContextHandle mBrowserContextHandle;
     @Mock private MockWebContents mWebContents;
@@ -115,6 +122,7 @@ public class PageZoomBarViewTest {
     @Before
     public void setUp() throws Exception {
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapJniMock);
+        ContentFeatureMapJni.setInstanceForTesting(mContentFeatureListMapMock);
         PageZoomMetricsJni.setInstanceForTesting(mPageZoomMetricsJniMock);
         when(mHostZoomMapJniMock.getDefaultZoomLevel(any())).thenReturn(0.0);
         when(mHostZoomMapJniMock.getZoomLevel(any())).thenReturn(0.0);

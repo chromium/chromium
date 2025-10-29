@@ -19,15 +19,20 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.ContentFeatureMapJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PageZoomMenuItemMediator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ContentFeatureList.ANDROID_DESKTOP_ZOOM_SCALING})
 public class PageZoomMenuItemMediatorUnitTest {
     // Error messages
     private static final String ZOOM_TEXT_FAILURE =
@@ -46,6 +51,7 @@ public class PageZoomMenuItemMediatorUnitTest {
             "Failure to disable increase button when zoom reached maximum.";
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
+    @Mock private ContentFeatureMap.Natives mContentFeatureListMapMock;
     @Mock private PageZoomManagerDelegate mPageZoomManagerDelegateMock;
     @Mock private WebContents mWebContentsMock;
     @Mock private BrowserContextHandle mBrowserContextHandleMock;
@@ -59,6 +65,7 @@ public class PageZoomMenuItemMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
 
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
+        ContentFeatureMapJni.setInstanceForTesting(mContentFeatureListMapMock);
 
         when(mPageZoomManagerDelegateMock.getWebContents()).thenReturn(mWebContentsMock);
         when(mPageZoomManagerDelegateMock.getBrowserContextHandle())
