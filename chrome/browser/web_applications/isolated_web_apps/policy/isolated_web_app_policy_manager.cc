@@ -322,7 +322,7 @@ void IsolatedWebAppPolicyManager::CleanupAndProcessPolicyOnSessionStart() {
         FROM_HERE,
         base::BindOnce(&IsolatedWebAppPolicyManager::CleanupOrphanedBundles,
                        weak_ptr_factory_.GetWeakPtr()),
-        base::Minutes(1));
+        base::Minutes(10));
   }
 }
 
