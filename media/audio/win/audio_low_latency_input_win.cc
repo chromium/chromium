@@ -1819,11 +1819,6 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
                    __func__, ErrorToString(hresult).c_str());
   }
   if (hresult == S_FALSE) {
-    // Enabling this flag allows us to query the Audio Engine for its MixFormat,
-    // the MixFormat should in theory always be supported, and we should not hit
-    // this pathway.
-    CHECK(!base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat),
-          base::NotFatalUntil::M148);
     SendLogMessage(
         "%s => (WARNING: Format is not supported but a closest match exists)",
         __func__);
@@ -1840,7 +1835,14 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
     // Otherwise, we keep the bits sample as is since we still request fixed
     // point PCM. In that case the closest match is typically in float format
     // (KSDATAFORMAT_SUBTYPE_IEEE_FLOAT).
-    if (CoreAudioUtil::WaveFormatWrapper(closest_match.get()).IsPcm()) {
+    if (CoreAudioUtil::WaveFormatWrapper(closest_match.get()).IsPcm() &&
+        input_format->wBitsPerSample != closest_match->wBitsPerSample) {
+      // Enabling kWasapiInputUseDeviceSampleFormat allows us to query the Audio
+      // Engine for its MixFormat. The MixFormat should in theory always be
+      // supported and have the same bit depth, so we should not hit this
+      // pathway.
+      CHECK(!base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat),
+            base::NotFatalUntil::M148);
       input_format->wBitsPerSample = closest_match->wBitsPerSample;
     }
 
