@@ -623,7 +623,11 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
     }
   }
 
-  if (system_identity_manager->HandleMDMNotification(
+  // Stop displaying the MDM error dialog on the NTP when
+  // kHandleMdmErrorsForDasherAccounts is enabled.
+  if (!base::FeatureList::IsEnabled(
+          switches::kHandleMdmErrorsForDasherAccounts) &&
+      system_identity_manager->HandleMDMNotification(
           identity, ActiveIdentities(), error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
