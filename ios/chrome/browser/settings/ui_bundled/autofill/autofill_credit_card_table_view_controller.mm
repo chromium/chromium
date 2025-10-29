@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -283,6 +282,8 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   cardManagedItem.statusText = l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   cardManagedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  cardManagedItem.target = self;
+  cardManagedItem.selector = @selector(didTapManagedUIInfoButton:);
   cardManagedItem.accessibilityIdentifier = kAutofillCreditCardManagedViewId;
   return cardManagedItem;
 }
@@ -507,38 +508,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       buttonView.bounds;
   bubbleViewController.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  switch (static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath])) {
-    case ItemTypeAutofillCardSwitchSubtitle:
-    case ItemTypeCard:
-    case ItemTypeHeader:
-    case ItemTypeMandatoryReauthSwitchSubtitle:
-    case ItemTypeCVCStorageButton:
-    case ItemTypeCVCStorageButtonSubtitle:
-    case ItemTypeMandatoryReauthSwitch:
-    case ItemTypeAutofillCardSwitch:
-      break;
-    case ItemTypeAutofillCardManaged: {
-      TableViewInfoButtonCell* managedCell =
-          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-  }
-
-  return cell;
 }
 
 #pragma mark - Switch Callbacks

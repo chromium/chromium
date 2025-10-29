@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -148,6 +147,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     translateManagedItem.accessibilityHint = l10n_util::GetNSString(
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+    translateManagedItem.target = self;
+    translateManagedItem.selector = @selector(didTapManagedUIInfoButton:);
 
     [model addItem:translateManagedItem
         toSectionWithIdentifier:SectionIdentifierTranslate];
@@ -369,32 +370,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.commandHandler moveLanguage:languageItem.languageCode
                            downward:downward
                          withOffset:offset];
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  ItemType itemType =
-      (ItemType)[self.tableViewModel itemTypeForIndexPath:indexPath];
-  switch (itemType) {
-    case ItemTypeTranslateManaged: {
-      TableViewInfoButtonCell* managedCell =
-          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-    case ItemTypeTranslateSwitch:
-    case ItemTypeHeader:
-    case ItemTypeLanguage:
-    case ItemTypeAddLanguage:
-      // Not handled.
-      break;
-  }
-  return cell;
 }
 
 #pragma mark - AddLanguageTableViewControllerDelegate

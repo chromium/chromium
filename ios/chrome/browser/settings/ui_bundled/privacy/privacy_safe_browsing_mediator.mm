@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -159,7 +160,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY_PROXY;
     }
 #endif
-    TableViewInfoButtonItem* safeBrowsingEnhancedProtectionItem = [self
+    TableViewItem* safeBrowsingEnhancedProtectionItem = [self
              infoButtonItemType:ItemTypeSafeBrowsingEnhancedProtection
                         titleId:
                             IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE
@@ -167,37 +168,46 @@ typedef NS_ENUM(NSInteger, ItemType) {
         accessibilityIdentifier:kSettingsSafeBrowsingEnhancedProtectionCellId];
     [items addObject:safeBrowsingEnhancedProtectionItem];
 
-    TableViewInfoButtonItem* safeBrowsingStandardProtectionItem = [self
-             infoButtonItemType:ItemTypeSafeBrowsingStandardProtection
-                        titleId:
-                            IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
-                     detailText:standardProtectionSummary
-        accessibilityIdentifier:kSettingsSafeBrowsingStandardProtectionCellId];
-    safeBrowsingStandardProtectionItem.infoButtonIsHidden =
-        base::FeatureList::IsEnabled(
+    if (base::FeatureList::IsEnabled(
             safe_browsing::kMovePasswordLeakDetectionToggleIos) &&
         base::FeatureList::IsEnabled(
-            safe_browsing::kExtendedReportingRemovePrefDependencyIos);
-    [items addObject:safeBrowsingStandardProtectionItem];
-    NSInteger noProtectionSummary;
-    noProtectionSummary =
-        IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY;
+            safe_browsing::kExtendedReportingRemovePrefDependencyIos)) {
+      TableViewItem* safeBrowsingStandardProtectionItem = [self
+               detailIconItemType:ItemTypeSafeBrowsingStandardProtection
+                          titleId:
+                              IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
+                       detailText:standardProtectionSummary
+          accessibilityIdentifier:
+              kSettingsSafeBrowsingStandardProtectionCellId];
+      [items addObject:safeBrowsingStandardProtectionItem];
+    } else {
+      TableViewItem* safeBrowsingStandardProtectionItem = [self
+               infoButtonItemType:ItemTypeSafeBrowsingStandardProtection
+                          titleId:
+                              IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE
+                       detailText:standardProtectionSummary
+          accessibilityIdentifier:
+              kSettingsSafeBrowsingStandardProtectionCellId];
+      [items addObject:safeBrowsingStandardProtectionItem];
+    }
+
     if (self.enterpriseEnabled) {
-      TableViewInfoButtonItem* safeBrowsingNoProtectionItem = [self
+      TableViewItem* safeBrowsingNoProtectionItem = [self
                infoButtonItemType:ItemTypeSafeBrowsingNoProtection
                           titleId:
                               IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
-                       detailText:noProtectionSummary
+                       detailText:
+                           IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY
           accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
       [items addObject:safeBrowsingNoProtectionItem];
     } else {
-      TableViewInfoButtonItem* safeBrowsingNoProtectionItem = [self
-               infoButtonItemType:ItemTypeSafeBrowsingNoProtection
+      TableViewItem* safeBrowsingNoProtectionItem = [self
+               detailIconItemType:ItemTypeSafeBrowsingNoProtection
                           titleId:
                               IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_TITLE
-                       detailText:noProtectionSummary
+                       detailText:
+                           IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY
           accessibilityIdentifier:kSettingsSafeBrowsingNoProtectionCellId];
-      safeBrowsingNoProtectionItem.infoButtonIsHidden = YES;
       [items addObject:safeBrowsingNoProtectionItem];
     }
     _safeBrowsingItems = items;
@@ -221,11 +231,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Private
 
 // Creates item with an image checkmark and an info button.
-- (TableViewInfoButtonItem*)infoButtonItemType:(NSInteger)type
-                                       titleId:(NSInteger)titleId
-                                    detailText:(NSInteger)detailText
-                       accessibilityIdentifier:
-                           (NSString*)accessibilityIdentifier {
+- (TableViewItem*)infoButtonItemType:(NSInteger)type
+                             titleId:(NSInteger)titleId
+                          detailText:(NSInteger)detailText
+             accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   TableViewInfoButtonItem* infoButtonItem =
       [[TableViewInfoButtonItem alloc] initWithType:type];
   infoButtonItem.text = l10n_util::GetNSString(titleId);
@@ -249,13 +258,40 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            scale:UIImageSymbolScaleMedium];
   infoButtonItem.iconImage =
       DefaultSymbolWithConfiguration(kCheckmarkSymbol, configuration);
-  infoButtonItem.iconTintColor = [self shouldItemTypeHaveCheckmark:type]
-                                     ? [UIColor colorNamed:kBlueColor]
-                                     : [UIColor clearColor];
+  infoButtonItem.iconTintColor = [self iconTintColorForItemType:type];
   infoButtonItem.accessibilityIdentifier = accessibilityIdentifier;
   infoButtonItem.accessibilityDelegate = self;
+  infoButtonItem.target = self;
+  infoButtonItem.selector = @selector(didTapInfoButton:);
+  infoButtonItem.tag = type;
 
   return infoButtonItem;
+}
+
+// Creates item with an image checkmark.
+- (TableViewItem*)detailIconItemType:(NSInteger)type
+                             titleId:(NSInteger)titleId
+                          detailText:(NSInteger)detailText
+             accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  TableViewDetailIconItem* detailIconItem =
+      [[TableViewDetailIconItem alloc] initWithType:type];
+  detailIconItem.text = l10n_util::GetNSString(titleId);
+  detailIconItem.textNumberOfLines = 0;
+  detailIconItem.detailText = l10n_util::GetNSString(detailText);
+  detailIconItem.detailTextNumberOfLines = 0;
+  detailIconItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolImagePointSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+  detailIconItem.iconImage =
+      DefaultSymbolWithConfiguration(kCheckmarkSymbol, configuration);
+  detailIconItem.iconTintColor = [self iconTintColorForItemType:type];
+  detailIconItem.accessibilityIdentifier = accessibilityIdentifier;
+  detailIconItem.accessibilityTraits = UIAccessibilityTraitButton;
+
+  return detailIconItem;
 }
 
 // Returns whether an ItemType should have a checkmark based on its
@@ -279,16 +315,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+// Returns the color to use to tint the checkmark associated with `itemType`.
+- (UIColor*)iconTintColorForItemType:(NSInteger)itemType {
+  return [self shouldItemTypeHaveCheckmark:itemType]
+             ? [UIColor colorNamed:kBlueColor]
+             : [UIColor clearColor];
+}
+
 // Updates the privacy safe browsing section according to the user consent. If
 // `notifyConsumer` is YES, the consumer is notified about model changes.
 - (void)updatePrivacySafeBrowsingSectionAndNotifyConsumer:(BOOL)notifyConsumer {
   for (TableViewItem* item in self.safeBrowsingItems) {
-    TableViewInfoButtonItem* infoButtonItem =
-        base::apple::ObjCCast<TableViewInfoButtonItem>(item);
     ItemType type = static_cast<ItemType>(item.type);
-    infoButtonItem.iconTintColor = [self shouldItemTypeHaveCheckmark:type]
-                                       ? [UIColor colorNamed:kBlueColor]
-                                       : [UIColor clearColor];
+    if ([item isKindOfClass:TableViewInfoButtonItem.class]) {
+      TableViewInfoButtonItem* infoButtonItem =
+          base::apple::ObjCCast<TableViewInfoButtonItem>(item);
+      infoButtonItem.iconTintColor = [self iconTintColorForItemType:type];
+    } else if ([item isKindOfClass:TableViewInfoButtonItem.class]) {
+      TableViewDetailIconItem* infoDetailItem =
+          base::apple::ObjCCast<TableViewDetailIconItem>(item);
+      infoDetailItem.iconTintColor = [self iconTintColorForItemType:type];
+    }
   }
 
   if (notifyConsumer) {
@@ -298,10 +345,41 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Check if selected row should display enterprise popover.
-- (BOOL)shouldEnterprisePopOverDisplay:(TableViewItem*)item {
-  ItemType type = static_cast<ItemType>(item.type);
-  return self.enterpriseEnabled && (![self shouldItemTypeHaveCheckmark:type] ||
-                                    type == ItemTypeSafeBrowsingNoProtection);
+- (BOOL)shouldEnterprisePopOverDisplay:(ItemType)itemType {
+  return self.enterpriseEnabled &&
+         (![self shouldItemTypeHaveCheckmark:itemType] ||
+          itemType == ItemTypeSafeBrowsingNoProtection);
+}
+
+// Called when the user tap on an info button.
+- (void)didTapInfoButton:(UIButton*)button {
+  ItemType itemType = static_cast<ItemType>(button.tag);
+
+  if ([self shouldEnterprisePopOverDisplay:itemType]) {
+    [self.consumer showEnterprisePopUp:button];
+    return;
+  }
+
+  [self showAdditionalInfoForItemType:itemType];
+}
+
+// Displays the screens with additional infos for `itemType`.
+- (void)showAdditionalInfoForItemType:(ItemType)itemType {
+  // Info button tap logic when not in enterprise mode.
+  switch (itemType) {
+    case ItemTypeSafeBrowsingEnhancedProtection:
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked"));
+      [self.handler showSafeBrowsingEnhancedProtection];
+      break;
+    case ItemTypeSafeBrowsingStandardProtection:
+      base::RecordAction(base::UserMetricsAction(
+          "SafeBrowsing.Settings.StandardProtectionExpandArrowClicked"));
+      [self.handler showSafeBrowsingStandardProtection];
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 #pragma mark - SafeBrowsingViewControllerDelegate
@@ -344,30 +422,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (void)didTapInfoButton:(UIButton*)button onItem:(TableViewItem*)item {
-  if ([self shouldEnterprisePopOverDisplay:item]) {
-    [self.consumer showEnterprisePopUp:button];
-    return;
-  }
-
-  // Info button tap logic when not in enterprise mode.
-  ItemType type = static_cast<ItemType>(item.type);
-  switch (type) {
-    case ItemTypeSafeBrowsingEnhancedProtection:
-      base::RecordAction(base::UserMetricsAction(
-          "SafeBrowsing.Settings.EnhancedProtectionExpandArrowClicked"));
-      [self.handler showSafeBrowsingEnhancedProtection];
-      break;
-    case ItemTypeSafeBrowsingStandardProtection:
-      base::RecordAction(base::UserMetricsAction(
-          "SafeBrowsing.Settings.StandardProtectionExpandArrowClicked"));
-      [self.handler showSafeBrowsingStandardProtection];
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
 - (void)selectItem {
   for (TableViewItem* item in self.safeBrowsingItems) {
     ItemType type = static_cast<ItemType>(item.type);
@@ -381,7 +435,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - TableViewInfoButtonItemDelegate
 
 - (void)handleTappedInfoButtonForItem:(TableViewItem*)item {
-  [self didTapInfoButton:nil onItem:item];
+  ItemType itemType = static_cast<ItemType>(item.type);
+  CHECK(![self shouldEnterprisePopOverDisplay:itemType]);
+  [self showAdditionalInfoForItemType:itemType];
 }
 
 #pragma mark - BooleanObserver

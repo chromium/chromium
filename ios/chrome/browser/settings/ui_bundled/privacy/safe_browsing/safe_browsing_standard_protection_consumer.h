@@ -26,5 +26,8 @@
 // Initializes section header related to the metric icon.
 - (void)setMetricIconHeader:(SafeBrowsingHeaderItem*)metricIconHeader;
 
+// Shows the managed UI info bubble for `button`.
+- (void)showManagedUIInfoForButton:(UIButton*)button;
+
 @end
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_STANDARD_PROTECTION_CONSUMER_H_

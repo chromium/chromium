@@ -841,8 +841,11 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     TableViewInfoButtonItem* button =
         [[TableViewInfoButtonItem alloc] initWithType:itemType];
     button.text = GetNSString(textStringID);
+    button.textColor = [UIColor colorNamed:kTextSecondaryColor];
     button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
     button.accessibilityIdentifier = accessibilityIdentifier;
+    button.target = self;
+    button.selector = @selector(itemButtonTapped:);
     return button;
   }
 }
@@ -852,6 +855,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [self updatePrimaryAccountDetails];
 }
 
+// Called when the user taps on the button of an info cell.
+- (void)itemButtonTapped:(UIButton*)button {
+  [self.consumer showManagedUIInfoForButton:button];
+}
+
+// Called when the user toggle the switch of a switch cell.
 - (void)itemSwitchToggled:(UISwitch*)sender {
   TableViewItem* item;
   for (TableViewItem* dataItem in self.syncSwitchItems) {

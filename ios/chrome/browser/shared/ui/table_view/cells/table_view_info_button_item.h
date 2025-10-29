@@ -44,8 +44,10 @@
 // The accessibility hint text string.
 @property(nonatomic, copy) NSString* accessibilityHint;
 
-// Boolean for if the info button is hidden.
-@property(nonatomic, assign) BOOL infoButtonIsHidden;
+// Configuration for the button.
+@property(nonatomic, weak) id target;
+@property(nonatomic, assign) SEL selector;
+@property(nonatomic, assign) NSInteger tag;
 
 // Accessibility delegate for custom accessibility actions.
 @property(nonatomic, weak) id<TableViewInfoButtonItemDelegate>

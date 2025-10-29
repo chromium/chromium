@@ -305,6 +305,8 @@ const CGFloat kSymbolSize = 20;
   managedItem.detailText = l10n_util::GetNSString(detailStringID);
   managedItem.statusText = status ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedItem.target = self;
+  managedItem.selector = @selector(itemInfoButtonTapped:);
   if (!status) {
     managedItem.iconTintColor = [UIColor colorNamed:kGrey300Color];
 
@@ -366,14 +368,21 @@ const CGFloat kSymbolSize = 20;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
 }
 
+// Called when toggling the password leak switch.
 - (void)passwordLeakSwitchToggled:(UISwitch*)sender {
   self.passwordLeakCheckItem.on = sender.on;
   self.passwordLeakCheckPreference.value = sender.on;
 }
 
+// Called when toggling the safe browsing switch.
 - (void)safeBrowsingExtendedSwitchToggled:(UISwitch*)sender {
   self.safeBrowsingExtendedItem.on = sender.on;
   self.safeBrowsingExtendedReportingPreference.value = sender.on;
+}
+
+// Called when tapping the info button.
+- (void)itemInfoButtonTapped:(UIButton*)button {
+  [self.consumer showManagedUIInfoForButton:button];
 }
 
 #pragma mark - BooleanObserver

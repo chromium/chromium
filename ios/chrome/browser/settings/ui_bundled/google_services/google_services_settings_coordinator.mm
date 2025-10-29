@@ -77,9 +77,6 @@ using signin_metrics::PromoAction;
       [[GoogleServicesSettingsViewController alloc]
           initWithStyle:ChromeTableViewStyle()];
   viewController.presentationDelegate = self;
-  viewController.forcedSigninEnabled =
-      self.authService->GetServiceStatus() ==
-      AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
       initWithIdentityManager:IdentityManagerFactory::GetForProfile(

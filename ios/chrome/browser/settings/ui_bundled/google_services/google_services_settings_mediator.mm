@@ -432,6 +432,19 @@ bool GetStatusForSigninPolicy() {
     managedItem.iconTintColor = [UIColor colorNamed:kGrey300Color];
   }
 
+  if (itemType == AllowChromeSigninItemType &&
+      self.authService->GetServiceStatus() ==
+          AuthenticationService::ServiceStatus::SigninForcedByPolicy) {
+    // Use a specific target when tapping the info button of the allow
+    // sign-in item while forced sign-in is enabled. This is because the info
+    // bubble has different textual content.
+    managedItem.target = self;
+    managedItem.selector = @selector(didTapForcedSigninUIInfoButton:);
+  } else {
+    managedItem.target = self;
+    managedItem.selector = @selector(didTapManagedUIInfoButton:);
+  }
+
   // This item is not controllable; set to lighter colors.
   managedItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
   managedItem.detailTextColor = [UIColor colorNamed:kTextTertiaryColor];
@@ -440,16 +453,22 @@ bool GetStatusForSigninPolicy() {
   return managedItem;
 }
 
+- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
+  [self.consumer showManagedInfoPopoverOnButton:buttonView
+                          isForcedSigninEnabled:NO];
+}
+
+- (void)didTapForcedSigninUIInfoButton:(UIButton*)buttonView {
+  [self.consumer showManagedInfoPopoverOnButton:buttonView
+                          isForcedSigninEnabled:YES];
+}
+
 #pragma mark - GoogleServicesSettingsViewControllerModelDelegate
 
 - (void)googleServicesSettingsViewControllerLoadModel:
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.consumer, controller);
   [self loadNonPersonalizedSection];
-}
-
-- (BOOL)isAllowChromeSigninItem:(int)type {
-  return type == AllowChromeSigninItemType;
 }
 
 - (BOOL)isViewControllerSubjectToParentalControls {

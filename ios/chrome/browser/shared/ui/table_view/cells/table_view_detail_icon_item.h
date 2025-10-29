@@ -45,9 +45,11 @@ enum class BadgeType {
 // Default in no badge (BadgeType::kNone).
 @property(nonatomic, assign) BadgeType badgeType;
 
-// Maximum number of lines for the `detailText`. It sets the numberOfLines of
-// the detailText UILabel. Value is ignored if the layout constraint axis is set
-// to horizontal. 1 by default.
+// Maximum number of lines for the `text`. Default is 1.
+@property(nonatomic, assign) NSInteger textNumberOfLines;
+
+// Maximum number of lines for the `detailText`. Value is ignored if the layout
+// constraint axis is set to horizontal. 1 by default.
 @property(nonatomic, assign) NSInteger detailTextNumberOfLines;
 
 // Line break mode for the labels. Defaults to NSLineBreakByTruncatingTail.

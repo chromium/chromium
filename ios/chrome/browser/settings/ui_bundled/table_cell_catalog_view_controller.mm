@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -477,6 +476,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeTableViewInfoButton];
   tableViewInfoButtonItem.text = @"Info button item";
   tableViewInfoButtonItem.statusText = @"Status";
+  tableViewInfoButtonItem.target = self;
+  tableViewInfoButtonItem.selector = @selector(didTapManagedUIInfoButton:);
   [model addItem:tableViewInfoButtonItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -486,6 +487,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewInfoButtonItemWithDetailText.text = @"Info button item";
   tableViewInfoButtonItemWithDetailText.detailText = @"Detail text";
   tableViewInfoButtonItemWithDetailText.statusText = @"Status";
+  tableViewInfoButtonItemWithDetailText.target = self;
+  tableViewInfoButtonItemWithDetailText.selector =
+      @selector(didTapManagedUIInfoButton:);
   [model addItem:tableViewInfoButtonItemWithDetailText
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -496,6 +500,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewInfoButtonItemWithLeadingImage.statusText = @"Status";
   tableViewInfoButtonItemWithLeadingImage.iconImage =
       DefaultSettingsRootSymbol(kDiscoverSymbol);
+  tableViewInfoButtonItemWithLeadingImage.target = self;
+  tableViewInfoButtonItemWithLeadingImage.selector =
+      @selector(didTapManagedUIInfoButton:);
   [model addItem:tableViewInfoButtonItemWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -792,15 +799,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                      cellForRowAtIndexPath:indexPath];
   ItemType itemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
-  if (itemType == ItemTypeTableViewInfoButton ||
-      itemType == ItemTypeTableViewInfoButtonWithDetailText ||
-      itemType == ItemTypeTableViewInfoButtonWithImage) {
-    TableViewInfoButtonCell* managedCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [managedCell.trailingButton addTarget:self
-                                   action:@selector(didTapManagedUIInfoButton:)
-                         forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeCheck6) {
+  if (itemType == ItemTypeCheck6) {
     SettingsCheckCell* checkCell =
         base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
     [checkCell.infoButton addTarget:self

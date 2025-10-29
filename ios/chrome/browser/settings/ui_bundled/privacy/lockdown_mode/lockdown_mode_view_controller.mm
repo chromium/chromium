@@ -9,7 +9,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/common/string_util.h"
@@ -175,23 +174,6 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   [self presentViewController:bubbleViewController animated:YES completion:nil];
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
-    TableViewInfoButtonCell* infoCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [infoCell.trailingButton addTarget:self
-                                action:@selector(didTapUIInfoButton:)
-                      forControlEvents:UIControlEventTouchUpInside];
-  }
-
-  return cell;
-}
-
 #pragma mark - UIViewController
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -226,6 +208,8 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
       lockdownModeItem.detailText =
           l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_SWITCH_BUTTON_SUMMARY);
       lockdownModeItem.accessibilityIdentifier = kLockdownModeCellId;
+      lockdownModeItem.target = self;
+      lockdownModeItem.selector = @selector(didTapUIInfoButton:);
       _lockdownModeItem = lockdownModeItem;
     } else {
       TableViewSwitchItem* lockdownModeItem =

@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -310,30 +309,6 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   _modelLoadStatus = ModelLoadComplete;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-    case ItemTypeSavePasswordsSwitch:
-    case ItemTypeAutomaticPasskeyUpgradesSwitch:
-      break;
-    case ItemTypeManagedSavePasswords: {
-      TableViewInfoButtonCell* managedCell =
-          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-  }
-  return cell;
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -457,6 +432,8 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
       kPasswordSettingsManagedSavePasswordSwitchTableViewId;
   managedSavePasswordsItem.statusText = l10n_util::GetNSString(
       _savingPasswordsEnabled ? IDS_IOS_SETTING_ON : IDS_IOS_SETTING_OFF);
+  managedSavePasswordsItem.target = self;
+  managedSavePasswordsItem.selector = @selector(didTapManagedUIInfoButton:);
   return managedSavePasswordsItem;
 }
 

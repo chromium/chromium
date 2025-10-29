@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/utils/content_setting_backed_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -164,33 +163,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   blockPopupsManagedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  blockPopupsManagedItem.target = self;
+  blockPopupsManagedItem.selector = @selector(didTapManagedUIInfoButton:);
   blockPopupsManagedItem.accessibilityIdentifier =
       @"blockPopupsContentView_managed";
   return blockPopupsManagedItem;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-    case ItemTypeHeader:
-    case ItemTypeException:
-    case ItemTypeMainSwitch:
-      break;
-    case ItemTypeManaged: {
-      TableViewInfoButtonCell* managedCell =
-          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-  }
-  return cell;
 }
 
 - (BOOL)tableView:(UITableView*)tableView

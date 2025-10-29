@@ -59,7 +59,7 @@ const CGFloat kInfoSymbolSize = 22;
 #pragma mark - ChromeContentView
 
 - (BOOL)hasCustomAccessibilityActivationPoint {
-  return YES;
+  return _configuration.selectedForVoiceOver;
 }
 
 #pragma mark - UIContentView

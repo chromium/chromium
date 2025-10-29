@@ -14,6 +14,7 @@
   self = [super init];
   if (self) {
     _enabled = YES;
+    _selectedForVoiceOver = YES;
   }
   return self;
 }
@@ -44,6 +45,7 @@
   configuration.selector = self.selector;
   configuration.enabled = self.enabled;
   configuration.tag = self.tag;
+  configuration.selectedForVoiceOver = self.selectedForVoiceOver;
   // LINT.ThenChange(info_button_content_configuration.h:Copy)
   return configuration;
 }

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/supervised_user_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller_model_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -95,40 +94,6 @@
   buttonView.enabled = YES;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if (_settingsAreDismissed) {
-    return cell;
-  }
-  if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
-    TableViewInfoButtonCell* managedCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    if ([self.modelDelegate
-            isAllowChromeSigninItem:[self.tableViewModel
-                                        itemAtIndexPath:indexPath]
-                                        .type] &&
-        self.forcedSigninEnabled) {
-      // Use a specific target when tapping the info button of the allow
-      // sign-in item while forced sign-in is enabled. This is because the info
-      // bubble has different textual content.
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapForcedSigninUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-    } else {
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-    }
-  }
-  return cell;
-}
-
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
@@ -187,21 +152,6 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSGoogleServicesSettingsCloseWithSwipe"));
-}
-
-#pragma mark - Actions
-
-// Called when the user clicks on the information button of the managed
-// setting's UI. Shows a textual bubble with management information.
-- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  [self showManagedInfoPopoverOnButton:buttonView isForcedSigninEnabled:NO];
-}
-
-// Called when the user taps on the information button of the allow sign-in
-// item while forced sign-in is enabled. Shows a textual bubble with
-// information about the forced sign-in policy.
-- (void)didTapForcedSigninUIInfoButton:(UIButton*)buttonView {
-  [self showManagedInfoPopoverOnButton:buttonView isForcedSigninEnabled:YES];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate

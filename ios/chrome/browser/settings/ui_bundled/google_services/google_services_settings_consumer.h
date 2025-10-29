@@ -19,6 +19,11 @@
 // Reloads the table view. Does nothing if the model is not loaded yet.
 - (void)reload;
 
+// Shows an info popover anchored on `buttonView` depending on the signed-in
+// policy.
+- (void)showManagedInfoPopoverOnButton:(UIButton*)buttonView
+                 isForcedSigninEnabled:(BOOL)isForcedSigninEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_GOOGLE_SERVICES_SETTINGS_CONSUMER_H_

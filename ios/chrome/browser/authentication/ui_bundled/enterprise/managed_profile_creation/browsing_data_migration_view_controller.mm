@@ -10,9 +10,10 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -117,17 +118,36 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - Private
 
 // Creates the Cell that allows the user to select how to handle browsing data.
-- (TableViewInfoButtonCell*)
-    createBrowsingDataMigrationCellItem:(NSString*)title
-                                details:(NSString*)details
-                               selected:(BOOL)selected
-                accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  TableViewInfoButtonCell* cell =
-      DequeueTableViewCell<TableViewInfoButtonCell>(self.tableView);
+- (UITableViewCell*)createBrowsingDataMigrationCellItem:(NSString*)title
+                                                details:(NSString*)details
+                                               selected:(BOOL)selected
+                                accessibilityIdentifier:
+                                    (NSString*)accessibilityIdentifier {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+
+  configuration.title = title;
+  configuration.subtitle = details;
+
+  ColorfulSymbolContentConfiguration* checkmarkConfig =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  UIImageConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolImagePointSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+  checkmarkConfig.symbolImage =
+      DefaultSymbolWithConfiguration(kCheckmarkSymbol, symbolConfiguration);
+  checkmarkConfig.symbolTintColor =
+      selected ? [UIColor colorNamed:kBlueColor] : [UIColor clearColor];
+
+  configuration.leadingConfiguration = checkmarkConfig;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:self.tableView];
+
+  cell.contentConfiguration = configuration;
 
   cell.accessoryType = UITableViewCellAccessoryNone;
-  cell.textLabel.text = title;
-  cell.detailTextLabel.text = details;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = selected
                              ? [UIColor colorNamed:kBlueHaloColor]
@@ -135,18 +155,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   cell.separatorInset =
       UIEdgeInsetsMake(0.f, kTableViewSeparatorInsetHide, 0.f, 0.f);
   cell.accessibilityIdentifier = accessibilityIdentifier;
-
-  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolImagePointSize
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleMedium];
-  [cell setIconImage:DefaultSymbolWithConfiguration(kCheckmarkSymbol,
-                                                    configuration)
-            tintColor:selected ? [UIColor colorNamed:kBlueColor]
-                               : [UIColor clearColor]
-      backgroundColor:[UIColor clearColor]
-         cornerRadius:0.f];
-  [cell hideUIButton:YES];
 
   return cell;
 }
@@ -166,7 +174,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                                                 itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewInfoButtonCell>(self.tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
   RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =

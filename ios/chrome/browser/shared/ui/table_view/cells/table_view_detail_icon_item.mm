@@ -29,9 +29,9 @@ constexpr CGFloat kNewIPHBadgeFontSize = 10.0;
 // kDotSize represents the size of the dot (i.e. its height and width).
 constexpr CGFloat kDotSize = 10.f;
 
-// By default, the maximum number of lines to be displayed for the detail text
-// should be one.
-const NSInteger kDefaultDetailTextNumberOfLines = 1;
+// By default, the maximum number of lines to be displayed for the text and
+// detail text should be 1.
+const NSInteger kDefaultNumberOfLines = 1;
 
 }  // namespace
 
@@ -42,7 +42,8 @@ const NSInteger kDefaultDetailTextNumberOfLines = 1;
   if (self) {
     self.cellClass = [LegacyTableViewCell class];
     self.badgeType = BadgeType::kNone;
-    _detailTextNumberOfLines = kDefaultDetailTextNumberOfLines;
+    _textNumberOfLines = kDefaultNumberOfLines;
+    _detailTextNumberOfLines = kDefaultNumberOfLines;
     _textLineBreakMode = NSLineBreakByTruncatingTail;
     _detailTextLineBreakMode = NSLineBreakByTruncatingTail;
   }
@@ -90,7 +91,7 @@ const NSInteger kDefaultDetailTextNumberOfLines = 1;
       break;
     }
   }
-  contentConfiguration.titleNumberOfLines = 1;
+  contentConfiguration.titleNumberOfLines = self.textNumberOfLines;
   if (self.textLayoutConstraintAxis == UILayoutConstraintAxisVertical) {
     contentConfiguration.subtitle = self.detailText;
     contentConfiguration.subtitleNumberOfLines = self.detailTextNumberOfLines;

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_table_view_controller_model_delegate.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -68,14 +67,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
-    TableViewInfoButtonCell* managedCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    managedCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    [managedCell.trailingButton addTarget:self
-                                   action:@selector(didTapManagedUIInfoButton:)
-                         forControlEvents:UIControlEventTouchUpInside];
-  } else if ([cell isKindOfClass:[SettingsImageDetailTextCell class]]) {
+  if ([cell isKindOfClass:[SettingsImageDetailTextCell class]]) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
   return cell;
@@ -201,6 +193,10 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                 useLargeMargins:YES];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
+}
+
+- (void)showManagedUIInfoForButton:(UIButton*)button {
+  [self didTapManagedUIInfoButton:button];
 }
 
 #pragma mark - UITableViewDelegate
