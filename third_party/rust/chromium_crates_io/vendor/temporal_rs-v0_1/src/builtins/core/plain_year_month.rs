@@ -548,7 +548,7 @@ impl PlainYearMonth {
         // 11. Return ! CreateTemporalYearMonth(isoDate, calendar).
         let overflow = overflow.unwrap_or(Overflow::Constrain);
         self.calendar.year_month_from_fields(
-            fields.with_fallback_year_month(self, self.calendar.kind(), overflow)?,
+            fields.with_fallback_year_month(self, self.calendar.kind())?,
             overflow,
         )
     }
@@ -615,7 +615,7 @@ impl PlainYearMonth {
     pub fn epoch_ns_for_with_provider(
         &self,
         time_zone: TimeZone,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<EpochNanoseconds> {
         // 2. Let isoDateTime be CombineISODateAndTimeRecord(temporalYearMonth.[[ISODate]], NoonTimeRecord()).
         let iso = IsoDateTime::new(self.iso, IsoTime::noon())?;
@@ -1079,18 +1079,20 @@ mod tests {
 
     #[test]
     fn test_reference_day() {
+        // Note: Japanese reference days are also day 1 even at era boundaries
+        // https://github.com/tc39/proposal-temporal/issues/3150
         assert_eq!(
             PlainYearMonth::from_str("1868-10-30[u-ca=japanese]")
                 .unwrap()
                 .reference_day(),
-            23
+            1
         );
         // Still happens for dates that are in the previous era but same month
         assert_eq!(
             PlainYearMonth::from_str("1868-10-20[u-ca=japanese]")
                 .unwrap()
                 .reference_day(),
-            23
+            1
         );
         // Won't happen for dates in other months
         assert_eq!(

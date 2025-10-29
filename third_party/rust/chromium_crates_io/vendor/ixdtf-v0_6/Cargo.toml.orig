@@ -5,7 +5,7 @@
 [package]
 name = "ixdtf"
 description = "Parser for Internet eXtended DateTime Format"
-version = "0.6.3"
+version = "0.6.4"
 
 authors.workspace = true
 categories.workspace = true
@@ -14,7 +14,7 @@ homepage.workspace = true
 include.workspace = true
 license.workspace = true
 repository.workspace = true
-rust-version.workspace = true
+rust-version = "1.82"
 
 [package.metadata.workspaces]
 independent = true
@@ -27,7 +27,6 @@ default = ["duration"]
 duration = []
 
 [dependencies]
-displaydoc = { workspace = true }
 
 [dev-dependencies]
 serde-json-core = { workspace = true, features = ["std"] }

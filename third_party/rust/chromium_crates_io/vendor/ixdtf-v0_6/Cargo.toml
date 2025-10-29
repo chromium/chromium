@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "ixdtf"
-version = "0.6.3"
+version = "0.6.4"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -39,14 +39,14 @@ categories = ["internationalization"]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.cargo-semver-checks.lints]
-workspace = true
+[package.metadata.workspaces]
+independent = true
 
 [package.metadata.docs.rs]
 all-features = true
 
-[package.metadata.workspaces]
-independent = true
+[package.metadata.cargo-semver-checks.lints]
+workspace = true
 
 [features]
 default = ["duration"]
@@ -56,9 +56,7 @@ duration = []
 name = "ixdtf"
 path = "src/lib.rs"
 
-[dependencies.displaydoc]
-version = "0.2.3"
-default-features = false
+[dependencies]
 
 [dev-dependencies.serde-json-core]
 version = "0.6.0"

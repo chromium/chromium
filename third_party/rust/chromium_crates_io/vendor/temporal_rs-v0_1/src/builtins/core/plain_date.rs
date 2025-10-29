@@ -446,7 +446,7 @@ impl PlainDate {
         // 10. Return ? CalendarDateFromFields(calendarRec, fields, resolvedOptions).
         let overflow = overflow.unwrap_or(Overflow::Constrain);
         self.calendar.date_from_fields(
-            fields.with_fallback_date(self, self.calendar.kind(), overflow)?,
+            fields.with_fallback_date(self, self.calendar.kind())?,
             overflow,
         )
     }
@@ -633,7 +633,7 @@ impl PlainDate {
     pub fn to_plain_month_day(&self) -> TemporalResult<PlainMonthDay> {
         let overflow = Overflow::Constrain;
         self.calendar().month_day_from_fields(
-            CalendarFields::default().with_fallback_date(self, self.calendar.kind(), overflow)?,
+            CalendarFields::default().with_fallback_date(self, self.calendar.kind())?,
             overflow,
         )
     }
@@ -660,7 +660,7 @@ impl PlainDate {
         &self,
         time_zone: TimeZone,
         plain_time: Option<PlainTime>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<ZonedDateTime> {
         // NOTE (nekevss): Steps 1-4 are engine specific
         let epoch_ns = if let Some(time) = plain_time {

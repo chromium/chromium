@@ -636,7 +636,7 @@ impl Duration {
             microseconds,
             nanoseconds,
         ) {
-            return Err(TemporalError::range().with_message("Duration was not valid."));
+            return Err(TemporalError::range().with_enum(ErrorMessage::DurationNotValid));
         }
         let sign = duration_sign(&[
             years,
@@ -830,7 +830,7 @@ impl Duration {
         &self,
         other: &Duration,
         relative_to: Option<RelativeTo>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Ordering> {
         if self == other {
             return Ok(Ordering::Equal);
@@ -1054,7 +1054,7 @@ impl Duration {
         &self,
         options: RoundingOptions,
         relative_to: Option<RelativeTo>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         // NOTE(HalidOdat): Steps 1-12 are handled before calling the function.
         //
@@ -1286,7 +1286,7 @@ impl Duration {
         &self,
         unit: Unit,
         relative_to: Option<RelativeTo>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
         // Review question what is the return type of duration.prototye.total?
     ) -> TemporalResult<FiniteF64> {
         match relative_to {

@@ -283,7 +283,7 @@ impl ZonedDateTime {
         instant: Instant,
         time_zone: TimeZone,
         calendar: Calendar,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let offset = time_zone
             .get_utc_offset_for(instant.epoch_nanoseconds().0, provider)
@@ -307,7 +307,7 @@ impl ZonedDateTime {
         &self,
         duration: InternalDurationRecord,
         overflow: Overflow,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Instant> {
         // 1. If DateDurationSign(duration.[[Date]]) = 0, then
         if duration.date().sign() == Sign::Zero {
@@ -349,7 +349,7 @@ impl ZonedDateTime {
         &self,
         duration: &Duration,
         overflow: Overflow,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         // 1. Let duration be ? ToTemporalDuration(temporalDurationLike).
         // 2. If operation is subtract, set duration to CreateNegatedTemporalDuration(duration).
@@ -375,7 +375,7 @@ impl ZonedDateTime {
         &self,
         other: &Instant,
         resolved_options: ResolvedRoundingOptions,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<InternalDurationRecord> {
         // 1. If UnitCategory(largestUnit) is time, then
         if resolved_options.largest_unit.is_time_unit() {
@@ -406,7 +406,7 @@ impl ZonedDateTime {
         &self,
         other: &Instant,
         unit: Unit,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<FiniteF64> {
         // 1. If UnitCategory(unit) is time, then
         if unit.is_time_unit() {
@@ -436,7 +436,7 @@ impl ZonedDateTime {
         &self,
         other: &Instant,
         largest_unit: Unit,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<InternalDurationRecord> {
         // 1. If ns1 = ns2, return CombineDateAndTimeDuration(ZeroDateDuration(), 0).
         if self.epoch_nanoseconds() == other.epoch_nanoseconds() {
@@ -517,7 +517,7 @@ impl ZonedDateTime {
         op: DifferenceOperation,
         other: &Self,
         options: DifferenceSettings,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Duration> {
         // NOTE: for order of operations, this should be asserted prior to this point
         // by any engine implementors, but asserting out of caution.
@@ -590,7 +590,7 @@ impl ZonedDateTime {
         nanos: i128,
         time_zone: TimeZone,
         calendar: Calendar,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let instant = Instant::try_new(nanos)?;
         Self::new_unchecked_with_provider(instant, time_zone, calendar, provider)
@@ -618,7 +618,7 @@ impl ZonedDateTime {
     pub fn try_new_iso_with_provider(
         nanos: i128,
         time_zone: TimeZone,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let instant = Instant::try_new(nanos)?;
         Self::new_unchecked_with_provider(instant, time_zone, Calendar::ISO, provider)
@@ -630,7 +630,7 @@ impl ZonedDateTime {
         instant: Instant,
         time_zone: TimeZone,
         calendar: Calendar,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         Self::new_unchecked_with_provider(instant, time_zone, calendar, provider)
     }
@@ -640,7 +640,7 @@ impl ZonedDateTime {
     pub fn try_new_iso_from_instant_with_provider(
         instant: Instant,
         time_zone: TimeZone,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         Self::new_unchecked_with_provider(instant, time_zone, Calendar::ISO, provider)
     }
@@ -666,7 +666,7 @@ impl ZonedDateTime {
         overflow: Option<Overflow>,
         disambiguation: Option<Disambiguation>,
         offset_option: Option<OffsetDisambiguation>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let overflow = overflow.unwrap_or(Overflow::Constrain);
         let disambiguation = disambiguation.unwrap_or(Disambiguation::Compatible);
@@ -729,7 +729,7 @@ impl ZonedDateTime {
         disambiguation: Option<Disambiguation>,
         offset_option: Option<OffsetDisambiguation>,
         overflow: Option<Overflow>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let overflow = overflow.unwrap_or_default();
         let disambiguation = disambiguation.unwrap_or_default();
@@ -740,11 +740,9 @@ impl ZonedDateTime {
 
         // 23. Let dateTimeResult be ? InterpretTemporalDateTimeFields(calendar, fields, overflow).
         let result_date = self.calendar.date_from_fields(
-            fields.calendar_fields.with_fallback_datetime(
-                &plain_date_time,
-                self.calendar.kind(),
-                overflow,
-            )?,
+            fields
+                .calendar_fields
+                .with_fallback_datetime(&plain_date_time, self.calendar.kind())?,
             overflow,
         )?;
 
@@ -787,7 +785,7 @@ impl ZonedDateTime {
     pub fn with_time_zone_with_provider(
         &self,
         time_zone: TimeZone,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         Self::try_new_with_provider(
             self.epoch_nanoseconds().as_i128(),
@@ -832,7 +830,7 @@ impl ZonedDateTime {
     pub fn get_time_zone_transition_with_provider(
         &self,
         direction: TransitionDirection,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Option<Self>> {
         // 8. If IsOffsetTimeZoneIdentifier(timeZone) is true, return null.
         let TimeZone::IanaIdentifier(identifier) = self.time_zone else {
@@ -874,7 +872,7 @@ impl ZonedDateTime {
 
     pub fn hours_in_day_with_provider(
         &self,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<f64> {
         // 1-3. Is engine specific steps
         // 4. Let isoDateTime be GetISODateTimeFor(timeZone, zonedDateTime.[[EpochNanoseconds]]).
@@ -1097,7 +1095,7 @@ impl ZonedDateTime {
     pub fn with_plain_time_and_provider(
         &self,
         time: Option<PlainTime>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let iso = self.get_iso_datetime();
         let epoch_ns = if let Some(time) = time {
@@ -1123,7 +1121,7 @@ impl ZonedDateTime {
         &self,
         duration: &Duration,
         overflow: Option<Overflow>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         self.add_internal(duration, overflow.unwrap_or(Overflow::Constrain), provider)
     }
@@ -1133,7 +1131,7 @@ impl ZonedDateTime {
         &self,
         duration: &Duration,
         overflow: Option<Overflow>,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         self.add_internal(
             &duration.negated(),
@@ -1146,7 +1144,7 @@ impl ZonedDateTime {
     pub fn equals_with_provider(
         &self,
         other: &Self,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<bool> {
         // 4. If zonedDateTime.[[EpochNanoseconds]] ≠ other.[[EpochNanoseconds]], return false.
         if self.instant != other.instant {
@@ -1169,7 +1167,7 @@ impl ZonedDateTime {
         &self,
         other: &Self,
         options: DifferenceSettings,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Duration> {
         self.diff_internal_with_provider(DifferenceOperation::Since, other, options, provider)
     }
@@ -1179,7 +1177,7 @@ impl ZonedDateTime {
         &self,
         other: &Self,
         options: DifferenceSettings,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Duration> {
         self.diff_internal_with_provider(DifferenceOperation::Until, other, options, provider)
     }
@@ -1188,7 +1186,7 @@ impl ZonedDateTime {
     /// for the current `ZonedDateTime`.
     pub fn start_of_day_with_provider(
         &self,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let iso = self.get_iso_datetime();
         let epoch_nanos = self.time_zone.get_start_of_day(&iso.date, provider)?;
@@ -1221,7 +1219,7 @@ impl ZonedDateTime {
     /// Creates a default formatted IXDTF (RFC 9557) date/time string for the provided `ZonedDateTime`.
     pub fn to_string_with_provider(
         &self,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<String> {
         self.to_ixdtf_string_with_provider(
             DisplayOffset::Auto,
@@ -1236,7 +1234,7 @@ impl ZonedDateTime {
     pub fn round_with_provider(
         &self,
         options: RoundingOptions,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         // 1. Let zonedDateTime be the this value.
         // 2. Perform ? RequireInternalSlot(zonedDateTime, [[InitializedTemporalZonedDateTime]]).
@@ -1364,7 +1362,7 @@ impl ZonedDateTime {
         display_timezone: DisplayTimeZone,
         display_calendar: DisplayCalendar,
         options: ToStringRoundingOptions,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<String> {
         let resolved_options = options.resolve()?;
         let result =
@@ -1397,7 +1395,7 @@ impl ZonedDateTime {
         source: &[u8],
         disambiguation: Disambiguation,
         offset_option: OffsetDisambiguation,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let parsed = ParsedZonedDateTime::from_utf8_with_provider(source, provider)?;
 
@@ -1408,7 +1406,7 @@ impl ZonedDateTime {
         parsed: ParsedZonedDateTime,
         disambiguation: Disambiguation,
         offset_option: OffsetDisambiguation,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<Self> {
         let date = IsoDate::new_with_overflow(
             parsed.date.record.year,
@@ -1455,7 +1453,7 @@ pub(crate) fn interpret_isodatetime_offset(
     disambiguation: Disambiguation,
     offset_option: OffsetDisambiguation,
     match_minutes: bool,
-    provider: &impl TimeZoneProvider,
+    provider: &(impl TimeZoneProvider + ?Sized),
 ) -> TemporalResult<EpochNanosecondsAndOffset> {
     // 1.  If time is start-of-day, then
     let Some(time) = time else {

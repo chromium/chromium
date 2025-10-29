@@ -488,7 +488,7 @@ fn basic_zdt_add() {
 
 fn parse_zdt_with_reject(
     s: &str,
-    provider: &impl TimeZoneProvider,
+    provider: &(impl TimeZoneProvider + ?Sized),
 ) -> TemporalResult<ZonedDateTime> {
     ZonedDateTime::from_utf8_with_provider(
         s.as_bytes(),
@@ -500,7 +500,7 @@ fn parse_zdt_with_reject(
 
 fn parse_zdt_with_compatible(
     s: &str,
-    provider: &impl TimeZoneProvider,
+    provider: &(impl TimeZoneProvider + ?Sized),
 ) -> TemporalResult<ZonedDateTime> {
     ZonedDateTime::from_utf8_with_provider(
         s.as_bytes(),
@@ -599,7 +599,10 @@ fn test_pacific_niue() {
     })
 }
 
-fn total_seconds_for_one_day(s: &str, provider: &impl TimeZoneProvider) -> TemporalResult<f64> {
+fn total_seconds_for_one_day(
+    s: &str,
+    provider: &(impl TimeZoneProvider + ?Sized),
+) -> TemporalResult<f64> {
     Ok(Duration::new(0, 0, 0, 1, 0, 0, 0, 0, 0, 0)
         .unwrap()
         .total_with_provider(
@@ -645,7 +648,7 @@ fn assert_tr(
     zdt: &ZonedDateTime,
     direction: TransitionDirection,
     s: &str,
-    provider: &impl TimeZoneProvider,
+    provider: &(impl TimeZoneProvider + ?Sized),
 ) {
     assert_eq!(
         zdt.get_time_zone_transition_with_provider(direction, provider)

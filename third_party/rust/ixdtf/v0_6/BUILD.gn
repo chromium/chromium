@@ -36,11 +36,10 @@ cargo_crate("lib") {
   cargo_pkg_name = "ixdtf"
   cargo_pkg_description = "Parser for Internet eXtended DateTime Format"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.6.3"
+  cargo_pkg_version = "0.6.4"
 
   allow_unsafe = false
 
-  deps = [ "//third_party/rust/displaydoc/v0_2:lib" ]
   features = [
     "default",
     "duration",

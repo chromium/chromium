@@ -662,11 +662,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "ixdtf"
-version = "0.6.3"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "displaydoc",
-]
 
 [[package]]
 name = "lazy_static"
@@ -1097,7 +1094,7 @@ dependencies = [
 
 [[package]]
 name = "temporal_rs"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "core_maths",
@@ -1120,7 +1117,7 @@ dependencies = [
 
 [[package]]
 name = "timezone_provider"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "tinystr",

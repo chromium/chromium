@@ -372,7 +372,7 @@ impl InternalDurationRecord {
         sign: Sign,
         dest_epoch_ns: i128,
         dt: &PlainDateTime,
-        time_zone: Option<(&TimeZone, &impl TimeZoneProvider)>, // ???
+        time_zone: Option<(&TimeZone, &(impl TimeZoneProvider + ?Sized))>, // ???
         options: ResolvedRoundingOptions,
     ) -> TemporalResult<NudgeRecord> {
         // NOTE: r2 may never be used...need to test.
@@ -660,7 +660,7 @@ impl InternalDurationRecord {
         dt: &PlainDateTime,
         time_zone: &TimeZone,
         options: ResolvedRoundingOptions,
-        provider: &impl TimeZoneProvider,
+        provider: &(impl TimeZoneProvider + ?Sized),
     ) -> TemporalResult<NudgeRecord> {
         let d = self.date();
         // 1.Let start be ? CalendarDateAdd(calendar, isoDateTime.[[ISODate]], duration.[[Date]], constrain).
@@ -822,7 +822,7 @@ impl InternalDurationRecord {
         sign: Sign,
         nudged_epoch_ns: i128,
         iso_date_time: &IsoDateTime,
-        time_zone: Option<(&TimeZone, &impl TimeZoneProvider)>,
+        time_zone: Option<(&TimeZone, &(impl TimeZoneProvider + ?Sized))>,
         calendar: &Calendar,
         largest_unit: Unit,
         smallest_unit: Unit,
@@ -956,7 +956,7 @@ impl InternalDurationRecord {
         &self,
         dest_epoch_ns: i128,
         dt: &PlainDateTime,
-        time_zone: Option<(&TimeZone, &impl TimeZoneProvider)>,
+        time_zone: Option<(&TimeZone, &(impl TimeZoneProvider + ?Sized))>,
         options: ResolvedRoundingOptions,
     ) -> TemporalResult<InternalDurationRecord> {
         let duration = *self;
@@ -1014,7 +1014,7 @@ impl InternalDurationRecord {
         &self,
         dest_epoch_ns: i128,
         dt: &PlainDateTime,
-        time_zone: Option<(&TimeZone, &impl TimeZoneProvider)>,
+        time_zone: Option<(&TimeZone, &(impl TimeZoneProvider + ?Sized))>,
         unit: Unit,
     ) -> TemporalResult<FiniteF64> {
         // 1. If IsCalendarUnit(unit) is true, or timeZone is not unset and unit is day, then
