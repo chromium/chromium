@@ -211,6 +211,8 @@ void RequestSender::OnNetworkFetcherComplete(
 
 void RequestSender::HandleSendError(int error, int retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(TakeRequestSenderCallback(), error,
                                 std::string(), retry_after_sec));
@@ -238,6 +240,8 @@ void RequestSender::Cancel() {
 RequestSender::RequestSenderCallback
 RequestSender::TakeRequestSenderCallback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
+
   RequestSenderCallback callback = std::move(request_sender_callback_);
   request_sender_callback_ = base::DoNothing();
   return callback;
