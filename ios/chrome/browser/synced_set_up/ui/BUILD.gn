@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "synced_set_up_animator.h",
+    "synced_set_up_animator.mm",
     "synced_set_up_consumer.h",
     "synced_set_up_view_controller.h",
     "synced_set_up_view_controller.mm",
@@ -11,6 +13,7 @@ source_set("ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tabs_closure_animation",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
