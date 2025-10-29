@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -72,12 +73,16 @@
 
 namespace {
 
-// Strips the `kGoogleChromeURLScheme` prefix from `arg` if present and the
+// Strips the `google-chrome://` prefix from `arg` if present and the
 // `kGoogleChromeScheme` feature is enabled. Returns true if the prefix was
 // stripped.
 bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
-  const base::FilePath kFullPrefixPath = base::FilePath::FromASCII(base::StrCat(
-      {chrome::kGoogleChromeURLScheme, url::kStandardSchemeSeparator}));
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  return false;
+#else
+  const base::FilePath kFullPrefixPath = base::FilePath::FromASCII(
+      base::StrCat({shell_integration::GetDirectLaunchUrlScheme(),
+                    url::kStandardSchemeSeparator}));
   // Note: we enabled the feature flag condition later
   // we want to activate the experiment when it is relevant for better
   // stats collection. We plan to remove this flag once we establish it works
@@ -89,6 +94,7 @@ bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
     return true;
   }
   return false;
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.

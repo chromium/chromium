@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/scoped_com_initializer.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -392,4 +393,21 @@ TEST(ShellIntegrationWinTest, GetAppModelIdForProfileTest) {
 }
 
 }  // namespace win
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST(ShellIntegrationWinTest, GetDirectLaunchUrlScheme) {
+  // On Windows, the scheme is determined by install-static constants,
+  // which are non-trivial to mock in a unit test.
+  // We'll just test that it returns a non-empty string.
+  std::string scheme = GetDirectLaunchUrlScheme();
+  EXPECT_FALSE(scheme.empty());
+  EXPECT_TRUE(base::StartsWith(scheme, "google-chrome",
+                               base::CompareCase::SENSITIVE));
+}
+#else  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST(ShellIntegrationWinTest, GetDirectLaunchUrlSchemeUnbranded) {
+  EXPECT_EQ("chromium", GetDirectLaunchUrlScheme());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 }  // namespace shell_integration

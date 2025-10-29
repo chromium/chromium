@@ -883,6 +883,26 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
   return shell_integration_linux::GetIsDefaultWebClient(scheme);
 }
 
+std::string GetDirectLaunchUrlScheme() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // On Linux, channel determination is static and tied to the installed
+  // package, unlike macOS and Windows which support "floating" channels.
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::CANARY:
+      return "google-chrome-canary";
+    case version_info::Channel::DEV:
+      return "google-chrome-dev";
+    case version_info::Channel::BETA:
+      return "google-chrome-beta";
+    case version_info::Channel::STABLE:
+    case version_info::Channel::UNKNOWN:
+      return "google-chrome";
+  }
+#else
+  return "chromium";
+#endif
+}
+
 namespace internal {
 
 DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
