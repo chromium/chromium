@@ -242,6 +242,7 @@ public class ReorderDelegate {
             @Nullable TabStripDragHandler tabStripDragHandler,
             ActionConfirmationManager actionConfirmationManager,
             Supplier<Float> tabWidthSupplier,
+            Supplier<Float> pinnedTabsBoundarySupplier,
             ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             View containerView) {
         mStripUpdateDelegate = stripUpdateDelegate;
@@ -273,6 +274,7 @@ public class ReorderDelegate {
                         containerView,
                         groupIdToHideSupplier,
                         mTabWidthSupplier,
+                        pinnedTabsBoundarySupplier,
                         mLastReorderScrollTimeSupplier,
                         mInReorderModeSupplier);
         mGroupStrategy =
@@ -403,12 +405,10 @@ public class ReorderDelegate {
 
         float scrollOffsetDelta =
                 computeScrollOffsetDeltaForAutoScroll(time, leftBound, rightBound);
-        float scrollOffset =
-                mScrollDelegate.setScrollOffset(
-                        mScrollDelegate.getScrollOffset() + scrollOffsetDelta);
         if (scrollOffsetDelta != 0f) {
-            // Skip deltaX since pinned tabs don't scroll.
-            float deltaX = isInteractingViewPinnedTab() ? 0f : scrollOffset;
+            float deltaX =
+                    mScrollDelegate.setScrollOffset(
+                            mScrollDelegate.getScrollOffset() + scrollOffsetDelta);
 
             if (mScrollDelegate.isFinished()) {
                 mActiveStrategy.updateReorderPosition(
@@ -421,12 +421,6 @@ public class ReorderDelegate {
             }
             mStripUpdateDelegate.refresh();
         }
-    }
-
-    private boolean isInteractingViewPinnedTab() {
-        if (mActiveStrategy == mExternalViewDragDropReorderStrategy) return false;
-        StripLayoutView interactingView = getInteractingView();
-        return (interactingView instanceof StripLayoutTab tab) && tab.getIsPinned();
     }
 
     /** See {@link ReorderStrategy#stopReorderMode} */

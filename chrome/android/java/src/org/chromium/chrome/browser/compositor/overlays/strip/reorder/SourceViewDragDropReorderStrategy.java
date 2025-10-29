@@ -36,7 +36,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -499,6 +498,8 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             mStripUpdateDelegate.setCompositorButtonsVisible(true);
 
             // 2. Store reorder state, then exit reorder within strip.
+            // TODO(crbug.com/441978834): Ensure the tabs dragged back onto strip are
+            // contiguous.
             mLastOffsetX = mViewBeingDragged.getOffsetX();
             super.stopReorderMode(stripViews, groupTitles);
 
@@ -563,46 +564,20 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         @Override
         boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
             // Populate the list of views being dragged.
+            mViewsBeingDragged.clear();
             List<Tab> selectedTabs = new ArrayList<>();
-            HashSet<Integer> tabIdsToUnselect = new HashSet();
-
-            assumeNonNull(mViewBeingDragged);
-            StripLayoutTab primaryStripTab = (StripLayoutTab) mViewBeingDragged;
             for (StripLayoutTab stripTab : stripTabs) {
                 if (stripTab != null && mModel.isTabMultiSelected(stripTab.getTabId())) {
-                    // TODO(crbug.com/441978834):  This is a temporary workaround: if the selection
-                    // mixes pinned and unpinned tabs, only keep the tabs have the same pin state
-                    // as the primary tab. To match desktop behavior for mixed pinned/unpinned
-                    // tabs, when "ungather" them on drop we should:
-                    // 1. When drop in pinned range: place pinned tabs at the drop point; snap
-                    // unpinned
-                    // tabs to the nearest valid indices.
-                    // 2. Drop in unpinned range: place unpinned tabs at the drop point; move pinned
-                    // tabs to the end of the pinned range.
-                    if (stripTab.getIsPinned() == primaryStripTab.getIsPinned()) {
-                        mViewsBeingDragged.add(stripTab);
-                        mTabsBeingDragged.add(stripTab);
-                        selectedTabs.add(mModel.getTabById(stripTab.getTabId()));
-                    } else {
-                        tabIdsToUnselect.add(stripTab.getTabId());
-                    }
+                    mViewsBeingDragged.add(stripTab);
+                    mTabsBeingDragged.add(stripTab);
+                    selectedTabs.add(mModel.getTabById(stripTab.getTabId()));
                 }
             }
-
-            // Deselect the ones that don't move due to a different pin state. If this includes the
-            // current tab, switch to the primary tab.
-            if (tabIdsToUnselect.contains(TabModelUtils.getCurrentTabId(mModel))) {
-                TabModelUtils.setIndex(
-                        mModel, TabModelUtils.getTabIndexById(mModel, primaryStripTab.getTabId()));
-            }
-            if (!tabIdsToUnselect.isEmpty()) {
-                mModel.setTabsMultiSelected(tabIdsToUnselect, /* isSelected= */ false);
-            }
-
             if (mViewsBeingDragged.isEmpty()) return false;
 
             // The primary tab is the one being interacted with.
-            Tab primaryTab = mModel.getTabById(primaryStripTab.getTabId());
+            assumeNonNull(mViewBeingDragged);
+            Tab primaryTab = mModel.getTabById(((StripLayoutTab) mViewBeingDragged).getTabId());
             assert primaryTab != null : "No matching Tab found.";
 
             // Store the selected tab if dragged.

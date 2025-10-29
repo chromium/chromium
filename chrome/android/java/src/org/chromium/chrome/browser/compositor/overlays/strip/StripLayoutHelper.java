@@ -402,6 +402,7 @@ public class StripLayoutHelper
                     StripLayoutTab stripTab = findTabById(tab.getId());
                     assumeNonNull(stripTab);
                     stripTab.setIsPinned(isPinned);
+                    mPinnedTabsBoundarySupplier.set(getPinnedTabsBoundary());
                     setAccessibilityDescription(stripTab, tab);
 
                     // Compute each view's ideal position to get ready for the tab move animation
@@ -533,6 +534,9 @@ public class StripLayoutHelper
      * space on the tab strip. Constricted by MIN_TAB_WIDTH_DP and MAX_TAB_WIDTH_DP.
      */
     private final ObservableSupplierImpl<Float> mCachedTabWidthSupplier =
+            new ObservableSupplierImpl<>(0f);
+
+    private final ObservableSupplierImpl<Float> mPinnedTabsBoundarySupplier =
             new ObservableSupplierImpl<>(0f);
 
     // Reorder State
@@ -1293,6 +1297,7 @@ public class StripLayoutHelper
                     stripTab.setIsPinned(tab.getIsPinned());
                 }
             }
+            mPinnedTabsBoundarySupplier.set(getPinnedTabsBoundary());
 
             RecordHistogram.recordCount1000Histogram(
                     PLACEHOLDER_LEFTOVER_TABS_HISTOGRAM_NAME, numLeftoverPlaceholders);
@@ -1337,6 +1342,7 @@ public class StripLayoutHelper
                 mTabStripDragHandler,
                 mActionConfirmationManager,
                 mCachedTabWidthSupplier,
+                mPinnedTabsBoundarySupplier,
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
 

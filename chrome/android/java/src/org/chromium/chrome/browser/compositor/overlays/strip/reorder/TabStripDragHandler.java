@@ -623,8 +623,15 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         Tab tab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (tab != null && tab.getIsPinned()) return true;
 
-        Tab primaryTab = ChromeDragDropUtils.getPrimaryTabFromGlobalState(globalState);
-        return primaryTab != null && primaryTab.getIsPinned();
+        List<Tab> tabs = ChromeDragDropUtils.getTabsFromGlobalState(globalState);
+        if (tabs == null) return false;
+
+        for (Tab curTab : tabs) {
+            if (!curTab.getIsPinned()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

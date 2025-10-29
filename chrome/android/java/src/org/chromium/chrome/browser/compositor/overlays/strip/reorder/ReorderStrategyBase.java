@@ -433,8 +433,9 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     // ============================================================================================
 
     /**
+     * Returns the threshold to swap the interacting views with an adjacent tab.
+     *
      * @param isPinned Whether the tab is pinned.
-     * @return The threshold to swap the interacting views with an adjacent tab.
      */
     protected float getTabSwapThreshold(boolean isPinned) {
         return StripLayoutUtils.getEffectiveTabWidth(mTabWidthSupplier, isPinned)
@@ -448,9 +449,10 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     }
 
     /**
+     * Returns the threshold to drag out of a group.
+     *
      * @param groupTitle The group title for the desired group. Must not be null.
      * @param towardEnd True if dragging towards the end of the strip.
-     * @return The threshold to drag out of a group.
      */
     protected float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
         float dragOutThreshold =
@@ -460,8 +462,9 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     }
 
     /**
+     * Returns the drag distance required to swap positions with the adjacent group.
+     *
      * @param adjTitle The adjacent group title.
-     * @return The drag distance required to swap positions with the adjacent group.
      */
     protected float getGroupSwapThreshold(StripLayoutGroupTitle adjTitle) {
         if (adjTitle.isCollapsed()) {
@@ -508,8 +511,9 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     }
 
     /**
+     * Returns {@code true} if we're dragging towards the end of the strip. {@code false} otherwise.
+     *
      * @param offset The offset of the current drag.
-     * @return {@code true} if we're dragging towards the end of the strip. {@code false} otherwise.
      */
     protected boolean isOffsetTowardEnd(float offset) {
         return (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
@@ -548,8 +552,9 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     }
 
     /**
+     * Returns The sliding {@link CompositorAnimator}.
+     *
      * @param view The {@link StripLayoutView} to create a sliding {@link CompositorAnimator} for.
-     * @return The sliding {@link CompositorAnimator}.
      */
     protected Animator getViewSlidingAnimator(StripLayoutView view) {
         return CompositorAnimator.ofFloatProperty(
@@ -576,5 +581,14 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         List<Animator> animators = new ArrayList<>();
         animators.add(getViewSlidingAnimator(view));
         mAnimationHost.queueAnimations(animators, listener);
+    }
+
+    /**
+     * Returns {@code true} if the drag is toward the end of the strip; {@code false} otherwise.
+     *
+     * @param isPinned Whether the tab is pinned; currently always false for grouped tabs.
+     */
+    protected float getEffectiveTabWidth(boolean isPinned) {
+        return StripLayoutUtils.getEffectiveTabWidth(mTabWidthSupplier, isPinned);
     }
 }

@@ -15,6 +15,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -32,11 +33,13 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -46,11 +49,15 @@ import java.util.function.Supplier;
 @NullMarked
 public class MultiTabReorderStrategy extends ReorderStrategyBase {
     private final List<StripLayoutTab> mInteractingTabs = new ArrayList<>();
+    private final List<StripLayoutTab> mPinnedTabs = new ArrayList<>();
+    private final List<StripLayoutTab> mUnpinnedTabs = new ArrayList<>();
     private final HashSet<Integer> mInteractingTabIds = new HashSet<>();
     @Nullable private StripLayoutTab mPrimaryInteractingStripTab;
-    @Nullable private StripLayoutTab mFirstTabInBlock;
-    @Nullable private StripLayoutTab mLastTabInBlock;
     private final Supplier<Boolean> mInReorderModeSupplier;
+    private final Supplier<Float> mPinnedTabsBoundarySupplier;
+    @Nullable private Boolean mHasMixedPinState;
+    @Nullable private Boolean mIsPrimaryPinned;
+    private float mLastScrollOffset;
 
     /**
      * Constructs a new reorder strategy for handling a multi-tab drag selection.
@@ -77,6 +84,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             View containerView,
             ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
+            Supplier<Float> pinnedTabsBoundarySupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
             Supplier<Boolean> inReorderModeSupplier) {
         super(
@@ -91,6 +99,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 tabWidthSupplier,
                 lastReorderScrollTimeSupplier);
         mInReorderModeSupplier = inReorderModeSupplier;
+        mPinnedTabsBoundarySupplier = pinnedTabsBoundarySupplier;
     }
 
     @Override
@@ -127,6 +136,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         updateTabAttachState(mPrimaryInteractingStripTab, /* attached= */ false, animationList);
         StripLayoutUtils.performHapticFeedback(mContainerView);
         mAnimationHost.startAnimations(animationList, /* listener= */ null);
+        mLastScrollOffset = mScrollDelegate.getScrollOffset();
     }
 
     @Override
@@ -144,49 +154,76 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 StripLayoutUtils.findIndexForTab(stripTabs, mPrimaryInteractingStripTab.getTabId());
         if (curIndex == TabModel.INVALID_TAB_INDEX) return;
 
-        float oldIdealX = mPrimaryInteractingStripTab.getIdealX();
+        StripLayoutTab tabToReorder;
+        List<StripLayoutTab> tabsToReorder;
+        if (Boolean.TRUE.equals(mHasMixedPinState)) {
+            boolean isPinnedReordering = isPinnedReordering(deltaX);
+            tabsToReorder = isPinnedReordering ? mPinnedTabs : mUnpinnedTabs;
+            tabToReorder = tabsToReorder.get(0);
+        } else {
+            tabsToReorder = mInteractingTabs;
+            tabToReorder = mPrimaryInteractingStripTab;
+        }
+        float offset = tabToReorder.getOffsetX() + deltaX;
+        float oldIdealX = tabToReorder.getIdealX();
         float oldScrollOffset = mScrollDelegate.getScrollOffset();
         float oldStartMargin = mScrollDelegate.getReorderStartMargin();
-        float offset = mPrimaryInteractingStripTab.getOffsetX() + deltaX;
 
-        if (reorderBlockIfThresholdReached(stripViews, groupTitles, stripTabs, offset)) {
+        boolean reordered =
+                reorderBlockIfThresholdReached(
+                        stripViews, groupTitles, stripTabs, offset, tabsToReorder);
+        if (reordered) {
             if (!Boolean.TRUE.equals(mInReorderModeSupplier.get())) return;
             setEdgeMarginsForReorder(stripTabs);
 
             offset =
                     adjustOffsetAfterReorder(
-                            mPrimaryInteractingStripTab,
+                            tabToReorder,
                             offset,
                             deltaX,
                             oldIdealX,
                             oldScrollOffset,
                             oldStartMargin);
+
+            for (StripLayoutTab tab : tabsToReorder) {
+                tab.setOffsetX(offset);
+            }
+            // Anchor the rest of tabs around ordered tabs by setting offsetX.
+            setOffsetXForNonReorderedPartition(tabToReorder.getIsPinned());
+        } else {
+            boolean rtl = LocalizationUtils.isLayoutRtl();
+            float scrollOffsetDelta =
+                    MathUtils.flipSignIf(oldScrollOffset - mLastScrollOffset, rtl);
+            for (StripLayoutTab tab : mInteractingTabs) {
+                // If no reorder occurs, simply add deltaX and scrollOffsetDelta(Pinned tab only) to
+                // offsetX.
+                tab.setOffsetX(
+                        tab.getOffsetX() + deltaX + (tab.getIsPinned() ? scrollOffsetDelta : 0f));
+            }
         }
 
-        StripLayoutTab firstTabInBlock = mFirstTabInBlock;
-        StripLayoutTab lastTabInBlock = mLastTabInBlock;
-        if (firstTabInBlock == null || lastTabInBlock == null) return;
+        // TODO(crbug.com/441978834): Trim offsetX around the edges.
+        mLastScrollOffset = oldScrollOffset;
+    }
 
-        int firstTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, firstTabInBlock.getTabId());
-        int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, lastTabInBlock.getTabId());
-        boolean isRtl = org.chromium.ui.base.LocalizationUtils.isLayoutRtl();
-        if (firstTabIndex == 0) {
-            float limit =
-                    (stripViews[0] instanceof StripLayoutGroupTitle groupTitle)
-                            ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
-                            : mScrollDelegate.getReorderStartMargin();
-            offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
-        }
-        if (lastTabIndex == stripTabs.length - 1) {
-            offset =
-                    isRtl
-                            ? Math.max(-lastTabInBlock.getTrailingMargin(), offset)
-                            : Math.min(lastTabInBlock.getTrailingMargin(), offset);
-        }
+    private boolean isPinnedReordering(float deltaX) {
+        boolean rtl = LocalizationUtils.isLayoutRtl();
+        StripLayoutTab firstUnpinnedTab = mUnpinnedTabs.get(0);
+        Tab tab = mTabGroupModelFilter.getTabModel().getTabById(firstUnpinnedTab.getTabId());
+        assumeNonNull(tab);
+        if (mTabGroupModelFilter.isTabInTabGroup(tab)) return false;
 
-        for (StripLayoutTab tab : mInteractingTabs) {
-            tab.setOffsetX(offset);
-        }
+        float firstUnpinnedPosition =
+                firstUnpinnedTab.getIdealX()
+                        + (rtl ? getEffectiveTabWidth(/* isPinned= */ false) : 0f)
+                        + firstUnpinnedTab.getOffsetX()
+                        + deltaX;
+        boolean crossIntoPinnedBoundary =
+                MathUtils.flipSignIf(
+                                firstUnpinnedPosition - mPinnedTabsBoundarySupplier.get(),
+                                LocalizationUtils.isLayoutRtl())
+                        < 0f;
+        return crossIntoPinnedBoundary;
     }
 
     @Override
@@ -217,7 +254,11 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
 
         // Fake a successful reorder in the target direction.
         float offset = MathUtils.flipSignIf(Float.MAX_VALUE, toLeft);
-        reorderBlockIfThresholdReached(stripViews, groupTitles, stripTabs, offset);
+        List<StripLayoutTab> tabsToReorder =
+                reorderingView instanceof StripLayoutTab tab && tab.getIsPinned()
+                        ? mPinnedTabs
+                        : mUnpinnedTabs;
+        reorderBlockIfThresholdReached(stripViews, groupTitles, stripTabs, offset, tabsToReorder);
 
         // Animate the reordering view and ensure it's foregrounded.
         for (StripLayoutTab tab : mInteractingTabs) {
@@ -263,6 +304,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 onAnimationEnd);
     }
 
+    @EnsuresNonNull({"mHasMixedPinState", "mIsPrimaryPinned"})
     private void setupReorderState(StripLayoutTab[] stripTabs, List<Tab> selectedTabs) {
         // Ensure state is clean before starting a new reorder.
         assert mInteractingTabs.isEmpty();
@@ -270,20 +312,28 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
 
         for (Tab tab : selectedTabs) {
             int tabId = tab.getId();
-            mInteractingTabs.add(StripLayoutUtils.findTabById(stripTabs, tabId));
+            StripLayoutTab stripTab = StripLayoutUtils.findTabById(stripTabs, tabId);
+            mInteractingTabs.add(stripTab);
             mInteractingTabIds.add(tabId);
+            if (tab.getIsPinned()) {
+                mPinnedTabs.add(stripTab);
+            } else {
+                mUnpinnedTabs.add(stripTab);
+            }
         }
-
-        mFirstTabInBlock = mInteractingTabs.get(0);
-        mLastTabInBlock = mInteractingTabs.get(mInteractingTabs.size() - 1);
+        mIsPrimaryPinned = Objects.requireNonNull(mPrimaryInteractingStripTab).getIsPinned();
+        mHasMixedPinState = mPinnedTabs.size() > 0 && mUnpinnedTabs.size() > 0;
     }
 
     private void clearReorderState() {
         mInteractingTabs.clear();
         mInteractingTabIds.clear();
+        mPinnedTabs.clear();
+        mUnpinnedTabs.clear();
+        mIsPrimaryPinned = null;
+        mHasMixedPinState = null;
         mPrimaryInteractingStripTab = null;
-        mFirstTabInBlock = null;
-        mLastTabInBlock = null;
+        mLastScrollOffset = 0f;
     }
 
     private void gatherBlock(Tab primaryTab, List<Tab> selectedTabs) {
@@ -302,27 +352,102 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             assert destinationGroupId != null;
             int primaryTabIndexInGroup = tabsInGroup.indexOf(primaryTab);
             mTabGroupModelFilter.mergeListOfTabsToGroup(
-                    selectedTabs,
+                    convertStripTabsToTabs(mUnpinnedTabs),
                     primaryTab,
                     /* indexInGroup= */ primaryTabIndexInGroup,
                     /* notify= */ MergeNotificationType.DONT_NOTIFY);
+            if (Boolean.TRUE.equals(mHasMixedPinState)) {
+                for (StripLayoutTab tab : mPinnedTabs) {
+                    mModel.moveTab(tab.getTabId(), mModel.findFirstNonPinnedTabIndex() - 1);
+                }
+            }
         } else {
             ungroupInteractingBlock();
             int primaryTabModelIndex = mModel.indexOf(primaryTab);
             int primaryTabIndexInSelection = selectedTabs.indexOf(primaryTab);
+            if (Boolean.TRUE.equals(mIsPrimaryPinned)) {
+                primaryTabIndexInSelection = mPinnedTabs.indexOf(mPrimaryInteractingStripTab);
+            } else {
+                primaryTabIndexInSelection = mUnpinnedTabs.indexOf(mPrimaryInteractingStripTab);
+            }
 
             int targetGatherIndex = primaryTabModelIndex - primaryTabIndexInSelection;
+            int firstUnpinnedIndex = mModel.findFirstNonPinnedTabIndex();
             for (int i = 0; i <= selectedTabs.size() - 1; i++) {
                 Tab tab = selectedTabs.get(i);
-                int currentTabModelIndex = mModel.indexOf(tab);
-                if (currentTabModelIndex > targetGatherIndex) {
-                    targetGatherIndex++;
-                } else if (currentTabModelIndex == targetGatherIndex) {
-                    continue;
+                if (tab.getIsPinned() == Boolean.TRUE.equals(mIsPrimaryPinned)) {
+                    // Gather as normal if has the same pin state.
+                    int currentTabModelIndex = mModel.indexOf(tab);
+                    if (currentTabModelIndex > targetGatherIndex) {
+                        targetGatherIndex++;
+                    } else if (currentTabModelIndex == targetGatherIndex) {
+                        continue;
+                    }
+                    mModel.moveTab(tab.getId(), targetGatherIndex);
+                } else {
+                    // Tabs whose pin state differs from the primary can move only to the last
+                    // pinned or first unpinned slot, any remaining distance is carried by
+                    // `offsetX`.
+                    if (tab.getIsPinned()) {
+                        mModel.moveTab(tab.getId(), mModel.findFirstNonPinnedTabIndex() - 1);
+                    } else {
+                        mModel.moveTab(tab.getId(), firstUnpinnedIndex++);
+                    }
                 }
-                mModel.moveTab(selectedTabs.get(i).getId(), targetGatherIndex);
             }
         }
+        setOffsetXForNonReorderedPartition(Boolean.TRUE.equals(mIsPrimaryPinned));
+    }
+
+    /**
+     * Positions the non-reordering partition to visually “gather” around the reordered (anchoring)
+     * partition. This is used only when the current selection mixes pinned and unpinned tabs.
+     * Exactly one partition actually reorders to primary tab in the model; the other partition’s
+     * tabs are repositioned by updating their {@code offsetX} so the whole selection appears
+     * contiguous.
+     *
+     * @param anchorOnPinned {@code true} to anchor on the pinned block (position unpinned around
+     *     it); {@code false} to anchor on the unpinned block (position pinned around it).
+     */
+    private void setOffsetXForNonReorderedPartition(boolean anchorOnPinned) {
+        if (!Boolean.TRUE.equals(mHasMixedPinState)) return;
+
+        boolean rtl = LocalizationUtils.isLayoutRtl();
+        StripLayoutTab anchorTab;
+        if (anchorOnPinned) {
+            anchorTab = mPinnedTabs.get(mPinnedTabs.size() - 1);
+            float anchorX =
+                    anchorTab.getIdealX()
+                            + anchorTab.getOffsetX()
+                            + (rtl ? 0f : getEffectiveTabWidth(/* isPinned= */ true));
+            for (StripLayoutTab tab : mUnpinnedTabs) {
+                float tabWidth = getEffectiveTabWidth(tab.getIsPinned());
+                if (rtl) anchorX -= tabWidth;
+                tab.setOffsetX(anchorX - tab.getIdealX());
+                if (!rtl) anchorX += tabWidth;
+            }
+        } else {
+            anchorTab = mUnpinnedTabs.get(0);
+            float anchorX =
+                    anchorTab.getIdealX()
+                            + anchorTab.getOffsetX()
+                            + (rtl ? getEffectiveTabWidth(anchorTab.getIsPinned()) : 0f);
+            for (int i = mPinnedTabs.size() - 1; i >= 0; i--) {
+                StripLayoutTab tab = mPinnedTabs.get(i);
+                float tabWidth = getEffectiveTabWidth(tab.getIsPinned());
+                if (!rtl) anchorX -= tabWidth;
+                tab.setOffsetX(anchorX - tab.getIdealX());
+                if (rtl) anchorX += tabWidth;
+            }
+        }
+    }
+
+    private List<Tab> convertStripTabsToTabs(List<StripLayoutTab> stripTabs) {
+        List<Tab> tabs = new ArrayList<>();
+        for (StripLayoutTab stripTab : stripTabs) {
+            tabs.add(mModel.getTabById(stripTab.getTabId()));
+        }
+        return tabs;
     }
 
     /**
@@ -340,37 +465,43 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
-            float offset) {
+            float offset,
+            List<StripLayoutTab> tabsToReorder) {
         assert mPrimaryInteractingStripTab != null;
 
         boolean towardEnd = isOffsetTowardEnd(offset);
         Tab primaryTab = mModel.getTabById(mPrimaryInteractingStripTab.getTabId());
         if (primaryTab == null) return false;
 
-        StripLayoutTab edgeTabInBlock = towardEnd ? mLastTabInBlock : mFirstTabInBlock;
-        if (edgeTabInBlock == null) return false;
+        StripLayoutTab reorderEdgeTab =
+                towardEnd ? tabsToReorder.get(tabsToReorder.size() - 1) : tabsToReorder.get(0);
+        Tab edgeTab = mModel.getTabById(reorderEdgeTab.getTabId());
+        if (reorderEdgeTab == null || edgeTab == null) return false;
         int edgeTabIndexInStrip =
-                StripLayoutUtils.findIndexForTab(stripTabs, edgeTabInBlock.getTabId());
+                StripLayoutUtils.findIndexForTab(stripTabs, reorderEdgeTab.getTabId());
 
         int adjTabIndex = towardEnd ? edgeTabIndexInStrip + 1 : edgeTabIndexInStrip - 1;
         Tab adjTab = mModel.getTabAt(adjTabIndex);
 
-        boolean isInGroup = mTabGroupModelFilter.isTabInTabGroup(primaryTab);
+        // If pinned state is different, then adjTab is ineligible for reordering.
+        if (adjTab != null && adjTab.getIsPinned() != reorderEdgeTab.getIsPinned()) adjTab = null;
+
+        boolean isInGroup = mTabGroupModelFilter.isTabInTabGroup(edgeTab);
         boolean mayDragInOrOutOfGroup =
                 adjTab == null
                         ? isInGroup
                         : StripLayoutUtils.notRelatedAndEitherTabInGroup(
-                                mTabGroupModelFilter, primaryTab, adjTab);
+                                mTabGroupModelFilter, edgeTab, adjTab);
 
+        // Return early if not reordering or removing from group.
         if (adjTab != null && mInteractingTabIds.contains(adjTab.getId())) return false;
-
-        if (adjTab != null && (adjTab.getIsPinned() != mPrimaryInteractingStripTab.getIsPinned())) {
-            return false;
-        }
+        if (adjTab == null && !isInGroup) return false;
 
         // Not interacting with tab groups.
         if (!mayDragInOrOutOfGroup) {
-            if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold(/* isPinned= */ false)) {
+            if (adjTab == null
+                    || Math.abs(offset)
+                            <= getTabSwapThreshold(/* isPinned= */ adjTab.getIsPinned())) {
                 return false;
             }
             moveAdjacentTabPastBlock(adjTab, towardEnd);
@@ -382,11 +513,11 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
         // Maybe drag out of group.
         if (isInGroup) {
             StripLayoutGroupTitle interactingGroupTitle =
-                    StripLayoutUtils.findGroupTitle(groupTitles, primaryTab.getTabGroupId());
+                    StripLayoutUtils.findGroupTitle(groupTitles, edgeTab.getTabGroupId());
             assumeNonNull(interactingGroupTitle);
             float threshold = getDragOutThreshold(interactingGroupTitle, towardEnd);
             if (Math.abs(offset) <= threshold) return false;
-            List<StripLayoutTab> interactingTabs = new ArrayList<>(mInteractingTabs);
+            List<StripLayoutTab> interactingTabs = new ArrayList<>(mUnpinnedTabs);
             if (towardEnd) Collections.reverse(interactingTabs);
             moveInteractingTabsOutOfGroup(
                     stripViews,
@@ -408,13 +539,13 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             float threshold = getGroupSwapThreshold(interactingGroupTitle);
             if (Math.abs(offset) <= threshold) return false;
 
-            moveAdjacentGroupPastBlock(interactingGroupTitle, towardEnd);
+            moveAdjacentGroupPastBlock(interactingGroupTitle, adjTab.getIsPinned(), towardEnd);
             animateViewSliding(interactingGroupTitle);
             return true;
         } else {
             // Maybe merge to group.
             if (Math.abs(offset) <= getDragInThreshold()) return false;
-            mergeBlockIntoGroup(stripTabs, adjTab, interactingGroupTitle, towardEnd);
+            mergeBlockIntoGroup(adjTab, interactingGroupTitle, towardEnd);
             return true;
         }
     }
@@ -431,7 +562,8 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
      * @param towardEnd True if the drag is toward the end of the strip (RTL: left, LTR: right).
      */
     private void moveAdjacentTabPastBlock(Tab adjTab, boolean towardEnd) {
-        int destinationIndex = getDestinationIndex(towardEnd);
+        int destinationIndex = getDestinationIndex(towardEnd, adjTab.getIsPinned());
+        if (destinationIndex == TabModel.INVALID_TAB_INDEX) return;
         mModel.moveTab(adjTab.getId(), destinationIndex);
     }
 
@@ -439,11 +571,12 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
      * Moves an entire adjacent tab group to the other side of the interacting block of tabs.
      *
      * @param adjGroupTitle The title of the group to move.
+     * @param isAdjPinned Whether the adjacent tab the group is dragging across is pinned.
      * @param towardEnd True if the drag is toward the end of the strip (RTL: left, LTR: right).
      */
     private void moveAdjacentGroupPastBlock(
-            StripLayoutGroupTitle adjGroupTitle, boolean towardEnd) {
-        int destinationIndex = getDestinationIndex(towardEnd);
+            StripLayoutGroupTitle adjGroupTitle, boolean isAdjPinned, boolean towardEnd) {
+        int destinationIndex = getDestinationIndex(towardEnd, isAdjPinned);
         Tab firstTabInAdjGroup =
                 mTabGroupModelFilter.getTabsInGroup(adjGroupTitle.getTabGroupId()).get(0);
         mTabGroupModelFilter.moveRelatedTabs(firstTabInAdjGroup.getId(), destinationIndex);
@@ -454,21 +587,24 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
      * interacting block.
      *
      * @param towardEnd True if the drag is toward the end of the strip (RTL: left, LTR: right).
+     * @param isPinned Whether the interacting tab block is pinned.
      * @return The model index where the item should be moved.
      */
-    private int getDestinationIndex(boolean towardEnd) {
-        int destinationIndex;
+    private int getDestinationIndex(boolean towardEnd, boolean isPinned) {
+        int destinationIndex = TabModel.INVALID_TAB_INDEX;
+        List<StripLayoutTab> block = isPinned ? mPinnedTabs : mUnpinnedTabs;
+        if (block.isEmpty()) {
+            return destinationIndex;
+        }
         if (towardEnd) {
             // The block is moving toward the end, so move the adjacent item to the start of the
             // block.
-            assert mFirstTabInBlock != null;
-            StripLayoutTab firstTabInBlock = mFirstTabInBlock;
+            StripLayoutTab firstTabInBlock = block.get(0);
             destinationIndex = mModel.indexOf(mModel.getTabById(firstTabInBlock.getTabId()));
         } else {
             // The block is moving toward the start, so move the adjacent item to the end of the
             // block.
-            assert mLastTabInBlock != null;
-            StripLayoutTab lastTabInBlock = mLastTabInBlock;
+            StripLayoutTab lastTabInBlock = block.get(block.size() - 1);
             destinationIndex = mModel.indexOf(mModel.getTabById(lastTabInBlock.getTabId()));
         }
         return destinationIndex;
@@ -477,20 +613,16 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     /**
      * Merges all tabs in the interacting block into an adjacent, expanded tab group.
      *
-     * @param stripTabs The array of tab views on the strip.
      * @param adjTab The adjacent tab, which is part of the destination group.
      * @param adjTitle The title view of the destination group.
      * @param towardEnd True if the drag is toward the end of the strip (RTL: left, LTR: right),
      *     which determines if the block is merged to the front or back of the group.
      */
     private void mergeBlockIntoGroup(
-            StripLayoutTab[] stripTabs,
-            Tab adjTab,
-            StripLayoutGroupTitle adjTitle,
-            boolean towardEnd) {
+            Tab adjTab, StripLayoutGroupTitle adjTitle, boolean towardEnd) {
         RecordUserAction.record("MobileToolbarReorderTab.TabsAddedToGroup");
         mTabGroupModelFilter.mergeListOfTabsToGroup(
-                getSortedSelectedTabs(stripTabs),
+                convertStripTabsToTabs(mUnpinnedTabs),
                 adjTab,
                 /* indexInGroup= */ towardEnd ? 0 : null,
                 /* notify= */ MergeNotificationType.DONT_NOTIFY);
@@ -506,34 +638,10 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
      */
     private List<Tab> getSortedSelectedTabs(StripLayoutTab[] stripTabs) {
         List<Tab> sortedTabs = new ArrayList<>();
-        HashSet<Integer> tabIdsToUnselect = new HashSet();
-        assumeNonNull(mPrimaryInteractingStripTab);
         for (StripLayoutTab stripTab : stripTabs) {
             if (stripTab != null && mModel.isTabMultiSelected(stripTab.getTabId())) {
-                // TODO(crbug.com/441978834):  This is a temporary workaround: if the selection
-                //  mixes pinned and unpinned tabs, only keep the tabs have the same pin state
-                //  as the primary tab. To match desktop behavior for mixed pinned/unpinned tabs,
-                //  when "ungather" them on drop we should:
-                // 1. When drop in pinned range: place pinned tabs at the drop point; snap unpinned
-                // tabs to the nearest valid indices.
-                // 2. Drop in unpinned range: place unpinned tabs at the drop point; move pinned
-                // tabs to the end of the pinned range.
-                if (stripTab.getIsPinned() == mPrimaryInteractingStripTab.getIsPinned()) {
-                    sortedTabs.add(mModel.getTabById(stripTab.getTabId()));
-                } else {
-                    tabIdsToUnselect.add(stripTab.getTabId());
-                }
+                sortedTabs.add(mModel.getTabById(stripTab.getTabId()));
             }
-        }
-        // Deselect the ones that don't move due to a different pin state. If this includes the
-        // current tab, switch to the primary tab.
-        if (tabIdsToUnselect.contains(TabModelUtils.getCurrentTabId(mModel))) {
-            TabModelUtils.setIndex(
-                    mModel,
-                    TabModelUtils.getTabIndexById(mModel, mPrimaryInteractingStripTab.getTabId()));
-        }
-        if (!tabIdsToUnselect.isEmpty()) {
-            mModel.setTabsMultiSelected(tabIdsToUnselect, /* isSelected= */ false);
         }
         return sortedTabs;
     }
