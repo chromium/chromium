@@ -47,6 +47,9 @@ class WebStateList;
     segmentation_platform::DeviceSwitcherResultDispatcher*
         deviceSwitcherResultDispatcher;
 
+/// Preferred toolbar to contain the omnibox.
+@property(nonatomic, readonly) ToolbarType preferredOmniboxPosition;
+
 /// Creates an instance of the mediator. Observers will be installed into all
 /// existing web states in `webStateList`. While the mediator is alive,
 /// observers will be added and removed from web states when they are inserted
