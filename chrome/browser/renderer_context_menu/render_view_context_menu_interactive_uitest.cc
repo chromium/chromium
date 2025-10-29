@@ -1231,8 +1231,7 @@ class GlicInteractiveContextMenuTest
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/450446123): Re-enable after fixing
-IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, DISABLED_GlicShareImage) {
+IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, GlicShareImage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithImage);
