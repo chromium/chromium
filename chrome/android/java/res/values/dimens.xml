@@ -304,8 +304,6 @@ found in the LICENSE file.
     <dimen name="context_menu_popup_header_image_max_size">36dp</dimen>
     <dimen name="context_menu_popup_header_monogram_size">16dp</dimen>
 
-    <dimen name="context_menu_flyout_popup_horizontal_overlap">8dp</dimen>
-
     <!-- History Navigation UI Item -->
     <dimen name="navigation_bubble_size">44dp</dimen>
     <dimen name="navigation_bubble_arrow_size">32dp</dimen>

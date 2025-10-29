@@ -383,6 +383,8 @@ public class ContextMenuCoordinatorTest {
                                 .with(SUBMENU_ITEMS, new ArrayList<>())
                                 .build());
         View mockAnchorView = mock(View.class);
+        doReturn(mActivity).when(mockAnchorView).getContext();
+
         mCoordinator.addFlyoutWindow(parentItem, mockAnchorView, 0);
 
         Assert.assertEquals(
@@ -419,6 +421,8 @@ public class ContextMenuCoordinatorTest {
                                 .with(SUBMENU_ITEMS, new ArrayList<>())
                                 .build());
         View mockAnchorView = mock(View.class);
+        doReturn(mActivity).when(mockAnchorView).getContext();
+
         mCoordinator.addFlyoutWindow(parentItem, mockAnchorView, 0);
 
         // Remove the flyout popup.

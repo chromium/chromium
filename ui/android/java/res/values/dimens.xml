@@ -119,9 +119,8 @@ found in the LICENSE file.
     <dimen name="list_divider_layout_height_desktop">10dp</dimen>
     <dimen name="list_menu_item_min_height_large_desktop">36dp</dimen>
 
-    <dimen name="list_menu_flyout_popup_horizontal_overlap">8dp</dimen>
-
     <!-- Hierarchical menu -->
+    <dimen name="hierarchical_menu_flyout_popup_horizontal_overlap">8dp</dimen>
     <!--
          min_spacing is the minimum non-overlapping width of the main popup
          and the flyout popup.

@@ -209,6 +209,36 @@ public class FlyoutController<T> {
     }
 
     /**
+     * Calculate the rect for flyout popups to anchor to, which is useful in case the flyout popup
+     * uses {@code AnchoredPopupWindow}. The rect represents the bounds of the {@code itemView}
+     * relative to the {@code rootView}, adjusted with the overlap.
+     *
+     * @param itemView The {@link View} that triggers the flyout menu (e.g., the list item).
+     * @param rootView The root {@link View} of the window/popup, used to calculate the relative
+     *     coordinates.
+     * @return A new {@link Rect} defining the anchor bounds for the flyout popup.
+     */
+    public static Rect calculateFlyoutAnchorRect(View itemView, View rootView) {
+        int[] result = new int[2];
+        itemView.getLocationOnScreen(result);
+
+        int[] rootCoordinates = new int[2];
+        rootView.getLocationOnScreen(rootCoordinates);
+
+        int horizontalOverlap =
+                itemView.getContext()
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.hierarchical_menu_flyout_popup_horizontal_overlap);
+
+        return new Rect(
+                result[0] - rootCoordinates[0] + horizontalOverlap,
+                result[1] - rootCoordinates[1],
+                result[0] - rootCoordinates[0] + itemView.getWidth() - horizontalOverlap,
+                result[1] - rootCoordinates[1] + itemView.getHeight());
+    }
+
+    /**
      * Cancels the timer that was supposed to remove or add flyout popups.
      *
      * @param view The hovered view.

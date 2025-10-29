@@ -42,6 +42,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
@@ -468,23 +469,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     private static Rect calculateFlyoutAnchorRect(
             Activity activity, WindowAndroid windowAndroid, View itemView) {
-        int[] result = new int[2];
-        itemView.getLocationOnScreen(result);
+        Rect anchorRect =
+                FlyoutController.calculateFlyoutAnchorRect(
+                        itemView, activity.getWindow().getDecorView());
+        anchorRect.offset(0, (int) topContentOffset(0, windowAndroid));
 
-        int[] rootCoordinates = new int[2];
-        activity.getWindow().getDecorView().getLocationOnScreen(rootCoordinates);
-
-        int verticalOffset = (int) topContentOffset(0, windowAndroid);
-        int horizontalOverlap =
-                activity.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.context_menu_flyout_popup_horizontal_overlap);
-
-        return new Rect(
-                result[0] - rootCoordinates[0] + horizontalOverlap,
-                result[1] - rootCoordinates[1] + verticalOffset,
-                result[0] - rootCoordinates[0] + itemView.getWidth() - horizontalOverlap,
-                result[1] - rootCoordinates[1] + verticalOffset);
+        return anchorRect;
     }
 
     /**
