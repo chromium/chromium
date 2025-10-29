@@ -439,6 +439,7 @@ chromium-metrics-reviews@google.com.
     On iOS, this histogram is always emitted on profile open and not emitted any
     other time.
   </summary>
+  <token key="ProfileActivityThreshold" variants="ProfileActivityThreshold"/>
 </histogram>
 
 <histogram name="Profile.NumberOfManagedProfiles{ProfileActivityThreshold}"
@@ -453,10 +454,10 @@ chromium-metrics-reviews@google.com.
     counted separately (even if it is managed); it is considered part of its
     &quot;parent&quot; profile.
 
-    This is intended to count only profiles that have been used in the last 28
-    days. However, active usage detection does not work correctly on all
-    platforms and for all Chrome versions. See details in the description of
-    Profile.NumberOfActiveProfiles.
+    This is intended to count only profiles that have been used in the last
+    {ProfileActivityThreshold}. However, active usage detection does not work
+    correctly on all platforms and for all Chrome versions. See details in the
+    description of Profile.NumberOfActiveProfiles.
 
     On non-iOS platforms, this histogram is emitted on startup if it has been
     more than 24 hours since the last time the histogram was emitted. It is also
@@ -474,6 +475,7 @@ chromium-metrics-reviews@google.com.
 
     Might have incomplete data between 2021-03-12 and 2021-05-26.
   </summary>
+  <token key="ProfileActivityThreshold" variants="ProfileActivityThreshold"/>
 </histogram>
 
 <histogram name="Profile.NumberOfProfiles" units="profiles"
@@ -545,10 +547,10 @@ chromium-metrics-reviews@google.com.
     Counts the number of signed-in (syncing) profiles on a user's machine. Only
     emitted for users with at least one profile (of any type).
 
-    This is intended to count only profiles that have been used in the last 28
-    days. However, active usage detection does not work correctly on all
-    platforms and for all Chrome versions. See details in the description of
-    Profile.NumberOfActiveProfiles.
+    This is intended to count only profiles that have been used in the last
+    {ProfileActivityThreshold}. However, active usage detection does not work
+    correctly on all platforms and for all Chrome versions. See details in the
+    description of Profile.NumberOfActiveProfiles.
 
     On non-iOS platforms, this histogram is emitted on startup if it has been
     more than 24 hours since the last time the histogram was emitted. It is also
@@ -564,6 +566,7 @@ chromium-metrics-reviews@google.com.
     On iOS, this histogram is always emitted on profile open and not emitted any
     other time.
   </summary>
+  <token key="ProfileActivityThreshold" variants="ProfileActivityThreshold"/>
 </histogram>
 
 <histogram name="Profile.NumberOfUnusedProfiles{ProfileActivityThreshold}"
@@ -594,6 +597,7 @@ chromium-metrics-reviews@google.com.
     On iOS, this histogram is always emitted on profile open and not emitted any
     other time.
   </summary>
+  <token key="ProfileActivityThreshold" variants="ProfileActivityThreshold"/>
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles{ProfileActivityThreshold}"
@@ -629,6 +633,7 @@ chromium-metrics-reviews@google.com.
     On iOS, this histogram is always emitted on profile open and not emitted any
     other time.
   </summary>
+  <token key="ProfileActivityThreshold" variants="ProfileActivityThreshold"/>
 </histogram>
 
 <histogram name="Profile.ProfileError2" enum="ProfileErrorType"
