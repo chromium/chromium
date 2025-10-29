@@ -332,6 +332,9 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     if (tabstrip_visible) {
       tabstrip_bounds =
           GetBoundsWithExclusion(params, views().tab_strip_region_view);
+      // TODO(https://crbug.com/454583671): Figure out if we always want to
+      // apply TABSTRIP_TOOLBAR_OVERLAP, or whether it should not apply to
+      // toolbar height side panel.
       y = tabstrip_bounds.bottom() -
           GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
       used_exclusion = true;
@@ -345,20 +348,18 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // Lay out toolbar-height side panel.
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
-    const int preferred_width =
+    const int width =
         views().toolbar_height_side_panel->GetPreferredSize().width();
-    int animated_width = preferred_width *
-                         views().toolbar_height_side_panel->GetAnimationValue();
-    if (animated_width > 0) {
-      const int top = std::max(
-          y, params.visual_client_area.y() +
-                 base::ClampCeil(
-                     params.leading_exclusion.ContentWithPadding().height()));
-      const gfx::Rect toolbar_height_bounds(
-          x, top, animated_width, params.visual_client_area.bottom() - top);
-      x = toolbar_height_bounds.right();
-      layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
-    }
+    const int visible_width = base::ClampFloor(
+        width * views().toolbar_height_side_panel->GetAnimationValue());
+    const int top = std::max(
+        y, params.visual_client_area.y() +
+               base::ClampCeil(
+                   params.leading_exclusion.ContentWithPadding().height()));
+    gfx::Rect toolbar_height_bounds(x - (width - visible_width), top, width,
+                                    params.visual_client_area.bottom() - top);
+    x = toolbar_height_bounds.right();
+    layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
   }
 
   // Layout the main container.
@@ -431,6 +432,7 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
                    views().main_container)) {
     SidePanel* const side_panel = views().contents_height_side_panel;
     int side_panel_width = 0;
+    int side_panel_visible_width = 0;
     const bool is_right_aligned = side_panel->IsRightAligned();
     side_panel_leading = is_right_aligned == base::i18n::IsRTL();
     if (side_panel->GetVisible()) {
@@ -450,17 +452,20 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
               : horizontal_space.length() - min_contents_width;
       side_panel_width =
           std::max(min_width, std::min(preferred_width, max_width));
+      side_panel_visible_width = base::ClampFloor(
+          side_panel_width *
+          views().contents_height_side_panel->GetAnimationValue());
     }
 
-    // Original layout sets side panel bounds regardless of visibility because
-    // when the side panel animates open we want it to start at zero size.
+    // Side panel slides in from the edge of the main container..
     const gfx::Rect side_panel_bounds(
-        side_panel_leading ? horizontal_space.start()
-                           : horizontal_space.end() - side_panel_width,
+        side_panel_leading ? horizontal_space.start() -
+                                 (side_panel_width - side_panel_visible_width)
+                           : horizontal_space.end() - side_panel_visible_width,
         side_panel_top, side_panel_width,
         params.visual_client_area.bottom() - side_panel_top);
     layout.AddChild(side_panel, side_panel_bounds);
-    Inset(horizontal_space, side_panel_width, side_panel_leading);
+    Inset(horizontal_space, side_panel_visible_width, side_panel_leading);
   }
 
   // This will be used to position the separator corner.
