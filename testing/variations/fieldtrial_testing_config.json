@@ -13797,6 +13797,21 @@
             ]
         }
     ],
+    "IOSShowTabGroupInGridOnStart": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowTabGroupInGridOnStart"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSkipCookieCaching": [
         {
             "platforms": [
