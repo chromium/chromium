@@ -366,9 +366,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // enable mnemonics.
   bool menu_uses_mnemonics_ = false;
 
-  base::ScopedObservation<BookmarkContextMenu, BookmarkContextMenuObserver>
-      bookmark_context_menu_observation_{this};
-
   base::ScopedObservation<BookmarkMergedSurfaceService,
                           BookmarkMergedSurfaceServiceObserver>
       bookmark_merged_service_observation_{this};

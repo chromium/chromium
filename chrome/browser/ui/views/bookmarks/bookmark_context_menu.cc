@@ -39,8 +39,6 @@ bool IsRemoveBookmarksCommand(int command_id) {
 
 }  // namespace
 
-BookmarkContextMenuObserver::~BookmarkContextMenuObserver() = default;
-
 ////////////////////////////////////////////////////////////////////////////////
 // BookmarkContextMenu, public:
 
@@ -97,15 +95,6 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
-void BookmarkContextMenu::AddObserver(BookmarkContextMenuObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void BookmarkContextMenu::RemoveObserver(
-    BookmarkContextMenuObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // BookmarkContextMenu, views::MenuDelegate implementation:
 
@@ -130,7 +119,9 @@ bool BookmarkContextMenu::ShouldCloseAllMenusOnExecute(int id) {
 }
 
 void BookmarkContextMenu::OnMenuClosed(views::MenuItemView* menu) {
-  observers_.Notify(&BookmarkContextMenuObserver::OnContextMenuClosed);
+  if (observer_) {
+    observer_->OnContextMenuClosed();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,14 +136,13 @@ void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         bookmarks) {
-  if (IsRemoveBookmarksCommand(command_id)) {
-    observers_.Notify(&BookmarkContextMenuObserver::WillRemoveBookmarks,
-                      bookmarks);
+  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
+    observer_->WillRemoveBookmarks(bookmarks);
   }
 }
 
 void BookmarkContextMenu::DidExecuteCommand(int command_id) {
-  if (IsRemoveBookmarksCommand(command_id)) {
-    observers_.Notify(&BookmarkContextMenuObserver::DidRemoveBookmarks);
+  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
+    observer_->DidRemoveBookmarks();
   }
 }

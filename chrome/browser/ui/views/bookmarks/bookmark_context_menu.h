@@ -20,7 +20,7 @@ class Widget;
 }  // namespace views
 
 // Observer for the BookmarkContextMenu.
-class BookmarkContextMenuObserver : public base::CheckedObserver {
+class BookmarkContextMenuObserver {
  public:
   // Invoked before the specified items are removed from the bookmark model.
   virtual void WillRemoveBookmarks(
@@ -34,7 +34,7 @@ class BookmarkContextMenuObserver : public base::CheckedObserver {
   virtual void OnContextMenuClosed() = 0;
 
  protected:
-  ~BookmarkContextMenuObserver() override;
+  virtual ~BookmarkContextMenuObserver() = default;
 };
 
 class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
@@ -66,8 +66,9 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   views::MenuItemView* menu() const { return menu_; }
 
-  void AddObserver(BookmarkContextMenuObserver* observer);
-  void RemoveObserver(BookmarkContextMenuObserver* observer);
+  void set_observer(BookmarkContextMenuObserver* observer) {
+    observer_ = observer;
+  }
 
   // Overridden from views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
@@ -97,7 +98,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   // The menu itself. This is owned by `menu_runner_`.
   const raw_ptr<views::MenuItemView> menu_;
 
-  base::ObserverList<BookmarkContextMenuObserver> observers_;
+  raw_ptr<BookmarkContextMenuObserver> observer_ = nullptr;
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;
