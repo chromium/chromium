@@ -17,14 +17,9 @@ namespace device_signals {
 namespace {
 
 void NormalizeMacAddresses(std::vector<std::string>& mac_addresses) {
-  mac_addresses.erase(std::remove_if(mac_addresses.begin(), mac_addresses.end(),
-                                     [](const std::string& s) {
-                                       return base::TrimWhitespaceASCII(
-                                                  s,
-                                                  base::TrimPositions::TRIM_ALL)
-                                           .empty();
-                                     }),
-                      mac_addresses.end());
+  std::erase_if(mac_addresses, [](const std::string& s) {
+    return base::TrimWhitespaceASCII(s, base::TrimPositions::TRIM_ALL).empty();
+  });
 
   std::sort(mac_addresses.begin(), mac_addresses.end());
   mac_addresses.erase(std::unique(mac_addresses.begin(), mac_addresses.end()),
