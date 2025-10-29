@@ -26,7 +26,9 @@ public final class EdgeToEdgeUtil {
                     Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
                     // Apply the insets paddings to the view.
                     v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-                    return windowInsets;
+                    return new WindowInsetsCompat.Builder(windowInsets)
+                            .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.NONE)
+                            .build();
                 });
     }
 }
