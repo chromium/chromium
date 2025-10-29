@@ -48,9 +48,8 @@ void DrawFullyRoundedRect(gfx::Canvas* canvas,
                           const gfx::RectF& bounds,
                           const cc::PaintFlags& flags) {
   const SkScalar corner_radius = std::min(bounds.width(), bounds.height()) / 2;
-  SkPath rounded_rect;
-  rounded_rect.addRoundRect(gfx::RectFToSkRect(bounds), corner_radius,
-                            corner_radius);
+  const SkPath rounded_rect = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectFToSkRect(bounds), corner_radius, corner_radius));
   canvas->DrawPath(rounded_rect, flags);
 }
 

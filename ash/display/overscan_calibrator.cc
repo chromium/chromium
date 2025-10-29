@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -50,22 +51,20 @@ void DrawTriangle(int x_offset,
   border_flags.setColor(SkColorSetA(
       SK_ColorWHITE, std::numeric_limits<uint8_t>::max() * kArrowOpacity));
 
-  SkPath base_path;
-  base_path.moveTo(0, 0);
-  base_path.lineTo(SkIntToScalar(-kCalibrationArrowHeight),
-                   SkIntToScalar(-kCalibrationArrowHeight));
-  base_path.lineTo(SkIntToScalar(kCalibrationArrowHeight),
-                   SkIntToScalar(-kCalibrationArrowHeight));
-  base_path.close();
-
-  SkPath path;
   gfx::Transform rotate_transform;
   rotate_transform.Rotate(rotation_degree);
   gfx::Transform move_transform;
   move_transform.Translate(x_offset, y_offset);
   rotate_transform.PostConcat(move_transform);
-  base_path.transform(gfx::TransformToFlattenedSkMatrix(rotate_transform),
-                      &path);
+
+  const SkPath path =
+      SkPathBuilder()
+          .moveTo(0, 0)
+          .lineTo(-kCalibrationArrowHeight, -kCalibrationArrowHeight)
+          .lineTo(kCalibrationArrowHeight, -kCalibrationArrowHeight)
+          .close()
+          .transform(gfx::TransformToFlattenedSkMatrix(rotate_transform))
+          .detach();
 
   canvas->DrawPath(path, content_flags);
   canvas->DrawPath(path, border_flags);

@@ -74,6 +74,8 @@
 #include "cc/paint/paint_flags.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
@@ -2457,11 +2459,13 @@ void CaptureModeSession::PaintSunfishCaptureRegion(gfx::Canvas* canvas) {
   auto draw_corner_arc = [&canvas, &corner_arc_flags, &arc_diameter](
                              int circle_left, int circle_top,
                              SkScalar start_angle) {
-    SkPath corner_arc;
-    corner_arc.arcTo(/*oval=*/SkRect::MakeXYWH(circle_left, circle_top,
-                                               arc_diameter, arc_diameter),
-                     /*startAngle=*/start_angle,
-                     /*sweepAngle=*/90, /*forceMoveTo=*/false);
+    const SkPath corner_arc =
+        SkPathBuilder()
+            .arcTo(/*oval=*/SkRect::MakeXYWH(circle_left, circle_top,
+                                             arc_diameter, arc_diameter),
+                   /*startAngle=*/start_angle,
+                   /*sweepAngle=*/90, /*forceMoveTo=*/false)
+            .detach();
     canvas->DrawPath(corner_arc, corner_arc_flags);
   };
 

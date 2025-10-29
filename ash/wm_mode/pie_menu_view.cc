@@ -20,6 +20,7 @@
 #include "cc/paint/paint_flags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -189,7 +190,7 @@ class PieMenuButton : public views::Button,
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override {
-    mask->addPath(ComputePieSlicePath(/*for_masking=*/true));
+    *mask = ComputePieSlicePath(/*for_masking=*/true);
     return true;
   }
 
@@ -235,7 +236,7 @@ class PieMenuButton : public views::Button,
     inner_circle_rect.ClampToCenteredSize(
         gfx::Size(2 * kBackButtonRadius, 2 * kBackButtonRadius));
 
-    SkPath path;
+    SkPathBuilder path;
     // Clamp the `sweep_angle_` to a maximum of 359.5 since we can't paint an
     // arc from 360 back to -360.
     const float sweep_angle = std::clamp(sweep_angle_, 0.0f, 359.5f);
@@ -260,7 +261,7 @@ class PieMenuButton : public views::Button,
         gfx::PointF(local_bounds.CenterPoint()), transform);
     path.transform(gfx::TransformToFlattenedSkMatrix(transform));
 
-    return path;
+    return path.detach();
   }
 
   // The unique ID of this button among all buttons in the hosting pie menu.

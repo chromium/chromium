@@ -45,9 +45,9 @@ class BulletView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override {
     View::OnPaint(canvas);
 
-    SkPath path;
-    path.addCircle(GetLocalBounds().CenterPoint().x(),
-                   GetLocalBounds().CenterPoint().y(), radius_);
+    const SkPath path =
+        SkPath::Circle(GetLocalBounds().CenterPoint().x(),
+                       GetLocalBounds().CenterPoint().y(), radius_);
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(color_);

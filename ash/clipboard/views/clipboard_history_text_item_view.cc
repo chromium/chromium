@@ -13,6 +13,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -92,7 +93,7 @@ class ClipboardHistoryTextItemView::TextContentsView
     const auto height = std::max(contents_bounds.height(),
                                  ClipboardHistoryViews::kCornerCutoutHeight);
 
-    return SkPath()
+    return SkPathBuilder()
         // Start at the top-left corner.
         .moveTo(0.f, 0.f)
         // Draw a vertical line to the bottom-left corner.
@@ -109,7 +110,8 @@ class ClipboardHistoryTextItemView::TextContentsView
         .rCubicTo(0.f, -3.3f, -2.f, -10.f, -10.f, -10.f)
         // Draw a horizontal line back to the starting point.
         .lineTo(0.f, 0.f)
-        .close();
+        .close()
+        .detach();
   }
 };
 

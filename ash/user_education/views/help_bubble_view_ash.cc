@@ -830,7 +830,7 @@ gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
 }
 
 void HelpBubbleViewAsh::GetWidgetHitTestMask(SkPath* mask) const {
-  mask->addRect(gfx::RectToSkRect(GetHitRect()));
+  *mask = SkPath::Rect(gfx::RectToSkRect(GetHitRect()));
 }
 
 bool HelpBubbleViewAsh::WidgetHasHitTestMask() const {

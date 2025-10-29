@@ -563,10 +563,9 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
       const gfx::Rect rect(GetContentsBounds());
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
-      SkPath mask;
-      mask.addCircle(rect.CenterPoint().x(), rect.CenterPoint().y(),
-                     rect.width() / 2);
-      canvas->ClipPath(mask, true);
+      const SkPath mask = SkPath::Circle(
+          rect.CenterPoint().x(), rect.CenterPoint().y(), rect.width() / 2);
+      canvas->ClipPath(mask, /*do_anti_alias=*/true);
       canvas->DrawImageInt(background_image_, 0, 0, flags);
     }
   }

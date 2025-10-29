@@ -12,6 +12,8 @@
 #include "ash/style/color_util.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -58,9 +60,11 @@ void PaintLoadingArc(gfx::Canvas* canvas,
   // Inset to make sure the whole arc is inside the visible rect.
   oval.Inset(gfx::Insets::VH(/*vertical=*/1, /*horizontal=*/1));
 
-  SkPath path;
-  path.arcTo(RectToSkRect(oval), /*startAngle=*/-90,
-             /*sweepAngle=*/360 * loading_fraction, /*forceMoveTo=*/true);
+  const SkPath path =
+      SkPathBuilder()
+          .arcTo(RectToSkRect(oval), /*startAngle=*/-90,
+                 /*sweepAngle=*/360 * loading_fraction, /*forceMoveTo=*/true)
+          .detach();
 
   cc::PaintFlags flags;
   // Use the same color as the arrow icon.

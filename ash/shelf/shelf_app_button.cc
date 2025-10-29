@@ -46,6 +46,7 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -285,10 +286,10 @@ class ShelfAppButton::AppStatusIndicatorView
       end = start;
       end.Offset(0, stroke_length);
     }
-    SkPath path;
-    path.moveTo(start.x() * dsf, start.y() * dsf);
-    path.lineTo(end.x() * dsf, end.y() * dsf);
-    canvas->DrawPath(path, flags);
+
+    start.Scale(dsf);
+    end.Scale(dsf);
+    canvas->DrawLine(start, end, flags);
   }
 
   float GetStrokeLength() {

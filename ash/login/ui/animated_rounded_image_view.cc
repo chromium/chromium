@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
@@ -143,13 +144,9 @@ void AnimatedRoundedImageView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
   gfx::Rect image_bounds(GetContentsBounds());
   image_bounds.ClampToCenteredSize(GetPreferredSize());
-  const SkScalar kRadius[8] = {
-      SkIntToScalar(corner_radius_), SkIntToScalar(corner_radius_),
-      SkIntToScalar(corner_radius_), SkIntToScalar(corner_radius_),
-      SkIntToScalar(corner_radius_), SkIntToScalar(corner_radius_),
-      SkIntToScalar(corner_radius_), SkIntToScalar(corner_radius_)};
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(image_bounds), kRadius);
+  const SkPath path = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(image_bounds), corner_radius_, corner_radius_));
+
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   canvas->DrawImageInPath(frames_[active_frame_].image, image_bounds.x(),
