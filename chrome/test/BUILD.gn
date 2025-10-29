@@ -9818,12 +9818,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chromeos) {
-    sources += [ "../browser/shell_integration_chromeos_unittest.cc" ]
-  }
-  if (is_mac) {
-    sources += [ "../browser/shell_integration_mac_unittest.mm" ]
-  }
   if (is_linux) {
     sources += [ "../browser/shell_integration_linux_unittest.cc" ]
 

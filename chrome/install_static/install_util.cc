@@ -405,10 +405,6 @@ const wchar_t* GetBrowserProgIdDescription() {
   return InstallDetails::Get().mode().browser_prog_id_description;
 }
 
-const char* GetDirectLaunchUrlScheme() {
-  return InstallDetails::Get().mode().direct_launch_url_scheme;
-}
-
 const wchar_t* GetPDFProgIdPrefix() {
   return InstallDetails::Get().mode().pdf_prog_id_prefix;
 }

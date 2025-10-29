@@ -748,10 +748,6 @@ DefaultWebClientState IsDefaultHandlerForFileExtension(
           base::UTF8ToWide(file_extension)));
 }
 
-std::string GetDirectLaunchUrlScheme() {
-  return install_static::GetDirectLaunchUrlScheme();
-}
-
 namespace internal {
 
 DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(

@@ -5,15 +5,11 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
 #include "base/command_line.h"
-#include "base/strings/strcat.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/shell_integration.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,25 +24,10 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/strings/sys_string_conversions.h"
 #define CMD_ARG(x) L##x
 #else
 #define CMD_ARG(x) x
-#endif  // !BUILDFLAG(IS_WIN)
-
-namespace {
-
-// Helper to create a CommandLine object from a single argument, handling
-// platform differences for string types.
-static base::CommandLine MakeCommandLine(std::string_view argument) {
-#if BUILDFLAG(IS_WIN)
-  return base::CommandLine({L"", base::ASCIIToWide(argument)});
-#else
-  return base::CommandLine({"", std::string(argument)});
 #endif
-}
-
-}  // namespace
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   std::vector<GURL> input = {GURL(u"https://new_tab_page"),
@@ -351,9 +332,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   }
 }
 
-TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
-  const std::string scheme_prefix =
-      base::StrCat({shell_integration::GetDirectLaunchUrlScheme(), "://"});
+TEST(StartupTabProviderTest, GetCommandLineTabsGoogleChromeScheme) {
   base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
@@ -361,11 +340,10 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
   TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
       &profile, base::BindOnce(&TemplateURLServiceFactory::BuildInstanceFor));
 
-  // Custom scheme case with valid external url.
+  // google-chrome:// scheme case with valid external url.
   {
-    const std::string arg_ascii =
-        base::StrCat({scheme_prefix, "https://www.google.com"});
-    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("google-chrome://https://www.google.com")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -376,11 +354,10 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with a file URL.
+  // google-chrome:// scheme case with a file URL.
   {
-    const std::string arg_ascii =
-        base::StrCat({scheme_prefix, "file:///tmp/test.html"});
-    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("google-chrome://file:///tmp/test.html")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -391,12 +368,11 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with a chrome:// URL. This is not allowed,
+  // google-chrome:// scheme case with a chrome:// URL. This is not allowed,
   // except on ChromeOS where any settings page is allowed.
   {
-    const std::string arg_ascii =
-        base::StrCat({scheme_prefix, "chrome://settings"});
-    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("google-chrome://chrome://settings")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -420,9 +396,9 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
 #endif
   }
 
-  // Custom scheme case with no inner URL.
+  // google-chrome:// scheme case with no inner URL.
   {
-    base::CommandLine command_line = MakeCommandLine(scheme_prefix);
+    base::CommandLine command_line({CMD_ARG(""), CMD_ARG("google-chrome://")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -432,12 +408,11 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
+
   // search query.
   {
-    const std::string arg_ascii = base::StrCat(
-        {scheme_prefix,
-         "https://www.google.com/search?q=Foo&sourceid=chrome&ie=UTF-8"});
-    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    base::CommandLine command_line({CMD_ARG(""),
+	CMD_ARG("google-chrome://https://www.google.com/search?q=Foo&sourceid=chrome&ie=UTF-8")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -447,11 +422,10 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with a URL with a fragment.
+  // google-chrome:// scheme case with a URL with a fragment.
   {
-    const std::string arg_ascii =
-        base::StrCat({scheme_prefix, "https://www.google.com#test"});
-    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("google-chrome://https://www.google.com#test")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
@@ -462,10 +436,10 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-  // Custom scheme case with file: path fix up
+  // google-chrome:// scheme case with file: path fix up
   {
-    const std::string arg_ascii = base::StrCat({scheme_prefix, "file:foo.txt"});
-    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    base::CommandLine command_line(
+        {CMD_ARG(""), CMD_ARG("google-chrome://file:foo.txt")});
     StartupTabProviderImpl instance;
     StartupTabs output =
         instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);

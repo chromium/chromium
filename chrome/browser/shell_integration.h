@@ -181,20 +181,6 @@ void AppendProfileArgs(const base::FilePath& profile_path,
 std::u16string GetAppShortcutsSubdirName();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-// Returns the URL scheme for google-chrome:// URLs.
-// This varies based on channel, branding, and platform to ensure that
-// different installations do not collide. For example:
-// - "google-chrome" for Google Chrome stable
-// - "google-chrome-beta" on Linux for Google Chrome beta, and on macOS and
-//   Windows for side-by-side Google Chrome beta installs.
-// - "chromium" for Chromium
-// This should not be used for Chrome for Testing builds, as those builds
-// are not intended for user installation or shell integration.
-std::string GetDirectLaunchUrlScheme();
-#endif
-
 // The type of callback used to communicate processing state to consumers of
 // DefaultBrowserWorker and DefaultSchemeClientWorker.
 using DefaultWebClientWorkerCallback =
