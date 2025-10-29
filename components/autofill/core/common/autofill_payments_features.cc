@@ -189,7 +189,7 @@ BASE_FEATURE(kAutofillEnableLoadBnplAllowlistAfterSyncing,
 // When enabled, virtual card downstream enrollment will support multiple
 // requests at a time.
 BASE_FEATURE(kAutofillEnableMultipleRequestInVirtualCardDownstreamEnrollment,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the card benefits toggle in settings will show updated text.
 BASE_FEATURE(kAutofillEnableNewCardBenefitsToggleText,

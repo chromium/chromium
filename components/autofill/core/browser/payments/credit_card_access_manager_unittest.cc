@@ -2602,7 +2602,10 @@ TEST_F(CreditCardAccessManagerTest, InvokeVirtualCardEnrollmentPreflightCall) {
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/nullptr, &autofill_client());
+          /*payments_network_interface=*/
+          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+              nullptr),
+          &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
       ->set_virtual_card_enrollment_manager(
@@ -2630,7 +2633,10 @@ TEST_F(CreditCardAccessManagerTest,
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/nullptr, &autofill_client());
+          /*payments_network_interface=*/
+          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+              nullptr),
+          &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
       ->set_virtual_card_enrollment_manager(
@@ -2659,7 +2665,10 @@ TEST_F(CreditCardAccessManagerTest,
   auto virtual_card_enrollment_manager =
       std::make_unique<MockVirtualCardEnrollmentManager>(
           &personal_data().payments_data_manager(),
-          /*payments_network_interface=*/nullptr, &autofill_client());
+          /*payments_network_interface=*/
+          static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+              nullptr),
+          &autofill_client());
   autofill_client()
       .GetPaymentsAutofillClient()
       ->set_virtual_card_enrollment_manager(

@@ -51,7 +51,7 @@ class MultipleRequestPaymentsNetworkInterface
   // Retrieve information necessary for the enrollment from the server. This is
   // invoked before we show the bubble to request user consent for the
   // enrollment.
-  RequestId GetVirtualCardEnrollmentDetails(
+  virtual RequestId GetVirtualCardEnrollmentDetails(
       const GetDetailsForEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const GetDetailsForEnrollmentResponseDetails&)>

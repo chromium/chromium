@@ -545,7 +545,10 @@ class FormDataImporterTest : public testing::Test {
 
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            &payments_data_manager(), nullptr, &client());
+            &payments_data_manager(),
+            static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
+                nullptr),
+            &client());
     payments_client().set_virtual_card_enrollment_manager(
         std::move(virtual_card_enrollment_manager));
     auto credit_card_save_manager =

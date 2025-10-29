@@ -12,7 +12,7 @@ namespace autofill {
 
 TestVirtualCardEnrollmentManager::TestVirtualCardEnrollmentManager(
     PaymentsDataManager* payments_data_manager,
-    payments::TestPaymentsNetworkInterface* payments_network_interface,
+    PaymentsNetworkInterfaceVariation payments_network_interface,
     TestAutofillClient* autofill_client = nullptr)
     : VirtualCardEnrollmentManager(payments_data_manager,
                                    payments_network_interface,
