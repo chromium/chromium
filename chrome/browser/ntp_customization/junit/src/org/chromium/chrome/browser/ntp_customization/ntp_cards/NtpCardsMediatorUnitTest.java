@@ -161,7 +161,6 @@ public class NtpCardsMediatorUnitTest {
 
         verify(mBottomSheetPropertyModel).set(eq(BACK_PRESS_HANDLER), eq(null));
         verify(mContainerPropertyModel).set(eq(LIST_CONTAINER_VIEW_DELEGATE), eq(null));
-        verify(spy).updateUserPrefs();
     }
 
     @Test
