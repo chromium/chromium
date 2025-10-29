@@ -161,6 +161,11 @@ class SchedulerLoopQuarantineBranch {
   void AllowScanlessPurge();
   void DisallowScanlessPurge();
 
+  // Once called, all the branches stop purging. This means every branch grows
+  // unbounded, potentially resulting in OOM. However, if we know the program
+  // is being terminated, this can help reduce hangs.
+  static void DangerouslyDisablePurge();
+
   const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
 
   class ScopedQuarantineExclusion {

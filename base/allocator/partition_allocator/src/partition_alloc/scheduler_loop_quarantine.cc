@@ -9,6 +9,8 @@
 
 #include "partition_alloc/scheduler_loop_quarantine.h"
 
+#include <atomic>
+
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_page.h"
@@ -34,6 +36,11 @@ class PA_SCOPED_LOCKABLE FakeScopedGuard {
 template <bool thread_bound>
 using ScopedGuardIfNeeded =
     std::conditional_t<thread_bound, FakeScopedGuard, ScopedGuard>;
+
+// When set to `true`, all the branches stop purging. It helps to reduce
+// shutdown hangs.
+std::atomic_bool g_no_purge = false;
+
 }  // namespace
 
 template <bool thread_bound>
@@ -179,6 +186,10 @@ PA_ALWAYS_INLINE void
 SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
     size_t target_size_in_bytes,
     [[maybe_unused]] bool for_destruction) {
+  if (g_no_purge.load(std::memory_order_relaxed)) {
+    return;
+  }
+
   int64_t freed_count = 0;
   int64_t freed_size_in_bytes = 0;
 
@@ -277,6 +288,12 @@ void SchedulerLoopQuarantineBranch<thread_bound>::DisallowScanlessPurge() {
 
   ++disallow_scanless_purge_;
   PA_CHECK(disallow_scanless_purge_ > 0);  // Overflow check.
+}
+
+// static
+template <bool thread_bound>
+void SchedulerLoopQuarantineBranch<thread_bound>::DangerouslyDisablePurge() {
+  g_no_purge.store(true, std::memory_order_relaxed);
 }
 
 template <bool thread_bound>
