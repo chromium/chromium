@@ -3770,40 +3770,47 @@ const AtomicString& AXNodeObject::EffectiveTarget() const {
 }
 
 AccessibilityOrientation AXNodeObject::Orientation() const {
+  // TODO(accessibility): aria-orientation stopped being supported on combobox
+  // in ARIA 1.2, but removing that exposure causes several tests to fail.
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxGrouping ||
+      RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton ||
+      RoleValue() == ax::mojom::blink::Role::kComboBoxSelect ||
+      RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
+    const AtomicString& aria_orientation =
+        AriaTokenAttribute(html_names::kAriaOrientationAttr);
+    if (EqualIgnoringASCIICase(aria_orientation, "horizontal")) {
+      return kAccessibilityOrientationHorizontal;
+    }
+    if (EqualIgnoringASCIICase(aria_orientation, "vertical")) {
+      return kAccessibilityOrientationVertical;
+    }
+  }
+
+  if (!RoleSupportsAriaAttribute(RoleValue(),
+                                 html_names::kAriaOrientationAttr)) {
+    return AXObject::Orientation();
+  }
+
+  // If there's a valid value, use it.
   const AtomicString& aria_orientation =
       AriaTokenAttribute(html_names::kAriaOrientationAttr);
-  AccessibilityOrientation orientation = kAccessibilityOrientationUndefined;
-  if (EqualIgnoringASCIICase(aria_orientation, "horizontal"))
-    orientation = kAccessibilityOrientationHorizontal;
-  else if (EqualIgnoringASCIICase(aria_orientation, "vertical"))
-    orientation = kAccessibilityOrientationVertical;
-
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kListBox:
-    case ax::mojom::blink::Role::kMenu:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kTree:
-      if (orientation == kAccessibilityOrientationUndefined)
-        orientation = kAccessibilityOrientationVertical;
-
-      return orientation;
-    case ax::mojom::blink::Role::kMenuBar:
-    case ax::mojom::blink::Role::kSlider:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kTabList:
-    case ax::mojom::blink::Role::kToolbar:
-      if (orientation == kAccessibilityOrientationUndefined)
-        orientation = kAccessibilityOrientationHorizontal;
-
-      return orientation;
-    case ax::mojom::blink::Role::kComboBoxGrouping:
-    case ax::mojom::blink::Role::kComboBoxMenuButton:
-    case ax::mojom::blink::Role::kRadioGroup:
-    case ax::mojom::blink::Role::kTreeGrid:
-      return orientation;
-    default:
-      return AXObject::Orientation();
+  if (EqualIgnoringASCIICase(aria_orientation, "horizontal")) {
+    return kAccessibilityOrientationHorizontal;
   }
+  if (EqualIgnoringASCIICase(aria_orientation, "vertical")) {
+    return kAccessibilityOrientationVertical;
+  }
+
+  // Fall back on the implicit value, should one exist.
+  const String& implicit_orientation = GetImplicitAriaOrientation(RoleValue());
+  if (EqualIgnoringASCIICase(implicit_orientation, "horizontal")) {
+    return kAccessibilityOrientationHorizontal;
+  }
+  if (EqualIgnoringASCIICase(implicit_orientation, "vertical")) {
+    return kAccessibilityOrientationVertical;
+  }
+
+  return AXObject::Orientation();
 }
 
 // According to the standard, the figcaption should only be the first or
