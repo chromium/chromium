@@ -129,7 +129,7 @@ constexpr syncer::SyncService::UserActionableError
 // when Sync is turned OFF.
 constexpr syncer::SyncService::UserActionableError
     kIneligibleIdentityErrorWhenSyncOff =
-        syncer::SyncService::UserActionableError::kSignInNeedsUpdate;
+        syncer::SyncService::UserActionableError::kNeedsClientUpgrade;
 
 void CleanupNSUserDefaults() {
   [[NSUserDefaults standardUserDefaults]
