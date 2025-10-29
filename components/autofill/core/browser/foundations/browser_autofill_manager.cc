@@ -1976,6 +1976,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kPopup:
       case AutofillTriggerSource::kKeyboardAccessory:
       case AutofillTriggerSource::kTouchToFillCreditCard:
+      case AutofillTriggerSource::kGlic:
         return ShouldFetchCreditCard(form, form_structure, autofill_field,
                                      credit_card);
       case AutofillTriggerSource::kScanCreditCard:
