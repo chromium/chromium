@@ -40,7 +40,7 @@ namespace data_controls {
 
 namespace {
 // Test URLs used to set up rules.
-const char kBlockedUrl[] = "https://block.com";
+const char kDataControlsBlockedUrl[] = "https://block.com";
 const char kAllowedUrl[] = "https://allow.com";
 const char kWarnUrl[] = "https://warn.com";
 const char kOtherUrl[] = "https://other.com";
@@ -92,18 +92,6 @@ class DataControlsTabHelperTest : public PlatformTest {
     }));
     run_loop.Run();
     return result;
-  }
-
-  void SetCopyBlockRule() {
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
-                        "sources": {
-                          "urls": ["block.com"]
-                        },
-                        "restrictions": [
-                          {"class": "CLIPBOARD", "level": "BLOCK"}
-                        ]
-                      })"},
-                    /*machine_scope=*/false);
   }
 
   void SetCopyFromOsClipboardBlockRule() {
@@ -338,8 +326,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Default) {
 
 // Tests that copy is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked) {
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSString(
@@ -364,8 +352,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Blocked_WithDomain) {
       IdentityManagerFactory::GetForProfile(profile_),
       "user@" + base::UTF16ToUTF8(kOrganizationDomain),
       signin::ConsentLevel::kSignin);
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSStringF(
@@ -501,9 +489,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_Warn_Bypassed_WithDomain) {
 
 // Tests that copy is allowed from a URL that doesn't match any rules.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_OtherUrl) {
-  SetCopyBlockRule();
-  // The blocking rule is set for `kBlockedUrl`, so it shouldn't apply to
-  // `kOtherUrl`.
+  SetCopyBlockRule(profile_->GetPrefs());
+  // The blocking rule is set for `kDataControlsBlockedUrl`, so it shouldn't
+  // apply to `kOtherUrl`.
   web_state_->SetCurrentURL(GURL(kOtherUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
@@ -518,8 +506,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_OtherUrl) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowCopy_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowCopy(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
@@ -541,7 +529,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Default) {
 // Tests that paste is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked) {
   SetPasteBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSString(
@@ -579,7 +567,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_Blocked_WithDomain) {
       "user@" + base::UTF16ToUTF8(kOrganizationDomain),
       signin::ConsentLevel::kSignin);
   SetPasteBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSStringF(
@@ -752,8 +740,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromIncognito) {
 
   EXPECT_TRUE(WaitForKnownPasteboardSource());
 
-  // Simulate pasting to kBlockedUrl in the non-incognito profile.
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  // Simulate pasting to kDataControlsBlockedUrl in the non-incognito profile.
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
 }
 
@@ -778,8 +766,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
 
   EXPECT_TRUE(WaitForKnownPasteboardSource());
 
-  // Simulate pasting to kBlockedUrl in the primary profile.
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  // Simulate pasting to kDataControlsBlockedUrl in the primary profile.
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
 }
 
@@ -788,8 +776,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOSClipboard) {
   SetPasteBlockFromOSClipboardRule();
 
-  // Simulate pasting to kBlockedUrl.
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  // Simulate pasting to kDataControlsBlockedUrl.
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(ShouldAllowPaste(tab_helper()));
 }
 
@@ -801,7 +789,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedToOSClipboard) {
   SetPasteBlockToOSClipboardRule();
 
   // Simulate copying from block.com.
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   ASSERT_TRUE(ShouldAllowCopy(tab_helper()));
 
   NSString* copied_content = @"copied content";
@@ -837,7 +825,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
   SetPasteBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   base::RunLoop run_loop;
   tab_helper()->ShouldAllowPaste(base::BindLambdaForTesting([&](bool allowed) {
     EXPECT_TRUE(allowed);
@@ -848,8 +836,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_FeatureDisabled) {
 
 // Tests that cut is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowCut) {
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSString(
@@ -879,8 +867,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Default) {
 TEST_F(DataControlsTabHelperTest, ShouldAllowShare_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnableClipboardDataControlsIOS);
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
 
   base::test::TestFuture<bool> test_future;
   tab_helper()->ShouldAllowShare(test_future.GetCallback());
@@ -889,8 +877,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShare_FeatureDisabled) {
 
 // Tests that share is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Blocked) {
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSString(
@@ -914,8 +902,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Blocked_WithDomain) {
       "user@" + base::UTF16ToUTF8(kOrganizationDomain),
       signin::ConsentLevel::kSignin);
 
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
 
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
@@ -938,7 +926,7 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Blocked_WithDomain) {
 // the OS clipboard.
 TEST_F(DataControlsTabHelperTest, ShouldAllowShare_OS_Clipboard_Blocked) {
   SetPasteBlockToOSClipboardRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   id snackbar_handler = OCMStrictProtocolMock(@protocol(SnackbarCommands));
   OCMExpect([snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSString(
@@ -1036,9 +1024,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShare_Warn_Bypassed_WithDomain) {
 
 // Tests that share is allowed from a URL that doesn't match any rules.
 TEST_F(DataControlsTabHelperTest, ShouldAllowShare_OtherUrl) {
-  SetCopyBlockRule();
-  // The blocking rule is set for `kBlockedUrl`, so it shouldn't apply to
-  // `kOtherUrl`.
+  SetCopyBlockRule(profile_->GetPrefs());
+  // The blocking rule is set for `kDataControlsBlockedUrl`, so it shouldn't
+  // apply to `kOtherUrl`.
   web_state_->SetCurrentURL(GURL(kOtherUrl));
 
   base::test::TestFuture<bool> test_future;
@@ -1053,8 +1041,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShareSync_Default) {
 
 // Tests that share is blocked when a "BLOCK" rule matches the page URL.
 TEST_F(DataControlsTabHelperTest, ShouldAllowShareSync_Blocked) {
-  SetCopyBlockRule();
-  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  SetCopyBlockRule(profile_->GetPrefs());
+  web_state_->SetCurrentURL(GURL(kDataControlsBlockedUrl));
   EXPECT_FALSE(tab_helper()->ShouldAllowShare());
 }
 

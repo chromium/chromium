@@ -7,6 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+class PrefService;
+
+inline constexpr char kDataControlsBlockedUrl[] = "https://block.com";
+
+// Sets a Data Controls policy to block copying from `kDataControlsBlockedUrl`.
+void SetCopyBlockRule(PrefService* prefs);
+
 // Waits until a known pasteboard source is available from the pasteboard
 // manager.
 [[nodiscard]] bool WaitForKnownPasteboardSource();

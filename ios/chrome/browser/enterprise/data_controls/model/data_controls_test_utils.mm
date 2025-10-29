@@ -7,11 +7,25 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/ios/wait_util.h"
+#import "components/enterprise/data_controls/core/browser/test_utils.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_pasteboard_manager.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+
+void SetCopyBlockRule(PrefService* prefs) {
+  data_controls::SetDataControls(prefs, {R"({
+                        "sources": {
+                          "urls": ["https://block.com"]
+                        },
+                        "restrictions": [
+                          {"class": "CLIPBOARD", "level": "BLOCK"}
+                        ]
+                      })"},
+                                 /*machine_scope=*/false);
+}
 
 bool WaitForKnownPasteboardSource() {
   return WaitUntilConditionOrTimeout(

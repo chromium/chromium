@@ -63,6 +63,8 @@ source_set("test_support") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/enterprise/data_controls/core/browser:test_support",
+    "//components/prefs",
     "//testing/gtest",
   ]
 }
