@@ -19,11 +19,11 @@
 
 namespace gcm {
 class GCMDriver;
-}
+}  // namespace gcm
 
 namespace instance_id {
 class InstanceIDDriver;
-}
+}  // namespace instance_id
 
 namespace ash::boca {
 
@@ -32,6 +32,11 @@ class FCMRegistrationTokenObserver : public base::CheckedObserver {
  public:
   // Called on each change of FCM registration token.
   virtual void OnFCMRegistrationTokenChanged() = 0;
+
+  // Called on token fetch failed if the fetch is not for validation. FCM token
+  // may get fetched after this failure because of a retry and
+  // `OnFCMRegistrationTokenChanged` will be called in this case.
+  virtual void OnFCMTokenFetchFailed() {}
 };
 
 // This class provides an interface to handle received invalidations.

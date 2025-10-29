@@ -93,6 +93,7 @@ class MockListener : public InvalidationsListener {
 class MockTokenObserver : public FCMRegistrationTokenObserver {
  public:
   MOCK_METHOD(void, OnFCMRegistrationTokenChanged, (), (override));
+  MOCK_METHOD(void, OnFCMTokenFetchFailed, (), (override));
 };
 
 class FCMHandlerTest : public testing::Test {
@@ -281,6 +282,45 @@ TEST_F(FCMHandlerTest, Init) {
   EXPECT_TRUE(fcm_handler.IsInitialized());
   fcm_handler.ShutdownHandler();
   EXPECT_TRUE(fcm_handler.IsInitialized());
+}
+
+TEST_F(FCMHandlerTest, ShouldNotifyOnTokenFetchFailure) {
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // Check that the handler gets the token through GetToken.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("", InstanceID::Result::NETWORK_ERROR));
+
+  EXPECT_CALL(mock_token_observer, OnFCMTokenFetchFailed());
+  fcm_handler_.StartListening();
+  EXPECT_FALSE(fcm_handler_.GetFCMRegistrationToken().has_value());
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
+}
+
+TEST_F(FCMHandlerTest, ShouldNotNotifyOnTokenValidationFailure) {
+  NiceMock<MockTokenObserver> mock_token_observer;
+  fcm_handler_.AddTokenObserver(&mock_token_observer);
+
+  // First fetch is successful.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("token", InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_token_observer, OnFCMRegistrationTokenChanged()).Times(1);
+  fcm_handler_.StartListening();
+  EXPECT_EQ("token", fcm_handler_.GetFCMRegistrationToken());
+
+  // Token validation fails.
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(RunOnceCallback<4>("", InstanceID::Result::NETWORK_ERROR));
+  EXPECT_CALL(mock_token_observer, OnFCMTokenFetchFailed()).Times(0);
+  task_environment_.FastForwardBy(
+      base::Minutes(kTokenValidationPeriodMinutesDefault));
+
+  // Token should not change.
+  EXPECT_EQ("token", fcm_handler_.GetFCMRegistrationToken());
+
+  fcm_handler_.RemoveTokenObserver(&mock_token_observer);
 }
 
 }  // namespace

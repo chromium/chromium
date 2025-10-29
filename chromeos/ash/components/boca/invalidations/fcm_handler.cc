@@ -202,7 +202,12 @@ void FCMHandlerImpl::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
       token_observer.OnFCMRegistrationTokenChanged();
     }
   } else if (result != instance_id::InstanceID::SUCCESS) {
-    LOG(ERROR) << "[Boca] Messaging subscription failed: " << result;
+    LOG(ERROR) << "[Boca] Messaging subscription failed: "
+               << static_cast<int>(result);
+    if (!is_validation) {
+      token_observers_.Notify(
+          &FCMRegistrationTokenObserver::OnFCMTokenFetchFailed);
+    }
   }
 
   ScheduleNextTokenValidation();
