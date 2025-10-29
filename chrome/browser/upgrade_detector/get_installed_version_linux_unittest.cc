@@ -63,7 +63,7 @@ MULTIPROCESS_TEST_MAIN(GetProductVersionInChildProc) {
 
     case ChildMode::kWithVersion:
       // Print the current version and report success.
-      UNSAFE_TODO(printf("%s\n", version_info::GetVersionNumber().data()));
+      printf("%s\n", std::string(version_info::GetVersionNumber()).c_str());
       return 0;
   }
   return 1;
