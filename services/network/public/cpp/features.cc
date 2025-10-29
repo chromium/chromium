@@ -197,7 +197,7 @@ BASE_FEATURE(kReduceAcceptLanguageHTTP, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled this feature will limit the total number of languages for
 // Accept-Language to enhance privacy. See details in
 // https://datatracker.ietf.org/doc/html/rfc7231#section-9.7.
-BASE_FEATURE(kReduceAcceptLanguageCount, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReduceAcceptLanguageCount, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When non-zero, the number of Accept-Language of this size will return as the
 // HTTP header and JavaScript getter.

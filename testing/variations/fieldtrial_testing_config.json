@@ -20676,37 +20676,6 @@
             ]
         }
     ],
-    "ReduceAcceptLanguageCount": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_5",
-                    "params": {
-                        "MaxAcceptLanguage": "5"
-                    },
-                    "enable_features": [
-                        "ReduceAcceptLanguageCount"
-                    ]
-                },
-                {
-                    "name": "Enabled_10",
-                    "params": {
-                        "MaxAcceptLanguage": "10"
-                    },
-                    "enable_features": [
-                        "ReduceAcceptLanguageCount"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReduceAcceptLanguageHTTP": [
         {
             "platforms": [
