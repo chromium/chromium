@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service_factory.h"
+#include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
+#include "chrome/browser/ui/read_anything/read_anything_service.h"
 
 // static
 ReadAnythingService* ReadAnythingServiceFactory::GetForBrowserContext(

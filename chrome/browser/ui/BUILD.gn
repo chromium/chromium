@@ -1682,6 +1682,7 @@ static_library("ui") {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_list_impl",
       "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/on_device_internals",
@@ -1705,6 +1706,7 @@ static_library("ui") {
       "//chrome/browser/apps/app_service/app_icon",
 
       # TODO(crbug.com/345487716): Remove circular dependencies.
+      "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/views/side_panel",
 
       # TODO(crbug/com/387527798): Remove circular dependencies.

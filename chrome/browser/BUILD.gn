@@ -4404,6 +4404,7 @@ static_library("browser") {
       "//chrome/browser/ui/promos:impl",
       "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
+      "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/signin",
@@ -4602,6 +4603,7 @@ static_library("browser") {
       "//chrome/browser/smart_card",
 
       # TODO(crbug.com/345487716): Remove this circular dependency.
+      "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/views/side_panel",
 
       # TODO(crbug/com/387527798): Remove circular dependencies.

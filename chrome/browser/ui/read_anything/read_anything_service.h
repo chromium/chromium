@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
+#ifndef CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
+#define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -61,4 +61,4 @@ class ReadAnythingService : public KeyedService, public BrowserListObserver {
   base::WeakPtrFactory<ReadAnythingService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
+#endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_SERVICE_H_
