@@ -96,11 +96,6 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return mHeaderView;
     }
 
-    /** Whether the detail panel is open. */
-    public boolean isLayoutOpen() {
-        return getSlidingPaneLayout().isOpen();
-    }
-
     @Override
     public void onResume() {
         // Update the detail pane, if the intent is specified.
