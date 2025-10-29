@@ -32,7 +32,15 @@ class NavigationAttachmentsViewBinder {
                         default -> 0;
                     };
 
-            if (res != 0) view.requestType.setText(res);
+            if (res != 0) {
+                view.requestType.setText(res);
+                view.requestType.setContentDescription(
+                        view.requestType
+                                .getResources()
+                                .getString(
+                                        R.string.accessibility_omnibox_reset_mode,
+                                        view.requestType.getResources().getString(res)));
+            }
             view.requestType.setVisibility(res == 0 ? View.GONE : View.VISIBLE);
         } else if (propertyKey
                 == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
