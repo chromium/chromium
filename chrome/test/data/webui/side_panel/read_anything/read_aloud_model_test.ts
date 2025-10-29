@@ -2,11 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {getReadAloudModel, ReadAloudNode, setInstance} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {DomReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 
 suite('ReadAloudModel', () => {
+  function assertTextEmpty() {
+    assertEquals('', getReadAloudModel().getCurrentTextContent());
+    assertEquals(0, getReadAloudModel().getCurrentTextSegments().length);
+  }
+
+  function assertSentenceMatchesEntireSegment(sentence: string) {
+    // Remove all trailing whitespace and newline characters. It's possible
+    // that extra newlines may get added to the ends of sentences to ensure
+    // sentence segments are broken up correctly, but it isn't necessary
+    // to test for the presence of these new lines, as testing the text in
+    // a segment will verify that the text was segmented at the correct
+    // sentence boundaries.
+    sentence = sentence.trim();
+    assertEquals(sentence, getReadAloudModel().getCurrentTextContent().trim());
+    assertEquals(1, getReadAloudModel().getCurrentTextSegments().length);
+    const node = getReadAloudModel().getCurrentTextSegments()[0]!.node as
+        DomReadAloudNode;
+    assertEquals(sentence, node.getText().trim());
+  }
+
   setup(() => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -71,4 +92,204 @@ suite('ReadAloudModel', () => {
     assertEquals(
         'I can\'t provide. ', getReadAloudModel().getCurrentTextContent());
   });
+
+  test('moveSpeechBackwards before init returns empty text', () => {
+    getReadAloudModel().moveSpeechBackwards();
+    assertTextEmpty();
+  });
+
+  test('moveSpeechBackwards returns expected text', async () => {
+    const paragraph1 = document.createElement('div');
+    paragraph1.textContent = 'See the line where the sky meets the sea? ';
+
+    const paragraph2 = document.createElement('div');
+    paragraph2.textContent = 'It calls me. ';
+
+    const paragraph3 = document.createElement('div');
+    paragraph3.textContent = 'And no one knows how far it goes.';
+
+    document.body.appendChild(paragraph1);
+    document.body.appendChild(paragraph2);
+    document.body.appendChild(paragraph3);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    // Move to the last granularity of the content.
+    assertSentenceMatchesEntireSegment(paragraph1.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(paragraph2.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(paragraph3.textContent);
+
+    // Assert text is expected while moving backwards.
+    getReadAloudModel().moveSpeechBackwards();
+    assertSentenceMatchesEntireSegment(paragraph2.textContent);
+
+    getReadAloudModel().moveSpeechBackwards();
+    assertSentenceMatchesEntireSegment(paragraph1.textContent);
+
+    // We're at the beginning of the content again, so the first sentence
+    // should be retrieved next.
+    getReadAloudModel().moveSpeechBackwards();
+    assertSentenceMatchesEntireSegment(paragraph1.textContent);
+
+    // After navigating previous text, navigating forwards should continue
+    // to work as expected.
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(paragraph2.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(paragraph3.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test('moveSpeechBackwards after re-initialization', async () => {
+    const paragraph1 = document.createElement('div');
+    paragraph1.textContent = 'This is a sentence. ';
+
+    const paragraph2 = document.createElement('div');
+    paragraph2.textContent = 'This is another sentence. ';
+
+    const paragraph3 = document.createElement('div');
+    paragraph3.textContent = 'And this is yet another sentence.';
+
+    document.body.appendChild(paragraph1);
+    document.body.appendChild(paragraph2);
+    document.body.appendChild(paragraph3);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertSentenceMatchesEntireSegment(paragraph1.textContent);
+
+    // Simulate updating the page text.
+    const newParagraph1 = document.createElement('div');
+    newParagraph1.textContent = 'Welcome to the show to the histo-remix. ';
+
+    const newParagraph2 = document.createElement('div');
+    newParagraph2.textContent = 'Switching up the flow, as we add the prefix. ';
+
+    const newParagraph3 = document.createElement('div');
+    newParagraph3.textContent =
+        'Everybody knows that we used to be six wives. ';
+
+    document.body.removeChild(paragraph1);
+    document.body.removeChild(paragraph2);
+    document.body.removeChild(paragraph3);
+
+    document.body.appendChild(newParagraph1);
+    document.body.appendChild(newParagraph2);
+    document.body.appendChild(newParagraph3);
+
+    await microtasksFinished();
+    getReadAloudModel().resetModel?.();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    // The nodes from the new tree are used.
+    // Move to the last node of the content.
+    assertSentenceMatchesEntireSegment(newParagraph1.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(newParagraph2.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(newParagraph3.textContent);
+
+    // Move backwards.
+    getReadAloudModel().moveSpeechBackwards();
+    assertSentenceMatchesEntireSegment(newParagraph2.textContent);
+
+    getReadAloudModel().moveSpeechBackwards();
+    assertSentenceMatchesEntireSegment(newParagraph1.textContent);
+
+    // We're at the beginning of the content again, so the first sentence
+    // should be retrieved next.
+    getReadAloudModel().moveSpeechBackwards();
+    assertSentenceMatchesEntireSegment(newParagraph1.textContent);
+
+    // After navigating previous text, navigating forwards should continue
+    // to work as expected.
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(newParagraph2.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(newParagraph3.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test('moveSpeechBackwards when text split across two nodes', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'And I am almost ';
+
+    const sentence2 = document.createElement('a');
+    sentence2.textContent = 'there. ';
+
+    const sentence3 = document.createElement('b');
+    sentence3.textContent = 'I am almost there.';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        'And I am almost there. ', getReadAloudModel().getCurrentTextContent());
+
+    // Move to last granularity and then move backwards.
+    getReadAloudModel().moveSpeechForward();
+    getReadAloudModel().moveSpeechBackwards();
+    assertEquals(
+        'And I am almost there. ', getReadAloudModel().getCurrentTextContent());
+    assertEquals(2, getReadAloudModel().getCurrentTextSegments().length);
+
+    // After moving forward again, the third segment was returned correctly.
+    // The third segment was returned correctly after getting the next text.
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(sentence3.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test(
+      'moveSpeechBackwards when text split across multiple nodes', async () => {
+        const div = document.createElement('div');
+        const sentence1 = document.createElement('b');
+        sentence1.textContent = 'The wind is howling like this ';
+
+        const sentence2 = document.createElement('a');
+        sentence2.textContent = 'swirling storm ';
+
+        const sentence3 = document.createElement('b');
+        sentence3.textContent = 'inside.';
+
+        div.appendChild(sentence1);
+        div.appendChild(sentence2);
+        div.appendChild(sentence3);
+        document.body.appendChild(div);
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        assertEquals(
+            'The wind is howling like this swirling storm inside.',
+            getReadAloudModel().getCurrentTextContent());
+
+        getReadAloudModel().moveSpeechBackwards();
+        assertEquals(
+            'The wind is howling like this swirling storm inside.',
+            getReadAloudModel().getCurrentTextContent());
+
+        // Nodes are empty at the end of the new tree.
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
 });
