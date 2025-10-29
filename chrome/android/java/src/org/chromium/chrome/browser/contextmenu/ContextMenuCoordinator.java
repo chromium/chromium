@@ -82,6 +82,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     private WebContentsObserver mWebContentsObserver;
     private @Nullable ContextMenuChipController mChipController;
     private ContextMenuHeaderCoordinator mHeaderCoordinator;
+    private ContextMenuParams mParams;
 
     private final List<ContextMenuListView> mListViews;
     private final float mTopContentOffsetPx;
@@ -212,6 +213,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             final Runnable onMenuShown,
             final Runnable onMenuClosed,
             @Nullable ChipDelegate chipDelegate) {
+        mParams = params;
         mWindowAndroid = window;
         mOnMenuClosed = onMenuClosed;
 
@@ -679,5 +681,10 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     public WebContentsObserver getWebContentsObserverForTesting() {
         return mWebContentsObserver;
+    }
+
+    @VisibleForTesting
+    public ContextMenuParams getParams() {
+        return mParams;
     }
 }

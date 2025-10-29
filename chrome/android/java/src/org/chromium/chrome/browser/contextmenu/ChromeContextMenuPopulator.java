@@ -1522,7 +1522,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * @param eventName The name of the UKM event to record.
      * @param metricName The name of the UKM metric to record.
      */
-    private void maybeRecordBooleanUkm(String eventName, String metricName) {
+    protected void maybeRecordBooleanUkm(String eventName, String metricName) {
         // Disable UKM reporting when incognito.
         if (mItemDelegate.isIncognito()) return;
         WebContents webContents = mItemDelegate.getWebContents();

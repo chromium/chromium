@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -216,6 +217,7 @@ public class ChromeContextMenuPopulatorTest {
         doReturn(shouldShowDeveloperMenu).when(mPopulator).shouldShowDeveloperMenu();
         doReturn(shouldShowViewPageSourceMenu).when(mPopulator).shouldShowViewPageSourceMenu();
         doReturn(supportPrint).when(mItemDelegate).isPrintSupported();
+        doNothing().when(mPopulator).maybeRecordBooleanUkm(anyString(), anyString());
     }
 
     private void checkMenuOptions(List<Integer> disabled, int[]... groups) {
@@ -259,7 +261,7 @@ public class ChromeContextMenuPopulatorTest {
                 StringBuilder generated_info = new StringBuilder();
                 for (int j = 0; j < contextMenuState.get(i).size(); j++) {
                     generated_info.append("'");
-                    generated_info.append(contextMenuState.get(i).get(j).model.get(TITLE));
+                    generated_info.append(contextMenuState.get(i).get(j).model.get(MENU_ITEM_ID));
                     generated_info.append("' ");
                 }
                 StringBuilder expected_info = new StringBuilder();
@@ -303,6 +305,29 @@ public class ChromeContextMenuPopulatorTest {
                 false,
                 /* openedFromInterestFor= */ false,
                 /* interestForNodeID= */ 0,
+                /* additionalNavigationParams= */ null);
+    }
+
+    private ContextMenuParams getInterestForLinkParams() {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.NONE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                new GURL(LINK_URL),
+                LINK_TEXT,
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                "",
+                null,
+                false,
+                0,
+                0,
+                MenuSourceType.TOUCH,
+                false,
+                /* openedFromInterestFor= */ true,
+                /* interestForNodeID= */ 12345,
                 /* additionalNavigationParams= */ null);
     }
 
@@ -419,6 +444,30 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_inspect_element,
         };
         checkMenuOptions(expected6Tab1, expected6Tab2);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testShowInterestInElement() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        ContextMenuParams params = getInterestForLinkParams();
+
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        int[] expected = {
+            R.id.contextmenu_open_in_new_tab,
+            R.id.contextmenu_open_in_new_tab_in_group,
+            R.id.contextmenu_open_in_incognito_tab,
+            R.id.contextmenu_show_interest_in_element,
+            R.id.contextmenu_open_in_ephemeral_tab,
+            R.id.contextmenu_copy_link_address,
+            R.id.contextmenu_copy_link_text,
+            R.id.contextmenu_save_link_as,
+            R.id.contextmenu_read_later,
+            R.id.contextmenu_share_link
+        };
+        checkMenuOptions(expected);
     }
 
     @Test

@@ -324,6 +324,15 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
+    @Feature({"Browser", "ContextMenu"})
+    public void testInterestForLinkHasCorrectContextMenu() throws TimeoutException {
+        Tab tab = sDownloadTestRule.getActivityTab();
+        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "interestForLink");
+        Assert.assertTrue(mMenuCoordinator.getParams().getOpenedFromInterestFor());
+    }
+
+    @Test
+    @MediumTest
     @Feature({"Browser"})
     @RequiresRestart
     public void testLongPressOnImage() throws TimeoutException {
