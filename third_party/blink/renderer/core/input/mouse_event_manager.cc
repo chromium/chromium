@@ -423,33 +423,33 @@ void MouseEventManager::SetElementUnderMouse(
 }
 
 void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
-  HandleRemoveSubtree(container, /*inclusive=*/false);
+  HandleRemoveSubtree(container, /*include_root=*/false);
 }
 
-void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
-  HandleRemoveSubtree(node_to_be_removed, /*inclusive=*/true);
+void MouseEventManager::NodeWillBeRemoved(Node& node) {
+  HandleRemoveSubtree(node, /*include_root=*/true);
 }
 
-void MouseEventManager::HandleRemoveSubtree(Node& node, bool inclusive) {
-  Node* remaining_node = inclusive ? node.parentNode() : &node;
-  if (mousedown_element_ && (inclusive || mousedown_element_ != node) &&
+void MouseEventManager::HandleRemoveSubtree(Node& node, bool include_root) {
+  Node* remaining_node = include_root ? node.parentNode() : &node;
+  if (mousedown_element_ && (include_root || mousedown_element_ != node) &&
       node.IsShadowIncludingInclusiveAncestorOf(*mousedown_element_)) {
     // We don't dispatch click events if the mousedown node is removed
     // before a mouseup event. It is compatible with IE and Firefox.
     mousedown_element_ = nullptr;
   }
-  if (mouse_press_node_ && (inclusive || mouse_press_node_ != node) &&
+  if (mouse_press_node_ && (include_root || mouse_press_node_ != node) &&
       node.IsShadowIncludingInclusiveAncestorOf(*mouse_press_node_)) {
     // If the mouse_press_node_ is removed, we should dispatch future default
     // keyboard actions (i.e. scrolling) to the still connected parent.
     mouse_press_node_ = remaining_node;
   }
   if (RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled() &&
-      element_under_mouse_ && (inclusive || element_under_mouse_ != node) &&
+      element_under_mouse_ && (include_root || element_under_mouse_ != node) &&
       node.IsShadowIncludingInclusiveAncestorOf(*element_under_mouse_)) {
     Element* remaining_element = DynamicTo<Element>(remaining_node);
     if (!remaining_element) {
-      remaining_element = remaining_node->parentElement();
+      remaining_element = remaining_node->ParentOrShadowHostElement();
     }
     element_under_mouse_ = remaining_element;
     original_element_under_mouse_removed_ = true;
