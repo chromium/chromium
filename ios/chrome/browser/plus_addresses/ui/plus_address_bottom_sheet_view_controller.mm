@@ -182,10 +182,11 @@ UIImageView* BrandingImageView() {
                                  ? IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_IOS
                                  : IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS);
   self.titleTextStyle = UIFontTextStyleTitle2;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS);
+  [self reloadConfiguration];
   self.customContentBottomInset = 0;
 
   // Don't show the dismiss bar button (with the secondary button used for
@@ -250,7 +251,7 @@ UIImageView* BrandingImageView() {
       /*refresh_count=*/(int)_refreshCount, [_delegate shouldShowNotice]);
   _bottomSheetModalCompletionErrorStatus.reset();
   _bottomSheetCreationErrorType.reset();
-  self.isLoading = NO;
+  [self setLoading:NO];
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
 }
 
@@ -258,7 +259,7 @@ UIImageView* BrandingImageView() {
     withCreateErrorType:(PlusAddressCreationBottomSheetErrorType)errorType {
   _bottomSheetModalCompletionErrorStatus = completionStatus;
   _bottomSheetCreationErrorType = errorType;
-  self.isLoading = NO;
+  [self setLoading:NO];
 }
 
 - (void)dismissBottomSheet {
@@ -545,7 +546,7 @@ UIImageView* BrandingImageView() {
 // Called when the user chose to confirm the plus address.
 - (void)willConfirmPlusAddress {
   [self enablePrimaryActionButton:NO];
-  self.isLoading = YES;
+  [self setLoading:YES];
 
   [_delegate confirmPlusAddress];
   plus_addresses::metrics::RecordModalEvent(
