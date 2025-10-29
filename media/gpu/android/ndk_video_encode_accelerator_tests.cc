@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -710,6 +711,56 @@ std::string PrintTestParams(const testing::TestParamInfo<VideoParams>& info) {
   // to replace them with underscores.
   std::replace(result.begin(), result.end(), ' ', '_');
   return result;
+}
+
+TEST_P(NdkVideoEncoderAcceleratorTest, Histograms) {
+  const size_t total_frames_count = 5;
+  auto config = GetDefaultConfig();
+  accelerator_ = MakeNdkAccelerator();
+  EXPECT_CALL(*this, OnRequireBuffer()).WillOnce(Return(false));
+  EXPECT_CALL(*this, OnBufferReady()).WillRepeatedly([this]() {
+    return outputs_.size() < total_frames_count;
+  });
+
+  base::HistogramTester histogram_tester;
+  auto status = accelerator_->Initialize(config, this, NullLog());
+  ASSERT_TRUE(status.is_ok());
+  Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoEncoder.NDKVEA.InitStatus." + GetCodecNameForUMA(codec_),
+      EncoderStatus::Codes::kOk, 1);
+
+  auto duration = base::Milliseconds(16);
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * duration;
+    uint32_t color = random_color_.Rand() & 0x00FFFFFF;
+    auto frame =
+        CreateFrame(config.input_visible_size, pixel_format_, timestamp, color);
+    accelerator_->Encode(frame, true);
+  }
+
+  Run();
+
+  // The EncodeStatus histogram is recorded in the destructor of the
+  // accelerator.
+  accelerator_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Media.VideoEncoder.NDKVEA.EncodeStatus." + GetCodecNameForUMA(codec_),
+      EncoderStatus::Codes::kOk, 1);
+
+  // Check EncodingLatency histogram
+  auto latency_buckets = histogram_tester.GetAllSamples(
+      "Media.VideoEncoder.NDKVEA.EncodingLatency." +
+      GetCodecNameForUMA(codec_));
+  size_t latency_samples = 0;
+  for (const auto& bucket : latency_buckets) {
+    EXPECT_GT(bucket.min, 0);
+    latency_samples += bucket.count;
+  }
+  EXPECT_LE(latency_samples, total_frames_count);
+  EXPECT_GT(latency_samples, 1u);
 }
 
 std::vector<VideoParams> GenerateSurfaceVariants(
