@@ -358,15 +358,13 @@ def get_simulator_runtime_info_by_build(runtime_build):
       "identifier" : "FD9ED7F9-96A7-4621-B328-4C317893EC8A",
       etc...
     }
-    if no runtime for the corresponding build id, with "Ready" state
-    is found, then return None.
+    if no runtime for the corresponding build id is found, then
+    return None.
   """
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
     build = runtime.get('build')
-    state = runtime.get('state')
-    if ((build and build.lower() == runtime_build.lower()) and
-        (state and state == 'Ready')):
+    if build and build.lower() == runtime_build.lower():
       return runtime
   return None
 
