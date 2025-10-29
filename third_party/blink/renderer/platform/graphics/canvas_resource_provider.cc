@@ -889,8 +889,40 @@ void CanvasResourceProviderSharedImage::RasterRecord(
 
   const bool needs_clear = !is_cleared_;
   is_cleared_ = true;
-  AcceleratedRasterRecord(std::move(last_recording), needs_clear,
-                          resource()->GetClientSharedImage()->mailbox());
+
+  gpu::raster::RasterInterface* ri = RasterInterface();
+  SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
+                                   ? SkColors::kBlack
+                                   : SkColors::kTransparent;
+
+  auto list = base::MakeRefCounted<cc::DisplayItemList>();
+  list->StartPaint();
+  list->push<cc::DrawRecordOp>(std::move(last_recording));
+  list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));
+  list->Finalize();
+
+  gfx::Size size(Size().width(), Size().height());
+  size_t max_op_size_hint = gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
+  gfx::Rect full_raster_rect(Size().width(), Size().height());
+  gfx::Rect playback_rect(Size().width(), Size().height());
+  gfx::Vector2dF post_translate(0.f, 0.f);
+  gfx::Vector2dF post_scale(1.f, 1.f);
+
+  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
+  ri->BeginRasterCHROMIUM(background_color, needs_clear,
+                          /*msaa_sample_count=*/oopr_uses_dmsaa_ ? 1 : 0,
+                          oopr_uses_dmsaa_ ? gpu::raster::MsaaMode::kDMSAA
+                                           : gpu::raster::MsaaMode::kNoMSAA,
+                          can_use_lcd_text, /*visible=*/true, GetColorSpace(),
+                          /*hdr_headroom=*/0.f,
+                          resource()->GetClientSharedImage()->mailbox().name);
+
+  ri->RasterCHROMIUM(
+      list.get(), GetOrCreateCanvasImageProvider(), size, full_raster_rect,
+      playback_rect, post_translate, post_scale, /*requires_clear=*/false,
+      /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint);
+
+  ri->EndRasterCHROMIUM();
   resource()->EndAccess(std::move(access));
 }
 
@@ -1633,46 +1665,6 @@ void CanvasResourceProvider::UnacceleratedRasterRecord(
   EnsureSkiaCanvas();
   skia_canvas_->drawPicture(std::move(last_recording));
   skgpu::ganesh::FlushAndSubmit(GetSkSurface());
-}
-
-void CanvasResourceProvider::AcceleratedRasterRecord(
-    cc::PaintRecord last_recording,
-    bool needs_clear,
-    gpu::Mailbox mailbox) {
-  if (IsGpuContextLost())
-    return;
-  gpu::raster::RasterInterface* ri = RasterInterface();
-  SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
-                                   ? SkColors::kBlack
-                                   : SkColors::kTransparent;
-
-  auto list = base::MakeRefCounted<cc::DisplayItemList>();
-  list->StartPaint();
-  list->push<cc::DrawRecordOp>(std::move(last_recording));
-  list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));
-  list->Finalize();
-
-  gfx::Size size(Size().width(), Size().height());
-  size_t max_op_size_hint = gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-  gfx::Rect full_raster_rect(Size().width(), Size().height());
-  gfx::Rect playback_rect(Size().width(), Size().height());
-  gfx::Vector2dF post_translate(0.f, 0.f);
-  gfx::Vector2dF post_scale(1.f, 1.f);
-
-  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
-  ri->BeginRasterCHROMIUM(background_color, needs_clear,
-                          /*msaa_sample_count=*/oopr_uses_dmsaa_ ? 1 : 0,
-                          oopr_uses_dmsaa_ ? gpu::raster::MsaaMode::kDMSAA
-                                           : gpu::raster::MsaaMode::kNoMSAA,
-                          can_use_lcd_text, /*visible=*/true, GetColorSpace(),
-                          /*hdr_headroom=*/0.f, mailbox.name);
-
-  ri->RasterCHROMIUM(
-      list.get(), GetOrCreateCanvasImageProvider(), size, full_raster_rect,
-      playback_rect, post_translate, post_scale, /*requires_clear=*/false,
-      /*raster_inducing_scroll_offsets=*/nullptr, &max_op_size_hint);
-
-  ri->EndRasterCHROMIUM();
 }
 
 bool CanvasResourceProvider::IsGpuContextLost() const {
