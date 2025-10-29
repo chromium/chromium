@@ -4,6 +4,7 @@
 
 import typing
 
+import starlark_conversions
 import values
 
 
@@ -24,7 +25,7 @@ def convert_basic_suite(
   targets_builder = values.ListValueBuilder()
   per_test_modifications_builder = values.DictValueBuilder()
   for test_name, test in suite.items():
-    test_name = values.convert_direct(test_name)
+    test_name = starlark_conversions.convert_direct(test_name)
     targets_builder.append(test_name)
 
     anonymous_mixin_builder = values.CallValueBuilder('targets.mixin')
@@ -45,25 +46,30 @@ def convert_basic_suite(
           pass
 
         case 'ci_only' | 'experiment_percentage' | 'use_isolated_scripts_api':
-          anonymous_mixin_builder[key] = values.convert_direct(value)
+          anonymous_mixin_builder[key] = (
+              starlark_conversions.convert_direct(value))
 
         case ('android_args' | 'chromeos_args' | 'desktop_args' | 'args'
               | 'lacros_args' | 'linux_args'):
-          anonymous_mixin_builder[key] = values.convert_args(value)
+          anonymous_mixin_builder[key] = (
+              starlark_conversions.convert_args(value))
 
         case 'resultdb':
-          anonymous_mixin_builder['resultdb'] = values.convert_resultdb(value)
+          anonymous_mixin_builder['resultdb'] = (
+              starlark_conversions.convert_resultdb(value))
 
         case 'android_swarming' | 'chromeos_swarming' | 'swarming':
-          anonymous_mixin_builder[key] = values.convert_swarming(value)
+          anonymous_mixin_builder[key] = (
+              starlark_conversions.convert_swarming(value))
 
         case 'skylab':
-          anonymous_mixin_builder[key] = values.convert_skylab(value)
+          anonymous_mixin_builder[key] = (
+              starlark_conversions.convert_skylab(value))
 
         case 'mixins':
           mixins_builder = values.ListValueBuilder([anonymous_mixin_builder])
           for e in value:
-            mixins_builder.append(values.convert_direct(e))
+            mixins_builder.append(starlark_conversions.convert_direct(e))
 
         case 'remove_mixins':
           # Remove_mixins in the starlark basic suite declaration won't be part
@@ -75,7 +81,7 @@ def convert_basic_suite(
           ])
           modifications_builder['remove_mixins'] = remove_mixins_builder
           for m in value:
-            remove_mixins_builder.append(values.convert_direct(m))
+            remove_mixins_builder.append(starlark_conversions.convert_direct(m))
 
         case _:
           raise Exception(
@@ -101,7 +107,9 @@ def convert_compound_suite(suite: list[str]) -> dict[str, str | None]:
     The keys are the parameter names with the corresponding values being
     the string representation of the parameter values.
   """
-  return {'targets': values.to_output(values.convert_direct(suite))}
+  return {
+      'targets': values.to_output(starlark_conversions.convert_direct(suite))
+  }
 
 
 def convert_matrix_compound_suite(
@@ -122,14 +130,15 @@ def convert_matrix_compound_suite(
   targets_builder = values.ListValueBuilder()
   for suite_name, matrix_config in suite.items():
     if not matrix_config:
-      targets_builder.append(values.convert_direct(suite_name))
+      targets_builder.append(starlark_conversions.convert_direct(suite_name))
     else:
       bundle_builder = values.CallValueBuilder(
-          'targets.bundle', {'targets': values.convert_direct(suite_name)})
+          'targets.bundle',
+          {'targets': starlark_conversions.convert_direct(suite_name)})
       for key, value in matrix_config.items():
         match key:
           case 'mixins' | 'variants':
-            bundle_builder[key] = values.convert_direct(value)
+            bundle_builder[key] = starlark_conversions.convert_direct(value)
 
           case _:
             raise Exception(f'unhandled key in matrix config: "{key}"')

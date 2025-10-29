@@ -10,6 +10,7 @@ import pathlib
 import typing
 
 import buildozer
+import starlark_conversions
 import values
 
 
@@ -25,7 +26,7 @@ def _per_test_modifications(
   mod_builders = collections.defaultdict(mod_builder_factory)
 
   for test_name, exceptions in test_suite_exceptions.items():
-    test_name = values.convert_direct(test_name)
+    test_name = starlark_conversions.convert_direct(test_name)
     for key, value in exceptions.items():
       match key:
         case 'remove_from':
@@ -51,13 +52,16 @@ def _per_test_modifications(
             match mod_key:
               case ('ci_only' | 'experiment_percentage'
                     | 'isolate_profile_data' | 'retry_only_failed_tests'):
-                mixin_builder[mod_key] = values.convert_direct(mod_value)
+                mixin_builder[mod_key] = (
+                    starlark_conversions.convert_direct(mod_value))
 
               case 'args':
-                mixin_builder[mod_key] = values.convert_args(mod_value)
+                mixin_builder[mod_key] = (
+                    starlark_conversions.convert_args(mod_value))
 
               case 'swarming':
-                mixin_builder['swarming'] = values.convert_swarming(mod_value)
+                mixin_builder['swarming'] = (
+                    starlark_conversions.convert_swarming(mod_value))
 
               case _:
                 raise Exception(f'unhandled key in modifications: "{mod_key}"')
@@ -76,8 +80,8 @@ def _per_test_modifications(
               case 'args' | 'precommit_args' | 'non_precommit_args':
                 args_builder = values.DictValueBuilder()
                 for arg_name, arg_value in replace_value.items():
-                  args_builder[values.convert_arg(arg_name)] = (
-                      values.convert_direct(arg_value))
+                  args_builder[starlark_conversions.convert_arg(arg_name)] = (
+                      starlark_conversions.convert_direct(arg_value))
                 replacements_builder[replace_key] = args_builder
 
               case _:
@@ -155,10 +159,11 @@ def _compute_edits(
               raise Exception(f'unhandled suite type: "{suite_type}"')
 
       case 'additional_compile_targets':
-        bundle_builder[key] = values.convert_direct(value)
+        bundle_builder[key] = starlark_conversions.convert_direct(value)
 
       case 'args':
-        anonymous_mixin_builder['args'] = values.convert_args(value)
+        anonymous_mixin_builder['args'] = (
+            starlark_conversions.convert_args(value))
 
       case 'mixins':
         for element in value:
@@ -180,10 +185,11 @@ def _compute_edits(
           settings_builder['use_android_merge_script_by_default'] = str(False)
 
       case 'swarming':
-        anonymous_mixin_builder['swarming'] = values.convert_swarming(value)
+        anonymous_mixin_builder['swarming'] = (
+            starlark_conversions.convert_swarming(value))
 
       case 'use_swarming':
-        settings_builder[key] = values.convert_direct(value)
+        settings_builder[key] = starlark_conversions.convert_direct(value)
 
       case _:
         raise Exception(f'unhandled key in builder config: "{key}"')
@@ -290,7 +296,7 @@ def process_waterfall(
       case 'forbid_script_tests':
         if value:
           targets_settings_defaults['allow_script_tests'] = (
-              values.convert_direct(False))
+              starlark_conversions.convert_direct(False))
 
       case _:
         raise Exception(f'unhandled key in waterfall: "{key}"')
