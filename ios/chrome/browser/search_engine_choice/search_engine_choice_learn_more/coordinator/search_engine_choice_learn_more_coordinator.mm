@@ -68,7 +68,7 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self viewControlerDidDismiss];
+  [self viewControllerDidDismiss];
 }
 
 #pragma mark - SearchEngineChoiceLearnMoreDelegate
@@ -79,14 +79,14 @@
   __weak __typeof(self) weakSelf = self;
   [_viewController dismissViewControllerAnimated:YES
                                       completion:^() {
-                                        [weakSelf viewControlerDidDismiss];
+                                        [weakSelf viewControllerDidDismiss];
                                       }];
 }
 
 #pragma mark - Private
 
 // Called when the view controller has been dismissed.
-- (void)viewControlerDidDismiss {
+- (void)viewControllerDidDismiss {
   _viewController.delegate = nil;
   _viewController = nil;
   [self.delegate learnMoreDidDismiss];
