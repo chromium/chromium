@@ -40,7 +40,7 @@ The following options exist for dealing with unused code warnings:
   unused variables, parameters, and other APIs
   with an underscore character
   (e.g. using `_foo` rather than `foo` as the name).
-* Temporarily insert `#[!allow(unused)] /* DO NOT
+* Temporarily insert `#![allow(unused)] /* DO NOT
   SUBMIT */` at the top of the affected `.rs` files.
     - See `rustc -W help` for a list of warnings covered by the `unused` group
       of warnings.
