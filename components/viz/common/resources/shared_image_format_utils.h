@@ -8,14 +8,6 @@
 #include "base/component_export.h"
 #include "components/viz/common/resources/shared_image_format.h"
 
-namespace gpu {
-class SharedImageFormatRestrictedUtilsAccessor;
-}  // namespace gpu
-
-namespace cc {
-class PerfContextProvider;
-}
-
 namespace gfx {
 enum class BufferFormat : uint8_t;
 }
@@ -23,10 +15,6 @@ enum class BufferFormat : uint8_t;
 enum SkColorType : int;
 
 namespace viz {
-
-class ContextProviderCommandBuffer;
-class TestContextProvider;
-class TestInProcessContextProvider;
 
 // Returns the closest SkColorType for a given single planar `format`.
 //
@@ -114,24 +102,6 @@ bool IsOddSizeMultiPlanarBuffersAllowed();
 // Returns a span containing all mappable SharedImageFormats.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting();
-
-// Utilities that conceptually belong only on the service side, but are
-// currently used by some clients. Usage is restricted to friended clients.
-class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
-    SharedImageFormatRestrictedSinglePlaneUtils {
- private:
-  friend class ContextProviderCommandBuffer;
-  friend class TestContextProvider;
-  friend class TestInProcessContextProvider;
-  friend class cc::PerfContextProvider;
-  friend class gpu::SharedImageFormatRestrictedUtilsAccessor;
-
-  // |use_angle_rgbx_format| should be true when the
-  // GL_ANGLE_rgbx_internal_format extension is available.
-  static unsigned int ToGLTextureStorageFormat(SharedImageFormat format,
-                                               bool use_angle_rgbx_format);
-};
-
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_RESOURCES_SHARED_IMAGE_FORMAT_UTILS_H_

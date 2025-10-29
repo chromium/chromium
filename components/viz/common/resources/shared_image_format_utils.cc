@@ -370,48 +370,6 @@ base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting() {
   return kMappableSharedImageFormats;
 }
 
-// static
-unsigned int
-SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
-    SharedImageFormat format,
-    bool use_angle_rgbx_format) {
-  CHECK(format.is_single_plane());
-  if (format == SinglePlaneFormat::kRGBA_8888) {
-    return GL_RGBA8_OES;
-  } else if (format == SinglePlaneFormat::kBGRA_8888) {
-    return GL_BGRA8_EXT;
-  } else if (format == SinglePlaneFormat::kRGBA_F16) {
-    return GL_RGBA16F_EXT;
-  } else if (format == SinglePlaneFormat::kRGBA_4444) {
-    return GL_RGBA4;
-  } else if (format == SinglePlaneFormat::kALPHA_8) {
-    return GL_ALPHA8_EXT;
-  } else if (format == SinglePlaneFormat::kBGR_565) {
-    return GL_RGB565;
-  } else if (format == SinglePlaneFormat::kR_8) {
-    return GL_R8_EXT;
-  } else if (format == SinglePlaneFormat::kRG_88) {
-    return GL_RG8_EXT;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return GL_LUMINANCE16F_EXT;
-  } else if (format == SinglePlaneFormat::kR_F16) {
-    return GL_R16F_EXT;
-  } else if (format == SinglePlaneFormat::kR_16) {
-    return GL_R16_EXT;
-  } else if (format == SinglePlaneFormat::kRG_1616) {
-    return GL_RG16_EXT;
-  } else if (format == SinglePlaneFormat::kRGBX_8888 ||
-             format == SinglePlaneFormat::kBGRX_8888) {
-    return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
-  } else if (format == SinglePlaneFormat::kETC1) {
-    return GL_ETC1_RGB8_OES;
-  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
-             format == SinglePlaneFormat::kBGRA_1010102) {
-    return GL_RGB10_A2_EXT;
-  }
-  NOTREACHED();
-}
-
 gfx::BufferFormat SharedImageFormatToBufferFormat(SharedImageFormat format) {
   if (!HasEquivalentBufferFormat(format)) {
     DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
