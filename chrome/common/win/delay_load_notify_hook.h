@@ -10,8 +10,6 @@
 
 #include <delayimp.h>
 
-namespace chrome {
-
 // See the following reference for sample delayload hook function:
 // https://learn.microsoft.com/en-us/cpp/build/reference/understanding-the-helper-function
 // The delayload hook function allows us to modify and monitor the behavior of
@@ -36,7 +34,5 @@ typedef FARPROC (*DelayLoadCallbackFunction)(unsigned delay_load_event,
 // would be practical to set it during early process startup. nullptr can be
 // passed to clear the callback, which is used in tests.
 void SetDelayLoadHookCallback(DelayLoadCallbackFunction callback_function);
-
-}  // namespace chrome
 
 #endif  // CHROME_COMMON_WIN_DELAY_LOAD_NOTIFY_HOOK_H_

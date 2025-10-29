@@ -13,8 +13,6 @@
 #include "base/notreached.h"
 #include "base/process/memory.h"
 
-namespace chrome {
-
 FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
                                             DelayLoadInfo* dll_info) {
   // ERROR_COMMITMENT_LIMIT means that there is no memory. Convert this into a
@@ -32,5 +30,3 @@ FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
   // behavior or be hard to diagnose. See https://crbug.com/1320845.
   NOTREACHED();
 }
-
-}  // namespace chrome

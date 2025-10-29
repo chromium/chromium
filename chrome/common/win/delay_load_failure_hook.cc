@@ -19,8 +19,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/common/win/delay_load_failure_support.h"
 
-namespace chrome {
-
 namespace {
 
 // Delay load failure hook that generates a crash report. By default a failure
@@ -57,12 +55,10 @@ FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
 
 }  // namespace
 
-}  // namespace chrome
-
 // Set the delay load failure hook to the function above.
 //
 // The |__pfnDliFailureHook2| failure notification hook gets called
 // automatically by the delay load runtime in case of failure, see
 // https://docs.microsoft.com/en-us/cpp/build/reference/failure-hooks?view=vs-2019
 // for more information about this.
-extern "C" const PfnDliHook __pfnDliFailureHook2 = chrome::DelayLoadFailureHook;
+extern "C" const PfnDliHook __pfnDliFailureHook2 = DelayLoadFailureHook;
