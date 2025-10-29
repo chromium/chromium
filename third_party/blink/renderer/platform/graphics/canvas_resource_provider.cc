@@ -202,6 +202,9 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
               ->ContextProvider()
               .GetCapabilities()
               .gpu_rasterization);
+    const auto& caps =
+        ContextProviderWrapper()->ContextProvider().GetCapabilities();
+    oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
   }
 
   if (raster_context_provider_) {
@@ -1407,9 +1410,6 @@ CanvasResourceProvider::CanvasResourceProvider(
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
-    const auto& caps =
-        context_provider_wrapper_->ContextProvider().GetCapabilities();
-    oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
             .GetGpuFeatureInfo()
