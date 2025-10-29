@@ -346,7 +346,14 @@ void ZeroStateSuggestionsPageData::GiveUp() {
                          "destroyed while waiting for "
                          "annotated page content from %s.",
                          GetUrl().spec()));
-  // If we've timed out, fail everything.
+
+  // Each OnReceived* method may try to construct the page context proto and
+  // access the (maybe already destroyed) page if partial results are available,
+  // so clear both of these first.
+  inner_text_result_.reset();
+  annotated_page_content_.reset();
+
+  // Finish with failure and run the page context callbacks.
   OnReceivedInnerText(nullptr);
   OnReceivedOptimizationMetadata(
       optimization_guide::OptimizationGuideDecision::kUnknown, {});
