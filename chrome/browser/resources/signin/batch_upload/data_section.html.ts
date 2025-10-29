@@ -22,7 +22,7 @@ export function getHtml(this: DataSectionElement) {
             ?hidden="${this.disabled_ || this.isThemeSection()}">
         </div>
         <cr-toggle id="toggle"
-            @checked-changed=${this.onToggleChanged_}
+            @checked-changed="${this.onToggleChanged_}"
             ?checked="${!this.disabled_}"
             aria-label="${this.getToggleAriaLabel_()}">
         </cr-toggle>

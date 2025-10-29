@@ -80,7 +80,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     collapse-icon="cr:expand-more"
     ?selected="${this.isSelected}"
     expand-icon="cr:chevron-right"
-    @expanded-changed=${this.onExpandedChanged_}>
+    @expanded-changed="${this.onExpandedChanged_}">
   ${urlListItem}
 </cr-expand-button>
   ${this.toggleExpand ? html`

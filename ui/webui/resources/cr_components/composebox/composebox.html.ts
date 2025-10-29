@@ -20,8 +20,8 @@ export function getHtml(this: ComposeboxElement) {
     @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
   </ntp-error-scrim>
   <div id="composebox" @keydown="${this.onKeydown_}"
-      @focusin=${this.handleComposeboxFocusIn_}
-      @focusout=${this.handleComposeboxFocusOut_}>
+      @focusin="${this.handleComposeboxFocusIn_}"
+      @focusout="${this.handleComposeboxFocusOut_}">
     <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">
@@ -35,7 +35,7 @@ export function getHtml(this: ComposeboxElement) {
             placeholder="${this.inputPlaceholder_}"
             part="input"
             .value="${this.input_}"
-            @input=${this.handleInput_}
+            @input="${this.handleInput_}"
             @scroll="${this.handleScroll_}"
             @focusin="${this.handleInputFocusIn_}"
             @focusout="${this.handleInputFocusOut_}"></textarea>
@@ -77,7 +77,7 @@ export function getHtml(this: ComposeboxElement) {
             @match-focusin="${this.onMatchFocusin_}"
             @match-click="${this.onMatchClick_}"
             ?hidden="${!this.showDropdown_}"
-            .lastQueriedInput=${this.lastQueriedInput_}>
+            .lastQueriedInput="${this.lastQueriedInput_}">
         </cr-composebox-dropdown>
       </contextual-entrypoint-and-carousel>
     </div>

@@ -7,19 +7,19 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IndividualPromosElement} from './individual_promos.js';
 
 export function getHtml(this: IndividualPromosElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="promos">
   ${this.eligiblePromos_.map(item => html`
-  <button id="promo" @click="${this.onClick_.bind(this, item.id)}"
-    aria-label="${item.buttonText}"
-  >
-    <cr-icon id="bodyIcon" icon="ntp-promo:${item.iconName}"></cr-icon>
-    <p id="bodyText" class=${this.eligiblePromos_.length > 1 ?
-       'multiplePromos' : 'singlePromo'}
-    >${item.bodyText}</p>
-    <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
-  </button>
-  `)}
+    <button id="promo" @click="${this.onClick_.bind(this, item.id)}"
+        aria-label="${item.buttonText}">
+      <cr-icon id="bodyIcon" icon="ntp-promo:${item.iconName}"></cr-icon>
+      <p id="bodyText" class="${this.getBodyTextCssClass_()}">
+        ${item.bodyText}
+      </p>
+      <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
+    </button>`)}
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

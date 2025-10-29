@@ -83,8 +83,8 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       part="cr-composebox-file-carousel"
       id="carousel"
       class="${this.carouselOnTop_ ? 'top' : ''}"
-      .files=${Array.from(this.files_.values())}
-      @delete-file=${this.onDeleteFile_}>
+      .files="${Array.from(this.files_.values())}"
+      @delete-file="${this.onDeleteFile_}">
     </cr-composebox-file-carousel> ` : ''}
   ${this.realboxLayoutMode === 'TallTopContext' ? contextMenu : ''}
   ${this.showDropdown && (this.showFileCarousel_ || this.realboxLayoutMode === 'TallTopContext') ? html`
