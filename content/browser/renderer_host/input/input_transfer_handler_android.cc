@@ -218,6 +218,10 @@ bool InputTransferHandlerAndroid::FilterRedundantDownEvent(
   return event.GetRawDownTime() <= cached_transferred_sequence_down_time_ms_;
 }
 
+void InputTransferHandlerAndroid::OnDetachedFromWindow() {
+  cached_transferred_sequence_event_time_us_.reset();
+}
+
 void InputTransferHandlerAndroid::RequestInputBack(
     RequestInputBackReason reason) {
   requested_input_back_ = true;

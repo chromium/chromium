@@ -73,6 +73,8 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   }
   bool FilterRedundantDownEvent(const ui::MotionEvent& event);
 
+  void OnDetachedFromWindow();
+
   enum class RequestInputBackReason {
     kStartDragAndDropGesture = 0,
     kStartTouchSelectionDragGesture = 1,
