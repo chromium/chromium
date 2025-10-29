@@ -563,7 +563,8 @@ namespace bluetoothLowEnergy {
     // bluetooth:low_energy and the bluetooth:peripheral permissions set to
     // true. The peripheral permission may not be available to all apps.
     // |request|: Request data for this request.
-    // |characteristic|: The GATT characteristic whose value is requested.
+    // |characteristicId|: The instance ID of the GATT characteristic whose
+    // value is requested.
     static void onCharacteristicReadRequest(
         Request request, DOMString characteristicId);
 
@@ -574,7 +575,8 @@ namespace bluetoothLowEnergy {
     // bluetooth:low_energy and the bluetooth:peripheral permissions set to
     // true. The peripheral permission may not be available to all apps.
     // |request|: Request data for this request.
-    // |characteristic|: The GATT characteristic whose value is being written.
+    // |characteristicId|: The instance ID of the GATT characteristic whose
+    // value is being written.
     static void onCharacteristicWriteRequest(
         Request request, DOMString characteristicId);
 
@@ -585,7 +587,8 @@ namespace bluetoothLowEnergy {
     // bluetooth:low_energy and the bluetooth:peripheral permissions set to
     // true. The peripheral permission may not be available to all apps.
     // |request|: Request data for this request.
-    // |descriptor|: The GATT descriptor whose value is requested.
+    // |descriptorId|: The instance ID of the GATT descriptor whose value is
+    // requested.
     static void onDescriptorReadRequest(
         Request request, DOMString descriptorId);
 
@@ -596,7 +599,8 @@ namespace bluetoothLowEnergy {
     // bluetooth:low_energy and the bluetooth:peripheral permissions set to
     // true. The peripheral permission may not be available to all apps.
     // |request|: Request data for this request.
-    // |descriptor|: The GATT descriptor whose value is being written.
+    // |descriptorId|: The instance ID of the GATT descriptor whose value is
+    // being written.
     static void onDescriptorWriteRequest(
         Request request, DOMString descriptorId);
   };
