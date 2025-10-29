@@ -23,7 +23,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "url/gurl.h"
 
@@ -43,12 +42,16 @@ FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
           std::move(callback),
           FetchManifestAndUpdateResult::kShutdown),
       install_url_(install_url),
-      expected_manifest_id_(expected_manifest_id) {}
+      expected_manifest_id_(expected_manifest_id) {
+  GetMutableDebugValue().Set("install_url",
+                             install_url.possibly_invalid_spec());
+  GetMutableDebugValue().Set("expected_manifest_id",
+                             expected_manifest_id_.possibly_invalid_spec());
+}
 
 void FetchManifestAndUpdateCommand::StartWithLock(
     std::unique_ptr<SharedWebContentsWithAppLock> lock) {
   lock_ = std::move(lock);
-  Observe(&lock_->shared_web_contents());
   if (!lock_->registrar().AppMatches(
           GenerateAppIdFromManifestId(expected_manifest_id_),
           WebAppFilter::InstalledInChrome())) {
@@ -85,11 +88,6 @@ void FetchManifestAndUpdateCommand::OnUrlLoaded(
           lock_->shared_web_contents(),
           base::BindOnce(&FetchManifestAndUpdateCommand::OnManifestRetrieved,
                          weak_factory_.GetWeakPtr()));
-}
-
-void FetchManifestAndUpdateCommand::PrimaryPageChanged(content::Page& page) {
-  CompleteAndSelfDestruct(CommandResult::kSuccess,
-                          FetchManifestAndUpdateResult::kPrimaryPageChanged);
 }
 
 void FetchManifestAndUpdateCommand::OnManifestRetrieved(
