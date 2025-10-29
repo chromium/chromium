@@ -34,6 +34,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.provider.Settings;
@@ -60,6 +61,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -71,6 +73,8 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
+import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionMenuItem.ItemGroupOffset;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
@@ -80,6 +84,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -89,6 +94,7 @@ import org.chromium.ui.touch_selection.TouchSelectionDraggableType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /** Unit tests for {@link SelectionPopupController}. */
@@ -729,6 +735,65 @@ public class SelectionPopupControllerTest {
         Mockito.verify(dropdownMenuDelegate, times(1))
                 .show(any(), any(), any(), any(), anyInt(), anyInt());
         Mockito.verify(spyController, never()).showActionModeOrClearOnFailure();
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    public void allItemsArePresentInDropdownMenu() {
+        // Adds numItemsPerGroup to each menu group and then builds a dropdown menu. Asserts that
+        // all the items were added properly by adding the items to a set at creation time and
+        // removing them again when building the dropdown menu.
+        int numItemsPerGroup = 8;
+        HashSet<Integer> ids = new HashSet<>();
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        for (@ItemGroupOffset
+        int group :
+                new int[] {
+                    ItemGroupOffset.ASSIST_ITEMS,
+                    ItemGroupOffset.DEFAULT_ITEMS,
+                    ItemGroupOffset.SECONDARY_ASSIST_ITEMS,
+                    ItemGroupOffset.TEXT_PROCESSING_ITEMS
+                }) {
+            for (int i = 0; i < numItemsPerGroup; i++) {
+                int id = group + i;
+                pendingMenu.addMenuItem(
+                        new SelectionMenuItem.Builder("")
+                                .setId(id)
+                                .setOrderAndCategory(i, group)
+                                .build());
+                ids.add(id);
+            }
+        }
+        TestSelectionDropdownMenuDelegate delegate =
+                new TestSelectionDropdownMenuDelegate() {
+                    @Override
+                    public MVCListAdapter.ListItem getMenuItem(
+                            String title,
+                            @Nullable String contentDescription,
+                            int groupId,
+                            int id,
+                            @Nullable Drawable startIcon,
+                            boolean isIconTintable,
+                            boolean groupContainsIcon,
+                            boolean enabled,
+                            @Nullable Intent intent,
+                            int order) {
+                        ids.remove(id);
+                        return super.getMenuItem(
+                                title,
+                                contentDescription,
+                                groupId,
+                                id,
+                                startIcon,
+                                isIconTintable,
+                                groupContainsIcon,
+                                enabled,
+                                intent,
+                                order);
+                    }
+                };
+        pendingMenu.getMenuAsDropdown(delegate);
+        assertTrue(ids.isEmpty());
     }
 
     @Test

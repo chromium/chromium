@@ -100,7 +100,12 @@ public final class PendingSelectionMenu {
         mItems.sort(Comparator.comparingInt(menuItem -> menuItem.order));
 
         if (mGroupTotals[LogicalGroup.ASSIST_ITEMS] != 0) {
-            addDropdownMenuItemsForRange(0, 1, items, delegate, LogicalGroup.ASSIST_ITEMS);
+            addDropdownMenuItemsForRange(
+                    0,
+                    mGroupTotals[LogicalGroup.ASSIST_ITEMS],
+                    items,
+                    delegate,
+                    LogicalGroup.ASSIST_ITEMS);
         }
         int start = mGroupTotals[LogicalGroup.ASSIST_ITEMS];
         int end =
