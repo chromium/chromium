@@ -108,6 +108,12 @@ public interface ControlContainer {
     void removeTouchEventObserver(TouchEventObserver observer);
 
     /**
+     * Sets the max height for the control container view. The view may be smaller than this and
+     * will still wrap to accommodate the height of its children, but only to the specified height.
+     */
+    void setMaxHeight(int maxHeight);
+
+    /**
      * Destroys the control container, causing it to release any owned native resources and cancel
      * pending tasks.
      */

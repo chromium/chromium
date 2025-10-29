@@ -31,7 +31,6 @@ import android.view.WindowInsets;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,6 +77,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -272,6 +272,8 @@ public class ToolbarPositionControllerTest {
     @Mock private PrefService mPrefs;
     @Mock private LocalStatePrefs.Natives mLocalStatePrefsNatives;
     @Mock private PrefService mLocalPrefService;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private DisplayAndroid mDisplayAndroid;
 
     private Context mContext;
     private final ObservableSupplierImpl<Boolean> mIsNtpShowing =
@@ -301,7 +303,6 @@ public class ToolbarPositionControllerTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private HistogramWatcher mStartupExpectation;
-    private WindowAndroid mWindowAndroid;
 
     public static class FakeKeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
         private boolean mIsShowing;
@@ -334,7 +335,6 @@ public class ToolbarPositionControllerTest {
         doReturn(mProgressBarParent).when(mProgressBarContainer).getParent();
         mContext = ContextUtils.getApplicationContext();
         doReturn(mContext.getResources()).when(mProgressBarContainer).getResources();
-        mWindowAndroid = new WindowAndroid(mContext, false);
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsSizer, mContext, mWindowAndroid);
         mBrowserControlsSizer.setControlsPosition(
@@ -377,7 +377,8 @@ public class ToolbarPositionControllerTest {
                         mContext,
                         mToolbarPosition,
                         mProfileSupplier,
-                        mKeyboardHeightSupplier);
+                        mKeyboardHeightSupplier,
+                        mWindowAndroid);
 
         LocalStatePrefs.setNativePrefsLoadedForTesting(true);
         LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
@@ -395,11 +396,6 @@ public class ToolbarPositionControllerTest {
                 .thenAnswer(invocation -> localPrefValue.get() != null);
         when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
                 .thenAnswer(invocation -> localPrefValue.get() != null && localPrefValue.get());
-    }
-
-    @After
-    public void tearDown() {
-        mWindowAndroid.destroy();
     }
 
     /**
@@ -1101,6 +1097,8 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testBottomAnchoredFocusedOmnibox() {
+        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
+        doReturn(1000).when(mDisplayAndroid).getDisplayHeight();
         doReturn(mRootView).when(mControlContainerView).getRootView();
         WindowInsets rootViewInsets =
                 new WindowInsets.Builder()
@@ -1115,6 +1113,13 @@ public class ToolbarPositionControllerTest {
 
         mKeyboardHeightSupplier.set(400);
         verify(mControlContainerView).setTranslationY(-400f);
+
+        // If the window is too short to accommodate the keyboard + the full height of the toolbar,
+        // the toolbar should be translated up to the top of the screen but no further.
+        doReturn(430).when(mDisplayAndroid).getDisplayHeight();
+        mKeyboardHeightSupplier.set(401);
+        verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT));
+        verify(mControlContainer, atLeast(1)).setMaxHeight(30);
     }
 
     @Test
