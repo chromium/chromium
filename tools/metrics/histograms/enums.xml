@@ -11944,6 +11944,7 @@ from previous Chrome versions.
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
   <int value="-834234595" label="BorealisProvision:enabled"/>
   <int value="-833449894" label="PrivacySandboxAdsNoticeCCT:disabled"/>
+  <int value="-833319821" label="AutoRevokeSuspiciousNotification:enabled"/>
   <int value="-833024559" label="AuxiliarySearchDonation:enabled"/>
   <int value="-832970990" label="mantis-feature-key:disabled"/>
   <int value="-832806243" label="QuickActionSearchWidgetAndroid:disabled"/>
@@ -13262,6 +13263,7 @@ from previous Chrome versions.
   <int value="-359452972" label="ProjectorV2:enabled"/>
   <int value="-359331504" label="InputDeviceSettingsSplit:enabled"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
+  <int value="-357272449" label="AutoRevokeSuspiciousNotification:disabled"/>
   <int value="-357250869"
       label="ActivateMetricsReportingEnabledPolicyAndroid:enabled"/>
   <int value="-356767031" label="DataSharingJoinOnly:disabled"/>

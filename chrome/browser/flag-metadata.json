@@ -803,6 +803,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "auto-revoke-suspicious-notification",
+    "owners": ["skrakowi@google.com","minap@google.com","chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 147
+  },
+  {
     "name": "autofill-across-iframes",
     "owners": [
       "vincb@google.com",

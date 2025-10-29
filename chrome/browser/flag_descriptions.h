@@ -267,6 +267,11 @@ inline constexpr char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
+inline constexpr char kAutoRevokeSuspiciousNotificationName[] =
+    "Auto-revoke suspicious notification";
+inline constexpr char kAutoRevokeSuspiciousNotificationDescription[] =
+    "Auto-revoke notification permission with suspicious content.";
+
 inline constexpr char kAutomaticUsbDetachName[] =
     "Automatically detach USB kernel drivers";
 inline constexpr char kAutomaticUsbDetachDescription[] =
