@@ -1308,8 +1308,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
       WaitForHide(kTabGroupEditorBubbleCloseGroupButtonId));
 }
 
+// TODO(crbug.com/456197972): This test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ScreenshotAcceleratorsInTabGroupSubmenu \
+  DISABLED_ScreenshotAcceleratorsInTabGroupSubmenu
+#else
+#define MAYBE_ScreenshotAcceleratorsInTabGroupSubmenu \
+  ScreenshotAcceleratorsInTabGroupSubmenu
+#endif
 IN_PROC_BROWSER_TEST_F(TabGroupShortcutsInteractiveTest,
-                       ScreenshotAcceleratorsInTabGroupSubmenu) {
+                       MAYBE_ScreenshotAcceleratorsInTabGroupSubmenu) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
   ASSERT_TRUE(
