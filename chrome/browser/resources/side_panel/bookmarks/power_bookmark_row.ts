@@ -72,6 +72,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       isSelected: {type: Boolean},
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
+      hasActiveDrag: {type: Boolean},
       activeFolderPath: {type: Array},
       hasFolders: {type: Boolean, reflect: true},
     };
@@ -106,6 +107,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor updatedElementIds: string[] = [];
   accessor isPriceTracked: boolean = false;
   accessor canDrag: boolean = true;
+  accessor hasActiveDrag: boolean = false;
   accessor activeFolderPath: BookmarksTreeNode[] = [];
   accessor hasFolders: boolean = false;
 
@@ -356,7 +358,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // Ignore clicks on the row when it has an input, to ensure the row doesn't
     // eat input clicks. Also ignore clicks if the row has no associated
     // bookmark, or if the event is a right-click.
-    if (this.isRenamingItem_() || !this.bookmark || event.button === 2) {
+    if (this.isRenamingItem_() || !this.bookmark || event.button === 2 ||
+        this.hasActiveDrag) {
       return;
     }
     event.preventDefault();

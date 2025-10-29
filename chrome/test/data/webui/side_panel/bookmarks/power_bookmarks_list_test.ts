@@ -977,5 +977,20 @@ suite('General', () => {
       await flushTasks();
       assertFalse(isHidden(labels));
     });
+
+    test('PreventsClickDuringDrag', async () => {
+      // Top level folder has 4 bookmarks.
+      assertEquals(4, getBookmarksInList(powerBookmarksList, 0).length);
+
+      // Simulate a drag occurring and then click the folder.
+      getPowerBookmarksRowElement(powerBookmarksList, '5')!.hasActiveDrag =
+          true;
+
+      getCrUrlListItemElementWithId('5')!.click();
+      await flushTasks();
+
+      // Folder should still have 4 bookmarks because the click was ignored.
+      assertEquals(4, getBookmarksInList(powerBookmarksList, 0).length);
+    });
   });
 });

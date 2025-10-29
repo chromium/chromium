@@ -99,6 +99,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
           .draggable="${String(this.canDrag)}"
           ?can-drag="${this.canDrag}"
+          ?has-active-drag="${this.hasActiveDrag}"
           .activeFolderPath="${this.activeFolderPath}"
           .contextMenuBookmark="${this.contextMenuBookmark}"
           ?has-folders="${true}">

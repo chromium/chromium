@@ -5,10 +5,10 @@
 
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
-import {DROP_POSITION_ATTR, DropPosition, PowerBookmarksDragManager} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_drag_manager.js';
+import {DROP_POSITION_ATTR, DropPosition} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_drag_manager.js';
 import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -93,7 +93,6 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
     });
 
     delegate = new PowerBookmarksListElement();
-    new PowerBookmarksDragManager(delegate);
     document.body.appendChild(delegate);
 
     await bookmarksApi.whenCalled('getAllBookmarks');
@@ -173,5 +172,29 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
 
     assertEquals(1, bookmarksApi.getCallCount('dropBookmarks'));
     assertEquals('5', bookmarksApi.getArgs('dropBookmarks')[0][0]);
+  });
+
+  test('HasActiveDrag', () => {
+    chrome.bookmarkManagerPrivate.startDrag = () => {};
+
+    const draggableElements = getDraggableElements();
+    const draggedBookmark = draggableElements[1]!;
+    draggedBookmark.dispatchEvent(new DragEvent(
+        'dragstart', {bubbles: true, composed: true, clientX: 0, clientY: 0}));
+
+    assertTrue(delegate.getDragManagerForTesting().hasActiveDrag());
+
+    const dropFolder = draggableElements[0]!;
+    const dragOverRect = dropFolder.getBoundingClientRect();
+    dropFolder.dispatchEvent(new DragEvent('dragover', {
+      bubbles: true,
+      composed: true,
+      clientX: dragOverRect.left,
+      clientY: dragOverRect.top + (dragOverRect.height * .5),
+    }));
+    dropFolder.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, composed: true}));
+
+    assertFalse(delegate.getDragManagerForTesting().hasActiveDrag());
   });
 });

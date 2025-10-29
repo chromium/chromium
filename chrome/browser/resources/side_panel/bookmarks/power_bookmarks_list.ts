@@ -617,6 +617,10 @@ export class PowerBookmarksListElement extends PolymerElement implements
     return this.keyArrowNavigationService_;
   }
 
+  getDragManagerForTesting() {
+    return this.bookmarksDragManager_;
+  }
+
   private notifyPathIfVisible_(id: string, key: string) {
     for (let i = 0; i < this.displayLists_.length; i++) {
       const listIndex = this.displayLists_[i].findIndex(b => b.id === id);
@@ -1343,6 +1347,10 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
     this.hasScrollbars_ =
         this.$.bookmarks.scrollHeight > this.$.bookmarks.offsetHeight;
+  }
+
+  private hasActiveDrag_() {
+    return this.bookmarksDragManager_.hasActiveDrag();
   }
 }
 

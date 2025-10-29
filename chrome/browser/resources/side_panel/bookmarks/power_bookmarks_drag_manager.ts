@@ -62,7 +62,7 @@ interface PowerBookmarksDragDelegate extends HTMLElement {
 class DragSession {
   private delegate_: PowerBookmarksDragDelegate;
   private dragData_: chrome.bookmarkManagerPrivate.DragData;
-  private lastDragOverElement_: PowerBookmarkRowElement|null = null;
+  private lastDragOverElement_: HTMLElement|null = null;
   private lastDropTargetBookmark_: BookmarksTreeNode|null = null;
   private lastPointerWasTouch_ = false;
   private bookmarksApi_: BookmarksApiProxy =
@@ -82,22 +82,23 @@ class DragSession {
   }
 
   update(e: DragEvent) {
-    const dragOverElement = e.composedPath().find(target => {
+    const bookmarkRowElement = e.composedPath().find(target => {
       return target instanceof PowerBookmarkRowElement && !target.bookmark.url;
     }) as PowerBookmarkRowElement;
 
-    if (!dragOverElement) {
+    if (!bookmarkRowElement) {
       // Invalid drag over element. Cancel session.
       this.cancel();
       return;
-    } else if (dragOverElement === this.lastDragOverElement_) {
+    } else if (bookmarkRowElement === this.lastDragOverElement_) {
       // State has not changed, nothing to update.
       return;
     }
 
     this.resetState_();
 
-    let dropTargetBookmark = dragOverElement.bookmark;
+    let dropTargetBookmark = bookmarkRowElement.bookmark;
+    let dragOverElement: HTMLElement = bookmarkRowElement;
 
     const invalidDropTarget = dropTargetBookmark.unmodifiable ||
         dropTargetBookmark.url ||
@@ -106,26 +107,19 @@ class DragSession {
              element => element.id === dropTargetBookmark.id));
     if (invalidDropTarget) {
       dropTargetBookmark = this.delegate_.getFallbackBookmark();
+      dragOverElement = this.delegate_.getFallbackDropTargetElement();
     }
 
     const draggedBookmarks = this.dragData_.elements!;
-    let dropTargetIsParent = true;
-    draggedBookmarks.forEach((bookmark: chrome.bookmarks.BookmarkTreeNode) => {
-      if (bookmark.parentId !== dropTargetBookmark.id) {
-        dropTargetIsParent = false;
-      }
-    });
+    const dropTargetIsParent = !draggedBookmarks.some(
+        (bookmark: chrome.bookmarks.BookmarkTreeNode) =>
+            bookmark.parentId !== dropTargetBookmark.id);
     if (draggedBookmarks.length === 0 || dropTargetIsParent) {
       this.cancel();
       return;
     }
 
-    if (invalidDropTarget) {
-      this.delegate_.getFallbackDropTargetElement().setAttribute(
-          DROP_POSITION_ATTR, DropPosition.INTO);
-    } else {
-      dragOverElement.setAttribute(DROP_POSITION_ATTR, DropPosition.INTO);
-    }
+    dragOverElement.setAttribute(DROP_POSITION_ATTR, DropPosition.INTO);
     this.lastDragOverElement_ = dragOverElement;
     this.lastDropTargetBookmark_ = dropTargetBookmark;
   }
@@ -210,6 +204,10 @@ export class PowerBookmarksDragManager {
     this.eventTracker_.removeAll();
   }
 
+  hasActiveDrag() {
+    return !!this.dragSession_;
+  }
+
   private cancelDrag_() {
     if (!this.dragSession_) {
       return;
@@ -243,7 +241,6 @@ export class PowerBookmarksDragManager {
         bookmark.unmodifiable) {
       return;
     }
-
     this.dragSession_ =
         DragSession.createFromBookmark(this.delegate_, bookmark);
     this.dragSession_.start(e);
