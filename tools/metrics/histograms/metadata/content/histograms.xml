@@ -882,6 +882,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.AllFeeds.Activity.ByProvider"
+    enum="FeedActivityBucket" expires_after="2026-01-18">
+  <owner>guiperez@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks user activity buckets for the filter. Reported every time a metric is
+    reported through the MetricsProvider to allow filtering. The histogram used
+    for analysis is ContentSuggestions.Feed.AllFeeds.Activity, whilst this one
+    will only be used for the filter. Any changes to
+    ContentSuggestions.Feed.AllFeeds.Activity will also change how this metric
+    is reported.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.BrokenNTPHierarchy"
     enum="NTPBrokenViewHierarchyRelationship" expires_after="M120">
   <owner>adamta@google.com</owner>
@@ -1675,14 +1689,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.WebFeed.SortType" enum="FeedSortType"
-    expires_after="2025-06-23">
-  <owner>adamta@google.com</owner>
-  <owner>sczs@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>The sort type that was selected from the feed's sort menu.</summary>
-</histogram>
-
 <histogram name="ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged"
     enum="FeedSortType" expires_after="2026-03-08">
   <owner>adamta@google.com</owner>
@@ -1776,39 +1782,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Feed" summary="the For-You feed"/>
     <variant name="Feed.AllFeeds" summary="All Feeds combined"/>
     <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.Activity.ByProvider"
-    enum="FeedActivityBucket" expires_after="2026-01-18">
-  <owner>guiperez@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Tracks user activity buckets for the filter. Reported every time a metric is
-    reported through the MetricsProvider to allow filtering. The histogram used
-    for analysis is ContentSuggestions.{FeedType}.Activity, whilst this one will
-    only be used for the filter. Any changes to
-    ContentSuggestions.{FeedType}.Activity will also change how this metric is
-    reported.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="the For-You feed"/>
-    <variant name="Feed.AllFeeds" summary="All Feeds combined"/>
-    <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.CardIndexOnSwitch" units="index"
-    expires_after="2023-04-21">
-  <owner>adamta@google.com</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    iOS: Before switching to a new feed type, logs the index of the last visible
-    card.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
