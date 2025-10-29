@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/page/page.mojom-forward.h"
 
 namespace content {
+class NavigationHandle;
 class Page;
 class RenderFrameHost;
 class WebContents;
@@ -55,6 +56,8 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   void OnMetaTagsChangedForFrame(
       content::RenderFrameHost* render_frame_host,
