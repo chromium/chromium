@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -418,6 +419,41 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                 buildBaseModelForTextItem(id)
                         .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
                         .with(AppMenuItemProperties.ADDITIONAL_ICONS, subList)
+                        .build();
+        if (iconResId != 0) {
+            model.set(
+                    AppMenuItemProperties.ICON,
+                    AppCompatResources.getDrawable(mContext, iconResId));
+        }
+        return model;
+    }
+
+    /**
+     * Build a property model for a menu item with submenu.
+     *
+     * @param id The id of the menu item.
+     * @param titleId The resource id of the title to be displayed.
+     * @param iconResId The resource id of the icon to be displayed (or 0 for no icon).
+     * @param submenuItems The list of {@code ListItem}s in the submenu.
+     * @return The property model for this item.
+     */
+    public PropertyModel buildModelForMenuItemWithSubmenu(
+            @IdRes int id,
+            @StringRes int titleId,
+            @DrawableRes int iconResId,
+            List<ListItem> submenuItems) {
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemWithSubmenuProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, id)
+                        .with(AppMenuItemProperties.TITLE, mContext.getString(titleId))
+                        .with(AppMenuItemProperties.ENABLED, true)
+                        .with(AppMenuItemProperties.ICON_COLOR_RES, getMenuItemIconColorRes(id))
+                        .with(AppMenuItemProperties.MENU_ICON_AT_START, isMenuIconAtStart())
+                        .with(AppMenuItemProperties.MANAGED, isMenuItemManaged(id))
+                        .with(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS, submenuItems)
+                        .with(
+                                AppMenuItemProperties.ICON_SHOW_BADGE,
+                                shouldShowBadgeOnMenuItemIcon(id))
                         .build();
         if (iconResId != 0) {
             model.set(
