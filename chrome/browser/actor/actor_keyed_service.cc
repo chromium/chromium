@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
@@ -207,6 +208,29 @@ void ActorKeyedService::OnCredentialSelected(
   } else {
     VLOG(1) << "Task not found for task id: " << request_task_id;
   }
+}
+
+base::CallbackListSubscription
+ActorKeyedService::AddRequestToShowAutofillSuggestionsDialogSubscriberCallback(
+    RequestToShowAutofillSuggestionsDialogSubscriberCallback callback) {
+  return request_to_show_autofill_suggestions_dialog_callback_list_.Add(
+      std::move(callback));
+}
+
+void ActorKeyedService::NotifyRequestToShowAutofillSuggestionsDialog(
+    TaskId task_id,
+    const std::vector<autofill::ActorFormFillingRequest>& requests) {
+  request_to_show_autofill_suggestions_dialog_callback_list_.Notify(
+      task_id, requests,
+      base::BindRepeating(&ActorKeyedService::OnAutofillSuggestionsSelected,
+                          weak_ptr_factory_.GetWeakPtr(), task_id));
+}
+
+void ActorKeyedService::OnAutofillSuggestionsSelected(
+    TaskId request_task_id,
+    webui::mojom::SelectAutofillSuggestionsDialogResponsePtr response) {
+  // TODO(crbug.com/452065032): Implement the AttemptFormFillingTool.
+  NOTIMPLEMENTED();
 }
 
 base::CallbackListSubscription
