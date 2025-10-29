@@ -94,6 +94,10 @@ class FindBar {
   // Called when the web contents associated with the find bar changes.
   virtual void UpdateFindBarForChangedWebContents() = 0;
 
+  // Called to check if find bar text can be populated from selected text or
+  // not.
+  virtual bool CanPopulateFromSelectedText() = 0;
+
   // Returns a pointer to the testing interface to the FindBar, or NULL
   // if there is none.
   virtual const FindBarTesting* GetFindBarTesting() const = 0;

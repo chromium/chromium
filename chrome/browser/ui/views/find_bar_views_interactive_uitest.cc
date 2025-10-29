@@ -46,6 +46,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_modifiers.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -75,6 +76,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabBId);
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                     kTextCopiedState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                    kTextSelectedState);
 const ui::Accelerator ctrl_c_accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
 const ui::Accelerator ctrl_v_accelerator(ui::VKEY_V, ui::EF_CONTROL_DOWN);
 }  // namespace
@@ -734,29 +737,10 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, PrepopulateRespectBlank) {
 }
 #endif
 
-INSTANTIATE_TEST_SUITE_P(, FindBarViewsUiTest, ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, PasteWithoutTextChange) {
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, PasteWithoutTextChange) {
   constexpr char16_t kSearchA[] = u"a";
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
-  const bool clipboard_restricted_by_policy = GetParam();
-  if (clipboard_restricted_by_policy) {
-    data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
-                                   "name": "rule_name",
-                                   "rule_id": "rule_id",
-                                   "destinations": {
-                                     "os_clipboard": true
-                                   },
-                                   "restrictions": [
-                                     {"class": "CLIPBOARD", "level": "BLOCK"}
-                                   ]
-                                 })"});
-  }
 
-  const std::string copied_text =
-      clipboard_restricted_by_policy
-          ? "Pasting this content here is blocked by your administrator."
-          : "a";
   RunTestSequence(
       ObserveState(kFindResultState,
                    [this]() {
@@ -791,7 +775,7 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, PasteWithoutTextChange) {
             std::u16string clipboard_text;
             clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste,
                                 /* data_dst = */ nullptr, &clipboard_text);
-            return base::EqualsASCII(clipboard_text, copied_text);
+            return base::EqualsASCII(clipboard_text, "a");
           }),
       WaitForState(kTextCopiedState, true),
       // Press Ctrl-V to paste the content back, it should start finding even if
@@ -1039,9 +1023,9 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MatchOrdinalStableWhileTyping) {
       WaitForState(kFindResultState, []() { return FindResultState(1, 3); }));
 }
 
-IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, DragAndDropInFindBarAllowed) {
-  const GURL page_a = embedded_test_server()->GetURL("/a.html");
-  constexpr char16_t kInitialText[] = u"Hello world";
+INSTANTIATE_TEST_SUITE_P(, FindBarViewsUiTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
   const bool clipboard_restricted_by_policy = GetParam();
   if (clipboard_restricted_by_policy) {
     data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
@@ -1055,29 +1039,46 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, DragAndDropInFindBarAllowed) {
                                    ]
                                  })"});
   }
+  const std::u16string_view text = clipboard_restricted_by_policy
+                                       ? u"42"
+                                       : u"This is some text with a link.";
+
+  const GURL page_url = embedded_test_server()->GetURL("/a.html");
+
+  // Helper function to check if text is selected.
+  auto has_selected_text = [this]() {
+#if BUILDFLAG(IS_MAC)
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
+                                                false, false, true));
+
+#else
+    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, true,
+                                                false, false, false));
+
+#endif
+    WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    if (!web_contents) {
+      return false;
+    }
+    auto* host_view = web_contents->GetRenderWidgetHostView();
+    return host_view->GetSelectedText() == u"This is some text with a link.";
+  };
 
   RunTestSequence(
-      // Open tab A and show the Find bar.
-      Init(page_a), ShowFindBar(),
-      // Enter the initial text.
-      EnterText(FindBarView::kTextField, kInitialText),
-      CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
-                        kInitialText),
+      Init(page_url), WaitForWebContentsReady(kTabId), ShowFindBar(),
+      EnterText(FindBarView::kTextField, u"42"), HideFindBar(),
+      Focus(ContentsWebView::kContentsWebViewElementId),
 
-      // Select "Hello".
-      WithView(FindBarView::kTextField,
-               [](views::Textfield* textfield) {
-                 textfield->SetSelectedRange(gfx::Range(0, 5));
-               }),
-      CheckViewProperty(FindBarView::kElementId,
-                        &FindBarView::GetFindSelectedText, u"Hello"),
+      // Wait for the selection to be "text".
+      // This will poll after the last attempt.
+      PollState(kTextSelectedState, has_selected_text),
 
-      // Check that AllowStartDragEvent returns the correct value based on
-      // policy.
-      WithView(FindBarView::kElementId,
-               [clipboard_restricted_by_policy](FindBarView* find_bar_view) {
-                 EXPECT_EQ(find_bar_view->AllowStartDragEvent(
-                               find_bar_view->GetFindSelectedText()),
-                           !clipboard_restricted_by_policy);
-               }));
+      WaitForState(kTextSelectedState, true),
+      // Show the Find bar.
+      ShowFindBar(), WaitForShow(FindBarView::kTextField),
+      // Verify the text in the find bar.
+      WithView(FindBarView::kTextField, [text](views::Textfield* textfield) {
+        EXPECT_EQ(textfield->GetText(), text);
+      }));
 }

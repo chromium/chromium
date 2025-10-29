@@ -67,7 +67,8 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
 
   std::u16string selected_text = GetSelectedText();
   auto selected_length = selected_text.length();
-  if (selected_length > 0 && selected_length <= 250) {
+  if (selected_length > 0 && selected_length <= 250 &&
+      find_bar_->CanPopulateFromSelectedText()) {
     find_bar_->SetFindTextAndSelectedRange(
         selected_text, gfx::Range(0, selected_text.length()));
   }

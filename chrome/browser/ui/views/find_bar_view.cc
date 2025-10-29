@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -33,7 +32,6 @@
 #include "components/find_in_page/find_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/input_method.h"
@@ -66,13 +64,6 @@ namespace {
 void SetCommonButtonAttributes(views::ImageButton* button) {
   views::ConfigureVectorImageButton(button);
   views::InstallCircleHighlightPathGenerator(button);
-}
-content::WebContents* GetWebContentsFromHost(FindBarHost* host) {
-  if (!host || !host->GetFindBarController() ||
-      !host->GetFindBarController()->web_contents()) {
-    return nullptr;
-  }
-  return host->GetFindBarController()->web_contents();
 }
 }  // namespace
 
@@ -495,23 +486,6 @@ void FindBarView::OnAfterPaste() {
   // a paste operation, even if the pasted text is the same as before.
   // See http://crbug.com/79002
   last_searched_text_.clear();
-}
-
-bool FindBarView::HandleWriteTextToClipboard(
-    ui::ClipboardBuffer clipboard_buffer,
-    const std::u16string_view& text) {
-  content::WebContents* web_contents = GetWebContentsFromHost(find_bar_host_);
-
-  return web_contents && enterprise_data_protection::HandleWriteTextToClipboard(
-                             web_contents, clipboard_buffer, text);
-}
-
-bool FindBarView::AllowStartDragEvent(
-    const std::u16string_view& selected_text) {
-  content::WebContents* web_contents = GetWebContentsFromHost(find_bar_host_);
-
-  return !web_contents ||
-         enterprise_data_protection::DragAndDropForTextIsAllowed(web_contents);
 }
 
 void FindBarView::Find(std::u16string_view search_text) {

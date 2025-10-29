@@ -95,6 +95,7 @@ class FindBarHost : public FindBar,
   void RestoreSavedFocus() override;
   bool HasGlobalFindPasteboard() const override;
   void UpdateFindBarForChangedWebContents() override;
+  bool CanPopulateFromSelectedText() override;
   const FindBarTesting* GetFindBarTesting() const override;
   bool HasFocus() const override;
 
