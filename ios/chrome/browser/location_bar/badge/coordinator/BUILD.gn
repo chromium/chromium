@@ -32,3 +32,27 @@ source_set("coordinator") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "location_bar_badge_coordinator_unittest.mm",
+    "location_bar_badge_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/location_bar/badge/model",
+    "//ios/chrome/browser/location_bar/badge/ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
