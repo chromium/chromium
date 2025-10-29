@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -953,9 +954,11 @@ void LensOverlayController::ShowUI(
       std::make_unique<lens::LensOverlayLanguagesController>(profile);
 
   // Setup observer to be notified of side panel opens and closes.
+  SidePanelEntry::PanelType panel_type =
+      GetLensOverlaySidePanelCoordinator()->GetPanelType();
   side_panel_shown_subscription_ =
       side_panel_coordinator_->RegisterSidePanelShown(
-          GetLensOverlaySidePanelCoordinator()->GetPanelType(),
+          panel_type,
           base::BindRepeating(&LensOverlayController::OnSidePanelDidOpen,
                               weak_factory_.GetWeakPtr()));
 
@@ -1005,13 +1008,12 @@ void LensOverlayController::ShowUI(
 
   // This should be the last thing called in ShowUI, so if something goes wrong
   // in capturing the screenshot, the state gets cleaned up correctly.
-  if (side_panel_coordinator_->IsSidePanelShowing(
-          GetLensOverlaySidePanelCoordinator()->GetPanelType()) &&
+  if (side_panel_coordinator_->IsSidePanelShowing(panel_type) &&
       !results_side_panel_coordinator_->IsEntryShowing()) {
     // Close the currently opened side panel synchronously if it's not the Lens
     // panel. Postpone the screenshot for a fixed time to allow reflow.
     state_ = State::kClosingOpenedSidePanel;
-    side_panel_coordinator_->Close(/*suppress_animations=*/true);
+    side_panel_coordinator_->Close(/*suppress_animations=*/true, panel_type);
     base::SingleThreadTaskRunner::GetCurrentDefault()
         ->PostNonNestableDelayedTask(
             FROM_HERE,

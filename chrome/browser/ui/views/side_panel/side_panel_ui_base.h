@@ -104,7 +104,8 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
     base::RepeatingCallbackList<void()> shown_callback_list;
   };
 
-  virtual void Close(bool suppress_animations) = 0;
+  virtual void Close(bool suppress_animations,
+                     SidePanelEntry::PanelType panel_type) = 0;
 
   // This method does not show the side panel. Instead, it queues the side panel
   // to be shown once the contents have been loaded. This process may be either

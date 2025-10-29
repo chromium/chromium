@@ -49,12 +49,15 @@ void SidePanelCoordinator::Init(Browser* browser) {
 }
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
-  Close(/*suppress_animations=*/true);
+  for (auto panel_type : {SidePanelEntry::PanelType::kContent,
+                          SidePanelEntry::PanelType::kToolbar}) {
+    Close(/*suppress_animations=*/true, panel_type);
+  }
   side_panel_toolbar_pinning_controller_.reset();
 }
 
 void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type) {
-  Close(/*suppress_animations=*/false);
+  Close(/*suppress_animations=*/false, panel_type);
 }
 
 void SidePanelCoordinator::Toggle(
@@ -156,7 +159,8 @@ void SidePanelCoordinator::Show(
                                                          open_trigger);
 
   // If the side panel is already showing, cancel all loads and do nothing.
-  if (current_key(entry->type()) && *current_key(entry->type()) == input) {
+  if (IsSidePanelShowing(entry->type()) &&
+      *current_key(entry->type()) == input) {
     waiter(entry->type())->ResetLoadingEntryIfNecessary();
 
     SidePanel* side_panel = GetSidePanelFor(entry->type());
@@ -200,26 +204,24 @@ void SidePanelCoordinator::Show(
 //   (4) At the moment that this comment was written, if this class is showing
 //   a window-scoped side-panel entry, and the window is closed via any
 //   mechanism, this method is not called.
-void SidePanelCoordinator::Close(bool suppress_animations) {
-  if (!IsSidePanelShowing(SidePanelEntry::PanelType::kContent) ||
-      (!suppress_animations &&
-       browser_view_->contents_height_side_panel()->IsClosing())) {
+void SidePanelCoordinator::Close(bool suppress_animations,
+                                 SidePanelEntry::PanelType panel_type) {
+  SidePanel* const side_panel = GetSidePanelFor(panel_type);
+  if (!IsSidePanelShowing(panel_type) ||
+      (!suppress_animations && side_panel->IsClosing())) {
     return;
   }
 
-  if (current_key(SidePanelEntry::PanelType::kContent)) {
-    if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-      side_panel_toolbar_pinning_controller_->UpdateActiveState(
-          current_key(SidePanelEntry::PanelType::kContent)->key, false);
-    }
-    SidePanelEntry* entry =
-        GetEntryForUniqueKey(*current_key(SidePanelEntry::PanelType::kContent));
-    if (entry) {
-      entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
-    }
+  if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+    side_panel_toolbar_pinning_controller_->UpdateActiveState(
+        current_key(panel_type)->key, false);
   }
-  browser_view_->contents_height_side_panel()->Close(
-      /*animated=*/!suppress_animations);
+  SidePanelEntry* entry = GetEntryForUniqueKey(*current_key(panel_type));
+  if (entry) {
+    entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
+  }
+
+  side_panel->Close(!suppress_animations);
 }
 
 SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
@@ -261,7 +263,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   side_panel->Open(/*animated=*/!suppress_animations);
 
   SidePanelEntry* previous_entry =
-      current_key(entry->type())
+      IsSidePanelShowing(entry->type())
           ? GetEntryForUniqueKey(*current_key(entry->type()))
           : nullptr;
 
@@ -347,7 +349,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
                 old_contextual_registry
                     ? old_contextual_registry->GetActiveEntryFor(type)
                     : std::nullopt;
-            active_entry.has_value() && current_key(type) &&
+            active_entry.has_value() && IsSidePanelShowing(type) &&
             current_key(type)->tab_handle &&
             (*active_entry)->key() == current_key(type)->key) {
           auto* content_wrapper = side_panel->GetContentParentView();
@@ -356,7 +358,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
               content_wrapper->children().front());
           (*active_entry)->CacheView(std::move(current_entry_view));
         }
-        Close(/*suppress_animations=*/true);
+        Close(/*suppress_animations=*/true, type);
       }
     } else if (auto active_entry =
                    new_contextual_registry
@@ -397,7 +399,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   //   becomes visible).
   //   We currently only take action on (2). We use `current_key()` to
   //   distinguish (3) from (2). We use visibility to distinguish (1) from (2).
-  if (observed_view->GetVisible() || !current_key(type)) {
+  if (observed_view->GetVisible() || !IsSidePanelShowing(type)) {
     return;
   }
 

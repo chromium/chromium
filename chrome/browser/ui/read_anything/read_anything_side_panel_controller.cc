@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -258,9 +259,13 @@ void ReadAnythingSidePanelController::TabWillDetach(
     }
     return;  // IN-TEST
   }
-  if (coordinator->IsSidePanelEntryShowing(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
-    coordinator->Close(/*suppress_animations=*/true);
+
+  SidePanelEntry::Key read_anything_key(SidePanelEntry::Id::kReadAnything);
+  if (coordinator->IsSidePanelEntryShowing(read_anything_key)) {
+    SidePanelEntry* const entry =
+        side_panel_registry_->GetEntryForKey(read_anything_key);
+    CHECK(entry);
+    coordinator->Close(/*suppress_animations=*/true, entry->type());
   }
 }
 
