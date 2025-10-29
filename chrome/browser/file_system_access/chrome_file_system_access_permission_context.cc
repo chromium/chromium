@@ -81,7 +81,7 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"

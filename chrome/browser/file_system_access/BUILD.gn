@@ -59,9 +59,7 @@ source_set("impl") {
 
   if (is_android) {
     deps += [ "//chrome/browser/ui/android/tab_model" ]
-  }
-
-  if (!is_android || is_desktop_android) {
+  } else {
     deps += [ "//chrome/browser/ui/browser_window" ]
   }
 
