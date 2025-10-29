@@ -18,10 +18,10 @@ features:
 supported_on:
 - chrome.*:130-
 - android:130-
+- ios:143-
 future_on:
 - chrome_os
 - fuchsia
-- ios
 items:
 - caption: Enable managed profile cloud reporting
   value: true
