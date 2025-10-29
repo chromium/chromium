@@ -52,7 +52,7 @@
 // clang-format on
 
 #include "third_party/skia/include/docs/SkXPSDocument.h"
-#include "third_party/skia/include/docs/SkXPSRustPngHelpers.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -366,7 +366,9 @@ sk_sp<SkDocument> MakeXpsDocument(SkWStream* stream) {
   }
 
   SkXPS::Options opts;
-  opts.pngEncoder = SkXPS::EncodePngUsingRust;
+  opts.pngEncoder = [](SkWStream* dst, const SkPixmap& src) {
+    return SkPngRustEncoder::Encode(dst, src, {});
+  };
   return SkXPS::MakeDocument(stream, factory, opts);
 }
 #endif
