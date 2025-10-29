@@ -6,7 +6,7 @@ module media.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-[Stable, Extensible]
+// TODO: crbug.com/453992558 - remove MinVersion.
 enum VideoCapturePixelFormat {
   UNKNOWN,
   I420,
@@ -51,34 +51,30 @@ enum VideoCapturePixelFormat {
   [MinVersion=3] P410LE,
 };
 
-[Stable, Extensible]
 enum ResolutionChangePolicy {
   FIXED_RESOLUTION,
   FIXED_ASPECT_RATIO,
   ANY_WITHIN_LIMIT,
 };
 
-[Stable, Extensible]
 enum PowerLineFrequency {
   DEFAULT,
   HZ_50,
   HZ_60
 };
 
-[Stable, Extensible]
 enum VideoFacingMode {
   NONE,
   USER,
   ENVIRONMENT
 };
 
-[Stable, Extensible]
 enum CameraAvailability {
-  [Default] kAvailable,
+  kAvailable,
   kUnavailableExclusivelyUsedByOtherApplication,
 };
 
-[Stable, Extensible]
+// TODO: crbug.com/453992558 - remove MinVersion.
 enum VideoCaptureApi {
   LINUX_V4L2_SINGLE_PLANE,
   WIN_MEDIA_FOUNDATION,
@@ -96,14 +92,12 @@ enum VideoCaptureApi {
   [MinVersion=1] WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE,
 };
 
-[Stable, Extensible]
 enum VideoCaptureTransportType {
 // For AVFoundation Api, identify devices that are built-in or USB.
   APPLE_USB_OR_BUILT_IN,
   OTHER_TRANSPORT
 };
 
-[Stable, Extensible]
 enum VideoCaptureBufferType {
   kSharedMemory,
   kSharedMemoryViaRawFileDescriptor_DEPRECATED,  // DEPRECATED, DO NOT USE
@@ -112,14 +106,13 @@ enum VideoCaptureBufferType {
 };
 
 // Represents capture device's support for different controls.
-[Stable]
 struct VideoCaptureControlSupport {
   bool pan;
   bool tilt;
   bool zoom;
 };
 
-[Stable, Extensible]
+// TODO: crbug.com/453992558 - remove MinVersion.
 enum VideoCaptureError {
   kNone,
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested,
@@ -273,7 +266,7 @@ enum VideoCaptureError {
   [MinVersion=9] kWebRtcStartCaptureFailed,
 };
 
-[Stable, Extensible]
+// TODO: crbug.com/453992558 - remove MinVersion.
 enum VideoCaptureFrameDropReason {
   kNone,
   kDeviceClientFrameHasInvalidFormat,
@@ -311,14 +304,13 @@ enum VideoCaptureFrameDropReason {
   [MinVersion=15] kOldCaptureVersion,
 };
 
-[Stable]
 struct VideoCaptureFormat {
   gfx.mojom.Size frame_size;
   float frame_rate;
   VideoCapturePixelFormat pixel_format;
 };
 
-[Stable]
+// TODO: crbug.com/453992558 - remove MinVersion.
 struct VideoCaptureParams {
   VideoCaptureFormat requested_format;
   VideoCaptureBufferType buffer_type;
@@ -336,7 +328,7 @@ struct VideoCaptureParams {
   [MinVersion=2] uint32 capture_version_source;
 };
 
-[Stable, RenamedFrom="media.mojom.VideoFrameFeedback"]
+// TODO: crbug.com/453992558 - remove MinVersion.
 struct VideoCaptureFeedback {
   // Reports that the frame incurred some fractional utilization of the
   // downstream pipeline's per-frame processing capacity.
@@ -392,7 +384,7 @@ struct PlaneStrides {
 // |device_id| represents a unique id of a physical device. Since the same
 // physical device may be accessible through different APIs |capture_api|
 // disambiguates the API.
-[Stable]
+// TODO: crbug.com/453992558 - remove MinVersion.
 struct VideoCaptureDeviceDescriptor {
   string display_name;
   string device_id;
@@ -406,7 +398,6 @@ struct VideoCaptureDeviceDescriptor {
 
 // Bundles a VideoCaptureDeviceDescriptor with corresponding supported
 // video formats.
-[Stable]
 struct VideoCaptureDeviceInfo {
   VideoCaptureDeviceDescriptor descriptor;
   array<VideoCaptureFormat> supported_formats;
