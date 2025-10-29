@@ -1675,7 +1675,7 @@ class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
     if (!resource.backing()) {
       resource.InstallSoftwareBacking(sii_, "TextureLayerTest");
 
-      resource.backing()->mailbox_sync_token = sii_->GenVerifiedSyncToken();
+      resource.backing()->mailbox_sync_token = sii_->GenUnverifiedSyncToken();
     }
     return std::make_unique<TestRasterBuffer>(resource.size(),
                                               resource.backing());

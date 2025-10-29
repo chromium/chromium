@@ -276,7 +276,7 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
           {viz::SinglePlaneFormat::kBGRA_8888, size, gfx::ColorSpace(),
            gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, "PixelTestSharedBitmap"});
   auto mapping = shared_image->Map();
-  gpu::SyncToken sync_token = shared_image_interface->GenVerifiedSyncToken();
+  gpu::SyncToken sync_token = shared_image_interface->GenUnverifiedSyncToken();
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(size.width(), size.height());
   const size_t row_bytes = info.minRowBytes();

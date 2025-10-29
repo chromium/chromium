@@ -364,7 +364,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     DrawHudContents(&canvas);
 
     auto sii = layer_tree_frame_sink->shared_image_interface();
-    backing->mailbox_sync_token = sii->GenVerifiedSyncToken();
+    backing->mailbox_sync_token = sii->GenUnverifiedSyncToken();
   }
 
   // Exports the backing to the ResourceProvider, giving it a ResourceId that

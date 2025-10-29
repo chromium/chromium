@@ -5741,7 +5741,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
         sync_token);
   } else {
     auto sii = layer_tree_frame_sink_->shared_image_interface();
-    gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
+    gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
     transferable = viz::TransferableResource::Make(
         client_shared_image, viz::TransferableResource::ResourceSource::kUI,
         sync_token);

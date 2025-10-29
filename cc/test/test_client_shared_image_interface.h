@@ -26,6 +26,11 @@ class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {
   TestClientSharedImageInterface(
       scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
   gpu::SyncToken GenVerifiedSyncToken() override;
+  gpu::SyncToken GenUnverifiedSyncToken() override;
+  void VerifySyncToken(gpu::SyncToken& sync_token) override;
+  bool CanVerifySyncToken(const gpu::SyncToken& sync_token) override;
+  void VerifyFlush() override;
+  void WaitSyncToken(const gpu::SyncToken& sync_token) override;
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const gpu::SharedImageInfo& si_info) override;
