@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
@@ -14,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SupplierUtils;
@@ -30,6 +32,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -291,7 +294,40 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     }
 
     private void onBothStateLoaded() {
-        // TODO(https://crbug.com/445197903): Compare tab model and the accumulating tab creators.
+        // Unless mTabStateStoreIsAuthoritative is true, createNewTabArgumentsList should be empty.
+        assert Boolean.FALSE.equals(mTabStateStoreIsAuthoritative)
+                || mRegularShadowTabCreator.createNewTabArgumentsList.isEmpty();
+
+        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        int tabCountDelta =
+                tabModel.getCount() - mRegularShadowTabCreator.createFrozenTabArgumentsList.size();
+        if (tabCountDelta > 0) {
+            RecordHistogram.recordCount1000Histogram(
+                    "Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher", tabCountDelta);
+        } else if (tabCountDelta < 0) {
+            RecordHistogram.recordCount1000Histogram(
+                    "Tabs.TabStateStore.TabCountDelta.ShadowHigher", -tabCountDelta);
+        }
+
+        for (CreateFrozenTabArguments arguments :
+                mRegularShadowTabCreator.createFrozenTabArgumentsList) {
+            Tab tab = tabModel.getTabById(arguments.id);
+            if (tab == null || arguments.state.contentsState == null) continue;
+
+            String authUrl = tab.getUrl().getSpec();
+            String shadowUrl = arguments.state.contentsState.getVirtualUrlFromState();
+
+            if (!TextUtils.equals(authUrl, shadowUrl)) {
+                long timeDelta = tab.getTimestampMillis() - arguments.state.timestampMillis;
+                if (timeDelta > 0) {
+                    RecordHistogram.recordTimesHistogram(
+                            "Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer", timeDelta);
+                } else if (timeDelta < 0) {
+                    RecordHistogram.recordTimesHistogram(
+                            "Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer", -timeDelta);
+                }
+            }
+        }
 
         for (CreateFrozenTabArguments arguments :
                 mRegularShadowTabCreator.createFrozenTabArgumentsList) {

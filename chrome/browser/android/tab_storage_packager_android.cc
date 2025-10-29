@@ -33,7 +33,9 @@
 #include "chrome/android/chrome_jni_headers/TabStoragePackager_jni.h"
 
 namespace tabs {
-static const int kTabStoragePackagerAndroidVersion = 1;
+// TODO(crbug.com/430996004): Reference a shared constant for the web content
+// state.
+static const int kTabStoragePackagerAndroidVersion = 2;
 
 // A payload of data representing TabStripCollection.
 class TabStripCollectionStorageData : public Payload {

@@ -8,9 +8,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.SystemClock;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -339,9 +339,9 @@ public class TabStateStore implements TabPersistentStore {
 
     private void onTabsLoaded(LoadedTabState[] loadedTabStates, long loadStartTime) {
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
-        Log.i(TAG, "Loaded %d tabs in %dms", loadedTabStates.length, duration);
-        mRestoredTabCount = loadedTabStates.length;
+        RecordHistogram.recordTimesHistogram("Tabs.TabStateStore.LoadAllTabsDuration", duration);
 
+        mRestoredTabCount = loadedTabStates.length;
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onInitialized(mRestoredTabCount);
         }
@@ -374,6 +374,7 @@ public class TabStateStore implements TabPersistentStore {
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onStateLoaded();
         }
+
         if (!ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
             // When we aren't the authoritative source we don't trust ourselves to be correct.
             // Raze the db and rebuild from the loaded tab state to ensure we are in a known good
