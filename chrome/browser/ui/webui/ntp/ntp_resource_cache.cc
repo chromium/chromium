@@ -38,7 +38,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/browser_thread.h"
@@ -255,33 +254,14 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
 
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kFingerprintingProtectionUx) ||
-      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx)) {
-    replacements["hideUserBypassIcon"] = "hidden";
-    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
-        IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_HEADER);
-    localized_strings.Set(
-        "cookieControlsDescription",
-        l10n_util::GetStringFUTF16(
-            IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP,
-            u"chrome://settings/incognito",
-            l10n_util::GetStringUTF16(
-                IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_LABEL),
-            l10n_util::GetStringUTF16(
-                IDS_INCOGNITO_NTP_INCOGNITO_TRACKING_PROTECTIONS_LINK_A11Y_DESCRIPTION)));
-  } else {
-    replacements["hideUserBypassIcon"] = "";
-    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
-        IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER);
-    localized_strings.Set(
-        "cookieControlsDescription",
-        l10n_util::GetStringFUTF16(
-            IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP,
-            chrome::kUserBypassHelpCenterURL,
-            l10n_util::GetStringUTF16(
-                IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
-  }
+  replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+      IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_HEADER);
+  localized_strings.Set(
+      "cookieControlsDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_DESKTOP,
+          chrome::kUserBypassHelpCenterURL,
+          l10n_util::GetStringUTF16(IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
 
   Profile* incognito_profile = profile_->GetAllOffTheRecordProfiles()[0];
   const ui::ThemeProvider& tp =
