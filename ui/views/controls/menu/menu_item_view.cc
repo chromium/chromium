@@ -573,6 +573,10 @@ void MenuItemView::SetIcon(const ui::ImageModel& icon) {
     return;
   }
 
+  if (icon.IsVectorIcon()) {
+    icon_color_ = icon.GetVectorIcon().color();
+  }
+
   auto icon_view = std::make_unique<ImageView>();
   icon_view->SetImage(icon);
   SetIconView(std::move(icon_view));
@@ -1578,20 +1582,26 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
         radio_icon, radio_icon_color, kMenuCheckSize));
   }
 
-  // Update any vector icons if a custom color is used or if the icon is
-  // disabled.
-  if ((!GetEnabledInViewsSubtree() || foreground_color_id_.has_value()) &&
-      icon_view_) {
+  // Update the main icon view color.
+  if (icon_view_) {
     ui::ImageModel icon_model = icon_view_->GetImageModel();
     if (!icon_model.IsEmpty() && icon_model.IsVectorIcon()) {
       ui::VectorIconModel model = icon_model.GetVectorIcon();
       const gfx::VectorIcon* icon = model.vector_icon();
-      const ui::ImageModel& image_model = ui::ImageModel::FromVectorIcon(
-          *icon,
-          GetEnabledInViewsSubtree()
-              ? GetColorProvider()->GetColor(foreground_color_id_.value())
-              : GetColorProvider()->GetColor(ui::kColorMenuIconDisabled),
-          model.icon_size());
+
+      ui::ColorVariant icon_color =
+          icon_color_.has_value() ? icon_color_.value() : colors.icon_color;
+
+      if (!GetEnabledInViewsSubtree()) {
+        icon_color = GetColorProvider()->GetColor(ui::kColorMenuIconDisabled);
+      } else if (foreground_color_id_.has_value() && paint_as_selected &&
+                 !selected_color_id_.has_value()) {
+        icon_color = GetColorProvider()->GetColor(foreground_color_id_.value());
+      } else if (paint_as_selected) {
+        icon_color = colors.icon_color;
+      }
+      const ui::ImageModel& image_model =
+          ui::ImageModel::FromVectorIcon(*icon, icon_color, model.icon_size());
       icon_view_->SetImage(image_model);
     }
   }

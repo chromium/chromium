@@ -668,6 +668,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Pointer to a view with a menu icon.
   raw_ptr<ImageView> icon_view_ = nullptr;
+  std::optional<ui::ColorVariant> icon_color_;
 
   // The tooltip to show on hover for this menu item.
   std::u16string custom_tooltip_;
