@@ -83,7 +83,8 @@ std::string GetEncoderStatusHistogramName(VideoCodecProfile profile) {
 #define RETURN_ON_FAILURE_WITH_CALLBACK(hr, message)                       \
   if (FAILED(hr)) {                                                        \
     LOG(ERROR) << message << ": " << logging::SystemErrorCodeToString(hr); \
-    std::move(frame_available_cb).Run(std::move(frame), nullptr, hr);      \
+    std::move(frame_available_cb)                                          \
+        .Run(std::move(frame), base::win::ScopedHandle(), hr);             \
     return;                                                                \
   }
 
@@ -143,7 +144,6 @@ struct D3D12VideoEncodeAccelerator::InputFrameRef {
 
 void GenerateResourceOnSynTokenReleased(
     scoped_refptr<VideoFrame> frame,
-    Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     FrameAvailableCB frame_available_cb) {
@@ -259,23 +259,17 @@ void GenerateResourceOnSynTokenReleased(
     shared_handle.Set(copied_handle);
   }
 
-  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_texture;
-  hr = d3d12_device->OpenSharedHandle(shared_handle.Get(),
-                                      IID_PPV_ARGS(&d3d12_texture));
-  RETURN_ON_FAILURE_WITH_CALLBACK(
-      hr, "Failed to open shared handle for D3D12 resource");
-
   std::move(frame_available_cb)
-      .Run(std::move(frame), std::move(d3d12_texture), hr);
+      .Run(std::move(frame), std::move(shared_handle), S_OK);
 }
 
 void GenerateResourceFromSharedImageVideoFrame(
     scoped_refptr<VideoFrame> frame,
-    Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     FrameAvailableCB frame_available_cb) {
   if (!frame->HasSharedImage()) {
-    std::move(frame_available_cb).Run(std::move(frame), nullptr, E_FAIL);
+    std::move(frame_available_cb)
+        .Run(std::move(frame), base::win::ScopedHandle(), E_FAIL);
     return;
   }
 
@@ -284,7 +278,8 @@ void GenerateResourceFromSharedImageVideoFrame(
           ->shared_context_state()
           ->GetD3D11Device();
   if (!d3d11_device) {
-    std::move(frame_available_cb).Run(std::move(frame), nullptr, E_FAIL);
+    std::move(frame_available_cb)
+        .Run(std::move(frame), base::win::ScopedHandle(), E_FAIL);
     return;
   }
 
@@ -292,7 +287,7 @@ void GenerateResourceFromSharedImageVideoFrame(
   command_buffer_helper->WaitForSyncToken(
       acquire_sync_token,
       base::BindOnce(&GenerateResourceOnSynTokenReleased, std::move(frame),
-                     d3d12_device, d3d11_device, command_buffer_helper,
+                     d3d11_device, command_buffer_helper,
                      std::move(frame_available_cb)));
 }
 
@@ -789,7 +784,7 @@ void D3D12VideoEncodeAccelerator::EncodeTask(
       gpu_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &GenerateResourceFromSharedImageVideoFrame, frame, device_,
+              &GenerateResourceFromSharedImageVideoFrame, frame,
               command_buffer_helper_,
               base::BindPostTask(
                   encoder_task_runner_,
@@ -895,6 +890,11 @@ void D3D12VideoEncodeAccelerator::DestroyTask() {
   DVLOGF(2);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
+  // Invalidate weak pointers created by |encoder_weak_this_factory_| so that
+  // any tasks posted with the encoder weak pointer will safely no-op if they
+  // run after this call.
+  encoder_weak_this_factory_.InvalidateWeakPtrs();
+
   delete this;
 }
 
@@ -958,7 +958,7 @@ void D3D12VideoEncodeAccelerator::SetCommandBufferHelperCB(
 // corresponding entry in the `input_frames_queue_`.
 void D3D12VideoEncodeAccelerator::OnSharedImageResolved(
     scoped_refptr<VideoFrame> frame,
-    Microsoft::WRL::ComPtr<ID3D12Resource> input_texture,
+    base::win::ScopedHandle shared_handle,
     HRESULT hr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
@@ -968,6 +968,13 @@ void D3D12VideoEncodeAccelerator::OnSharedImageResolved(
         << hr;
     return NotifyError({EncoderStatus::Codes::kSystemAPICallError,
                         "Failed to resolve shared image"});
+  }
+  Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
+  hr = device_->OpenSharedHandle(shared_handle.Get(),
+                                 IID_PPV_ARGS(&input_texture));
+  if (FAILED(hr)) {
+    return NotifyError({EncoderStatus::Codes::kSystemAPICallError,
+                        "Failed to open shared handle for D3D12 resource"});
   }
 
   // Find the matching frame in the queue and update it.
@@ -1002,7 +1009,7 @@ void D3D12VideoEncodeAccelerator::ResolveQueuedSharedImages() {
           FROM_HERE,
           base::BindOnce(
               &GenerateResourceFromSharedImageVideoFrame, input_frame.frame,
-              device_, command_buffer_helper_,
+              command_buffer_helper_,
               base::BindPostTask(
                   encoder_task_runner_,
                   base::BindOnce(
