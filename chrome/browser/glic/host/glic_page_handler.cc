@@ -671,10 +671,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
-    focused_browser_changed_subscription_ =
-        sharing_manager().AddFocusedBrowserChangedCallback(
-            base::BindRepeating(&GlicWebClientHandler::OnFocusedBrowserChanged,
-                                base::Unretained(this)));
+    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      focused_browser_changed_subscription_ =
+          sharing_manager().AddFocusedBrowserChangedCallback(
+              base::BindRepeating(
+                  &GlicWebClientHandler::OnFocusedBrowserChanged,
+                  base::Unretained(this)));
+    }
 
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
@@ -749,7 +752,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
 
     state->browser_is_open = browser_is_open_calculator_.IsOpen();
-    state->browser_is_active = sharing_manager().GetFocusedBrowser();
+    state->instance_is_active = host().instance_delegate().IsActive();
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
 
@@ -1698,7 +1701,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void OnFocusedBrowserChanged(BrowserWindowInterface* browser_interface) {
     const bool is_browser_active = browser_interface != nullptr;
-    web_client_->NotifyBrowserIsActiveChanged(is_browser_active);
+    NotifyInstanceActivationChanged(is_browser_active);
+  }
+
+  void NotifyInstanceActivationChanged(bool is_active) override {
+    web_client_->NotifyInstanceActivationChanged(is_active);
   }
 
   bool ShouldDoApiActivationGating() const {

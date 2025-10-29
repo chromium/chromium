@@ -816,6 +816,7 @@ void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
   if (coordinator_delegate_) {
     coordinator_delegate_->OnInstanceActivationChanged(this, is_active);
   }
+  host_.NotifyInstanceActivationChanged(is_active);
 }
 
 bool GlicInstanceImpl::IsActive() {

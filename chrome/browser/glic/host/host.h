@@ -130,6 +130,8 @@ class Host : public GlicSharingManagerProvider {
 
     virtual void OnInteractionModeChange(mojom::WebClientMode new_mode) = 0;
     virtual GlicInstanceMetrics* instance_metrics() = 0;
+
+    virtual bool IsActive() = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -259,6 +261,8 @@ class Host : public GlicSharingManagerProvider {
 
   // Sends a ViewChangeRequest to the primary client.
   void SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request);
+
+  void NotifyInstanceActivationChanged(bool is_active);
 
   // Informs the web client that additional context is available.
   void NotifyAdditionalContext(mojom::AdditionalContextPtr context);

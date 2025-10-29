@@ -1875,11 +1875,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   base::HistogramTester histogram_tester;
-  WebUIStateListener listener(GetHost());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
+  WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(0)});  // test run count: 0.
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
@@ -1892,12 +1891,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNavigateToAboutBlank) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
   // Client loads, and navigates to a new URL. We try to load the client again,
   // but it fails.
-  WebUIStateListener listener(GetHost());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
+  WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest();
   listener.WaitForWebUiState(mojom::WebUiState::kError);
@@ -1911,15 +1909,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNavigateToAboutBlank) {
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
                        MAYBE_testNavigateToBadPage) {
-  TODO_SKIP_BROKEN_MULTI_INSTANCE_TEST();
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
   // Client loads, and navigates to a new URL. We try to load the client again,
   // but it fails.
-  WebUIStateListener listener(GetHost());
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
+  WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest({.params = base::Value(0)});
   listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
