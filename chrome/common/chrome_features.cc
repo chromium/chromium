@@ -449,6 +449,8 @@ BASE_FEATURE(kGlicActorToctouValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorInternalPopups, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicActorCoordinateScrollTool, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the actor framework searches for an interaction point when
 // when the center of the target element is obscured.
 BASE_FEATURE(kGlicActorIterativeInteractionPointDiscovery,
