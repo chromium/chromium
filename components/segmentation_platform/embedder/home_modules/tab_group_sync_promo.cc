@@ -39,26 +39,22 @@ std::map<SignalKey, FeatureQuery> TabGroupSyncPromo::GetInputs() {
            .name = kSyncedTabGroupExists})},
   };
 
-  int days_to_show_ephemeral_card_once =
-      features::KDaysToShowEphemeralCardOnce.Get();
   // Define signal for number of times all educational tip card has shown to the
   // user in limited days.
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfEducationalTipCardShownTimes,
                                 kEducationalTipModuleHistogramName,
                                 kEducationalTipModuleHistogramEnumValues.data(),
                                 kEducationalTipModuleHistogramEnumValues.size(),
-                                /* days= */ days_to_show_ephemeral_card_once);
+                                /* days= */ KDaysToShowEphemeralCardOnce);
   map.emplace(kEducationalTipShownCount,
               std::move(countOfEducationalTipCardShownTimes));
 
-  int days_to_show_tab_group_sync_card_once =
-      features::KDaysToShowEachEphemeralCardOnce.Get();
   // Define signal for number of times tab group sync promo card has shown to
   // the user in limited days.
-  DEFINE_UMA_FEATURE_ENUM_COUNT(
-      countOfTabGroupSyncPromoShownTimes, kEducationalTipModuleHistogramName,
-      &kTabGroupSyncPromoId, /* enum_size= */ 1,
-      /* days= */ days_to_show_tab_group_sync_card_once);
+  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfTabGroupSyncPromoShownTimes,
+                                kEducationalTipModuleHistogramName,
+                                &kTabGroupSyncPromoId, /* enum_size= */ 1,
+                                /* days= */ KDaysToShowEachEphemeralCardOnce);
   map.emplace(kTabGroupSyncPromoShownCount,
               std::move(countOfTabGroupSyncPromoShownTimes));
 
@@ -115,8 +111,7 @@ CardSelectionInfo::ShowResult TabGroupSyncPromo::ComputeCardResult(
   return result;
 }
 
-bool TabGroupSyncPromo::IsEnabled(bool is_in_enabled_cards_set,
-                                  int impression_count) {
+bool TabGroupSyncPromo::IsEnabled(int impression_count) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -126,12 +121,11 @@ bool TabGroupSyncPromo::IsEnabled(bool is_in_enabled_cards_set,
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule) ||
-      !is_in_enabled_cards_set) {
+  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
     return false;
   }
 
-  if (impression_count >= features::kMaxTabGroupSyncCardImpressions.Get()) {
+  if (impression_count >= kSingleEphemeralCardMaxImpressions) {
     return false;
   }
 

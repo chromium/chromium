@@ -197,33 +197,6 @@ constexpr base::FeatureParam<bool> kSegmentationSurveyInternalsPage{
     &kSegmentationSurveyPage, "survey_internals_page", /*default_value=*/true};
 
 BASE_FEATURE(kEducationalTipModule, base::FEATURE_ENABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int> kMaxDefaultBrowserCardImpressions{
-    &kEducationalTipModule, "max_default_browser_card_impressions",
-    /*default_value=*/3};
-constexpr base::FeatureParam<int> kMaxTabGroupCardImpressions{
-    &kEducationalTipModule, "max_tab_group_card_impressions",
-    /*default_value=*/10};
-constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
-    &kEducationalTipModule, "max_tab_group_sync_card_impressions",
-    /*default_value=*/10};
-constexpr base::FeatureParam<int> kMaxQuickDeleteCardImpressions{
-    &kEducationalTipModule, "max_quick_delete_card_impressions",
-    /*default_value=*/10};
-constexpr base::FeatureParam<int> kMaxHistorySyncCardImpressions{
-    &kEducationalTipModule, "max_history_sync_card_impressions",
-    /*default_value=*/10};
-
-constexpr base::FeatureParam<int> KDaysToShowEphemeralCardOnce{
-    &kEducationalTipModule, "days_to_show_ephemeral_card_once",
-    /*default_value=*/3};
-
-constexpr base::FeatureParam<int> KDaysToShowEachEphemeralCardOnce{
-    &kEducationalTipModule, "days_to_show_each_ephemeral_card_once",
-    /*default_value=*/7};
-
-constexpr base::FeatureParam<std::string> KNamesOfEphemeralCardsToShow{
-    &kEducationalTipModule, "names_of_ephemeral_cards_to_show",
-    /*default_value=*/""};
 
 BASE_FEATURE(kAndroidAppIntegrationModule, base::FEATURE_ENABLED_BY_DEFAULT);
 

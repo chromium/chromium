@@ -12,6 +12,14 @@
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
+namespace {
+
+// The maximum number of times the default browser promo card can be visible to
+// the user.
+const int kMaxDefaultBrowserCardImpressions = 3;
+
+}  // namespace
+
 namespace segmentation_platform::home_modules {
 
 DefaultBrowserPromo::DefaultBrowserPromo(PrefService* profile_prefs)
@@ -88,8 +96,7 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
   return result;
 }
 
-bool DefaultBrowserPromo::IsEnabled(bool is_in_enabled_cards_set,
-                                    int impression_count) {
+bool DefaultBrowserPromo::IsEnabled(int impression_count) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -99,12 +106,11 @@ bool DefaultBrowserPromo::IsEnabled(bool is_in_enabled_cards_set,
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule) ||
-      !is_in_enabled_cards_set) {
+  if (!base::FeatureList::IsEnabled(features::kEducationalTipModule)) {
     return false;
   }
 
-  if (impression_count >= features::kMaxDefaultBrowserCardImpressions.Get()) {
+  if (impression_count >= kMaxDefaultBrowserCardImpressions) {
     return false;
   }
 
