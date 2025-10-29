@@ -16,8 +16,8 @@ import values
 
 def _per_test_modifications(
     builder: str,
-    test_suite_exceptions: dict[str, typing.Any],
-) -> values.ValueBuilder:
+    test_suite_exceptions: dict[str, dict[str, typing.Any]],
+) -> values.Value:
 
   def mod_builder_factory():
     return values.CallValueBuilder('targets.per_test_modification',
@@ -41,7 +41,7 @@ def _per_test_modifications(
           break
 
         case 'modifications':
-          mods = value.get(builder)
+          mods: dict[str, typing.Any] | None = value.get(builder)
           if mods is None:
             continue
 
@@ -67,7 +67,8 @@ def _per_test_modifications(
                 raise Exception(f'unhandled key in modifications: "{mod_key}"')
 
         case 'replacements':
-          replacements = value.get(builder)
+          replacements: dict[str, dict[str, dict[str, str]]] | None = (
+              value.get(builder))
           if replacements is None:
             continue
 
@@ -121,7 +122,7 @@ _OS_TYPE_MAPPING = {
 def _compute_edits(
     builder: str,
     builder_config: dict[str, typing.Any],
-    test_suite_exceptions: dict[str, typing.Any],
+    test_suite_exceptions: dict[str, dict[str, typing.Any]],
 ) -> dict[str, str]:
   anonymous_mixin_builder = values.CallValueBuilder('targets.mixin')
   mixins_builder = values.ListValueBuilder([anonymous_mixin_builder])
@@ -197,7 +198,9 @@ def _compute_edits(
   bundle_builder['per_test_modifications'] = _per_test_modifications(
       builder, test_suite_exceptions)
 
-  edits = {'targets': ''.join(bundle_builder.output())}
+  bundle_output = bundle_builder.output()
+  assert bundle_output is not None
+  edits = {'targets': bundle_output}
   if (settings_output := settings_builder.output()) is not None:
     edits['targets_settings'] = ''.join(settings_output)
 

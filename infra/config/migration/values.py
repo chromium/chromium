@@ -62,6 +62,7 @@ list_builder.output will be
 """
 
 import abc
+import collections.abc
 import typing
 
 # A value that can be contained by another value. A string value will be output
@@ -209,7 +210,7 @@ class CallValueBuilder(_CompoundValueBuilder):
 
   def __init__(self,
                function: str,
-               params: dict[str, Value] | None = None,
+               params: collections.abc.Mapping[str, Value] | None = None,
                *,
                elide_param: str | None = None,
                **kwargs):
@@ -223,7 +224,7 @@ class CallValueBuilder(_CompoundValueBuilder):
     """
     super().__init__(**kwargs)
     self._function: str = function
-    self._params = params or {}
+    self._params = dict(params or {})
     self._elide_param = elide_param
 
   def __setitem__(self, param_name: str, param_value: Value) -> None:
@@ -280,7 +281,9 @@ class DictValueBuilder(_CompoundValueBuilder):
   in the order they were added.
   """
 
-  def __init__(self, items: dict[str, Value] | None = None, **kwargs):
+  def __init__(self,
+               items: collections.abc.Mapping[str, Value] | None = None,
+               **kwargs):
     """Initialize the CallValueBuilder.
 
     Args:
@@ -289,7 +292,7 @@ class DictValueBuilder(_CompoundValueBuilder):
         any items added after initialization.
     """
     super().__init__(**kwargs)
-    self._items = items or {}
+    self._items = dict(items or {})
 
   def __setitem__(self, key: str, value: Value) -> None:
     """Add an additional item to the dict."""
@@ -329,7 +332,9 @@ class ListValueBuilder(_CompoundValueBuilder):
   appear in the order they were added.
   """
 
-  def __init__(self, elements: list[Value] | None = None, **kwargs):
+  def __init__(self,
+               elements: collections.abc.Iterable[Value] | None = None,
+               **kwargs):
     """Initialize the ListValueBuilder.
 
     Args:
@@ -338,7 +343,7 @@ class ListValueBuilder(_CompoundValueBuilder):
         before any elements added after initialization.
     """
     super().__init__(**kwargs)
-    self._elements = elements or []
+    self._elements = list(elements or [])
 
   def append(self, value: Value) -> None:
     """Add an additional element to the list."""

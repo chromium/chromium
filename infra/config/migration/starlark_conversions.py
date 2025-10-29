@@ -21,7 +21,7 @@ _MAGIC_ARG_MAPPING = {
 }
 
 
-def convert_arg(arg: str) -> values.Value:
+def convert_arg(arg: str) -> str:
   """Convert a test argument to a starlark value.
 
   In //testing/buildbot, there are magic strings that trigger special
@@ -45,7 +45,17 @@ def convert_args(args: list[str]) -> values.Value:
   return values.ListValueBuilder([convert_arg(arg) for arg in args])
 
 
-def convert_direct(value: typing.Any) -> values.Value:
+@typing.overload
+def convert_direct(value: bool | int | str | None) -> str:
+  ...  # pragma: no cover
+
+
+@typing.overload
+def convert_direct(value: list | dict) -> values.ValueBuilder:
+  ...  # pragma: no cover
+
+
+def convert_direct(value):
   """Convert a python value to a starlark value.
 
   This converts python values where the starlark representation is the
@@ -56,12 +66,17 @@ def convert_direct(value: typing.Any) -> values.Value:
   if isinstance(value, str):
     return '"{}"'.format(value.replace("\"", "\\\""))
   if isinstance(value, list):
-    return values.ListValueBuilder([convert_direct(e) for e in value])
+    return typing.cast(
+        values.ValueBuilder,
+        values.ListValueBuilder([convert_direct(e) for e in value]))
   if isinstance(value, dict):
-    return values.DictValueBuilder({
-        convert_direct(k): convert_direct(v)
-        for k, v in value.items()
-    })
+    return typing.cast(
+        values.ValueBuilder,
+        values.DictValueBuilder({
+            typing.cast(str, convert_direct(k)):
+            convert_direct(v)
+            for k, v in value.items()
+        }))
   raise Exception(f'unhandled python value: {value!r}')
 
 

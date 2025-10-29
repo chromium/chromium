@@ -15,7 +15,7 @@ _THIS_DIR = pathlib.Path(__file__).parent
 _TABLES_JSON_FILE = _THIS_DIR / 'buildozer-tables.json'
 
 
-def _run(*args: str) -> subprocess.CompletedProcess:
+def _run(*args: str) -> subprocess.CompletedProcess[str]:
   # output is always captured to avoid having each edit trigger a repetitive
   # line of output
   return subprocess.run(

@@ -26,7 +26,6 @@ import pathlib
 import re
 import subprocess
 import sys
-import typing
 
 import buildozer
 import post_migrate_targets_lib
