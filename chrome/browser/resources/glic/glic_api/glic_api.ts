@@ -162,6 +162,11 @@ export declare interface GlicBrowserHost {
    * Notifies the browser that the web client has switched modes. Note that this
    * call does not change any aspect of the panel itself (e.g. resize-ability).
    *
+   * This should be called by the web client whenever it switches modes. It
+   * should not be called, though, when the panel is being opened, as the
+   * opening mode is already part of the information returned to the browser by
+   * `notifyPanelWillOpen`.
+   *
    * @param newMode the mode the web client switched into.
    */
   onModeChange?(newMode: WebClientMode): void;
