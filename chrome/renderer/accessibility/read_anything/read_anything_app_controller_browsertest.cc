@@ -2589,30 +2589,6 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentTextSegments_WhenCalledManyTimes_ReturnsSameSegment) {
-  std::u16string sentence1 = u"This is a sentence. ";
-  std::u16string sentence2 = u"This is another sentence. ";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  std::set<ui::AXNodeID> node_ids = {kId1, kId2};
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
-
-  // The returned id should be the first node id, 2
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
-
-  // The returned id should be the second node id, 3
-  controller().MovePositionToNextGranularity();
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
-  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
        GetCurrentTextContent_ReturnsExpectedText) {
   // TODO(crbug.com/40927698): Investigate if we can improve in scenarios when
   // there's not a space between sentences.
@@ -3986,6 +3962,30 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
 
   // Nodes are empty at the end of the new tree.
   MoveToNextAndAssertEmpty();
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentTextSegments_WhenCalledManyTimes_ReturnsSameSegment) {
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  std::set<ui::AXNodeID> node_ids = {kId1, kId2};
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
+
+  // The returned id should be the first node id, 2
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId1);
+
+  // The returned id should be the second node id, 3
+  controller().MovePositionToNextGranularity();
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
+  EXPECT_EQ(GetCurrentTextSegments()[0].id, kId2);
 }
 
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest
