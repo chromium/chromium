@@ -227,16 +227,6 @@ ClientResourceProvider::~ClientResourceProvider() {
   BatchResourceRelease();
 }
 
-gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
-    gpu::raster::RasterInterface* ri) {
-  DCHECK(ri);
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  DCHECK(sync_token.HasData() ||
-         ri->GetGraphicsResetStatusKHR() != GL_NO_ERROR);
-  return sync_token;
-}
-
 void ClientResourceProvider::PrepareSendToParent(
     const std::vector<ResourceId>& export_ids,
     std::vector<TransferableResource>* list,

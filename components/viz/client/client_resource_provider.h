@@ -22,9 +22,6 @@
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace gpu {
-namespace raster {
-class RasterInterface;
-}
 class SharedImageInterface;
 }  // namespace gpu
 
@@ -75,9 +72,6 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   ClientResourceProvider& operator=(const ClientResourceProvider&) = delete;
 
   ~ClientResourceProvider();
-
-  static gpu::SyncToken GenerateSyncTokenHelper(
-      gpu::raster::RasterInterface* ri);
 
   // Prepares resources to be transfered to the parent, moving them to
   // mailboxes and serializing meta-data into TransferableResources.
