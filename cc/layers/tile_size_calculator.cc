@@ -144,7 +144,8 @@ TileSizeCalculator::AffectingParams TileSizeCalculator::GetAffectingParams(
   AffectingParams params;
   LayerTreeImpl* layer_tree_impl = layer_impl()->layer_tree_impl();
   params.max_texture_size = layer_tree_impl->max_texture_size();
-  params.use_gpu_rasterization = layer_tree_impl->use_gpu_rasterization();
+  params.use_gpu_rasterization =
+      layer_tree_impl->raster_caps().use_gpu_rasterization;
   params.max_tile_size = layer_tree_impl->settings().max_gpu_raster_tile_size;
   params.min_height_for_gpu_raster_tile =
       layer_tree_impl->settings().min_height_for_gpu_raster_tile;

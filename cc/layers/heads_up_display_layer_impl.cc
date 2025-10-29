@@ -830,7 +830,7 @@ SkRect HeadsUpDisplayLayerImpl::DrawGpuRasterizationStatus(PaintCanvas* canvas,
                                                            int width) const {
   std::string status;
   SkColor color = SK_ColorRED;
-  if (layer_tree_impl()->use_gpu_rasterization()) {
+  if (layer_tree_impl()->raster_caps().use_gpu_rasterization) {
     status = "on";
     color = SK_ColorGREEN;
   } else {

@@ -6658,12 +6658,13 @@ class LayerTreeHostTestGpuRasterizationDisabled : public LayerTreeHostTest {
   }
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_FALSE(host_impl->pending_tree()->use_gpu_rasterization());
+    EXPECT_FALSE(
+        host_impl->pending_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_FALSE(host_impl->use_gpu_rasterization());
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_FALSE(host_impl->active_tree()->use_gpu_rasterization());
+    EXPECT_FALSE(host_impl->active_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_FALSE(host_impl->use_gpu_rasterization());
     EndTest();
   }
@@ -6701,12 +6702,12 @@ class LayerTreeHostTestGpuRasterizationSupportedButDisabled
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_FALSE(host_impl->sync_tree()->use_gpu_rasterization());
+    EXPECT_FALSE(host_impl->sync_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_FALSE(host_impl->use_gpu_rasterization());
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_FALSE(host_impl->active_tree()->use_gpu_rasterization());
+    EXPECT_FALSE(host_impl->active_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_FALSE(host_impl->use_gpu_rasterization());
     EndTest();
   }
@@ -6742,12 +6743,12 @@ class LayerTreeHostTestGpuRasterizationEnabled : public LayerTreeHostTest {
   }
 
   void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_TRUE(host_impl->sync_tree()->use_gpu_rasterization());
+    EXPECT_TRUE(host_impl->sync_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_TRUE(host_impl->use_gpu_rasterization());
   }
 
   void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
-    EXPECT_TRUE(host_impl->active_tree()->use_gpu_rasterization());
+    EXPECT_TRUE(host_impl->active_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_TRUE(host_impl->use_gpu_rasterization());
     EndTest();
   }
@@ -6805,7 +6806,7 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
     EXPECT_GT(host_impl->GetMSAASampleCountForRaster(
                   *raster_source->GetDisplayItemList()),
               0);
-    EXPECT_TRUE(host_impl->pending_tree()->use_gpu_rasterization());
+    EXPECT_TRUE(host_impl->pending_tree()->raster_caps().use_gpu_rasterization);
     EXPECT_TRUE(host_impl->use_gpu_rasterization());
     EndTest();
   }

@@ -2111,8 +2111,8 @@ void LayerTreeImpl::DidAnimateScrollOffset() {
   host_impl_->DidAnimateScrollOffset();
 }
 
-bool LayerTreeImpl::use_gpu_rasterization() const {
-  return host_impl_->use_gpu_rasterization();
+const RasterCapabilities& LayerTreeImpl::raster_caps() const {
+  return host_impl_->raster_caps();
 }
 
 void LayerTreeImpl::SetNeedsRedraw() {

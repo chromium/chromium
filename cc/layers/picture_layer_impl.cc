@@ -1874,7 +1874,7 @@ PictureLayerImpl::CreatePictureLayerTilingSet() {
   return PictureLayerTilingSet::Create(
       IsActive() ? ACTIVE_TREE : PENDING_TREE, this,
       settings.tiling_interest_area_padding,
-      layer_tree_impl()->use_gpu_rasterization()
+      layer_tree_impl()->raster_caps().use_gpu_rasterization
           ? settings.gpu_rasterization_skewport_target_time_in_seconds
           : settings.skewport_target_time_in_seconds,
       settings.skewport_extrapolation_limit_in_screen_pixels,
