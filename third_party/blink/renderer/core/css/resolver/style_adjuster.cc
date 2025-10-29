@@ -801,6 +801,11 @@ void StyleAdjuster::AdjustStyleForDisplay(
       builder.Display() == EDisplay::kTableHeaderGroup ||
       builder.Display() == EDisplay::kTableRow ||
       builder.Display() == EDisplay::kTableRowGroup) {
+    // TODO(crbug.com/40527196): This effectively changes the *computed
+    // value* of 'writing-mode', which is too late at this point.
+    //
+    // Note: if/when this is fixed, we can stop maintaining
+    // the WritingDirectionMode separately on StyleCascade.
     builder.SetWritingMode(layout_parent_style.GetWritingMode());
     builder.SetTextOrientation(layout_parent_style.GetTextOrientation());
     builder.UpdateFontOrientation();

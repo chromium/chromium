@@ -471,6 +471,7 @@ void StyleCascade::AnalyzeIfNeeded() {
 
 void StyleCascade::AnalyzeMatchResult() {
   AddExplicitDefaults();
+  writing_direction_ = state_.StyleBuilder().GetWritingDirection();
 
   int index = 0;
   for (const MatchedProperties& properties :
@@ -1506,7 +1507,7 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSProperty& property,
   // Note: the value is transformed *from* the property we're reverting *to*.
   const CSSValue* flipped = TryValueFlips::FlipValue(
       /* from_property */ to_property.PropertyID(), unflipped,
-      value.Transform(), state_.StyleBuilder().GetWritingDirection());
+      value.Transform(), writing_direction_);
   return Resolve(property, *flipped, tree_scope,
                  /*mixin_parameter_bindings=*/nullptr, priority, origin,
                  resolver);
@@ -2918,8 +2919,7 @@ const CSSProperty& StyleCascade::ResolveSurrogate(const CSSProperty& property) {
   // currently a flag to distinguish such surrogates from e.g. css-logical
   // properties.
   depends_on_cascade_affecting_property_ = true;
-  const CSSProperty* original =
-      property.SurrogateFor(state_.StyleBuilder().GetWritingDirection());
+  const CSSProperty* original = property.SurrogateFor(writing_direction_);
   DCHECK(original);
   return *original;
 }
