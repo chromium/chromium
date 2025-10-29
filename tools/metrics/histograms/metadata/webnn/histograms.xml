@@ -53,6 +53,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Inference" summary="time to inference."/>
 </variants>
 
+<variants name="WebNNOrtExecutionProvider">
+  <variant name="NvTensorRTRTXExecutionProvider"
+      summary="name of NVIDIA TensorRT execution provider."/>
+  <variant name="OpenVINOExecutionProvider"
+      summary="name of Intel OpenVINO execution provider."/>
+  <variant name="QNNExecutionProvider"
+      summary="name of Qualcomm QNN execution provider."/>
+</variants>
+
 <histogram name="WebNN.ConstantDataSizeInKB" units="KB"
     expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
@@ -126,6 +135,17 @@ chromium-metrics-reviews@google.com.
     {WebNNOrtActions}
   </summary>
   <token key="WebNNOrtActions" variants="WebNNOrtActions"/>
+</histogram>
+
+<histogram name="WebNN.ORT.{WebNNOrtExecutionProvider}.Status"
+    enum="ExecutionProviderStatusUma" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    WebNN ORT backend can run on different execution providers (EPs). This
+    histogram records the status of known EPs, queried by EP Catalog API.
+  </summary>
+  <token key="WebNNOrtExecutionProvider" variants="WebNNOrtExecutionProvider"/>
 </histogram>
 
 </histograms>

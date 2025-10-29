@@ -37,6 +37,19 @@ DeviceTypeUma in //services/webnn/webnn_context_provider_impl.cc.
 </enum>
 
 <!--
+The values in ExecutionProviderStatusUma enum type map to those in the enum class
+ExecutionProviderStatusUma in //services/webnn/host/execution_provider_initializer.cc.
+-->
+
+<enum name="ExecutionProviderStatusUma">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="EP version too low"/>
+  <int value="2" label="Not installed"/>
+  <int value="3" label="Ensure ready failed"/>
+  <int value="4" label="Ready for use"/>
+</enum>
+
+<!--
 The values in MLGraphOperatorUma enum type map to those in the enum class
 MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.cc.
 -->

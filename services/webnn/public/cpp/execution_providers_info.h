@@ -50,6 +50,9 @@ struct EpInfo {
   base::raw_span<const SessionConfigEntry> config_entries;
 };
 
+// The listed EPs must match the names of the histogram variants
+// WebNNOrtExecutionProvider in
+// tools/metrics/histograms/metadata/webnn/histograms.xml.
 inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                                                          EpInfo>({
     // Intel

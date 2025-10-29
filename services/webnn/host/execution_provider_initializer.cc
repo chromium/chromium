@@ -16,6 +16,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
@@ -36,6 +38,27 @@ using EnsureReadyAsyncOp =
     __FIAsyncOperationWithProgress_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double;
 using EnsureReadyCompletedHandler =
     __FIAsyncOperationWithProgressCompletedHandler_2_Microsoft__CWindows__CAI__CMachineLearning__CExecutionProviderReadyResult_double;
+
+// Maps to ExecutionProviderStatusUma in
+// tools/metrics/histograms/metadata/webnn/enums.xml.
+enum class ExecutionProviderStatusUma {
+  kUnknown = 0,
+  kEpVersionTooLow = 1,
+  kNotInstalled = 2,
+  kEnsureReadyFailed = 3,
+  kReadyForUse = 4,
+
+  kMaxValue = kReadyForUse,
+};
+
+void RecordEpStatus(std::string_view ep_name,
+                    ExecutionProviderStatusUma status) {
+  constexpr std::string_view kWebnnHistogramPrefix = "WebNN.ORT.";
+  constexpr std::string_view kWebnnHistogramSuffix = ".Status";
+  base::UmaHistogramEnumeration(
+      base::StrCat({kWebnnHistogramPrefix, ep_name, kWebnnHistogramSuffix}),
+      status);
+}
 
 bool operator<(const PACKAGE_VERSION& a, const PACKAGE_VERSION& b) {
   if (a.Major != b.Major) {
@@ -144,6 +167,8 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
   hr = async_info->get_Status(&status);
   CHECK_EQ(hr, S_OK);
   if (status != AsyncStatus::Completed) {
+    RecordEpStatus(ep_name, ExecutionProviderStatusUma::kUnknown);
+
     LOG(WARNING) << "[WebNN] EnsureReadyAsync() didn't complete for "
                  << ep_name;
     return std::nullopt;
@@ -188,12 +213,17 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
       const PACKAGE_VERSION& min_package_version =
           kKnownEPs.find(ep_name)->second.min_package_version;
       if (package_version < min_package_version) {
+        RecordEpStatus(ep_name, ExecutionProviderStatusUma::kEpVersionTooLow);
+
         LOG(WARNING) << "[WebNN] Found [" << ep_name << "] package version: "
                      << VersionToString(package_version)
                      << " is lower than the minimum required version: "
                      << VersionToString(min_package_version);
         return std::nullopt;
       }
+
+      RecordEpStatus(ep_name, ExecutionProviderStatusUma::kReadyForUse);
+
       return std::make_pair(
           std::move(ep_name),
           mojom::EpPackageInfo::New(std::wstring(family_name.Get()),
@@ -201,6 +231,8 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
                                     base::FilePath(ep_path.Get())));
     }
     case abi_winml::ExecutionProviderReadyResultState_Failure: {
+      RecordEpStatus(ep_name, ExecutionProviderStatusUma::kEnsureReadyFailed);
+
       HRESULT extended_error;
       hr = ready_result->get_ExtendedError(&extended_error);
       CHECK_EQ(hr, S_OK);
@@ -346,6 +378,8 @@ void ExecutionProviderInitializer::Initialize(
         break;
       }
       case abi_winml::ExecutionProviderReadyState_NotPresent: {
+        RecordEpStatus(ep_name, ExecutionProviderStatusUma::kNotInstalled);
+
         EnsureExecutionProviderReadyAsync(
             provider,
             base::BindOnce(
