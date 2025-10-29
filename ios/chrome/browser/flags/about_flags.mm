@@ -1305,6 +1305,22 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
      nullptr},
     {"Skip new user delay", kSkipNewUserDelay, std::size(kSkipNewUserDelay)}};
 
+const FeatureEntry::FeatureParam kMultilineOmniboxNoPeekingParam[] = {
+    {kMultilineOmniboxParam, kMultilineOmniboxNoPeeking}};
+const FeatureEntry::FeatureParam kMultilineOmniboxHalfLinePeekingParam[] = {
+    {kMultilineOmniboxParam, kMultilineOmniboxHalfLinePeeking}};
+const FeatureEntry::FeatureParam kMultilineOmniboxFullLineAndPeekingParam[] = {
+    {kMultilineOmniboxParam, kMultilineOmniboxFullLineAndPeeking}};
+
+const FeatureEntry::FeatureVariation kMultilineOmniboxVariations[] = {
+    {"A: No peeking", kMultilineOmniboxNoPeekingParam,
+     std::size(kMultilineOmniboxNoPeekingParam), nullptr},
+    {"B: Half line peeking", kMultilineOmniboxHalfLinePeekingParam,
+     std::size(kMultilineOmniboxHalfLinePeekingParam), nullptr},
+    {"C: Full line and peeking", kMultilineOmniboxFullLineAndPeekingParam,
+     std::size(kMultilineOmniboxFullLineAndPeekingParam), nullptr},
+};
+
 const FeatureEntry::FeatureParam kOmniboxMobileParityEnableFeedForGoogleOnly[] =
     {{OmniboxFieldTrial::kMobileParityEnableFeedForGoogleOnly.name, "true"}};
 const FeatureEntry::FeatureVariation kOmniboxMobileParityVariations[] = {
@@ -2847,7 +2863,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"multiline-browser-omnibox",
      flag_descriptions::kMultilineBrowserOmniboxName,
      flag_descriptions::kMultilineBrowserOmniboxDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kMultilineBrowserOmnibox)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMultilineBrowserOmnibox,
+                                    kMultilineOmniboxVariations,
+                                    "MultilineBrowserOmnibox")},
     {"ios-auto-open-remote-tab-groups-settings",
      flag_descriptions::kIOSAutoOpenRemoteTabGroupsSettingsName,
      flag_descriptions::kIOSAutoOpenRemoteTabGroupsSettingsDescription,
