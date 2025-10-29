@@ -47,28 +47,22 @@ namespace {
 GameDashboardController* g_instance = nullptr;
 
 // List of known app IDs that are games.
-static const std::array<std::string, 7> kGameAppIdAllowList{
-    extension_misc::kGeForceNowAppId,   "iicceeckdelepgbcpojbgahbhnklpane",
-    "ojjlibnpojmhhabohpkclejfdblglkpj", "hhkmajjdndhdnkbmomodobajdjngeejb",
-    "gihmggjjlnjaldngedmnegjmhccccahg", "lbefcdhjbnilmnokeflglbaiaebadckd",
-    "bifaabbnnccaenolhjngemgmegdjflkg"};
-
-// List of pending game PWA app IDs that are being merged into
-// `kGameAppIdAllowList`.
-static const std::array<std::string, 12> kPWAGameAppIdAllowList{
-    extension_misc::kAmazonLunaAppIdCA, extension_misc::kAmazonLunaAppIdDE,
-    extension_misc::kAmazonLunaAppIdES, extension_misc::kAmazonLunaAppIdFR,
-    extension_misc::kAmazonLunaAppIdIT, extension_misc::kAmazonLunaAppIdNL,
-    extension_misc::kAmazonLunaAppIdPL, extension_misc::kAmazonLunaAppIdUK,
-    extension_misc::kAmazonLunaAppIdUS, extension_misc::kBoosteroidAppId,
-    extension_misc::kPokiAppId,         extension_misc::kXboxCloudGamingAppId};
+static const std::array<std::string, 19> kGameAppIdAllowList{
+    extension_misc::kGeForceNowAppId,     "iicceeckdelepgbcpojbgahbhnklpane",
+    "ojjlibnpojmhhabohpkclejfdblglkpj",   "hhkmajjdndhdnkbmomodobajdjngeejb",
+    "gihmggjjlnjaldngedmnegjmhccccahg",   "lbefcdhjbnilmnokeflglbaiaebadckd",
+    "bifaabbnnccaenolhjngemgmegdjflkg",   extension_misc::kAmazonLunaAppIdCA,
+    extension_misc::kAmazonLunaAppIdDE,   extension_misc::kAmazonLunaAppIdES,
+    extension_misc::kAmazonLunaAppIdFR,   extension_misc::kAmazonLunaAppIdIT,
+    extension_misc::kAmazonLunaAppIdNL,   extension_misc::kAmazonLunaAppIdPL,
+    extension_misc::kAmazonLunaAppIdUK,   extension_misc::kAmazonLunaAppIdUS,
+    extension_misc::kBoosteroidAppId,     extension_misc::kPokiAppId,
+    extension_misc::kXboxCloudGamingAppId};
 
 // Checks whether the given `app_id` is allow listed to show the Game
 // Dashboard button.
 bool IsAppIdAllowListed(const std::string& app_id) {
-  return base::Contains(kGameAppIdAllowList, app_id) ||
-         (features::IsGameDashboardGamePWAsEnabled() &&
-          base::Contains(kPWAGameAppIdAllowList, app_id));
+  return base::Contains(kGameAppIdAllowList, app_id);
 }
 }  // namespace
 

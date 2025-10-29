@@ -7439,10 +7439,6 @@ inline constexpr char kFuseBoxDebugDescription[] =
 inline constexpr char kGameDashboardGamepadSupport[] =
     "Game Dashboard gamepad support.";
 
-inline constexpr char kGameDashboardGamePWAs[] = "Game Dashboard Game PWAs";
-inline constexpr char kGameDashboardGamePWAsDescription[] =
-    "Enables Game Dashboard for an additional set of game PWAs.";
-
 inline constexpr char kGameDashboardUtilities[] = "Game Dashboard Utilities";
 inline constexpr char kGameDashboardUtilitiesDescription[] =
     "Enables utility features in the Game Dashboard.";
