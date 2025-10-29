@@ -305,9 +305,10 @@
   if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
     ChooseFileTabHelper* chooseFileTabHelper =
         ChooseFileTabHelper::FromWebState(webState);
-    CHECK(chooseFileTabHelper);
-    chooseFileTabHelper->SetFileUploadPanelHandler(
-        HandlerForProtocol(_commandDispatcher, FileUploadPanelCommands));
+    if (chooseFileTabHelper) {
+      chooseFileTabHelper->SetFileUploadPanelHandler(
+          HandlerForProtocol(_commandDispatcher, FileUploadPanelCommands));
+    }
   }
 }
 
@@ -443,8 +444,9 @@
   if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
     ChooseFileTabHelper* chooseFileTabHelper =
         ChooseFileTabHelper::FromWebState(webState);
-    CHECK(chooseFileTabHelper);
-    chooseFileTabHelper->SetFileUploadPanelHandler(nil);
+    if (chooseFileTabHelper) {
+      chooseFileTabHelper->SetFileUploadPanelHandler(nil);
+    }
   }
 }
 
