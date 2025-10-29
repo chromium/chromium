@@ -85,6 +85,7 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//chrome/browser/sync",

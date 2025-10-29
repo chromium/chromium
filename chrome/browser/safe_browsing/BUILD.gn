@@ -33,6 +33,7 @@ static_library("safe_browsing") {
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_io_data",
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",

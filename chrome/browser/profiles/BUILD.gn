@@ -99,6 +99,31 @@ source_set("profile") {
   }
 }
 
+source_set("profile_io_data") {
+  sources = [
+    "profile_io_data.cc",
+    "profile_io_data.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common",
+    "//chrome/common:buildflags",
+    "//components/dom_distiller/core",
+    "//extensions/buildflags",
+    "//net:buildflags",
+    "//url",
+  ]
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
+}
+
 source_set("profile_util") {
   sources = [
     "nuke_profile_directory_utils.h",

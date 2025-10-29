@@ -183,6 +183,7 @@ source_set("impl") {
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:headers",
       "//chrome/browser/privacy_sandbox/notice:desktop_entrypoint_handlers_helper",
+      "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",

@@ -276,6 +276,7 @@ if (!is_android) {
       "//build:chromeos_buildflags",
       "//chrome/browser",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/ui",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/tabs:tab_strip",
