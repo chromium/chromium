@@ -28,6 +28,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"

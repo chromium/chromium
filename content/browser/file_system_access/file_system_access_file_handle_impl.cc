@@ -16,6 +16,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/file_access/scoped_file_access_delegate.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"

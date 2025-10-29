@@ -22,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
