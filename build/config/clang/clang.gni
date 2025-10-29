@@ -37,7 +37,8 @@ clang_modules_platform_supported =
     # s390x should work, but IBM doesn't want it enabled for that cpu arch.
     (is_linux && current_cpu != "s390x") ||
     (is_android && current_cpu == "x64") ||
-    (is_android && current_cpu == "arm64") || is_apple || is_fuchsia
+    (is_android && current_cpu == "arm64") || is_apple || is_fuchsia ||
+    is_chromeos
 
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
