@@ -113,7 +113,7 @@ HoverButton::HoverButton()
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorId(kColorHoverButtonBackgroundHovered);
+  views::InkDrop::Get(this)->SetBaseColor(kColorHoverButtonBackgroundHovered);
   // kColorHoverButtonBackgroundHovered has its own opacity.
   // sets the opacity to 100% * opacity(kColorHoverButtonBackgroundHovered).
   views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);

@@ -251,7 +251,7 @@ void TrayPopupUtils::ConfigureHeader(views::View* view) {
 void TrayPopupUtils::ConfigureRowButtonInkdrop(views::InkDropHost* ink_drop) {
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
   ink_drop->SetVisibleOpacity(1.0f);  // The colors already contain opacity
-  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(cros_tokens::kCrosSysRippleNeutralOnSubtle);
 }
 
 views::LabelButton* TrayPopupUtils::CreateTrayPopupButton(

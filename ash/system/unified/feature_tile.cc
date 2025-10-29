@@ -396,10 +396,9 @@ void FeatureTile::UpdateColors() {
                                                corner_radius_));
 
   auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetBaseColorId(toggled_
-                               ? ink_drop_toggled_base_color_.value_or(
-                                     cros_tokens::kCrosSysRipplePrimary)
-                               : cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(toggled_ ? ink_drop_toggled_base_color_.value_or(
+                                        cros_tokens::kCrosSysRipplePrimary)
+                                  : cros_tokens::kCrosSysRippleNeutralOnSubtle);
 
   auto icon_image_model = ui::ImageModel::FromVectorIcon(
       *vector_icon_, foreground_color, kIconSize);
@@ -712,9 +711,8 @@ void FeatureTile::UpdateIconButtonRippleColors() {
                           toggled_ ? cros_tokens::kCrosSysHighlightShape
                                    : cros_tokens::kCrosSysHoverOnSubtle));
   // Set up the ripple color.
-  ink_drop->SetBaseColorId(toggled_
-                               ? cros_tokens::kCrosSysRipplePrimary
-                               : cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(toggled_ ? cros_tokens::kCrosSysRipplePrimary
+                                  : cros_tokens::kCrosSysRippleNeutralOnSubtle);
   // The ripple base color includes opacity.
   ink_drop->SetVisibleOpacity(1.0f);
 

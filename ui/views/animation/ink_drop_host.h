@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -112,13 +113,12 @@ class VIEWS_EXPORT InkDropHost {
   SkColor GetBaseColor() const;
 
   // Sets the base color of the ink drop. If `SetBaseColor` is called, the
-  // effect of previous calls to `SetBaseColorId` and `SetBaseColorCallback` is
+  // effect of previous calls to  `SetBaseColorCallback` is
   // overwritten and vice versa.
-  // TODO(crbug.com/40230665): Replace SetBaseColor with SetBaseColorId.
-  void SetBaseColor(SkColor color);
-  void SetBaseColorId(ui::ColorId color_id);
+  void SetBaseColor(ui::ColorVariant color);
+
   // Callback version of `GetBaseColor`. If possible, prefer using
-  // `SetBaseColor` or `SetBaseColorId`.
+  // `SetBaseColor`.
   void SetBaseColorCallback(base::RepeatingCallback<SkColor()> callback);
 
   // Toggle to enable/disable an InkDrop on this View.  Descendants can override
@@ -263,7 +263,7 @@ class VIEWS_EXPORT InkDropHost {
   float ink_drop_visible_opacity_ = 0.175f;
 
   // The color of the ripple and hover.
-  std::variant<SkColor, ui::ColorId, base::RepeatingCallback<SkColor()>>
+  std::variant<ui::ColorVariant, base::RepeatingCallback<SkColor()>>
       ink_drop_base_color_ = gfx::kPlaceholderColor;
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either

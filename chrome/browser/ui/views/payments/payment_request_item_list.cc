@@ -103,7 +103,7 @@ void PaymentRequestItemList::Item::Init() {
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon, ui::kColorIcon,
                                        kEditIconSize));
-    views::InkDrop::Get(edit_button.get())->SetBaseColorId(ui::kColorIcon);
+    views::InkDrop::Get(edit_button.get())->SetBaseColor(ui::kColorIcon);
     edit_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
     edit_button->GetViewAccessibility().SetName(

@@ -277,7 +277,7 @@ NotificationView::NotificationView(
             views::InkDrop::Get(host)->GetVisibleOpacity());
       },
       this));
-  views::InkDrop::Get(this)->SetBaseColorId(
+  views::InkDrop::Get(this)->SetBaseColor(
       ui::kColorNotificationBackgroundActive);
 
   auto header_row = CreateHeaderRowBuilder().Build();

@@ -144,7 +144,7 @@ Checkbox::Checkbox(const std::u16string& label,
   // Usually ink-drop ripples match the text color. Checkboxes use the
   // color of the unchecked, enabled icon.
   InkDrop::Get(image_container_view())
-      ->SetBaseColorId(ui::kColorCheckboxForegroundUnchecked);
+      ->SetBaseColor(ui::kColorCheckboxForegroundUnchecked);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
   SetAndUpdateAccessibleDefaultActionVerb();

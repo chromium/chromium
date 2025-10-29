@@ -142,7 +142,7 @@ class ScrollButton : public views::ImageButton {
             : ui::ImageModel::FromVectorIcon(kTrailingScrollIcon,
                                              ui::kColorIcon));
 
-    views::InkDrop::Get(this)->SetBaseColorId(
+    views::InkDrop::Get(this)->SetBaseColor(
         views::TypographyProvider::Get().GetColorId(
             views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
 

@@ -402,7 +402,7 @@ TEST_F(InkDropInWidgetTest, SetBaseColor) {
 }
 
 TEST_F(InkDropInWidgetTest, SetBaseColorId) {
-  ink_drop().SetBaseColorId(ui::kColorSeparator);
+  ink_drop().SetBaseColor(ui::kColorSeparator);
   EXPECT_EQ(ink_drop().GetBaseColor(),
             color_provider().GetColor(ui::kColorSeparator));
 
@@ -489,7 +489,7 @@ class InkDropHostAttentionTest : public ViewsTestBase {
 
 TEST_F(InkDropHostAttentionTest, ToggleAttentionColor) {
   // Give it an original color before flipping attention to true.
-  ink_drop_host()->SetBaseColorId(ui::kColorSeparator);
+  ink_drop_host()->SetBaseColor(ui::kColorSeparator);
   EXPECT_EQ(ink_drop_host()->GetBaseColor(),
             color_provider().GetColor(ui::kColorSeparator));
 

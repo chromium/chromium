@@ -364,7 +364,7 @@ class IntentPickerLabelButton : public views::LabelButton {
         provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
         provider->GetInsetsMetric(views::INSETS_DIALOG).left())));
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColorId(
+    views::InkDrop::Get(this)->SetBaseColor(
         views::TypographyProvider::Get().GetColorId(
             views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
   }

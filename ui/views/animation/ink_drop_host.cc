@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/event.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/gfx/color_palette.h"
@@ -184,15 +185,11 @@ SkColor InkDropHost::GetBaseColor() const {
     return color_provider->GetColor(ui::kColorButtonFeatureAttentionHighlight);
   }
 
-  if (std::holds_alternative<ui::ColorId>(ink_drop_base_color_)) {
+  if (std::holds_alternative<ui::ColorVariant>(ink_drop_base_color_)) {
     ui::ColorProvider* color_provider = host_view_->GetColorProvider();
     CHECK(color_provider);
-    return color_provider->GetColor(
-        std::get<ui::ColorId>(ink_drop_base_color_));
-  }
-
-  if (std::holds_alternative<SkColor>(ink_drop_base_color_)) {
-    return std::get<SkColor>(ink_drop_base_color_);
+    return std::get<ui::ColorVariant>(ink_drop_base_color_)
+        .ResolveToSkColor(color_provider);
   }
 
   // The callback may need access to the color provider, which is only available
@@ -205,12 +202,8 @@ SkColor InkDropHost::GetBaseColor() const {
   return gfx::kPlaceholderColor;
 }
 
-void InkDropHost::SetBaseColor(SkColor color) {
+void InkDropHost::SetBaseColor(ui::ColorVariant color) {
   ink_drop_base_color_ = color;
-}
-
-void InkDropHost::SetBaseColorId(ui::ColorId color_id) {
-  ink_drop_base_color_ = color_id;
 }
 
 void InkDropHost::SetBaseColorCallback(

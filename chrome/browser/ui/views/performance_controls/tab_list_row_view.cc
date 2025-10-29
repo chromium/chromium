@@ -149,7 +149,7 @@ TabListRowView::TabListRowView(
   views::InkDrop::Install(this, std::move(ink_drop_host_unique));
   views::InstallRectHighlightPathGenerator(this);
   ink_drop_host->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop_host->SetBaseColorId(ui::kColorSysStateHoverOnSubtle);
+  ink_drop_host->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
   ink_drop_host->SetHighlightOpacity(1.0f);
   ink_drop_host->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
   ink_drop_host->GetInkDrop()->SetShowHighlightOnFocus(true);

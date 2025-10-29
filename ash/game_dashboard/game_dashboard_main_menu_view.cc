@@ -274,7 +274,7 @@ views::BoxLayout* ConfigureFeatureRowLayout(views::Button* button,
   ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
   ink_drop->GetInkDrop()->SetShowHighlightOnFocus(false);
   ink_drop->SetVisibleOpacity(1.0f);
-  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(cros_tokens::kCrosSysRippleNeutralOnSubtle);
 
   // Set up focus ring.
   auto* focus_ring = views::FocusRing::Get(button);

@@ -44,7 +44,7 @@ ShelfButton::~ShelfButton() = default;
 void ShelfButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(cros_tokens::kCrosSysRippleNeutralOnSubtle);
   ink_drop->SetVisibleOpacity(1.0f);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);

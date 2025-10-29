@@ -51,7 +51,7 @@ PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
           views::Emphasis::kMedium)));
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColorId(kColorPaymentsPromoCodeInkDrop);
+  views::InkDrop::Get(this)->SetBaseColor(kColorPaymentsPromoCodeInkDrop);
   SetHasInkDropActionOnClick(true);
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);

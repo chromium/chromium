@@ -190,7 +190,7 @@ void GameDashboardButton::UpdateViews() {
         IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE));
   }
 
-  views::InkDrop::Get(this)->SetBaseColorId(
+  views::InkDrop::Get(this)->SetBaseColor(
       is_recording_ ? cros_tokens::kCrosSysRippleNeutralOnProminent
                     : cros_tokens::kCrosSysRipplePrimary);
 

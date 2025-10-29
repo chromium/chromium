@@ -57,7 +57,7 @@ ManageSharingRow::ManageSharingRow(
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorId(kColorHoverButtonBackgroundHovered);
+  views::InkDrop::Get(this)->SetBaseColor(kColorHoverButtonBackgroundHovered);
   views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
   views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);

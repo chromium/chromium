@@ -62,7 +62,7 @@ QuickSettingsNoticeView::QuickSettingsNoticeView(
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-  views::InkDrop::Get(this)->SetBaseColorId(kColorAshInkDropOpaqueColor);
+  views::InkDrop::Get(this)->SetBaseColor(kColorAshInkDropOpaqueColor);
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     icon, cros_tokens::kCrosSysOnSurfaceVariant, kIconSize));
