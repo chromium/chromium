@@ -1626,7 +1626,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 ),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       browser_context_(browser_context),
-      storage_partition_impl_(storage_partition_impl->GetWeakPtr()),
+      storage_partition_impl_(storage_partition_impl),
       flags_(flags),
       has_spare_renderer_priority_(is_spare_renderer),
       tracing_track_(
@@ -3498,10 +3498,6 @@ bool RenderProcessHostImpl::ShouldPauseChannelUntilProcessLaunched() {
 }
 
 StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
-  // TODO(crbug.com/40061679): Remove the `CHECK` after the ad-hoc
-  // debugging is no longer needed to investigate the bug.
-  CHECK(!!storage_partition_impl_);
-
   return storage_partition_impl_.get();
 }
 

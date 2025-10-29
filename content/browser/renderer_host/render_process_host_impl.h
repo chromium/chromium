@@ -1412,11 +1412,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // vibe with raw_ptr<T>.
   RAW_PTR_EXCLUSION BrowserContext* browser_context_ = nullptr;
 
-  // Owned by |browser_context_|.
-  //
-  // TODO(crbug.com/40061679): Change back to `raw_ptr` after the ad-hoc
-  // debugging is no longer needed to investigate the bug.
-  base::WeakPtr<StoragePartitionImpl> storage_partition_impl_;
+  // Owned by `browser_context_`.
+  raw_ptr<StoragePartitionImpl> storage_partition_impl_;
 
   // Owns the singular DomStorageProvider binding established by this renderer.
   mojo::Receiver<blink::mojom::DomStorageProvider>

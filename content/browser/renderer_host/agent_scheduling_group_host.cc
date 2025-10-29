@@ -144,7 +144,7 @@ int32_t AgentSchedulingGroupHost::GetNextID() {
 }
 
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
-    : process_(process.GetSafeRef()), receiver_(this) {
+    : process_(process), receiver_(this) {
   process_->AddObserver(this);
 
   // The RenderProcessHost's channel and other mojo interfaces are bound by the

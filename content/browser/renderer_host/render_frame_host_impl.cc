@@ -8008,11 +8008,6 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
     return;
   }
 
-  // TODO(crbug.com/40061679): Remove the crash key logging after the
-  // ad-hoc bug investigation is no longer needed.
-  SCOPED_CRASH_KEY_STRING256("rfhi-uslf", "frame->ToDebugString",
-                             ToDebugString());
-
   // The `subresource_loader_factories_config` of the new factories might need
   // to depend on the pending (rather than the last committed) navigation,
   // because we can't predict if an in-flight Commit IPC might be present when
