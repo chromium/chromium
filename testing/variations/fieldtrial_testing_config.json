@@ -24663,6 +24663,24 @@
             ]
         }
     ],
+    "SupportOpeningDraggedLinksInSameTab": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SupportOpeningDraggedLinksInSameTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressMemoryListeners": [
         {
             "platforms": [
