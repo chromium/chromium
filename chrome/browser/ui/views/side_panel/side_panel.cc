@@ -327,12 +327,12 @@ SidePanel::SidePanel(BrowserView* browser_view,
         std::make_unique<BorderView>(browser_view);
     border_view_ = border_view.get();
     AddChildView(std::move(border_view));
-
-    std::unique_ptr<views::SidePanelResizeArea> resize_area =
-        std::make_unique<views::SidePanelResizeArea>(this);
-    resize_area_ = resize_area.get();
-    AddChildView(std::move(resize_area));
   }
+
+  std::unique_ptr<views::SidePanelResizeArea> resize_area =
+      std::make_unique<views::SidePanelResizeArea>(this);
+  resize_area_ = resize_area.get();
+  AddChildView(std::move(resize_area));
 
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
