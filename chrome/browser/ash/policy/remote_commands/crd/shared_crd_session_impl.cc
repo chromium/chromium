@@ -36,10 +36,6 @@ std::string GetRobotAccountUserName(const DeviceOAuth2TokenService* service) {
 // `policy::SharedCrdSession` to provide their own callback for session end.
 void OnCrdSessionFinished(base::OnceClosure session_finished_callback,
                           base::TimeDelta session_duration) {
-  CrdUmaLogger(CrdSessionType::REMOTE_SUPPORT_SESSION,
-               UserSessionType::AFFILIATED_USER_SESSION)
-      .LogSessionDuration(session_duration);
-
   std::move(session_finished_callback).Run();
 }
 }  // namespace

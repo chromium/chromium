@@ -73,9 +73,6 @@ constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 // Common template used in all UMA histograms for session result logs.
 constexpr char kHistogramResultTemplate[] =
     "Enterprise.DeviceRemoteCommand.Crd.%s.%s.Result";
-// Common template used in all UMA histograms for session duration logs.
-constexpr char kHistogramDurationTemplate[] =
-    "Enterprise.DeviceRemoteCommand.Crd.%s.%s.SessionDuration";
 
 // Created for session type logged to UMA.
 const char* SessionTypeToUmaString(TestSessionType session_type) {
@@ -979,27 +976,6 @@ TEST_F(
 }
 
 TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
-       ShouldSendSessionDurationLogForRemoteSupport) {
-  TestSessionType user_session_type = GetParam();
-  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
-                                  SessionTypeToString(user_session_type)));
-  base::TimeDelta duration = base::Seconds(1);
-
-  if (!SupportsRemoteSupport(user_session_type)) {
-    return;
-  }
-  base::HistogramTester histogram_tester;
-  StartSessionOfType(user_session_type);
-  RunJobAndWaitForResult();
-  delegate().TerminateCrdSession(duration);
-
-  histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(kHistogramDurationTemplate, "RemoteSupport",
-                         SessionTypeToUmaString(user_session_type)),
-      duration, /*expected_bucket_count=*/1);
-}
-
-TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
        ShouldAllowFileTransferForKioskSessions) {
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
@@ -1599,29 +1575,6 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
                          SessionTypeToUmaString(TestSessionType::kNoSession)),
       ExtendedStartCrdSessionResultCode::kFailureUnmanagedEnvironment,
       /*expected_bucket_count=*/1);
-}
-
-TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
-       ShouldSendSessionDurationUmaLogWhenCrdSessionFinish) {
-  base::HistogramTester histogram_tester;
-  TestSessionType user_session_type = GetParam();
-  SCOPED_TRACE(base::StringPrintf("Testing session type %s",
-                                  SessionTypeToString(user_session_type)));
-  base::TimeDelta duration = base::Seconds(1);
-
-  if (!SupportsRemoteAccess(user_session_type)) {
-    // This test is only about the cases where remote access is supported.
-    return;
-  }
-  AddActiveManagedNetwork();
-  StartSessionOfType(user_session_type);
-  Result result = RunJobAndWaitForResult(RemoteAccessPayload());
-  delegate().TerminateCrdSession(duration);
-
-  histogram_tester.ExpectUniqueTimeSample(
-      base::StringPrintf(kHistogramDurationTemplate, "RemoteAccess",
-                         SessionTypeToUmaString(user_session_type)),
-      duration, /*expected_bucket_count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

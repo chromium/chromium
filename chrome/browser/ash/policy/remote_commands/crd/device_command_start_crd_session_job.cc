@@ -177,8 +177,8 @@ CrdSessionType ToCrdSessionTypeOrDefault(std::optional<int> int_value,
 void OnCrdSessionFinished(CrdSessionType crd_session_type,
                           UserSessionType user_session_type,
                           base::TimeDelta session_duration) {
-  CrdUmaLogger(crd_session_type, user_session_type)
-      .LogSessionDuration(session_duration);
+  // TODO(b:446670622): Remove redundant `OnCrdSessionFinished`'s method
+  // usage.
 }
 
 bool IsKioskSession(UserSessionType session_type) {
