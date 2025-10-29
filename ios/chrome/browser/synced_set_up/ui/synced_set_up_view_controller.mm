@@ -9,6 +9,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -40,6 +42,8 @@ NSString* const kSyncedSetUpTitleAccessibilityID =
 // Accessibility identifier for the subtitle label.
 NSString* const kSyncedSetUpSubtitleAccessibilityID =
     @"kSyncedSetUpSubtitleAccessibilityID";
+// Lottie animation file name.
+NSString* const kSpinAnimationName = @"synced_set_up_spin";
 
 // Helper function to configure common label properties.
 static void ConfigureCommonLabelProperties(UILabel* label) {
@@ -73,6 +77,8 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   UIImage* _avatarImage;
   // Tracks if the subtitle has been animated.
   BOOL _subtitleHasAnimated;
+  // The Lottie animation that plays to reveal the avatar.
+  id<LottieAnimation> _spinAnimation;
 }
 
 #pragma mark - UIViewController
@@ -81,6 +87,8 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+  _spinAnimation = [self createAnimation:kSpinAnimationName];
 
   [self setupViews];
   [self setupConstraints];
@@ -100,6 +108,7 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
 
   if (!_subtitleHasAnimated) {
     [self animateSubtitleIn];
+    [_spinAnimation play];
   }
 }
 
@@ -130,6 +139,18 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
 }
 
 #pragma mark - Private
+
+// Creates a Lottie animation view.
+- (id<LottieAnimation>)createAnimation:(NSString*)animationName {
+  LottieAnimationConfiguration* config =
+      [[LottieAnimationConfiguration alloc] init];
+  config.animationName = animationName;
+  config.shouldLoop = NO;
+  id<LottieAnimation> animation =
+      ios::provider::GenerateLottieAnimation(config);
+  animation.animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  return animation;
+}
 
 // Updates the title label based on `_welcomeMessage`.
 - (void)updateTitleLabel {
@@ -232,6 +253,9 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   [_stackView setCustomSpacing:kTitleTopMargin afterView:_avatarImageView];
 
   [_contentView addSubview:_stackView];
+
+  // Add animation view on top of all other views.
+  [self.view addSubview:_spinAnimation.animationView];
 }
 
 // Configures constraints to support the scroll view structure.
@@ -253,6 +277,7 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   contentHeightConstraint.active = YES;
 
   AddSameCenterConstraints(_stackView, _contentView);
+  AddSameConstraints(_avatarImageView, _spinAnimation.animationView);
 
   [NSLayoutConstraint activateConstraints:@[
     [_stackView.topAnchor
