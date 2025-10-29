@@ -258,6 +258,7 @@ Tab::Tab(TabSlotController* controller)
 
 #if BUILDFLAG(ENABLE_GLIC)
   if (base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+      controller_->GetBrowser() &&
       glic::GlicEnabling::IsProfileEligible(
           controller_->GetBrowser()->GetProfile())) {
     glic_tab_underline_view_ = AddChildView(
