@@ -1925,6 +1925,11 @@
       base_feature: "none",
     },
     {
+      // Disables removeFormat command on Plaintext-only content editable div
+      name: "DisableRemoveFormatForPlainTextOnlyEditableDiv",
+      status: "stable",
+    },
+    {
       // `kHidden` and `kHiddenButPainting` visibility states are treated as
       // hidden in the sense of `document.visibilityState`.  However, they are
       // handled differently internally.  For example, video playback should

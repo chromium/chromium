@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] In <input type="text">, execCommand("cut", false, null), ab[]c): execCommand() should return false
   assert_equals: expected false but got true
 [FAIL] In <input type="text">, execCommand("copy", false, null), abc[]d): execCommand() should return false
@@ -24,10 +24,6 @@ Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected (undefined) undefined but got (object) Element node <input id="target" type="text"></input>
 [FAIL] In <input type="text">, execCommand("redo", false, null), a[b]c): The command should be enabled
   assert_equals: expected true but got false
-[FAIL] In <input type="text">, execCommand("removeformat", false, null), a[b]c): The command should not be enabled
-  assert_equals: expected false but got true
-[FAIL] In <input type="text">, execCommand("removeformat", false, null), a[b]c): execCommand() should return false
-  assert_equals: expected false but got true
 [FAIL] In <input type="text">, execCommand("insertparagraph", false, null), a[b]c): The command should not be enabled
   assert_equals: expected false but got true
 [FAIL] In <input type="text">, execCommand("insertparagraph", false, null), a[b]c): execCommand() should return false
@@ -84,10 +80,6 @@ Found 48 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected (undefined) undefined but got (object) Element node <input id="target" type="text"></input>
 [FAIL] In <input type="text"> in contenteditable, execCommand("redo", false, null), a[b]c): The command should be enabled
   assert_equals: expected true but got false
-[FAIL] In <input type="text"> in contenteditable, execCommand("removeformat", false, null), a[b]c): The command should not be enabled
-  assert_equals: expected false but got true
-[FAIL] In <input type="text"> in contenteditable, execCommand("removeformat", false, null), a[b]c): execCommand() should return false
-  assert_equals: expected false but got true
 [FAIL] In <input type="text"> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): The command should not be enabled
   assert_equals: expected false but got true
 [FAIL] In <input type="text"> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): execCommand() should return false

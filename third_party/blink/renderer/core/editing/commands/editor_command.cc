@@ -1272,6 +1272,16 @@ static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
   return selection.IsRange() && IsRichlyEditablePosition(selection.Anchor());
 }
 
+static bool IsRemoveFormatAllowed(LocalFrame& frame,
+                                  Event* event,
+                                  EditorCommandSource source) {
+  if (RuntimeEnabledFeatures::
+          DisableRemoveFormatForPlainTextOnlyEditableDivEnabled()) {
+    return EnabledRangeInRichlyEditableText(frame, event, source);
+  }
+  return EnabledRangeInEditableText(frame, event, source);
+}
+
 static bool EnabledRedo(LocalFrame& frame, Event*, EditorCommandSource) {
   return frame.GetEditor().CanRedo();
 }
@@ -1839,8 +1849,8 @@ static const EditorInternalCommand* InternalCommand(
        StateNone, ValueStateOrNull, kNotTextInsertion,
        CanNotExecuteWhenDisabled},
       {EditingCommandType::kRemoveFormat, ExecuteRemoveFormat, Supported,
-       EnabledRangeInEditableText, StateNone, ValueStateOrNull,
-       kNotTextInsertion, CanNotExecuteWhenDisabled},
+       IsRemoveFormatAllowed, StateNone, ValueStateOrNull, kNotTextInsertion,
+       CanNotExecuteWhenDisabled},
       {EditingCommandType::kScrollPageBackward, ExecuteScrollPageBackward,
        SupportedFromMenuOrKeyBinding, Enabled, StateNone, ValueStateOrNull,
        kNotTextInsertion, CanNotExecuteWhenDisabled},
