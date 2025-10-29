@@ -2191,15 +2191,15 @@ void ViewTransitionStyleTracker::InvalidateStyleAndCompositing() {
 void ViewTransitionStyleTracker::
     InvalidateBackdropFilterCompositingProperties() {
   for (auto& entry : element_data_map_) {
-    if (!entry.value->target_element ||
-        entry.value->target_element->IsDocumentElement() ||
-        entry.value->target_element->ComputedStyleRef()
-            .BackdropFilter()
-            .IsEmpty()) {
+    // Only invalidate things that have a backdrop filter.
+    if (!entry.value || !entry.value->target_element) {
       continue;
     }
+
     auto* object = entry.value->target_element->GetLayoutObject();
-    if (!object) {
+    auto* style = entry.value->target_element->GetComputedStyle();
+    if (entry.value->target_element->IsDocumentElement() || !style || !object ||
+        style->BackdropFilter().IsEmpty()) {
       continue;
     }
 
