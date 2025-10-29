@@ -1912,6 +1912,7 @@ static_library("browser") {
     "//chrome/browser/legion",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media:access_handler",
+    "//chrome/browser/media:access_handler_impl",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router",
     "//chrome/browser/media/router:media_router_feature",
@@ -7655,8 +7656,6 @@ static_library("browser") {
       "browsing_data/counters/hosted_apps_counter.h",
       "clipboard/chrome_clipboard_permission_context_delegate.cc",
       "clipboard/chrome_clipboard_permission_context_delegate.h",
-      "controlled_frame/controlled_frame_media_access_handler.cc",
-      "controlled_frame/controlled_frame_media_access_handler.h",
       "guest_view/app_view/chrome_app_view_guest_delegate.cc",
       "guest_view/app_view/chrome_app_view_guest_delegate.h",
       "guest_view/chrome_guest_view_manager_delegate.cc",
@@ -7833,6 +7832,8 @@ static_library("browser") {
     ]
     deps += [
       "//apps",
+      "//chrome/browser/controlled_frame:media_access_handler",
+      "//chrome/browser/controlled_frame:media_access_handler_impl",
       "//chrome/browser/policy:policy_migrator",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications/extensions",
