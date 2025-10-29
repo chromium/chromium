@@ -38,6 +38,7 @@ class BrowserViewLayoutDelegate {
   virtual int GetTopInsetInBrowserView() const = 0;
   virtual bool IsToolbarVisible() const = 0;
   virtual bool IsBookmarkBarVisible() const = 0;
+  virtual bool IsInfobarVisible() const = 0;
   virtual bool IsContentsSeparatorEnabled() const = 0;
   virtual bool IsActiveTabSplit() const = 0;
   virtual const ImmersiveModeController* GetImmersiveModeController() const = 0;

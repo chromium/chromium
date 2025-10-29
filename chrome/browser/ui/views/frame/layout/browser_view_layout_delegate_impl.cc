@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,8 +54,12 @@ bool BrowserViewLayoutDelegateImplBase::GetBorderlessModeEnabled() const {
 
 BrowserLayoutParams BrowserViewLayoutDelegateImplBase::GetBrowserLayoutParams()
     const {
-  return GetFrameView()->GetBrowserLayoutParams().InLocalCoordinates(
-      browser_view_->bounds());
+  const auto params = GetFrameView()->GetBrowserLayoutParams();
+  if (params.IsEmpty()) {
+    // This can happen sometimes right after a browser is created.
+    return params;
+  }
+  return params.InLocalCoordinates(browser_view_->bounds());
 }
 
 int BrowserViewLayoutDelegateImplBase::GetTopInsetInBrowserView() const {
@@ -88,6 +93,17 @@ bool BrowserViewLayoutDelegateImplBase::IsToolbarVisible() const {
 
 bool BrowserViewLayoutDelegateImplBase::IsBookmarkBarVisible() const {
   return browser_view_->IsBookmarkBarVisible();
+}
+
+bool BrowserViewLayoutDelegateImplBase::IsInfobarVisible() const {
+  auto* const container = browser_view_->infobar_container();
+  if (!container || container->IsEmpty()) {
+    return false;
+  }
+  if (browser_view_->GetWidget()->IsFullscreen()) {
+    return !container->ShouldHideInFullscreen();
+  }
+  return true;
 }
 
 bool BrowserViewLayoutDelegateImplBase::IsContentsSeparatorEnabled() const {

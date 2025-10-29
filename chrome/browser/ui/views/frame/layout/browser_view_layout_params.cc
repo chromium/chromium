@@ -28,6 +28,10 @@ BrowserLayoutExclusionArea ShrinkBy(const BrowserLayoutExclusionArea& area,
 
 }  // namespace
 
+bool BrowserLayoutParams::IsEmpty() const {
+  return visual_client_area.IsEmpty();
+}
+
 BrowserLayoutParams BrowserLayoutParams::InLocalCoordinates(
     const gfx::Rect& rect) const {
   CHECK(visual_client_area.Contains(rect))

@@ -36,7 +36,8 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // Hierarchical version of views::ProposedLayout that will allow us to run
   // calculations without actually applying the layout.
   struct ProposedLayout;
-  ProposedLayout CalculateProposedLayout() const;
+  ProposedLayout CalculateProposedLayout(
+      const BrowserLayoutParams& params) const;
 
   // Lay out the main container of the browser.
   void CalculateMainContainerLayout(ProposedLayout& layout,
@@ -50,7 +51,7 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
 
   // When the top container is floating, it needs to have its layout applied
   // separately.
-  void MaybeLayoutTopContainerOverlay();
+  void MaybeLayoutTopContainerOverlay(const BrowserLayoutParams& params);
 
   // Returns whether the top contents separator should go in the top container.
   bool ContentsSeparatorInTopContainer() const;

@@ -220,6 +220,8 @@ BASE_DECLARE_FEATURE(kSideBySideKeyboardShortcut);
 
 bool IsSideBySideKeyboardShortcutEnabled();
 
+BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
+
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
@@ -341,8 +343,6 @@ BASE_DECLARE_FEATURE(kEnterpriseBadgingForNtpFooter);
 BASE_DECLARE_FEATURE(kNTPFooterBadgingPolicies);
 BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
-
-BASE_DECLARE_FEATURE(kUseNewTabbedBrowserLayout);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);
 

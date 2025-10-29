@@ -59,6 +59,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   void set_top_controls_shown_ratio(float ratio) {
     top_controls_shown_ratio_ = ratio;
   }
+  void set_infobar_visible(bool visible) { infobar_visible_ = visible; }
 
   // BrowserViewLayout::Delegate overrides:
   bool ShouldDrawTabStrip() const override { return should_draw_tab_strip_; }
@@ -81,6 +82,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   int GetTopInsetInBrowserView() const override { return 0; }
   bool IsToolbarVisible() const override { return toolbar_visible_; }
   bool IsBookmarkBarVisible() const override { return bookmark_bar_visible_; }
+  bool IsInfobarVisible() const override { return infobar_visible_; }
   bool IsContentsSeparatorEnabled() const override {
     return content_separator_enabled_;
   }
@@ -122,6 +124,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool should_draw_tab_strip_ = true;
   bool toolbar_visible_ = true;
   bool bookmark_bar_visible_ = true;
+  bool infobar_visible_ = false;
   bool content_separator_enabled_ = true;
   bool top_controls_slide_enabled_ = false;
   float top_controls_shown_ratio_ = 1.f;

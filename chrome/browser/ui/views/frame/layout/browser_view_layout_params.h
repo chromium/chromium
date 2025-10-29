@@ -90,6 +90,9 @@ struct BrowserLayoutParams {
 
   bool operator==(const BrowserLayoutParams&) const = default;
 
+  // Is the visual area empty?
+  bool IsEmpty() const;
+
   // Converts this params object to local coordinates in `rect`.
   BrowserLayoutParams InLocalCoordinates(const gfx::Rect& rect) const;
 };

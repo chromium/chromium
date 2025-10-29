@@ -127,7 +127,7 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
     BrowserViewLayoutViews views) {
   // Browser can be null in unit tests.
   if (browser && browser->is_type_normal() &&
-      base::FeatureList::IsEnabled(features::kUseNewTabbedBrowserLayout)) {
+      base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
     return std::make_unique<BrowserViewLayoutImpl>(std::move(delegate), browser,
                                                    std::move(views));
   }

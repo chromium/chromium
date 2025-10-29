@@ -275,6 +275,8 @@ bool IsSideBySideKeyboardShortcutEnabled() {
          base::FeatureList::IsEnabled(features::kSideBySideKeyboardShortcut);
 }
 
+BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabDuplicateMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables buttons when scrolling the tabstrip https://crbug.com/951078
@@ -422,8 +424,6 @@ BASE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel,
 
 BASE_FEATURE(kManagedProfileRequiredInterstitial,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUseNewTabbedBrowserLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a web-based tab strip. See https://crbug.com/989131. Note this
 // feature only works when the ENABLE_WEBUI_TAB_STRIP buildflag is enabled.

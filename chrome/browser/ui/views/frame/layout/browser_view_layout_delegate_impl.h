@@ -31,6 +31,7 @@ class BrowserViewLayoutDelegateImplBase : public BrowserViewLayoutDelegate {
                                views::Label& window_title_label) const override;
   bool IsToolbarVisible() const override;
   bool IsBookmarkBarVisible() const override;
+  bool IsInfobarVisible() const override;
   bool IsContentsSeparatorEnabled() const override;
   bool IsActiveTabSplit() const override;
   const ImmersiveModeController* GetImmersiveModeController() const override;
