@@ -17,6 +17,8 @@ namespace password_manager::features {
 // alongside the definition of their values in the .cc file.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Filling on pageload is disabled if an actor task is active on the tab.
+BASE_DECLARE_FEATURE(kActorActiveDisablesFillingOnPageLoad);
 BASE_DECLARE_FEATURE(kActorLogin);
 // Enables Actor Login form finding with async check
 BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
