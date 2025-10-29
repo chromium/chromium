@@ -29,14 +29,13 @@ namespace capi {
       AnyCalendarKind_Hebrew = 7,
       AnyCalendarKind_Indian = 8,
       AnyCalendarKind_HijriTabularTypeIIFriday = 9,
-      AnyCalendarKind_HijriSimulatedMecca = 10,
-      AnyCalendarKind_HijriTabularTypeIIThursday = 11,
-      AnyCalendarKind_HijriUmmAlQura = 12,
-      AnyCalendarKind_Iso = 13,
-      AnyCalendarKind_Japanese = 14,
-      AnyCalendarKind_JapaneseExtended = 15,
-      AnyCalendarKind_Persian = 16,
-      AnyCalendarKind_Roc = 17,
+      AnyCalendarKind_HijriTabularTypeIIThursday = 10,
+      AnyCalendarKind_HijriUmmAlQura = 11,
+      AnyCalendarKind_Iso = 12,
+      AnyCalendarKind_Japanese = 13,
+      AnyCalendarKind_JapaneseExtended = 14,
+      AnyCalendarKind_Persian = 15,
+      AnyCalendarKind_Roc = 16,
     };
 
     typedef struct AnyCalendarKind_option {union { AnyCalendarKind ok; }; bool is_ok; } AnyCalendarKind_option;
@@ -57,14 +56,13 @@ public:
         Hebrew = 7,
         Indian = 8,
         HijriTabularTypeIIFriday = 9,
-        HijriSimulatedMecca = 10,
-        HijriTabularTypeIIThursday = 11,
-        HijriUmmAlQura = 12,
-        Iso = 13,
-        Japanese = 14,
-        JapaneseExtended = 15,
-        Persian = 16,
-        Roc = 17,
+        HijriTabularTypeIIThursday = 10,
+        HijriUmmAlQura = 11,
+        Iso = 12,
+        Japanese = 13,
+        JapaneseExtended = 14,
+        Persian = 15,
+        Roc = 16,
     };
 
     AnyCalendarKind(): value(Value::Buddhist) {}
