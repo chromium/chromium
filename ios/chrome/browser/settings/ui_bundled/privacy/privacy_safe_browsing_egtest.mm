@@ -69,6 +69,15 @@ void OpenPrivacySafeBrowsingSettings() {
                                IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE)];
 }
 
+// Open privacy safe browsing settings in the window with the given number.
+void OpenPrivacySafeBrowsingSettingsInWindowWithNumber(int windowNumber) {
+  [ChromeEarlGrey openSettingsInWindowWithNumber:windowNumber];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:ButtonWithAccessibilityLabelId(
+                               IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE)];
+}
+
 // Opens "i" button for a specific cell identifier.
 void PressInfoButtonForCell(NSString* cellId) {
   [[EarlGrey
@@ -93,8 +102,6 @@ void PressInfoButtonForCell(NSString* cellId) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // TODO (crbug.com/1285974) Remove when bug is resolved.
-  config.features_disabled.push_back(kNewOverflowMenu);
   // TODO: crbug.com/336547987 - Remove when this is fully deployed.
   config.features_disabled.push_back(
       safe_browsing::kExtendedReportingRemovePrefDependencyIos);
@@ -198,15 +205,16 @@ void PressInfoButtonForCell(NSString* cellId) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
-  OpenPrivacySafeBrowsingSettings();
+  OpenPrivacySafeBrowsingSettingsInWindowWithNumber(0);
 
   // Open privacy safe browsing settings on second window and select enhanced
   // protection.
   [ChromeEarlGrey openNewWindow];
   [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
   [ChromeEarlGrey waitForForegroundWindowCount:2];
+
   [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
-  OpenPrivacySafeBrowsingSettings();
+  OpenPrivacySafeBrowsingSettingsInWindowWithNumber(1);
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kSettingsSafeBrowsingEnhancedProtectionCellId)]

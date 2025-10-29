@@ -1255,6 +1255,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                           windowNumber, chrome_test_util::FakeOmnibox())];
 }
 
+- (void)openSettingsInWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGreyAppInterface openSettingsInWindowWithNumber:windowNumber];
+}
+
 #pragma mark - SignIn Utilities (EG2)
 
 - (void)signOutAndClearIdentities {

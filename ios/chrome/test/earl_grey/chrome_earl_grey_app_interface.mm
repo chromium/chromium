@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
@@ -456,7 +457,7 @@ NSString* GetIdForWebState(web::WebState* web_state) {
 
 #pragma mark - Window utilities (EG2)
 
-+ (UIWindow*)windowWithNumber:(int)windowNumber {
++ (SceneState*)sceneStateWithNumber:(int)windowNumber {
   NSArray<SceneState*>* connectedScenes =
       chrome_test_util::GetMainController().appState.connectedScenes;
   NSString* accessibilityIdentifier =
@@ -464,7 +465,7 @@ NSString* GetIdForWebState(web::WebState* web_state) {
   for (SceneState* state in connectedScenes) {
     if ([state.window.accessibilityIdentifier
             isEqualToString:accessibilityIdentifier]) {
-      return state.window;
+      return state;
     }
   }
   return nil;
@@ -852,6 +853,14 @@ NSString* GetIdForWebState(web::WebState* web_state) {
       web_state->Stop();
     }
   }
+}
+
++ (void)openSettingsInWindowWithNumber:(int)windowNumber {
+  SceneState* scene = [self sceneStateWithNumber:windowNumber];
+  Browser* browser = scene.browserProviderInterface.mainBrowserProvider.browser;
+  id<ApplicationCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  [handler showSettingsFromViewController:nil];
 }
 
 #pragma mark - URL Utilities (EG2)

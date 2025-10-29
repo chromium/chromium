@@ -553,6 +553,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
+// Opens the settings menu directly (not via the UI) in the window with the
+// given number. EarlGrey + Multiwindow + SwiftUI (the tools menu) do not
+// play well together, so EG often fails to interact with the tools menu in
+// secondary windows.
+- (void)openSettingsInWindowWithNumber:(int)windowNumber;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts & browsing data, and wait for
