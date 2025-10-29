@@ -3483,14 +3483,18 @@ bool RenderProcessHostImpl::ShouldPauseChannelUntilProcessLaunched() {
           features::kSkipIPCChannelPausingForNonGuests)) {
     if (features::skip_channel_pausing_for_internal_webui_only.Get()) {
 #if !BUILDFLAG(IS_ANDROID)
-      return IsForInitialWebUI();
+      // Skip pausing if we're on initial WebUI, so return false in that case.
+      return !IsForInitialWebUI();
 #else
-      return false;
+      // We're definitely not on initial WebUI, so return true to pause.
+      return true;
 #endif
     }
-    return true;
+    // Skip pausing in all cases.
+    return false;
   }
-  return false;
+  // Don't skip pausing.
+  return true;
 }
 
 StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
