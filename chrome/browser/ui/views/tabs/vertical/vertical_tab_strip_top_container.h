@@ -41,6 +41,7 @@ class VerticalTabStripTopContainer : public views::View,
   views::LabelButton* AddChildButtonFor(actions::ActionId action_id);
 
   views::LabelButton* GetTabSearchButton() { return tab_search_button_; }
+  views::LabelButton* GetCollapseButton() { return collapse_button_; }
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
@@ -48,6 +49,7 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::LabelButton> tab_search_button_ = nullptr;
+  raw_ptr<views::LabelButton> collapse_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };

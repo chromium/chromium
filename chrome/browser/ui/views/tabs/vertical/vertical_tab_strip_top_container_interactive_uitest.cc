@@ -112,4 +112,41 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kTabSearchBubbleElementId));
 }
 
+// This test checks that we can click the collapse button in the vertical tab
+// strip
+IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
+                       VerifyCollapseButton) {
+  RunTestSequence(
+      // Display Vertical Tabs
+      Do([this]() {
+        browser()
+            ->browser_window_features()
+            ->vertical_tab_strip_state_controller()
+            ->SetVerticalTabsEnabled(true);
+        RunScheduledLayouts();
+      }),
+      // Verify not collapsed
+      CheckResult(
+          [this]() {
+            return browser()
+                ->GetFeatures()
+                .vertical_tab_strip_state_controller()
+                ->IsCollapsed();
+          },
+          false),
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripCollapseButtonElementId),
+      // Press Collapse Button
+      PressButton(kVerticalTabStripCollapseButtonElementId),
+      // Verify collapsed
+      CheckResult(
+          [this]() {
+            return browser()
+                ->GetFeatures()
+                .vertical_tab_strip_state_controller()
+                ->IsCollapsed();
+          },
+          true));
+}
+
 }  // namespace

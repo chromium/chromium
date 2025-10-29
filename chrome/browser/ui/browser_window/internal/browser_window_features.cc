@@ -283,7 +283,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     if (tabs::IsVerticalTabsFeatureEnabled()) {
       vertical_tab_strip_state_controller_ =
           std::make_unique<tabs::VerticalTabStripStateController>(
-              profile->GetPrefs());
+              profile->GetPrefs(), browser_actions_->root_action_item());
     }
   }
 

@@ -5,21 +5,29 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_service.h"
+#include "ui/actions/actions.h"
+#include "ui/views/vector_icons.h"
 
 namespace tabs {
 
 VerticalTabStripStateController::VerticalTabStripStateController(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
+    PrefService* pref_service,
+    actions::ActionItem* root_action_item)
+    : pref_service_(pref_service), root_action_item_(root_action_item) {
   pref_change_registrar_.Init(pref_service_);
 
   pref_change_registrar_.Add(
       prefs::kVerticalTabsEnabled,
       base::BindRepeating(&VerticalTabStripStateController::NotifyStateChanged,
                           base::Unretained(this)));
+
+  UpdateCollapseActionItem();
+
+  // TODO(crbug.com/455559992): Add uncollapsed text logic for collapse button.
 }
 
 VerticalTabStripStateController::~VerticalTabStripStateController() = default;
@@ -70,7 +78,21 @@ VerticalTabStripStateController::RegisterOnStateChanged(
 }
 
 void VerticalTabStripStateController::NotifyStateChanged() {
+  UpdateCollapseActionItem();
   on_state_changed_callback_list_.Notify(this);
+}
+
+void VerticalTabStripStateController::UpdateCollapseActionItem() {
+  const gfx::VectorIcon& icon =
+      IsCollapsed() ? views::kMenuCloseIcon : views::kMenuOpenIcon;
+
+  actions::ActionItem* collapse_action =
+      actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical,
+                                               root_action_item_);
+  if (collapse_action) {
+    collapse_action->SetImage(
+        ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
+  }
 }
 
 }  // namespace tabs

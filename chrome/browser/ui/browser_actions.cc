@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -490,6 +492,25 @@ void BrowserActions::InitializeBrowserActions() {
                 bwi),
             kActionTabSearch, IDS_TAB_SEARCH_MENU, IDS_TAB_SEARCH_MENU,
             vector_icons::kTabSearchIcon)
+            .Build());
+  }
+
+  if (tabs::IsVerticalTabsFeatureEnabled()) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  auto* controller =
+                      bwi->GetFeatures().vertical_tab_strip_state_controller();
+                  controller->SetCollapsed(!controller->IsCollapsed());
+                },
+                bwi))
+            .SetActionId(kActionToggleCollapseVertical)
+            .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
+            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
             .Build());
   }
 

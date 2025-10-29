@@ -12,11 +12,17 @@
 
 class PrefService;
 
+namespace actions {
+class ActionItem;
+}  // namespace actions
+
 namespace tabs {
 
 class VerticalTabStripStateController {
  public:
-  explicit VerticalTabStripStateController(PrefService* pref_service);
+  explicit VerticalTabStripStateController(
+      PrefService* pref_service,
+      actions::ActionItem* root_action_item);
   VerticalTabStripStateController(const VerticalTabStripStateController&) =
       delete;
   VerticalTabStripStateController& operator=(
@@ -43,8 +49,13 @@ class VerticalTabStripStateController {
  private:
   void NotifyStateChanged();
 
+  // Update the Collapse Button's Action Item (kActionToggleCollapseVertical)
+  // based on the Vertical Tab Strip's Collapse State.
+  void UpdateCollapseActionItem();
+
   const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  raw_ptr<actions::ActionItem> root_action_item_;
   VerticalTabStripState state_;
   base::RepeatingCallbackList<void(VerticalTabStripStateController*)>
       on_state_changed_callback_list_;

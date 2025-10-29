@@ -28,8 +28,9 @@ class VerticalTabStripStateControllerTest : public testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kVerticalTabsEnabled, false,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-    controller_ =
-        std::make_unique<VerticalTabStripStateController>(&pref_service_);
+    // Action items like CollapseActionItem are tested in interactive ui tests.
+    controller_ = std::make_unique<VerticalTabStripStateController>(
+        &pref_service_, /*root_action_item=*/nullptr);
   }
 
   void TearDown() override {

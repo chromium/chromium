@@ -510,6 +510,8 @@
   /*Commerce*/ \
   E(kActionCommercePriceInsights) \
   E(kActionCommerceDiscounts) \
+  /*Vertical Tabs*/ \
+  E(kActionToggleCollapseVertical) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \

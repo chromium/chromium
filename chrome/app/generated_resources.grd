@@ -10152,6 +10152,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="The button in context menu that switches to horizontal tab view.">
           Show tabs at the top
       </message>
+      <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
+          Collapse vertical tabs
+      </message>
       <!-- /Vertical Tab Strings -->
 
       <!-- Strings for intent picker -->
