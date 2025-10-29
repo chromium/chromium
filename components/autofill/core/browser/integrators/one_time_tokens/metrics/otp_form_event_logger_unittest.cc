@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -23,6 +24,7 @@ namespace {
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 using UkmInteractedWithFormType = ukm::builders::Autofill_InteractedWithForm;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
+using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using test::CreateTestFormField;
 using test::VerifySingleSubmissionKeyMetricExpectations;
 using ::testing::_;
@@ -45,6 +47,7 @@ class OtpFormEventLoggerIntegrationTest
       public testing::Test {
  protected:
   OtpFormEventLoggerIntegrationTest() = default;
+  base::test::ScopedFeatureList feature_list_;
 
   void SetUp() override {
     SetUpHelper();
@@ -313,6 +316,10 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotReady) {
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
+#if BUILDFLAG(IS_ANDROID)
+  feature_list_.InitAndEnableFeature(
+      password_manager::features::kAndroidSmsOtpFilling);
+#endif
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
@@ -372,6 +379,38 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
         autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
         Each(otp_form.main_frame_origin().GetURL()));
   }
+
+  // Verify that the FORM_EVENT_LOCAL_SUGGESTION_FILLED and
+  // FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE events are logged by the logger
+  // other events are logged by the base logger.
+#if BUILDFLAG(IS_ANDROID)
+  {
+    using Ukm = UkmFormEventType;
+    auto event_metrics = [](autofill_metrics::FormEvent e) {
+      return std::vector<autofill_metrics::UkmMetricNameAndValue>{
+          {Ukm::kAutofillFormEventName, e},
+          {Ukm::kFormTypesName,
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kOneTimePasswordForm})},
+          {Ukm::kMillisecondsSinceFormParsedName, 0}};
+    };
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(autofill_metrics::FORM_EVENT_INTERACTED_ONCE),
+             event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN),
+             event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE),
+             event_metrics(
+                 autofill_metrics::FORM_EVENT_LOCAL_SUGGESTION_FILLED),
+             event_metrics(
+                 autofill_metrics::FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE),
+             event_metrics(autofill_metrics::
+                               FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE),
+             event_metrics(autofill_metrics::
+                               FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE)}));
+  }
+#endif
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
@@ -435,6 +474,10 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpNotAccepted) {
 }
 
 TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
+#if BUILDFLAG(IS_ANDROID)
+  feature_list_.InitAndEnableFeature(
+      password_manager::features::kAndroidSmsOtpFilling);
+#endif
   base::HistogramTester histogram_tester;
   SetupMockedOtpResponse(true);
   FormData otp_form = CreateOtpForm();
@@ -497,6 +540,38 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
         autofill_metrics::GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
         Each(otp_form.main_frame_origin().GetURL()));
   }
+
+  // Verify that the FORM_EVENT_LOCAL_SUGGESTION_FILLED and
+  // FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE events are logged by the logger
+  // other events are logged by the base logger.
+#if BUILDFLAG(IS_ANDROID)
+  {
+    using Ukm = UkmFormEventType;
+    auto event_metrics = [](autofill_metrics::FormEvent e) {
+      return std::vector<autofill_metrics::UkmMetricNameAndValue>{
+          {Ukm::kAutofillFormEventName, e},
+          {Ukm::kFormTypesName,
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kOneTimePasswordForm})},
+          {Ukm::kMillisecondsSinceFormParsedName, 0}};
+    };
+    EXPECT_THAT(
+        autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+        autofill_metrics::UkmEventsAre(
+            {event_metrics(autofill_metrics::FORM_EVENT_INTERACTED_ONCE),
+             event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN),
+             event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE),
+             event_metrics(
+                 autofill_metrics::FORM_EVENT_LOCAL_SUGGESTION_FILLED),
+             event_metrics(
+                 autofill_metrics::FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE),
+             event_metrics(autofill_metrics::
+                               FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE),
+             event_metrics(autofill_metrics::
+                               FORM_EVENT_SUGGESTION_SHOWN_WILL_SUBMIT_ONCE)}));
+  }
+#endif
 }
 
 }  // namespace

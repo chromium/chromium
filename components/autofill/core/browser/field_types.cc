@@ -11,8 +11,10 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 
 namespace autofill {
 
@@ -290,6 +292,14 @@ bool IsFillableFieldType(FieldType field_type) {
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return true;
 
+    case ONE_TIME_CODE:
+#if BUILDFLAG(IS_ANDROID)
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kAndroidSmsOtpFilling);
+#else
+      return false;  // Feature is not applicable on other platforms
+#endif
+
     // Autofill AI types.
     case DRIVERS_LICENSE_EXPIRATION_DATE:
     case DRIVERS_LICENSE_ISSUE_DATE:
@@ -334,8 +344,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case NEW_PASSWORD:
     case PROBABLY_NEW_PASSWORD:
     case NOT_NEW_PASSWORD:
-    case ONE_TIME_CODE:
-      return false;
 
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
