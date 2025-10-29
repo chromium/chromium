@@ -9,8 +9,8 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
@@ -27,19 +27,23 @@ TabStripContextDecorator::~TabStripContextDecorator() = default;
 std::vector<TabStripContextDecorator::TabInfo>
 TabStripContextDecorator::GetOpenTabUrls() {
   std::vector<TabInfo> open_tabs;
-  for (const Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
-      continue;
-    }
-    const TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-      if (web_contents) {
-        open_tabs.push_back(
-            {web_contents->GetLastCommittedURL(), web_contents->GetTitle()});
-      }
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile = profile_, &open_tabs](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
+        const TabStripModel* const tab_strip_model =
+            browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          content::WebContents* web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          if (web_contents) {
+            open_tabs.push_back({web_contents->GetLastCommittedURL(),
+                                 web_contents->GetTitle()});
+          }
+        }
+        return true;
+      });
   return open_tabs;
 }
 

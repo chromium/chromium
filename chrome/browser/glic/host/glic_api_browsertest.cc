@@ -1081,6 +1081,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testShowProfilePicker) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
   browser_activator().SetMode(BrowserActivator::Mode::kFirst);
+  // Explicitly track this glic instance by ID. When a new browser window is
+  // created below, it will become the most recently activated browser. Without
+  // explicit tracking, GetBrowser() would return the new window (based on
+  // activation order) instead of the original browser where glic was opened.
+  TrackGlicInstanceWithId(GetGlicInstance()->id());
   ExecuteJsTest();
 
   // Opening a new browser window will deactivate the previous one, and make

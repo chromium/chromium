@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -133,11 +134,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreBrowserWindows) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreBrowserWindows) {
   size_t total_count = 0;
   size_t incognito_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    ++total_count;
-    if (browser->profile()->IsOffTheRecord())
-      ++incognito_count;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&total_count, &incognito_count](BrowserWindowInterface* browser) {
+        ++total_count;
+        if (browser->GetProfile()->IsOffTheRecord()) {
+          ++incognito_count;
+        }
+        return true;
+      });
   EXPECT_EQ(2u, total_count);
   EXPECT_EQ(0u, incognito_count);
 }
@@ -291,13 +295,19 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsV1) {
   size_t total_count = 0;
   size_t app1_count = 0;
   size_t app2_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    ++total_count;
-    if (browser->app_name() == test_app_name1)
-      ++app1_count;
-    if (browser->app_name() == test_app_name2)
-      ++app2_count;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&total_count, &app1_count,
+       &app2_count](BrowserWindowInterface* browser) {
+        ++total_count;
+        const std::string& app_name =
+            browser->GetBrowserForMigrationOnly()->app_name();
+        if (app_name == test_app_name1) {
+          ++app1_count;
+        } else if (app_name == test_app_name2) {
+          ++app2_count;
+        }
+        return true;
+      });
   EXPECT_EQ(1u, app1_count);
   EXPECT_EQ(2u, app2_count);   // Only the trusted app windows are restored.
   EXPECT_EQ(4u, total_count);  // Default browser() + 3 app windows
@@ -319,13 +329,19 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreAppsPopup) {
   size_t total_count = 0;
   size_t app1_count = 0;
   size_t app2_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    ++total_count;
-    if (browser->app_name() == test_app_name1)
-      ++app1_count;
-    if (browser->app_name() == test_app_name2)
-      ++app2_count;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&total_count, &app1_count,
+       &app2_count](BrowserWindowInterface* browser) {
+        ++total_count;
+        const std::string& app_name =
+            browser->GetBrowserForMigrationOnly()->app_name();
+        if (app_name == test_app_name1) {
+          ++app1_count;
+        } else if (app_name == test_app_name2) {
+          ++app2_count;
+        }
+        return true;
+      });
   EXPECT_EQ(1u, app1_count);
   EXPECT_EQ(2u, app2_count);   // Only the trusted app windows are restored.
   EXPECT_EQ(4u, total_count);  // Default browser() + 3 app windows
@@ -341,11 +357,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreNoDevtools) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, RestoreNoDevtools) {
   size_t total_count = 0;
   size_t devtools_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    ++total_count;
-    if (browser->is_type_devtools())
-      ++devtools_count;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&total_count, &devtools_count](BrowserWindowInterface* browser) {
+        ++total_count;
+        if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
+          ++devtools_count;
+        }
+        return true;
+      });
   EXPECT_EQ(1u, total_count);
   EXPECT_EQ(0u, devtools_count);
 }
@@ -388,16 +407,22 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMaximized) {
   size_t app1_maximized_count = 0;
   size_t app2_maximized_count = 0;
   size_t total_maximized_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    ++total_count;
-    if (browser->window()->IsMaximized()) {
-      ++total_maximized_count;
-      if (browser->app_name() == test_app_name1)
-        ++app1_maximized_count;
-      if (browser->app_name() == test_app_name2)
-        ++app2_maximized_count;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&total_count, &app1_maximized_count, &app2_maximized_count,
+       &total_maximized_count](BrowserWindowInterface* browser) {
+        ++total_count;
+        if (browser->GetWindow()->IsMaximized()) {
+          ++total_maximized_count;
+          const std::string& app_name =
+              browser->GetBrowserForMigrationOnly()->app_name();
+          if (app_name == test_app_name1) {
+            ++app1_maximized_count;
+          } else if (app_name == test_app_name2) {
+            ++app2_maximized_count;
+          }
+        }
+        return true;
+      });
   EXPECT_EQ(6u, total_count);
   EXPECT_EQ(0u, app1_maximized_count);
   EXPECT_EQ(2u, app2_maximized_count);  // One TYPE_APP + One TYPE_APP_POPUP
@@ -424,11 +449,14 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, PRE_RestoreMinimized) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS, DISABLED_RestoreMinimized) {
   size_t total_count = 0;
   size_t minimized_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    ++total_count;
-    if (browser->window()->IsMinimized())
-      ++minimized_count;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&total_count, &minimized_count](BrowserWindowInterface* browser) {
+        ++total_count;
+        if (browser->GetWindow()->IsMinimized()) {
+          ++minimized_count;
+        }
+        return true;
+      });
   EXPECT_EQ(2u, total_count);
   // Chrome OS always activates the last browser windows on login to remind
   // users they have a browser running instead of just showing them an empty

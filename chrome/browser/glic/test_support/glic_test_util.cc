@@ -147,13 +147,16 @@ GlicInstance* GlicInstanceTracker::GetGlicInstance() {
   return service->GetInstanceForActiveTab(GetBrowser());
 }
 
-Browser* GlicInstanceTracker::GetBrowser() {
-  for (auto& browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile_) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* GlicInstanceTracker::GetBrowser() {
+  BrowserWindowInterface* found = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &found](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile_) {
+          found = browser;
+        }
+        return !found;
+      });
+  return found;
 }
 
 std::string GlicInstanceTracker::DescribeGlicTracking() {

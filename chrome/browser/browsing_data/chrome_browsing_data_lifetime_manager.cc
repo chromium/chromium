@@ -48,8 +48,8 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
 #include "chrome/browser/android/tab_android.h"
@@ -231,14 +231,17 @@ std::set<GURL> GetOpenedUrlsAndOngoingDownloads(Profile* profile) {
   std::set<GURL> result;
   // TODO (crbug/1288416): Enable this for android.
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile) {
-      continue;
-    }
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      result.insert(browser->tab_strip_model()->GetWebContentsAt(i)->GetURL());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &result](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          result.insert(tab_strip_model->GetWebContentsAt(i)->GetURL());
+        }
+        return true;
+      });
 #else
   for (const TabModel* model : TabModelList::models()) {
     for (int index = 0; index < model->GetTabCount(); ++index) {

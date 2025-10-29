@@ -9,6 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
@@ -19,23 +21,18 @@ GlicTabCreationObserver::GlicTabCreationObserver(Profile* profile,
                                                  TabCreatedCallback callback)
     : profile_(profile), callback_(std::move(callback)) {
   BrowserList::AddObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile_) {
-      browser->tab_strip_model()->AddObserver(this);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, profile](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() == profile) {
+          // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+          browser->GetTabStripModel()->AddObserver(this);
+        }
+        return true;
+      });
 }
 
 GlicTabCreationObserver::~GlicTabCreationObserver() {
   BrowserList::RemoveObserver(this);
-  // Manually remove observer from all TabStripModels for this profile.
-  // This is necessary because BrowserList::RemoveObserver only stops
-  // observing new browser additions/removals, not existing TabStripModels.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() == profile_) {
-      browser->tab_strip_model()->RemoveObserver(this);
-    }
-  }
 }
 
 void GlicTabCreationObserver::OnBrowserAdded(Browser* browser) {

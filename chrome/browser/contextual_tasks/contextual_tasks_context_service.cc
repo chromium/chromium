@@ -10,10 +10,12 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/passage_embeddings/passage_embeddings_types.h"
+#include "content/public/browser/web_contents.h"
 
 namespace contextual_tasks {
 
@@ -109,50 +111,55 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   // score.
   std::vector<content::WebContents*> relevant_web_contents;
   int all_browsers_tab_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!browser || browser->profile() != profile_) {
-      continue;
-    }
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    int tab_count = tab_strip_model->count();
-    all_browsers_tab_count += tab_count;
-    for (int i = 0; i < tab_count; i++) {
-      content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-      if (!web_contents) {
-        continue;
-      }
-
-      // See if any passage embeddings are closely related to the query
-      // embedding. Just add if at least one is high enough.
-      std::vector<passage_embeddings::PassageEmbedding>
-          web_contents_embeddings =
-              page_embeddings_service_->GetEmbeddings(web_contents);
-      AUTO_CONTEXT_LOG(base::StringPrintf(
-          "Comparing query embedding to %llu embeddings for %s",
-          web_contents_embeddings.size(),
-          web_contents->GetLastCommittedURL().spec()));
-      for (const auto& embedding : web_contents_embeddings) {
-        if (kOnlyUseTitlesForSimilarity.Get() &&
-            embedding.passage.second !=
-                passage_embeddings::PassageType::kTitle) {
-          continue;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, profile = profile_, &relevant_web_contents,
+       &all_browsers_tab_count, &query_embedding,
+       &query](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
         }
 
-        float similarity_score = embedding.embedding.ScoreWith(query_embedding);
-        AUTO_CONTEXT_LOG(base::StringPrintf(
-            "Similarity with passage %s and query %s: %f",
-            embedding.passage.first, query, similarity_score));
-        if (similarity_score > kMinEmbeddingSimilarityScore.Get()) {
-          AUTO_CONTEXT_LOG(
-              base::StringPrintf("Adding %s to relevant set",
-                                 web_contents->GetLastCommittedURL().spec()));
-          relevant_web_contents.push_back(web_contents);
-          break;
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        const int tab_count = tab_strip_model->count();
+        all_browsers_tab_count += tab_count;
+        for (int i = 0; i < tab_count; i++) {
+          content::WebContents* web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          if (!web_contents) {
+            continue;
+          }
+
+          // See if any passage embeddings are closely related to the query
+          // embedding. Just add if at least one is high enough.
+          std::vector<passage_embeddings::PassageEmbedding>
+              web_contents_embeddings =
+                  page_embeddings_service_->GetEmbeddings(web_contents);
+          AUTO_CONTEXT_LOG(base::StringPrintf(
+              "Comparing query embedding to %llu embeddings for %s",
+              web_contents_embeddings.size(),
+              web_contents->GetLastCommittedURL().spec()));
+          for (const auto& embedding : web_contents_embeddings) {
+            if (kOnlyUseTitlesForSimilarity.Get() &&
+                embedding.passage.second !=
+                    passage_embeddings::PassageType::kTitle) {
+              continue;
+            }
+            float similarity_score =
+                embedding.embedding.ScoreWith(query_embedding);
+            AUTO_CONTEXT_LOG(base::StringPrintf(
+                "Similarity with passage %s and query %s: %f",
+                embedding.passage.first, query, similarity_score));
+            if (similarity_score > kMinEmbeddingSimilarityScore.Get()) {
+              AUTO_CONTEXT_LOG(base::StringPrintf(
+                  "Adding %s to relevant set",
+                  web_contents->GetLastCommittedURL().spec()));
+              relevant_web_contents.push_back(web_contents);
+              break;
+            }
+          }
         }
-      }
-    }
-  }
+        return true;
+      });
 
   AUTO_CONTEXT_LOG(base::StringPrintf("Number of open tabs for query %s: %d",
                                         query, all_browsers_tab_count));
