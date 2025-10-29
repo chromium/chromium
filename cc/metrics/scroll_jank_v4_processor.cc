@@ -13,6 +13,7 @@
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
@@ -20,7 +21,7 @@ namespace cc {
 void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
     EventMetrics::List& events_metrics,
     base::TimeTicks presentation_ts,
-    base::TimeDelta vsync_interval) {
+    const viz::BeginFrameArgs& args) {
   static const bool scroll_jank_v4_metric_enabled =
       base::FeatureList::IsEnabled(features::kScrollJankV4Metric);
   if (!scroll_jank_v4_metric_enabled) {
@@ -38,7 +39,7 @@ void ScrollJankV4Processor::ProcessEventsMetricsForPresentedFrame(
                      HandleFramePresented(
                          *updates.earliest_event,
                          updates.last_input_generation_ts, presentation_ts,
-                         vsync_interval, updates.has_inertial_input,
+                         args, updates.has_inertial_input,
                          std::abs(updates.total_raw_delta_pixels),
                          updates.max_abs_inertial_raw_delta_pixels);
                    },
@@ -54,7 +55,7 @@ void ScrollJankV4Processor::HandleFramePresented(
     ScrollUpdateEventMetrics& earliest_event,
     base::TimeTicks last_input_generation_ts,
     base::TimeTicks presentation_ts,
-    base::TimeDelta vsync_interval,
+    const viz::BeginFrameArgs& args,
     bool has_inertial_input,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels) {
@@ -62,9 +63,9 @@ void ScrollJankV4Processor::HandleFramePresented(
       earliest_event.GetDispatchStageTimestamp(
           EventMetrics::DispatchStage::kGenerated);
   std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result> result =
-      decider_.DecideJankForPresentedFrame(
+      decider_.DecideJankForPresentedDamagingFrame(
           first_input_generation_ts, last_input_generation_ts, presentation_ts,
-          vsync_interval, has_inertial_input, abs_total_raw_delta_pixels,
+          args, has_inertial_input, abs_total_raw_delta_pixels,
           max_abs_inertial_raw_delta_pixels);
   if (!result.has_value()) {
     return;

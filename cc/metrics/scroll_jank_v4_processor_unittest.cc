@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -116,12 +117,25 @@ class ScrollJankV4ProcessorTest : public testing::Test {
   }
 
   void AdvanceByVsyncs(int vsyncs) {
-    next_input_generation_ts_ += vsyncs * kVsyncInterval;
-    next_presentation_ts_ += vsyncs * kVsyncInterval;
+    base::TimeDelta offset = vsyncs * kVsyncInterval;
+    next_input_generation_ts_ += offset;
+    next_begin_frame_ts_ += offset;
+    next_presentation_ts_ += offset;
+  }
+
+  viz::BeginFrameArgs CreateNextBeginFrameArgs() {
+    return viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, /* source_id= */ 1,
+        next_begin_frame_sequence_id_++,
+        /* frame_time= */ next_begin_frame_ts_,
+        /* deadline= */ next_begin_frame_ts_ + kVsyncInterval / 3,
+        kVsyncInterval, viz::BeginFrameArgs::BeginFrameArgsType::NORMAL);
   }
 
   base::TimeTicks next_input_generation_ts_ = MillisSinceEpoch(4);
+  base::TimeTicks next_begin_frame_ts_ = MillisSinceEpoch(16);
   base::TimeTicks next_presentation_ts_ = MillisSinceEpoch(32);
+  int next_begin_frame_sequence_id_ = 1;
   ScrollJankV4Processor processor_;
   base::SimpleTestTickClock test_tick_clock_;
 };
@@ -145,7 +159,7 @@ TEST_F(ScrollJankV4ProcessorTest, ConsistentFrameProduction) {
           next_input_generation_ts_ + kVsyncInterval / 2, /* delta= */ 5.0f,
           /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          first_metrics, next_presentation_ts_, kVsyncInterval);
+          first_metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(first_metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -163,7 +177,7 @@ TEST_F(ScrollJankV4ProcessorTest, ConsistentFrameProduction) {
           next_input_generation_ts_ + kVsyncInterval / 2,
           /* delta= */ 5.0f, /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -181,7 +195,7 @@ TEST_F(ScrollJankV4ProcessorTest, ConsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -205,7 +219,8 @@ TEST_F(ScrollJankV4ProcessorTest, ConsistentFrameProduction) {
         next_input_generation_ts_,
         /* delta= */ 2.0f, /* did_scroll= */ true));
     processor_.ProcessEventsMetricsForPresentedFrame(
-        last_metrics_in_fixed_window, next_presentation_ts_, kVsyncInterval);
+        last_metrics_in_fixed_window, next_presentation_ts_,
+        CreateNextBeginFrameArgs());
     EXPECT_EQ(last_metrics_in_fixed_window[0]
                   ->AsScrollUpdate()
                   ->scroll_jank_v4()
@@ -230,7 +245,7 @@ TEST_F(ScrollJankV4ProcessorTest, ConsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -253,7 +268,7 @@ TEST_F(ScrollJankV4ProcessorTest, ConsistentFrameProduction) {
     end_metrics.push_back(
         CreateInertialGestureScrollEnd(next_input_generation_ts_));
     processor_.ProcessEventsMetricsForPresentedFrame(
-        end_metrics, next_presentation_ts_, kVsyncInterval);
+        end_metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
 
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);
@@ -281,7 +296,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
           next_input_generation_ts_ + kVsyncInterval / 2, /* delta= */ 5.0f,
           /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          first_metrics, next_presentation_ts_, kVsyncInterval);
+          first_metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(first_metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -299,7 +314,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
           next_input_generation_ts_ + kVsyncInterval / 2,
           /* delta= */ 5.0f, /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -328,7 +343,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
           next_input_generation_ts_ + kVsyncInterval / 2,
           /* delta= */ 5.0f, /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(
           metrics[0]
               ->AsScrollUpdate()
@@ -351,7 +366,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
           next_input_generation_ts_ + kVsyncInterval / 2,
           /* delta= */ 5.0f, /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -372,7 +387,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(
           metrics[0]
               ->AsScrollUpdate()
@@ -389,7 +404,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -413,7 +428,8 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
         next_input_generation_ts_,
         /* delta= */ 2.0f, /* did_scroll= */ true));
     processor_.ProcessEventsMetricsForPresentedFrame(
-        last_metrics_in_fixed_window, next_presentation_ts_, kVsyncInterval);
+        last_metrics_in_fixed_window, next_presentation_ts_,
+        CreateNextBeginFrameArgs());
     EXPECT_EQ(last_metrics_in_fixed_window[0]
                   ->AsScrollUpdate()
                   ->scroll_jank_v4()
@@ -439,7 +455,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -458,7 +474,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(
           metrics[0]
               ->AsScrollUpdate()
@@ -475,7 +491,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
                                             /* delta= */ 2.0f,
                                             /* did_scroll= */ true));
       processor_.ProcessEventsMetricsForPresentedFrame(
-          metrics, next_presentation_ts_, kVsyncInterval);
+          metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
       EXPECT_EQ(metrics[0]
                     ->AsScrollUpdate()
                     ->scroll_jank_v4()
@@ -498,7 +514,7 @@ TEST_F(ScrollJankV4ProcessorTest, InconsistentFrameProduction) {
     end_metrics.push_back(
         CreateInertialGestureScrollEnd(next_input_generation_ts_));
     processor_.ProcessEventsMetricsForPresentedFrame(
-        end_metrics, next_presentation_ts_, kVsyncInterval);
+        end_metrics, next_presentation_ts_, CreateNextBeginFrameArgs());
 
     histogram_tester.ExpectTotalCount(
         "Event.ScrollJank.DelayedFramesPercentage4.FixedWindow", 0);

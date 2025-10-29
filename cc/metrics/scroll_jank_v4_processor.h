@@ -25,13 +25,13 @@ class CC_EXPORT ScrollJankV4Processor {
  public:
   void ProcessEventsMetricsForPresentedFrame(EventMetrics::List& events_metrics,
                                              base::TimeTicks presentation_ts,
-                                             base::TimeDelta vsync_interval);
+                                             const viz::BeginFrameArgs& args);
 
  private:
   void HandleFramePresented(ScrollUpdateEventMetrics& earliest_event,
                             base::TimeTicks last_input_generation_ts,
                             base::TimeTicks presentation_ts,
-                            base::TimeDelta vsync_interval,
+                            const viz::BeginFrameArgs& args,
                             bool has_inertial_input,
                             float abs_total_raw_delta_pixels,
                             float max_abs_inertial_raw_delta_pixels);

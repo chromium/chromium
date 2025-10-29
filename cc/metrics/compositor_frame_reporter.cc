@@ -1984,7 +1984,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() {
   if (global_trackers_.scroll_jank_v4_processor) {
     global_trackers_.scroll_jank_v4_processor
         ->ProcessEventsMetricsForPresentedFrame(events_metrics_, end_timestamp,
-                                                args_.interval);
+                                                args_);
   }
 }
 

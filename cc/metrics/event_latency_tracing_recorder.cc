@@ -330,8 +330,10 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
               proto_result->set_adjusted_delivery_cutoff_us(
                   result.adjusted_delivery_cutoff->InNanoseconds());
             }
-            proto_result->set_current_delivery_cutoff_us(
-                result.current_delivery_cutoff.InNanoseconds());
+            if (result.current_delivery_cutoff.has_value()) {
+              proto_result->set_current_delivery_cutoff_us(
+                  result.current_delivery_cutoff->InNanoseconds());
+            }
           }
         }
         if (args) {
