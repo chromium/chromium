@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -1103,7 +1104,8 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID));
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
         verify(mMultiInstanceManager, times(1))
-                .moveTabsToNewWindow(Collections.singletonList(mTabOutsideOfGroup));
+                .moveTabsToNewWindow(
+                        Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
     }
 
     @Test

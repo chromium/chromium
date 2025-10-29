@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
@@ -217,7 +218,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     }
                 },
                 mRenameCallback,
-                () -> openNewWindow("Android.WindowManager.NewWindow", /* incognito= */ false),
+                () ->
+                        openNewWindow(
+                                "Android.WindowManager.NewWindow",
+                                /* incognito= */ false,
+                                NewWindowAppSource.WINDOW_MANAGER),
                 MultiWindowUtils.getMaxInstances(),
                 info);
     }
@@ -227,9 +232,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void moveTabsToOtherWindow(List<Tab> tabs) {
+    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
-            moveTabsToNewWindow(tabs);
+            moveTabsToNewWindow(tabs, source);
 
             // Close the source instance window, if needed.
             closeChromeWindowIfEmpty(mInstanceId);
@@ -260,11 +265,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     new ChromeAsyncTabLauncher(
                             ((ChromeTabbedActivity) mActivity).isIncognitoWindow());
             chromeAsyncTabLauncher.launchTabInOtherWindow(
-                    loadUrlParams,
-                    mActivity,
-                    parentTabId,
-                    null,
-                    MultiWindowUtils.NewWindowEntryPoint.OTHER);
+                    loadUrlParams, mActivity, parentTabId, null, NewWindowAppSource.OTHER);
             return;
         }
 
@@ -284,16 +285,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             mActivity,
                             parentTabId,
                             selectedActivity,
-                            MultiWindowUtils.NewWindowEntryPoint.OTHER);
+                            NewWindowAppSource.OTHER);
                 },
                 getInstanceInfo(),
                 R.string.contextmenu_open_in_other_window);
     }
 
     @Override
-    public void moveTabGroupToOtherWindow(TabGroupMetadata tabGroupMetadata) {
+    public void moveTabGroupToOtherWindow(
+            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
-            moveTabGroupToNewWindow(tabGroupMetadata);
+            moveTabGroupToNewWindow(tabGroupMetadata, source);
             return;
         }
 
@@ -514,13 +516,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    protected void openNewWindow(String umaAction, boolean incognito) {
+    protected void openNewWindow(
+            String umaAction, boolean incognito, @NewWindowAppSource int source) {
         Intent intent = createNewWindowIntent(incognito);
         assert intent != null : "The Intent to open a new window must not be null";
 
         onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
         Log.i(TAG_MULTI_INSTANCE, "Opening new window from action: " + umaAction);
+        RecordHistogram.recordEnumeratedHistogram(
+                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                source,
+                NewWindowAppSource.NUM_ENTRIES);
         RecordUserAction.record(umaAction);
     }
 
@@ -1451,7 +1458,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public void moveTabsToNewWindow(List<Tab> tabs) {
+    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         boolean openAdjacently =
                 !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
         moveToNewWindowIfPossible(
@@ -1461,11 +1468,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                                 INVALID_WINDOW_ID,
                                 /* preferNew= */ true,
                                 openAdjacently,
-                                /* addTrustedIntentExtras= */ true));
+                                /* addTrustedIntentExtras= */ true),
+                source);
     }
 
     @Override
-    public void moveTabGroupToNewWindow(TabGroupMetadata tabGroupMetadata) {
+    public void moveTabGroupToNewWindow(
+            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         boolean openAdjacently =
                 !mActivity.isInMultiWindowMode() && MultiWindowUtils.shouldOpenInAdjacentWindow();
         moveToNewWindowIfPossible(
@@ -1475,7 +1484,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                                 INVALID_WINDOW_ID,
                                 /* preferNew= */ true,
                                 openAdjacently,
-                                /* addTrustedIntentExtras= */ true));
+                                /* addTrustedIntentExtras= */ true),
+                source);
     }
 
     /**
@@ -1483,8 +1493,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
      * reached. Otherwise, shows a toast indicating this action failed.
      *
      * @param moveToNewWindow Runnable to create a new window and reparent the given tab or group.
+     * @param source The app source of the new window used for metrics.
      */
-    private void moveToNewWindowIfPossible(Runnable moveToNewWindow) {
+    private void moveToNewWindowIfPossible(
+            Runnable moveToNewWindow, @NewWindowAppSource int source) {
         // Check if the new Chrome instance can be opened.
         if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
             moveToNewWindow.run();
@@ -1492,7 +1504,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             // Just try to launch a Chrome window to inform user that maximum number of instances
             // limit is exceeded. This will pop up a toast message and the tab will not be removed
             // from the exiting window.
-            openNewWindow("Android.WindowManager.NewWindow", /* incognito= */ false);
+            // TODO(crbug.com/451683614): Add UMA user action for this case.
+            openNewWindow("Android.WindowManager.NewWindow", /* incognito= */ false, source);
         }
     }
 

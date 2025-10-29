@@ -13,6 +13,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -74,8 +75,11 @@ public class RedirectTabCreator extends ChromeTabCreator {
         Activity otherActivity =
                 MultiWindowUtils.getForegroundWindowActivityWithProfileType(mActivity, mIncognito);
         chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams, mActivity, Tab.INVALID_TAB_ID, otherActivity,
-                MultiWindowUtils.NewWindowEntryPoint.OTHER);
+                loadUrlParams,
+                mActivity,
+                Tab.INVALID_TAB_ID,
+                otherActivity,
+                NewWindowAppSource.OTHER);
         return null;
     }
 }

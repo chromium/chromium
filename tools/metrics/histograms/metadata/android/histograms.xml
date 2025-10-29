@@ -3471,7 +3471,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.MultiWindowMode.NewWindow.AppSource"
     enum="NewWindowAppSource" expires_after="2026-03-01">
-  <owner>aishwaryarj@google.com</owner>
   <owner>rathomas@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>

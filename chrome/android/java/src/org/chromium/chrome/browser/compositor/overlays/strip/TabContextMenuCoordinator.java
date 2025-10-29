@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -211,7 +212,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
                         .getTabUngrouper()
                         .ungroupTabs(tabs, /* trailing= */ true, /* allowDialog= */ true);
             } else if (menuId == R.id.move_to_other_window_menu_id) {
-                multiInstanceManager.moveTabsToOtherWindow(tabs);
+                multiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.MENU);
             } else if (menuId == R.id.share_tab) {
                 assert tabs.size() == 1 : "Share is only available for single tab selection.";
                 shareDelegateSupplier
@@ -687,7 +688,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<List<Int
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
-        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(tabs);
+        assumeNonNull(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.MENU);
     }
 
     @Override

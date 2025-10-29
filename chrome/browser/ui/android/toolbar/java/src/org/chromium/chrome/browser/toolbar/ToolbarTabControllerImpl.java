@@ -10,6 +10,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -112,7 +113,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (newTab == null) return false;
             newTab.goBack();
             if (mMultiInstanceManager == null) return false;
-            mMultiInstanceManager.moveTabsToNewWindow(Collections.singletonList(newTab));
+            mMultiInstanceManager.moveTabsToNewWindow(
+                    Collections.singletonList(newTab), NewWindowAppSource.KEYBOARD_SHORTCUT);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }
@@ -151,7 +153,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             if (newTab == null) return false;
             newTab.goForward();
             if (mMultiInstanceManager == null) return false;
-            mMultiInstanceManager.moveTabsToNewWindow(Collections.singletonList(newTab));
+            mMultiInstanceManager.moveTabsToNewWindow(
+                    Collections.singletonList(newTab), NewWindowAppSource.KEYBOARD_SHORTCUT);
             // Don't run mOnSuccessRunnable since nothing happened in the current tab.
             return true;
         }

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
@@ -74,7 +75,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             Activity activity,
             int parentId,
             @Nullable Activity otherActivity,
-            @MultiWindowUtils.NewWindowEntryPoint int entryPoint) {
+            @NewWindowAppSource int entryPoint) {
         Intent intent =
                 createNewTabIntent(
                         new AsyncTabCreationParams(loadUrlParams),
@@ -105,9 +106,9 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
         }
         activity.startActivity(intent);
         RecordHistogram.recordEnumeratedHistogram(
-                    "Android.MultiWindowMode.NewWindow.AppSource",
-                    entryPoint,
-                    MultiWindowUtils.NewWindowEntryPoint.NUM_ENTRIES);
+                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                entryPoint,
+                NewWindowAppSource.NUM_ENTRIES);
     }
 
     /**

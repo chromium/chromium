@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -537,7 +538,9 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 /* listViewTouchTracker= */ null);
 
         // Verify.
-        verify(mMultiInstanceManager).moveTabGroupToOtherWindow(any(TabGroupMetadata.class));
+        verify(mMultiInstanceManager)
+                .moveTabGroupToOtherWindow(
+                        any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
     }
 
     @Test
@@ -592,7 +595,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 4, mMenuView);
 
         verify(mMultiInstanceManager, times(1))
-                .moveTabGroupToNewWindow(any(TabGroupMetadata.class));
+                .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
     }
 
     @Test

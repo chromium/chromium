@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.DownloadUiActionFlags;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -119,7 +120,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
                 mActivity,
                 mHost.getParentId(),
                 MultiWindowUtils.getForegroundWindowActivity(mActivity),
-                MultiWindowUtils.NewWindowEntryPoint.OTHER);
+                NewWindowAppSource.OTHER);
     }
 
     private Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {

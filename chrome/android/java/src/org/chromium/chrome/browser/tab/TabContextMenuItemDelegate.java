@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
@@ -317,7 +318,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 activity,
                 mTab.getParentId(),
                 otherWindowActivity,
-                MultiWindowUtils.NewWindowEntryPoint.MENU);
+                NewWindowAppSource.MENU);
     }
 
     /**

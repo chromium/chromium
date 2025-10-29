@@ -38,6 +38,26 @@ import java.util.List;
 @NullMarked
 public abstract class MultiInstanceManager {
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
+    public static final String NEW_WINDOW_APP_SOURCE_HISTOGRAM =
+            "Android.MultiWindowMode.NewWindow.AppSource";
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        NewWindowAppSource.OTHER,
+        NewWindowAppSource.MENU,
+        NewWindowAppSource.WINDOW_MANAGER,
+        NewWindowAppSource.KEYBOARD_SHORTCUT
+    })
+    public @interface NewWindowAppSource {
+        int OTHER = 0;
+        int MENU = 1;
+        int WINDOW_MANAGER = 2;
+        int KEYBOARD_SHORTCUT = 3;
+
+        // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 4;
+    }
 
     /** Should be called when multi-instance mode is started. */
     public static void onMultiInstanceModeStarted() {
@@ -121,8 +141,9 @@ public abstract class MultiInstanceManager {
      * existing instance to the new one.
      *
      * @param tabs Tabs that are to be moved to a new Chrome instance.
+     * @param source The new window creation source used for metrics.
      */
-    public void moveTabsToNewWindow(List<Tab> tabs) {
+    public void moveTabsToNewWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -131,8 +152,10 @@ public abstract class MultiInstanceManager {
      * existing instance to the new one.
      *
      * @param tabGroupMetadata The object containing the metadata of the tab group.
+     * @param source The new window creation source used for metrics.
      */
-    public void moveTabGroupToNewWindow(TabGroupMetadata tabGroupMetadata) {
+    public void moveTabGroupToNewWindow(
+            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -201,8 +224,9 @@ public abstract class MultiInstanceManager {
      * dialog to select which window to move {@param tabs} to.
      *
      * @param tabs The list of tabs to move.
+     * @param source The new window creation source used for metrics.
      */
-    public void moveTabsToOtherWindow(List<Tab> tabs) {
+    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         // Not implemented
     }
 
@@ -222,8 +246,10 @@ public abstract class MultiInstanceManager {
      * opens a dialog to select which window to move the matching group to.
      *
      * @param tabGroupMetadata The metadata for the group to move.
+     * @param source The new window creation source used for metrics.
      */
-    public void moveTabGroupToOtherWindow(TabGroupMetadata tabGroupMetadata) {
+    public void moveTabGroupToOtherWindow(
+            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         // Not implemented
     }
 

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -256,7 +257,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                                 assumeNonNull(tabModel.getTabAt(tabModel.index())).getId(),
                                 TabShareUtils.isCollaborationIdValid(collaborationId));
                 if (tabGroupMetadata != null) {
-                    multiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
+                    multiInstanceManager.moveTabGroupToOtherWindow(
+                            tabGroupMetadata, NewWindowAppSource.MENU);
                 }
             } else if (menuId == R.id.share_group) {
                 // Create the group share flow and display the share bottom sheet.
@@ -516,7 +518,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         @Nullable TabGroupMetadata tabGroupMetadata = getTabGroupMetadata(groupId);
         if (tabGroupMetadata == null) return;
         RecordUserAction.record("MobileToolbarTabGroupMenu.MoveGroupToNewWindow");
-        mMultiInstanceManager.moveTabGroupToNewWindow(tabGroupMetadata);
+        mMultiInstanceManager.moveTabGroupToNewWindow(tabGroupMetadata, NewWindowAppSource.MENU);
     }
 
     @Override

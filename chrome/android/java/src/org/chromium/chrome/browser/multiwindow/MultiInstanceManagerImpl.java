@@ -24,6 +24,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -330,6 +332,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+        int appSource = fromMenu ? NewWindowAppSource.MENU : NewWindowAppSource.KEYBOARD_SHORTCUT;
         if (id == R.id.move_to_other_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
             if (tabModelOrchestrator == null) return true;
@@ -337,10 +340,12 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (tabModelSelector == null) return true;
 
             Tab currentTab = tabModelSelector.getCurrentTab();
-            if (currentTab != null) moveTabsToOtherWindow(Collections.singletonList(currentTab));
+            if (currentTab != null) {
+                moveTabsToOtherWindow(Collections.singletonList(currentTab), appSource);
+            }
             return true;
         } else if (id == R.id.new_window_menu_id) {
-            openNewWindow("MobileMenuNewWindow", /* incognito= */ false);
+            openNewWindow("MobileMenuNewWindow", /* incognito= */ false, appSource);
             return true;
         } else if (id == R.id.new_incognito_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
@@ -349,7 +354,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (tabModelSelector == null) return true;
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
-                openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true);
+                openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true, appSource);
             }
             return true;
         }
@@ -442,9 +447,9 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
-    public void moveTabsToOtherWindow(List<Tab> tabs) {
+    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         if (MultiWindowUtils.getInstanceCount() == 1) {
-            moveTabsToNewWindow(tabs);
+            moveTabsToNewWindow(tabs, source);
             return;
         }
 
@@ -485,8 +490,9 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         return intent;
     }
-
-    protected void openNewWindow(String umaAction, boolean incognito) {
+    // TODO(crbug.com/455922432): Clean up the umaAction param.
+    protected void openNewWindow(
+            String umaAction, boolean incognito, @NewWindowAppSource int source) {
         Intent intent = createNewWindowIntent(incognito);
         if (intent == null) {
             return;
@@ -494,6 +500,10 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         onMultiInstanceModeStarted();
         mActivity.startActivity(intent);
+        RecordHistogram.recordEnumeratedHistogram(
+                MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
+                source,
+                NewWindowAppSource.NUM_ENTRIES);
         RecordUserAction.record(umaAction);
     }
 
