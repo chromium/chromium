@@ -337,9 +337,23 @@ class LensOverlayQueryControllerTest : public testing::Test {
       // Proto3 primitives don't have a has_foo method.
       ASSERT_EQ(vsint.object_id(), "");
     }
+    auto interaction_type =
+        interaction_request.interaction_request_metadata().type();
     if (interaction_request.has_image_crop()) {
       EXPECT_THAT(vsint.zoomed_crop(),
                   EqualsProto(interaction_request.image_crop().zoomed_crop()));
+    } else if (interaction_type ==
+                   lens::LensOverlayInteractionRequestMetadata::PDF_QUERY ||
+               interaction_type ==
+                   lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY) {
+      ASSERT_TRUE(vsint.has_zoomed_crop());
+      const auto& crop = vsint.zoomed_crop().crop();
+      EXPECT_EQ(crop.center_x(), 0.5f);
+      EXPECT_EQ(crop.center_y(), 0.5f);
+      EXPECT_EQ(crop.width(), 1);
+      EXPECT_EQ(crop.height(), 1);
+      EXPECT_EQ(crop.coordinate_type(), lens::CoordinateType::NORMALIZED);
+      EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
     } else {
       ASSERT_FALSE(vsint.has_zoomed_crop());
     }
@@ -4717,6 +4731,116 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   ASSERT_EQ(
       interaction_request.request_context().request_id().image_sequence_id(),
       1);
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       ContextualPdfQuery_ShouldHaveFullImageZoomedCropInVsint) {
+  InitFeaturesWithClusterInfoOptimization();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(), base::NullCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakePdfPageContents,
+      lens::MimeType::kPdf, /*pdf_current_page=*/std::nullopt, 0,
+      base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  query_controller.SendContextualTextQuery(
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH, {});
+  ASSERT_TRUE(url_response_future.Wait());
+
+  // Verify zoomed_crop is set in vsint.
+  auto vsint = GetVsintFromUrl(url_response_future.Get().url());
+  ASSERT_TRUE(vsint.has_zoomed_crop());
+  const auto& crop = vsint.zoomed_crop().crop();
+  EXPECT_EQ(crop.center_x(), 0.5f);
+  EXPECT_EQ(crop.center_y(), 0.5f);
+  EXPECT_EQ(crop.width(), 1);
+  EXPECT_EQ(crop.height(), 1);
+  EXPECT_EQ(crop.coordinate_type(), lens::CoordinateType::NORMALIZED);
+  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       ContextualWebpageQuery_ShouldHaveFullImageZoomedCropInVsint) {
+  InitFeaturesWithClusterInfoOptimization();
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      GetSuggestInputsCallback(), base::NullCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeApcPageContents,
+      lens::MimeType::kAnnotatedPageContent,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  query_controller.SendContextualTextQuery(
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH, {});
+  ASSERT_TRUE(url_response_future.Wait());
+
+  // Verify zoomed_crop is set in vsint.
+  auto vsint = GetVsintFromUrl(url_response_future.Get().url());
+  ASSERT_TRUE(vsint.has_zoomed_crop());
+  const auto& crop = vsint.zoomed_crop().crop();
+  EXPECT_EQ(crop.center_x(), 0.5f);
+  EXPECT_EQ(crop.center_y(), 0.5f);
+  EXPECT_EQ(crop.width(), 1);
+  EXPECT_EQ(crop.height(), 1);
+  EXPECT_EQ(crop.coordinate_type(), lens::CoordinateType::NORMALIZED);
+  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
+
+  query_controller.EndQuery();
 }
 
 }  // namespace lens
