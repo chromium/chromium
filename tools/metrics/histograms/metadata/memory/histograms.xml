@@ -129,7 +129,11 @@ chromium-metrics-reviews@google.com.
       summary="Memory used by IOSurface, on macOS. Only account for purgeable
                memory, which is part of private memory footprint."/>
   <variant name=".JavaHeap"
-      summary="Only counting memory used by Java heap in Android."/>
+      summary="Only counting memory used by Java heap in Android. This is the
+               heap size, not actual allocated memory from the app. See
+               comments in
+               //base/trace_event/java_heap_memory_dump_provider.cc for
+               details."/>
   <variant name=".Malloc"
       summary="Constrained to malloc allocator. Not accurate on Windows
                (http://crbug.com/780735#c9, http://crbug.com/665516)."/>

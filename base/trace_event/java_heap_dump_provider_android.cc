@@ -25,6 +25,18 @@ bool JavaHeapDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   uint64_t free_heap_size = 0;
   android::JavaRuntime::GetMemoryUsage(&total_heap_size, &free_heap_size);
 
+  // This is the heap size, which only changes when the heap either grows or
+  // shrinks right after a GC. Contrary to V8, ART does not provide access to
+  // the allocated object size right after a GC (which is the only time we know
+  // the size of live objects), so the allocated_objects below is not very
+  // informative: it will move from some value right after GC to ~heap size when
+  // the GC is triggered.
+  //
+  // As a consequence, the heap size metric will tend to be heavily quantized:
+  // the heap starts at a given size (see the system property
+  // "dalvik.vm.heapstartsize"), then can go down, or up, to a maximum of
+  // "dalvik.vm.heapgrowthlimit", since Chromium typically does not request a
+  // large heap (android:largeHeap in the application tag inside the manifest).
   MemoryAllocatorDump* outer_dump = pmd->CreateAllocatorDump("java_heap");
   outer_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                         MemoryAllocatorDump::kUnitsBytes, total_heap_size);
