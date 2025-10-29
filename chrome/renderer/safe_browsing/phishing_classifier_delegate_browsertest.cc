@@ -191,9 +191,7 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
     std::string model_str = GetFlatBufferString(model_version);
     base::MappedReadOnlyRegion mapped_region =
         base::ReadOnlySharedMemoryRegion::Create(model_str.length());
-    UNSAFE_TODO(memcpy(mapped_region.mapping.memory(), model_str.data(),
-                       model_str.length()));
-
+    mapped_region.mapping.GetMemoryAsSpan<char>().copy_from(model_str);
     ScorerStorage::GetInstance()->SetScorer(
         Scorer::Create(mapped_region.region.Duplicate(), base::File()));
   }

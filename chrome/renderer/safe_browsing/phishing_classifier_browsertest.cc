@@ -201,8 +201,7 @@ class PhishingClassifierTest
     mapped_region_ =
         base::ReadOnlySharedMemoryRegion::Create(model_str.length());
     ASSERT_TRUE(mapped_region_.IsValid());
-    UNSAFE_TODO(memcpy(mapped_region_.mapping.memory(), model_str.data(),
-                       model_str.length()));
+    mapped_region_.mapping.GetMemoryAsSpan<char>().copy_from(model_str);
     base::File tflite_model;
     base::FilePath tflite_path;
     GetTfliteModelPath(&tflite_path),

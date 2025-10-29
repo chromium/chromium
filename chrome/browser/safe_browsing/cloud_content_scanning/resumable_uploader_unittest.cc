@@ -103,8 +103,7 @@ class ResumableUploadRequestTest : public testing::Test {
     base::MappedReadOnlyRegion region =
         base::ReadOnlySharedMemoryRegion::Create(content.size());
     EXPECT_TRUE(region.IsValid());
-    UNSAFE_TODO(
-        std::memcpy(region.mapping.memory(), content.data(), content.size()));
+    region.mapping.GetMemoryAsSpan<char>().copy_from(content);
     return std::move(region.region);
   }
 

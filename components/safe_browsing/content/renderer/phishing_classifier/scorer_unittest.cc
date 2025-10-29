@@ -94,8 +94,7 @@ base::MappedReadOnlyRegion GetMappedReadOnlyRegionWithData(std::string data) {
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(data.length());
   EXPECT_TRUE(mapped_region.IsValid());
-  UNSAFE_TODO(
-      memcpy(mapped_region.mapping.memory(), data.data(), data.length()));
+  mapped_region.mapping.GetMemoryAsSpan<char>().copy_from(data);
   return mapped_region;
 }
 
