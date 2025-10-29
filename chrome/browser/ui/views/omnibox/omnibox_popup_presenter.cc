@@ -54,7 +54,7 @@ void OmniboxPopupPresenter::Show() {
     const views::Widget* parent_widget = location_bar_view_->GetWidget();
     views::Widget::InitParams params(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        views::Widget::InitParams::TYPE_POPUP);
 #if BUILDFLAG(IS_WIN)
     // On Windows use the software compositor to ensure that we don't block
     // the UI thread during command buffer creation. See http://crbug.com/125248
@@ -63,6 +63,10 @@ void OmniboxPopupPresenter::Show() {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.parent = parent_widget->GetNativeView();
     params.context = parent_widget->GetNativeWindow();
+
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    }
 
     RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_.get());
 
