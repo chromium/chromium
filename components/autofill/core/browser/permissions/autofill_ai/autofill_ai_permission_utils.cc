@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -47,6 +48,42 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   if (out) {
     *out = std::string(message);
   }
+}
+
+// Checks whether `country_code` belongs to a country where Wallet is
+// supported.
+[[nodiscard]] bool IsWalletSupportedCountry(
+    const GeoIpCountryCode& country_code) {
+  // List of countries where Wallet is supported.
+  constexpr static auto kWalletSupportedCountries =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"AD", "AE", "AF", "AG", "AI", "AL", "AM", "AO", "AQ", "AR", "AS",
+           "AT", "AU", "AW", "AX", "AZ", "BA", "BB", "BD", "BE", "BF", "BG",
+           "BH", "BI", "BJ", "BL", "BM", "BN", "BO", "BQ", "BR", "BS", "BT",
+           "BV", "BW", "BZ", "CA", "CC", "CD", "CF", "CG", "CH", "CI", "CK",
+           "CL", "CM", "CO", "CR", "CV", "CW", "CX", "CY", "CZ", "DE", "DJ",
+           "DK", "DM", "DO", "EC", "EE", "EG", "EH", "ER", "ES", "ET", "FI",
+           "FJ", "FK", "FM", "FO", "FR", "GA", "GB", "GD", "GE", "GF", "GG",
+           "GH", "GI", "GL", "GM", "GN", "GP", "GQ", "GR", "GS", "GT", "GU",
+           "GW", "GY", "HK", "HM", "HN", "HR", "HT", "HU", "ID", "IE", "IL",
+           "IM", "IO", "IQ", "IS", "IT", "JE", "JM", "JO", "JP", "KG", "KH",
+           "KI", "KM", "KN", "KW", "KY", "KZ", "LA", "LB", "LC", "LI", "LK",
+           "LR", "LS", "LT", "LU", "LV", "MA", "MC", "MD", "ME", "MF", "MG",
+           "MH", "MK", "ML", "MN", "MO", "MP", "MQ", "MR", "MS", "MT", "MU",
+           "MV", "MW", "MX", "MY", "MZ", "NA", "NC", "NE", "NF", "NG", "NI",
+           "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PA", "PE", "PF", "PG",
+           "PH", "PK", "PL", "PM", "PN", "PR", "PS", "PT", "PW", "PY", "QA",
+           "RE", "RO", "RS", "RW", "SA", "SB", "SC", "SE", "SG", "SH", "SI",
+           "SJ", "SK", "SL", "SM", "SN", "SO", "SR", "ST", "SV", "SX", "SZ",
+           "TC", "TD", "TF", "TG", "TH", "TJ", "TK", "TL", "TM", "TN", "TO",
+           "TT", "TV", "TW", "TZ", "UA", "UG", "UM", "US", "UY", "VA", "VC",
+           "VE", "VG", "VI", "VN", "VU", "WF", "WS", "XK", "YE", "YT", "ZA",
+           "ZM", "ZW"});
+  if (country_code->empty()) {
+    // Assumes a valid country if the country is not set.
+    return true;
+  }
+  return kWalletSupportedCountries.contains(country_code.value());
 }
 
 // Checks whether `country_code` belongs to a permitted GeoIp.
@@ -420,6 +457,28 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kUseCachedServerClassificationModelResults:
       // Filling and cache use are permitted when OTR.
+      break;
+  }
+
+  // Wallet-supported country.
+  switch (action) {
+    case AutofillAiAction::kAddServerEntityInstanceInSettings:
+    case AutofillAiAction::kImportToWallet:
+      if (!IsWalletSupportedCountry(country_code)) {
+        return false;
+      }
+      break;
+    case AutofillAiAction::kAddLocalEntityInstanceInSettings:
+    case AutofillAiAction::kCrowdsourcingVote:
+    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+    case AutofillAiAction::kImport:
+    case AutofillAiAction::kIphForOptIn:
+    case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kLogToMqls:
+    case AutofillAiAction::kOptIn:
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kFilling:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
       break;
   }
 
