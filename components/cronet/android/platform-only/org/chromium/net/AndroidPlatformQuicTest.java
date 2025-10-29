@@ -105,7 +105,7 @@ public class AndroidPlatformQuicTest {
     @Flags(
             boolFlags = {
                 @BoolFlag(
-                        name = "ChromiumBaseFeature_kQuicRegisterConnectionClosePayload",
+                        name = "ChromiumBaseFeature_kQuicRegisterConnectionClosePayloadV2",
                         value = true)
             })
     // FIREWALL_CHAIN_BACKGROUND is supported on V+
