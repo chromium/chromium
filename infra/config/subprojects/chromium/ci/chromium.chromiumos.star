@@ -33,6 +33,9 @@ ci.defaults.set(
     tree_closing = True,
     tree_closing_notifiers = ci_constants.DEFAULT_TREE_CLOSING_NOTIFIERS,
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     health_spec = health_spec.modified_default({
         "Unhealthy": struct(
             build_time = struct(
