@@ -382,9 +382,20 @@ void TouchToFillDelegateAndroidImpl::BnplSuggestionSelected(
   if (extracted_amount.has_value()) {
     final_extracted_amount = static_cast<uint64_t>(extracted_amount.value());
   }
-  // TODO(crbug.com/430575808): Add callback when VCN fetching flow is ready.
-  bnpl_manager->OnDidAcceptBnplSuggestion(final_extracted_amount,
-                                          /*on_bnpl_vcn_fetched_callback=*/{});
+
+  bnpl_manager->OnDidAcceptBnplSuggestion(
+      final_extracted_amount,
+      /*on_bnpl_vcn_fetched_callback=*/base::BindOnce(
+          [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,
+             const CreditCard& card) {
+            if (delegate) {
+              delegate->manager_->FillOrPreviewForm(
+                  mojom::ActionPersistence::kFill, delegate->query_form_,
+                  delegate->query_field_.global_id(), &card,
+                  AutofillTriggerSource::kTouchToFillCreditCard);
+            }
+          },
+          GetWeakPtr()));
 }
 
 void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(

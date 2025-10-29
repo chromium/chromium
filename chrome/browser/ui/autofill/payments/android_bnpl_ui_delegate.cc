@@ -56,8 +56,8 @@ void AndroidBnplUiDelegate::ShowProgressUi(
 }
 
 void AndroidBnplUiDelegate::CloseProgressUi(
-    bool show_confirmation_before_closing) {
-  // TODO(crbug.com/438783909): Add JNI call to hide the progress spinner.
+    bool credit_card_fetched_successfully) {
+  client_->HideTouchToFillPaymentMethod();
 }
 
 void AndroidBnplUiDelegate::ShowAutofillErrorUi(

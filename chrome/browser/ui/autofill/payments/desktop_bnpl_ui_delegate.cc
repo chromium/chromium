@@ -77,9 +77,9 @@ void DesktopBnplUiDelegate::ShowProgressUi(
 }
 
 void DesktopBnplUiDelegate::CloseProgressUi(
-    bool show_confirmation_before_closing) {
+    bool credit_card_fetched_successfully) {
   client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
-      show_confirmation_before_closing,
+      /*show_confirmation_before_closing=*/credit_card_fetched_successfully,
       /*no_interactive_authentication_callback=*/base::DoNothing());
 }
 

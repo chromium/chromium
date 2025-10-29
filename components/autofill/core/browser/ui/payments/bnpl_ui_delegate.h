@@ -54,9 +54,9 @@ class BnplUiDelegate {
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) = 0;
 
-  // Closes the progress UI. `show_confirmation_before_closing` indicates
-  // whether a confirmation should be shown before the UI is closed.
-  virtual void CloseProgressUi(bool show_confirmation_before_closing) = 0;
+  // Closes the progress UI. `credit_card_fetched_successfully` is true if the
+  // form was successfully filled with the BNPL VCN, and is false otherwise.
+  virtual void CloseProgressUi(bool credit_card_fetched_successfully) = 0;
 
   // Shows an error UI during the BNPL flow. The type of error UI that is shown
   // will match the `type` in `context`. If the `server_returned_title` and

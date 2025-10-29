@@ -302,9 +302,12 @@ void BnplManager::OnVcnDetailsFetched(
   bool successful =
       result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
 
+  // TODO(crbug.com/430575808): Branch using BnplStrategy to keep existing
+  // bottomsheet open on failure for Android, since the error screen will be
+  // displayed on the same bottom sheet.
   CHECK(payments_autofill_client().GetBnplUiDelegate());
   payments_autofill_client().GetBnplUiDelegate()->CloseProgressUi(
-      /*show_confirmation_before_closing=*/successful);
+      /*credit_card_fetched_successfully=*/successful);
 
   if (successful) {
     CHECK(ongoing_flow_state_);

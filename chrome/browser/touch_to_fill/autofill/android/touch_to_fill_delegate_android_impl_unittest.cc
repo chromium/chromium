@@ -359,6 +359,62 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
       /*extracted_amount=*/std::nullopt);
 }
 
+TEST_F(TouchToFillDelegateAndroidImplUnitTest,
+       BnplSuggestionSelected_CallbackFillsForm) {
+  CreditCard test_card = test::GetCreditCard();
+
+  ConfigureForCreditCards(test_card);
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  base::OnceCallback<void(const CreditCard&)> captured_callback;
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnDidAcceptBnplSuggestion(_, _))
+      .WillOnce([&](std::optional<uint64_t> amount,
+                    base::OnceCallback<void(const CreditCard&)> callback) {
+        captured_callback = std::move(callback);
+      });
+
+  touch_to_fill_delegate_->BnplSuggestionSelected(
+      /*extracted_amount=*/12345);
+  ASSERT_TRUE(captured_callback);
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(
+          mojom::ActionPersistence::kFill, form_, form_.fields()[0].global_id(),
+          ::testing::VariantWith<const CreditCard*>(Pointee(test_card)),
+          AutofillTriggerSource::kTouchToFillCreditCard));
+
+  // Run the captured callback, simulating a successful VCN fetch.
+  std::move(captured_callback).Run(test_card);
+}
+
+TEST_F(TouchToFillDelegateAndroidImplUnitTest,
+       BnplSuggestionSelected_CallbackDoesNothingAfterDelegateReset) {
+  CreditCard test_card = test::GetCreditCard();
+
+  ConfigureForCreditCards(test_card);
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  base::OnceCallback<void(const CreditCard&)> captured_callback;
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnDidAcceptBnplSuggestion(_, _))
+      .WillOnce([&](std::optional<uint64_t> amount,
+                    base::OnceCallback<void(const CreditCard&)> callback) {
+        captured_callback = std::move(callback);
+      });
+
+  touch_to_fill_delegate_->BnplSuggestionSelected(
+      /*extracted_amount=*/12345);
+  ASSERT_TRUE(captured_callback);
+
+  // Expect FillOrPreviewForm is not called after delegate is reset.
+  autofill_manager().set_touch_to_fill_delegate(nullptr);
+  EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
+
+  std::move(captured_callback).Run(test_card);
+}
+
 // Params of TouchToFillDelegateAndroidImplPaymentMethodUnitTest:
 // -- FillingProduct: Indicates the Autofill data type to test. Supported data
 // types are:

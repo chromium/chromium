@@ -34,6 +34,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               ShowTouchToFillError,
               (const AutofillErrorDialogContext& context),
               (override));
+  MOCK_METHOD(void, HideTouchToFillPaymentMethod, (), (override));
 };
 
 class AndroidBnplUiDelegateTest : public ChromeRenderViewHostTestHarness {
@@ -74,6 +75,22 @@ TEST_F(AndroidBnplUiDelegateTest, ShowProgressUi) {
   delegate_->ShowProgressUi(
       AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
       /*cancel_callback=*/base::DoNothing());
+}
+
+// Tests that CloseProgressUi calls the client's HideTouchToFillPaymentMethod
+// when the credit card is fetched successfully.
+TEST_F(AndroidBnplUiDelegateTest, CloseProgressUi_FormFilledSuccessfully) {
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod());
+
+  delegate_->CloseProgressUi(/*credit_card_fetched_successfully=*/true);
+}
+
+// Tests that CloseProgressUi calls the client's HideTouchToFillPaymentMethod
+// when the credit card is not fetched successfully.
+TEST_F(AndroidBnplUiDelegateTest, CloseProgressUi_FormNotFilledSuccessfully) {
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod());
+
+  delegate_->CloseProgressUi(/*credit_card_fetched_successfully=*/false);
 }
 
 // Tests that ShowAutofillErrorUi calls the client's ShowTouchToFillError.
