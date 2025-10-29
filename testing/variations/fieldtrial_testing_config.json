@@ -16673,6 +16673,23 @@
             ]
         }
     ],
+    "NtpCustomizeChromeAutoOpen": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "NtpCustomizeChromeAutoOpen"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpMicrosoftFilesCard": [
         {
             "platforms": [
@@ -19732,9 +19749,27 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Control",
+                    "disable_features": [
                         "ProfileCreationDeclineSigninCTAExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProfileExperimentsM0": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "ProfilePickerTextVariations",
+                        "ShowProfilePickerToAllUsersExperiment"
                     ]
                 }
             ]
