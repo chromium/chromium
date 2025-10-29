@@ -158,8 +158,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
 // the graph validation steps and computation resources.
 class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
  public:
-  std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-  CreateWebNNContext(
+  scoped_refptr<WebNNContextImpl> CreateWebNNContext(
       base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
       mojom::CreateContextOptionsPtr options,
       gpu::CommandBufferId command_buffer_id,
@@ -171,16 +170,12 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
     mojo::PendingRemote<mojom::WebNNContext> remote;
-    auto task_runner = owning_task_runner;
-    std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-        context_impl(
-            new FakeWebNNContextImpl(
-                remote.InitWithNewPipeAndPassReceiver(),
-                std::move(context_provider_impl), command_buffer_id,
-                std::move(sequence), std::move(memory_tracker),
-                std::move(owning_task_runner), shared_image_manager,
-                std::move(main_task_runner)),
-            WebNNContextImpl::TaskRunnerDeleter(std::move(task_runner)));
+    auto context_impl = base::MakeRefCounted<FakeWebNNContextImpl>(
+        remote.InitWithNewPipeAndPassReceiver(),
+        std::move(context_provider_impl), command_buffer_id,
+        std::move(sequence), std::move(memory_tracker),
+        std::move(owning_task_runner), shared_image_manager,
+        std::move(main_task_runner));
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     auto success = mojom::CreateContextSuccess::New(

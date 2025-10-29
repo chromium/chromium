@@ -47,9 +47,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
   return Adapter::GetGpuInstance(std::move(dxgi_adapter));
 }
 
-base::expected<
-    std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>,
-    mojom::ErrorPtr>
+base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
 CreateDmlContext(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -70,19 +68,14 @@ CreateDmlContext(scoped_refptr<Adapter> adapter,
         return CreateError(mojom::Error::Code::kUnknownError,
                            "Failed to create a CommandRecorder.");
       });
-  auto task_runner = owning_task_runner;
-  std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-      context_impl(
-          new ContextImplDml(
-              std::move(adapter), std::move(receiver),
-              std::move(context_provider), std::move(options),
-              std::move(write_tensor_consumer), std::move(read_tensor_producer),
-              std::move(command_recorder), gpu_feature_info, command_buffer_id,
-              std::move(sequence), std::move(memory_tracker),
-              std::move(owning_task_runner), shared_image_manager,
-              std::move(main_task_runner)),
-          WebNNContextImpl::TaskRunnerDeleter(std::move(task_runner)));
-  return context_impl;
+
+  return base::MakeRefCounted<ContextImplDml>(
+      std::move(adapter), std::move(receiver), std::move(context_provider),
+      std::move(options), std::move(write_tensor_consumer),
+      std::move(read_tensor_producer), std::move(command_recorder),
+      gpu_feature_info, command_buffer_id, std::move(sequence),
+      std::move(memory_tracker), std::move(owning_task_runner),
+      shared_image_manager, std::move(main_task_runner));
 }
 
 }  // namespace
@@ -101,9 +94,7 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
   }
 }
 
-base::expected<
-    std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>,
-    mojom::ErrorPtr>
+base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
 CreateContextFromOptions(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,

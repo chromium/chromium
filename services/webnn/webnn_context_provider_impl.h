@@ -24,7 +24,7 @@
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_object_impl.h"
 
 namespace gpu {
 class Scheduler;
@@ -33,6 +33,7 @@ class Scheduler;
 namespace webnn {
 
 class ScopedSequence;
+class WebNNContextImpl;
 
 // Maintain a set of WebNNContextImpl instances that are created by the context
 // provider.
@@ -88,16 +89,17 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   base::optional_ref<WebNNContextImpl> GetWebNNContextImplForTesting(
       const blink::WebNNContextToken& handle);
 
-  using WebNNContextImplPtr =
-      std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>;
-  using WebNNContextImplSet =
-      base::flat_set<WebNNContextImplPtr, WebNNContextImpl::Comparator>;
+  using WebNNContextImplSet = base::flat_set<
+      scoped_refptr<WebNNContextImpl>,
+      WebNNObjectImpl<mojom::WebNNContext,
+                      blink::WebNNContextToken,
+                      mojo::Receiver<mojom::WebNNContext>>::Comparator>;
 
   // The test cases can override the context creating behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
   class BackendForTesting {
    public:
-    virtual WebNNContextImplPtr CreateWebNNContext(
+    virtual scoped_refptr<WebNNContextImpl> CreateWebNNContext(
         base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
         mojom::CreateContextOptionsPtr options,
         gpu::CommandBufferId command_buffer_id,
@@ -151,7 +153,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingRemote<::webnn::mojom::WebNNContext> remote,
       mojo::ScopedDataPipeProducerHandle write_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-      WebNNContextImplPtr context_impl);
+      scoped_refptr<WebNNContextImpl> context_impl);
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
   void CreateTFLiteContext(

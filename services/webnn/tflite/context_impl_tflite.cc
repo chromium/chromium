@@ -18,8 +18,7 @@
 namespace webnn::tflite {
 
 // static
-std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
-ContextImplTflite::Create(
+scoped_refptr<WebNNContextImpl> ContextImplTflite::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
@@ -33,15 +32,12 @@ ContextImplTflite::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     ScopedTrace scoped_trace) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
-  auto task_runner = owning_task_runner;
-  return std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>(
-      new ContextImplTflite(
-          std::move(receiver), std::move(context_provider), std::move(options),
-          std::move(write_tensor_consumer), std::move(read_tensor_producer),
-          command_buffer_id, std::move(sequence), std::move(memory_tracker),
-          std::move(owning_task_runner), shared_image_manager,
-          std::move(main_task_runner)),
-      WebNNContextImpl::TaskRunnerDeleter(std::move(task_runner)));
+  return base::MakeRefCounted<ContextImplTflite>(
+      std::move(receiver), std::move(context_provider), std::move(options),
+      std::move(write_tensor_consumer), std::move(read_tensor_producer),
+      command_buffer_id, std::move(sequence), std::move(memory_tracker),
+      std::move(owning_task_runner), shared_image_manager,
+      std::move(main_task_runner));
 }
 
 ContextImplTflite::ContextImplTflite(

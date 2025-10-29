@@ -14,13 +14,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -36,6 +34,7 @@
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_constant_operand.h"
+#include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_object_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
@@ -43,7 +42,6 @@
 
 namespace webnn {
 
-class WebNNContextProviderImpl;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 class ScopedSequence;
@@ -54,39 +52,12 @@ class ScopedSequence;
 // `scheduler_task_runner()`, which is a distinct task runner but runs on the
 // same thread.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
-    : public WebNNObjectBase<mojom::WebNNContext,
+    : public WebNNObjectImpl<mojom::WebNNContext,
                              blink::WebNNContextToken,
                              mojo::Receiver<mojom::WebNNContext>> {
  public:
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
-
-  struct COMPONENT_EXPORT(WEBNN_SERVICE) TaskRunnerDeleter {
-    explicit TaskRunnerDeleter(
-        scoped_refptr<base::SequencedTaskRunner> task_runner);
-    ~TaskRunnerDeleter();
-
-    TaskRunnerDeleter(TaskRunnerDeleter&&);
-    TaskRunnerDeleter& operator=(TaskRunnerDeleter&&);
-
-    // For compatibility with std:: deleters.
-    template <typename T>
-    void operator()(const T* ptr) {
-      if (!ptr) {
-        return;
-      }
-      if (task_runner_->RunsTasksInCurrentSequence()) {
-        delete ptr;
-      } else {
-        task_runner_->DeleteSoon(FROM_HERE, ptr);
-      }
-    }
-
-    scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  };
-
-  using WebNNContextImplPtr =
-      std::unique_ptr<WebNNContextImpl, TaskRunnerDeleter>;
 
   WebNNContextImpl(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
@@ -191,32 +162,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   mojo_base::BigBuffer WriteDataToDataPipeOrBigBuffer(
       base::span<const uint8_t> src_span);
 
-  base::SequencedTaskRunner* owning_task_runner() {
-    return owning_task_runner_.get();
-  }
-
-  // Defines a "transparent" comparator so that std::unique_ptr keys to
-  // WebNNContextImpl instances can be compared against tokens for lookup in
-  // associative containers like base::flat_set.
-  struct Comparator {
-    using is_transparent = blink::WebNNContextToken;
-
-    bool operator()(const WebNNContextImplPtr& lhs,
-                    const WebNNContextImplPtr& rhs) const {
-      return lhs->handle() < rhs->handle();
-    }
-
-    bool operator()(const blink::WebNNContextToken& lhs,
-                    const WebNNContextImplPtr& rhs) const {
-      return lhs < rhs->handle();
-    }
-
-    bool operator()(const WebNNContextImplPtr& lhs,
-                    const blink::WebNNContextToken& rhs) const {
-      return lhs->handle() < rhs;
-    }
-  };
-
  protected:
   ~WebNNContextImpl() override;
 
@@ -277,8 +222,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       tensor_impls_;
 
  private:
-  friend class base::DeleteHelper<WebNNContextImpl>;
-
   void OnDisconnect() override;
 
   // Graph builders owned by this context.
@@ -327,10 +270,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // Task runner used to remove this context from its provider.
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-
-  // The owning_task_runner is the underlying single-thread runner for the GPU
-  // sequence.
-  scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner_;
 };
 
 }  // namespace webnn
