@@ -76,7 +76,12 @@ const NSInteger kCredentialExportItemType = 0;
   }
   _items = items;
 
-  [self applySnapshotWithItems:_items animated:YES];
+  __weak __typeof(self) weakSelf = self;
+  [self applySnapshotWithItems:_items
+                      animated:YES
+                    completion:^{
+                      [weakSelf selectAllItems];
+                    }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -132,12 +137,17 @@ const NSInteger kCredentialExportItemType = 0;
       [[UITableViewDiffableDataSource alloc] initWithTableView:self.tableView
                                                   cellProvider:cellProvider];
 
-  [self applySnapshotWithItems:_items animated:NO];
+  [self applySnapshotWithItems:_items
+                      animated:NO
+                    completion:^{
+                      [weakSelf selectAllItems];
+                    }];
 }
 
 // Builds and applies a new snapshot to the data source.
 - (void)applySnapshotWithItems:(NSArray<AffiliatedGroupTableViewItem*>*)items
-                      animated:(BOOL)animated {
+                      animated:(BOOL)animated
+                    completion:(void (^)(void))completion {
   if (!_dataSource) {
     return;
   }
@@ -148,7 +158,9 @@ const NSInteger kCredentialExportItemType = 0;
   [snapshot appendItemsWithIdentifiers:items
              intoSectionWithIdentifier:kCredentialSectionIdentifier];
 
-  [_dataSource applySnapshot:snapshot animatingDifferences:animated];
+  [_dataSource applySnapshot:snapshot
+        animatingDifferences:animated
+                  completion:completion];
 }
 
 // TODO(crbug.com/454566693): Add EGTest.
@@ -166,6 +178,26 @@ const NSInteger kCredentialExportItemType = 0;
     self.title = l10n_util::GetPluralNSStringF(
         IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS_COUNT, selectedCount);
   }
+}
+
+// Selects all rows in the table view.
+- (void)selectAllItems {
+  NSInteger sectionIndex = [[_dataSource snapshot]
+      indexOfSectionIdentifier:kCredentialSectionIdentifier];
+  if (sectionIndex == NSNotFound) {
+    [self updateTitleAndContinueButton];
+    return;
+  }
+
+  NSInteger count = _items.count;
+  for (NSInteger row = 0; row < count; row++) {
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row
+                                                inSection:sectionIndex];
+    [self.tableView selectRowAtIndexPath:indexPath
+                                animated:NO
+                          scrollPosition:UITableViewScrollPositionNone];
+  }
+  [self updateTitleAndContinueButton];
 }
 
 @end
