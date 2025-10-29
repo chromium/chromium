@@ -696,6 +696,33 @@ TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions) {
   run_loop.Run();
 }
 
+// Ensure cleanup is not executed until the model is loaded.
+TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions_WaitsForModelLoad) {
+  // Use a separate bookmark model so we can control the loading state.
+  std::unique_ptr<bookmarks::BookmarkModel> model{
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>())};
+  ASSERT_FALSE(model->loaded());
+
+  std::vector<CommerceSubscription> subs;
+  subs.push_back(BuildUserSubscriptionForClusterId(12345L));
+  shopping_service_->SetGetAllSubscriptionsCallbackValue(std::move(subs));
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  RemoveDanglingSubscriptions(
+      shopping_service_.get(), model.get(),
+      base::BindOnce([](size_t count) {}).Then(run_loop.QuitClosure()));
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
+
+  model->LoadEmptyForTest();
+  ASSERT_TRUE(model->loaded());
+  run_loop.Run();
+}
+
 // Ensure the callback runs even if there are no dangling
 TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions_NoDanglingSubs) {
   std::vector<CommerceSubscription> subs;
