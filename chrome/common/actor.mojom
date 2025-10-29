@@ -319,7 +319,8 @@ enum ActionResultCode {
   kSelectOptionDisabled = 602,
 
   // The invoking the tool resulted in an unexpected value.
-  kSelectUnexpectedValue = 603,
+  // DEPRECATED: Unused
+  // kSelectUnexpectedValue = 603,
 
   // Please see the comment above about adding new values.
 
