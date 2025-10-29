@@ -8,6 +8,8 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
@@ -47,7 +49,7 @@ void PaintComboboxArrow(SkColor color,
   SkScalar x = std::ceil(bounds.x() * dsf);
   SkScalar y = std::ceil(bounds.y() * dsf);
   SkScalar height = std::floor(bounds.height() * dsf);
-  SkPath path;
+  SkPathBuilder path;
   // This epsilon makes sure that all the aliasing pixels are slightly more
   // than half full. Otherwise, rounding issues cause some to be considered
   // slightly less than half full and come out a little lighter.
@@ -60,7 +62,7 @@ void PaintComboboxArrow(SkColor color,
   cc::PaintFlags flags;
   flags.setColor(color);
   flags.setAntiAlias(true);
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
 }
 
 void ConfigureComboboxButtonInkDrop(Button* host_view) {

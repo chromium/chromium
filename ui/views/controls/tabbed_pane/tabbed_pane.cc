@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -345,13 +346,13 @@ void TabbedPaneTab::OnPaint(gfx::Canvas* canvas) {
     return;
   }
   constexpr SkScalar kRadius = SkIntToScalar(32);
-  constexpr SkScalar kLTRRadii[8] = {0,       0,       kRadius, kRadius,
-                                     kRadius, kRadius, 0,       0};
-  constexpr SkScalar kRTLRadii[8] = {kRadius, kRadius, 0,       0,
-                                     0,       0,       kRadius, kRadius};
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                    base::i18n::IsRTL() ? kRTLRadii : kLTRRadii);
+  constexpr SkVector kLTRRadii[4] = {
+      {0, 0}, {kRadius, kRadius}, {kRadius, kRadius}, {0, 0}};
+  constexpr SkVector kRTLRadii[4] = {
+      {kRadius, kRadius}, {0, 0}, {0, 0}, {kRadius, kRadius}};
+  const SkPath path = SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(GetLocalBounds()),
+                             base::i18n::IsRTL() ? kRTLRadii : kLTRRadii));
 
   cc::PaintFlags fill_flags;
   fill_flags.setAntiAlias(true);

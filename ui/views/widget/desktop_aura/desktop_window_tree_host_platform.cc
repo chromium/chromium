@@ -1048,7 +1048,7 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   SkPath window_mask = GetWindowMask(GetWidget());
   // Convert SkPath in DIPs to pixels.
   if (!window_mask.isEmpty()) {
-    window_mask.transform(
+    window_mask = window_mask.makeTransform(
         gfx::TransformToFlattenedSkMatrix(GetRootTransform()));
   }
   return window_mask;

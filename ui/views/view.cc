@@ -1403,8 +1403,6 @@ void View::Paint(const PaintInfo& parent_paint_info) {
       clip_recorder.ClipRect(gfx::Rect(paint_info.paint_recording_size()) +
                              paint_info.offset_from_parent());
     } else {
-      SkPath clip_path_in_parent = clip_path_;
-
       // Transform |clip_path_| from local space to parent recording space.
       gfx::Transform to_parent_recording_space;
 
@@ -1413,7 +1411,7 @@ void View::Paint(const PaintInfo& parent_paint_info) {
           SkFloatToScalar(paint_info.paint_recording_scale_x()),
           SkFloatToScalar(paint_info.paint_recording_scale_y()));
 
-      clip_path_in_parent.transform(
+      const SkPath clip_path_in_parent = clip_path_.makeTransform(
           gfx::TransformToFlattenedSkMatrix(to_parent_recording_space));
       clip_recorder.ClipPathWithAntiAliasing(clip_path_in_parent);
     }

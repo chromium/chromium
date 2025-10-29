@@ -11,6 +11,7 @@
 #include <variant>
 
 #include "base/functional/bind.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -230,10 +231,8 @@ void Checkbox::OnThemeChanged() {
 }
 
 SkPath Checkbox::GetFocusRingPath() const {
-  SkPath path;
   gfx::Rect bounds = image_container_view()->GetMirroredContentsBounds();
-  path.addRect(RectToSkRect(bounds));
-  return path;
+  return SkPath::Rect(RectToSkRect(bounds));
 }
 
 SkColor Checkbox::GetIconImageColor(int icon_state) const {

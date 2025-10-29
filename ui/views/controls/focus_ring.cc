@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -87,8 +88,7 @@ SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
   if (client_rect.IsEmpty()) {
     client_rect.Outset(kMinFocusRingInset);
   }
-  return SkPath().addRRect(SkRRect::MakeRectXY(RectToSkRect(client_rect),
-                                               corner_radius, corner_radius));
+  return SkPath::RRect(RectToSkRect(client_rect), corner_radius, corner_radius);
 }
 
 }  // namespace
@@ -423,7 +423,7 @@ SkPath GetHighlightPath(const View* view, float halo_thickness) {
     gfx::Point center = view->GetLocalBounds().CenterPoint();
     SkMatrix flip;
     flip.setScale(-1, 1, center.x(), center.y());
-    path.transform(flip);
+    path = path.makeTransform(flip);
   }
   return path;
 }

@@ -12,6 +12,8 @@
 #include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -34,7 +36,7 @@ namespace {
 void AddPossiblyRoundRectToPath(
     const gfx::Rect& rectangle,
     const gfx::RoundedCornersF& preferred_corner_radii,
-    SkPath* path) {
+    SkPathBuilder* path) {
   if (preferred_corner_radii.IsEmpty() || rectangle.height() == 0) {
     path->addRect(gfx::RectToSkRect(rectangle));
     return;
@@ -91,17 +93,17 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect content_bounds = GetContentsBounds();
 
   // Draw background.
-  SkPath background_path;
+  SkPathBuilder background_path;
   gfx::RoundedCornersF rounded_corners = GetPreferredCornerRadii();
   AddPossiblyRoundRectToPath(content_bounds, rounded_corners, &background_path);
   cc::PaintFlags background_flags;
   background_flags.setStyle(cc::PaintFlags::kFill_Style);
   background_flags.setAntiAlias(true);
   background_flags.setColor(GetBackgroundColor());
-  canvas->DrawPath(background_path, background_flags);
+  canvas->DrawPath(background_path.detach(), background_flags);
 
   // Draw slice.
-  SkPath slice_path;
+  SkPathBuilder slice_path;
   const int slice_width = static_cast<int>(
       content_bounds.width() * std::min(current_value_, 1.0) + 0.5);
   if (slice_width < 1) {
@@ -116,7 +118,7 @@ void ProgressBar::OnPaint(gfx::Canvas* canvas) {
   slice_flags.setStyle(cc::PaintFlags::kFill_Style);
   slice_flags.setAntiAlias(true);
   slice_flags.setColor(GetForegroundColor());
-  canvas->DrawPath(slice_path, slice_flags);
+  canvas->DrawPath(slice_path.detach(), slice_flags);
 }
 
 double ProgressBar::GetValue() const {
@@ -275,17 +277,17 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   gfx::Rect content_bounds = GetContentsBounds();
 
   // Draw background.
-  SkPath background_path;
+  SkPathBuilder background_path;
   gfx::RoundedCornersF rounded_corners = GetPreferredCornerRadii();
   AddPossiblyRoundRectToPath(content_bounds, rounded_corners, &background_path);
   cc::PaintFlags background_flags;
   background_flags.setStyle(cc::PaintFlags::kFill_Style);
   background_flags.setAntiAlias(true);
   background_flags.setColor(GetBackgroundColor());
-  canvas->DrawPath(background_path, background_flags);
+  canvas->DrawPath(background_path.detach(), background_flags);
 
   // Draw slice.
-  SkPath slice_path;
+  SkPathBuilder slice_path;
   double time = indeterminate_bar_animation_->GetCurrentValue();
 
   // The animation spec corresponds to the material design lite's parameter.
@@ -330,7 +332,7 @@ void ProgressBar::OnPaintIndeterminate(gfx::Canvas* canvas) {
   slice_flags.setStyle(cc::PaintFlags::kFill_Style);
   slice_flags.setAntiAlias(true);
   slice_flags.setColor(GetForegroundColor());
-  canvas->DrawPath(slice_path, slice_flags);
+  canvas->DrawPath(slice_path.detach(), slice_flags);
 }
 
 void ProgressBar::MaybeNotifyAccessibilityValueChanged() {

@@ -47,13 +47,9 @@ MATCHER_P(PointsAre, expected, "") {
 
 TEST(InkDropMaskTest, PathInkDropMaskPaintsTriangle) {
   gfx::Size layer_size(10, 10);
-  SkPath path;
   std::vector<SkPoint> points = {SkPoint::Make(3, 3), SkPoint::Make(5, 6),
                                  SkPoint::Make(8, 1)};
-  path.moveTo(points[0].x(), points[0].y());
-  path.lineTo(points[1].x(), points[1].y());
-  path.lineTo(points[2].x(), points[2].y());
-  path.close();
+  const SkPath path = SkPath::Polygon(points, /*isClosed=*/true);
   PathInkDropMask mask(layer_size, path);
 
   auto list = base::MakeRefCounted<cc::DisplayItemList>();

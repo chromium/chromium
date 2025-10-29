@@ -343,9 +343,8 @@ gfx::Size DesignerExample::GrabHandle::CalculatePreferredSize(
 }
 
 void DesignerExample::GrabHandle::OnPaint(gfx::Canvas* canvas) {
-  SkPath path;
   gfx::Point center = GetLocalBounds().CenterPoint();
-  path.addCircle(center.x(), center.y(), width() / 2);
+  const SkPath path = SkPath::Circle(center.x(), center.y(), width() / 2);
   cc::PaintFlags flags;
   flags.setColor(
       GetColorProvider()->GetColor(ExamplesColorIds::kColorDesignerGrabHandle));

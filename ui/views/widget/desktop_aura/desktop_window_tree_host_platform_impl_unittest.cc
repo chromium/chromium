@@ -72,13 +72,16 @@ class ShapedWidgetDelegate : public WidgetDelegateView {
           int right = size.width();
           int bottom = size.height();
 
-          window_mask->moveTo(0, 0);
-          window_mask->lineTo(0, bottom);
-          window_mask->lineTo(right, bottom);
-          window_mask->lineTo(right, 10);
-          window_mask->lineTo(right - 10, 10);
-          window_mask->lineTo(right - 10, 0);
-          window_mask->close();
+          *window_mask = SkPath::Polygon(
+              {
+                  SkPoint(0, 0),
+                  SkPoint(0, bottom),
+                  SkPoint(right, bottom),
+                  SkPoint(right, 10),
+                  SkPoint(right - 10, 10),
+                  SkPoint(right - 10, 0),
+              },
+              /*isClosed=*/true);
         }));
 
     frame_view->SetHitTestCallback(

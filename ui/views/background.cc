@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
@@ -71,12 +73,12 @@ class RoundedRectBackground : public Background {
   void Paint(gfx::Canvas* canvas, View* view) const override {
     gfx::Rect rect(view->GetLocalBounds());
     rect.Inset(insets_);
-    SkPath path;
-    SkScalar radii[8] = {radii_.upper_left(),  radii_.upper_left(),
-                         radii_.upper_right(), radii_.upper_right(),
-                         radii_.lower_right(), radii_.lower_right(),
-                         radii_.lower_left(),  radii_.lower_left()};
-    path.addRoundRect(gfx::RectToSkRect(rect), radii);
+    const SkVector radii[4] = {{radii_.upper_left(),  radii_.upper_left()},
+                               {radii_.upper_right(), radii_.upper_right()},
+                               {radii_.lower_right(), radii_.lower_right()},
+                               {radii_.lower_left(),  radii_.lower_left()}};
+    const SkPath path =
+        SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

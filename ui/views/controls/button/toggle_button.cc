@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -457,12 +458,10 @@ void ToggleButton::UpdateAccessibleCheckedState() {
 }
 
 SkPath ToggleButton::GetFocusRingPath() const {
-  SkPath path;
   gfx::RectF bounds(GetTrackBounds());
   const SkRect sk_rect = gfx::RectFToSkRect(bounds);
   const float corner_radius = sk_rect.height() / 2;
-  path.addRoundRect(sk_rect, corner_radius, corner_radius);
-  return path;
+  return SkPath::RRect(sk_rect, corner_radius, corner_radius);
 }
 
 void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {

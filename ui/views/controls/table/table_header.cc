@@ -15,6 +15,8 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -90,8 +92,8 @@ class TableHeader::HighlightPathGenerator
 
     // Fill the path with an explicitly calculated default radius.
     const float default_radius = header->GetDefaultFocusRingRadius();
-    std::array<SkScalar, 8> focus_ring_radii;
-    focus_ring_radii.fill(default_radius);
+    std::array<SkVector, 4> focus_ring_radii;
+    focus_ring_radii.fill({default_radius, default_radius});
 
     // Use the preferred upper corner radius, based on the active column.
     if (const auto& columns = header->table_->visible_columns();
@@ -112,12 +114,14 @@ class TableHeader::HighlightPathGenerator
         const float lower_right = default_radius;
         const float lower_left = default_radius;
 
-        focus_ring_radii = {upper_left,  upper_left,  upper_right, upper_right,
-                            lower_right, lower_right, lower_left,  lower_left};
+        focus_ring_radii = {SkVector{upper_left,  upper_left},
+                            SkVector{upper_right, upper_right},
+                            SkVector{lower_right, lower_right},
+                            SkVector{lower_left,  lower_left}};
       }
     }
-    return SkPath().addRoundRect(gfx::RectToSkRect(bounds),
-                                 focus_ring_radii);
+    return SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds),
+                                                focus_ring_radii.data()));
   }
 };
 
@@ -285,7 +289,7 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
       indicator_x += (sort_indicator_width - kSortIndicatorSize) / 2;
       indicator_x = GetMirroredXInView(indicator_x);
       int indicator_y = height() / 2 - kSortIndicatorSize / 2;
-      SkPath indicator_path;
+      SkPathBuilder indicator_path;
       if (table_->sort_descriptors()[0].ascending) {
         indicator_path.moveTo(SkIntToScalar(indicator_x),
                               SkIntToScalar(indicator_y + kSortIndicatorSize));
@@ -306,7 +310,7 @@ void TableHeader::OnPaint(gfx::Canvas* canvas) {
             SkIntToScalar(indicator_y + kSortIndicatorSize));
       }
       indicator_path.close();
-      canvas->DrawPath(indicator_path, flags);
+      canvas->DrawPath(indicator_path.detach(), flags);
     }
   }
 }

@@ -9,7 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -96,7 +97,7 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
   // so outset by a half pixel.
   stroke_bounds.Inset(gfx::InsetsF(-kThumbStrokeVisualSize / 2.0f));
   // The stroke doesn't apply to the far edge of the thumb.
-  SkPath path;
+  SkPathBuilder path;
   path.moveTo(gfx::PointFToSkPoint(stroke_bounds.top_right()));
   path.lineTo(gfx::PointFToSkPoint(stroke_bounds.origin()));
   path.lineTo(gfx::PointFToSkPoint(stroke_bounds.bottom_left()));
@@ -106,7 +107,7 @@ void OverlayScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
   } else {
     path.lineTo(gfx::PointFToSkPoint(stroke_bounds.bottom_right()));
   }
-  canvas->DrawPath(path, stroke_flags);
+  canvas->DrawPath(path.detach(), stroke_flags);
 }
 
 void OverlayScrollBar::Thumb::OnBoundsChanged(

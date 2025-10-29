@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -194,7 +195,7 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
     // Draw a focus indicator around the active cell.
     gfx::Rect bounds = table->GetActiveCellBounds();
     bounds.set_x(table->GetMirroredXForRect(bounds));
-    return SkPath().addRect(gfx::RectToSkRect(bounds));
+    return SkPath::Rect(gfx::RectToSkRect(bounds));
   }
 };
 

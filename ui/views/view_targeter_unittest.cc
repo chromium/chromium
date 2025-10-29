@@ -79,10 +79,13 @@ class TestMaskedView : public View, public MaskedTargeterDelegate {
     SkScalar h = SkIntToScalar(height());
 
     // Create a triangular mask within the bounds of this View.
-    mask->moveTo(w / 2, 0);
-    mask->lineTo(w, h);
-    mask->lineTo(0, h);
-    mask->close();
+    *mask = SkPath::Polygon(
+        {
+            {w / 2, 0},
+            {w, h},
+            {0, h},
+        },
+        /*isClosed=*/true);
     return true;
   }
 };

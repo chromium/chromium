@@ -13,31 +13,33 @@ void GetDefaultWindowMask(const gfx::Size& size, SkPath* window_mask) {
   const SkScalar width = SkIntToScalar(size.width());
   const SkScalar height = SkIntToScalar(size.height());
 
-  window_mask->moveTo(0, 3);
-  window_mask->lineTo(1, 3);
-  window_mask->lineTo(1, 1);
-  window_mask->lineTo(3, 1);
-  window_mask->lineTo(3, 0);
+  *window_mask = SkPath::Polygon(
+      {
+          {0, 3},
+          {1, 3},
+          {1, 1},
+          {3, 1},
+          {3, 0},
 
-  window_mask->lineTo(width - 3, 0);
-  window_mask->lineTo(width - 3, 1);
-  window_mask->lineTo(width - 1, 1);
-  window_mask->lineTo(width - 1, 3);
-  window_mask->lineTo(width, 3);
+          {width - 3, 0},
+          {width - 3, 1},
+          {width - 1, 1},
+          {width - 1, 3},
+          {width, 3},
 
-  window_mask->lineTo(width, height - 3);
-  window_mask->lineTo(width - 1, height - 3);
-  window_mask->lineTo(width - 1, height - 1);
-  window_mask->lineTo(width - 3, height - 1);
-  window_mask->lineTo(width - 3, height);
+          {width, height - 3},
+          {width - 1, height - 3},
+          {width - 1, height - 1},
+          {width - 3, height - 1},
+          {width - 3, height},
 
-  window_mask->lineTo(3, height);
-  window_mask->lineTo(3, height - 1);
-  window_mask->lineTo(1, height - 1);
-  window_mask->lineTo(1, height - 3);
-  window_mask->lineTo(0, height - 3);
-
-  window_mask->close();
+          {3, height},
+          {3, height - 1},
+          {1, height - 1},
+          {1, height - 3},
+          {0, height - 3},
+      },
+      /*isClosed=*/true);
 }
 
 }  // namespace views
