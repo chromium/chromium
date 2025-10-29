@@ -136,7 +136,12 @@ void GlicFreController::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
   }
   chrome::AddAndReturnTabAt(browser, GURL(), /*index=*/-1, /*foreground=*/true);
   if (CanShowFreDialog(browser)) {
-    ShowFreDialog(browser, source);
+    if (GlicEnabling::IsUnifiedFreEnabled(profile_)) {
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
+          browser, /*prevent_close=*/true, source);
+    } else {
+      ShowFreDialog(browser, source);
+    }
   }
 }
 
