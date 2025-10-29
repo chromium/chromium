@@ -84,7 +84,8 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
   ActorAttemptLoginToolTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::kActorLogin,
-                              actor::kGlicEnableAutoLoginDialogs},
+                              actor::kGlicEnableAutoLoginDialogs,
+                              actor::kGlicEnableAutoLoginPersistedPermissions},
         /*disabled_features=*/{});
   }
 
@@ -405,6 +406,33 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
   ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
   EXPECT_EQ(u"username1",
             mock_login_service().last_credential_used()->username);
+  EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, UsePersistedCredential) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  actor_login::Credential persisted_cred = MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true);
+  persisted_cred.has_persistent_permission = true;
+
+  mock_login_service().SetCredentials(std::vector{persisted_cred});
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // Since we'll use a credential that we already have permission for, we should
+  // skip the confirmation prompt and use the credential automatically.
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+      .Times(0);
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+  ASSERT_TRUE(mock_login_service().last_credential_used().has_value());
+  EXPECT_EQ(u"username", mock_login_service().last_credential_used()->username);
   EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
 }
 
