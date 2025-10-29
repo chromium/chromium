@@ -16049,6 +16049,7 @@ from previous Chrome versions.
   <int value="630947363" label="touch-events"/>
   <int value="631136125" label="EnableDefaultAppsMigration:enabled"/>
   <int value="631315985" label="SyncSessionOnVisibilityChanged:disabled"/>
+  <int value="632276726" label="ReadAnythingOmniboxChip:enabled"/>
   <int value="632324382"
       label="ExperimentalAccessibilityDictationListening:disabled"/>
   <int value="632340413" label="network-settings-config"/>
@@ -19575,6 +19576,7 @@ from previous Chrome versions.
   <int value="1844222711" label="AssistantConsentV2:disabled"/>
   <int value="1845138535" label="ServiceWorkerAutoPreload:enabled"/>
   <int value="1845205143" label="ShowSuggestionsOnAutofocus:disabled"/>
+  <int value="1845273093" label="ReadAnythingOmniboxChip:disabled"/>
   <int value="1845781020" label="DesktopSharePreview:disabled"/>
   <int value="1846717591" label="CaptureMode:disabled"/>
   <int value="1847024354" label="enable-hotword-hardware"/>

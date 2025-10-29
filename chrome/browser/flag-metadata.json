@@ -8669,6 +8669,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "read-anything-omnibox-chip",
+    "owners": [ "kristislee@google.com", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "read-anything-read-aloud",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 145

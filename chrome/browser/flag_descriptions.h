@@ -6079,6 +6079,11 @@ inline constexpr char kReadAnythingReadAloudTsTextSegmentationDescription[] =
     "Enables the experimental text segmentation method for reading "
     "mode.";
 
+inline constexpr char kReadAnythingOmniboxChipName[] =
+    "Reading Mode Omnibox Chip";
+inline constexpr char kReadAnythingOmniboxChipDescription[] =
+    "Enables the omnibox chip entry point for Reading mode";
+
 inline constexpr char kReadAnythingReadAloudPhraseHighlightingName[] =
     "Reading Mode Read Aloud Phrase Highlighting";
 inline constexpr char kReadAnythingReadAloudPhraseHighlightingDescription[] =

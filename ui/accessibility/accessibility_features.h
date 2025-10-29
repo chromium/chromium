@@ -345,6 +345,10 @@ AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudTSTextSegmentation);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudTSTextSegmentationEnabled();
 
+// Enable the omnibox entrypoint for Read Anything.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxChip);
+AX_BASE_EXPORT bool IsReadAnythingOmniboxChipEnabled();
+
 // Enable images to be distilled via algorithm. Should be disabled by
 // default.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingImagesViaAlgorithm);
