@@ -44,10 +44,24 @@ bool IsContextualTasksHost(const GURL& url) {
 }
 
 GURL AppendCommonUrlParams(GURL url) {
-  url = net::AppendQueryParameter(url, "aep", "11");
-  url = net::AppendQueryParameter(url, "igu", "1");
   url = net::AppendQueryParameter(url, "gsc", "2");
+  // TODO(crbug.com/454388385): Remove this param once authentication flow is
+  // implemented.
+  url = net::AppendQueryParameter(url, "gl", "us");
   return url;
+}
+
+bool IsSignInDomain(const GURL& url) {
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  std::vector<std::string> sign_in_domains = GetContextualTasksSignInDomains();
+  for (const auto& sign_in_domain : sign_in_domains) {
+    if (url.host() == sign_in_domain) {
+      return true;
+    }
+  }
+  return false;
 }
 }  // namespace
 
@@ -175,11 +189,18 @@ bool ContextualTasksUiService::HandleNavigation(
   }
 
   bool is_nav_to_ai = IsAiUrl(navigation_url);
+  bool is_nav_to_sign_in = IsSignInDomain(navigation_url);
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the AI page.
   if (IsContextualTasksHost(responsible_web_contents_url)) {
     if (is_nav_to_ai) {
+      return false;
+    }
+    // Allow users to sign in within the <webview>.
+    // TODO(crbug.com/454388385): Remove this once the authentication flow is
+    // implemented.
+    if (is_nav_to_sign_in) {
       return false;
     }
     // This needs to be posted in case the called method triggers a navigation

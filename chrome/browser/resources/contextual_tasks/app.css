@@ -14,7 +14,10 @@
 }
 
 #toolbar {
+  align-items: center;
   background-color: var(--cr-fallback-color-primary-container);
+  display: flex;
+  justify-content: space-between;
   padding: 16px;
 }
 
