@@ -149,6 +149,7 @@ void SignalGpuCompletion(
 void CopyToGpuMemoryBuffer(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
     media::VideoFrame* dst_frame,
+    const gpu::SyncToken& blit_done_sync_token,
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableGpuBuffer());
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
@@ -160,9 +161,6 @@ void CopyToGpuMemoryBuffer(
   DCHECK(raster_context_provider);
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
-
-  gpu::SyncToken blit_done_sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
   auto* sii = context_provider.SharedImageInterface();
   DCHECK(sii);
@@ -295,6 +293,7 @@ WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     // For shared memory GMBs we needed to explicitly request a copy
     // from the shared image GPU texture to the GMB.
     CopyToGpuMemoryBuffer(weak_context_provider_, dst_frame_ptr,
+                          completion_sync_token.value(),
                           wrapped_callback->callback());
   } else {
     // QueryEXT functions are used to make sure that
