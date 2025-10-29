@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 
 namespace gpu {
 class SharedContextState;
@@ -22,7 +23,6 @@ class SharedImageManager;
 namespace webnn {
 
 class ScopedSequence;
-class WebNNContextImpl;
 class WebNNContextProviderImpl;
 
 namespace dml {
@@ -32,7 +32,9 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options);
 // Create a WebNN context that satisfies the requested preferences in a
 // CreateContextOptions. This corresponds to the
 // ML.createContext(MLContextOptions) overload in the WebNN API.
-base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
+base::expected<
+    std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>,
+    mojom::ErrorPtr>
 CreateContextFromOptions(
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,

@@ -26,22 +26,22 @@ namespace ort {
 class ContextImplOrt final : public WebNNContextImpl {
  public:
   // Constructs a new `ContextImplOrt`. Must be called on `owning_task_runner`.
-  static scoped_refptr<WebNNContextImpl> Create(
-      mojo::PendingReceiver<mojom::WebNNContext> receiver,
-      base::WeakPtr<WebNNContextProviderImpl> context_provider,
-      const EpWorkarounds& ep_workarounds,
-      mojom::CreateContextOptionsPtr options,
-      mojom::Device device_type,
-      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
-      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
-      scoped_refptr<Environment> env,
-      gpu::CommandBufferId command_buffer_id,
-      std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::MemoryTracker> memory_tracker,
-      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
-      gpu::SharedImageManager* shared_image_manager,
-      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      ScopedTrace scoped_trace);
+  static std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
+  Create(mojo::PendingReceiver<mojom::WebNNContext> receiver,
+         base::WeakPtr<WebNNContextProviderImpl> context_provider,
+         const EpWorkarounds& ep_workarounds,
+         mojom::CreateContextOptionsPtr options,
+         mojom::Device device_type,
+         mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+         mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+         scoped_refptr<Environment> env,
+         gpu::CommandBufferId command_buffer_id,
+         std::unique_ptr<ScopedSequence> sequence,
+         scoped_refptr<gpu::MemoryTracker> memory_tracker,
+         scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+         gpu::SharedImageManager* shared_image_manager,
+         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+         ScopedTrace scoped_trace);
 
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  base::WeakPtr<WebNNContextProviderImpl> context_provider,

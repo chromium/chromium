@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -208,16 +209,17 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // Task runner used to create the context on sequence.
   // Only the main thread task runner is used unless the feature is enabled and
   // the backend has support.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+  scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner =
       main_thread_task_runner_;
 
   if (base::FeatureList::IsEnabled(kWebNNAllowMultipleThreads)) {
-    task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+    owning_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
 
-  scoped_refptr<WebNNContextImpl> context_impl;
+  WebNNContextImplPtr context_impl(
+      nullptr, WebNNContextImpl::TaskRunnerDeleter(owning_task_runner));
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
 
@@ -250,11 +252,11 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         AsWeakPtr(), std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(sequence), std::move(task_runner),
+        command_buffer_id, std::move(sequence), std::move(owning_task_runner),
         std::move(receiver), std::move(remote), std::move(callback)));
     return;
   } else if (dml::ShouldCreateDmlContext(*options)) {
-    base::expected<scoped_refptr<WebNNContextImpl>, mojom::ErrorPtr>
+    base::expected<WebNNContextImplPtr, mojom::ErrorPtr>
         context_creation_results = dml::CreateContextFromOptions(
             std::move(options), std::move(write_tensor_consumer),
             std::move(read_tensor_producer), gpu_feature_info_, gpu_info_,
@@ -283,7 +285,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       write_tensor_consumer.reset();
       read_tensor_producer.reset();
       read_tensor_consumer.reset();
-      context_impl = base::MakeRefCounted<coreml::ContextImplCoreml>(
+      context_impl = coreml::ContextImplCoreml::Create(
           std::move(receiver), AsWeakPtr(), std::move(options),
           command_buffer_id, std::move(sequence), memory_tracker_,
           main_thread_task_runner_, shared_image_manager_,
@@ -298,7 +300,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
         std::move(read_tensor_producer), std::move(read_tensor_consumer),
-        command_buffer_id, std::move(sequence), std::move(task_runner),
+        command_buffer_id, std::move(sequence), std::move(owning_task_runner),
         std::move(receiver), std::move(remote), std::move(callback));
     return;
   }
@@ -314,7 +316,7 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
     mojo::PendingRemote<::webnn::mojom::WebNNContext> remote,
     mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
-    scoped_refptr<WebNNContextImpl> context_impl) {
+    WebNNContextImplPtr context_impl) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!context_impl) {
@@ -386,13 +388,12 @@ void WebNNContextProviderImpl::CreateTFLiteContext(
                        std::move(read_tensor_consumer)));
     return;
   }
-  scoped_refptr<WebNNContextImpl> context_impl =
-      base::MakeRefCounted<tflite::ContextImplTflite>(
-          std::move(receiver), AsWeakPtr(), std::move(options),
-          std::move(write_tensor_consumer), std::move(read_tensor_producer),
-          command_buffer_id, std::move(sequence), memory_tracker_,
-          std::move(task_runner), shared_image_manager_,
-          main_thread_task_runner_);
+  WebNNContextImplPtr context_impl = tflite::ContextImplTflite::Create(
+      std::move(receiver), AsWeakPtr(), std::move(options),
+      std::move(write_tensor_consumer), std::move(read_tensor_producer),
+      command_buffer_id, std::move(sequence), memory_tracker_,
+      std::move(task_runner), shared_image_manager_, main_thread_task_runner_,
+      std::move(scoped_trace));
 
   OnCreateWebNNContextImpl(
       std::move(callback), std::move(remote), std::move(write_tensor_producer),
@@ -415,7 +416,8 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     mojo::PendingRemote<mojom::WebNNContext> remote,
     CreateWebNNContextCallback callback,
     base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info) {
-  scoped_refptr<WebNNContextImpl> context_impl;
+  WebNNContextImplPtr context_impl(
+      nullptr, WebNNContextImpl::TaskRunnerDeleter(main_thread_task_runner_));
 
   scoped_trace.AddStep("ort::Environment::GetInstance");
 
@@ -464,14 +466,15 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
                          std::move(read_tensor_consumer)));
       return;
     }
-    context_impl = base::MakeRefCounted<ort::ContextImplOrt>(
+    context_impl = ort::ContextImplOrt::Create(
         std::move(receiver), AsWeakPtr(),
         env_creation_results.value()->GetEpWorkarounds(device_type),
         std::move(options), device_type, std::move(write_tensor_consumer),
         std::move(read_tensor_producer),
         std::move(env_creation_results.value()), command_buffer_id,
         std::move(sequence), memory_tracker_, std::move(task_runner),
-        shared_image_manager_, main_thread_task_runner_);
+        shared_image_manager_, main_thread_task_runner_,
+        std::move(scoped_trace));
   }
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)

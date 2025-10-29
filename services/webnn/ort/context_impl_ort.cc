@@ -29,7 +29,8 @@ BASE_FEATURE(kUseDeviceTensor, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
 // static
-scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
+std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
+ContextImplOrt::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
@@ -46,13 +47,18 @@ scoped_refptr<WebNNContextImpl> ContextImplOrt::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     ScopedTrace scoped_trace) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
-  return base::MakeRefCounted<ContextImplOrt>(
-      std::move(receiver), std::move(context_provider),
-      std::move(ep_workarounds), std::move(options), device_type,
-      std::move(write_tensor_consumer), std::move(read_tensor_producer),
-      std::move(env), command_buffer_id, std::move(sequence),
-      std::move(memory_tracker), std::move(owning_task_runner),
-      shared_image_manager, std::move(main_task_runner));
+  auto task_runner = owning_task_runner;
+  std::unique_ptr<WebNNContextImpl, WebNNContextImpl::TaskRunnerDeleter>
+      context_impl(
+          new ContextImplOrt(
+              std::move(receiver), std::move(context_provider),
+              std::move(ep_workarounds), std::move(options), device_type,
+              std::move(write_tensor_consumer), std::move(read_tensor_producer),
+              std::move(env), command_buffer_id, std::move(sequence),
+              std::move(memory_tracker), std::move(owning_task_runner),
+              shared_image_manager, std::move(main_task_runner)),
+          WebNNContextImpl::TaskRunnerDeleter(std::move(task_runner)));
+  return context_impl;
 }
 
 ContextImplOrt::ContextImplOrt(
