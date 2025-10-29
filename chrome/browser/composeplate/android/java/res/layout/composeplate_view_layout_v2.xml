@@ -20,7 +20,8 @@ found in the LICENSE file.
 
     <LinearLayout
         android:id="@+id/composeplate_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="horizontal"
@@ -52,7 +53,8 @@ found in the LICENSE file.
 
     <LinearLayout
         android:id="@+id/incognito_button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="horizontal"

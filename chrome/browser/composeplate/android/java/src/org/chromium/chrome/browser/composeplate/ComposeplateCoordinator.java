@@ -23,7 +23,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class ComposeplateCoordinator {
     private final PropertyModel mModel;
+    private final ComposeplateView mView;
     private final boolean mHideIncognitoButton;
+    private final int mComposeplateViewMaxiumWidth;
 
     /**
      * Constructs a new ComposeplateCoordinator.
@@ -39,14 +41,19 @@ public class ComposeplateCoordinator {
             @Nullable ColorStateList colorStateList,
             @StyleRes int textStyleResId) {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
-        ComposeplateView view = parentView.findViewById(R.id.composeplate_view);
-        PropertyModelChangeProcessor.create(mModel, view, ComposeplateViewBinder::bind);
+        mView = parentView.findViewById(R.id.composeplate_view);
+        PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
         mHideIncognitoButton =
                 ChromeFeatureList.sAndroidComposeplateHideIncognitoButton.getValue()
                         || !IncognitoUtils.isIncognitoModeEnabled(profile);
 
         mModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
         mModel.set(ComposeplateProperties.TEXT_STYLE_RES_ID, textStyleResId);
+
+        mComposeplateViewMaxiumWidth =
+                parentView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_max_width);
     }
 
     /**
@@ -130,6 +137,21 @@ public class ComposeplateCoordinator {
                 createEnhancedClickListener(
                         composeplateButtonClickListener,
                         ModuleTypeOnStartAndNtp.COMPOSEPLATE_BUTTON));
+    }
+
+    /**
+     * Convenience method to call measure() on the composeplate view with MeasureSpecs converted
+     * from the given dimensions (in pixels) with MeasureSpec.EXACTLY.
+     */
+    public void measureExactlyComposeplateView(int searchBoxWidthPx) {
+        // In landscape mode on tablets, the composeplate view has a maximum width of 680dp.
+        // Otherwise, its width matches the fake search box.
+        int composeplateViewWidth = Math.min(searchBoxWidthPx, mComposeplateViewMaxiumWidth);
+
+        mView.measure(
+                View.MeasureSpec.makeMeasureSpec(composeplateViewWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        mView.getMeasuredHeight(), View.MeasureSpec.EXACTLY));
     }
 
     /**

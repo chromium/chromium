@@ -14,12 +14,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.StyleRes;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,16 +58,22 @@ public class ComposeplateCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private ColorStateList mColorStateList;
 
+    private Context mContext;
     private ComposeplateCoordinator mCoordinator;
     private PropertyModel mPropertyModel;
     private @StyleRes int mTextStyleResId;
 
     @Before
     public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         IncognitoUtils.setEnabledForTesting(true);
         assertTrue(IncognitoUtils.isIncognitoModeEnabled(mProfile));
 
         when(mParentView.findViewById(R.id.composeplate_view)).thenReturn(mComposeplateView);
+        when(mParentView.getResources()).thenReturn(mContext.getResources());
         when(mComposeplateView.findViewById(R.id.voice_search_button))
                 .thenReturn(mVoiceSearchButton);
         when(mComposeplateView.findViewById(R.id.lens_camera_button)).thenReturn(mLensButton);
