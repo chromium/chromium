@@ -798,14 +798,12 @@ bool CanonicalizeFileSystemUrl(std::u16string_view spec,
 // Use for path URLs such as javascript. This does not modify the path in any
 // way, for example, by escaping it.
 COMPONENT_EXPORT(URL)
-bool CanonicalizePathURL(const char* spec,
-                         int spec_len,
+bool CanonicalizePathUrl(std::string_view spec,
                          const Parsed& parsed,
                          CanonOutput* output,
                          Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool CanonicalizePathURL(const char16_t* spec,
-                         int spec_len,
+bool CanonicalizePathUrl(std::u16string_view spec,
                          const Parsed& parsed,
                          CanonOutput* output,
                          Parsed* new_parsed);
@@ -1092,13 +1090,13 @@ bool ReplaceFileUrl(std::string_view base,
 // Path URLs can only have the scheme and path replaced. All other components
 // will be ignored.
 COMPONENT_EXPORT(URL)
-bool ReplacePathURL(const char* base,
+bool ReplacePathUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char>& replacements,
                     CanonOutput* output,
                     Parsed* new_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplacePathURL(const char* base,
+bool ReplacePathUrl(std::string_view base,
                     const Parsed& base_parsed,
                     const Replacements<char16_t>& replacements,
                     CanonOutput* output,

@@ -315,9 +315,8 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
           spec, ParseNonSpecialURLInternal(spec, trim_path_end),
           charset_converter, *output, *output_parsed);
     } else {
-      success = CanonicalizePathURL(spec.data(), spec.length(),
-                                    ParsePathURL(spec, trim_path_end), output,
-                                    output_parsed);
+      success = CanonicalizePathUrl(spec, ParsePathURL(spec, trim_path_end),
+                                    output, output_parsed);
     }
   }
   return success;
@@ -496,7 +495,7 @@ bool DoReplaceComponents(std::string_view spec,
     return ReplaceNonSpecialUrl(spec, parsed, replacements, charset_converter,
                                 *output, *out_parsed);
   }
-  return ReplacePathURL(spec_ptr, parsed, replacements, output, out_parsed);
+  return ReplacePathUrl(spec, parsed, replacements, output, out_parsed);
 }
 
 void DoSchemeModificationPreamble() {

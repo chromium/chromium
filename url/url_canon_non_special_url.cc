@@ -194,8 +194,7 @@ bool CanonicalizeNonSpecialUrl(std::string_view spec,
   new_parsed.has_opaque_path = parsed.has_opaque_path;
 
   if (parsed.has_opaque_path) {
-    return CanonicalizePathURL(spec.data(), spec.length(), parsed, &output,
-                               &new_parsed);
+    return CanonicalizePathUrl(spec, parsed, &output, &new_parsed);
   }
   return DoCanonicalizeNonSpecialUrl(URLComponentSource(spec.data()), parsed,
                                      query_converter, output, new_parsed);
@@ -210,8 +209,7 @@ bool CanonicalizeNonSpecialUrl(std::u16string_view spec,
   new_parsed.has_opaque_path = parsed.has_opaque_path;
 
   if (parsed.has_opaque_path) {
-    return CanonicalizePathURL(spec.data(), spec.length(), parsed, &output,
-                               &new_parsed);
+    return CanonicalizePathUrl(spec, parsed, &output, &new_parsed);
   }
   return DoCanonicalizeNonSpecialUrl(URLComponentSource(spec.data()), parsed,
                                      query_converter, output, new_parsed);
@@ -227,7 +225,7 @@ bool ReplaceNonSpecialUrl(std::string_view base,
   new_parsed.has_opaque_path = base_parsed.has_opaque_path;
 
   if (base_parsed.has_opaque_path) {
-    return ReplacePathURL(base.data(), base_parsed, replacements, &output,
+    return ReplacePathUrl(base, base_parsed, replacements, &output,
                           &new_parsed);
   }
 
@@ -250,7 +248,7 @@ bool ReplaceNonSpecialUrl(std::string_view base,
   new_parsed.has_opaque_path = base_parsed.has_opaque_path;
 
   if (base_parsed.has_opaque_path) {
-    return ReplacePathURL(base.data(), base_parsed, replacements, &output,
+    return ReplacePathUrl(base, base_parsed, replacements, &output,
                           &new_parsed);
   }
 

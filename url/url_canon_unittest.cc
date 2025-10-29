@@ -2163,7 +2163,7 @@ TEST_F(URLCanonTest, ReplacePathURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplacePathURL(cur.base, ParsePathURL(cur.base, false), r, &output,
+    ReplacePathUrl(cur.base, ParsePathURL(cur.base, false), r, &output,
                    &out_parsed);
     output.Complete();
 
@@ -2406,7 +2406,7 @@ TEST_F(URLCanonTest, CanonicalizePathURL) {
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizePathURL(path_case.input, url_len,
+    bool success = CanonicalizePathUrl(path_case.input,
                                        ParsePathURL(path_case.input, true),
                                        &output, &out_parsed);
     output.Complete();
