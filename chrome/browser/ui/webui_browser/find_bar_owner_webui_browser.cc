@@ -25,7 +25,7 @@ views::Widget* FindBarOwnerWebUIBrowser::GetOwnerWidget() {
 
 gfx::Rect FindBarOwnerWebUIBrowser::GetFindBarBoundingBox() {
   if (!window_->browser()->SupportsWindowFeature(
-          Browser::FEATURE_LOCATIONBAR)) {
+          Browser::WindowFeature::kFeatureLocationBar)) {
     return gfx::Rect();
   }
 

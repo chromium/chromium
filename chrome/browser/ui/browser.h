@@ -129,16 +129,16 @@ class Browser : public TabStripModelObserver,
                 public DesktopBrowserWindowCapabilitiesDelegate {
  public:
   // Possible elements of the Browser window.
-  enum WindowFeature {
-    FEATURE_NONE = 0,
-    FEATURE_TITLEBAR = 1 << 0,
-    FEATURE_TABSTRIP = 1 << 1,
-    FEATURE_TOOLBAR = 1 << 2,
-    FEATURE_LOCATIONBAR = 1 << 3,
-    FEATURE_BOOKMARKBAR = 1 << 4,
-    // TODO(crbug.com/40639933): Add FEATURE_PAGECONTROLS to describe the
+  enum class WindowFeature {
+    kFeatureNone,
+    kFeatureTitleBar,
+    kFeatureTabStrip,
+    kFeatureToolbar,
+    kFeatureLocationBar,
+    kFeatureBookmarkBar,
+    // TODO(crbug.com/40639933): Add kFeaturePageControls to describe the
     // presence of per-page controls such as Content Settings Icons, which
-    // should be decoupled from FEATURE_LOCATIONBAR as they have independent
+    // should be decoupled from kFeatureLocationBar as they have independent
     // presence in Web App browsers.
   };
 

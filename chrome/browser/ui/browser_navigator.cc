@@ -114,7 +114,7 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
   }
 
   return params.browser->GetBrowserForMigrationOnly()->CanSupportWindowFeature(
-             Browser::FEATURE_TABSTRIP) ||
+             Browser::WindowFeature::kFeatureTabStrip) ||
          params.browser->GetBrowserForMigrationOnly()
              ->tab_strip_model()
              ->empty();

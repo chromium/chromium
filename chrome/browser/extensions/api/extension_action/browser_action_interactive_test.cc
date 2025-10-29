@@ -779,7 +779,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   EXPECT_TRUE(popup_browser->window()->IsActive());
 #endif
   EXPECT_FALSE(browser()->window()->IsActive());
-  EXPECT_FALSE(popup_browser->SupportsWindowFeature(Browser::FEATURE_TOOLBAR));
+  EXPECT_FALSE(popup_browser->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureToolbar));
   EXPECT_EQ(popup_browser,
             chrome::FindLastActiveWithProfile(browser()->profile()));
 

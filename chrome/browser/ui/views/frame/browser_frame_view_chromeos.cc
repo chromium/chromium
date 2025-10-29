@@ -138,7 +138,8 @@ bool UsePackagedAppHeaderStyle(const Browser* browser) {
     return false;
   }
 
-  return !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+  return !browser->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip);
 }
 
 // Whether or not the window's title should show the avatar. Practically,

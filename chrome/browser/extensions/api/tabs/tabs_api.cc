@@ -238,7 +238,7 @@ int MoveTabToWindow(ExtensionFunction* function,
 
   // TODO(crbug.com/40638654): Rather than calling checking against
   // TYPE_NORMAL, should this call
-  // SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
+  // SupportsWindowFeature(Browser::kFeatureTabstrip)?
   if (target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
     return -1;

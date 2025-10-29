@@ -3622,14 +3622,14 @@ bool Browser::NormalBrowserSupportsWindowFeature(WindowFeature feature,
   const base::FunctionRef<bool(const Browser*)> fullscreen =
       MaybeLazyIsFullscreen(this);
   switch (feature) {
-    case FEATURE_BOOKMARKBAR:
+    case WindowFeature::kFeatureBookmarkBar:
       return true;
-    case FEATURE_TABSTRIP:
-    case FEATURE_TOOLBAR:
-    case FEATURE_LOCATIONBAR:
+    case WindowFeature::kFeatureTabStrip:
+    case WindowFeature::kFeatureToolbar:
+    case WindowFeature::kFeatureLocationBar:
       return check_can_support || !fullscreen(this);
-    case FEATURE_TITLEBAR:
-    case FEATURE_NONE:
+    case WindowFeature::kFeatureTitleBar:
+    case WindowFeature::kFeatureNone:
       return false;
   }
 }
@@ -3639,13 +3639,13 @@ bool Browser::PopupBrowserSupportsWindowFeature(WindowFeature feature,
   const base::FunctionRef<bool(const Browser*)> fullscreen =
       MaybeLazyIsFullscreen(this);
   switch (feature) {
-    case FEATURE_TITLEBAR:
-    case FEATURE_LOCATIONBAR:
+    case WindowFeature::kFeatureTitleBar:
+    case WindowFeature::kFeatureLocationBar:
       return check_can_support || (!fullscreen(this) && !is_trusted_source());
-    case FEATURE_TABSTRIP:
-    case FEATURE_TOOLBAR:
-    case FEATURE_BOOKMARKBAR:
-    case FEATURE_NONE:
+    case WindowFeature::kFeatureTabStrip:
+    case WindowFeature::kFeatureToolbar:
+    case WindowFeature::kFeatureBookmarkBar:
+    case WindowFeature::kFeatureNone:
       return false;
   }
 }
@@ -3656,9 +3656,9 @@ bool Browser::AppPopupBrowserSupportsWindowFeature(
   const base::FunctionRef<bool(const Browser*)> fullscreen =
       MaybeLazyIsFullscreen(this);
   switch (feature) {
-    case FEATURE_TITLEBAR:
+    case WindowFeature::kFeatureTitleBar:
       return check_can_support || !fullscreen(this);
-    case FEATURE_LOCATIONBAR:
+    case WindowFeature::kFeatureLocationBar:
       return GetAppBrowserController() &&
              (check_can_support || !fullscreen(this));
     default:
@@ -3679,21 +3679,21 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
     // by the |AppBrowserController|.
     // TODO(crbug.com/40639933): Make this control the visibility of Browser
     // Controls more generally.
-    case FEATURE_TOOLBAR:
+    case WindowFeature::kFeatureToolbar:
       return true;
-    case FEATURE_TITLEBAR:
+    case WindowFeature::kFeatureTitleBar:
     // TODO(crbug.com/40639933): Make this control the visibility of
     // CustomTabBarView.
-    case FEATURE_LOCATIONBAR:
+    case WindowFeature::kFeatureLocationBar:
       return check_can_support || !fullscreen(this);
-    case FEATURE_TABSTRIP:
+    case WindowFeature::kFeatureTabStrip:
       // Even when the app has a tab strip, it should be hidden in
       // fullscreen. This is consistent with the behavior of
       // NormalBrowserSupportsWindowFeature().
       return app_browser_controller->has_tab_strip() &&
              (check_can_support || !fullscreen(this));
-    case FEATURE_BOOKMARKBAR:
-    case FEATURE_NONE:
+    case WindowFeature::kFeatureBookmarkBar:
+    case WindowFeature::kFeatureNone:
       return false;
   }
 }
@@ -3703,13 +3703,13 @@ bool Browser::AppBrowserSupportsWindowFeature(WindowFeature feature,
 bool Browser::CustomTabBrowserSupportsWindowFeature(
     WindowFeature feature) const {
   switch (feature) {
-    case FEATURE_TOOLBAR:
+    case WindowFeature::kFeatureToolbar:
       return true;
-    case FEATURE_TITLEBAR:
-    case FEATURE_LOCATIONBAR:
-    case FEATURE_TABSTRIP:
-    case FEATURE_BOOKMARKBAR:
-    case FEATURE_NONE:
+    case WindowFeature::kFeatureTitleBar:
+    case WindowFeature::kFeatureLocationBar:
+    case WindowFeature::kFeatureTabStrip:
+    case WindowFeature::kFeatureBookmarkBar:
+    case WindowFeature::kFeatureNone:
       return false;
   }
 }
@@ -3719,13 +3719,13 @@ bool Browser::PictureInPictureBrowserSupportsWindowFeature(
     WindowFeature feature,
     bool check_can_support) const {
   switch (feature) {
-    case FEATURE_TITLEBAR:
+    case WindowFeature::kFeatureTitleBar:
       return true;
-    case FEATURE_LOCATIONBAR:
-    case FEATURE_TABSTRIP:
-    case FEATURE_TOOLBAR:
-    case FEATURE_BOOKMARKBAR:
-    case FEATURE_NONE:
+    case WindowFeature::kFeatureLocationBar:
+    case WindowFeature::kFeatureTabStrip:
+    case WindowFeature::kFeatureToolbar:
+    case WindowFeature::kFeatureBookmarkBar:
+    case WindowFeature::kFeatureNone:
       return false;
   }
 }

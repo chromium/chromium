@@ -358,7 +358,8 @@ content::WebContents* DuplicateTabAt(Browser* browser,
   content::WebContents* raw_contents_dupe = contents_dupe.get();
 
   bool pinned = false;
-  if (browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
+  if (browser->CanSupportWindowFeature(
+          Browser::WindowFeature::kFeatureTabStrip)) {
     // If this is a tabbed browser, just create a duplicate tab inside the same
     // window next to the tab being duplicated.
     TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -1118,7 +1119,8 @@ content::WebContents& NewTab(Browser* browser, NewTabTypes context) {
       std::make_unique<NewTabGroupingUserData>(
           browser->tab_strip_model()->GetActiveTabGroupId()));
 
-  if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
+  if (browser->SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureTabStrip)) {
     std::optional<tab_groups::TabGroupId> group_id = std::nullopt;
 
     if (features::IsNewTabAddsToActiveGroupEnabled()) {
@@ -1365,7 +1367,8 @@ WebContents* DuplicateTabAt(Browser* browser, int index) {
 }
 
 void DuplicateSplit(Browser* browser, split_tabs::SplitTabId split) {
-  CHECK(browser->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP));
+  CHECK(browser->CanSupportWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip));
 
   TabStripModel* model = browser->tab_strip_model();
   split_tabs::SplitTabData* split_data = model->GetSplitData(split);

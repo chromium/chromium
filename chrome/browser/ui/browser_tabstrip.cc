@@ -132,7 +132,7 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
 
   if (!nav_params->browser ||
       !nav_params->browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
-          Browser::WindowFeature::FEATURE_TABSTRIP)) {
+          Browser::WindowFeature::kFeatureTabStrip)) {
     return;
   }
 

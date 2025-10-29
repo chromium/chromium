@@ -184,7 +184,7 @@ BrowserFrameViewWin::BrowserFrameViewWin(BrowserWidget* widget,
 
   Browser* browser = browser_view->browser();
   bool supports_title_bar =
-      browser->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
+      browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureTitleBar);
 
   // Only show icons if the browser supports title bars.
   if (supports_title_bar) {

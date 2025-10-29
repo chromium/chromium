@@ -152,15 +152,16 @@ gfx::Size BrowserViewLayoutImplOld::GetMinimumSize(
   // The minimum height for the normal (tabbed) browser window's contents area.
   constexpr int kMainBrowserContentsMinimumHeight = 1;
 
-  const bool has_tabstrip =
-      delegate().SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+  const bool has_tabstrip = delegate().SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip);
   const bool has_toolbar =
-      delegate().SupportsWindowFeature(Browser::FEATURE_TOOLBAR);
-  const bool has_location_bar =
-      delegate().SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR);
+      delegate().SupportsWindowFeature(Browser::WindowFeature::kFeatureToolbar);
+  const bool has_location_bar = delegate().SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureLocationBar);
   const bool has_bookmarks_bar =
       views().bookmark_bar && views().bookmark_bar->GetVisible() &&
-      delegate().SupportsWindowFeature(Browser::FEATURE_BOOKMARKBAR);
+      delegate().SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureBookmarkBar);
 
   // TODO(crbug.com/437917495): Verify all callers have the correct bounds in
   // vertical and horizontal tabstrip modes.

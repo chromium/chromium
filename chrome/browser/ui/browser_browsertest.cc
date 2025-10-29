@@ -1318,12 +1318,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(app_browser != browser());
 
-  EXPECT_FALSE(
-      dev_tools_browser->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR));
+  EXPECT_FALSE(dev_tools_browser->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureLocationBar));
 
   // App windows can show location bars, for example when they navigate away
   // from their starting origin.
-  EXPECT_TRUE(app_browser->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR));
+  EXPECT_TRUE(app_browser->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureLocationBar));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }
@@ -1619,18 +1620,18 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ArcBrowserWindowFeaturesSetCorrectly) {
   ASSERT_TRUE(new_browser);
 
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_LOCATIONBAR));
+      Browser::WindowFeature::kFeatureLocationBar));
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_TITLEBAR));
+      Browser::WindowFeature::kFeatureTitleBar));
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_TABSTRIP));
+      Browser::WindowFeature::kFeatureTabStrip));
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_BOOKMARKBAR));
+      Browser::WindowFeature::kFeatureBookmarkBar));
   EXPECT_FALSE(
-      new_browser->SupportsWindowFeature(Browser::WindowFeature::FEATURE_NONE));
+      new_browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureNone));
 
   EXPECT_TRUE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_TOOLBAR));
+      Browser::WindowFeature::kFeatureToolbar));
 }
 #endif
 

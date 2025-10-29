@@ -162,7 +162,8 @@ ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
     return ToolbarView::DisplayMode::kCustomTab;
   }
 
-  if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
+  if (browser->SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureTabStrip)) {
     return ToolbarView::DisplayMode::kNormal;
   }
 
@@ -1128,7 +1129,8 @@ AppMenuButton* ToolbarView::GetAppMenuButton() {
 }
 
 gfx::Rect ToolbarView::GetFindBarBoundingBox(int contents_bottom) {
-  if (!browser_->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR)) {
+  if (!browser_->SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureLocationBar)) {
     return gfx::Rect();
   }
 

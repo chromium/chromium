@@ -199,8 +199,8 @@ BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
   }
 #endif
 
-  return FindBrowserOrderedByActivationMatching(profile, Browser::FEATURE_NONE,
-                                                match_types, display_id);
+  return FindBrowserOrderedByActivationMatching(
+      profile, Browser::WindowFeature::kFeatureNone, match_types, display_id);
 }
 
 size_t GetBrowserCountImpl(Profile* profile,
@@ -210,8 +210,8 @@ size_t GetBrowserCountImpl(Profile* profile,
   size_t count = 0;
   if (browser_list_impl) {
     for (const auto& i : *browser_list_impl) {
-      if (BrowserMatches(i, profile, Browser::FEATURE_NONE, match_types,
-                         display_id)) {
+      if (BrowserMatches(i, profile, Browser::WindowFeature::kFeatureNone,
+                         match_types, display_id)) {
         count++;
       }
     }
@@ -249,8 +249,8 @@ Browser* FindBrowserWithProfile(Profile* profile) {
 std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
   std::vector<Browser*> browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchNormal,
-                       display::kInvalidDisplayId)) {
+    if (BrowserMatches(browser, profile, Browser::WindowFeature::kFeatureNone,
+                       kMatchNormal, display::kInvalidDisplayId)) {
       browsers.emplace_back(browser);
     }
   }
@@ -260,8 +260,8 @@ std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
 std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile) {
   std::vector<Browser*> browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchAny,
-                       display::kInvalidDisplayId)) {
+    if (BrowserMatches(browser, profile, Browser::WindowFeature::kFeatureNone,
+                       kMatchAny, display::kInvalidDisplayId)) {
       browsers.emplace_back(browser);
     }
   }
@@ -330,7 +330,7 @@ Browser* FindLastActiveWithProfile(Profile* profile) {
   // We are only interested in last active browsers, so we don't fall back to
   // all browsers like FindBrowserWith* do.
   BrowserWindowInterface* browser = FindBrowserOrderedByActivationMatching(
-      profile, Browser::FEATURE_NONE, kMatchAny);
+      profile, Browser::WindowFeature::kFeatureNone, kMatchAny);
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 

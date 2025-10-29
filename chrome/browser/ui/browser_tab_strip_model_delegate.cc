@@ -119,7 +119,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,
     const gfx::Rect& window_bounds,
     bool maximize) {
-  DCHECK(browser_->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP));
+  DCHECK(browser_->CanSupportWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip));
 
   // Create an empty new browser window the same size as the old one.
   Browser::CreateParams params(browser_->profile(), true);
@@ -229,7 +230,8 @@ std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
 
   // We only create historical tab entries for tabbed browser windows.
-  if (service && browser_->CanSupportWindowFeature(Browser::FEATURE_TABSTRIP)) {
+  if (service && browser_->CanSupportWindowFeature(
+                     Browser::WindowFeature::kFeatureTabStrip)) {
     return service->CreateHistoricalTab(
         sessions::ContentLiveTab::GetForWebContents(contents),
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));

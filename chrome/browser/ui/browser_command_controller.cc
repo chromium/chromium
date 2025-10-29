@@ -1415,11 +1415,13 @@ void BrowserCommandController::TabRestoreServiceLoaded(
 // BrowserCommandController, private:
 
 bool BrowserCommandController::IsShowingMainUI() {
-  return browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+  return browser_->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip);
 }
 
 bool BrowserCommandController::IsShowingLocationBar() {
-  return browser_->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR);
+  return browser_->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureLocationBar);
 }
 
 void BrowserCommandController::InitCommandState() {
@@ -1625,7 +1627,7 @@ void BrowserCommandController::InitCommandState() {
 
   // Tab management commands
   const bool supports_tabs =
-      browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+      browser_->SupportsWindowFeature(Browser::WindowFeature::kFeatureTabStrip);
   command_updater_.UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, supports_tabs);
   command_updater_.UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB, supports_tabs);
   command_updater_.UpdateCommandEnabled(IDC_MOVE_TAB_NEXT, supports_tabs);
@@ -2126,8 +2128,8 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
     // within a webpage if the webapp is locked for OnTask
     // (only relevant for non-web browser scenarios).
     if (browser_->IsLockedForOnTask()) {
-      bool supports_tabs =
-          browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+      bool supports_tabs = browser_->SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureTabStrip);
       command_updater_.UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, supports_tabs);
       command_updater_.UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB,
                                             supports_tabs);

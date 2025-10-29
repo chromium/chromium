@@ -530,7 +530,8 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
   // (like popups).
   if (auto* browser = browser_view_->browser();
       browser && (browser->app_controller() ||
-                  !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))) {
+                  !browser->SupportsWindowFeature(
+                      Browser::WindowFeature::kFeatureTabStrip))) {
     return;
   }
 

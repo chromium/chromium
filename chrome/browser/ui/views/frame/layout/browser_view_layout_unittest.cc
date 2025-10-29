@@ -103,10 +103,10 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
       const Browser::WindowFeature feature) const override {
     static constexpr auto kSupportedFeatures =
         base::MakeFixedFlatSet<Browser::WindowFeature>({
-            Browser::FEATURE_TABSTRIP,
-            Browser::FEATURE_TOOLBAR,
-            Browser::FEATURE_LOCATIONBAR,
-            Browser::FEATURE_BOOKMARKBAR,
+            Browser::WindowFeature::kFeatureTabStrip,
+            Browser::WindowFeature::kFeatureToolbar,
+            Browser::WindowFeature::kFeatureLocationBar,
+            Browser::WindowFeature::kFeatureBookmarkBar,
         });
     return kSupportedFeatures.contains(feature);
   }

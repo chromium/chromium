@@ -86,7 +86,7 @@ bool OpenPopupInBrowser(Browser& browser,
                         const Extension& extension,
                         std::string* error,
                         ShowPopupCallback callback) {
-  if (!browser.SupportsWindowFeature(Browser::FEATURE_TOOLBAR) ||
+  if (!browser.SupportsWindowFeature(Browser::WindowFeature::kFeatureToolbar) ||
       !browser.window()->IsToolbarVisible()) {
     *error = "Browser window has no toolbar.";
     return false;

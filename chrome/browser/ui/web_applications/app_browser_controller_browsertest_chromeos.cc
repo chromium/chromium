@@ -183,7 +183,8 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, TabsTest) {
   InstallAndLaunchMockApp();
 
-  EXPECT_TRUE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
+  EXPECT_TRUE(app_browser_->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip));
 
   // No favicons shown for web apps.
   EXPECT_FALSE(
@@ -230,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, TabsTest) {
                                       ->GetActiveWebContents()
                                       ->GetPrimaryMainFrame(),
                                   {});
-  EXPECT_FALSE(app_browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP));
+  EXPECT_FALSE(app_browser_->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTabStrip));
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTestCrOs, NonAppUrl) {

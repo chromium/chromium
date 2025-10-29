@@ -230,7 +230,8 @@ void ManagedProfileCreationController::ShowManagementDisclaimer() {
   CHECK(source_profile_);
   Browser* browser = chrome::FindLastActiveWithProfile(source_profile_);
   bool has_browser_with_tab =
-      browser && browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP);
+      browser &&
+      browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureTabStrip);
 
   if (user_choice_for_testing_.has_value()) {
     CHECK_IS_TEST();
