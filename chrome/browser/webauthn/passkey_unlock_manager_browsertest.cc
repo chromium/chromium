@@ -5,9 +5,13 @@
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -18,7 +22,13 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
+
+// These tests are also disabled under MSAN. The enclave subprocess is written
+// in Rust and FFI from Rust to C++ doesn't work in Chromium at this time
+// (crbug.com/1369167).
+#if !defined(MEMORY_SANITIZER)
 
 namespace webauthn {
 
@@ -49,7 +59,14 @@ HandleEncryptionUnlockPageRequest(
   return nullptr;  // Let other handlers process if not matched.
 }
 
-class PasskeyUnlockManagerBrowserTest : public InProcessBrowserTest {
+class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
+ public:
+  MOCK_METHOD(void, OnPasskeyUnlockManagerStateChanged, (), (override));
+  MOCK_METHOD(void, OnPasskeyUnlockManagerShuttingDown, (), (override));
+  MOCK_METHOD(void, OnPasskeyUnlockManagerIsReady, (), (override));
+};
+
+class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
  public:
   PasskeyUnlockManagerBrowserTest() = default;
   ~PasskeyUnlockManagerBrowserTest() override = default;
@@ -61,7 +78,7 @@ class PasskeyUnlockManagerBrowserTest : public InProcessBrowserTest {
 
  protected:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    EnclaveAuthenticatorTestBase::SetUpOnMainThread();
     // Make the browser's network stack route requests to the
     // embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -102,6 +119,35 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
+                       NotifyObserversOnEnclaveStateUpdated) {
+  testing::NiceMock<MockPasskeyUnlockManagerObserver> observer;
+  passkey_unlock_manager()->AddObserver(&observer);
+
+  base::test::TestFuture<void> load_future;
+  EnclaveManager* enclave_manager =
+      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+          browser()->profile());
+  enclave_manager->Load(load_future.GetCallback());
+  ASSERT_TRUE(load_future.Wait());
+
+  base::test::TestFuture<void> event_future;
+  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged())
+      .WillOnce([&event_future]() {
+        // Signal the TestFuture when OnPasskeyUnlockManagerStateChanged is
+        // called.
+        event_future.SetValue();
+      });
+
+  // Simulate the operations that make the EnclaveManager ready. This causes a
+  // state change, which should be observed by the PasskeyUnlockManager.
+  SimulateSuccessfulGpmPinCreation("123456");
+
+  EXPECT_TRUE(event_future.Wait());
+}
+
 }  // namespace
 
 }  // namespace webauthn
+
+#endif  // !defined(MEMORY_SANITIZER)
