@@ -333,6 +333,30 @@ public class UrlBarMediatorUnitTest {
     }
 
     @Test
+    public void hintVisibility() {
+        UrlBarData baseData =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        14,
+                        "Blah");
+        mMediator.setUrlBarHintText("Hint 1");
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        mMediator.onUrlFocusChange(true);
+        mMediator.onTextChanged("");
+
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+
+        mMediator.onTextChanged("f");
+        Assert.assertFalse(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+
+        mMediator.onUrlFocusChange(false);
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+    }
+
+    @Test
     public void setIsInCct() {
         Assert.assertFalse(mModel.get(UrlBarProperties.IS_IN_CCT));
         mMediator.setIsInCct(true);

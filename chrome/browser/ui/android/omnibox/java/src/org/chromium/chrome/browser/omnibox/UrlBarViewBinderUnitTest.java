@@ -182,6 +182,9 @@ public class UrlBarViewBinderUnitTest {
         Assert.assertNull(mUrlBar.getHint());
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
         Assert.assertEquals("Hint Text", mUrlBar.getHint());
+
+        mModel.set(UrlBarProperties.SHOW_HINT_TEXT, false);
+        Assert.assertNull(mUrlBar.getHint());
     }
 
     @Test

@@ -46,6 +46,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     // and we couldn't change it by the branded color scheme.
     private boolean mIsHintTextFixedForNtp;
     private boolean mShowOriginOnly;
+    private Callback<String> mTextChangeListener = (text) -> {};
 
     /**
      * Creates a URLBarMediator.
@@ -65,6 +66,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.SHOW_CURSOR, false);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
+        mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, this::onTextChanged);
+        mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         pushTextToModel();
     }
@@ -77,7 +80,18 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
 
     /** Sets a listener for url text changes. */
     public void setTextChangeListener(Callback<String> listener) {
-        mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, listener);
+        mTextChangeListener = listener;
+    }
+
+    @VisibleForTesting
+    void onTextChanged(String text) {
+        mTextChangeListener.onResult(text);
+        updateShowHintText(text);
+    }
+
+    private void updateShowHintText(String text) {
+        boolean showHintText = !mHasFocus || text.isEmpty();
+        mModel.set(UrlBarProperties.SHOW_HINT_TEXT, showHintText);
     }
 
     /**
@@ -232,7 +246,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                 new AutocompleteText(userText, autocompleteText, additionalText));
     }
 
-    private void onUrlFocusChange(boolean focus) {
+    @VisibleForTesting
+    void onUrlFocusChange(boolean focus) {
         mHasFocus = focus;
 
         if (mModel.get(UrlBarProperties.ALLOW_FOCUS)) {
@@ -246,6 +261,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         if (!textChangedInFocusCallback) {
             pushTextToModel();
         }
+        updateShowHintText(mUrlBarData.displayText.toString());
     }
 
     /**
