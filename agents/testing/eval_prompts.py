@@ -14,6 +14,7 @@ import sys
 import checkout_helpers
 import constants
 import eval_config
+import gemini_cli_installation
 import metrics
 import promptfoo_installation
 import results
@@ -300,11 +301,19 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     if args.sandbox and not _fetch_sandbox_image():
         return 1
 
+    gemini_cli_bin = args.gemini_cli_bin
+    node_bin = args.node_bin
+    if args.use_pinned_binaries:
+        (gemini_cli_bin,
+         node_bin) = gemini_cli_installation.fetch_cipd_gemini_cli(
+             args.verbose)
+
     worker_options = workers.WorkerOptions(clean=not args.no_clean,
                                            verbose=args.verbose,
                                            force=args.force,
                                            sandbox=args.sandbox,
-                                           gemini_cli_bin=args.gemini_cli_bin)
+                                           gemini_cli_bin=gemini_cli_bin,
+                                           node_bin=node_bin)
     result_options = results.ResultOptions(
         print_output_on_success=args.print_output_on_success)
 
@@ -482,6 +491,15 @@ def _parse_args() -> argparse.Namespace:
     group.add_argument('--gemini-cli-bin',
                        type=pathlib.Path,
                        help='Path to a custom gemini-cli binary to use.')
+    group.add_argument('--node-bin',
+                       type=pathlib.Path,
+                       help='Path to a custom nodejs binary to use.')
+    group.add_argument(
+        '--use-pinned-binaries',
+        action='store_true',
+        help=('Use the pinned cipd version. This is to control what is under '
+              'test i.e. separating the changes in gemini-cli from the '
+              'changing prompt/codebase.'))
 
     group = parser.add_argument_group('Test Runner Arguments')
     group.add_argument(

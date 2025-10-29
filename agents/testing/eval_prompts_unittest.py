@@ -557,6 +557,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.enable_perf_uploading = False
         self.args.git_revision = None
         self.args.builder = None
+        self.args.use_pinned_binaries = False
+        self.args.node_bin = None
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -572,6 +574,12 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             'promptfoo_installation.FromCipdPromptfooInstallation')
         self.mock_from_cipd = from_cipd_patcher.start()
         self.addCleanup(from_cipd_patcher.stop)
+
+        gcli_cipd_patcher = mock.patch(
+            'gemini_cli_installation.fetch_cipd_gemini_cli')
+        self.mock_gcli_cipd_patcher = gcli_cipd_patcher.start()
+        self.mock_gcli_cipd_patcher.return_value = ('foo_gcli', 'foo_node')
+        self.addCleanup(gcli_cipd_patcher.stop)
 
         perform_chromium_setup_patcher = mock.patch(
             'eval_prompts._perform_chromium_setup')
