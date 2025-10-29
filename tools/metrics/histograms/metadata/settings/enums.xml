@@ -82,6 +82,7 @@ chromium-metrics-reviews@google.com.
   <int value="406265787" label="LanguageSettings"/>
   <int value="436870314" label="SiteSettings"/>
   <int value="453432714" label="AboutChromeSettings"/>
+  <int value="455040669" label="EmptyFragment"/>
   <int value="460038414" label="PreloadPagesSettingsFragment"/>
   <int value="461783669" label="SafetyHubNotificationsFragment"/>
   <int value="493474121" label="StandardProtectionSettingsFragment"/>
@@ -91,6 +92,7 @@ chromium-metrics-reviews@google.com.
   <int value="690866195" label="SafetyHubFragment"/>
   <int value="706619094" label="CredentialEditFragmentView"/>
   <int value="721075728" label="FederatedCredentialFragmentView"/>
+  <int value="734412281" label="SearchResultsPreferenceFragment"/>
   <int value="790603956" label="ChosenObjectSettings"/>
   <int value="851266805" label="RwsCookieSettings"/>
   <int value="853227285" label="ImageDescriptionsSettings"/>
