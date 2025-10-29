@@ -66,6 +66,8 @@ constexpr char kGeolocationMigrateExceptionsPref[] =
 #if !BUILDFLAG(IS_IOS)
 constexpr char kObsoleteTopLevelTpcdTrialExceptionsPref[] =
     "profile.content_settings.exceptions.top_level_3pcd_support";
+constexpr char kObsoleteTopLevelTpcdOriginTrialExceptionsPref[] =
+    "profile.content_settings.exceptions.top_level_3pcd_origin_trial";
 // This setting was accidentally bound to a UI surface intended for a different
 // setting (https://crbug.com/364820109). It should not have been settable
 // except via enterprise policy, so it is temporarily cleaned up here to revert
@@ -115,6 +117,8 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoletePrivateNetworkChooserDataPref);
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
+  registry->RegisterDictionaryPref(
+      kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
 #endif  // !BUILDFLAG(IS_IOS)
@@ -440,6 +444,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
 
 #if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
+  prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)

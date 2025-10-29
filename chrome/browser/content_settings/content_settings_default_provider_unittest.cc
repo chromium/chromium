@@ -186,6 +186,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
       "profile.default_content_setting_values.private_network_guard";
   static const char kObsoleteTopLevelTpcdTrialDefaultPref[] =
       "profile.default_content_setting_values.top_level_3pcd_support";
+  static const char kObsoleteTopLevelTpcdOriginTrialDefaultPref[] =
+      "profile.default_content_setting_values.top_level_3pcd_origin_trial";
 #if !BUILDFLAG(IS_ANDROID)
   static const char kMouselockPrefPath[] =
       "profile.default_content_setting_values.mouselock";
@@ -216,6 +218,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
                     CONTENT_SETTING_BLOCK);
   prefs->SetInteger(kObsoleteTopLevelTpcdTrialDefaultPref,
                     CONTENT_SETTING_ALLOW);
+  prefs->SetInteger(kObsoleteTopLevelTpcdOriginTrialDefaultPref,
+                    CONTENT_SETTING_ALLOW);
 
   // Instantiate a new DefaultProvider; can't use |provider_| because we want to
   // test the constructor's behavior after setting the above.
@@ -225,6 +229,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePrivateNetworkGuardDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdTrialDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdOriginTrialDefaultPref));
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDefaultPref));
