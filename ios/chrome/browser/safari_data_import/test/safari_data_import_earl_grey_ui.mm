@@ -133,18 +133,18 @@ void ExpectImportTableHasRowCount(int expected_count) {
   BOOL visible = [ChromeEarlGrey
       testUIElementAppearanceWithMatcher:
           grey_accessibilityID(
-              GetSafariDataItemTableViewAccessibilityIdentifier())];
+              GetImportDataItemTableViewAccessibilityIdentifier())];
   GREYAssertEqual(visible, expected_count > 0,
                   visible ? @"Import table is unexpectedly displayed."
                           : @"Import table is unexpectedly hidden.");
   id<GREYMatcher> last_row =
       grey_allOf(grey_accessibilityID(
-                     GetSafariDataItemTableViewCellAccessibilityIdentifier(
+                     GetImportDataItemTableViewCellAccessibilityIdentifier(
                          expected_count - 1)),
                  grey_sufficientlyVisible(), nil);
   id<GREYMatcher> row_index_out_of_bounds =
       grey_allOf(grey_accessibilityID(
-                     GetSafariDataItemTableViewCellAccessibilityIdentifier(
+                     GetImportDataItemTableViewCellAccessibilityIdentifier(
                          expected_count)),
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:last_row]

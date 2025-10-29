@@ -8,14 +8,14 @@
 #import "ios/chrome/browser/data_import/public/import_data_item_consumer.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 
-@protocol SafariDataImportImportStageTransitionHandler;
+@protocol DataImportImportStageTransitionHandler;
 
-/// View controller for the Safari data import screen.
-@interface SafariDataItemTableView
-    : SelfSizingTableView <SafariDataItemConsumer>
+/// View controller for the import data screen.
+@interface ImportDataItemTableView
+    : SelfSizingTableView <ImportDataItemConsumer>
 
 /// Import stage transition handler.
-@property(nonatomic, weak) id<SafariDataImportImportStageTransitionHandler>
+@property(nonatomic, weak) id<DataImportImportStageTransitionHandler>
     importStageTransitionHandler;
 
 /// Designated Initializer. `itemCount` specifies how many cells should be in

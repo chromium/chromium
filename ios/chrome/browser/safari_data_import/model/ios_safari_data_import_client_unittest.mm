@@ -20,13 +20,13 @@ constexpr char kUsername[] = "tester";
 constexpr char kPassword[] = "te$te^";
 }  // namespace
 
-/// A mock SafariDataItemConsumer for use in tests.
-@interface MockSafariDataItemConsumer : NSObject <SafariDataItemConsumer>
-@property(nonatomic, strong) SafariDataItem* lastPopulatedItem;
+/// A mock ImportDataItemConsumer for use in tests.
+@interface MockImportDataItemConsumer : NSObject <ImportDataItemConsumer>
+@property(nonatomic, strong) ImportDataItem* lastPopulatedItem;
 @end
 
-@implementation MockSafariDataItemConsumer
-- (void)populateItem:(SafariDataItem*)item {
+@implementation MockImportDataItemConsumer
+- (void)populateItem:(ImportDataItem*)item {
   self.lastPopulatedItem = item;
 }
 @end
@@ -35,15 +35,15 @@ constexpr char kPassword[] = "te$te^";
 class IOSSafariDataImportClientTest : public PlatformTest {
  public:
   IOSSafariDataImportClientTest() {
-    consumer_ = [[MockSafariDataItemConsumer alloc] init];
-    client_.SetSafariDataItemConsumer(consumer_);
+    consumer_ = [[MockImportDataItemConsumer alloc] init];
+    client_.SetImportDataItemConsumer(consumer_);
   }
 
   /// Returns the Safari data import client.
   IOSSafariDataImportClient* client() { return &client_; }
 
   /// Returns the last populated item
-  SafariDataItem* last_populated_item() { return consumer_.lastPopulatedItem; }
+  ImportDataItem* last_populated_item() { return consumer_.lastPopulatedItem; }
 
   /// Whether the import has failed.
   BOOL failed() { return failed_; }
@@ -53,28 +53,28 @@ class IOSSafariDataImportClientTest : public PlatformTest {
 
  private:
   IOSSafariDataImportClient client_;
-  MockSafariDataItemConsumer* consumer_;
+  MockImportDataItemConsumer* consumer_;
   BOOL failed_;
 };
 
 /// Tests that OnBookmarksReady() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnBookmarksReady) {
   client()->OnBookmarksReady(10);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kBookmarks);
+  EXPECT_EQ(item.type, ImportDataItemType::kBookmarks);
   EXPECT_EQ(item.count, 10);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kReady);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kReady);
 }
 
 /// Tests that OnHistoryReady() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnHistoryReady) {
   client()->OnHistoryReady(20);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kHistory);
+  EXPECT_EQ(item.type, ImportDataItemType::kHistory);
   EXPECT_EQ(item.count, 20);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kReady);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kReady);
 }
 
 /// Tests that OnPasswordsReady() populates the consumer.
@@ -93,44 +93,44 @@ TEST_F(IOSSafariDataImportClientTest, OnPasswordsReady) {
   EXPECT_NSEQ(password.username, [NSString stringWithUTF8String:kUsername]);
   EXPECT_NSEQ(password.password, [NSString stringWithUTF8String:kPassword]);
   EXPECT_NSEQ(password.url.title, [NSString stringWithUTF8String:kPrettyUrl]);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kPasswords);
+  EXPECT_EQ(item.type, ImportDataItemType::kPasswords);
   EXPECT_EQ(item.count, 31);
   EXPECT_EQ(item.invalidCount, 0);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kReady);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kReady);
 }
 
 /// Tests that OnPaymentCardsReady() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnPaymentCardsReady) {
   client()->OnPaymentCardsReady(40);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kPayment);
+  EXPECT_EQ(item.type, ImportDataItemType::kPayment);
   EXPECT_EQ(item.count, 40);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kReady);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kReady);
 }
 
 /// Tests that OnBookmarksImported() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnBookmarksImported) {
   client()->OnBookmarksImported(10);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kBookmarks);
+  EXPECT_EQ(item.type, ImportDataItemType::kBookmarks);
   EXPECT_EQ(item.count, 10);
   EXPECT_EQ(item.invalidCount, 0);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kImported);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kImported);
 }
 
 /// Tests that OnHistoryImported() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnHistoryImported) {
   client()->OnHistoryImported(20);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kHistory);
+  EXPECT_EQ(item.type, ImportDataItemType::kHistory);
   EXPECT_EQ(item.count, 20);
   EXPECT_EQ(item.invalidCount, 0);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kImported);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kImported);
 }
 
 /// Tests that OnPasswordsImported() populates the consumer.
@@ -149,23 +149,23 @@ TEST_F(IOSSafariDataImportClientTest, OnPasswordsImported) {
   EXPECT_NSEQ(password.username, [NSString stringWithUTF8String:kUsername]);
   EXPECT_NSEQ(password.password, [NSString stringWithUTF8String:kPassword]);
   EXPECT_NSEQ(password.url.title, [NSString stringWithUTF8String:kPrettyUrl]);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kPasswords);
+  EXPECT_EQ(item.type, ImportDataItemType::kPasswords);
   EXPECT_EQ(item.count, 30);
   EXPECT_EQ(item.invalidCount, 1);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kImported);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kImported);
 }
 
 /// Tests that OnPaymentCardsImported() populates the consumer.
 TEST_F(IOSSafariDataImportClientTest, OnPaymentCardsImported) {
   client()->OnPaymentCardsImported(40);
-  SafariDataItem* item = last_populated_item();
+  ImportDataItem* item = last_populated_item();
   ASSERT_TRUE(item);
-  EXPECT_EQ(item.type, SafariDataItemType::kPayment);
+  EXPECT_EQ(item.type, ImportDataItemType::kPayment);
   EXPECT_EQ(item.count, 40);
   EXPECT_EQ(item.invalidCount, 0);
-  EXPECT_EQ(item.status, SafariDataItemImportStatus::kImported);
+  EXPECT_EQ(item.status, ImportDataItemImportStatus::kImported);
 }
 
 /// Tests that OnTotalFailure() triggers the failure callback.

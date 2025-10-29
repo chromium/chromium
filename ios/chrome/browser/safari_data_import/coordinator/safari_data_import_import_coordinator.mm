@@ -53,7 +53,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
 
 @interface SafariDataImportImportCoordinator () <
     PromoStyleViewControllerDelegate,
-    SafariDataImportImportStageTransitionHandler,
+    DataImportImportStageTransitionHandler,
     UITableViewDelegate>
 
 /// The mediator handling the interaction with the model. Lazily loaded with
@@ -77,7 +77,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
   /// File picker for the user to select Safari data.
   UIDocumentPickerViewController* _documentProvider;
   /// Table view  that displays the import status of Safari data.
-  SafariDataItemTableView* _tableView;
+  ImportDataItemTableView* _tableView;
 }
 
 @synthesize mediator = _mediator;
@@ -101,7 +101,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
       [[SafariDataImportImportViewController alloc] init];
   _containerViewController.delegate = self;
   _tableView =
-      [[SafariDataItemTableView alloc] initWithItemCount:kExpectedItemsCount];
+      [[ImportDataItemTableView alloc] initWithItemCount:kExpectedItemsCount];
   _tableView.delegate = self;
   _tableView.importStageTransitionHandler = self;
   _containerViewController.itemTableView = _tableView;
@@ -249,7 +249,7 @@ constexpr NSInteger kExpectedItemsCount = 4;
   [self dismissWorkflow];
 }
 
-#pragma mark - SafariDataImportImportStageTransitionHandler
+#pragma mark - DataImportImportStageTransitionHandler
 
 - (void)transitionToNextImportStage {
   CHECK_NE(self.importStage, SafariDataImportStage::kImported)

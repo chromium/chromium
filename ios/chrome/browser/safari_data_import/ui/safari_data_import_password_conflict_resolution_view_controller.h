@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @class PasswordImportItem;
-@protocol SafariDataImportImportStageTransitionHandler;
+@protocol DataImportImportStageTransitionHandler;
 @protocol SafariDataImportPasswordConflictMutator;
 
 /// View controller listing password conflicts introduced by Safari data import

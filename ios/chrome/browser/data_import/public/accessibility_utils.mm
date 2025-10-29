@@ -7,18 +7,18 @@
 namespace {
 
 /// Accessibility identifier prefix.
-NSString* const kSafariDataItemTableViewAXidPrefix = @"SafariDataItemTableView";
+NSString* const kImportDataItemTableViewAXidPrefix = @"ImportDataItemTableView";
 
 }  // namespace
 
-NSString* GetSafariDataItemTableViewAccessibilityIdentifier() {
-  return [NSString stringWithFormat:@"%@%@", kSafariDataItemTableViewAXidPrefix,
+NSString* GetImportDataItemTableViewAccessibilityIdentifier() {
+  return [NSString stringWithFormat:@"%@%@", kImportDataItemTableViewAXidPrefix,
                                     @"AccessibilityIdentifier"];
 }
 
-NSString* GetSafariDataItemTableViewCellAccessibilityIdentifier(
+NSString* GetImportDataItemTableViewCellAccessibilityIdentifier(
     NSUInteger cell_index) {
   return
-      [NSString stringWithFormat:@"%@-%ld", kSafariDataItemTableViewAXidPrefix,
+      [NSString stringWithFormat:@"%@-%ld", kImportDataItemTableViewAXidPrefix,
                                  cell_index];
 }

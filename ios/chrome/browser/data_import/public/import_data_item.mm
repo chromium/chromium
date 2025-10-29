@@ -7,14 +7,14 @@
 #import "base/check_op.h"
 #import "base/notreached.h"
 
-@implementation SafariDataItem
+@implementation ImportDataItem
 
 @synthesize type = _type;
 @synthesize status = _status;
 @synthesize count = _count;
 
-- (instancetype)initWithType:(SafariDataItemType)type
-                      status:(SafariDataItemImportStatus)status
+- (instancetype)initWithType:(ImportDataItemType)type
+                      status:(ImportDataItemImportStatus)status
                        count:(size_t)count {
   self = [super init];
   if (self) {
@@ -27,14 +27,14 @@
 
 - (void)transitionToNextStatus {
   switch (self.status) {
-    case SafariDataItemImportStatus::kReady:
-      _status = SafariDataItemImportStatus::kImporting;
+    case ImportDataItemImportStatus::kReady:
+      _status = ImportDataItemImportStatus::kImporting;
       break;
-    case SafariDataItemImportStatus::kImporting:
-      _status = SafariDataItemImportStatus::kImported;
+    case ImportDataItemImportStatus::kImporting:
+      _status = ImportDataItemImportStatus::kImported;
       break;
-    case SafariDataItemImportStatus::kBlockedByPolicy:
-    case SafariDataItemImportStatus::kImported:
+    case ImportDataItemImportStatus::kBlockedByPolicy:
+    case ImportDataItemImportStatus::kImported:
       NOTREACHED() << "item of type " << static_cast<NSUInteger>(self.type)
                    << " is in a terminal state and cannot be transitioned";
   }

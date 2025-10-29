@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_DATA_IMPORT_UI_DATA_IMPORT_IMPORT_STAGE_TRANSITION_HANDLER_H_
 
 /// Consumer that updates the UI to reflect import stage transition.
-@protocol SafariDataImportImportStageTransitionHandler
+@protocol DataImportImportStageTransitionHandler
 
 /// Transition to the next import stage.
 - (void)transitionToNextImportStage;

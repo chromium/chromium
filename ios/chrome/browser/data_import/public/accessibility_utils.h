@@ -7,12 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
-/// Returns the accessibility identifier to set on a `SafariDataItemTableView`.
-NSString* GetSafariDataItemTableViewAccessibilityIdentifier();
+/// Returns the accessibility identifier to set on a `ImportDataItemTableView`.
+NSString* GetImportDataItemTableViewAccessibilityIdentifier();
 
 /// Returns the accessibility identifier to set on a cell in the
-/// `SafariDataItemTableView`.
-NSString* GetSafariDataItemTableViewCellAccessibilityIdentifier(
+/// `ImportDataItemTableView`.
+NSString* GetImportDataItemTableViewCellAccessibilityIdentifier(
     NSUInteger cell_index);
 
 #endif  // IOS_CHROME_BROWSER_DATA_IMPORT_PUBLIC_ACCESSIBILITY_UTILS_H_

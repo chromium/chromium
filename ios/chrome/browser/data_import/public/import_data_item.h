@@ -7,17 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
-/// Different types of items identified by a SafariDataItem. Ordered by position
+/// Different types of items identified by a ImportDataItem. Ordered by position
 /// in the table view.
-enum class SafariDataItemType : NSUInteger {
+enum class ImportDataItemType : NSUInteger {
   kPasswords = 0,
   kPayment = 1,
   kHistory = 2,
   kBookmarks = 3,
 };
 
-/// Current import progress for each SafariDataItem.
-enum class SafariDataItemImportStatus : NSUInteger {
+/// Current import progress for each ImportDataItem.
+enum class ImportDataItemImportStatus : NSUInteger {
   /// Data is ready to be imported.
   kReady,
   /// Data import in progress.
@@ -28,15 +28,15 @@ enum class SafariDataItemImportStatus : NSUInteger {
   kBlockedByPolicy,
 };
 
-/// Hashable container for a type of data item that can be imported from Safari.
-@interface SafariDataItem : NSObject
+/// Hashable container for a type of data item that can be imported.
+@interface ImportDataItem : NSObject
 
-/// The type of the Safari data item. Also serves as a unique hash of the
+/// The type of the import data item. Also serves as a unique hash of the
 /// object.
-@property(nonatomic, readonly) SafariDataItemType type;
+@property(nonatomic, readonly) ImportDataItemType type;
 
 /// One of { kReady, kImporting, kImported }.
-@property(nonatomic, readonly) SafariDataItemImportStatus status;
+@property(nonatomic, readonly) ImportDataItemImportStatus status;
 
 /// Number of items.
 @property(nonatomic, readonly) int count;
@@ -46,8 +46,8 @@ enum class SafariDataItemImportStatus : NSUInteger {
 @property(nonatomic, assign) int invalidCount;
 
 /// Initializer with data item type.
-- (instancetype)initWithType:(SafariDataItemType)type
-                      status:(SafariDataItemImportStatus)status
+- (instancetype)initWithType:(ImportDataItemType)type
+                      status:(ImportDataItemImportStatus)status
                        count:(size_t)count NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

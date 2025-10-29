@@ -7,15 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class SafariDataItem;
+@class ImportDataItem;
 
-/// Consumer to allow the Safari import model to send import status information
-/// to its UI.
-@protocol SafariDataItemConsumer
+/// Consumer to allow the import model to send import status information to
+/// its UI.
+@protocol ImportDataItemConsumer
 
-/// Populate Safari data items. Note that this method should only be invoked
+/// Populate import data items. Note that this method should only be invoked
 /// from the same thread.
-- (void)populateItem:(SafariDataItem*)item;
+- (void)populateItem:(ImportDataItem*)item;
 
 @end
 

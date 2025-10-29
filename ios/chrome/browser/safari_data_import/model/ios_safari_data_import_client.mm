@@ -86,19 +86,19 @@ NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
   return password_items;
 }
 
-void HandleCountOrErrorResult(id<SafariDataItemConsumer> consumer,
-                              SafariDataItemType type,
+void HandleCountOrErrorResult(id<ImportDataItemConsumer> consumer,
+                              ImportDataItemType type,
                               user_data_importer::CountOrError result) {
   size_t count = 0;
-  SafariDataItemImportStatus status = SafariDataItemImportStatus::kReady;
+  ImportDataItemImportStatus status = ImportDataItemImportStatus::kReady;
   if (result.has_value()) {
     count = result.value();
   } else if (result.error() ==
              user_data_importer::ImportPreparationError::kBlockedByPolicy) {
-    status = SafariDataItemImportStatus::kBlockedByPolicy;
+    status = ImportDataItemImportStatus::kBlockedByPolicy;
   }
 
-  [consumer populateItem:[[SafariDataItem alloc] initWithType:type
+  [consumer populateItem:[[ImportDataItem alloc] initWithType:type
                                                        status:status
                                                         count:count]];
 }
@@ -108,8 +108,8 @@ void HandleCountOrErrorResult(id<SafariDataItemConsumer> consumer,
 IOSSafariDataImportClient::IOSSafariDataImportClient() = default;
 IOSSafariDataImportClient::~IOSSafariDataImportClient() = default;
 
-void IOSSafariDataImportClient::SetSafariDataItemConsumer(
-    id<SafariDataItemConsumer> consumer) {
+void IOSSafariDataImportClient::SetImportDataItemConsumer(
+    id<ImportDataItemConsumer> consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   consumer_ = consumer;
 }
@@ -141,13 +141,13 @@ void IOSSafariDataImportClient::OnTotalFailure() {
 void IOSSafariDataImportClient::OnBookmarksReady(
     user_data_importer::CountOrError result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleCountOrErrorResult(consumer_, SafariDataItemType::kBookmarks, result);
+  HandleCountOrErrorResult(consumer_, ImportDataItemType::kBookmarks, result);
 }
 
 void IOSSafariDataImportClient::OnHistoryReady(
     user_data_importer::CountOrError estimated_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleCountOrErrorResult(consumer_, SafariDataItemType::kHistory,
+  HandleCountOrErrorResult(consumer_, ImportDataItemType::kHistory,
                            estimated_count);
 }
 
@@ -156,16 +156,16 @@ void IOSSafariDataImportClient::OnPasswordsReady(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t count = 0;
-  SafariDataItemImportStatus status = SafariDataItemImportStatus::kReady;
+  ImportDataItemImportStatus status = ImportDataItemImportStatus::kReady;
   if (result.has_value()) {
     const ImportResults& results = result.value();
     conflicting_passwords_ = GetPasswordImportItemsFromImportResults(results);
     count = results.number_to_import + results.displayed_entries.size();
   } else if (result.error() == ImportPreparationError::kBlockedByPolicy) {
-    status = SafariDataItemImportStatus::kBlockedByPolicy;
+    status = ImportDataItemImportStatus::kBlockedByPolicy;
   }
-  [consumer_ populateItem:[[SafariDataItem alloc]
-                              initWithType:SafariDataItemType::kPasswords
+  [consumer_ populateItem:[[ImportDataItem alloc]
+                              initWithType:ImportDataItemType::kPasswords
                                     status:status
                                      count:count]];
 }
@@ -173,22 +173,22 @@ void IOSSafariDataImportClient::OnPasswordsReady(
 void IOSSafariDataImportClient::OnPaymentCardsReady(
     user_data_importer::CountOrError result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  HandleCountOrErrorResult(consumer_, SafariDataItemType::kPayment, result);
+  HandleCountOrErrorResult(consumer_, ImportDataItemType::kPayment, result);
 }
 
 void IOSSafariDataImportClient::OnBookmarksImported(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [consumer_ populateItem:[[SafariDataItem alloc]
-                              initWithType:SafariDataItemType::kBookmarks
-                                    status:SafariDataItemImportStatus::kImported
+  [consumer_ populateItem:[[ImportDataItem alloc]
+                              initWithType:ImportDataItemType::kBookmarks
+                                    status:ImportDataItemImportStatus::kImported
                                      count:count]];
 }
 
 void IOSSafariDataImportClient::OnHistoryImported(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [consumer_ populateItem:[[SafariDataItem alloc]
-                              initWithType:SafariDataItemType::kHistory
-                                    status:SafariDataItemImportStatus::kImported
+  [consumer_ populateItem:[[ImportDataItem alloc]
+                              initWithType:ImportDataItemType::kHistory
+                                    status:ImportDataItemImportStatus::kImported
                                      count:count]];
 }
 
@@ -196,9 +196,9 @@ void IOSSafariDataImportClient::OnPasswordsImported(
     const password_manager::ImportResults& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   invalid_passwords_ = GetPasswordImportItemsFromImportResults(results);
-  SafariDataItem* item =
-      [[SafariDataItem alloc] initWithType:SafariDataItemType::kPasswords
-                                    status:SafariDataItemImportStatus::kImported
+  ImportDataItem* item =
+      [[ImportDataItem alloc] initWithType:ImportDataItemType::kPasswords
+                                    status:ImportDataItemImportStatus::kImported
                                      count:results.number_imported];
   item.invalidCount = static_cast<int>(invalid_passwords_.count);
   [consumer_ populateItem:item];
@@ -206,9 +206,9 @@ void IOSSafariDataImportClient::OnPasswordsImported(
 
 void IOSSafariDataImportClient::OnPaymentCardsImported(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  [consumer_ populateItem:[[SafariDataItem alloc]
-                              initWithType:SafariDataItemType::kPayment
-                                    status:SafariDataItemImportStatus::kImported
+  [consumer_ populateItem:[[ImportDataItem alloc]
+                              initWithType:ImportDataItemType::kPayment
+                                    status:ImportDataItemImportStatus::kImported
                                      count:count]];
 }
 

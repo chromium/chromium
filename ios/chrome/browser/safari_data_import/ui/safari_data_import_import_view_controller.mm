@@ -138,7 +138,7 @@
   /// Removes the instruction view first.
   [self.specificContentView.subviews[0] removeFromSuperview];
   /// Displays the table view.
-  SafariDataItemTableView* tableView = self.itemTableView;
+  ImportDataItemTableView* tableView = self.itemTableView;
   [self.specificContentView addSubview:tableView];
   /// Top align the table view.
   [NSLayoutConstraint activateConstraints:@[

@@ -204,7 +204,7 @@
   if (_importClientReady) {
     return;
   }
-  _importClient->SetSafariDataItemConsumer(self.itemConsumer);
+  _importClient->SetImportDataItemConsumer(self.itemConsumer);
   __weak SafariDataImportImportMediator* weakSelf = self;
   _importClient->RegisterCallbackOnImportFailure(base::BindOnce(^{
     __strong SafariDataImportImportMediator* strongSelf = weakSelf;

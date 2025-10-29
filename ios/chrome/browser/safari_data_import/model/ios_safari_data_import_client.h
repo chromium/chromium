@@ -13,7 +13,7 @@
 #import "base/types/expected.h"
 #import "components/user_data_importer/utility/safari_data_import_client.h"
 
-@protocol SafariDataItemConsumer;
+@protocol ImportDataItemConsumer;
 @class PasswordImportItem;
 
 // A C++ class that provides a platform-specific implementation for
@@ -32,7 +32,7 @@ class IOSSafariDataImportClient
   // Consumer object handling UI updates to display the progress of data
   // importing. This needs to be set before preparing the .zip file containing
   // Safari data.
-  void SetSafariDataItemConsumer(id<SafariDataItemConsumer> consumer);
+  void SetImportDataItemConsumer(id<ImportDataItemConsumer> consumer);
 
   // Register callback function invoked when no Safari data item could be
   // loaded.
@@ -68,7 +68,7 @@ class IOSSafariDataImportClient
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Object handling ready or imported Safari Data items.
-  __weak id<SafariDataItemConsumer> consumer_;
+  __weak id<ImportDataItemConsumer> consumer_;
 
   // List of registered callbacks, and the object managing its lifetime.
   ImportFailureCallbackList failure_callbacks_;
