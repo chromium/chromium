@@ -228,6 +228,11 @@ public class ReaderModePrefsView extends LinearLayout
         MaterialButton button = findViewById(id);
         button.setOnClickListener(
                 v -> {
+                    // Do not update distilled page prefs if clicking already selected theme.
+                    if (mDistilledPagePrefs.getTheme() == theme) {
+                        button.setChecked(true);
+                        return;
+                    }
                     ReaderModeMetrics.reportReaderModePrefsThemeChanged(theme);
                     mDistilledPagePrefs.setUserPrefTheme(theme);
                 });
@@ -336,6 +341,11 @@ public class ReaderModePrefsView extends LinearLayout
     public void onClick(View view) {
         int fontFamily = (int) view.getTag();
         FontFamily.validate(fontFamily);
+        // Do not update distilled page prefs if clicking already selected font family.
+        if (mDistilledPagePrefs.getFontFamily() == fontFamily) {
+            ((MaterialButton) view).setChecked(true);
+            return;
+        }
         ReaderModeMetrics.reportReaderModePrefsFontFamilyChanged(fontFamily);
         mDistilledPagePrefs.setFontFamily(fontFamily);
     }
