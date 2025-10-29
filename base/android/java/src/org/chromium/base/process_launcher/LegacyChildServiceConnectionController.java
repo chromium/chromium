@@ -153,20 +153,15 @@ import javax.annotation.concurrent.GuardedBy;
     @Override
     public void unbind() {
         mUnbound = true;
-        if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
-            // Update binding state to ChildBindingState.UNBOUND before unbinding
-            // actual bindings below.
-            updateBindingState();
-        }
+        // Update binding state to ChildBindingState.UNBOUND before unbinding
+        // actual bindings below.
+        updateBindingState();
         mStrongBinding.unbindServiceConnection(null);
         // We must clear shared waived binding when we unbind a waived binding.
         clearSharedWaivedBinding();
         mWaivedBinding.unbindServiceConnection(null);
         mNotPerceptibleBinding.unbindServiceConnection(null);
         mVisibleBinding.unbindServiceConnection(null);
-        if (!BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
-            updateBindingState();
-        }
     }
 
     @Override
@@ -293,12 +288,7 @@ import javax.annotation.concurrent.GuardedBy;
 
     @Override
     public void unsetStrongBinding() {
-        if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
-            mStrongBinding.unbindServiceConnection(() -> updateBindingState());
-        } else {
-            mStrongBinding.unbindServiceConnection(null);
-            updateBindingState();
-        }
+        mStrongBinding.unbindServiceConnection(() -> updateBindingState());
     }
 
     @Override
@@ -309,12 +299,7 @@ import javax.annotation.concurrent.GuardedBy;
 
     @Override
     public void unsetVisibleBinding() {
-        if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
-            mVisibleBinding.unbindServiceConnection(() -> updateBindingState());
-        } else {
-            mVisibleBinding.unbindServiceConnection(null);
-            updateBindingState();
-        }
+        mVisibleBinding.unbindServiceConnection(() -> updateBindingState());
     }
 
     @Override
@@ -325,12 +310,7 @@ import javax.annotation.concurrent.GuardedBy;
 
     @Override
     public void unsetNotPerceptibleBinding() {
-        if (BaseFeatureList.sUpdateStateBeforeUnbinding.isEnabled()) {
-            mNotPerceptibleBinding.unbindServiceConnection(() -> updateBindingState());
-        } else {
-            mNotPerceptibleBinding.unbindServiceConnection(null);
-            updateBindingState();
-        }
+        mNotPerceptibleBinding.unbindServiceConnection(() -> updateBindingState());
     }
 
     @Override

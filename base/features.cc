@@ -160,9 +160,6 @@ BASE_FEATURE(kRebindingChildServiceConnectionController,
 // Use a batch API to rebind service connections.
 BASE_FEATURE(kRebindServiceBatchApi, FEATURE_DISABLED_BY_DEFAULT);
 
-// Update child process binding state before unbinding.
-BASE_FEATURE(kUpdateStateBeforeUnbinding, FEATURE_ENABLED_BY_DEFAULT);
-
 // Use ChildServiceConnectionController.isUnbound() instead of isConnected() to
 // check the connection state in ChildProcessConnection.
 BASE_FEATURE(kUseIsUnboundCheck, FEATURE_DISABLED_BY_DEFAULT);
