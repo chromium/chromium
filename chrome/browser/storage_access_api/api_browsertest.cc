@@ -2002,8 +2002,58 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
             CookieBundle("cross-site=a.test"));
 }
 
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       DedicatedWorker_InheritsStorageAccessFromDocument) {
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    DedicatedWorker_InheritsStorageAccessFromDocument_NewGrant) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(
+      GetURL(kHostB, "/workers/fetch_from_worker.html?start_worker_manually"));
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // When the worker's parent document has storage access at the time the worker
+  // is created, the worker should inherit that access and be able to use it.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "start_worker()"));
+  EXPECT_EQ(
+      content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
+      "cross-site=b.test");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    DedicatedWorker_InheritsStorageAccessFromDocument_ExistingGrant) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DENY_ALL);
+  // This cross-origin navigation avoids propagating storage access by default
+  // so that the kHostB frame has to request it again.
+  NavigateFrameTo(RedirectViaHosts(
+      {kHostA},
+      GetURL(kHostB, "/workers/fetch_from_worker.html?start_worker_manually")));
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // When the worker's parent document has storage access at the time the worker
+  // is created, the worker should inherit that access and be able to use it.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "start_worker()"));
+  EXPECT_EQ(
+      content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
+      "cross-site=b.test");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    DedicatedWorker_InheritsStorageAccessFromDocument_NavigationInheritance) {
   SetBlockThirdPartyCookies(true);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
