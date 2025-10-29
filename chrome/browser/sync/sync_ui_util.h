@@ -91,6 +91,12 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service);
 // whether a missing passphrase is preventing Sync from fully starting up.
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// Shows the sync passphrase dialog and attempts decrypting the data using the
+// provided passphrase.
+void ShowSyncPassphraseDialogAndDecryptData(Browser& browser);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_ANDROID)
 // Opens a tab for the purpose of retrieving the trusted vault keys, which
 // usually requires a reauth.

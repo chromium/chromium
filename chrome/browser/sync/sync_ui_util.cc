@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -269,6 +270,28 @@ bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   }
   return settings->IsPassphraseRequiredForPreferredDataTypes();
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(browser.profile());
+  if (!sync_service) {
+    return;
+  }
+
+  ShowSyncPassphraseDialog(
+      browser,
+      base::BindRepeating(
+          [](base::WeakPtr<Profile> profile, std::u16string_view passphrase) {
+            if (!profile) {
+              return true;  // Close the dialog.
+            }
+            return SyncPassphraseDialogDecryptData(
+                SyncServiceFactory::GetForProfile(profile.get()), passphrase);
+          },
+          browser.profile()->GetWeakPtr()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 void OpenTabForSyncKeyRetrieval(

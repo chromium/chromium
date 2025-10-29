@@ -155,6 +155,7 @@ if (!is_android) {
           ":sync",
           "//base",
           "//base/test:test_support",
+          "//chrome/browser/ui",
           "//chrome/common",
           "//chrome/test:test_support_ui",
           "//content/test:test_support",
