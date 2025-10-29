@@ -10,8 +10,8 @@ desc: |-
         Setting the policy to Disabled or leaving it unset prevents all users from applying firmware updates.
 
         This policy applies to firmware for internal component firmware updates for <ph name="PRODUCT_OS_FLEX_NAME">Google ChromeOS Flex</ph> devices. Internal component firmware updates for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices are not affected by this policy.
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:144-
 device_only: true
 features:
   dynamic_refresh: true
