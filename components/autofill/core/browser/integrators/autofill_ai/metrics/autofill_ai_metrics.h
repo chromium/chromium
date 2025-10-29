@@ -30,7 +30,8 @@ void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&
         local_entities_considered_for_deduplication_per_type,
-    const base::flat_map<EntityType, size_t>& local_entities_dedupled_per_type);
+    const base::flat_map<EntityType, size_t>&
+        local_entities_deduplicated_per_type);
 
 void LogStoredEntitiesCount(base::span<const EntityInstance> entities);
 
