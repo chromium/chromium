@@ -74,6 +74,8 @@ dependencies {
     compileLatest 'javax.inject:javax.inject:+'
     compileLatest 'javax.annotation:javax.annotation-api:+'
     compileLatest 'com.squareup.leakcanary:leakcanary-android:+'
+    compileLatest 'com.squareup.leakcanary:leakcanary-android-core:+'
+    compileLatest 'com.squareup.leakcanary:shark:+'
     androidTestCompileLatest 'com.squareup.leakcanary:leakcanary-android-instrumentation:+'
     buildCompileLatest 'org.ow2.asm:asm:+'
     buildCompileLatest 'org.ow2.asm:asm-commons:+'
