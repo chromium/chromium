@@ -13488,6 +13488,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kReadAnythingOmniboxChip)},
 #endif
 
+#if BUILDFLAG(IS_MAC)
+    {"unexportable-key-deletion",
+     flag_descriptions::kUnexportableKeyDeletionName,
+     flag_descriptions::kUnexportableKeyDeletionDescription, kOsMac,
+     FEATURE_VALUE_TYPE(unexportable_keys::kUnexportableKeyDeletion)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

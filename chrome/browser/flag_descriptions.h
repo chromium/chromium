@@ -6516,6 +6516,12 @@ inline constexpr char kRetryGetVideoCaptureDeviceInfosDescription[] =
     "after a crash. The capture service is restarted without loading external "
     "DAL plugins which could have caused the crash.";
 
+inline constexpr char kUnexportableKeyDeletionName[] =
+    "Enable Unexportable Key Deletion";
+inline constexpr char kUnexportableKeyDeletionDescription[] =
+    "Enables the garbage collection and deletion of obsolete cryptographic "
+    "keys used for Device Bound Session Credentials.";
+
 inline constexpr char kUseAdHocSigningForWebAppShimsName[] =
     "Use Ad-hoc Signing for Web App Shims";
 inline constexpr char kUseAdHocSigningForWebAppShimsDescription[] =

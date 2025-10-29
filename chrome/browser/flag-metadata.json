@@ -10154,6 +10154,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "unexportable-key-deletion",
+    "owners": [ "jdoerrie@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "unsafely-treat-insecure-origin-as-secure",
     "owners": [ "security-dev@chromium.org" ],
     // This flag is supported for bypassing security restrictions on HTTP pages,

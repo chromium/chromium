@@ -9738,6 +9738,7 @@ from previous Chrome versions.
       label="enable-experimental-webassembly-stack-switching"/>
   <int value="-1611357520" label="MediaAppPdfInInk:enabled"/>
   <int value="-1611305202" label="KeepPrefetchedContentSuggestions:disabled"/>
+  <int value="-1610215431" label="UnexportableKeyDeletion:enabled"/>
   <int value="-1609065859" label="ClipboardCustomFormats:enabled"/>
   <int value="-1608869911" label="RobustAudioDeviceSelectLogic:enabled"/>
   <int value="-1608717313" label="TabStripCollectionStorage:enabled"/>
@@ -15988,6 +15989,7 @@ from previous Chrome versions.
   <int value="609112512" label="touch-selection-strategy"/>
   <int value="609568740" label="ImprovedSemanticsActivityIndicators:disabled"/>
   <int value="609580715" label="ArcCupsApi:disabled"/>
+  <int value="610239808" label="UnexportableKeyDeletion:disabled"/>
   <int value="610513921" label="RobustWindowManagement:disabled"/>
   <int value="610545308" label="enable-potentially-annoying-security-features"/>
   <int value="612509325" label="AndroidWindowManagementWebApi:enabled"/>
