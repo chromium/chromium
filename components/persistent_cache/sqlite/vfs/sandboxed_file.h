@@ -20,12 +20,13 @@ namespace persistent_cache {
 //   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
 //   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
 //  +---+-+-+-----------------------+-------------------------------+
-//  |0|P|R|0|                     SHARED COUNT                      |
+//  |A|P|R|0|                     SHARED COUNT                      |
 //  +---+-+-+-----------------------+-------------------------------+
 //
 // Where
 //
 //   SHARED COUNT: The number of SHARED locks held by readers.
+//   A: Whether the lock is abandoned. If set no further use is permitted.
 //   R: The RESERVED lock is held. New shared locks are still permitted.
 //   P: The PENDING lock is held. No new shared locks are permitted while any
 //      process holds the PENDING lock.
@@ -114,6 +115,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SandboxedFile
   int Unfetch(sqlite3_int64 offset, void* fetch_result) override;
 
   int LockModeForTesting() const { return sqlite_lock_mode_; }
+
+  // Marks this instance as not suitable for use anymore. Once called the effect
+  // is permanent. After this call `Lock()` will not succeed anymore and
+  // communicate the abandonment through the error code returned which
+  // lets code using the class observe the change.
+  void Abandon();
 
  private:
   // Returns a pointer to the lock state, which is shared across other instances

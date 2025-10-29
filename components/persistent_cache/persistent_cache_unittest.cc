@@ -496,6 +496,29 @@ TEST_P(PersistentCacheTest, MultipleLiveEntriesWithVaryingLifetime) {
   }
 }
 
+TEST_P(PersistentCacheTest, AbandonementDetected) {
+  auto cache = OpenCache();
+
+  // Value is correctly inserted.
+  EXPECT_THAT(
+      cache->Insert(kKey, base::byte_span_from_cstring("1"), EntryMetadata{}),
+      base::test::HasValue());
+  ASSERT_OK_AND_ASSIGN(auto entry, cache->Find(kKey));
+  EXPECT_NE(entry, nullptr);
+
+  // Abandon cache, no further operations will succeed.
+  cache->Abandon();
+
+  // Calling Find() is no longer successful.
+  EXPECT_THAT(cache->Find(kKey),
+              base::test::ErrorIs(TransactionError::kConnectionError));
+
+  // Calling Insert() is no longer successful.
+  EXPECT_THAT(
+      cache->Insert(kKey, base::byte_span_from_cstring("1"), EntryMetadata{}),
+      base::test::ErrorIs(TransactionError::kConnectionError));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PersistentCacheTest,
                          testing::Values(BackendType::kSqlite));

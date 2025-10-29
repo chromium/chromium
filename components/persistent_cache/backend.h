@@ -69,6 +69,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   // nothing in case of error.
   virtual std::optional<BackendParams> ExportReadWriteParams() = 0;
 
+  // See `PersistentCache::Abandon()` documentation.
+  virtual void Abandon() = 0;
+
  protected:
   Backend();
 };

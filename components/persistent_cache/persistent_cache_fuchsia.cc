@@ -51,6 +51,10 @@ std::optional<BackendParams> PersistentCache::ExportReadWriteBackendParams() {
   NOTREACHED();
 }
 
+void PersistentCache::Abandon() {
+  NOTREACHED();
+}
+
 Backend* PersistentCache::GetBackendForTesting() {
   NOTREACHED();
 }

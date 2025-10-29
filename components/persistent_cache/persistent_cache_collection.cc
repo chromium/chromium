@@ -21,20 +21,24 @@
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
 
-namespace {
-
-constexpr size_t kLruCacheCapacity = 100;
-
-}  // namespace
-
 namespace persistent_cache {
+
+// Custom deleter for PersistentCache that makes sure the instances are always
+// properly abandoned before deletion.
+struct PersistentCacheCollection::AbandoningDeleter {
+  void operator()(PersistentCache* cache) const {
+    cache->Abandon();
+    delete cache;
+  }
+};
 
 PersistentCacheCollection::PersistentCacheCollection(
     base::FilePath top_directory,
-    int64_t target_footprint)
+    int64_t target_footprint,
+    size_t lru_capacity)
     : backend_storage_(std::move(top_directory)),
       target_footprint_(target_footprint),
-      persistent_caches_(kLruCacheCapacity) {
+      persistent_caches_(lru_capacity) {
   ReduceFootPrint();
 }
 
@@ -197,7 +201,8 @@ PersistentCache* PersistentCacheCollection::GetOrCreateCache(
 
   // Create the cache
   auto inserted_it = persistent_caches_.Put(
-      cache_id, std::make_unique<PersistentCache>(std::move(backend)));
+      cache_id, std::unique_ptr<PersistentCache, AbandoningDeleter>(
+                    new PersistentCache(std::move(backend))));
   return inserted_it->second.get();
 }
 

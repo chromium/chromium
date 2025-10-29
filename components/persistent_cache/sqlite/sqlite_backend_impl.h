@@ -47,9 +47,11 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   bool IsReadOnly() const override;
   std::optional<BackendParams> ExportReadOnlyParams() override;
   std::optional<BackendParams> ExportReadWriteParams() override;
+  void Abandon() override;
 
  private:
-  TransactionError HandleError(int sqlite_error);
+  // Translate error codes from `db_` into a `TransactionError`.
+  TransactionError TranslateError(int error_code);
 
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
 
@@ -59,7 +61,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
 
   // The set of of `SanboxedFiles` accessible by this backend. This class owns
   // the `SandboxedFiles`.
-  const SqliteVfsFileSet vfs_file_set_;
+  SqliteVfsFileSet vfs_file_set_;
 
   // Owns the registration / unregistration of the `SanboxedFiles` own by this
   // backend to the `SqliteSandboxedVfsDelegate`. Must be defined after

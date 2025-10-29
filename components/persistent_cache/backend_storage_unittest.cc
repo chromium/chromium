@@ -69,6 +69,7 @@ class MockBackend : public Backend {
               ExportReadWriteParams,
               (),
               (override));
+  MOCK_METHOD(void, Abandon, (), (override));
 };
 
 class BackendStorageTest : public testing::Test {

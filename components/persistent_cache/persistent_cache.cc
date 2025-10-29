@@ -113,6 +113,12 @@ std::optional<BackendParams> PersistentCache::ExportReadWriteBackendParams() {
   return backend_->ExportReadWriteParams();
 }
 
+void PersistentCache::Abandon() {
+  if (backend_) {
+    backend_->Abandon();
+  }
+}
+
 Backend* PersistentCache::GetBackendForTesting() {
   return backend_.get();
 }

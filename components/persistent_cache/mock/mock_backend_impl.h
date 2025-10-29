@@ -47,6 +47,7 @@ class MockBackendImpl : public Backend {
               ExportReadWriteParams,
               (),
               (override));
+  MOCK_METHOD(void, Abandon, (), (override));
 };
 
 }  // namespace persistent_cache

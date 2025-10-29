@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
   // lock.
   base::UnsafeSharedMemoryRegion DuplicateLock() const;
 
+  // Marks this file set as not usable anymore. Should only be used through
+  // `Backend::Abandon()`.
+  void Abandon();
+
  private:
   base::FilePath GetJournalVirtualFilePath() const;
 

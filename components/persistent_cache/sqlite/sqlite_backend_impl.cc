@@ -143,7 +143,7 @@ SqliteBackendImpl::Find(std::string_view key) {
   const int error_code = db_->GetErrorCode();
   TRACE_EVENT_INSTANT1("persistent_cache", "find_failed",
                        TRACE_EVENT_SCOPE_THREAD, "error_code", error_code);
-  return base::unexpected(HandleError(error_code));
+  return base::unexpected(TranslateError(error_code));
 }
 
 base::expected<void, TransactionError> SqliteBackendImpl::Insert(
@@ -174,22 +174,22 @@ base::expected<void, TransactionError> SqliteBackendImpl::Insert(
     const int error_code = db_->GetErrorCode();
     TRACE_EVENT_INSTANT1("persistent_cache", "insert_failed",
                          TRACE_EVENT_SCOPE_THREAD, "error_code", error_code);
-    return base::unexpected(HandleError(error_code));
+    return base::unexpected(TranslateError(error_code));
   }
 
   return base::ok();
 }
 
-TransactionError SqliteBackendImpl::HandleError(int sqlite_error) {
-  switch (sqlite_error) {
+TransactionError SqliteBackendImpl::TranslateError(int error_code) {
+  switch (error_code) {
     case SQLITE_BUSY:
     case SQLITE_NOMEM:
       return TransactionError::kTransient;
     case SQLITE_CANTOPEN:
     case SQLITE_IOERR_LOCK:  // Lock abandonment.
       return TransactionError::kConnectionError;
-    case SQLITE_CORRUPT:
     case SQLITE_ERROR:
+    case SQLITE_CORRUPT:
     case SQLITE_FULL:
     case SQLITE_IOERR_FSTAT:
     case SQLITE_IOERR_FSYNC:
@@ -214,13 +214,17 @@ bool SqliteBackendImpl::IsReadOnly() const {
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportReadOnlyParams() {
-  // TODO(https://crbug.com/377475540): Disallow export after permanent error.
   return ExportParams(/*read_write=*/false);
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportReadWriteParams() {
-  // TODO(https://crbug.com/377475540): Disallow export after permanent error.
   return ExportParams(/*read_write=*/true);
+}
+
+void SqliteBackendImpl::Abandon() {
+  // Read only instances do not have the privilege of abandoning an instance.
+  CHECK(!IsReadOnly());
+  vfs_file_set_.Abandon();
 }
 
 std::optional<BackendParams> SqliteBackendImpl::ExportParams(bool read_write) {

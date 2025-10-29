@@ -23,6 +23,7 @@ constexpr uint32_t kMaxSharedLocks = 0x08000000;
 constexpr uint32_t kSharedMask = 0x0FFFFFFF;
 constexpr uint32_t kReservedBit = 0x20000000;
 constexpr uint32_t kPendingBit = 0x40000000;
+constexpr uint32_t kAbandonedBit = 0x80000000;
 
 }  // namespace
 
@@ -90,6 +91,10 @@ int SandboxedFile::Close() {
   CHECK(IsValid());
   underlying_file_ = std::move(opened_file_);
   return SQLITE_OK;
+}
+
+void SandboxedFile::Abandon() {
+  GetLockState().fetch_or(kAbandonedBit);
 }
 
 int SandboxedFile::Read(void* buffer, int size, sqlite3_int64 offset) {
@@ -252,6 +257,11 @@ int SandboxedFile::Lock(int mode) {
       // Try to increment the SHARED lock count as long as the PENDING lock
       // remains unheld and there is room remaining to count a new SHARED lock.
       uint32_t shared_state = lock_state.load();
+
+      if ((shared_state & kAbandonedBit) != 0) {
+        return SQLITE_IOERR_LOCK;
+      }
+
       for (int i = 0; i < 5; ++i) {
         if ((shared_state & kPendingBit) != 0 ||
             (shared_state & kSharedMask) == kMaxSharedLocks) {
@@ -263,6 +273,11 @@ int SandboxedFile::Lock(int mode) {
           sqlite_lock_mode_ = SQLITE_LOCK_SHARED;
           return SQLITE_OK;
         }
+
+        if ((shared_state & kAbandonedBit) != 0) {
+          return SQLITE_IOERR_LOCK;
+        }
+
         // Perform up to four retries in case this client is racing against
         // other changes to the shared lock.
       }
@@ -278,6 +293,10 @@ int SandboxedFile::Lock(int mode) {
       // intention to modify the database. At this point, readers are still
       // allowed to get a SHARED lock on the database.
       const uint32_t acquired_shared_state = lock_state.fetch_or(kReservedBit);
+      if ((acquired_shared_state & kAbandonedBit) != 0) {
+        return SQLITE_IOERR_LOCK;
+      }
+
       if ((acquired_shared_state & kReservedBit) != 0) {
         return SQLITE_BUSY;
       }
@@ -302,6 +321,13 @@ int SandboxedFile::Lock(int mode) {
       uint32_t shared_state = 0;
       if (sqlite_lock_mode_ < SQLITE_LOCK_PENDING) {
         shared_state = lock_state.fetch_or(kPendingBit);
+        if ((shared_state & kAbandonedBit) != 0) {
+          // This instance may have just set `kPendingBit`. There is no need to
+          // clear it since all other parties will detect that the instance is
+          // abandoned on their next attempt to acquire any lock.
+          return SQLITE_IOERR_LOCK;
+        }
+
         if ((shared_state & kPendingBit) != 0) {
           // This connection is not the owner of the PENDING lock.
           return SQLITE_BUSY;
@@ -314,6 +340,10 @@ int SandboxedFile::Lock(int mode) {
       } else {
         // Fetch the current state of the lock for use below.
         shared_state = lock_state.load();
+
+        if ((shared_state & kAbandonedBit) != 0) {
+          return SQLITE_IOERR_LOCK;
+        }
       }
 
       // Do not grant the EXCLUSIVE lock until all other readers have released

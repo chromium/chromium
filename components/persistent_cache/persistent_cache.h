@@ -131,6 +131,12 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
   // nothing if its backend is not operating or the params cannot be exported.
   std::optional<BackendParams> ExportReadWriteBackendParams();
 
+  // Marks a backend as not suitable for use. This property applies to
+  // all backends initialized with the same `BackendParam`s. This is different
+  // from deleting the backing files which is done to completely get rid of the
+  // data contained.
+  void Abandon();
+
   Backend* GetBackendForTesting();
 
  private:
