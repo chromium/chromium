@@ -46,6 +46,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -545,20 +546,25 @@ const LayoutObject* GetListMarker(const LayoutObject& layout_object,
 }
 
 bool ElementHasAnyAriaRelation(Element& element) {
-  return element.HasAnyExplicitlySetAttrAssociatedElements() ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaActionsAttr) ||
-         AXObject::HasAriaAttribute(element,
-                                    html_names::kAriaActivedescendantAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaControlsAttr) ||
-         AXObject::HasAriaAttribute(element,
-                                    html_names::kAriaDescribedbyAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaDetailsAttr) ||
-         AXObject::HasAriaAttribute(element,
-                                    html_names::kAriaErrormessageAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaFlowtoAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaLabelledbyAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaLabeledbyAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaOwnsAttr);
+  if (element.HasAnyExplicitlySetAttrAssociatedElements()) {
+    return true;
+  }
+
+  const auto& idref_attrs = GetAriaIdrefAttributes();
+  for (const QualifiedName* attr : idref_attrs) {
+    if (AXObject::HasAriaAttribute(element, *attr)) {
+      return true;
+    }
+  }
+
+  const auto& idref_list_attrs = GetAriaIdrefListAttributes();
+  for (const QualifiedName* attr : idref_list_attrs) {
+    if (AXObject::HasAriaAttribute(element, *attr)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
@@ -2939,20 +2945,13 @@ bool AXNodeObject::IsLoaded() const {
 }
 
 bool AXNodeObject::IsMultiSelectable() const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kGrid:
-    case ax::mojom::blink::Role::kTreeGrid:
-    case ax::mojom::blink::Role::kTree:
-    case ax::mojom::blink::Role::kListBox:
-    case ax::mojom::blink::Role::kTabList:
-      bool multiselectable;
-      if (AriaBooleanAttribute(html_names::kAriaMultiselectableAttr,
-                               &multiselectable)) {
-        return multiselectable;
-      }
-      break;
-    default:
-      break;
+  if (RoleSupportsAriaAttribute(RoleValue(),
+                                html_names::kAriaMultiselectableAttr)) {
+    bool multiselectable;
+    if (AriaBooleanAttribute(html_names::kAriaMultiselectableAttr,
+                             &multiselectable)) {
+      return multiselectable;
+    }
   }
 
   auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());

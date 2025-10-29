@@ -287,16 +287,7 @@ const QualifiedName& DeprecatedAriaRowtextAttrName() {
 const AtomicString& AriaTokenAttributeFromValue(const QualifiedName& attribute,
                                                 const AtomicString& value) {
   DEFINE_STATIC_LOCAL(const AtomicString, undefined_value, ("undefined"));
-  if (attribute == html_names::kAriaAutocompleteAttr ||
-      attribute == html_names::kAriaCheckedAttr ||
-      attribute == html_names::kAriaCurrentAttr ||
-      attribute == html_names::kAriaHaspopupAttr ||
-      attribute == html_names::kAriaInvalidAttr ||
-      attribute == html_names::kAriaLiveAttr ||
-      attribute == html_names::kAriaOrientationAttr ||
-      attribute == html_names::kAriaPressedAttr ||
-      attribute == html_names::kAriaRelevantAttr ||
-      attribute == html_names::kAriaSortAttr) {
+  if (IsAriaTokenAttribute(attribute) || IsAriaTokenListAttribute(attribute)) {
     // These properties support a list of tokens, and "undefined"/"" is
     // equivalent to not setting the attribute.
     return value.empty() || value == undefined_value ? g_null_atom : value;
@@ -4703,25 +4694,8 @@ bool AXObject::IsNameProhibited() const {
 
   // The ARIA specification disallows providing accessible names on certain
   // roles because doing so causes problems in screen readers.
-  // Roles which probit names: https://w3c.github.io/aria/#namefromprohibited.
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kCaption:
-    case ax::mojom::blink::Role::kCode:
-    case ax::mojom::blink::Role::kContentDeletion:
-    case ax::mojom::blink::Role::kContentInsertion:
-    case ax::mojom::blink::Role::kDefinition:
-    case ax::mojom::blink::Role::kEmphasis:
-    case ax::mojom::blink::Role::kGenericContainer:
-    case ax::mojom::blink::Role::kMark:
-    case ax::mojom::blink::Role::kNone:
-    case ax::mojom::blink::Role::kParagraph:
-    case ax::mojom::blink::Role::kStrong:
-    case ax::mojom::blink::Role::kSuggestion:
-    case ax::mojom::blink::Role::kTerm:
-      return true;
-    default:
-      return false;
-  }
+  // https://w3c.github.io/aria/#namefromprohibited
+  return RoleIsNameProhibited(RoleValue());
 }
 
 String AXObject::GetName(ax::mojom::blink::NameFrom& name_from,
@@ -5435,34 +5409,23 @@ ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
 }
 
 bool AXObject::SupportsARIAExpanded() const {
+  if (RoleSupportsAriaAttribute(RoleValue(), html_names::kAriaExpandedAttr)) {
+    return true;
+  }
+
+  // Nonstandard. For Read Anything's Gmail thread support, likely temporary:
+  // TODO(accessibility): remove once Gmail uses standards-compliant markup.
+  // Alternatively, consider adding aria-expanded support to listitem.
+  if (RoleValue() == ax::mojom::blink::Role::kListItem) {
+    return true;
+  }
+
   switch (RoleValue()) {
-    case ax::mojom::blink::Role::kApplication:
-    case ax::mojom::blink::Role::kButton:
-    case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kColumnHeader:
-    case ax::mojom::blink::Role::kComboBoxGrouping:
-    case ax::mojom::blink::Role::kComboBoxMenuButton:
-    case ax::mojom::blink::Role::kComboBoxSelect:
+    // TODO(accessibility): Should these map to the "button" ARIA role?
+    // If so, they should be added to the `internalRoles` field of "button"
+    // in `aria_properties.json5`.
     case ax::mojom::blink::Role::kDisclosureTriangle:
     case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
-    case ax::mojom::blink::Role::kGridCell:
-    case ax::mojom::blink::Role::kLink:
-    case ax::mojom::blink::Role::kPopUpButton:
-    case ax::mojom::blink::Role::kMenuItem:
-    case ax::mojom::blink::Role::kMenuItemCheckBox:
-    case ax::mojom::blink::Role::kMenuItemRadio:
-    case ax::mojom::blink::Role::kRow:
-    case ax::mojom::blink::Role::kRowHeader:
-    case ax::mojom::blink::Role::kSwitch:
-    case ax::mojom::blink::Role::kTab:
-    case ax::mojom::blink::Role::kTextFieldWithComboBox:
-    case ax::mojom::blink::Role::kToggleButton:
-    case ax::mojom::blink::Role::kTreeItem:
-      return true;
-    // Nonstandard. For Read Anything's Gmail thread support, likely temporary:
-    // TODO(accessibility): remove once Gmail uses standards-compliant markup.
-    // Alternatively, consider adding aria-expanded support to listitem.
-    case ax::mojom::blink::Role::kListItem:
       return true;
     default:
       return false;
