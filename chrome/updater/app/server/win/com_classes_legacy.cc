@@ -1271,7 +1271,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   update_client::Callback callback = base::BindOnce(
       [](LegacyAppCommandWebImplPtr obj, update_client::Error error) {
         VLOG(1) << "App command ping for appid: " << obj->app_id_
-                << " completed: " << error;
+                << " completed or was skipped: " << error;
       },
       LegacyAppCommandWebImplPtr(this));
   if (FAILED(hr)) {
@@ -1347,6 +1347,8 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
          const std::string& command_id, ErrorParams error_params,
          update_client::Callback callback, bool enable_usage_stats) {
         if (!enable_usage_stats) {
+          AppServerWin::PostRpcTask(
+              base::BindOnce(std::move(callback), update_client::Error::NONE));
           return;
         }
         scoped_refptr<Configurator> config =
