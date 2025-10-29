@@ -51,7 +51,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);
+    self.title = l10n_util::GetNSString(
+        IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()
+            ? IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS
+            : IDS_IOS_TABS_MANAGEMENT_SETTINGS);
   }
   return self;
 }

@@ -967,6 +967,11 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)tabsSettingsButton {
+  if (IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()) {
+    return [ChromeMatchersAppInterface
+        buttonWithAccessibilityLabelID:
+            (IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS)];
+  }
   return [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:(IDS_IOS_TABS_MANAGEMENT_SETTINGS)];
 }
