@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
@@ -223,6 +224,8 @@ class ActorTask {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   TaskId id_;
+
+  base::SafeRef<AggregatedJournal> journal_;
 
   // The title does not change for the duration of a task.
   const std::string title_;

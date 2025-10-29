@@ -143,7 +143,7 @@ TaskId ActorKeyedService::CreateTaskWithOptions(
   TRACE_EVENT0("actor", "ActorKeyedService::CreateTask");
   if (!policy_checker_->can_act_on_web()) {
     base::UmaHistogramBoolean("Actor.Task.Created", false);
-    GetJournal().Log(GURL(), TaskId(), "CreateTask",
+    GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::CreateTask",
                      JournalDetailsBuilder()
                          .AddError("Actuation capability disabled")
                          .Build());
@@ -394,7 +394,11 @@ void ActorKeyedService::PerformActions(
   std::vector<ActionResultWithLatencyInfo> empty_results;
   auto* task = GetTask(task_id);
   if (!task) {
-    VLOG(1) << "PerformActions failed: Task not found.";
+    GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::PerformActions",
+                     JournalDetailsBuilder()
+                         .Add("task_id", task_id)
+                         .AddError("Invalid Task")
+                         .Build());
     RunLater(base::BindOnce(std::move(callback),
                             mojom::ActionResultCode::kTaskWentAway,
                             std::nullopt, std::move(empty_results)));
@@ -402,7 +406,9 @@ void ActorKeyedService::PerformActions(
   }
 
   if (actions.empty()) {
-    VLOG(1) << "PerformActions failed: No actions provided.";
+    GetJournal().Log(
+        GURL(), TaskId(), "ActorKeyedService::PerformActions",
+        JournalDetailsBuilder().AddError("Empty Actions List").Build());
     RunLater(base::BindOnce(std::move(callback),
                             mojom::ActionResultCode::kEmptyActionSequence,
                             std::nullopt, std::move(empty_results)));
@@ -432,6 +438,7 @@ void ActorKeyedService::OnActionsFinished(
 void ActorKeyedService::FailAllTasks() {
   std::vector<TaskId> tasks_to_stop =
       FindTaskIdsInActive([](const ActorTask& task) { return true; });
+  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::FailAllTasks", {});
   for (const auto& task_id : tasks_to_stop) {
     StopTask(task_id, /*success=*/false);
   }
@@ -439,6 +446,11 @@ void ActorKeyedService::FailAllTasks() {
 
 void ActorKeyedService::StopTask(TaskId task_id, bool success) {
   TRACE_EVENT0("actor", "ActorKeyedService::StopTask");
+  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::StopTask",
+                   JournalDetailsBuilder()
+                       .Add("task_id", task_id)
+                       .Add("success", success)
+                       .Build());
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
     auto ret = inactive_tasks_.insert(std::move(task));
