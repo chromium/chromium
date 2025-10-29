@@ -9,6 +9,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
@@ -21,6 +22,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -39,13 +41,14 @@ BASE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations,
 namespace {
 
 std::optional<AutofillFieldMetadata> GetAutofillFieldData(
-    content::GlobalRenderFrameHostToken source_frame_token,
+    std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
     ConvertAIPageContentToProtoSession& session,
     const optimization_guide::proto::ContentAttributes& proto_attributes) {
-  if (base::FeatureList::IsEnabled(
+  if (source_frame_token.has_value() &&
+      base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentWithAutofillAnnotations)) {
     content::RenderFrameHost* render_frame_host =
-        content::RenderFrameHost::FromFrameToken(source_frame_token);
+        content::RenderFrameHost::FromFrameToken(*source_frame_token);
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
     if (auto* autofill_annotations_provider =
@@ -548,8 +551,10 @@ void ConvertTableRowData(
   }
 }
 
+// `source_frame_token` is std::nullopt for documents inside popup windows since
+// they're not associated with a `RenderFrameHost`.
 base::expected<void, std::string> ConvertAttributes(
-    content::GlobalRenderFrameHostToken source_frame_token,
+    std::optional<content::GlobalRenderFrameHostToken> source_frame_token,
     ConvertAIPageContentToProtoSession& session,
     const blink::mojom::AIPageContentAttributes& mojom_attributes,
     optimization_guide::proto::ContentAttributes* proto_attributes) {
@@ -779,12 +784,14 @@ class Converter {
             const AIPageContentMap& page_content_map,
             const GetRenderFrameInfo get_render_frame_info,
             FrameTokenSet& frame_token_set,
-            blink::mojom::PageMetadata& page_metadata)
+            blink::mojom::PageMetadata& page_metadata,
+            optimization_guide::proto::AnnotatedPageContent& page_content_proto)
       : options_(std::move(options)),
         page_content_map_(page_content_map),
         get_render_frame_info_(get_render_frame_info),
         frame_token_set_(frame_token_set),
-        page_metadata_(page_metadata) {}
+        page_metadata_(page_metadata),
+        page_content_proto_(page_content_proto) {}
   ~Converter() = default;
 
   base::expected<void, std::string> ConvertNode(
@@ -845,6 +852,12 @@ class Converter {
                   auto* proto_child_frame_node =
                       proto_node->add_children_nodes();
 
+                  if (page_content->frame_data &&
+                      page_content->frame_data->popup) {
+                    RETURN_IF_ERROR(ConvertPopup(
+                        *page_content->frame_data->popup, *render_frame_info));
+                  }
+
                   RETURN_IF_ERROR(ConvertNode(
                       render_frame_info->global_frame_token,
                       *page_content->root_node, proto_child_frame_node));
@@ -873,6 +886,12 @@ class Converter {
 
         switch (iframe_data.content->which()) {
           case blink::mojom::AIPageContentIframeContent::Tag::kLocalFrameData:
+            if (iframe_data.content->get_local_frame_data() &&
+                iframe_data.content->get_local_frame_data()->popup) {
+              RETURN_IF_ERROR(ConvertPopup(
+                  *iframe_data.content->get_local_frame_data()->popup,
+                  *render_frame_info));
+            }
             ConvertIframeData(*render_frame_info, iframe_data,
                               /*mojom_local_frame_data=*/
                               *iframe_data.content->get_local_frame_data(),
@@ -900,6 +919,57 @@ class Converter {
       RETURN_IF_ERROR(
           ConvertNode(source_frame_for_children, *mojom_child, proto_child));
     }
+
+    return base::ok();
+  }
+
+  // Popup windows (annoyingly) do not have an RFH and cannot contain iframes,
+  // so their traversal can be greatly simplified.
+  base::expected<void, std::string> ConvertPopupNode(
+      const blink::mojom::AIPageContentNode& mojom_node,
+      optimization_guide::proto::ContentNode* proto_node) {
+    const auto& mojom_attributes = *mojom_node.content_attributes;
+    if (mojom_attributes.attribute_type ==
+        blink::mojom::AIPageContentAttributeType::kIframe) {
+      return base::unexpected("iframe is unexpected in popup");
+    }
+
+    RETURN_IF_ERROR(
+        ConvertAttributes(std::nullopt, session_, mojom_attributes,
+                          proto_node->mutable_content_attributes()));
+
+    for (const auto& mojom_child : mojom_node.children_nodes) {
+      auto* proto_child = proto_node->add_children_nodes();
+      RETURN_IF_ERROR(ConvertPopupNode(*mojom_child, proto_child));
+    }
+
+    return base::ok();
+  }
+
+  base::expected<void, std::string> ConvertPopup(
+      const blink::mojom::AIPageContentPopup& mojom_popup,
+      const RenderFrameInfo& opener_frame_info) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kAIPageContentIncludePopupWindows)) {
+      return base::ok();
+    }
+
+    optimization_guide::proto::PopupWindow* popup_window =
+        page_content_proto_->mutable_popup_window();
+
+    // First, walk the popup's DOM tree to create proto::ContentNodes.
+    RETURN_IF_ERROR(ConvertPopupNode(*mojom_popup.root_node,
+                                     popup_window->mutable_root_node()));
+
+    // Set the document ID to the frame which opened the popup (might be wrong,
+    // because we treat a main page and its same-site iframes as the same
+    // document id). Also we don't need browser-side security check as the data
+    // all come from the same renderer.
+    popup_window->mutable_opener_document_id()->set_serialized_token(
+        opener_frame_info.serialized_server_token);
+
+    popup_window->set_opener_common_ancestor_dom_node_id(
+        mojom_popup.opener_dom_node_id);
 
     return base::ok();
   }
@@ -932,6 +1002,7 @@ class Converter {
   raw_ref<FrameTokenSet> frame_token_set_;
   raw_ref<blink::mojom::PageMetadata> page_metadata_;
   ConvertAIPageContentToProtoSession session_;
+  raw_ref<optimization_guide::proto::AnnotatedPageContent> page_content_proto_;
 };
 
 // Private helper template to handle both mutable and const traversals for
@@ -1016,7 +1087,7 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
 
   Converter converter(std::move(main_frame_options), page_content_map,
                       get_render_frame_info, frame_token_set,
-                      *page_content_result.metadata);
+                      *page_content_result.metadata, page_content_result.proto);
 
   RETURN_IF_ERROR(converter.ConvertNode(
       main_frame_token, *main_frame_page_content->root_node,
@@ -1039,6 +1110,12 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
   }
   page_content_result.proto.set_version(version);
   page_content_result.proto.set_mode(mode);
+
+  // If the page had a popup open, provide that popup to APC as well.
+  if (main_frame_page_content->frame_data->popup) {
+    RETURN_IF_ERROR(converter.ConvertPopup(
+        *main_frame_page_content->frame_data->popup, *render_frame_info));
+  }
 
   return base::ok();
 }

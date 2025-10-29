@@ -347,6 +347,10 @@ struct AIPageContentFrameData {
 
   // The set of tools supported by this Document.
   array<ScriptTool> script_tools;
+
+  // The opened popup window that is visible on this page, if one exists. Has
+  // its own AIPageContentNode tree.
+  AIPageContentPopup? popup;
 };
 
 // Provides metadata for local redacted frames.
@@ -517,6 +521,16 @@ struct AIPageContentAttributes {
 struct AIPageContentNode {
   array<AIPageContentNode> children_nodes;
   AIPageContentAttributes content_attributes;
+};
+
+// Representation of an open popup window on a page. Contains its own tree of
+// AIPageContentNodes, plus additional metadata.
+struct AIPageContentPopup {
+  // The root node of the web content in the popup window.
+  AIPageContentNode root_node;
+
+  // Unique identifier for the DOM node in the frame which opened this popup.
+  int32 opener_dom_node_id;
 };
 
 // Represents the parsed content of a page. This captures data for a local root.

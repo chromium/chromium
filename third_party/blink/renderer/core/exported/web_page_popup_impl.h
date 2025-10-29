@@ -137,6 +137,9 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   void ExecuteEditCommand(const String& command, const String& value);
 
+  // The element which created this popup.
+  Element& OwnerElement();
+
  private:
   // WidgetBaseClient overrides:
   void OnCommitRequested() override;

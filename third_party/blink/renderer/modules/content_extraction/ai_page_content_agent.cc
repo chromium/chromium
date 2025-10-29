@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -50,6 +52,8 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -1023,16 +1027,7 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
         });
   }
 
-  // Running lifecycle beyond layout is expensive and the information is only
-  // needed to compute geometry. Limit the update to layout if we don't need
-  // the geometry.
-  if (actionable_mode()) {
-    document.View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kUnknown);
-  } else {
-    document.View()->UpdateLifecycleToLayoutClean(
-        DocumentUpdateReason::kUnknown);
-  }
+  UpdateLifecycle(document);
 
   auto* layout_view = document.GetLayoutView();
   auto* document_style = layout_view->Style();
@@ -1060,6 +1055,48 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   }
 
   return page_content;
+}
+
+void AIPageContentAgent::ContentBuilder::UpdateLifecycle(Document& document) {
+  // Running lifecycle beyond layout is expensive and the information is only
+  // needed to compute geometry. Limit the update to layout if we don't need
+  // the geometry.
+  if (actionable_mode()) {
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kUnknown);
+  } else {
+    document.View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kUnknown);
+  }
+
+  // If there's any popup opened, update the popup as well.
+  WebViewImpl* web_view = document.GetPage()->GetChromeClient().GetWebView();
+  WebPagePopupImpl* web_popup = web_view->GetPagePopup();
+  if (!web_popup) {
+    return;
+  }
+  LocalDOMWindow* popup_window = web_popup->Window();
+  if (!popup_window) {
+    return;
+  }
+
+  LocalFrame* popup_frame = popup_window->GetFrame();
+  if (!popup_frame) {
+    return;
+  }
+
+  Document* popup_document = popup_frame->GetDocument();
+  if (!popup_document) {
+    return;
+  }
+
+  if (actionable_mode()) {
+    popup_document->View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kUnknown);
+  } else {
+    popup_document->View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kUnknown);
+  }
 }
 
 void AIPageContentAgent::ContentBuilder::AddMetaData(
@@ -1719,6 +1756,37 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
     model_context->ForEachScriptTool([&](const mojom::blink::ScriptTool& tool) {
       frame_data.script_tools.push_back(tool.Clone());
     });
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentIncludePopupWindows)) {
+    // Check for an open popup window.
+    WebViewImpl* web_view = frame.GetPage()->GetChromeClient().GetWebView();
+    if (web_view->HasOpenedPopup()) {
+      // Fetch the popup window and the element that opened it.
+      WebPagePopupImpl* web_popup = web_view->GetPagePopup();
+      Element& opener = web_popup->OwnerElement();
+
+      // Only fill AIPageContentPopup if this frame owns the popup.
+      if (opener.GetDocument() == frame.GetDocument()) {
+        auto mojom_popup = mojom::blink::AIPageContentPopup::New();
+        if (LayoutView* web_popup_layout_view =
+                web_popup->Window()->GetFrame()->ContentLayoutObject()) {
+          // Build the ContentNode tree.
+          auto web_popup_root_node = MaybeGenerateContentNode(
+              *web_popup_layout_view, *web_popup_layout_view->Style());
+          CHECK(web_popup_root_node);
+          WalkChildren(*web_popup_layout_view, *web_popup_root_node,
+                       *web_popup_layout_view->Style());
+          mojom_popup->root_node = std::move(web_popup_root_node);
+
+          // Add identifier for the node which opened the popup.
+          mojom_popup->opener_dom_node_id = opener.GetDomNodeId();
+
+          frame_data.popup = std::move(mojom_popup);
+        }
+      }
+    }
   }
 }
 

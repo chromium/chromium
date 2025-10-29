@@ -148,6 +148,8 @@ class MODULES_EXPORT AIPageContentAgent final
         const LocalFrame& frame,
         mojom::blink::AIPageContentFrameData& frame_data);
 
+    void UpdateLifecycle(Document& document);
+
     // The set of nodes which are involved in a user interaction and must
     // produce a ContentNode.
     base::flat_set<DOMNodeId> interactive_dom_node_ids_;
