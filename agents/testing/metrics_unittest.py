@@ -37,11 +37,13 @@ class MergeAndUploadMetricsUnittest(unittest.TestCase):
             git_revision='test_revision',
             bucket='test-bucket',
             build_id='123',
+            builder='test_builder',
         )
         self.mock_create_dashboard_json.assert_called_once_with(
             [],
             'test_revision',
             '123',
+            'test_builder',
         )
         self.mock_upload_dashboard_json.assert_called_once_with(
             {
@@ -58,6 +60,7 @@ class MergeAndUploadMetricsUnittest(unittest.TestCase):
                 git_revision='test_revision',
                 bucket='test-bucket',
                 build_id='123',
+                builder='test_builder',
             )
             self.assertIn('Error occurred while uploading to bucket',
                           cm.output[0])
@@ -89,6 +92,7 @@ class CreateDashboardJsonUnittest(unittest.TestCase):
             iteration_metrics=[],
             git_revision='test_revision',
             build_id='123',
+            builder='test_builder',
         )
         self.assertEqual(
             dashboard_json, {
@@ -96,6 +100,10 @@ class CreateDashboardJsonUnittest(unittest.TestCase):
                 1,
                 'git_hash':
                 'test_revision',
+                'key': {
+                    'benchmark': 'gcli_prompt_eval',
+                    'bot': 'test_builder',
+                },
                 'results': [
                     {
                         'key': {

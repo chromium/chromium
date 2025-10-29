@@ -556,6 +556,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.isolated_script_test_repeat = 0
         self.args.enable_perf_uploading = False
         self.args.git_revision = None
+        self.args.builder = None
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -877,11 +878,20 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         """Tests that perf arguments are passed to the worker pool."""
         self.args.enable_perf_uploading = True
         self.args.git_revision = 'test_revision'
+        self.args.gcs_bucket = 'test_bucket'
+        self.args.build_id = '123'
+        self.args.builder = 'test_builder'
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = []
 
         eval_prompts._run_prompt_eval_tests(self.args)
-        self.mock_upload_metrics.assert_called_once()
+        self.mock_upload_metrics.assert_called_once_with(
+            iteration_metrics=self.mock_worker_pool.return_value.
+            get_forwarded_metrics(),
+            git_revision='test_revision',
+            bucket='test_bucket',
+            build_id='123',
+            builder='test_builder')
 
     def test_run_prompt_eval_tests_perf_disabled(self):
         """Tests that metrics are not uploaded when perf uploading is
@@ -949,13 +959,15 @@ class ParseArgsUnittest(unittest.TestCase):
         """Tests that all perf arguments are parsed correctly."""
         self.mock_argv[:] = [
             'eval_prompts.py', '--enable-perf-uploading', '--git-revision',
-            'my-revision', '--gcs-bucket', 'my-bucket', '--build-id', '123'
+            'my-revision', '--gcs-bucket', 'my-bucket', '--build-id', '123',
+            '--builder', 'my-builder'
         ]
         args = eval_prompts._parse_args()
         self.assertTrue(args.enable_perf_uploading)
         self.assertEqual(args.git_revision, 'my-revision')
         self.assertEqual(args.gcs_bucket, 'my-bucket')
         self.assertEqual(args.build_id, '123')
+        self.assertEqual(args.builder, 'my-builder')
 
     def test_parse_args_all_test_selection_args(self):
         """Tests that all test selection arguments are parsed correctly."""
@@ -1114,6 +1126,7 @@ class ParseArgsUnittest(unittest.TestCase):
             '--git-revision': 'my-revision',
             '--gcs-bucket': 'my-bucket',
             '--build-id': '123',
+            '--builder': 'my-builder',
         }
 
         for key_to_omit in perf_args:

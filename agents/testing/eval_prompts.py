@@ -325,7 +325,8 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
             iteration_metrics=worker_pool.get_forwarded_metrics(),
             git_revision=args.git_revision,
             bucket=args.gcs_bucket,
-            build_id=args.build_id)
+            build_id=args.build_id,
+            builder=args.builder)
 
     returncode = 0
     if failed_test_results:
@@ -363,7 +364,9 @@ def _validate_args(args: argparse.Namespace,
         if not args.build_id:
             parser.error(
                 '--build-id must be passed if --enable-perf-uploading is')
-
+        if not args.builder:
+            parser.error(
+                '--builder must be passed if --enable-perf-uploading is')
 
     # Test Selection Arguments group.
     if args.shard_index is not None and args.shard_index < 0:
@@ -437,6 +440,9 @@ def _parse_args() -> argparse.Namespace:
                        help=('The Buildbucket build ID to associate with perf '
                              'results. Must be set if --enable-perf-uploading '
                              'is set.'))
+    group.add_argument('--builder',
+                       help=('The name of the builder running these tests. '
+                             'Must be set if --enable-perf-uploading is set.'))
 
     group = parser.add_argument_group('Test Selection Arguments')
     filter_group = group.add_mutually_exclusive_group()

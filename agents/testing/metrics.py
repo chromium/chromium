@@ -44,8 +44,8 @@ class IterationMetrics:
 
 
 def merge_and_upload_metrics(iteration_metrics: Iterable[IterationMetrics],
-                             git_revision: str, bucket: str,
-                             build_id: str) -> None:
+                             git_revision: str, bucket: str, build_id: str,
+                             builder: str) -> None:
     """Merges collected metrics and uploads them to the perf dashboard.
 
     Args:
@@ -53,9 +53,10 @@ def merge_and_upload_metrics(iteration_metrics: Iterable[IterationMetrics],
         git_revision: The current Chromium git revision being tested.
         bucket: The GCS bucket to upload data to.
         build_id: The Buildbucket ID of the current build.
+        builder: The name of the builder the tests are running on.
     """
     dashboard_json = _create_dashboard_json(iteration_metrics, git_revision,
-                                            build_id)
+                                            build_id, builder)
     try:
         _upload_dashboard_json(dashboard_json, bucket)
     except Exception as e:
@@ -66,7 +67,8 @@ def merge_and_upload_metrics(iteration_metrics: Iterable[IterationMetrics],
 
 
 def _create_dashboard_json(iteration_metrics: Iterable[IterationMetrics],
-                           git_revision: str, build_id: str) -> dict:
+                           git_revision: str, build_id: str,
+                           builder: str) -> dict:
     """Merges all data from |iteration_metrics| into dashboard-compatible JSON.
 
     See https://skia.googlesource.com/buildbot/+/refs/heads/main/perf/FORMAT.md
@@ -76,6 +78,7 @@ def _create_dashboard_json(iteration_metrics: Iterable[IterationMetrics],
         iteration_metrics: All IterationMetrics from all tests run.
         git_revision: The current Chromium git revision being tested.
         build_id: The Buildbucket ID of the current build.
+        builder: The name of the builder the tests are running on.
 
     Returns:
         A dict containing the merged data from |metrics|. The returned dict is
@@ -85,6 +88,10 @@ def _create_dashboard_json(iteration_metrics: Iterable[IterationMetrics],
     dashboard_json = {
         'version': 1,
         'git_hash': git_revision,
+        'key': {
+            'benchmark': 'gcli_prompt_eval',
+            'bot': builder,
+        },
         'results': [],
         'links': {
             'build': f'https://ci.chromium.org/b/{build_id}',
