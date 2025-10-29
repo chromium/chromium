@@ -595,6 +595,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3739899004075612870">U shtua si faqeshënues në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Kërkimi zanor nuk mund të përdoret në këtë pajisje</translation>
 <translation id="376561056759077985">Disa të dhëna nuk janë ruajtur ende</translation>
+<translation id="3770620323585347665">Emërto dritaren</translation>
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
 <translation id="3771290962915251154">Ky cilësim është i çaktivizuar sepse kontrollet prindërore janë të aktivizuara</translation>
 <translation id="3771694256347217732">Kushtet e shërbimit të Google</translation>
@@ -788,6 +789,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4668279686271488041">Të dhënat për matjen e reklamave fshihen rregullisht nga pajisja jote</translation>
 <translation id="4668347365065281350">Të gjitha të dhënat e ruajtura nga sajtet, duke përfshirë kukit dhe të dhënat e tjera të ruajtura lokalisht</translation>
 <translation id="4673702426794876519">Dritarja e fshehtë</translation>
+<translation id="4675298276894277358">Ky sajt nuk do të shfaqet më</translation>
 <translation id="4678082183394354975">Tema e errët për sajtet është aktive në Chrome</translation>
 <translation id="4682306524980568490">Mund të shfaqen vetëm <ph name="MAX_INSTANCE_COUNT" /> dritare</translation>
 <translation id="4684427112815847243">Sinkronizo gjithçka</translation>
@@ -989,6 +991,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="555671485580955310">Sinkronizo historikun dhe skedat</translation>
 <translation id="555816257274242153">Monitorimi i çmimit u ndalua</translation>
+<translation id="5559778750856177186">Shkurtorja u zhgozhdua</translation>
 <translation id="5561445479436807659">Kalo te loja argëtuese Dino</translation>
 <translation id="5561549206367097665">Në pritje të rrjetit…</translation>
 <translation id="5568069709869097550">Nuk mund të identifkohet</translation>
@@ -1662,6 +1665,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8281886186245836920">Kapërce</translation>
 <translation id="8282297628636750033">Zbato temën e errët për sajtet</translation>
 <translation id="8282950411412455249">Shko te cilësimet e sigurisë</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Mbyll 1 dritare të fshehtë}other{Mbyll # dritare të fshehta}}</translation>
 <translation id="831192587911042850">Shton sajtin aktual të uebit në listën e sajteve të uebit që po ndjek ti.</translation>
 <translation id="8317318757008452355">Hap opsionet për të printuar</translation>
 <translation id="8320212361750431956">Aktiviteti i fundit</translation>

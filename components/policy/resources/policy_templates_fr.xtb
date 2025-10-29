@@ -9612,6 +9612,17 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
       Si cette règle est activée, ou si elle n'est pas configurée, les sites peuvent uniquement appeler getDisplayMedia() depuis les contextes ajoutés à la liste d'autorisation par la règle display-capture permissions-policy.
 
       Si cette règle est désactivée, les sites peuvent appeler getDisplayMedia() même depuis les contextes qui ne sont pas ajoutés à la liste d'autorisation par la règle display-capture permissions policy. Notez que d'autres restrictions peuvent quand même s'appliquer.</translation>
+<translation id="750408442628578356">Détermine si l'appli Gemini est autorisée à effectuer des actions sur les pages Web au nom de l'utilisateur.
+
+0/Non définie = L'appli Gemini est autorisée à effectuer des actions sur les pages Web.
+
+1 = L'appli Gemini n'est pas autorisée à effectuer des actions sur les pages Web.
+
+Cette règle n'a aucun effet lorsque l'appli Gemini est désactivée. Par exemple, l'appli Gemini peut être désactivée par la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur Gemini dans Chrome, veuillez consulter https://support.google.com/chrome/a/answer/16291696.
+
+L'activation de Gemini n'est pas disponible dans tous les pays ni dans toutes les langues. La configuration de cette règle ne garantit pas que la fonctionnalité sera activée. Elle reste soumise à disponibilité. Pour en savoir plus sur le déploiement, consultez les notes de version Enterprise : https://support.google.com/chrome/a/answer/7679408?hl=fr</translation>
 <translation id="7506745375479451616">Permet de spécifier la commande à utiliser pour ouvrir les URL dans <ph name="PRODUCT_NAME" /> lors du changement de navigateur depuis <ph name="IE_PRODUCT_NAME" />. Cette règle peut être définie sur le chemin d'accès à un fichier exécutable ou sur <ph name="PRODUCT_NAME_PLACEHOLDER" /> pour détecter automatiquement l'emplacement d'installation de <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée, <ph name="IE_PRODUCT_NAME" /> détecte automatiquement le chemin d'accès au fichier exécutable de <ph name="PRODUCT_NAME" /> lors du lancement de <ph name="PRODUCT_NAME" /> depuis Internet Explorer.

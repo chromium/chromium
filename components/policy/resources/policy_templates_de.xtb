@@ -1909,6 +1909,7 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 <translation id="2306505001667207184">Fordert Nutzer auf, das Clientzertifikat auszuwählen, wenn die Richtlinie für die automatische Auswahl zu mehreren Zertifikaten passt.</translation>
 <translation id="230713790688681130">Inscript-Layout für Hindi aktivieren</translation>
 <translation id="2307496301287881990">Status von Display und Grafikkarte melden</translation>
+<translation id="2308084581803907194">Hohe Komplexität</translation>
 <translation id="2308899582897965249">Stummes Drucken deaktivieren</translation>
 <translation id="2309284543927494965">Updates blockieren</translation>
 <translation id="2309341709647905294">Keine Daten zu Peripheriegeräten melden, die an das Gerät angeschlossen sind</translation>
@@ -2720,6 +2721,19 @@ Wenn diese Richtlinie aktiviert ist, kann das Verhalten von Funktionstasten mit 
       Wenn die Richtlinie nicht konfiguriert ist, wird sie für verwaltete Geräte deaktiviert und für nutzereigene Geräte aktiviert.
       Bitte beachte, dass beim Deaktivieren nur die systemweite Trace-Erfassung deaktiviert wird. Die Erfassung von Browser-Traces ist von dieser Richtlinie nicht betroffen.</translation>
 <translation id="2922511125678964398">Erlauben, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
+<translation id="2923126158151236068">Mit dieser Richtlinie werden die Mindestanforderungen an die Komplexität von lokalen Authentifizierungsfaktoren (PINs und lokale Passwörter) konfiguriert, die von Nutzern unter <ph name="PRODUCT_OS_NAME" /> festgelegt werden.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird standardmäßig die Komplexitätsstufe „Keine“ verwendet.
+
+Die Anforderungen dieser Richtlinie werden erzwungen, wenn ein Nutzer eine lokale PIN bzw. ein lokales Passwort ändert oder neu einrichtet.
+
+Die Komplexitätsstufen basieren auf den Android-Messwerten für die Passwortqualität (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements) und wurden für <ph name="PRODUCT_OS_NAME" /> angepasst:
+– 1 = Keine: Eine PIN bzw. ein Passwort ist erforderlich, aber es gibt keine Einschränkungen hinsichtlich Inhalt oder Länge.
+– 2 = Niedrig: Grundlegende Anforderungen an die Komplexität.
+– 3 = Mittel: Strengere Anforderungen an Länge und Zeichentyp.
+– 4 = Hoch: Stärkste Komplexitätsanforderungen, die mehrere Zeichentypen erfordern.
+
+In der Hilfe findest du detaillierte Erklärungen dazu, was die einzelnen Stufen für PINs und Passwörter bedeuten.</translation>
 <translation id="2926813071464307947">Renderer-App-Container-Sandbox deaktivieren</translation>
 <translation id="2931888116345994552">Mit der Richtlinie werden Komponentenupdates für alle Komponenten in <ph name="PRODUCT_NAME" /> aktiviert, sofern sie nicht festgelegt oder auf „Aktiviert“ gesetzt ist.
 
@@ -5951,6 +5965,7 @@ Falsch formatierte Domains werden ignoriert.</translation>
 <translation id="5163889437570441600">Hiermit wird das Streamen von Inhalten an das Gerät über <ph name="PRODUCT_NAME" /> erlaubt.
 
           Wenn diese Richtlinie auf „false“ gesetzt ist, ist es Nutzern nicht möglich, Inhalte auf ihr Gerät zu streamen. Ist sie auf „true“ gesetzt, können Nutzer Inhalte streamen. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer keine Inhalte an angemeldete Chrome OS-Geräte streamen, aber an nicht angemeldete Geräte.</translation>
+<translation id="5166766992668636906">Mittlere Komplexität</translation>
 <translation id="5168529971295111207">Diese Richtlinie wurde eingestellt. Verwende stattdessen "ProxyMode".
 
           Mit dieser Richtlinie kannst du angeben, welcher Proxyserver von <ph name="PRODUCT_NAME" /> verwendet werden soll, und verhindern, dass Nutzer die Proxyeinstellungen ändern.
@@ -7526,6 +7541,7 @@ Andere Einschränkungen wie die der Richtlinien ArcEnabled und UnaffiliatedArcAl
 <translation id="6144046700495610112">Wenn die Richtlinie aktiviert ist, werden bei der ersten Ausführung Autofill-Kreditkartendaten aus dem Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Autofill-Formulardaten importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Autofill-Formulardaten wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
+<translation id="6144246313478615705">Mindestanforderung an die Komplexität von lokalen PINs und Passwörtern festlegen</translation>
 <translation id="614551633868957694">Chrome-Apps und ‑Erweiterungen</translation>
 <translation id="614616930188030377">Muster in dieser Liste werden mit der Sicherheitsherkunft der anfragenden URL abgeglichen.
       Wenn Übereinstimmungen gefunden werden oder chrome://flags/#enable-webrtc-hide-local-ips-with-mdns deaktiviert ist, werden die lokalen IP-Adressen in WebRTC ICE-Kandidaten angezeigt.
@@ -8997,6 +9013,17 @@ Nur gültige HTTPS-Ursprünge sind zulässig. Platzhalter werden nicht unterstü
 Ungültige Einträge werden ignoriert.</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7045221780834308118">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die <ph name="DESK_API_NAME" /> nicht verfügbar. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
+<translation id="704591686761455167">Mit dieser Richtlinie wird festgelegt, ob Blob-URLs beim Abrufen und Navigieren partitioniert werden.
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Blob-URLs partitioniert.
+Ist die Richtlinie deaktiviert, werden Blob-URLs nicht partitioniert.
+
+Blob-URLs werden ebenfalls nicht partitioniert, wenn die Speicherpartitionierung für einen Ursprung der obersten Ebene deaktiviert ist (entweder durch „<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ oder „<ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />“).
+
+Falls du die Richtlinie verwenden musst, melde auf <ph name="BUG_URL" /> einen Fehler unter Angabe deines Anwendungsfalls. Die Richtlinie kann bis zum Ende von Version 146 von <ph name="PRODUCT_NAME" /> verwendet werden. Danach wird die alte Implementierung entfernt.
+
+HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Richtlinie nur für neu gestartete Rendererprozesse übernommen.
+
+Ausführliche Informationen zur Drittanbieter-Speicherpartitionierung findest du unter https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>
 <translation id="7046997898355294677">Datenschutzhinweise anzeigen, bis sie vom Nutzer geschlossen werden</translation>
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
@@ -9598,6 +9625,17 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
       Ist die Richtlinie aktiviert oder nicht konfiguriert, können Websites „getDisplayMedia()“ nur aus Kontexten anrufen, die auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display-Erfassung aufgeführt sind.
 
       Wenn die Richtlinie deaktiviert ist, können Websites „getDisplayMedia()“ auch aus Kontexten anrufen, die nicht auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display-Erfassung aufgeführt sind. Andere Einschränkungen können dennoch gültig sein.</translation>
+<translation id="750408442628578356">Diese Richtlinie legt fest, ob die Gemini App im Namen des Nutzers Aktionen auf Webseiten ausführen darf.
+
+0 / nicht festgelegt = Die Gemini App darf Aktionen auf Webseiten ausführen.
+
+1 = Die Gemini App darf keine Aktionen auf Webseiten ausführen.
+
+Diese Richtlinie hat keine Auswirkungen, wenn die Gemini App deaktiviert ist. Beispielsweise kann die Gemini App durch die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ deaktiviert werden.
+
+Unter https://support.google.com/chrome/a/answer/16291696 findest du weitere Informationen zu Gemini in Chrome.
+
+Gemini kann nicht in allen Ländern und Sprachen Aktionen ausführen. Auch wenn du diese Richtlinie festlegst, kann die Funktion möglicherweise nicht aktiviert werden, da sie von der Verfügbarkeit abhängig ist. Weitere Informationen zur Einführung der Funktion findest du in den Versionshinweisen für Chrome Enterprise: https://support.google.com/chrome/a/answer/7679408?</translation>
 <translation id="7506745375479451616">Mit dieser Richtlinie wird der Befehl konfiguriert, mit dem URLs in <ph name="PRODUCT_NAME" /> geöffnet werden, wenn von <ph name="IE_PRODUCT_NAME" /> dorthin gewechselt wird. Diese Richtlinie kann mit einem Pfad zur ausführbaren Datei oder <ph name="PRODUCT_NAME_PLACEHOLDER" /> konfiguriert werden, damit das Verzeichnis von <ph name="PRODUCT_NAME" /> automatisch erkannt wird.
 
       Ist die Richtlinie nicht konfiguriert, erkennt <ph name="IE_PRODUCT_NAME" /> den Pfad zur ausführbaren Datei von <ph name="PRODUCT_NAME" /> automatisch, wenn <ph name="PRODUCT_NAME" /> über Internet Explorer geöffnet wird.
@@ -9679,6 +9717,7 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 
       Bei nicht verwalteten Geräten ist es auch wichtig, ob der jeweilige Nutzer der Geräteeigentümer ist.</translation>
 <translation id="7570291542739287032">Nur Cloud</translation>
+<translation id="7572641760104970905">Keine Komplexität</translation>
 <translation id="757395965347379751">Wenn diese Einstellung aktiviert ist, werden von <ph name="PRODUCT_NAME" /> SHA-1-signierte Zertifikate genehmigt, vorausgesetzt sie werden erfolgreich überprüft und bilden eine Kette zu einem lokal installierten CA-Zertifikat.
 
       Diese Richtlinie setzt voraus, dass vom Zertifikatüberprüfungsstapel des Betriebssystems SHA-1-Signaturen zugelassen werden. Wenn sich durch ein Update des Betriebssystems die Handhabung von SHA-1-Zertifikaten ändert, ist diese Richtlinie nicht mehr wirksam. Diese Richtlinie dient zur vorübergehenden Problemumgehung, um Unternehmen mehr Zeit zu geben, SHA-1 zu ersetzen. Diese Richtlinie wird ab dem 1. Januar 2019 entfernt.
@@ -9772,6 +9811,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
 <translation id="76580522298425324">Bildschirmaufnahme ohne vorherige Nutzergeste zulassen</translation>
+<translation id="7661379728107156839">Geringe Komplexität</translation>
 <translation id="7666228839913571182">Drittanbieter-Cookies zulassen</translation>
 <translation id="7666782560345386904">Einstellungen für das erweiterte Autofill</translation>
 <translation id="7669630878711068277">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer in „<ph name="PRODUCT_NAME" />“ drucken. Nutzer können diese Einstellung nicht ändern.

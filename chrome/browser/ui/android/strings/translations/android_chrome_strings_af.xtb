@@ -595,6 +595,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3739899004075612870">Geboekmerk in <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Stemsoektog is nie op hierdie toestel beskikbaar nie</translation>
 <translation id="376561056759077985">Sommige data is nog nie gestoor nie</translation>
+<translation id="3770620323585347665">Benoem venster</translation>
 <translation id="3771033907050503522">Incognito-oortjies</translation>
 <translation id="3771290962915251154">Hierdie instelling is gedeaktiveer omdat ouerkontroles aan is</translation>
 <translation id="3771694256347217732">Google se diensbepalings</translation>
@@ -789,6 +790,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4668279686271488041">Advertensiemetingdata word gereeld van jou toestel af uitgevee</translation>
 <translation id="4668347365065281350">Alle data wat deur werwe geberg is, insluitend webkoekies en ander data wat plaaslik gestoor is</translation>
 <translation id="4673702426794876519">Incognito-venster</translation>
+<translation id="4675298276894277358">Hierdie werf sal nie weer gewys word nie</translation>
 <translation id="4678082183394354975">Donkertema vir werwe is aan in Chrome</translation>
 <translation id="4682306524980568490">Net <ph name="MAX_INSTANCE_COUNT" /> vensters kan gewys word</translation>
 <translation id="4684427112815847243">Sinkroniseer alles</translation>
@@ -990,6 +992,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="555671485580955310">Sinkroniseer geskiedenis en oortjies</translation>
 <translation id="555816257274242153">Prysnasporing is gestop</translation>
+<translation id="5559778750856177186">Kortpad is ontspeld</translation>
 <translation id="5561445479436807659">Spring in ’n lekker Dino-speletjie</translation>
 <translation id="5561549206367097665">Wag tans vir netwerk …</translation>
 <translation id="5568069709869097550">Kan nie aanmeld nie</translation>
@@ -1664,6 +1667,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8281886186245836920">Slaan Oor</translation>
 <translation id="8282297628636750033">Pas donkertema op werwe toe, as jy kan</translation>
 <translation id="8282950411412455249">Gaan na sekuriteitinstellings</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Maak 1 Incognito-venster toe}other{Maak # Incognito-vensters toe}}</translation>
 <translation id="831192587911042850">Voeg die huidige webwerf by die lys webwerwe wat jy tans volg.</translation>
 <translation id="8317318757008452355">Maak opsies om te druk oop</translation>
 <translation id="8320212361750431956">Onlangse aktiwiteit</translation>

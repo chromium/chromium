@@ -9667,6 +9667,17 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
       Si se habilita esta política o no se establece, los sitios solo podrán hacer llamadas a getDisplayMedia() desde contextos incluidos en la lista de permitidos de la política de permisos mostrar-capturar.
 
       Si se inhabilita esta política, los sitios podrán hacer llamadas a getDisplayMedia() incluso desde contextos no incluidos en la lista de permitidos de la política de permisos mostrar-capturar. Ten en cuenta que es posible que se apliquen otras restricciones.</translation>
+<translation id="750408442628578356">Controla si la aplicación Gemini puede realizar acciones en las páginas web en nombre del usuario.
+
+0/sin definir = la aplicación Gemini puede realizar acciones en las páginas web.
+
+1 = la app Gemini no puede realizar acciones en las páginas web.
+
+Esta política no tiene efecto cuando la app Gemini está inhabilitada. Por ejemplo, la app Gemini se puede inhabilitar mediante la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre Gemini en Chrome, accede a https://support.google.com/chrome/a/answer/16291696.
+
+La activación de Gemini no está disponible en todos los países ni en todos los idiomas. Aunque se defina esta política, no se garantiza que la función se habilite, ya que sigue sujeta a disponibilidad. Para obtener más información sobre su lanzamiento, consulta las notas de la versión de Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=es</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se utilizará para abrir las URL al cambiar de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" />. A esta política se le puede asignar la ruta de un archivo ejecutable o el valor <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automáticamente la ubicación de <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.

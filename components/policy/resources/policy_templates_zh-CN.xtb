@@ -9545,6 +9545,17 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已启用或未设置，网站只能从已被显示面截取权限政策列入许可名单的上下文中调用 getDisplayMedia()。
 
       如果此政策已停用，即使相应上下文未被显示面截取权限政策列入许可名单，网站也能从这些上下文中调用 getDisplayMedia()。请注意，别处设定的限制可能仍然适用。</translation>
+<translation id="750408442628578356">控制 Gemini 应用是否可以代表用户在网页上执行操作。
+
+0/未设置 = Gemini 应用可以在网页上执行操作。
+
+1 = Gemini 应用不得在网页上执行操作。
+
+如果 Gemini 应用已停用，此政策将不会产生任何影响。例如，可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策停用 Gemini 应用。
+
+如需详细了解 Chrome 中的 Gemini，请访问 https://support.google.com/chrome/a/answer/16291696。
+
+Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置此政策并不能保证该功能会启用，仍需取决于实际可用情况。如需详细了解推出情况，请查看企业版版本说明：https://support.google.com/chrome/a/answer/7679408?hl=en</translation>
 <translation id="7506745375479451616">此政策旨在控制从 <ph name="IE_PRODUCT_NAME" /> 切换至 <ph name="PRODUCT_NAME" /> 时应使用哪个命令打开网址。此政策可设为一个可执行文件路径，也可设为 <ph name="PRODUCT_NAME_PLACEHOLDER" /> 以自动检测 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。

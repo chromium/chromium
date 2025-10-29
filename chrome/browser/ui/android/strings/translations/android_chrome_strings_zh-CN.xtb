@@ -595,6 +595,7 @@
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中添加书签</translation>
 <translation id="3740525748616366977">无法在此设备上使用语音搜索</translation>
 <translation id="376561056759077985">部分数据尚未保存</translation>
+<translation id="3770620323585347665">为窗口命名</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
@@ -789,6 +790,7 @@
 <translation id="4668279686271488041">系统会定期从您的设备中删除广告衡量数据</translation>
 <translation id="4668347365065281350">网站存储的所有数据，包括 Cookie 及其他本地存储的数据</translation>
 <translation id="4673702426794876519">无痕式窗口</translation>
+<translation id="4675298276894277358">此网站不会再显示</translation>
 <translation id="4678082183394354975">Chrome 中已为网站开启深色主题</translation>
 <translation id="4682306524980568490">只能显示 <ph name="MAX_INSTANCE_COUNT" /> 个窗口</translation>
 <translation id="4684427112815847243">同步所有数据</translation>
@@ -990,6 +992,7 @@
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="555671485580955310">同步历史记录和标签页</translation>
 <translation id="555816257274242153">已停止跟踪价格</translation>
+<translation id="5559778750856177186">已取消固定快捷方式</translation>
 <translation id="5561445479436807659">进入有趣的恐龙游戏</translation>
 <translation id="5561549206367097665">正在等待连接到网络…</translation>
 <translation id="5568069709869097550">无法登录</translation>
@@ -1662,6 +1665,7 @@
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{关闭 1 个无痕式窗口}other{关闭 # 个无痕式窗口}}</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
 <translation id="8317318757008452355">打开打印网页的选项</translation>
 <translation id="8320212361750431956">近期活动</translation>

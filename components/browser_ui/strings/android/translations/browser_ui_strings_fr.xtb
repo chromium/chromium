@@ -540,6 +540,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Supprimer les données du site ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilité</translation>
+<translation id="6991142177939282156">Autorisée • Utilisation de la position approximative</translation>
 <translation id="6992289844737586249">Demander avant d'autoriser des sites à utiliser mon micro (recommandé)</translation>
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
@@ -650,6 +651,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8300705686683892304">Gérés par l'application</translation>
+<translation id="8301363963630676147">Autorisée cette fois-ci • Utilisation de la position approximative</translation>
 <translation id="8315509175050791576">Partage d'un onglet…</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8362795839483915693">Vous pouvez faire un zoom avant ou arrière sur les sites que vous consultez</translation>

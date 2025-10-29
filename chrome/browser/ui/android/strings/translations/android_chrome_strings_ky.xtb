@@ -595,6 +595,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> кызматына жаңы кыстарма кошулду</translation>
 <translation id="3740525748616366977">Бул түзмөктө айтып издөө мүмкүнчүлүгү жок</translation>
 <translation id="376561056759077985">Айрым маалымат азырынча сактала элек</translation>
+<translation id="3770620323585347665">Терезене аталыш коюу</translation>
 <translation id="3771033907050503522">Жашыруун өтмөктөр</translation>
 <translation id="3771290962915251154">Бул параметр өчүрүлгөн, анткени Ата-эненин көзөмөлү күйүк</translation>
 <translation id="3771694256347217732">Google'дун Тейлөө шарттары</translation>
@@ -789,6 +790,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4668279686271488041">Жарнамалардын майнаптуулугун талдоо үчүн колдонулган маалымат түзмөктөн өчүрүлүп турат</translation>
 <translation id="4668347365065281350">Бардык сайттардын дайын-даректери, анын ичинде cookie файлдары жана башка жергиликтүү сакталган маалымат</translation>
 <translation id="4673702426794876519">Жашыруун терезе</translation>
+<translation id="4675298276894277358">Бул сайт экинчи көрсөтүлбөйт</translation>
 <translation id="4678082183394354975">Chrome'до сайттар үчүн караңгы тема күйгүзүлгөн</translation>
 <translation id="4682306524980568490"><ph name="MAX_INSTANCE_COUNT" /> терезени гана көрүүгө болот</translation>
 <translation id="4684427112815847243">Баарын шайкештештирүү</translation>
@@ -990,6 +992,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5556459405103347317">Кайра жүктөө</translation>
 <translation id="555671485580955310">Таржымалды жана өтмөктөрдү шайкештирүү</translation>
 <translation id="555816257274242153">Баасына көз салуу токтотулду</translation>
+<translation id="5559778750856177186">Ыкчам баскыч бошотулду</translation>
 <translation id="5561445479436807659">Кызыктуу Dino оюну</translation>
 <translation id="5561549206367097665">Тармак күтүлүүдө…</translation>
 <translation id="5568069709869097550">Аккаунтка кирбей жатат</translation>
@@ -1664,6 +1667,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8281886186245836920">Өткөрүп жиберүү</translation>
 <translation id="8282297628636750033">Cайттарга караңгы теманы колдонуу (мүмкүн болгондо)</translation>
 <translation id="8282950411412455249">Коопсуздук параметрлерине өтүү</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 жашыруун терезени жабуу}other{Жашыруун # терезени жабуу}}</translation>
 <translation id="831192587911042850">Учурдагы вебсайтты жазылган вебсайттардын тизмесине кошуңуз.</translation>
 <translation id="8317318757008452355">Басып чыгаруу варианттарын ачуу</translation>
 <translation id="8320212361750431956">Соңку аракеттер</translation>

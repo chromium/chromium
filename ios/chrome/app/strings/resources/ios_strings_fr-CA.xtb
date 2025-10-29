@@ -678,6 +678,7 @@
 <translation id="3642060527569456384">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur l'ensemble de vos appareils.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}one{{count} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google, {email}.}other{{count} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google, {email}.}}</translation>
 <translation id="3659297405161482746">Modes de paiement introuvable</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 compte sélectionné}one{# compte sélectionné}other{# comptes sélectionnés}}</translation>
 <translation id="3668816008081204991">La Liste de lecture est masquée</translation>
 <translation id="3670030362669914947">Numéro</translation>
 <translation id="3679163990085797665">Supprimer les éléments lus</translation>
@@ -782,6 +783,7 @@
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
+<translation id="4095483462103784441">Créer un nouveau groupe d'onglets</translation>
 <translation id="4099756562043439968">Créer un rappel</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4111985840824673503">Tout marquer comme lu</translation>

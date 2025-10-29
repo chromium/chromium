@@ -595,6 +595,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> məhsulunda əlfəcinlənib</translation>
 <translation id="3740525748616366977">Səsli axtarış bu cihazda əlçatan deyil</translation>
 <translation id="376561056759077985">Müəyyən data hələ yadda saxlanılmayıb</translation>
+<translation id="3770620323585347665">Pəncərəni adlandırın</translation>
 <translation id="3771033907050503522">Gizli Panellər</translation>
 <translation id="3771290962915251154">Valideyn nəzarətləri yanılı olduğu üçün bu ayar deaktiv edilib</translation>
 <translation id="3771694256347217732">Google Xidmət Şərtləri</translation>
@@ -788,6 +789,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4668279686271488041">Reklam ölçmə datası cihazınızdan müntəzəm olaraq silinir</translation>
 <translation id="4668347365065281350">Kukilər və digər yerli yadda saxlanmış data daxil olmaqla, saytların saxladığı bütün dütü</translation>
 <translation id="4673702426794876519">Anonim pəncərə</translation>
+<translation id="4675298276894277358">Bu sayt bir daha göstərilməyəcək</translation>
 <translation id="4678082183394354975">Saytlar üçün tünd tema Chrome'da aktivdir</translation>
 <translation id="4682306524980568490">Sadəcə <ph name="MAX_INSTANCE_COUNT" /> pəncərə göstərilə bilər</translation>
 <translation id="4684427112815847243">Hər şeyi sinxronlaşdırın</translation>
@@ -989,6 +991,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5556459405103347317">Yenidən yükləyin</translation>
 <translation id="555671485580955310">Tarixçə və tabları sinxronlaşdırın</translation>
 <translation id="555816257274242153">Qiymətin izlənməsi dayandırılıb</translation>
+<translation id="5559778750856177186">Qısayolun bərkidilməsi ləğv edildi</translation>
 <translation id="5561445479436807659">Əyləncəli Dinozavr oyununa dalın</translation>
 <translation id="5561549206367097665">Şəbəkə gözlənilir…</translation>
 <translation id="5568069709869097550">Daxil ola bilməz</translation>
@@ -1660,6 +1663,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8281886186245836920">Keçin</translation>
 <translation id="8282297628636750033">Mümkün olduqda saytlara tünd tema tətbiq edin</translation>
 <translation id="8282950411412455249">Təhlükəsizlik ayarlarına keçin</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 anonim pəncərəni bağlayın}other{# anonim pəncərəni bağlayın}}</translation>
 <translation id="831192587911042850">Cari veb saytı izlədiyiniz veb saytların siyahısına əlavə edir.</translation>
 <translation id="8317318757008452355">Çap etmək üçün seçimləri açın</translation>
 <translation id="8320212361750431956">Son fəaliyyət</translation>

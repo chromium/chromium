@@ -595,6 +595,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3739899004075612870">Engadiuse aos marcadores en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">A busca por voz non está dispoñible neste dispositivo</translation>
 <translation id="376561056759077985">Algúns datos aínda non se gardaron</translation>
+<translation id="3770620323585347665">Pór nome á ventá</translation>
 <translation id="3771033907050503522">Pestanas de incógnito</translation>
 <translation id="3771290962915251154">Esta opción de configuración está desactivada porque os controis parentais están activados</translation>
 <translation id="3771694256347217732">Condicións de servizo de Google</translation>
@@ -788,6 +789,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4668279686271488041">Os datos de medición de anuncios elimínanse de maneira regular do dispositivo</translation>
 <translation id="4668347365065281350">Todos os datos que almacenasen os sitios, como as cookies e outros datos gardados localmente</translation>
 <translation id="4673702426794876519">Ventá do modo de incógnito</translation>
+<translation id="4675298276894277358">Este sitio non se volverá mostrar</translation>
 <translation id="4678082183394354975">O tema escuro para os sitios está activado en Chrome</translation>
 <translation id="4682306524980568490">Só se poden mostrar <ph name="MAX_INSTANCE_COUNT" /> ventás</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
@@ -989,6 +991,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="555671485580955310">Sincronizar historial e pestanas</translation>
 <translation id="555816257274242153">Detívose o seguimento do prezo</translation>
+<translation id="5559778750856177186">Deixouse de fixar o atallo</translation>
 <translation id="5561445479436807659">Desfruta do divertido xogo do dinosauro</translation>
 <translation id="5561549206367097665">Esperando unha rede…</translation>
 <translation id="5568069709869097550">Non se pode iniciar sesión</translation>
@@ -1662,6 +1665,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8282297628636750033">Aplicar tema escuro aos sitios cando sexa posible</translation>
 <translation id="8282950411412455249">Ir á configuración de seguranza</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Pechar 1 ventá do modo de incógnito}other{Pechar # ventás do modo de incógnito}}</translation>
 <translation id="831192587911042850">Engade o sitio web actual á lista de sitios web que estás seguindo.</translation>
 <translation id="8317318757008452355">Abrir as opcións de impresión</translation>
 <translation id="8320212361750431956">Actividade recente</translation>

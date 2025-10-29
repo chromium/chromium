@@ -595,6 +595,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3739899004075612870">Marcador añadido a <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">La búsqueda por voz no está disponible en este dispositivo</translation>
 <translation id="376561056759077985">Algunos datos aún no se han guardado</translation>
+<translation id="3770620323585347665">Asignar nombre a ventana</translation>
 <translation id="3771033907050503522">Pestañas incógnito</translation>
 <translation id="3771290962915251154">Este ajuste está inhabilitado porque el control parental está activado</translation>
 <translation id="3771694256347217732">Términos del Servicio de Google</translation>
@@ -789,6 +790,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4668279686271488041">Los datos de medición de anuncios se eliminarán periódicamente de tu dispositivo.</translation>
 <translation id="4668347365065281350">Todos los datos almacenados por sitios, incluidas las cookies y otros datos almacenados de forma local</translation>
 <translation id="4673702426794876519">Ventana de Incógnito</translation>
+<translation id="4675298276894277358">Este sitio no se volverá a mostrar</translation>
 <translation id="4678082183394354975">El tema oscuro para sitios está activado en Chrome</translation>
 <translation id="4682306524980568490">Máximo de ventanas que se pueden mostrar: <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
@@ -990,6 +992,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="555671485580955310">Sincronizar historial y pestañas</translation>
 <translation id="555816257274242153">Se ha dejado de seguir el precio</translation>
+<translation id="5559778750856177186">Acceso directo desfijado</translation>
 <translation id="5561445479436807659">Disfruta del divertido juego del dinosaurio</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
 <translation id="5568069709869097550">No puedo iniciar sesión</translation>
@@ -1664,6 +1667,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8281886186245836920">Saltar</translation>
 <translation id="8282297628636750033">Aplicar tema oscuro a sitios, siempre que sea posible</translation>
 <translation id="8282950411412455249">Ir a la configuración de seguridad</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Cerrar 1 ventana de Incógnito}other{Cerrar # ventanas de Incógnito}}</translation>
 <translation id="831192587911042850">Añade el sitio web actual a la lista de sitios que sigues.</translation>
 <translation id="8317318757008452355">Abrir opciones de impresión</translation>
 <translation id="8320212361750431956">Actividad reciente</translation>

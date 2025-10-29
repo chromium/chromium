@@ -595,6 +595,7 @@
 <translation id="3739899004075612870">በ<ph name="PRODUCT_NAME" /> ውስጥ ዕልባት ተቀምጦለታል</translation>
 <translation id="3740525748616366977">የድምፅ ፍለጋ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="376561056759077985">የተወሰነ ውሂብ እስካሁን አልተቀመጠም</translation>
+<translation id="3770620323585347665">መስኮትን ይሰይሙ</translation>
 <translation id="3771033907050503522">ማንነት የማያሳውቁ ትሮች</translation>
 <translation id="3771290962915251154">የወላጅ መቆጣጠሪያዎች ስለበሩ ይህ ቅንብር ተሰናክሏል</translation>
 <translation id="3771694256347217732">የGoogle የአገልግሎት ውል</translation>
@@ -789,6 +790,7 @@
 <translation id="4668279686271488041">የማስታወቂያ ልኬት ውሂብ በመደበኛነት ከመሣሪያዎ ይሰረዛል</translation>
 <translation id="4668347365065281350">ኩኪዎች እና ሌላ በአከባቢያዊ የተከማቸ ውሂብን ጨምሮ በጣቢያዎች የተከማቹ ሁሉም ውሂቦች</translation>
 <translation id="4673702426794876519">ማንነትህን የማያሳውቅ መስኮት</translation>
+<translation id="4675298276894277358">ይህ ጣቢያ እንደገና አይታይም</translation>
 <translation id="4678082183394354975">ለጣቢያዎች ጠቆር ያለ ገጽታ በChrome ውስጥ በርቷል</translation>
 <translation id="4682306524980568490">ሊታዩ የሚችሉት <ph name="MAX_INSTANCE_COUNT" /> መስኮቶች ብቻ ናቸው</translation>
 <translation id="4684427112815847243">ሁሉንም ያመሳስሉ</translation>
@@ -990,6 +992,7 @@
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="555671485580955310">ታሪክ እና ትሮችን ያስምሩ</translation>
 <translation id="555816257274242153">ዋጋ መከታተል ቆሟል</translation>
+<translation id="5559778750856177186">አቋራጭ ተነቅሏል</translation>
 <translation id="5561445479436807659">ወደ አስደሳች Dino ጨዋታ ዘለው ይግቡ</translation>
 <translation id="5561549206367097665">አውታረ መረብን በመጠበቅ ላይ…</translation>
 <translation id="5568069709869097550">መግባት አልተቻለም</translation>
@@ -1664,6 +1667,7 @@
 <translation id="8281886186245836920">ዝለል</translation>
 <translation id="8282297628636750033">በሚቻልበት ጊዜ ጠቆር ያለ ገጽታን ጣቢያዎች ላይ ተግብር</translation>
 <translation id="8282950411412455249">ወደ ደህንነት ቅንብሮች ሂድ</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 ማንነትን የማያሳውቅ መስኮት ዝጋ}one{# ማንነትን የማያሳውቅ መስኮት ዝጋ}other{# ማንነትን የማያሳውቁ መስኮቶችን ዝጋ}}</translation>
 <translation id="831192587911042850">የአሁኑን ድር ጣቢያ እርስዎ በሚከተሏቸው የድር ጣቢያዎች ዝርዝር ውስጥ ያክላል።</translation>
 <translation id="8317318757008452355">ለማተም አማራጮችን ይክፈቱ</translation>
 <translation id="8320212361750431956">የቅርብ ጊዜ እንቅስቃሴ</translation>

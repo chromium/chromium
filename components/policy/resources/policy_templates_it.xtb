@@ -9780,6 +9780,17 @@ Se la policy non viene configurata, in pratica equivale a impostarla su "<ph nam
       Se la policy viene attivata o se non viene configurata, i siti possono chiamare getDisplayMedia() solo da contesti che sono stati aggiunti alla lista consentita in base alla policy relativa alle autorizzazioni display-capture.
 
       Se la policy viene disattivata, i siti possono chiamare getDisplayMedia() anche da contesti che non sono stati aggiunti alla lista consentita in base alla policy relativa alle autorizzazioni display-capture. Tieni presente che potrebbero essere applicate altre limitazioni.</translation>
+<translation id="750408442628578356">Determina se l'app Gemini può eseguire azioni sulle pagine web per conto dell'utente.
+
+0/non configurata = l'app Gemini può eseguire azioni sulle pagine web.
+
+1 = l'app Gemini non può eseguire azioni sulle pagine web.
+
+Questa policy non ha alcun effetto quando l'app Gemini è disattivata. Ad esempio, l'app Gemini può essere disattivata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Per maggiori informazioni su Gemini in Chrome, visita la pagina https://support.google.com/chrome/a/answer/16291696.
+
+L'attivazione di Gemini non è disponibile in tutti i paesi o in tutte le lingue. L'impostazione di questa policy non garantisce l'attivazione della funzionalità, che rimane soggetta a disponibilità. Per maggiori informazioni sull'implementazione, consulta le note di rilascio di Chrome Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=it</translation>
 <translation id="7506745375479451616">Questa policy consente di stabilire il comando da usare per aprire gli URL in <ph name="PRODUCT_NAME" /> anziché in <ph name="IE_PRODUCT_NAME" />. Per questa policy è possibile impostare un percorso file eseguibile o un valore <ph name="PRODUCT_NAME_PLACEHOLDER" /> per rilevare automaticamente la posizione di <ph name="PRODUCT_NAME" />.
 
       Se la policy non viene impostata, <ph name="IE_PRODUCT_NAME" /> rileva automaticamente il percorso eseguibile di <ph name="PRODUCT_NAME" /> all'avvio di <ph name="PRODUCT_NAME" /> da Internet Explorer.

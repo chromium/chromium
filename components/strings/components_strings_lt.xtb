@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Žydra (3)</translation>
 <translation id="1035709686865413354">Vandens filtrai ir valytuvai</translation>
 <translation id="1036348656032585052">Išjungti</translation>
+<translation id="1036436692654972538">Išsaugoma įrenginyje</translation>
 <translation id="1036881361735705143">C4 vokas</translation>
 <translation id="1038842779957582377">nežinomas pavadinimas</translation>
 <translation id="1041998700806130099">Užduoties lapo pranešimas</translation>
@@ -2832,6 +2833,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> buvote per daug kartų peradresuoti.</translation>
 <translation id="5619721953841297650">Iš anksto nustatyta</translation>
 <translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
+<translation id="5628060911499153873">Išsaugokite informaciją, kad galėtumėte sparčiau atlikti užduotis „Google“ produktuose. Jūsų informacija išsaugota „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />“ (<ph name="ACCOUNT" />).</translation>
 <translation id="5629630648637658800">Įkeliant politikos nustatymus įvyko klaida</translation>
 <translation id="5630981295558454585">Mygtukas „Paklausti „Google“ apie šį puslapį“; suaktyvinkite, jei norite paklausti „Google“ apie šį puslapį</translation>
 <translation id="5631439013527180824">Netinkamas įrenginio tvarkymo prieigos raktas</translation>

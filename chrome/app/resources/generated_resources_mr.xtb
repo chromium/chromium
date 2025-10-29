@@ -763,7 +763,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> एंक्रिप्ट केलेली आहे. तिच्या मालकाला ती डिक्रिप्ट करण्यास सांगा.</translation>
 <translation id="151501797353681931">Safari मधून इंपोर्ट केलेले</translation>
 <translation id="1515163294334130951">लाँच करा</translation>
-<translation id="1515246388279049673">जुना गट बदला</translation>
 <translation id="1517467582299994451">कोड वापरून कास्ट करण्यासाठी, Chrome ब्राउझर सिंक सेटिंग्ज बदला हे सुरू करा</translation>
 <translation id="1519090060276706457">विंडो रिस्टोअर करण्यासाठी अपेक्षेहून अधिक वेळ लागत आहे</translation>
 <translation id="1521442365706402292">प्रमाणपत्रे व्यवस्थापित करा</translation>
@@ -3135,7 +3134,6 @@
 <translation id="3132277757485842847">आम्हाला तुमच्या फोनसह कनेक्शन सुरू ठेवता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">दररोज रिफ्रेश करा</translation>
-<translation id="3133743499784536658">नवीन गट तयार करा</translation>
 <translation id="3134312457920437826">एक्स्टेंशन इंस्टॉल करू शकत नाही, कारण ते सपोर्ट नसलेली मॅनिफेस्ट आवृत्ती वापरते.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> प्रयोगासाठी प्रयोगाची स्थिती निवडा. प्रयोगाचे वर्णन: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">डीफॉल्ट पिवळा अवतार</translation>
@@ -9009,7 +9007,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7269229526547981029">ही प्रोफाइल <ph name="PROFILE_MANAGER" /> द्वारे व्यवस्थापित आहे. <ph name="ACCOUNT_MANAGER" /> द्वारे <ph name="USER_EMAIL_ADDRESS" /> खात्यासाठी नवीन प्रोफाइलची आवश्यकता आहे</translation>
 <translation id="7269736181983384521">Nearby सह शेअरिंग डेटा वापर</translation>
 <translation id="7271278495464744706">पाल्हाळीक वर्णने सुरू करा</translation>
-<translation id="7272299278407797215">जुना गट बदला</translation>
 <translation id="7272674038937250585">वर्णन दिलेले नाही</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> रोजी अंतिम संलग्न केले</translation>
 <translation id="7273894023751806510"><ph name="HOST" /> ला तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्यापासून नेहमी ब्लॉक करा</translation>
@@ -9111,7 +9108,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7343372807593926528">कृपया फीडबॅक पाठवण्यापूर्वी समस्येचे वर्णन करा.</translation>
 <translation id="7344585835349671209">तुमच्या डिव्हाइसवर HTTPS/SSL सर्टिफिकेट व्यवस्थापित करा</translation>
 <translation id="7345706641791090287">तुमचा पासवर्ड कन्फर्म करा</translation>
-<translation id="7345713233326828297">तुम्ही आधीच या फोल्डरमधून गट तयार केला आहे.</translation>
 <translation id="7346909386216857016">ठीक आहे, समजले</translation>
 <translation id="7347751611463936647">हे एक्स्टेंशन वापरण्यासाठी, "<ph name="EXTENSION_KEYWORD" />", नंतर TAB, नंतर तुमची आज्ञा किंवा शोध टाइप करा.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> वरून बाहेर नेव्हिगेट करण्यासाठी क्लिक करा.</translation>
@@ -9469,7 +9465,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7585490016012953607">रिकव्हरी पासवर्ड — कमाल ३ महिने तात्पुरता सेव्ह केला जातो</translation>
 <translation id="7586498138629385861">Chrome Apps उघडे असताना Chrome सुरू रहाणे सुरू ठेवेल.</translation>
 <translation id="7587806318633605613">सूचनेशी संबंधित इतिहास</translation>
-<translation id="7588381637439911806">नवीन गट तयार करा</translation>
 <translation id="7589448773774086276">सद्य टॅब सह नवीन स्प्लिट दृश्य</translation>
 <translation id="7589461650300748890">ओहो, तेथेच. काळजी घ्या.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
@@ -11203,7 +11198,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8750786237117206586">ChromeOS Flex ऑडिओ सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="8751034568832412184">शाळा</translation>
 <translation id="8751329102746373229">तुमच्या अ‍ॅडमिनिस्ट्रेटरकडील</translation>
-<translation id="875242763254084885"><ph name="ORIGIN" /> साइटला ही लिंक अ‍ॅपमध्ये उघडायची आहे.</translation>
 <translation id="8752451679755290210">आयटमदरम्यान आपोआप नेव्हिगेट करा</translation>
 <translation id="8753948258138515839">Files अ‍ॅप हे तुम्ही Google Drive, बाह्य स्टोरेज किंवा तुमच्या ChromeOS Flex डिव्हाइसवर सेव्ह केलेल्या फाइलचा झटपट अ‍ॅक्सेस पुरवते.</translation>
 <translation id="8754200782896249056">&lt;p&gt;सपोर्टेड डेस्कटॉप परिस्थिती अंतर्गत <ph name="PRODUCT_NAME" /> चालवताना, सिस्टीम प्रॉक्सी सेटिंग्ज वापरल्या जातील. तथापि, एकतर तुमची सिस्टीमला सपोर्ट नाही नसते किंवा तुमचे सिस्टीम कॉन्फिगरेशन लाँच करताना समस्या आली.&lt;/p&gt;

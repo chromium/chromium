@@ -595,6 +595,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3739899004075612870">Bookmarked in <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Voice search is not available on this device</translation>
 <translation id="376561056759077985">Some data isn't saved yet</translation>
+<translation id="3770620323585347665">Name window</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3771290962915251154">This setting is disabled because parental controls are on</translation>
 <translation id="3771694256347217732">Google Terms of Service</translation>
@@ -788,6 +789,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4668279686271488041">Ads measurement data is deleted regularly from your device</translation>
 <translation id="4668347365065281350">All data stored by sites, including cookies and other locally stored data</translation>
 <translation id="4673702426794876519">Incognito window</translation>
+<translation id="4675298276894277358">This site won't be shown again</translation>
 <translation id="4678082183394354975">Dark theme for sites is on in Chrome</translation>
 <translation id="4682306524980568490">Only <ph name="MAX_INSTANCE_COUNT" /> windows can be shown</translation>
 <translation id="4684427112815847243">Sync everything</translation>
@@ -989,6 +991,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555671485580955310">Sync history and tabs</translation>
 <translation id="555816257274242153">Stopped tracking price</translation>
+<translation id="5559778750856177186">Shortcut unpinned</translation>
 <translation id="5561445479436807659">Jump into a fun Dino game</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
@@ -1662,6 +1665,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8281886186245836920">Skip</translation>
 <translation id="8282297628636750033">Apply Dark theme to sites, when possible</translation>
 <translation id="8282950411412455249">Go to security settings</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Close 1 Incognito window}other{Close # Incognito windows}}</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="8317318757008452355">Open options to print</translation>
 <translation id="8320212361750431956">Recent activity</translation>

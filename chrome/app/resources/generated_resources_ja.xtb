@@ -762,7 +762,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> は暗号化されています。所有者に復号するよう依頼してください。</translation>
 <translation id="151501797353681931">Safari からのインポート</translation>
 <translation id="1515163294334130951">起動</translation>
-<translation id="1515246388279049673">古いグループを置き換える</translation>
 <translation id="1517467582299994451">コードを使ってキャストするには、Chrome ブラウザの同期設定を有効にしてください</translation>
 <translation id="1519090060276706457">ウィンドウの復元に通常より時間がかかっています</translation>
 <translation id="1521442365706402292">証明書の管理</translation>
@@ -3117,7 +3116,6 @@
 <translation id="3132277757485842847">スマートフォンとの接続を維持できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3132896062549112541">ルール</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
-<translation id="3133743499784536658">新しいグループを作成</translation>
 <translation id="3134312457920437826">サポートされていないマニフェスト バージョンを使用しているため、拡張機能をインストールできません。</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
@@ -7418,6 +7416,7 @@
 <translation id="6160290816917599257">コードが無効です。エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
 <translation id="6160625263637492097">認証用の証明書の提供</translation>
 <translation id="6160887111111841751">保存した情報はここに表示されます</translation>
+<translation id="616290554291007512">Gemini によるログインを許可しない</translation>
 <translation id="6163363155248589649">標準(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 設定</translation>
 <translation id="6163522313638838258">すべてを展開...</translation>
@@ -7730,6 +7729,7 @@
 <translation id="6379228010899751161">アカウント「<ph name="ACCOUNT_EMAIL" />」のパスワードを常に使用できるようにするには、本人確認を行ってください</translation>
 <translation id="6379827283296619736">いいえ、このプロフィールで作業を続行します</translation>
 <translation id="6380143666419481200">同意して続行</translation>
+<translation id="6380618366311601172">Gemini は、<ph name="DOMAIN" /> でログインが必要なタスクを完了できなくなります。</translation>
 <translation id="6383382161803538830">このページではリーディング モードを利用できません</translation>
 <translation id="638418309848716977">対応リンク</translation>
 <translation id="6384275966486438344">検索設定を次に変更します: <ph name="SEARCH_HOST" /></translation>
@@ -8978,7 +8978,6 @@
 <translation id="7269229526547981029">このプロフィールは <ph name="PROFILE_MANAGER" /> によって管理されています。<ph name="ACCOUNT_MANAGER" /> がアカウント <ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成するよう求めています</translation>
 <translation id="7269736181983384521">ニアバイシェアのデータ使用</translation>
 <translation id="7271278495464744706">詳細な説明を有効にする</translation>
-<translation id="7272299278407797215">古いグループを置き換える</translation>
 <translation id="7272674038937250585">説明が提供されていません</translation>
 <translation id="7273110280511444812">前回接続した日: <ph name="DATE" /></translation>
 <translation id="7273894023751806510"><ph name="HOST" /> による MIDI デバイスの操作と再プログラムを常にブロックする</translation>
@@ -9080,7 +9079,6 @@
 <translation id="7343372807593926528">問題の詳細を記入してからフィードバックを送信してください。</translation>
 <translation id="7344585835349671209">デバイスの HTTPS / SSL 証明書を管理します</translation>
 <translation id="7345706641791090287">パスワードを再入力</translation>
-<translation id="7345713233326828297">このフォルダからグループがすでに作成されています。</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">この拡張機能を使用するには、「<ph name="EXTENSION_KEYWORD" />」と入力して Tab キーを押してからコマンドまたは検索キーワードを入力してください。</translation>
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>
@@ -9437,8 +9435,8 @@
 <translation id="7585106857920830898">組織のセキュリティ ポリシーに沿ってチェックしています…</translation>
 <translation id="7585490016012953607">再設定パスワード - 最大 3 か月間一時的に保存されます</translation>
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
+<translation id="7587297195142686341">Gemini によるログイン</translation>
 <translation id="7587806318633605613">候補の履歴</translation>
-<translation id="7588381637439911806">新しいグループを作成</translation>
 <translation id="7589448773774086276">現在のタブで新しい分割表示</translation>
 <translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7590883480672980941">入力設定</translation>
@@ -10793,6 +10791,7 @@
 <translation id="849488240089599592">最近のダウンロードに戻る</translation>
 <translation id="8496717697661868878">このプラグインを実行する</translation>
 <translation id="8497219075884839166">Windows ユーティリティ</translation>
+<translation id="8497819894150712946">Chrome から保存</translation>
 <translation id="8498214519255567734">薄明かりの下でも画面を見やすくします</translation>
 <translation id="8499083585497694743">マイクのミュートを解除</translation>
 <translation id="8500044868721690197">このサイトでは MIDI デバイスの操作と再プログラムがブロックされています</translation>
@@ -11171,7 +11170,6 @@
 <translation id="8750786237117206586">ChromeOS Flex の音声設定を管理する</translation>
 <translation id="8751034568832412184">学校</translation>
 <translation id="8751329102746373229">管理者が追加</translation>
-<translation id="875242763254084885">サイト <ph name="ORIGIN" /> がこのリンクをアプリで開く許可を求めています。</translation>
 <translation id="8752451679755290210">アイテム間を自動的に移動する</translation>
 <translation id="8753948258138515839">ファイルアプリを使えば、Google ドライブ、外部ストレージ、ChromeOS Flex デバイスに保存したファイルにすぐにアクセスできます。</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> をサポート対象のデスクトップ環境で実行するとシステムのプロキシ設定が使用されますが、お使いのシステムがサポートされていないか、システム設定の適用で問題が発生した可能性があります。&lt;/p&gt;
@@ -11650,6 +11648,7 @@
 <translation id="9069417381769492963">検索条件に一致するブックマークはありません</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> に許可した権限は、インストール（ストリーミング）されるアプリにも適用されます。</translation>
 <translation id="9070342919388027491">タブを左に移動しました</translation>
+<translation id="9072918088200875065">Gemini があなたの代わりにこれらのサイトにログインして、タスクを完了することを許可しました。</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB マウスが接続されました</translation>
 <translation id="9075413375877487220">この拡張機能は、セーフ ブラウジング保護強化機能で信頼されていません。</translation>

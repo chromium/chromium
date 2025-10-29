@@ -760,7 +760,6 @@
 <translation id="1512642802859169995">Файлът <ph name="FILE_NAME" /> е шифрован. Помолете собственика му да го разшифрова.</translation>
 <translation id="151501797353681931">Импортирани от Safari</translation>
 <translation id="1515163294334130951">Стартиране</translation>
-<translation id="1515246388279049673">Замяна на старата група</translation>
 <translation id="1517467582299994451">За да предавате посредством код, включете настройките за синхронизиране на браузъра Chrome</translation>
 <translation id="1519090060276706457">Възстановяването на прозорците отнема повече време от очакваното</translation>
 <translation id="1521442365706402292">Управление на сертификати</translation>
@@ -777,6 +776,7 @@
 <translation id="152913213824448541">Контакти за „Споделяне наблизо“</translation>
 <translation id="1529769834253316556">Височина на редовете</translation>
 <translation id="1529891865407786369">Източник на захранване</translation>
+<translation id="1530376661400379364">Chrome нулира следните настройки</translation>
 <translation id="1531275250079031713">Показване на диалоговия прозорец за добавяне на нова Wi-Fi мрежа</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Разбирам, че изтеглянето ще навреди на компютъра ми</translation>
@@ -1076,6 +1076,7 @@
 <translation id="1709916727352927457">Изтриване на кода за достъп</translation>
 <translation id="1709972045049031556">Споделянето не е възможно</translation>
 <translation id="1712143791363119140">В ход</translation>
+<translation id="1714265454085143857">Фиксирани раздели</translation>
 <translation id="1714326320203665217">Файловете с пояснения за основния възел са изтеглени</translation>
 <translation id="1714644264617423774">Активирайте функциите за достъпност, за да улесните използването на устройството си. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Да се изтрият ли данните и разрешенията за сайта <ph name="SITE_NAME" /> и инсталираното за него приложение?</translation>
@@ -1198,6 +1199,7 @@
 <translation id="1805967612549112634">Потвърждаване на ПИН кода</translation>
 <translation id="1806335016774576568">Превключване към друго отворено приложение</translation>
 <translation id="1807246157184219062">Светло</translation>
+<translation id="1807542511544484064">Тези настройки бяха променени извън Chrome. Браузърът ги нулира, за да ви защити.</translation>
 <translation id="180759455458343539">Добавяне на изображение</translation>
 <translation id="1808571181382454540">Към страницата с настройки</translation>
 <translation id="1808805149659872686">Нов запис</translation>
@@ -3130,7 +3132,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3132277757485842847">Връзката с телефона ви прекъсна. Проверете дали е наблизо, отключен е и Bluetooth и функцията за Wi-Fi са включени.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Ежедневно опресняване</translation>
-<translation id="3133743499784536658">Създаване на нова група</translation>
 <translation id="3134312457920437826">Разширението не може да се инсталира, защото използва неподдържана версия на манифеста.</translation>
 <translation id="3134393957315651797">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“. Описание на експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Стандартен жълт аватар</translation>
@@ -7447,6 +7448,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6160290816917599257">Невалиден код. Въведеното от вас трябва да е във формат <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адрес<ph name="LPA_2" />$<ph name="LPA_3" />незадължителен идентификатор за съответствие<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Предоставяне на сертификати за удостоверяване</translation>
 <translation id="6160887111111841751">Запазената информация ще се показва тук</translation>
+<translation id="616290554291007512">Забраняване на Gemini да влиза в профила ви вместо вас</translation>
 <translation id="6163363155248589649">&amp;Нормален</translation>
 <translation id="6163376401832887457">Настройки за Kerberos</translation>
 <translation id="6163522313638838258">Разгъване на всички...</translation>
@@ -7759,6 +7761,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6379228010899751161">Потвърдете самоличността си, така че винаги да можете да използвате паролите в профила си (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6379827283296619736">Не, продължаване на използването на този потребителски профил за работа</translation>
 <translation id="6380143666419481200">Приемам и продължавам</translation>
+<translation id="6380618366311601172">Gemini няма да може да изпълнява задачи, които изискват влизане в профила в(ъв) <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Режимът на четене не е налице за тази страница</translation>
 <translation id="638418309848716977">Поддържани връзки</translation>
 <translation id="6384275966486438344">Променете настройките си за търсене на: <ph name="SEARCH_HOST" /></translation>
@@ -9011,7 +9014,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7269229526547981029">Този потребителски профил се управлява от <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">Пренос на данни за „Споделяне наблизо“</translation>
 <translation id="7271278495464744706">Активиране на подробните описания</translation>
-<translation id="7272299278407797215">Замяна на старата група</translation>
 <translation id="7272674038937250585">Няма описание</translation>
 <translation id="7273110280511444812">последно свързване на <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Контролирането и препрограмирането на MIDI устройствата ви да са забранени винаги за <ph name="HOST" /></translation>
@@ -9113,7 +9115,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7343372807593926528">Моля, опишете проблема, преди да изпратите отзивите</translation>
 <translation id="7344585835349671209">Управление на HTTPS/SSL сертификатите на устройството ви</translation>
 <translation id="7345706641791090287">Потвърждаване на паролата</translation>
-<translation id="7345713233326828297">Вече създадохте група от тази папка.</translation>
 <translation id="7346909386216857016">Добре, разбрах</translation>
 <translation id="7347751611463936647">За да използвате това разширение, въведете „<ph name="EXTENSION_KEYWORD" />“, след това натиснете „Tab“, след което въведете своята команда или търсене.</translation>
 <translation id="7347943691222276892">Кликнете, за да излезете от страницата <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9470,8 +9471,8 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7585106857920830898">Проверява се за съответствие с правилата за сигурност на организацията ви...</translation>
 <translation id="7585490016012953607">Парола за възстановяване – временно запазена до 3 месеца</translation>
 <translation id="7586498138629385861">Браузърът ще продължи да работи, докато приложенията в Chrome са отворени.</translation>
+<translation id="7587297195142686341">Gemini може да влиза в профила ви вместо вас</translation>
 <translation id="7587806318633605613">История на предложенията</translation>
-<translation id="7588381637439911806">Създаване на нова група</translation>
 <translation id="7589448773774086276">Нов разделен изглед с текущия раздел</translation>
 <translation id="7589461650300748890">Не бързайте! Внимавайте.</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
@@ -10827,6 +10828,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="849488240089599592">Назад към скорошните изтегляния</translation>
 <translation id="8496717697661868878">Стартиране на тази приставка</translation>
 <translation id="8497219075884839166">Помощни програми за Windows</translation>
+<translation id="8497819894150712946">Запазено от Chrome</translation>
 <translation id="8498214519255567734">Подобряване на видимостта на екрана и улесняване на четенето при слаба светлина</translation>
 <translation id="8499083585497694743">Включване на микрофона</translation>
 <translation id="8500044868721690197">Контролирането и препрограмирането на MIDI устройствата ви са забранени за този сайт</translation>
@@ -11206,7 +11208,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8750786237117206586">Управление на настройките за звука на ChromeOS Flex</translation>
 <translation id="8751034568832412184">Училище</translation>
 <translation id="8751329102746373229">От администратора ви</translation>
-<translation id="875242763254084885">Сайтът <ph name="ORIGIN" /> иска да отвори тази връзка в приложение.</translation>
 <translation id="8752451679755290210">Автоматично придвижване между елементите</translation>
 <translation id="8753948258138515839">Приложението „Файлове“ предоставя бърз достъп до файловете, които сте запазили в Google Диск, във външно хранилище или на устройството си с ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Когато изпълнявате <ph name="PRODUCT_NAME" /> в поддържана среда на компютър, ще се използват системните настройки за прокси сървър. Но системата ви или не се поддържа, или е възникнал проблем при стартирането на системната конфигурация.&lt;/p&gt;
@@ -11601,6 +11602,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9016827136585652292">превключване на екрана за поверителност</translation>
 <translation id="90181708067259747">Дата на валидност: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Инсталирането завърши</translation>
+<translation id="9018677074423884999">Основна търсеща машина</translation>
 <translation id="901876615920222131">За да отворите отново групата, кликнете върху нея</translation>
 <translation id="9019062154811256702">Четене и промяна на настройките за автоматично попълване</translation>
 <translation id="9019956081903586892">Изтеглянето на речника за проверка на правописа не бе успешно</translation>
@@ -11657,6 +11659,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9045160989383249058">Списъкът ви за четене е преместен в новия страничен панел. Изпробвайте го тук.</translation>
 <translation id="9048745018038487540">Избиране на всички шрифтове</translation>
 <translation id="9050666287014529139">Парола</translation>
+<translation id="905137631551495997">Разширения</translation>
 <translation id="905145695813415387">Папката „<ph name="LOCAL_FOLDER" />“ е запазена само на това устройство. Ако я преместите в(ъв) „<ph name="LOCAL_FOLDER" />“, тя вече няма да се показва на другите ви устройства.</translation>
 <translation id="9052404922357793350">Продължаване на блокирането</translation>
 <translation id="90528604757378587">Активността на заден план и някои визуални ефекти, като гладкото превъртане, може да са ограничени.</translation>
@@ -11685,6 +11688,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9069417381769492963">Няма отметки, съответстващи на търсенето ви</translation>
 <translation id="9070231741075992882">Разрешенията, които предоставите на приложението <ph name="APP_NAME" />, ще бъдат разрешени и за инсталираните и поточно предаваните от него приложения.</translation>
 <translation id="9070342919388027491">Разделът бе преместен наляво</translation>
+<translation id="9072918088200875065">Предоставихте на Gemini разрешение да влиза в профила ви в тези сайтове, за да изпълнява задачи вместо вас</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Мишката с USB е свързана</translation>
 <translation id="9075413375877487220">Подобрената защита от Безопасно сърфиране няма доверие на това разширение.</translation>

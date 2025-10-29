@@ -540,6 +540,7 @@
 <translation id="6965382102122355670">确定</translation>
 <translation id="6980861169612950611">要删除网站数据吗？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">无障碍</translation>
+<translation id="6991142177939282156">允许 • 使用大致位置</translation>
 <translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
@@ -650,6 +651,7 @@
 <translation id="8261506727792406068">删除</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">由应用管理</translation>
+<translation id="8301363963630676147">这次允许 • 使用大致位置</translation>
 <translation id="8315509175050791576">正在共享标签页</translation>
 <translation id="8324158725704657629">别再询问</translation>
 <translation id="8362795839483915693">您可以放大或缩小所访问网站的内容</translation>

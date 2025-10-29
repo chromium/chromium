@@ -202,6 +202,7 @@
 <translation id="3123473560110926937">ບລັອກໃນບາງເວັບໄຊ</translation>
 <translation id="3132996321662585180">ໂຫຼດຂໍ້ມູນໃໝ່ທຸກມື້</translation>
 <translation id="3143754809889689516">ຫຼິ້ນແຕ່ເລີ່ມຕົ້ນ</translation>
+<translation id="3164169438034704658">ທ່ານສາມາດເປີດໃຊ້ສະຖານທີ່ແບບລະອຽດໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="3167868116600277716">ຟີດ Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ຂໍ້​ມູນ​ເກັບ​ຮັກ​ສາ​ໄວ້</translation>
@@ -540,6 +541,7 @@
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6980861169612950611">ລຶບຂໍ້ມູນເວັບໄຊບໍ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
+<translation id="6991142177939282156">ອະນຸຍາດ • ໃຊ້ສະຖານທີ່ໂດຍປະມານ</translation>
 <translation id="6992289844737586249">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="7000754031042624318">ປິດໃນການຕັ້ງຄ່າ Android</translation>
 <translation id="702275896380648118">ເວັບໄຊນີ້ຈະລະບຸສິ່ງທີ່ທ່ານມັກແລ້ວແນະນຳໂຄສະນາໃນເວັບໄຊອື່ນ. ເວັບໄຊນີ້ຍັງຮັບຫົວຂໍ້ໂຄສະນາຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນນຳອີກ.</translation>
@@ -650,6 +652,7 @@
 <translation id="8261506727792406068">ລຶບ</translation>
 <translation id="8284326494547611709">ຄໍາບັນຍາຍພາບ</translation>
 <translation id="8300705686683892304">ຈັດການໂດຍແອັບ</translation>
+<translation id="8301363963630676147">ອະນຸຍາດໃນເທື່ອນີ້ • ໃຊ້ສະຖານທີ່ໂດຍປະມານ</translation>
 <translation id="8315509175050791576">ກໍາລັງແບ່ງປັນແຖບ</translation>
 <translation id="8324158725704657629">ຢ່າຖາມອີກ</translation>
 <translation id="8362795839483915693">ທ່ານສາມາດຊູມເຂົ້າ ຫຼື ອອກຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໄດ້</translation>

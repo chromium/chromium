@@ -763,7 +763,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> 已加密。請要求擁有者解密。</translation>
 <translation id="151501797353681931">由 Safari 匯入</translation>
 <translation id="1515163294334130951">啟動</translation>
-<translation id="1515246388279049673">取代舊群組</translation>
 <translation id="1517467582299994451">如要透過存取碼投放，請開啟 Chrome 瀏覽器同步設定</translation>
 <translation id="1519090060276706457">還原視窗的時間比預期長</translation>
 <translation id="1521442365706402292">管理憑證</translation>
@@ -3136,7 +3135,6 @@
 <translation id="3132277757485842847">我們無法與您的手機維持連線狀態。請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每日重新整理</translation>
-<translation id="3133743499784536658">建立新群組</translation>
 <translation id="3134312457920437826">擴充程式使用的資訊清單版本不受支援，因此無法安裝擴充程式。</translation>
 <translation id="3134393957315651797">揀「<ph name="EXPERIMENT_NAME" />」嘅實驗狀態。實驗描述：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設黃色圖片</translation>
@@ -9007,7 +9005,6 @@
 <translation id="7269229526547981029">此個人檔案由 <ph name="PROFILE_MANAGER" /> 管理。<ph name="ACCOUNT_MANAGER" /> 要求為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立新的個人檔案</translation>
 <translation id="7269736181983384521">「咫尺共享」數據用量</translation>
 <translation id="7271278495464744706">啟用詳細說明</translation>
-<translation id="7272299278407797215">取代舊群組</translation>
 <translation id="7272674038937250585">未提供說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="7273894023751806510">一律禁止 <ph name="HOST" /> 控制 MIDI 裝置及將其重新編程</translation>
@@ -9109,7 +9106,6 @@
 <translation id="7343372807593926528">請在傳送意見前說明問題。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
 <translation id="7345706641791090287">確認密碼</translation>
-<translation id="7345713233326828297">你已使用此資料夾建立群組。</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，再輸入您的指令或搜尋項目。</translation>
 <translation id="7347943691222276892">撳一下就可以離開<ph name="SUBPAGE_TITLE" />。</translation>
@@ -9467,7 +9463,6 @@
 <translation id="7586498138629385861">Chrome 會在 Chrome 應用程式開啟的狀態下持續運作。</translation>
 <translation id="7587297195142686341">Gemini 可以代你登入</translation>
 <translation id="7587806318633605613">建議記錄</translation>
-<translation id="7588381637439911806">建立新群組</translation>
 <translation id="7589448773774086276">使用目前分頁建立新的分割檢視畫面</translation>
 <translation id="7589461650300748890">噢，請注意！</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
@@ -11201,7 +11196,6 @@
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自管理員的憑證</translation>
-<translation id="875242763254084885">網站「<ph name="ORIGIN" />」想以應用程式開啟此連結。</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753948258138515839">「檔案」應用程式可供快速存取您存放在 Google 雲端硬碟」、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行 <ph name="PRODUCT_NAME" /> 時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;

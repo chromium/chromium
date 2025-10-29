@@ -765,7 +765,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> مشفّر. يُرجى طلب فكّ تشفيره من المالك.</translation>
 <translation id="151501797353681931">‏تم الاستيراد من Safari</translation>
 <translation id="1515163294334130951">تشغيل</translation>
-<translation id="1515246388279049673">استبدال المجموعة القديمة</translation>
 <translation id="1517467582299994451">‏لبث المحتوى باستخدام رمز، يجب تفعيل إعدادات مزامنة متصفّح Chrome.</translation>
 <translation id="1519090060276706457">تستغرق عملية استعادة النوافذ وقتًا أطول من المتوقع</translation>
 <translation id="1521442365706402292">تنظيم الشهادات</translation>
@@ -3129,7 +3128,6 @@
 <translation id="3132277757485842847">‏تعذَّر علينا المحافظة على الاتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
 <translation id="3132896062549112541">القاعدة</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
-<translation id="3133743499784536658">إنشاء مجموعة جديدة</translation>
 <translation id="3134312457920437826">يتعذّر تثبيت الإضافة لأنّها تستخدم إصدار بيان غير متوافق.</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">الأفاتار التلقائي الأصفر</translation>
@@ -7442,6 +7440,7 @@
 <translation id="6160290816917599257">‏رمز غير صحيح. يجب أن يكون الإدخال بالتنسيق <ph name="LPA_0" />$<ph name="LPA_1" />عنوان SM-DP+‎<ph name="LPA_2" />$<ph name="LPA_3" />رقم تعريف مطابق اختياري<ph name="LPA_4" />.</translation>
 <translation id="6160625263637492097">تقديم شهادات للمصادقة</translation>
 <translation id="6160887111111841751">ستظهر المعلومات المحفوظة هنا</translation>
+<translation id="616290554291007512">‏عدم السماح لـ Gemini بتسجيل الدخول نيابةً عنك</translation>
 <translation id="6163363155248589649">&amp;عادي</translation>
 <translation id="6163376401832887457">‏إعدادات Kerberos</translation>
 <translation id="6163522313638838258">توسيع الكل...</translation>
@@ -7754,6 +7753,7 @@
 <translation id="6379228010899751161">يُرجى إثبات هويتك للتأكّد من أنّه يمكنك استخدام كلمات المرور في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6379827283296619736">لا، أريد مواصلة استخدام ملف العمل هذا</translation>
 <translation id="6380143666419481200">القبول والمواصلة</translation>
+<translation id="6380618366311601172">‏لن يتمكّن Gemini من إكمال المهام التي تتطلّب تسجيل الدخول على <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">وضع القراءة غير متاح على هذه الصفحة</translation>
 <translation id="638418309848716977">الروابط المتوافقة</translation>
 <translation id="6384275966486438344">تغيير إعدادات البحث لـ: <ph name="SEARCH_HOST" /></translation>
@@ -9015,7 +9015,6 @@
 <translation id="7269229526547981029">تتم إدارة هذا الملف الشخصي من قِبَل <ph name="PROFILE_MANAGER" />. وهناك طلب من <ph name="ACCOUNT_MANAGER" /> لإنشاء ملف شخصي جديد لحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">استخدام البيانات في ميزة "المشاركة عن قرب"</translation>
 <translation id="7271278495464744706">تفعيل الأوصاف المطوَّلة</translation>
-<translation id="7272299278407797215">استبدال المجموعة القديمة</translation>
 <translation id="7272674038937250585">لم يتم تقديم أي وصف</translation>
 <translation id="7273110280511444812">تم آخر توصيل في <ph name="DATE" /></translation>
 <translation id="7273894023751806510">‏حظر <ph name="HOST" /> دائمًا من التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
@@ -9117,7 +9116,6 @@
 <translation id="7343372807593926528">يُرجى وصف المشكلة قبل إرسال التعليقات.</translation>
 <translation id="7344585835349671209">‏إدارة شهادات HTTPS أو شهادات طبقة المقابس الآمنة على جهازك</translation>
 <translation id="7345706641791090287">تأكيد كلمة المرور</translation>
-<translation id="7345713233326828297">سبق أن أنشأت مجموعة من هذا المجلد.</translation>
 <translation id="7346909386216857016">حسنًا</translation>
 <translation id="7347751611463936647">‏لاستخدام هذه الإضافة، اكتب "<ph name="EXTENSION_KEYWORD" />"، ثم TAB، ثم الأمر أو البحث.</translation>
 <translation id="7347943691222276892">يُرجى النقر للانتقال من صفحة <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9473,8 +9471,8 @@
 <translation id="7585106857920830898">جارٍ فحص الملف للتأكّد من توافقه مع سياسات أمان مؤسستك…</translation>
 <translation id="7585490016012953607">كلمة مرور الاسترداد: يتم حفظها مؤقتًا لمدة تصل إلى 3 أشهر</translation>
 <translation id="7586498138629385861">‏سيستمر Chrome في العمل أثناء فتح تطبيقات Chrome.</translation>
+<translation id="7587297195142686341">‏يمكن لـ Gemini تسجيل الدخول نيابةً عنك</translation>
 <translation id="7587806318633605613">سجلّ الاقتراحات</translation>
-<translation id="7588381637439911806">إنشاء مجموعة جديدة</translation>
 <translation id="7589448773774086276">إضافة علامة التبويب الحالية إلى وضع تقسيم العرض الجديد</translation>
 <translation id="7589461650300748890">توقف، وكن حذرًا.</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
@@ -10831,6 +10829,7 @@
 <translation id="849488240089599592">الرجوع إلى عمليات التنزيل الأخيرة</translation>
 <translation id="8496717697661868878">تشغيل هذا المكون الإضافي</translation>
 <translation id="8497219075884839166">‏الأدوات المساعدة في Windows</translation>
+<translation id="8497819894150712946">‏الملفات المحفوظة من Chrome</translation>
 <translation id="8498214519255567734">يمكنك تسهيل النظر إلى الشاشة أو القراءة في الضوء الخافت</translation>
 <translation id="8499083585497694743">إعادة صوت الميكروفون</translation>
 <translation id="8500044868721690197">‏تم منع هذا الموقع الإلكتروني من التحكُّم في أجهزة MIDI وإعادة برمجتها.</translation>
@@ -11210,7 +11209,6 @@
 <translation id="8750786237117206586">‏إدارة إعدادات الصوت على ChromeOS Flex</translation>
 <translation id="8751034568832412184">مؤسسة تعليمية</translation>
 <translation id="8751329102746373229">من المُشرف</translation>
-<translation id="875242763254084885">يطلب الموقع الإلكتروني <ph name="ORIGIN" /> فتح هذا الرابط في تطبيق.</translation>
 <translation id="8752451679755290210">التنقُّل بين العناصر تلقائيًا</translation>
 <translation id="8753948258138515839">‏يتيح تطبيق "الملفات" وصولاً سريعًا إلى الملفات التي تم حفظها على Google Drive أو وحدة التخزين الخارجية أو الجهاز الذي يعمل بنظام التشغيل ChromeOS Flex.</translation>
 <translation id="8754200782896249056">‏&lt;p&gt;عند تشغيل <ph name="PRODUCT_NAME" /> من خلال بيئة معتمدة لسطح المكتب، سيتم استخدام إعدادات الخادم الوكيل للنظام. ومع ذلك، يحتمل إما أن يكون نظامك غير مدعم أو أنه ربما حدثت مشكلة أثناء تشغيل إعداد نظامك.&lt;/p&gt;
@@ -11695,6 +11693,7 @@
 <translation id="9069417381769492963">ما مِن إشارات مرجعية تتطابق مع طلب بحثك.</translation>
 <translation id="9070231741075992882">إنّ الأذونات التي سيتم منحها لتطبيق <ph name="APP_NAME" /> سيتم منحها أيضًا لتطبيقاته التي يتم تثبيتها وبثها.</translation>
 <translation id="9070342919388027491">تم نقل علامة التبويب إلى اليسار.</translation>
+<translation id="9072918088200875065">‏لقد منحت Gemini الإذن بتسجيل الدخول إلى هذه المواقع الإلكترونية لإكمال المهام نيابةً عنك</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9074836595010225693">‏ماوس USB متصل</translation>
 <translation id="9075413375877487220">لا تفي هذه الإضافة بمعايير "الحماية المُحسّنة للتصفّح الآمن"، ولذلك فهي غير موثوق بها.</translation>

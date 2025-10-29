@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">3. tirkizna</translation>
 <translation id="1035709686865413354">Filteri i prečišćivači za vodu</translation>
 <translation id="1036348656032585052">Isključi</translation>
+<translation id="1036436692654972538">Podaci se čuvaju na uređaju</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
@@ -2831,6 +2832,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5617949217645503996">Host <ph name="HOST_NAME" /> vas je preusmerio preveliki broj puta.</translation>
 <translation id="5619721953841297650">Zadata podešavanja</translation>
 <translation id="5624120631404540903">Upravljaj lozinkama</translation>
+<translation id="5628060911499153873">Sačuvajte informacije da biste brže obavljali stvari u Google proizvodima. Informacije se čuvaju u <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-u za <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Učitavanje podešavanja smernica nije uspelo</translation>
 <translation id="5630981295558454585">Dugme Upitajte Google o ovoj stranici, aktivirajte ga da biste upitali Google o ovoj stranici</translation>
 <translation id="5631439013527180824">Nevažeći token za upravljanje uređajima</translation>

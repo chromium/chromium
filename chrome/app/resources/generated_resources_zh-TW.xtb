@@ -762,7 +762,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> 已加密。請要求檔案擁有者解密。</translation>
 <translation id="151501797353681931">由 Safari 匯入</translation>
 <translation id="1515163294334130951">啟動</translation>
-<translation id="1515246388279049673">取代舊群組</translation>
 <translation id="1517467582299994451">如要使用代碼建立投放連線，請開啟 Chrome 瀏覽器同步處理設定</translation>
 <translation id="1519090060276706457">還原視窗的時間過長</translation>
 <translation id="1521442365706402292">管理憑證</translation>
@@ -779,6 +778,7 @@
 <translation id="152913213824448541">鄰近分享功能聯絡人</translation>
 <translation id="1529769834253316556">行高</translation>
 <translation id="1529891865407786369">電源</translation>
+<translation id="1530376661400379364">Chrome 已重設這些設定</translation>
 <translation id="1531275250079031713">顯示「新增 Wi-Fi」對話方塊</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">我瞭解這個下載項目可能損害我的電腦</translation>
@@ -1070,6 +1070,7 @@
 <translation id="1709916727352927457">刪除密碼金鑰</translation>
 <translation id="1709972045049031556">無法分享</translation>
 <translation id="1712143791363119140">進行中</translation>
+<translation id="1714265454085143857">固定分頁</translation>
 <translation id="1714326320203665217">主節點註解檔案下載完畢</translation>
 <translation id="1714644264617423774">啟用無障礙功能，讓裝置更容易使用。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">要對 <ph name="SITE_NAME" /> 和其安裝的應用程式刪除網站資料和權限嗎？</translation>
@@ -1192,6 +1193,7 @@
 <translation id="1805967612549112634">確認 PIN 碼</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
 <translation id="1807246157184219062">淺色</translation>
+<translation id="1807542511544484064">這些設定被 Chrome 以外的程式變更。Chrome 已重設這些設定，保護你的安全。</translation>
 <translation id="180759455458343539">新增圖片</translation>
 <translation id="1808571181382454540">前往「設定」頁面</translation>
 <translation id="1808805149659872686">新項目</translation>
@@ -1891,6 +1893,7 @@
 <translation id="2290615375132886363">平板電腦瀏覽按鈕</translation>
 <translation id="2291452790265535215">試著在側邊面板上使用書籤、瀏覽歷程和其他功能</translation>
 <translation id="229182044471402145">找不到相符的字型。</translation>
+<translation id="2292590498047171967">如要共用分頁及與人協作，請將歷史記錄和分頁同步到 <ph name="EMAIL" /></translation>
 <translation id="2292848386125228270">請以一般使用者身分啟用 <ph name="PRODUCT_NAME" />。開發時，如要以 root 身分執行，請使用 --no-sandbox 標記重新執行。</translation>
 <translation id="2292862094862078674">請檢查網際網路連線，然後再試一次。你還是可以選取下方其中一個先前生成的主題。</translation>
 <translation id="2294081976975808113">螢幕隱私設定</translation>
@@ -3118,7 +3121,6 @@
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每天更新</translation>
-<translation id="3133743499784536658">建立新群組</translation>
 <translation id="3134312457920437826">擴充功能使用不支援的資訊清單版本，因此無法安裝。</translation>
 <translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
@@ -8335,6 +8337,7 @@
 <translation id="6808039367995747522">如要繼續，請插入並輕觸安全金鑰</translation>
 <translation id="6808166974213191158">ChromeOS Flex 系統映像檔寫入工具</translation>
 <translation id="6808193438228982088">狐狸</translation>
+<translation id="6808818615395768377">封鎖不熟悉的網站 (預設)</translation>
 <translation id="6809470175540814047">在無痕視窗中開啟</translation>
 <translation id="6810613314571580006">自動使用已儲存的憑證登入網站。如果停用這項功能，每當您登入網站時，都必須向系統確認您的登入憑證。</translation>
 <translation id="6811034713472274749">你可以瀏覽這個網頁了</translation>
@@ -8976,7 +8979,6 @@
 <translation id="7269229526547981029">這個設定檔是由 <ph name="PROFILE_MANAGER" /> 管理，<ph name="ACCOUNT_MANAGER" /> 要求必須為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶設定新的設定檔</translation>
 <translation id="7269736181983384521">鄰近分享功能數據用量</translation>
 <translation id="7271278495464744706">啟用詳細說明</translation>
-<translation id="7272299278407797215">取代舊群組</translation>
 <translation id="7272674038937250585">沒有任何說明</translation>
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="7273894023751806510">一律禁止 <ph name="HOST" /> 控制 MIDI 裝置及重設程式</translation>
@@ -9078,7 +9080,6 @@
 <translation id="7343372807593926528">請先說明問題再傳送意見回饋。</translation>
 <translation id="7344585835349671209">管理裝置上的 HTTPS/SSL 憑證</translation>
 <translation id="7345706641791090287">確認你的密碼</translation>
-<translation id="7345713233326828297">你先前已從這個資料夾建立群組。</translation>
 <translation id="7346909386216857016">好，我知道了</translation>
 <translation id="7347751611463936647">如要使用這個擴充功能，請輸入「<ph name="EXTENSION_KEYWORD" />」，然後按 TAB 鍵，接著再輸入你的指令或搜尋項目。</translation>
 <translation id="7347943691222276892">按一下即可離開「<ph name="SUBPAGE_TITLE" />」。</translation>
@@ -9436,7 +9437,6 @@
 <translation id="7585490016012953607">備援密碼：最多可暫時儲存 3 個月</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
 <translation id="7587806318633605613">建議字詞記錄</translation>
-<translation id="7588381637439911806">建立新群組</translation>
 <translation id="7589448773774086276">使用目前分頁建立新的分割檢視畫面</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
@@ -11170,7 +11170,6 @@
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
 <translation id="8751034568832412184">學校</translation>
 <translation id="8751329102746373229">來自系統管理員的憑證</translation>
-<translation id="875242763254084885">網站 <ph name="ORIGIN" /> 想使用應用程式開啟這個連結。</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753948258138515839">「檔案」應用程式可以讓你快速存取自己存放在 Google 雲端硬碟、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行「<ph name="PRODUCT_NAME" />」時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;
@@ -11563,6 +11562,7 @@
 <translation id="9016827136585652292">切換隱私保護功能</translation>
 <translation id="90181708067259747">到期日：<ph name="CARD" /></translation>
 <translation id="9018218886431812662">安裝完成</translation>
+<translation id="9018677074423884999">預設搜尋引擎 (DSE)</translation>
 <translation id="901876615920222131">按一下群組即可重新開啟</translation>
 <translation id="9019062154811256702">讀取及變更自動填入設定</translation>
 <translation id="9019956081903586892">無法下載拼字檢查字典</translation>
@@ -11619,6 +11619,7 @@
 <translation id="9045160989383249058">你的閱讀清單已移至新的側邊面板。按這裡即可體驗。</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
 <translation id="9050666287014529139">通關密語</translation>
+<translation id="905137631551495997">擴充功能</translation>
 <translation id="905145695813415387">「<ph name="LOCAL_FOLDER" />」只會儲存到這部裝置。如果移到「<ph name="LOCAL_FOLDER" />」，就無法在其他裝置上使用這個資料夾。</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>
 <translation id="90528604757378587">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制。</translation>

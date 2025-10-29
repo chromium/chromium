@@ -760,7 +760,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> fayli shifrlangan. Egasidan uning shifrini yechishini soʻrang.</translation>
 <translation id="151501797353681931">Safari brauzeridan import qilinganlar</translation>
 <translation id="1515163294334130951">Ishga tushirish</translation>
-<translation id="1515246388279049673">Eski guruhni almashtirish</translation>
 <translation id="1517467582299994451">Kod bilan namoyish qilish uchun Chrome brauzeri sinxronizatsiya sozlamalarini yoqing</translation>
 <translation id="1519090060276706457">Oynalarni tiklash kutilganidan ortiq vaqt olmoqda</translation>
 <translation id="1521442365706402292">Sertifikatlarni boshqarish</translation>
@@ -3126,7 +3125,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3132277757485842847">Telefon bilan ulanish uzilib qoldi. Telefoningiz yoningizda, qulflanmagan va undagi Bluetooth, Wi-Fi yoniqligini tekshiring.</translation>
 <translation id="3132896062549112541">Qoida</translation>
 <translation id="3132996321662585180">Kunlik yangilash</translation>
-<translation id="3133743499784536658">Yangi guruh yaratish</translation>
 <translation id="3134312457920437826">Bu kengaytmani oʻrnatish imkonsiz, chuni unda ishlatilgan manifest versiyasi dastaklanmaydi.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang. Tajriba tavsifi: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Standart sariq avatar</translation>
@@ -9001,7 +8999,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7269229526547981029">Bu profil boshqaruvchisi: <ph name="PROFILE_MANAGER" /> <ph name="ACCOUNT_MANAGER" /> <ph name="USER_EMAIL_ADDRESS" /> hisobi uchun yangi profil yaratilishini talab qiladi</translation>
 <translation id="7269736181983384521">Nearby Share trafik sarfi</translation>
 <translation id="7271278495464744706">Batafsil ovoz berish</translation>
-<translation id="7272299278407797215">Eski guruhni almashtirish</translation>
 <translation id="7272674038937250585">Hech qanday tavsif berilmagan.</translation>
 <translation id="7273110280511444812">oxirgi ulanish: <ph name="DATE" /></translation>
 <translation id="7273894023751806510"><ph name="HOST" /> saytiga MIDI qurilmalarini boshqarish va qayta dasturlash taqiqlansin</translation>
@@ -9103,7 +9100,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7343372807593926528">Fikr-mulohaza yuborishdan oldin muammo haqida batafsil yozing.</translation>
 <translation id="7344585835349671209">Qurilmangizda HTTPS/SSL sertifikatlarini boshqarish</translation>
 <translation id="7345706641791090287">Parolni tasdiqlang</translation>
-<translation id="7345713233326828297">Bu jild asosida guruh yaratildi.</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347751611463936647">Bu kengaytmadan foydalanish uchun “<ph name="EXTENSION_KEYWORD" />” so‘zini terib TAB tugmasini bosing, keyin esa qidiruv so‘rovi yoki buyruq kiriting.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" /> sahifasini tark etish uchun bosing.</translation>
@@ -9461,7 +9457,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7585490016012953607">Parolni tiklash — 3 oygacha vaqtincha saqlanadi</translation>
 <translation id="7586498138629385861">Chrome ilovalari yopilmaguncha brauzer ishlashda davom etadi.</translation>
 <translation id="7587806318633605613">Tavsiyalar tarixi</translation>
-<translation id="7588381637439911806">Yangi guruh yaratish</translation>
 <translation id="7589448773774086276">Joriy varaqni yangi ajratilgan rejimga olish</translation>
 <translation id="7589461650300748890">Ehtiyot bo‘ling.</translation>
 <translation id="7590883480672980941">Kiritish sozlamalari</translation>
@@ -11195,7 +11190,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8750786237117206586">ChromeOS Flex audio sozlamalarini boshqarish</translation>
 <translation id="8751034568832412184">Maktab</translation>
 <translation id="8751329102746373229">Administratordan</translation>
-<translation id="875242763254084885"><ph name="ORIGIN" /> sayti bu havolani ilovada ochmoqchi.</translation>
 <translation id="8752451679755290210">Elementlarni avtomatik varaqlash</translation>
 <translation id="8753948258138515839">Fayllar ilovasi yordamida Google Drive, ChromeOS Flex qurilmalari yoki tashqi xotira qurilmasidagi hujjatlarni tezkor ochish mumkin.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" /> qo‘llab-quvvatlanadigan muhitda ishga tushirilganda, kompyuterda proksi-server uchun tizim sozlamalaridan foydalaniladi. Lekin noma’lum sabablarga ko‘ra, sizning tizimingizda ishga tushmadi, balki tizim sozlamalarini ishga tushirishda xatolik yuz bergandir.&lt;/p&gt;

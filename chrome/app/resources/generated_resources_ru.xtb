@@ -764,7 +764,6 @@
 <translation id="1512642802859169995">Файл <ph name="FILE_NAME" /> зашифрован. Попросите владельца его расшифровать.</translation>
 <translation id="151501797353681931">Импортированные из Safari</translation>
 <translation id="1515163294334130951">Запустить</translation>
-<translation id="1515246388279049673">Заменить существующую</translation>
 <translation id="1517467582299994451">Чтобы трансляцию можно было запускать с помощью кода, включите синхронизацию в браузере Chrome.</translation>
 <translation id="1519090060276706457">Восстановление окон занимает больше времени, чем обычно</translation>
 <translation id="1521442365706402292">Настроить сертификаты</translation>
@@ -3126,7 +3125,6 @@
 <translation id="3132277757485842847">Не удалось сохранить подключение к телефону. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Обновлять ежедневно</translation>
-<translation id="3133743499784536658">Создать новую группу</translation>
 <translation id="3134312457920437826">Не удалось установить расширение, так как в нем используется неподдерживаемая версия манифеста.</translation>
 <translation id="3134393957315651797">Выберите состояние для эксперимента "<ph name="EXPERIMENT_NAME" />". Описание эксперимента: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3139925690611372679">Аватар по умолчанию (желтый)</translation>
@@ -9012,7 +9010,6 @@
 <translation id="7269229526547981029">Этим профилем управляет <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> требует создать новый профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7269736181983384521">Обмен с окружением: передача данных</translation>
 <translation id="7271278495464744706">Озвучивать подробно</translation>
-<translation id="7272299278407797215">Заменить существующую</translation>
 <translation id="7272674038937250585">Описания нет</translation>
 <translation id="7273110280511444812">последнее подключение: <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Никогда не разрешать сайту <ph name="HOST" /> управлять MIDI-устройствами и перепрограммировать их</translation>
@@ -9114,7 +9111,6 @@
 <translation id="7343372807593926528">Прежде чем отправить отзыв, опишите проблему.</translation>
 <translation id="7344585835349671209">Управление сертификатами HTTPS/SSL на устройстве</translation>
 <translation id="7345706641791090287">Подтвердите пароль</translation>
-<translation id="7345713233326828297">Вы уже сформировали группу вкладок из этой папки.</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7347751611463936647">Чтобы использовать это расширение, введите "<ph name="EXTENSION_KEYWORD" />", нажмите клавишу табуляции, а затем введите команду или поисковый запрос.</translation>
 <translation id="7347943691222276892">Нажмите, чтобы покинуть подстраницу "<ph name="SUBPAGE_TITLE" />".</translation>
@@ -9472,7 +9468,6 @@
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
 <translation id="7587297195142686341">Сайты, на которые Gemini может входить за вас</translation>
 <translation id="7587806318633605613">История подсказок</translation>
-<translation id="7588381637439911806">Создать новую группу</translation>
 <translation id="7589448773774086276">Перейти в режим Split View с текущей вкладкой</translation>
 <translation id="7589461650300748890">Осторожно!</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
@@ -11208,7 +11203,6 @@
 <translation id="8750786237117206586">Управление настройками аудио в ChromeOS Flex</translation>
 <translation id="8751034568832412184">Учебный</translation>
 <translation id="8751329102746373229">От администратора</translation>
-<translation id="875242763254084885">Сайт <ph name="ORIGIN" /> пытается открыть эту ссылку в приложении.</translation>
 <translation id="8752451679755290210">Перемещайтесь между объектами автоматически</translation>
 <translation id="8753948258138515839">С помощью приложения "Файлы" можно быстро открывать документы, сохраненные на Google Диске, внешнем накопителе или устройстве с Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;При работе <ph name="PRODUCT_NAME" /> в поддерживаемой среде на компьютере используются системные настройки прокси-сервера. Однако либо ваша система не поддерживается, либо возникли неполадки при запуске системной конфигурации.&lt;/p&gt;

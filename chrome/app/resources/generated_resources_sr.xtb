@@ -761,7 +761,6 @@
 <translation id="1512642802859169995">Датотека <ph name="FILE_NAME" /> је шифрована. Затражите од власника да је дешифрује.</translation>
 <translation id="151501797353681931">Увоз из прегледача Safari</translation>
 <translation id="1515163294334130951">Покрени</translation>
-<translation id="1515246388279049673">Замени стару групу</translation>
 <translation id="1517467582299994451">Да бисте пребацивали помоћу кода, укључите подешавања синхронизације Chrome прегледача</translation>
 <translation id="1519090060276706457">Враћање прозора траје дуже него што је очекивано</translation>
 <translation id="1521442365706402292">Управљај сертификатима</translation>
@@ -3122,7 +3121,6 @@
 <translation id="3132277757485842847">Нисмо успели да одржимо везу са телефоном. Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="3132896062549112541">Правило</translation>
 <translation id="3132996321662585180">Освежавај дневно</translation>
-<translation id="3133743499784536658">Направи нову групу</translation>
 <translation id="3134312457920437826">Додатак не може да се инсталира јер користи неподржану верзију манифеста.</translation>
 <translation id="3134393957315651797">Изаберите стање за експеримент <ph name="EXPERIMENT_NAME" />. Опис експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Подразумевани жути аватар</translation>
@@ -9006,7 +9004,6 @@
 <translation id="7269229526547981029">Овим профилом управља <ph name="PROFILE_MANAGER" />. <ph name="ACCOUNT_MANAGER" /> захтева нови профил за налог <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7269736181983384521">Потрошња података Дељења у близини</translation>
 <translation id="7271278495464744706">Омогући детаљне описе</translation>
-<translation id="7272299278407797215">Замени стару групу</translation>
 <translation id="7272674038937250585">Није наведен ниједан опис</translation>
 <translation id="7273110280511444812">последњи пут је прикључено <ph name="DATE" /></translation>
 <translation id="7273894023751806510">Никад не дозволи да <ph name="HOST" /> контролише и репрограмира MIDI уређаје.</translation>
@@ -9108,7 +9105,6 @@
 <translation id="7343372807593926528">Опишите проблем да бисте послали повратне информације.</translation>
 <translation id="7344585835349671209">Управљајте HTTPS/SSL сертификатима на уређају</translation>
 <translation id="7345706641791090287">Потврдите лозинку</translation>
-<translation id="7345713233326828297">Већ сте направили групу од овог фолдера.</translation>
 <translation id="7346909386216857016">Важи</translation>
 <translation id="7347751611463936647">Да бисте користили овај додатак, унесите „<ph name="EXTENSION_KEYWORD" />“ и притисните тастер TAB, а затим унесите команду или обавите претрагу.</translation>
 <translation id="7347943691222276892">Кликните да бисте напустили подстраницу <ph name="SUBPAGE_TITLE" />.</translation>
@@ -9467,7 +9463,6 @@
 <translation id="7586498138629385861">Chrome ће наставити да ради док су Chrome апликације отворене.</translation>
 <translation id="7587297195142686341">Gemini може да се пријави уместо вас</translation>
 <translation id="7587806318633605613">Историја предлога</translation>
-<translation id="7588381637439911806">Направи нову групу</translation>
 <translation id="7589448773774086276">Нови подељени приказ са актуелном картицом</translation>
 <translation id="7589461650300748890">Полако. Будите опрезни.</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
@@ -11203,7 +11198,6 @@
 <translation id="8750786237117206586">Управљање подешавањима звука за ChromeOS Flex</translation>
 <translation id="8751034568832412184">Школа</translation>
 <translation id="8751329102746373229">Од администратора</translation>
-<translation id="875242763254084885">Сајт <ph name="ORIGIN" /> жели да отвори овај линк у апликацији.</translation>
 <translation id="8752451679755290210">Аутоматски се крећите између ставки</translation>
 <translation id="8753948258138515839">Апликација Фајлови пружа брз приступ фајловима које сте сачували на Google диску, у спољној меморији или на Chrome OS Flex уређају.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Када користите <ph name="PRODUCT_NAME" /> у подржаном рачунарском окружењу, користиће се подешавања проксија система. Међутим, или систем није подржан или је дошло до проблема при покретању конфигурације система.&lt;/p&gt;

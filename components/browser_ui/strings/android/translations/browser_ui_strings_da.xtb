@@ -202,6 +202,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3123473560110926937">Blokeret på visse websites</translation>
 <translation id="3132996321662585180">Opdater dagligt</translation>
 <translation id="3143754809889689516">Afspil fra begyndelsen</translation>
+<translation id="3164169438034704658">Du kan aktivere præcis lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Tillad, at et website bruger tredjepartscookies</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
@@ -540,6 +541,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Vil du slette websitedata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
+<translation id="6991142177939282156">Tilladt • Bruger omtrentlig</translation>
 <translation id="6992289844737586249">Spørg, før websites bruger din mikrofon (anbefales)</translation>
 <translation id="7000754031042624318">Deaktiveret i indstillingerne for Android</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
@@ -650,6 +652,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8261506727792406068">Slet</translation>
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
+<translation id="8301363963630676147">Tilladt denne gang • Bruger omtrentlig</translation>
 <translation id="8315509175050791576">Deler en fane</translation>
 <translation id="8324158725704657629">Spørg ikke igen</translation>
 <translation id="8362795839483915693">Du kan zoome ind eller ud på websites, du besøger</translation>

@@ -757,7 +757,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> 已加密。请让它的所有者进行解密。</translation>
 <translation id="151501797353681931">从 Safari 中导入</translation>
 <translation id="1515163294334130951">启动</translation>
-<translation id="1515246388279049673">替换旧标签页分组</translation>
 <translation id="1517467582299994451">若要使用代码进行投放，请开启 Chrome 浏览器同步设置</translation>
 <translation id="1519090060276706457">恢复窗口所用时间超出预期</translation>
 <translation id="1521442365706402292">管理证书</translation>
@@ -774,6 +773,7 @@
 <translation id="152913213824448541">“附近分享”功能联系人</translation>
 <translation id="1529769834253316556">行高</translation>
 <translation id="1529891865407786369">电源</translation>
+<translation id="1530376661400379364">Chrome 重置了这些设置</translation>
 <translation id="1531275250079031713">显示“添加新 Wi-Fi 网络”对话框</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">我了解此下载内容会损害我的计算机</translation>
@@ -1066,6 +1066,7 @@
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1709972045049031556">无法分享</translation>
 <translation id="1712143791363119140">进行中</translation>
+<translation id="1714265454085143857">固定标签页</translation>
 <translation id="1714326320203665217">主要节点标注文件已下载</translation>
 <translation id="1714644264617423774">启用无障碍功能，让设备更易于使用。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">为 <ph name="SITE_NAME" /> 及其已安装的应用删除网站数据和权限？</translation>
@@ -1188,6 +1189,7 @@
 <translation id="1805967612549112634">确认 PIN 码</translation>
 <translation id="1806335016774576568">切换到另一个已打开的应用</translation>
 <translation id="1807246157184219062">浅色调</translation>
+<translation id="1807542511544484064">这些设置已在 Chrome 外部更改。为保护您的安全，Chrome 已将其重置。</translation>
 <translation id="180759455458343539">添加图片</translation>
 <translation id="1808571181382454540">前往“设置”页面</translation>
 <translation id="1808805149659872686">新建条目</translation>
@@ -1886,6 +1888,7 @@
 <translation id="2290615375132886363">平板电脑导航按钮</translation>
 <translation id="2291452790265535215">试试使用侧边栏查看书签、历程等内容吧</translation>
 <translation id="229182044471402145">找不到符合要求的字体。</translation>
+<translation id="2292590498047171967">若要分享标签页并与他人协作，请与 <ph name="EMAIL" /> 同步您的历史记录和标签页</translation>
 <translation id="2292848386125228270">请以普通用户的身份启动 <ph name="PRODUCT_NAME" />。如果您出于开发目的，需要以根用户的身份运行 Chrome，请使用 --no-sandbox 标记重新运行 Chrome。</translation>
 <translation id="2292862094862078674">请检查您的互联网连接，然后重试。您仍能从之前生成的以下主题中任选其一。</translation>
 <translation id="2294081976975808113">屏幕隐私保护</translation>
@@ -3112,7 +3115,6 @@
 <translation id="3132277757485842847">我们无法保持与您手机的连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">规则</translation>
 <translation id="3132996321662585180">每日刷新</translation>
-<translation id="3133743499784536658">创建新标签页分组</translation>
 <translation id="3134312457920437826">无法安装扩展程序，因为它使用了不受支持的清单版本。</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
@@ -8338,6 +8340,7 @@
 <translation id="6808039367995747522">要继续，请插入并轻触您的安全密钥</translation>
 <translation id="6808166974213191158">ChromeOS Flex 系统映像写入工具</translation>
 <translation id="6808193438228982088">狐狸</translation>
+<translation id="6808818615395768377">如果网站不熟悉，则屏蔽（默认）</translation>
 <translation id="6809470175540814047">在无痕式窗口中打开</translation>
 <translation id="6810613314571580006">使用存储的凭据自动登录网站。停用该功能后，系统会在您每次登录网站之前要求您进行确认。</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
@@ -8982,7 +8985,6 @@
 <translation id="7269229526547981029">这份个人资料由 <ph name="PROFILE_MANAGER" /> 管理。<ph name="ACCOUNT_MANAGER" /> 要求您为账号 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的个人资料</translation>
 <translation id="7269736181983384521">“附近分享”功能的流量使用设置</translation>
 <translation id="7271278495464744706">启用详细说明</translation>
-<translation id="7272299278407797215">替换旧标签页分组</translation>
 <translation id="7272674038937250585">未提供说明</translation>
 <translation id="7273110280511444812">上次连接日期：<ph name="DATE" /></translation>
 <translation id="7273894023751806510">始终禁止 <ph name="HOST" /> 控制您的 MIDI 设备以及为其重新编程</translation>
@@ -9084,7 +9086,6 @@
 <translation id="7343372807593926528">请先阐明问题，然后再发送反馈。</translation>
 <translation id="7344585835349671209">管理您设备上的 HTTPS/SSL 证书</translation>
 <translation id="7345706641791090287">确认您的密码</translation>
-<translation id="7345713233326828297">您已通过此文件夹创建了标签页分组。</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7347751611463936647">要使用该扩展程序，请依次键入“<ph name="EXTENSION_KEYWORD" />”和 TAB，然后键入您的命令或搜索。</translation>
 <translation id="7347943691222276892">点击此按钮即可离开“<ph name="SUBPAGE_TITLE" />”子页面。</translation>
@@ -9442,7 +9443,6 @@
 <translation id="7585490016012953607">恢复密码 - 最多临时保存 3 个月</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
 <translation id="7587806318633605613">建议历史记录</translation>
-<translation id="7588381637439911806">创建新标签页分组</translation>
 <translation id="7589448773774086276">使用当前标签页创建新的拆分视图</translation>
 <translation id="7589461650300748890">注意！</translation>
 <translation id="7590883480672980941">输入设置</translation>
@@ -11177,7 +11177,6 @@
 <translation id="8750786237117206586">管理 ChromeOS Flex 音频设置</translation>
 <translation id="8751034568832412184">学校</translation>
 <translation id="8751329102746373229">来自您的管理员</translation>
-<translation id="875242763254084885">网站 <ph name="ORIGIN" /> 想在应用中打开此链接。</translation>
 <translation id="8752451679755290210">自动在各项内容之间移动</translation>
 <translation id="8753948258138515839">通过“文件”应用，您可以快速访问自己保存在 Google 云端硬盘、外部存储空间或 ChromeOS Flex 设备上的文件。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支持的桌面环境中运行<ph name="PRODUCT_NAME" />时，将使用系统代理设置。但您的系统不受支持，或启动系统配置时出现问题。&lt;/p&gt;
@@ -11572,6 +11571,7 @@
 <translation id="9016827136585652292">隐私保护屏幕切换开关</translation>
 <translation id="90181708067259747">失效日期：<ph name="CARD" /></translation>
 <translation id="9018218886431812662">安装完成</translation>
+<translation id="9018677074423884999">默认搜索引擎 (DSE)</translation>
 <translation id="901876615920222131">要重新打开该组，请点击该组</translation>
 <translation id="9019062154811256702">读取和更改自动填充设置</translation>
 <translation id="9019956081903586892">无法下载拼写检查字典</translation>
@@ -11628,6 +11628,7 @@
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>
 <translation id="9048745018038487540">选择所有字体</translation>
 <translation id="9050666287014529139">密码</translation>
+<translation id="905137631551495997">扩展程序</translation>
 <translation id="905145695813415387">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此文件夹移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
 <translation id="9052404922357793350">继续拦截</translation>
 <translation id="90528604757378587">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制。</translation>

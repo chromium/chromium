@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Turkoosi 3</translation>
 <translation id="1035709686865413354">Vedensuodattimet ja -puhdistimet</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
+<translation id="1036436692654972538">Tallentaa laitteelle</translation>
 <translation id="1036881361735705143">Kirjekuori C4</translation>
 <translation id="1038842779957582377">tuntematon nimi</translation>
 <translation id="1041998700806130099">Työpaikkasivun viesti</translation>
@@ -2832,6 +2833,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> uudelleenohjasi sinut liian monta kertaa.</translation>
 <translation id="5619721953841297650">Esiasetus</translation>
 <translation id="5624120631404540903">Hallitse salasanoja</translation>
+<translation id="5628060911499153873">Tallenna tietosi, niin voit hoitaa asioita nopeammin Googlen tuotteissa. Tietosi tallennetaan tänne: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> (<ph name="ACCOUNT" />).</translation>
 <translation id="5629630648637658800">Käytännön asetuksien lataaminen epäonnistui</translation>
 <translation id="5630981295558454585">Kysy Googlelta tästä sivusta ‑painike, aktivoi kysyäksesi Googlelta tästä sivusta</translation>
 <translation id="5631439013527180824">Laitteenhallintatunnus on virheellinen</translation>

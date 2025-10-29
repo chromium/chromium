@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">シアン 3</translation>
 <translation id="1035709686865413354">浄水器</translation>
 <translation id="1036348656032585052">オフにする</translation>
+<translation id="1036436692654972538">デバイスに保存します</translation>
 <translation id="1036881361735705143">C4 封筒</translation>
 <translation id="1038842779957582377">不明な名前</translation>
 <translation id="1041998700806130099">ジョブシート メッセージ</translation>
@@ -2831,6 +2832,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> でリダイレクトが繰り返し行われました。</translation>
 <translation id="5619721953841297650">プリセット</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
+<translation id="5628060911499153873">情報を保存すると、各種の Google サービスで簡単に入力できるようになります。情報は <ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存されます。</translation>
 <translation id="5629630648637658800">ポリシー設定を読み込めませんでした</translation>
 <translation id="5630981295558454585">[このページについて Google に質問する] ボタンです。実行すると、このページについて Google に質問できます</translation>
 <translation id="5631439013527180824">無効なデバイス管理トークンです</translation>

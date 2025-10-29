@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cianova 3</translation>
 <translation id="1035709686865413354">Vodni filtri in čistilniki</translation>
 <translation id="1036348656032585052">Izklop</translation>
+<translation id="1036436692654972538">Shrani v napravo</translation>
 <translation id="1036881361735705143">Kuverta C4</translation>
 <translation id="1038842779957582377">neznano ime</translation>
 <translation id="1041998700806130099">Sporočilo glede delovnega lista</translation>
@@ -2831,6 +2832,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5617949217645503996">Spletno mesto <ph name="HOST_NAME" /> vas je prevečkrat preusmerilo.</translation>
 <translation id="5619721953841297650">Prednastavljeno</translation>
 <translation id="5624120631404540903">Upravljanje gesel</translation>
+<translation id="5628060911499153873">Shranite podatke, da boste hitreje opravili delo v Googlovih izdelkih. Vaši podatki so shranjeni v aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" /></translation>
 <translation id="5629630648637658800">Nastavitev pravilnika ni bilo mogoče naložiti</translation>
 <translation id="5630981295558454585">Gumb za vprašanje Googla o tej strani, aktivirajte, če želite vprašati Google o tej strani</translation>
 <translation id="5631439013527180824">Neveljaven žeton za upravljanje naprave</translation>

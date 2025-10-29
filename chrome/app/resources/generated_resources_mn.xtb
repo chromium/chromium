@@ -760,7 +760,6 @@
 <translation id="1512642802859169995"><ph name="FILE_NAME" />-г шифрлэсэн байна. Өмчлөгчөөс нь үүний кодыг тайлахыг хүснэ үү.</translation>
 <translation id="151501797353681931">Safari-аас импортолж авсан</translation>
 <translation id="1515163294334130951">Эхлүүлэх</translation>
-<translation id="1515246388279049673">Хуучин бүлгийг солих</translation>
 <translation id="1517467582299994451">Кодоор дамжуулахын тулд Chrome хөтчийн синк хийх тохиргоог асаана уу</translation>
 <translation id="1519090060276706457">Цонхыг сэргээхэд тооцоолсноос удаж байна</translation>
 <translation id="1521442365706402292">Гэрчилгээг удирдан зохион байгуулах</translation>
@@ -777,6 +776,7 @@
 <translation id="152913213824448541">Ойролцоо хуваалцах харилцагчид</translation>
 <translation id="1529769834253316556">Мөрийн өндөр</translation>
 <translation id="1529891865407786369">Эрчим хүчний эх үүсвэр</translation>
+<translation id="1530376661400379364">Chrome эдгээр тохиргоог шинэчилсэн</translation>
 <translation id="1531275250079031713">'Шинэ Wi-Fi нэмэх' харилцах цонхыг харуулах</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Би энэ татан авалт нь миний компьютерыг гэмтээнэ гэдгийг ойлгож байна</translation>
@@ -1076,6 +1076,7 @@
 <translation id="1709916727352927457">Passkey-г устгах</translation>
 <translation id="1709972045049031556">Хуваалцах боломжгүй</translation>
 <translation id="1712143791363119140">Үргэлжилж байна</translation>
+<translation id="1714265454085143857">Бэхэлсэн табууд</translation>
 <translation id="1714326320203665217">Үндсэн зангилааны тэмдэглэгээний файлуудыг татаж авлаа</translation>
 <translation id="1714644264617423774">Таны төхөөрөмжийг ашиглахад илүү хялбар болгохын тулд хандалтын онцлогуудыг идэвхжүүлэх. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> болон түүний суулгасан аппын сайтын өгөгдөл, зөвшөөрлийг устгах уу?</translation>
@@ -1198,6 +1199,7 @@
 <translation id="1805967612549112634">ПИН-г баталгаажуулах</translation>
 <translation id="1806335016774576568">Нээлттэй өөр апп руу сэлгэх</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
+<translation id="1807542511544484064">Эдгээр тохиргоог Chrome-с гадуур өөрчилсөн. Таныг хамгаалахын тулд Chrome тэдгээрийг шинэчилсэн.</translation>
 <translation id="180759455458343539">Зураг нэмэх</translation>
 <translation id="1808571181382454540">Тохиргооны хуудас руу очно уу</translation>
 <translation id="1808805149659872686">Шинэ оруулга</translation>
@@ -3129,7 +3131,6 @@
 <translation id="3132277757485842847">Бид таны утасны холболтыг хадгалж чадсангүй. Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="3132896062549112541">Дүрэм</translation>
 <translation id="3132996321662585180">Өдөр бүр сэргээх</translation>
-<translation id="3133743499784536658">Шинэ бүлэг үүсгэх</translation>
 <translation id="3134312457920437826">Өргөтгөл нь дэмжигдээгүй тодорхойлогч файлын хувилбарыг ашигладаг тул уг өргөтгөлийг суулгах боломжгүй.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу. Туршилтын тайлбар: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Өгөгдмөл шар аватар</translation>
@@ -9000,7 +9001,6 @@
 <translation id="7269229526547981029">Энэ профайлыг <ph name="PROFILE_MANAGER" /> удирддаг. <ph name="ACCOUNT_MANAGER" /> <ph name="USER_EMAIL_ADDRESS" /> бүртгэлд шинэ профайл шаардаж байна</translation>
 <translation id="7269736181983384521">Ойролцоо хуваалцах онцлогийн дата ашиглалт</translation>
 <translation id="7271278495464744706">Дэлгэрэнгүй тайлбарыг идэвхжүүлэх</translation>
-<translation id="7272299278407797215">Хуучин бүлгийг солих</translation>
 <translation id="7272674038937250585">Тайлбар алга</translation>
 <translation id="7273110280511444812"><ph name="DATE" /> дээр хамгийн сүүлд хавсаргасан</translation>
 <translation id="7273894023751806510"><ph name="HOST" />-г таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг үргэлж блоклох</translation>
@@ -9102,7 +9102,6 @@
 <translation id="7343372807593926528">Санал хүсэлтийг илгээхийн өмнө асуудлыг тайлбарлана уу.</translation>
 <translation id="7344585835349671209">Өөрийн төхөөрөмж дээрх HTTPS/SSL сертификатуудыг удирдаарай</translation>
 <translation id="7345706641791090287">Нууц үгээ баталгаажуулна уу</translation>
-<translation id="7345713233326828297">Та аль хэдийн энэ фолдероос бүлэг үүсгэсэн.</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
 <translation id="7347751611463936647">Энэ өргөтгөлийг ашиглахын тулд,  "<ph name="EXTENSION_KEYWORD" /> " гэж бичээд, ЦОНХ үүсгээд дараа нь командаа өгч эсвэл хайлтаа хийнэ үү.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" />-с шилжиж гарахын тулд товшино уу.</translation>
@@ -9460,7 +9459,6 @@
 <translation id="7585490016012953607">Сэргээх нууц үг — 3 хүртэлх сар түр зуур хадгалдаг</translation>
 <translation id="7586498138629385861">Chrome-г хэрэглээний программыг нээсэн байгаа тохиолдолд Chrome нь ачаалласан хэвээр байна.</translation>
 <translation id="7587806318633605613">Зөвлөмжийн түүх</translation>
-<translation id="7588381637439911806">Шинэ бүлэг үүсгэх</translation>
 <translation id="7589448773774086276">Одоогийн табтай шинэ хуваасан харагдах байдал</translation>
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
@@ -11192,7 +11190,6 @@
 <translation id="8750786237117206586">ChromeOS Flex-н аудионы тохиргоог удирдах</translation>
 <translation id="8751034568832412184">Сургууль</translation>
 <translation id="8751329102746373229">Таны администратораас</translation>
-<translation id="875242763254084885"><ph name="ORIGIN" /> сайт энэ холбоосыг аппад нээх хүсэлтэй байна.</translation>
 <translation id="8752451679755290210">Зүйлс хооронд автоматаар шилжих</translation>
 <translation id="8753948258138515839">Files апп нь таны Google Драйв, гадаад хадгалах сан эсвэл ChromeOS Flex төхөөрөмж дээр хадгалсан файлуудад шуурхай хандалт олгоно.</translation>
 <translation id="8754200782896249056">&lt;p&gt; Дэмжлэг бүхий дэлгэцийн орчинд <ph name="PRODUCT_NAME" />-г ачаалж байх үед системийн proxy тохиргоог ашиглана. Гэхдээ таны систед аливаа дэмжлэг байхгүй эсвэл таны системийн тохиргоо нь алдаатай байж болох юм.&lt;/p&gt; &lt;p&gt;Та системын тохиргоог тушаалын мөрөөр дамжуулан хийх боломжтой. &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; -с туг болон орчны хувьсагчийн талаарх нэмэлт мэдээллийг авах боломжтой.&lt;/p&gt;</translation>
@@ -11583,6 +11580,7 @@
 <translation id="9016827136585652292">нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="90181708067259747">Хүчинтэй хугацаа: <ph name="CARD" /></translation>
 <translation id="9018218886431812662">Суулгаж дууссан</translation>
+<translation id="9018677074423884999">Өгөгдмөл хайлтын систем (DSE)</translation>
 <translation id="901876615920222131">Бүлгийг дахин нээхийн тулд бүлгийг товшино уу</translation>
 <translation id="9019062154811256702">Аutofill-н тохиргоог уншиж, өөрчлөх</translation>
 <translation id="9019956081903586892">Зөв бичгийн алдаа шалгах толь бичгийг татаж чадсангүй</translation>
@@ -11639,6 +11637,7 @@
 <translation id="9045160989383249058">Таны унших жагсаалтыг шинэ хажуугийн самбар луу зөөсөн. Энд туршиж үзнэ үү.</translation>
 <translation id="9048745018038487540">Бүх фонтыг сонгох</translation>
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>
+<translation id="905137631551495997">Өргөтгөл(үүд)</translation>
 <translation id="905145695813415387">“<ph name="LOCAL_FOLDER" />”-г зөвхөн энэ төхөөрөмжид хадгалсан. Хэрэв та энэ фолдерыг “<ph name="LOCAL_FOLDER" />” руу зөөвөл цаашид тухайн фолдерыг бусад төхөөрөмж дээрээ авахгүй.</translation>
 <translation id="9052404922357793350">Үргэлжлүүлэн хориглох</translation>
 <translation id="90528604757378587">Арын үйл ажиллагаа болон төвөггүйгээр гүйлгэх гэх мэт зарим визуал эффектийг ашиглах хязгаарлагдмал байж болно.</translation>

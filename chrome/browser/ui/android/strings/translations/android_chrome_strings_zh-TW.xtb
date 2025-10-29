@@ -595,6 +595,7 @@
 <translation id="3739899004075612870">已加入 <ph name="PRODUCT_NAME" /> 書籤</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
 <translation id="376561056759077985">部分資料尚未儲存</translation>
+<translation id="3770620323585347665">命名視窗</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
 <translation id="3771290962915251154">已啟用家長監護功能，因此這項設定已停用</translation>
 <translation id="3771694256347217732">Google 服務條款</translation>
@@ -788,6 +789,7 @@
 <translation id="4668279686271488041">定期刪除裝置上的廣告評估資料</translation>
 <translation id="4668347365065281350">網站儲存的所有資料，包括 Cookie 和其他儲存在本機上的資料</translation>
 <translation id="4673702426794876519">無痕視窗</translation>
+<translation id="4675298276894277358">系統不會再顯示這個網站</translation>
 <translation id="4678082183394354975">已在 Chrome 中啟用網站的深色主題</translation>
 <translation id="4682306524980568490">只能顯示 <ph name="MAX_INSTANCE_COUNT" /> 個視窗</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
@@ -989,6 +991,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="555671485580955310">同步歷史記錄和分頁</translation>
 <translation id="555816257274242153">已停止追蹤價格</translation>
+<translation id="5559778750856177186">已取消固定捷徑</translation>
 <translation id="5561445479436807659">暢玩有趣的恐龍遊戲</translation>
 <translation id="5561549206367097665">正在等待網路連線…</translation>
 <translation id="5568069709869097550">無法登入</translation>
@@ -1662,6 +1665,7 @@
 <translation id="8281886186245836920">略過</translation>
 <translation id="8282297628636750033">盡可能對網站套用深色主題</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{關閉 1 個無痕視窗}other{關閉 # 個無痕視窗}}</translation>
 <translation id="831192587911042850">將目前的網站加到你追蹤的網站清單中。</translation>
 <translation id="8317318757008452355">開啟列印選項</translation>
 <translation id="8320212361750431956">近期活動</translation>
