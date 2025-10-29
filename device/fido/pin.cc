@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
@@ -188,8 +189,8 @@ std::optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
   if (x.size() != sizeof(ret.x) || y.size() != sizeof(ret.y)) {
     return std::nullopt;
   }
-  UNSAFE_TODO(memcpy(ret.x, x.data(), sizeof(ret.x)));
-  UNSAFE_TODO(memcpy(ret.y, y.data(), sizeof(ret.y)));
+  base::span(ret.x).copy_from(x);
+  base::span(ret.y).copy_from(y);
 
   bssl::UniquePtr<EC_GROUP> group(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -205,11 +206,12 @@ std::optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
 
 std::array<uint8_t, kP256X962Length> KeyAgreementResponse::X962() const {
   std::array<uint8_t, kP256X962Length> ret;
-  static_assert(ret.size() == 1 + sizeof(this->x) + sizeof(this->y),
+  static_assert(ret.size() == 1 + sizeof(x) + sizeof(y),
                 "Bad length for return type");
-  ret[0] = POINT_CONVERSION_UNCOMPRESSED;
-  UNSAFE_TODO(memcpy(&ret[1], this->x, sizeof(this->x)));
-  UNSAFE_TODO(memcpy(&ret[1 + sizeof(this->x)], this->y, sizeof(this->y)));
+  base::SpanWriter<uint8_t> writer(ret);
+  writer.WriteU8BigEndian(POINT_CONVERSION_UNCOMPRESSED);
+  writer.Write(x);
+  writer.Write(y);
   return ret;
 }
 
