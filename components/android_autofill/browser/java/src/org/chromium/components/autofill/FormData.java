@@ -93,13 +93,19 @@ public class FormData {
 
             ViewStructure.HtmlInfo.Builder builder =
                     child.newHtmlInfoBuilder("input")
-                            .addAttribute("name", field.mName)
-                            .addAttribute("type", field.mType)
-                            .addAttribute("label", field.mLabel)
-                            .addAttribute("ua-autofill-hints", field.mHeuristicType)
-                            .addAttribute("id", field.mId)
-                            .addAttribute("crowdsourcing-autofill-hints", field.getServerType())
-                            .addAttribute("computed-autofill-hints", field.getOverallType());
+                            .addAttribute("name", field.mName == null ? "" : field.mName)
+                            .addAttribute("type", field.mType == null ? "" : field.mType)
+                            .addAttribute("label", field.mLabel == null ? "" : field.mLabel)
+                            .addAttribute(
+                                    "ua-autofill-hints",
+                                    field.mHeuristicType == null ? "" : field.mHeuristicType)
+                            .addAttribute("id", field.mId == null ? "" : field.mId)
+                            .addAttribute(
+                                    "crowdsourcing-autofill-hints",
+                                    field.getServerType() == null ? "" : field.getServerType())
+                            .addAttribute(
+                                    "computed-autofill-hints",
+                                    field.getOverallType() == null ? "" : field.getOverallType());
             if (AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION
                     .isEnabled()) {
                 builder.addAttribute("visibility", field.getVisible() ? "visible" : "invisible");
