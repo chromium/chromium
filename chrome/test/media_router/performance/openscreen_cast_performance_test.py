@@ -10,6 +10,7 @@ records the casted video using ffmpeg, and analyzes the output for metrics
 like dropped frames and smoothness.
 """
 
+import argparse
 import logging
 import multiprocessing
 import os
@@ -45,10 +46,9 @@ sys.path.append(TEST_SCRIPTS_ROOT)
 from repeating_log import RepeatingLog
 # pylint: enable=import-error, wrong-import-position
 
+
+
 CHROMEDRIVER_PORT = int(os.environ.get('CHROMEDRIVER_PORT', '49573'))
-SENDER = os.environ.get('SENDER')
-USERNAME = os.environ.get('USERNAME')
-RECEIVER = os.environ.get('RECEIVER')
 SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 
 CAST_BTN_XPATH = "//button[text()='Launch app']"
@@ -103,15 +103,7 @@ VIDEOS = [
     }
 ]
 
-HOST_TUNNEL_CMD = [
-    'ssh',
-    '-i',
-    '~/.ssh/id_ed25519',
-    '-L',
-    f'{CHROMEDRIVER_PORT}:127.0.0.1:{CHROMEDRIVER_PORT}',
-    f'{USERNAME}@{SENDER}',
-    '-N'
-]
+
 
 SENDER_CHROMEDRIVER_CMD = (
     f'nohup /opt/homebrew/bin/chromedriver --port={CHROMEDRIVER_PORT} '
@@ -196,13 +188,13 @@ def send_ssh_command(hostname, username, command, blocking=False):
 
     return process
 
-def terminate_old_chromedriver():
+def terminate_old_chromedriver(args):
     """Tries to terminate any existing chromedriver processes."""
     logging.info("Attempting to terminate old chromedriver processes...")
-    send_ssh_command(SENDER, USERNAME, SENDER_TERMINATE_DRIVER_CMD)
+    send_ssh_command(args.sender, args.username, SENDER_TERMINATE_DRIVER_CMD)
 
     for _ in range(5):
-        result = send_ssh_command(SENDER, USERNAME,
+        result = send_ssh_command(args.sender, args.username,
                                   SENDER_CHROMEDRIVER_CHECK_CMD, blocking=True)
         if not result.stdout.strip():
             logging.info("Old chromedriver processes confirmed gone.")
@@ -211,23 +203,26 @@ def terminate_old_chromedriver():
         time.sleep(1)
     raise RuntimeError("Chromedriver processes lingered after kill attempts.")
 
-def start_new_chromedriver():
+def start_new_chromedriver(args):
     """Starts a new chromedriver process on the remote machine."""
-    send_ssh_command(SENDER, USERNAME, SENDER_CHROMEDRIVER_CMD)
+    send_ssh_command(args.sender, args.username, SENDER_CHROMEDRIVER_CMD)
     logging.info("Started new chromedriver.")
 
-def wait_for_chromedriver():
+def wait_for_chromedriver(args):
     """Waits for the new chromedriver to be ready by checking its status URL."""
     logging.info("Starting Chromedriver status check...")
-    for _ in range(5):
+    for i in range(5):
         try:
-            result = send_ssh_command(SENDER, USERNAME,
+            result = send_ssh_command(args.sender, args.username,
                                       SENDER_STATUS_CMD, blocking=True)
             stdout = result.stdout.strip()
             if result.returncode == 0 and stdout == '200':
                 logging.info("Chromedriver is ready.")
                 return
-            logging.info("Connection refused (curl code 7). Not ready yet...")
+            logging.warning(f"Attempt {i+1} failed. Chromedriver not ready. "
+                          f"Return code: {result.returncode}, "
+                          f"stdout: '{stdout}', "
+                          f"stderr: '{result.stderr.strip()}'")
         except subprocess.TimeoutExpired:
             logging.warning("Status check timed out. Retrying...")
         except Exception as e: # pylint: disable=broad-exception-caught
@@ -235,10 +230,19 @@ def wait_for_chromedriver():
         time.sleep(2)
     raise RuntimeError("Chromedriver still not ready after multiple attempts.")
 
-def start_ssh_tunnel():
+def start_ssh_tunnel(args):
     # pylint: disable=consider-using-with
     """Starts the SSH tunnel process."""
-    tunnel_proc = subprocess.Popen(HOST_TUNNEL_CMD)
+    host_tunnel_cmd = [
+        'ssh',
+        '-i',
+        f'~/.ssh/id_ed25519',
+        '-L',
+        f'{CHROMEDRIVER_PORT}:127.0.0.1:{CHROMEDRIVER_PORT}',
+        f'{args.username}@{args.sender}',
+        '-N'
+    ]
+    tunnel_proc = subprocess.Popen(host_tunnel_cmd)
     logging.info("Started tunnel.")
     return tunnel_proc
 
@@ -259,7 +263,7 @@ def connect_to_remote_driver(chrome_options):
             time.sleep(2)
     raise RuntimeError("Could not connect to the remote chromedriver.")
 
-def setup_test_environment():
+def setup_test_environment(args):
     """
     Sets up the remote chromedriver and SSH tunnel for testing.
 
@@ -270,10 +274,10 @@ def setup_test_environment():
     Returns:
         tuple: A tuple containing the WebDriver and the tunnel process.
     """
-    terminate_old_chromedriver()
-    start_new_chromedriver()
-    wait_for_chromedriver()
-    tunnel_proc = start_ssh_tunnel()
+    terminate_old_chromedriver(args)
+    start_new_chromedriver(args)
+    wait_for_chromedriver(args)
+    tunnel_proc = start_ssh_tunnel(args)
 
     chrome_options = ChromeOptions()
     for option in CHROME_OPTIONS:
@@ -307,7 +311,7 @@ def teardown_recording_process(rec_proc):
             raise RuntimeError("Recording process timed out and was forcefully \
                                 terminated.") from e
 
-def teardown_test_environment(driver, tunnel_proc):
+def teardown_test_environment(driver, tunnel_proc, args):
     """
     Tears down the test environment, ensuring the driver and tunnel are safely
     terminated.
@@ -319,6 +323,7 @@ def teardown_test_environment(driver, tunnel_proc):
     Args:
         driver (webdriver.Remote): The Selenium WebDriver instance.
         tunnel_proc (subprocess.Popen): The SSH tunnel process.
+        args: The parsed command-line arguments.
     """
     if driver:
         driver.quit()
@@ -349,7 +354,7 @@ def enable_tab_mirroring(driver):
     driver.execute_cdp_cmd("Cast.enable", {"presentationUrl": ""})
 
 
-def start_tab_mirroring(driver, receiver):
+def start_tab_mirroring(driver, args):
     """
     Starts tab mirroring to a specified Cast receiver with retries.
 
@@ -359,7 +364,7 @@ def start_tab_mirroring(driver, receiver):
 
     Args:
         driver: The Selenium WebDriver instance.
-        receiver: The name of the Cast receiver to mirror to.
+        args: The parsed command-line arguments.
 
     Returns:
         bool: True if tab mirroring was successfully initiated.
@@ -371,9 +376,9 @@ def start_tab_mirroring(driver, receiver):
     for attempt in range(1, max_retries + 1):
         try:
             driver.execute_cdp_cmd("Cast.startTabMirroring",
-                                   {"sinkName": receiver})
+                                   {"sinkName": args.receiver})
             logging.info("'Cast.startTabMirroring' command sent to %s.",
-                         receiver)
+                         args.receiver)
             return True
         except Exception as e: # pylint: disable=broad-exception-caught
             logging.warning(
@@ -384,7 +389,8 @@ def start_tab_mirroring(driver, receiver):
     raise RuntimeError("Failed to start tab mirroring.")
 
 # pylint: disable=too-many-locals
-def run_performance_test(video_file: str, framerate: int, driver: webdriver):
+def run_performance_test(video_file: str, framerate: int,
+                         driver: webdriver, args):
     """
     Runs a single video performance test by casting and recording the video.
 
@@ -396,6 +402,7 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
         video_file (str): The name of the video file to be tested.
         framerate (int): The framerate of the video.
         driver (webdriver.Remote): The Selenium WebDriver instance.
+        args: The parsed command-line arguments.
 
     Returns:
         subprocess.Popen: The Popen object for the ffmpeg recording process.
@@ -446,7 +453,7 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
                     logging.info("Started recording.")
                     break
 
-        casting = start_tab_mirroring(driver, RECEIVER)
+        casting = start_tab_mirroring(driver, args)
 
         def _wait_js_condition(driver, element, condition: str) -> bool:
             """Waits a condition on the element once a second for at most 30
@@ -506,11 +513,12 @@ def run_performance_test(video_file: str, framerate: int, driver: webdriver):
                            "more details.") from e
     finally:
         if driver:
-            if casting and RECEIVER:
-                logging.info('Attempting to stop casting to "%s"...', RECEIVER)
+            if casting and args.receiver:
+                logging.info('Attempting to stop casting to "%s"...',
+                             args.receiver)
                 try:
                     driver.execute_cdp_cmd("Cast.stopCasting",
-                                           {"sinkName": RECEIVER})
+                                           {"sinkName": args.receiver})
                     logging.info("'Cast.stopCasting' command sent.")
                     casting = False
                 except Exception as e:
@@ -533,6 +541,16 @@ def main():
     """
     logging.getLogger().setLevel(logging.INFO)
 
+    parser = argparse.ArgumentParser(
+        description="Performance test for media played via Chromecast.",
+    )
+
+    parser.add_argument('--username', help='Sender device username.')
+    parser.add_argument('--sender', help='Sender device IP.')
+    parser.add_argument('--receiver',help='Receiver device sink name.')
+
+    args, _ = parser.parse_known_args()
+
     if os.path.exists(RECORDINGS_DIR):
         shutil.rmtree(RECORDINGS_DIR)
     os.makedirs(RECORDINGS_DIR)
@@ -541,20 +559,21 @@ def main():
     tunnel_proc = None
 
     try:
-        driver, tunnel_proc = setup_test_environment()
+        driver, tunnel_proc = setup_test_environment(args)
         for video in VIDEOS:
             logging.info("Starting test for video: %s", video['name'])
             rec_proc = None
             try:
                 rec_proc = run_performance_test(video['name'],
                                                 video['fps'],
-                                                driver)
+                                                driver,
+                                                args)
             except Exception: # pylint: disable=broad-exception-caught
                 logging.exception("Error during video %s test", video['name'])
             finally:
                 teardown_recording_process(rec_proc)
     finally:
-        teardown_test_environment(driver, tunnel_proc)
+        teardown_test_environment(driver, tunnel_proc, args)
 
 if __name__ == '__main__':
     with StartProcess(server.start, [SERVER_PORT], True):
