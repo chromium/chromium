@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Holder;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -275,30 +277,36 @@ public class TabModelHolderFactory {
         return filter;
     }
 
-    // TODO(crbug.com/454298057): Replace TabGroupModelFilterImpl with a mock, fake, or stub in
-    // these testing methods.
-
-    /** Creates a legacy {@link TabModelHolder} for testing. */
+    /**
+     * Creates a {@link TabModelHolder} for testing. The {@link TabGroupModelFilter} mostly no-ops.
+     * This is primarily intended for unit tests that use a {@link MockTabModel} and don't care
+     * about tab groups.
+     */
     public static TabModelHolder createTabModelHolderForTesting(TabModelInternal tabModelInternal) {
         return new TabModelHolder(
-                tabModelInternal,
-                createLegacyTabGroupModelFilterInternalForTesting(tabModelInternal));
+                tabModelInternal, createStubTabGroupModelFilterForTesting(tabModelInternal));
     }
 
-    /** Creates a legacy {@link IncognitoTabModelHolder} for testing. */
+    /**
+     * Creates a {@link IncognitoTabModelHolder} for testing. The {@link TabGroupModelFilter} mostly
+     * no-ops. This is primarily intended for unit tests that use a {@link MockTabModel} and don't
+     * care about tab groups.
+     */
     public static IncognitoTabModelHolder createIncognitoTabModelHolderForTesting(
             IncognitoTabModelInternal incognitoTabModelInternal) {
         return new IncognitoTabModelHolder(
                 incognitoTabModelInternal,
-                createLegacyTabGroupModelFilterInternalForTesting(incognitoTabModelInternal));
+                createStubTabGroupModelFilterForTesting(incognitoTabModelInternal));
     }
 
-    private static TabGroupModelFilterInternal createLegacyTabGroupModelFilterInternalForTesting(
+    private static TabGroupModelFilterInternal createStubTabGroupModelFilterForTesting(
             TabModelInternal tabModel) {
-        return createLegacyTabGroupModelFilterInternal(
-                tabModel,
-                (isIncognitoBranded, tabModelInternalSupplier) ->
-                        new PassthroughTabUngrouper(tabModelInternalSupplier),
-                /* wasTabCollectionsActive= */ false);
+        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
+        TabUngrouper tabUngrouper =
+                new PassthroughTabUngrouper(() -> assumeNonNull(filterHolder.get()));
+        TabGroupModelFilterInternal filter =
+                new StubTabGroupModelFilterImpl(tabModel, tabUngrouper);
+        filterHolder.value = filter;
+        return filter;
     }
 }
