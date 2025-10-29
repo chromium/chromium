@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
@@ -201,6 +202,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     private void showInstanceSwitcherDialog() {
         List<InstanceInfo> info = getInstanceInfo();
+        boolean isIncognitoWindow =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        && mActivity instanceof ChromeTabbedActivity
+                        && ((ChromeTabbedActivity) mActivity).isIncognitoWindow();
         InstanceSwitcherCoordinator.showDialog(
                 mActivity,
                 mModalDialogManagerSupplier.get(),
@@ -221,10 +226,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 () ->
                         openNewWindow(
                                 "Android.WindowManager.NewWindow",
-                                /* incognito= */ false,
+                                isIncognitoWindow,
                                 NewWindowAppSource.WINDOW_MANAGER),
                 MultiWindowUtils.getMaxInstances(),
-                info);
+                info,
+                isIncognitoWindow);
     }
 
     Callback<Pair<Integer, String>> getRenameCallbackForTesting() {

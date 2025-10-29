@@ -96,6 +96,7 @@ public class InstanceSwitcherCoordinator {
     private final ModelList mInactiveModelList = new ModelList();
     private final UiUtils mUiUtils;
     private final View mDialogView;
+    private final boolean mIsIncognitoWindow;
     private @Nullable TabLayout mTabHeaderRow;
 
     private @Nullable PropertyModel mDialog;
@@ -123,6 +124,8 @@ public class InstanceSwitcherCoordinator {
      * @param newWindowAction Runnable to invoke to open a new window.
      * @param maxInstanceCount The maximum number of instances whose state can be persisted.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
+     * @param isIncognitoWindow Used to determine if dialog should show "New window" or "New
+     *     Incognito window".
      */
     public static void showDialog(
             Context context,
@@ -133,7 +136,8 @@ public class InstanceSwitcherCoordinator {
             Callback<Pair<Integer, String>> renameWindowCallback,
             Runnable newWindowAction,
             int maxInstanceCount,
-            List<InstanceInfo> instanceInfo) {
+            List<InstanceInfo> instanceInfo,
+            boolean isIncognitoWindow) {
         new InstanceSwitcherCoordinator(
                         context,
                         modalDialogManager,
@@ -142,7 +146,8 @@ public class InstanceSwitcherCoordinator {
                         closeCallback,
                         renameWindowCallback,
                         newWindowAction,
-                        maxInstanceCount)
+                        maxInstanceCount,
+                        isIncognitoWindow)
                 .show(instanceInfo);
     }
 
@@ -154,7 +159,8 @@ public class InstanceSwitcherCoordinator {
             Callback<InstanceInfo> closeCallback,
             Callback<Pair<Integer, String>> renameWindowCallback,
             Runnable newWindowAction,
-            int maxInstanceCount) {
+            int maxInstanceCount,
+            boolean isIncognitoWindow) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOpenCallback = openCallback;
@@ -163,6 +169,7 @@ public class InstanceSwitcherCoordinator {
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
         mMaxInstanceCount = maxInstanceCount;
+        mIsIncognitoWindow = isIncognitoWindow;
 
         if (UiUtils.isInstanceSwitcherV2Enabled()) {
             var activeListAdapter = getInstanceListV2Adapter(/* active= */ true);
@@ -174,6 +181,10 @@ public class InstanceSwitcherCoordinator {
             mInstanceListContainer = mDialogView.findViewById(R.id.instance_list_container);
             mMaxInfoView = mDialogView.findViewById(R.id.max_instance_info);
             mNewWindowLayout = mDialogView.findViewById(R.id.new_window);
+            TextView newWindowTextView = mNewWindowLayout.findViewById(R.id.new_window_text);
+            if (mIsIncognitoWindow) {
+                newWindowTextView.setText(R.string.menu_new_incognito_window);
+            }
 
             int itemVerticalSpacing =
                     mContext.getResources()

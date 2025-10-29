@@ -141,7 +141,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
         onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
@@ -168,7 +169,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify "Open" button is disabled before a selection is made.
@@ -221,7 +223,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify active list is showing when the menu is initially displayed.
@@ -276,7 +279,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
         onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
         // Switch to inactive list.
@@ -331,7 +335,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
         onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
         // Switch to inactive list.
@@ -383,7 +388,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify that the active list is showing when the menu is initially displayed.
@@ -434,7 +440,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
@@ -468,7 +475,22 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    public void testNewWindow() throws Exception {
+    public void testNewRegularWindow() throws Exception {
+        testNewWindow(/* isIncognitoWindow= */ false, R.string.menu_new_window);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.INSTANCE_SWITCHER_V2,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void testNewIncognitoWindow() throws Exception {
+        testNewWindow(/* isIncognitoWindow= */ true, R.string.menu_new_incognito_window);
+    }
+
+    private void testNewWindow(boolean isIncognitoWindow, int stringId) throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
                         /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
@@ -485,10 +507,15 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             itemClickCallbackHelper::notifyCalled,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            isIncognitoWindow);
                 });
+
         // 0 ~ 2: instances. 3: 'new window' command.
-        onData(anything()).inRoot(isDialog()).atPosition(3).perform(click());
+        onView(withId(R.id.new_window))
+                .inRoot(isDialog())
+                .check(matches(hasDescendant(withText(stringId))))
+                .perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }
 
@@ -512,7 +539,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify that we have only [cancel] button.
@@ -554,7 +582,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify that we show a info message that users can have up to 5 windows when there are
@@ -598,7 +627,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             newWindowCallbackHelper::notifyCalled,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify that we show info message that users can have up to 5 windows when there are more
@@ -661,7 +691,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             newWindowCallbackHelper::notifyCalled,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify that we show max info message that users can have up to 5 windows when there are
@@ -751,7 +782,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify "Open" button is disabled before a selection is made.
@@ -839,7 +871,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Closing a hidden, tab-less instance skips the confirmation.
@@ -868,7 +901,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         onData(anything())
@@ -912,7 +946,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Verify that the "Current window" string is at position 0.
@@ -970,7 +1005,8 @@ public class InstanceSwitcherCoordinatorTest {
                             renameCallback,
                             null, // newWindowAction
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Click on the 'more' button for the second instance.
@@ -1034,7 +1070,8 @@ public class InstanceSwitcherCoordinatorTest {
                             null, // renameCallback
                             null, // newWindowAction
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         onView(withId(R.id.active_instance_list)).inRoot(isDialog()).check(matches(isDisplayed()));
@@ -1092,7 +1129,8 @@ public class InstanceSwitcherCoordinatorTest {
                             renameCallback,
                             null, // newWindowAction
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Click on the 'more' button for the second instance.
@@ -1157,7 +1195,8 @@ public class InstanceSwitcherCoordinatorTest {
                             renameCallback,
                             null, // newWindowAction
                             MAX_INSTANCE_COUNT,
-                            Arrays.asList(instances));
+                            Arrays.asList(instances),
+                            /* isIncognitoWindow= */ false);
                 });
 
         // Click on the 'more' button for the second instance.
