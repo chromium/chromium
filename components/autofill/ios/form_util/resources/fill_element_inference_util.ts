@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
@@ -134,7 +135,7 @@ function findChildTextInner(
     if (node.tagName === 'OPTION') {
       return '';
     }
-    if (gCrWebLegacy.form.isFormControlElement(/** @type {Element} */ (node))) {
+    if (isFormControlElement(/** @type {Element} */ (node))) {
       const input = /** @type {FormControlElement} */ (node);
       if (isAutofillableElement(input)) {
         return '';

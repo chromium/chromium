@@ -8,6 +8,7 @@
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {getRemoteFrameToken, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {isFormControlElement} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -173,17 +174,6 @@ class FormSubmissionReportManager {
 }
 
 const gFormSubmissionReportManager = new FormSubmissionReportManager();
-
-/**
- * Based on Element::isFormControlElement() (WebKit)
- * @param element A DOM element.
- * @return true if the `element` is a form control element.
- */
-function isFormControlElement(element: Element): boolean {
-  const tagName = element.tagName;
-  return (
-      tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA');
-}
 
 /**
  * Returns an array of control elements in a form.
@@ -576,7 +566,6 @@ function reportDetectedFormSubmission(
 
 gCrWebLegacy.form = {
   wasEditedByUser,
-  isFormControlElement,
   getFormControlElements,
   getIframeElements,
   getFieldIdentifier,
