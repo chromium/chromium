@@ -462,6 +462,9 @@ const base::FeatureParam<size_t>
         &kGlicActorIterativeInteractionPointDiscovery,
         "interaction-discovery-max-iterations", 0};
 
+// Whether to use modifiers to mouse actions during the drag and release tool.
+BASE_FEATURE(kGlicActorUseDragModifiers, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Glic's act-on-web capability is checked for managed
 // trial clients.
 BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,

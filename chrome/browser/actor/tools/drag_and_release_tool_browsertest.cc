@@ -106,6 +106,40 @@ IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
             EvalJs(web_contents(), "event_log.join(',')"));
 }
 
+// Ensure the drag tool sends the expected pointer down, move and up events and
+// responds appropriately to setPointerCapture
+IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
+                       DragAndReleaseTool_PointerEvents) {
+  const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Log starts off empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "pointer_log.join(',')"));
+
+  gfx::RectF target_rect =
+      GetBoundingClientRect(*main_frame(), "#pointerLogger");
+
+  // Arbitrary pad to hit a few pixels inside the logger element.
+  const int kPadding = 10;
+  gfx::Vector2d delta(100, 150);
+  gfx::Point start(target_rect.x() + kPadding, target_rect.y() + kPadding);
+  gfx::Point end = start + delta;
+
+  std::unique_ptr<ToolRequest> action =
+      MakeDragAndReleaseRequest(*active_tab(), start, end);
+
+  ActResultFuture result_success;
+  actor_task().Act(ToRequestList(action), result_success.GetCallback());
+  ExpectOkResult(result_success);
+
+  EXPECT_EQ(
+      base::StrCat({"pointermove[", start.ToString(), "]: 0,", "pointerdown[",
+                    start.ToString(), "]: 1,", "gotpointercapture[",
+                    end.ToString(), "]: 1,", "pointermove[", end.ToString(),
+                    "]: 1,", "pointerup[", end.ToString(), "]: 0"}),
+      EvalJs(web_contents(), "pointer_log.join(',')"));
+}
+
 // Ensure coordinates outside of the viewport are rejected.
 IN_PROC_BROWSER_TEST_F(ActorDragAndReleaseToolBrowserTest,
                        DragAndReleaseTool_Offscreen) {

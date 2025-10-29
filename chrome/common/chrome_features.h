@@ -345,6 +345,9 @@ extern const base::FeatureParam<size_t>
     kGlicActorInterationPointDiscoveryMaxIterations;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicActorUseDragModifiers);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActOnWebCapabilityForManagedTrials);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
