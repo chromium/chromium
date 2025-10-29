@@ -410,7 +410,7 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
   // obtain the icon's image.
   BITMAPV5HEADER h;
   InitializeBitmapHeader(&h, s.width(), s.height());
-  void* bits;
+  void* bits = nullptr;
   base::win::ScopedGDIObject<HBITMAP> dib;
   base::win::ScopedCreateDC dib_dc;
   {
@@ -420,8 +420,10 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
                            DIB_RGB_COLORS, &bits, nullptr, 0));
     dib_dc = base::win::ScopedCreateDC(CreateCompatibleDC(hdc));
   }
-  DCHECK(dib.is_valid());
-  DCHECK(dib_dc.IsValid());
+  if (!dib.is_valid() || !dib_dc.IsValid() || !bits) {
+    return SkBitmap();
+  }
+
   HGDIOBJ old_obj = ::SelectObject(dib_dc.Get(), dib.get());
 
   // Windows icons are defined using two different masks. The XOR mask, which
