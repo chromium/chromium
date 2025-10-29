@@ -3,8 +3,7 @@
     "gtest_tests": [
       {
         "args": [
-          "-v",
-          "--do-not-store-tombstones"
+          "-v"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19,7 +18,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -38,7 +37,6 @@
         "args": [
           "--use-cmd-decoder=passthrough",
           "--use-gl=angle",
-          "--do-not-store-tombstones",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -55,7 +53,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -73,7 +71,6 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
-          "--do-not-store-tombstones",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -90,7 +87,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -107,7 +104,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--do-not-store-tombstones",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -129,7 +125,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -145,7 +141,6 @@
       },
       {
         "args": [
-          "--do-not-store-tombstones",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -162,7 +157,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -205,7 +200,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -256,7 +251,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -298,7 +293,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -340,7 +335,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -386,7 +381,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -437,7 +432,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -480,7 +475,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -522,7 +517,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
@@ -565,7 +560,7 @@
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
-            "device_os": "AP3A.240905.015.A2",
+            "device_os": "UP1A.231005.007",
             "device_os_type": "user",
             "device_type": "dm1q",
             "os": "Android",
