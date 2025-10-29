@@ -67,9 +67,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -900,9 +900,9 @@ public class SearchActivity extends AsyncInitializationActivity
         }
     }
 
-    private void bringTabToFront(Tab tab) {
+    private void bringTabToFront(TabWindowInfo tabWindowInfo, GURL url) {
         finish(TerminationReason.BRING_TAB_TO_FRONT, /* loadUrlParams= */ null);
-        IntentHandler.bringTabToFront(tab);
+        IntentHandler.bringTabToFront(tabWindowInfo.tab);
     }
 
     private void bringTabGroupToFront(String tabGroupId) {

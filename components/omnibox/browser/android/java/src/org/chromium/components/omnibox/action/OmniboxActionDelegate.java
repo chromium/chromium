@@ -8,6 +8,7 @@ import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.url.GURL;
 
 /** An interface for handling interactions for Omnibox Action Chips. */
 @NullMarked
@@ -46,8 +47,9 @@ public interface OmniboxActionDelegate {
     /**
      * Switch to an existing tab that is identified by tabId.
      *
-     * @param identifier for the {@link Tab}.
+     * @param tabid identifier for the {@link Tab}.
+     * @param url the page url of the {@link Tab}.
      * @return whether the switch was successful.
      */
-    boolean switchToTab(int tabId);
+    boolean switchToTab(int tabId, GURL url);
 }

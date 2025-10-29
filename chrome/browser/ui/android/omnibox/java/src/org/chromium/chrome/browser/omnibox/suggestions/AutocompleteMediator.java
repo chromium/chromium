@@ -560,7 +560,7 @@ class AutocompleteMediator
                 if (!actions.isEmpty()) {
                     var action = actions.get(0);
                     if (action instanceof OmniboxActionInSuggest omniboxActionInSuggest) {
-                        if (mOmniboxActionDelegate.switchToTab(omniboxActionInSuggest.tabId)) {
+                        if (mOmniboxActionDelegate.switchToTab(omniboxActionInSuggest.tabId, url)) {
                             // This bypasses the execution flow that captures histograms for all
                             // other cases.
                             recordMetrics(
