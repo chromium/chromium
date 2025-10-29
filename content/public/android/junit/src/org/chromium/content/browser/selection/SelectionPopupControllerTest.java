@@ -59,6 +59,7 @@ import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
@@ -840,7 +841,7 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu(MenuType.FLOATING);
         showSelectionMenu(
                 mController,
                 AMPHITHEATRE_FULL,
@@ -848,7 +849,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu());
+        Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu(MenuType.FLOATING));
     }
 
     @Test
@@ -856,7 +857,9 @@ public class SelectionPopupControllerTest {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
         SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
         mController.setSelectionActionMenuDelegate(delegate);
-        when(delegate.canReuseCachedSelectionMenu()).thenReturn(false);
+        when(delegate.canReuseCachedSelectionMenu(anyInt())).thenReturn(false);
+        when(delegate.getDefaultMenuItemOrder(anyInt()))
+                .thenReturn(SelectionActionMenuDelegate.getDefaultMenuItemOrder());
 
         // Called twice to check the selection menu has been cached properly.
         showSelectionMenu(
@@ -865,7 +868,7 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu(MenuType.FLOATING);
         showSelectionMenu(
                 mController,
                 AMPHITHEATRE_FULL,
@@ -873,7 +876,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertNotSame(pendingMenu, mController.getPendingSelectionMenu());
+        Assert.assertNotSame(pendingMenu, mController.getPendingSelectionMenu(MenuType.FLOATING));
     }
 
     @Test
@@ -881,7 +884,9 @@ public class SelectionPopupControllerTest {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
         SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
         mController.setSelectionActionMenuDelegate(delegate);
-        when(delegate.canReuseCachedSelectionMenu()).thenReturn(true);
+        when(delegate.canReuseCachedSelectionMenu(anyInt())).thenReturn(true);
+        when(delegate.getDefaultMenuItemOrder(anyInt()))
+                .thenReturn(SelectionActionMenuDelegate.getDefaultMenuItemOrder());
 
         // Called twice to check the selection menu has been cached properly.
         showSelectionMenu(
@@ -890,7 +895,7 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu(MenuType.FLOATING);
         showSelectionMenu(
                 mController,
                 AMPHITHEATRE_FULL,
@@ -898,7 +903,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
 
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu());
+        Assert.assertSame(pendingMenu, mController.getPendingSelectionMenu(MenuType.FLOATING));
     }
 
     @Test
@@ -911,16 +916,16 @@ public class SelectionPopupControllerTest {
                 /* selectionStartOffset= */ 0,
                 MenuSourceType.MOUSE);
 
-        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu();
+        PendingSelectionMenu pendingMenu = mController.getPendingSelectionMenu(MenuType.FLOATING);
         showSelectionMenu(
                 mController, AMPHITHEATRE, /* selectionStartOffset= */ 0, MenuSourceType.MOUSE);
 
         // Check the menu is different and not similar to the one we have stored.
         Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
-        Assert.assertNotSame(pendingMenu, mController.getPendingSelectionMenu());
+        Assert.assertNotSame(pendingMenu, mController.getPendingSelectionMenu(MenuType.FLOATING));
         Assert.assertNotSame(
                 mController.getSelectionMenuCachedResultForTesting(),
-                mController.getPendingSelectionMenu());
+                mController.getPendingSelectionMenu(MenuType.FLOATING));
     }
 
     @Test

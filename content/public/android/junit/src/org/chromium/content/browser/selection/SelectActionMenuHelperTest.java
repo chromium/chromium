@@ -30,6 +30,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.SelectionActionMenuClientWrapper.DefaultItem;
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.R;
@@ -49,41 +51,32 @@ public class SelectActionMenuHelperTest {
     @Mock private Context mContext;
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
+
         @Override
-        public void modifyDefaultMenuItems(
-                List<SelectionMenuItem.Builder> menuItemBuilders,
+        public @DefaultItem int[] getDefaultMenuItemOrder(@MenuType int menuType) {
+            return new @DefaultItem int[] {
+                DefaultItem.CUT,
+                DefaultItem.COPY,
+                DefaultItem.PASTE,
+                DefaultItem.PASTE_AS_PLAIN_TEXT,
+                DefaultItem.SELECT_ALL,
+                DefaultItem.SHARE,
+                DefaultItem.WEB_SEARCH
+            };
+        }
+
+        @Override
+        public List<SelectionMenuItem> getAdditionalMenuItems(
+                @MenuType int menuType,
                 boolean isSelectionPassword,
                 boolean isSelectionReadOnly,
                 String selectedText) {
-            for (SelectionMenuItem.Builder builder : menuItemBuilders) {
-                int menuItemOrder = getMenuItemOrder(builder.mId);
-                if (menuItemOrder == -1) continue;
-                builder.setOrderAndCategory(
-                        menuItemOrder, SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS);
-            }
-        }
-
-        private int getMenuItemOrder(int id) {
-            if (id == R.id.select_action_menu_cut) {
-                return 0;
-            } else if (id == R.id.select_action_menu_copy) {
-                return 1;
-            } else if (id == R.id.select_action_menu_paste) {
-                return 2;
-            } else if (id == R.id.select_action_menu_paste_as_plain_text) {
-                return 3;
-            } else if (id == R.id.select_action_menu_select_all) {
-                return 4;
-            } else if (id == R.id.select_action_menu_share) {
-                return 5;
-            } else if (id == R.id.select_action_menu_web_search) {
-                return 6;
-            }
-            return -1;
+            return new ArrayList<>();
         }
 
         @Override
-        public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
+        public List<ResolveInfo> filterTextProcessingActivities(
+                @MenuType int menuType, List<ResolveInfo> activities) {
             List<ResolveInfo> updatedSupportedItems = new ArrayList<>();
             List<String> splitTextManagerApps = Arrays.asList("ProcessTextActivity2");
             for (int i = 0; i < activities.size(); i++) {
@@ -98,17 +91,7 @@ public class SelectActionMenuHelperTest {
         }
 
         @Override
-        public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
-            return new ArrayList<>();
-        }
-
-        @Override
-        public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
-            return new ArrayList<>();
-        }
-
-        @Override
-        public boolean canReuseCachedSelectionMenu() {
+        public boolean canReuseCachedSelectionMenu(@MenuType int menuType) {
             return true;
         }
     }
@@ -136,12 +119,7 @@ public class SelectActionMenuHelperTest {
         PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
         pendingMenu.addAll(
                 SelectActionMenuHelper.getDefaultItems(
-                        mContext,
-                        mDelegate,
-                        null,
-                        /* isSelectionPassword= */ true,
-                        /* isSelectionReadOnly= */ true,
-                        /* selectedText= */ "test"));
+                        mContext, mDelegate, MenuType.FLOATING, null));
         List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
         assertEquals(7, menuItems.size());
         assertEquals(menuItems.get(0).id, R.id.select_action_menu_cut);
@@ -161,12 +139,7 @@ public class SelectActionMenuHelperTest {
         PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
         pendingMenu.addAll(
                 SelectActionMenuHelper.getDefaultItems(
-                        mContext,
-                        mDelegate,
-                        selectionActionMenuDelegate,
-                        /* isSelectionPassword= */ true,
-                        /* isSelectionReadOnly= */ true,
-                        /* selectedText= */ "test"));
+                        mContext, mDelegate, MenuType.FLOATING, selectionActionMenuDelegate));
         List<SelectionMenuItem> menuItems = pendingMenu.getMenuItemsForTesting();
         assertEquals(7, menuItems.size());
         assertEquals(menuItems.get(0).id, R.id.select_action_menu_cut);
@@ -192,13 +165,19 @@ public class SelectActionMenuHelperTest {
                 new TestSelectionActionMenuDelegate();
         List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, "test", true, null);
+                        mContext, MenuType.FLOATING, false, true, "test", true, null);
         assertNotNull(textProcessingItems);
         assertEquals(1, textProcessingItems.size());
 
         textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, "test", true, selectionActionMenuDelegate);
+                        mContext,
+                        MenuType.FLOATING,
+                        false,
+                        true,
+                        "test",
+                        true,
+                        selectionActionMenuDelegate);
         assertNotNull(textProcessingItems);
         assertTrue(textProcessingItems.isEmpty());
     }
@@ -208,7 +187,7 @@ public class SelectActionMenuHelperTest {
     public void testGetTextProcessingItems_emptySelection() {
         List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, true, "", true, null);
+                        mContext, MenuType.FLOATING, false, true, "", true, null);
         assertNull(textProcessingItems);
     }
 

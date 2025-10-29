@@ -23,6 +23,7 @@ android_library("java") {
   deps = [
     ":features_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/autofill/android:autofill_java",

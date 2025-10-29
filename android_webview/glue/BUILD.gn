@@ -18,6 +18,7 @@ android_library("glue_java") {
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//android_webview/support_library/callback:callback_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/content_capture/android:java",

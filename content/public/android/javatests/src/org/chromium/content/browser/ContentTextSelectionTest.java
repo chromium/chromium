@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -59,7 +60,6 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -130,16 +130,24 @@ public class ContentTextSelectionTest {
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
         @Override
-        public void modifyDefaultMenuItems(
-                List<SelectionMenuItem.Builder> menuItemBuilders,
+        public List<SelectionMenuItem> getAdditionalMenuItems(
+                @MenuType int menuType,
                 boolean isSelectionPassword,
                 boolean isSelectionReadOnly,
                 String selectedText) {
-            // No-op because we are testing default menu item ordering with no modifications.
+            if (selectedText.isEmpty()) {
+                return List.of(
+                        new SelectionMenuItem.Builder("testNonSelectionItem")
+                                .setOrderAndCategory(
+                                        0, SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
+                                .build());
+            }
+            return new ArrayList<>();
         }
 
         @Override
-        public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
+        public List<ResolveInfo> filterTextProcessingActivities(
+                @MenuType int menuType, List<ResolveInfo> activities) {
             List<ResolveInfo> resolveInfos = new ArrayList<>();
             ResolveInfo resolveInfo =
                     createResolveInfoWithActivityInfo("ProcessTextActivity", true);
@@ -148,21 +156,7 @@ public class ContentTextSelectionTest {
         }
 
         @Override
-        public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
-            return Arrays.asList(
-                    new SelectionMenuItem.Builder("testNonSelectionItem")
-                            .setOrderAndCategory(
-                                    0, SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
-                            .build());
-        }
-
-        @Override
-        public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
-            return new ArrayList<>();
-        }
-
-        @Override
-        public boolean canReuseCachedSelectionMenu() {
+        public boolean canReuseCachedSelectionMenu(@MenuType int menuType) {
             return true;
         }
 
@@ -375,7 +369,8 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "whitespace_input_text");
         waitForPastePopupStatus(true);
         waitForSelectActionBarVisible(false);
-        PendingSelectionMenu menu = mSelectionPopupController.getPendingSelectionMenu();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.FLOATING);
         ArrayList<ArrayList<SelectionMenuItem>> menuGroups =
                 getMenuItemsFromPendingSelectionMenu(menu);
 
@@ -384,8 +379,7 @@ public class ContentTextSelectionTest {
         Assert.assertFalse(menuGroups.get(2).isEmpty()); // Secondary assist should have items.
         Assert.assertTrue(menuGroups.get(3).isEmpty()); // Text processing should be empty.
 
-        // Default items. Subtracting 1 to adjust the 1-based indices of the DefaultItemOrder
-        // constants to the 0-based indices of arrays.
+        // Default items.
         ArrayList<SelectionMenuItem> defaultItems = menuGroups.get(1);
 
         // We should only see paste and select all in the default items group. Paste should appear
@@ -421,7 +415,8 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "phone_number");
         waitForSelectActionBarVisible(true);
         waitForPastePopupStatus(false);
-        PendingSelectionMenu menu = mSelectionPopupController.getPendingSelectionMenu();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.FLOATING);
         ArrayList<ArrayList<SelectionMenuItem>> menuGroups =
                 getMenuItemsFromPendingSelectionMenu(menu);
         // Default, primary assist, and text processing item groups are added to the menu.
@@ -477,7 +472,8 @@ public class ContentTextSelectionTest {
         DOMUtils.longPressNode(mWebContents, "smart_selection");
         waitForSelectActionBarVisible(true);
         waitForPastePopupStatus(false);
-        PendingSelectionMenu menu = mSelectionPopupController.getPendingSelectionMenu();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.FLOATING);
         ArrayList<ArrayList<SelectionMenuItem>> menuGroups =
                 getMenuItemsFromPendingSelectionMenu(menu);
 

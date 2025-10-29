@@ -15,6 +15,7 @@ import android.hardware.display.DisplayManager;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
+import android.webkit.WebViewDelegate;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -165,5 +166,19 @@ public interface AconfigFlaggedApiDelegate {
     default boolean requestTextCursorOnScreen(View view, Rect boundsInView) {
         // TODO(crbug.com/450540343) inline internal delegate into callsites when API 36.1 releases.
         return false;
+    }
+
+    /**
+     * Checks if the Selection Action Menu Client is available, based on the API level and Aconfig
+     * flags. If the client is available, this method returns it wrapped in a {@code
+     * SelectionActionMenuClientWrapper}. This does not check if the client has been overridden and
+     * calling this method may return the default client. If the client is unavailable, this method
+     * returns null.
+     *
+     * @param delegate the WebViewDelegate used to get the client object.
+     */
+    default @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient(
+            WebViewDelegate delegate) {
+        return null;
     }
 }

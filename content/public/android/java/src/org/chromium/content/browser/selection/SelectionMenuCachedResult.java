@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.selection;
 
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.PendingSelectionMenu;
@@ -30,6 +31,7 @@ public class SelectionMenuCachedResult {
     private final boolean mIsSelectionPassword;
     private final boolean mIsSelectionReadOnly;
     private final String mSelectedText;
+    private final @MenuType int mMenuType;
     private final PendingSelectionMenu mLastSelectionMenu;
 
     public SelectionMenuCachedResult(
@@ -37,11 +39,13 @@ public class SelectionMenuCachedResult {
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
+            @MenuType int menuType,
             PendingSelectionMenu lastSelectionMenu) {
         mClassificationResult = classificationResult;
         mIsSelectionPassword = isSelectionPassword;
         mIsSelectionReadOnly = isSelectionReadOnly;
         mSelectedText = selectedText;
+        mMenuType = menuType;
         mLastSelectionMenu = lastSelectionMenu;
     }
 
@@ -66,14 +70,16 @@ public class SelectionMenuCachedResult {
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText,
+            @MenuType int menuType,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (selectionActionMenuDelegate != null
-                && !selectionActionMenuDelegate.canReuseCachedSelectionMenu()) {
+                && !selectionActionMenuDelegate.canReuseCachedSelectionMenu(menuType)) {
             return false;
         }
         if (mIsSelectionPassword != isSelectionPassword
                 || mIsSelectionReadOnly != isSelectionReadOnly
-                || !Objects.equals(mSelectedText, selectedText)) {
+                || !Objects.equals(mSelectedText, selectedText)
+                || mMenuType != menuType) {
             return false;
         }
         if ((mClassificationResult == null) != (classificationResult == null)) {
