@@ -54,6 +54,7 @@ polymorphic.launcher(
     runner = "reviver/runner",
     target_builders = [
         "ci/android-10-x86-rel",
+        "ci/android-10-x86-nofieldtrial-rel",
         "ci/android-12-x64-rel",
         "ci/android-13-x64-rel",
         "ci/android-14-x64-rel",
