@@ -117,4 +117,15 @@ public final class PinnedTabStripItemViewBinderUnitTest {
         captor.getValue().onClick(mPinnedTabStripItemView);
         verify(mMockTabActionListener).run(eq(mPinnedTabStripItemView), eq(1), any());
     }
+
+    @Test
+    public void testBindContextClickListener() {
+        mModel.set(TabProperties.TAB_ID, 1);
+        mModel.set(TabProperties.TAB_CONTEXT_CLICK_LISTENER, mMockTabActionListener);
+        PinnedTabStripItemViewBinder.bind(
+                mModel, mPinnedTabStripItemView, TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+        verify(mPinnedTabStripItemView)
+                .setNullableContextClickListener(
+                        eq(mMockTabActionListener), eq(mPinnedTabStripItemView), eq(1));
+    }
 }

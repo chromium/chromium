@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CONTEXT_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
 
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewRectUpdater;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,6 +86,19 @@ public class PinnedTabStripMediator {
 
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
+    private final TabActionListener mContextClickTabItemEventListener =
+            new TabActionListener() {
+                @Override
+                public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                    onLongPress(tabId, view);
+                }
+
+                @Override
+                public void run(
+                        View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
+                    // No-op.
+                }
+            };
 
     /**
      * The current width of a tab list item in the main tab grid. This is used to calculate the
@@ -248,6 +264,7 @@ public class PinnedTabStripMediator {
                         .with(
                                 TAB_ACTION_BUTTON_DATA,
                                 new TabActionButtonData(TabActionButtonType.PIN, null))
+                        .with(TAB_CONTEXT_CLICK_LISTENER, mContextClickTabItemEventListener)
                         .build();
         return new ListItem(UiType.TAB, newModel);
     }

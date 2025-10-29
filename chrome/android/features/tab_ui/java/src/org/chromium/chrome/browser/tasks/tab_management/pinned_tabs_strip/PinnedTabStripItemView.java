@@ -25,9 +25,11 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabCardThemeUtil;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.ui.animation.AnimationHandler;
 
@@ -199,6 +201,21 @@ public class PinnedTabStripItemView extends FrameLayout {
                     mTrailingIcon,
                     TabCardThemeUtil.getActionButtonTintList(
                             context, isIncognito, isSelected, /* colorId= */ null));
+        }
+    }
+
+    void setNullableContextClickListener(
+            @Nullable TabActionListener listener, View view, @TabId int tabId) {
+        if (listener == null) {
+            view.setContextClickable(false);
+            view.setOnContextClickListener(null);
+        } else {
+            view.setContextClickable(true);
+            view.setOnContextClickListener(
+                    v -> {
+                        listener.run(view, tabId, /* triggeringMotion= */ null);
+                        return true;
+                    });
         }
     }
 
