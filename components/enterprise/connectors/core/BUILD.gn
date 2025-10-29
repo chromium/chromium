@@ -17,8 +17,6 @@ source_set("core") {
     "analysis_settings.h",
     "common.cc",
     "common.h",
-    "connector_data_pipe_getter.cc",
-    "connector_data_pipe_getter.h",
     "connectors_manager_base.cc",
     "connectors_manager_base.h",
     "connectors_prefs.cc",
@@ -48,6 +46,13 @@ source_set("core") {
     "service_provider_config.cc",
     "service_provider_config.h",
   ]
+
+  if (enterprise_cloud_content_analysis) {
+    sources += [
+      "connector_data_pipe_getter.cc",
+      "connector_data_pipe_getter.h",
+    ]
+  }
 
   public_deps = [
     ":constants",
@@ -151,7 +156,6 @@ source_set("unit_tests") {
 
   sources = [
     "analysis_service_settings_base_unittest.cc",
-    "connector_data_pipe_getter_unittest.cc",
     "connectors_manager_base_unittest.cc",
     "connectors_service_base_unittest.cc",
     "enterprise_connectors_policy_handler_unittest.cc",
@@ -159,6 +163,10 @@ source_set("unit_tests") {
     "reporting_utils_unittest.cc",
     "service_provider_config_unittest.cc",
   ]
+
+  if (enterprise_cloud_content_analysis) {
+    sources += [ "connector_data_pipe_getter_unittest.cc" ]
+  }
 
   public_deps = [ ":core" ]
 

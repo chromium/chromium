@@ -262,11 +262,7 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
     // resumable upload.
     return;
   }
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-  constexpr size_t kLargeDataSize = 50 * 1024 * 1024;
-#else
   constexpr size_t kLargeDataSize = 100 * 1024 * 1024;
-#endif
   std::string large_data = std::string(kLargeDataSize, 'a');
   std::string expected_body =
       "--boundary\r\n"
