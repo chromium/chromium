@@ -25,6 +25,11 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
     return;
   }
 
+  if (solid_color()) {
+    AppendSolidQuad(render_pass, append_quads_data, *solid_color());
+    return;
+  }
+
   AppendQuadsSpecialization(context, render_pass, append_quads_data);
 }
 
