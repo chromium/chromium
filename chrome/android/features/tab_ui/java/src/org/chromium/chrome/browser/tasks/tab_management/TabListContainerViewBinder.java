@@ -17,9 +17,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CLIP_TO_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CONTENT_SENSITIVE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_TABLET_OR_LANDSCAPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SEARCH_BOX_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SUPPRESS_ACCESSIBILITY;
 
 import android.app.Activity;
@@ -130,8 +130,8 @@ class TabListContainerViewBinder {
                             ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                             : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
             view.setImportantForAccessibility(important);
-        } else if (SEARCH_BOX_PADDING == propertyKey) {
-            boolean isTabletOrLandscape = model.get(SEARCH_BOX_PADDING);
+        } else if (IS_TABLET_OR_LANDSCAPE == propertyKey) {
+            boolean isTabletOrLandscape = model.get(IS_TABLET_OR_LANDSCAPE);
             int paddingTop =
                     isTabletOrLandscape
                             ? 0
