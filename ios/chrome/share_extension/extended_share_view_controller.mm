@@ -329,7 +329,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
                     task:(NSURLSessionTask*)task
     didCompleteWithError:(NSError*)error {
   if (error && error.code != NSURLErrorCancelled) {
-    // if an error has occured consider the task's URL to not be an image.
+    // if an error has occurred consider the task's URL to not be an image.
     dispatch_async(dispatch_get_main_queue(), ^{
       [self handleURL:task.originalRequest.URL forItem:nil];
     });
