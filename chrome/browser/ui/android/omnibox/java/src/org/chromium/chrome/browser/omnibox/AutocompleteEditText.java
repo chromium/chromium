@@ -387,6 +387,9 @@ public class AutocompleteEditText extends EditTextWithLeading
         return defaultIme == null ? "" : defaultIme;
     }
 
+    @Override
+    public void setInputIsMultilineEligible(boolean isMultilineEligible) {}
+
     /* package */ void setModelForTesting(AutocompleteEditTextModelBase model) {
         mModel = model;
     }

@@ -63,6 +63,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 import java.util.Collections;
 import java.util.List;
@@ -1002,17 +1003,17 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    public void multiline() {
+    @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
+    public void setInputIsMultilineEligible() {
         mUrlBar.requestFocus();
-        mUrlBar.setText(" ");
+        mUrlBar.setInputIsMultilineEligible(true);
         assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
         assertFalse(mUrlBar.isSingleLine());
 
-        mUrlBar.setText("");
+        mUrlBar.setInputIsMultilineEligible(false);
         assertEquals(1, mUrlBar.getMaxLines());
         assertTrue(mUrlBar.isSingleLine());
 
-        mUrlBar.setText(" ");
         mUrlBar.clearFocus();
     }
 }
