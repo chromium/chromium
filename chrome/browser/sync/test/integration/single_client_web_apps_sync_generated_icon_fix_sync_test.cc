@@ -130,7 +130,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
       Browser* app_browser =
           LaunchWebAppBrowserAndWait(GetProfile(/*index=*/0), app_id);
       CHECK(app_browser);
-      CHECK(ui_test_utils::NavigateToURL(app_browser, update_url));
     } else {
       CHECK(AddTabAtIndexToBrowser(GetBrowser(0), 0, update_url,
                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL));
@@ -157,11 +156,8 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/453586386): Investigate the test and fix flakiness. This is
-// failing flakily everywhere except on Linux bots, and there are a few areas of
-// slowness that needs to be investigated.
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
-                       DISABLED_GeneratedIconsSilentlyUpdate) {
+                       GeneratedIconsSilentlyUpdate) {
   // Listen for sync install in client.
   WebAppTestInstallObserver install_observer(GetProfile(0));
   install_observer.BeginListening();
