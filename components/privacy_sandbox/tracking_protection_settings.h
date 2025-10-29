@@ -5,25 +5,31 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SETTINGS_H_
 #define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SETTINGS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "components/sync/service/sync_service.h"
-#include "url/gurl.h"
+
+class GURL;
+class HostContentSettingsMap;
+class PrefService;
 
 namespace content_settings {
 struct SettingInfo;
-}
+}  // namespace content_settings
 
-class HostContentSettingsMap;
-class PrefService;
+namespace policy {
+class ManagementService;
+}  // namespace policy
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace privacy_sandbox {
 
