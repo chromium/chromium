@@ -5716,6 +5716,50 @@ TEST_F(RenderWidgetHostViewAuraTest, GestureTapFromStylusHasPointerType) {
             gesture_event->primary_pointer_type);
 }
 
+TEST_F(RenderWidgetHostViewAuraTest, TouchpadResendsFilteredGSB) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kDropInputEventsWhilePaintHolding);
+
+  view_->event_handler()->set_mouse_wheel_wheel_phase_handler_timeout(
+      TestTimeouts::action_max_timeout());
+
+  InitViewForFrame(nullptr);
+  view_->Show();
+
+  // Simulate the browser paint-holding stage. This is a bit hacky since the
+  // mock RWHI is self_owned, so it has already called InputRouter::MakeActive
+  // during test setup (RWHI::SetView).
+  widget_host_->input_router()->MakeInactiveForTesting();
+
+  // Try to scroll the page.
+  auto wheel_event = blink::SyntheticWebMouseWheelEventBuilder::Build(
+      0, 0, 0, 100, 0, ui::ScrollGranularity::kScrollByPrecisePixel);
+  wheel_event.phase = WebMouseWheelEvent::kPhaseBegan;
+  widget_host_->ForwardWheelEvent(wheel_event);
+  base::RunLoop().RunUntilIdle();
+
+  // Events are filtered by paint holding.
+  EXPECT_EQ(0, GetAndResetDispatchedMessages().size());
+  auto* render_input_router = widget_host_->GetRenderInputRouter();
+  EXPECT_FALSE(render_input_router->IsWheelScrollInProgress());
+
+  // Simulate the end of browser paint-holding that makes InputRouter active.
+  widget_host_->input_router()->MakeActive();
+
+  // The wheel is PhaseChanged but it should synthesize a GestureScrollBegin.
+  wheel_event.phase = WebMouseWheelEvent::kPhaseChanged;
+  widget_host_->ForwardWheelEvent(wheel_event);
+  base::RunLoop().RunUntilIdle();
+
+  // Now we are scrolling.
+  EXPECT_TRUE(render_input_router->IsWheelScrollInProgress());
+  auto events = GetAndResetDispatchedMessages();
+  EXPECT_EQ("MouseWheel GestureScrollBegin GestureScrollUpdate",
+            GetMessageNames(events));
+  SendNotConsumedAcks(events);
+}
+
 // Test that the rendering timeout for newly loaded content fires when enough
 // time passes without receiving a new compositor frame.
 // TODO(crbug.com/40775652): This test is flaky on "Linux ASan LSan Tests

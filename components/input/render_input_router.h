@@ -262,6 +262,7 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
              base::checked_cast<size_t>(blink::WebGestureDevice::kMaxValue) + 1>
       is_in_gesture_scroll_ = {{false}};
   bool is_in_touchpad_gesture_fling_ = false;
+  bool gsb_filtered_for_paint_holding_ = false;
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
   std::unique_ptr<viz::PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
