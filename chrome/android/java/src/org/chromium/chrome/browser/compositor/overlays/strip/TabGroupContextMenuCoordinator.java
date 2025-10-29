@@ -641,7 +641,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         // Set horizontal padding to custom view to match list items.
         int horizontalPadding =
                 context.getResources()
-                        .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
+                        .getDimensionPixelSize(R.dimen.color_picker_horizontal_padding);
 
         // TODO(crbug.com/357104424): Consider create ColorPickerCoordinator once during the first
         // call, and reuse it for subsequent calls.
