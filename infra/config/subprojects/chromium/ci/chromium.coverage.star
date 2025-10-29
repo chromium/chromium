@@ -284,6 +284,7 @@ coverage_builder(
             "emulator-4-cores",
             "linux-jammy",
             "x86-64",
+            "retry_only_failed_tests",
         ],
         per_test_modifications = {
             # Keep this same as android-10-x86-rel
@@ -303,16 +304,12 @@ coverage_builder(
                     shards = 2,
                 ),
             ),
-            # Keep this same as android-10-x86-rel
-            "chrome_junit_tests": targets.mixin(
-                retry_only_failed_tests = True,
-            ),
+
             # Keep this same as android-10-x86-rel
             "chrome_public_test_apk": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.chrome_public_test_apk.filter",
                 ],
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
@@ -332,7 +329,6 @@ coverage_builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
                 ],
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime
@@ -412,7 +408,6 @@ coverage_builder(
                 args = [
                     "--use-persistent-shell",
                 ],
-                retry_only_failed_tests = True,
                 swarming = targets.swarming(
                     shards = 18,
                 ),

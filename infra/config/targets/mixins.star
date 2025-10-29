@@ -2324,6 +2324,12 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "retry_only_failed_tests",
+    generate_pyl_entry = False,
+    retry_only_failed_tests = True,
+)
+
+targets.mixin(
     name = "skia_gold_test",
     args = [
         "--git-revision=${got_revision}",
