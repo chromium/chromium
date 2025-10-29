@@ -1114,9 +1114,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private void maybeMakeSpaceForSearchBar() {
         Configuration config = mActivity.getResources().getConfiguration();
-        boolean isTabletOrLandscape =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                        || HubUtils.isScreenWidthTablet(config.screenWidthDp);
+        boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
         mMediator.setSearchBoxSpace(isTabletOrLandscape);
         if (isTabletOrLandscape) {
             if (mPinnedTabsCoordinator != null) {

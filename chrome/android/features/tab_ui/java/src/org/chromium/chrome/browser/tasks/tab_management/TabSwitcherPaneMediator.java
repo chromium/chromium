@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -407,9 +406,7 @@ public class TabSwitcherPaneMediator
             boolean forced) {
         Configuration config = activity.getResources().getConfiguration();
         FrameLayout pinnedTabsContainer = mContainerView.findViewById(R.id.pinned_tabs_container);
-        boolean isTabletOrLandscape =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
-                        || HubUtils.isScreenWidthTablet(config.screenWidthDp);
+        boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
         boolean shouldShow = show && !isTabletOrLandscape;
         if (hubSearchBoxVisibilitySupplier.get() != null
                 && shouldShow == hubSearchBoxVisibilitySupplier.get()

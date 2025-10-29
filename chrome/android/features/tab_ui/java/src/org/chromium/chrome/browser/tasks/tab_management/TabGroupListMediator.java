@@ -41,7 +41,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService.Observer;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_group_sync.TriggerSource;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -320,9 +319,7 @@ public class TabGroupListMediator {
 
     private void setSpaceForSearchBox() {
         Configuration config = mContext.getResources().getConfiguration();
-        boolean isTabletOrLandscape =
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                        || HubUtils.isScreenWidthTablet(config.screenWidthDp);
+        boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
         mPropertyModel.set(TabGroupListProperties.SEARCH_BOX_PADDING, isTabletOrLandscape);
     }
 
