@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -23,6 +22,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/search_engines/template_url.h"
 #include "components/sync/base/data_type.h"
+#include "crypto/hash.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -180,8 +180,7 @@ TemplateURLBuilder::TemplateURLBuilder(const std::string& keyword) {
   data_.prepopulate_id = 999999;
 
   // Produce a GUID deterministically from |keyword|.
-  std::string hex_encoded_hash =
-      base::HexEncode(base::SHA1Hash(base::as_byte_span(keyword)));
+  std::string hex_encoded_hash = base::HexEncode(crypto::hash::Sha256(keyword));
   hex_encoded_hash.resize(12);
   data_.sync_guid =
       base::StrCat({"12345678-0000-4000-8000-", hex_encoded_hash});
