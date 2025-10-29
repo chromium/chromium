@@ -272,6 +272,9 @@ TEST_P(AutofillAiMayPerformActionTest, SignedOut) {
 // user's account capabilities include running a model.
 TEST_P(AutofillAiMayPerformActionTest, MayNotRunModel) {
   AddEntity();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiIgnoreCapabilityCheck);
   client().SetCanUseModelExecutionFeatures(false);
   const bool is_allowed =
       GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
@@ -356,6 +359,8 @@ TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
 }
 
 TEST_P(AutofillAiMayPerformActionTest, CountryCode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiIgnoreGeoIp);
   client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
@@ -450,6 +455,8 @@ TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIpBlocklistAndAllowlist) {
 }
 
 TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiIgnoreLocale);
   client().set_app_locale("de-DE");
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
@@ -465,6 +472,8 @@ TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithOverride) {
 // Tests that listing, editing and removing entities is permitted even if the
 // app locale is unsupported as long as there is data saved.
 TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithDataSaved) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiIgnoreLocale);
   AddEntity();
   client().set_app_locale("de-DE");
   const bool is_allowed =

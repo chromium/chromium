@@ -2280,33 +2280,6 @@
             ]
         }
     ],
-    "AutofillAiI18n": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "autofill_ai_geo_ip_blocklist": "IN"
-                    },
-                    "enable_features": [
-                        "AutofillAiIgnoreCapabilityCheck",
-                        "AutofillAiIgnoreGeoIp",
-                        "AutofillAiIgnoreLocale",
-                        "AutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph",
-                        "AutofillAiKnownTravelerNumber",
-                        "AutofillAiNationalIdCard",
-                        "AutofillAiRedressNumber"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiVoteForFormatStringsForAffixes": [
         {
             "platforms": [

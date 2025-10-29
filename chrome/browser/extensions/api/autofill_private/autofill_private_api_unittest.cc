@@ -194,7 +194,10 @@ class AutofillPrivateApiUnitTest : public extensions::ExtensionApiTest {
             autofill::features::kAutofillAiWalletVehicleRegistration,
         },
         /*disabled_features=*/
-        {autofill::features::kAutofillAiIgnoreLocale});
+        {autofill::features::kAutofillAiIgnoreLocale,
+         autofill::features::kAutofillAiNationalIdCard,
+         autofill::features::kAutofillAiKnownTravelerNumber,
+         autofill::features::kAutofillAiRedressNumber});
   }
   AutofillPrivateApiUnitTest(const AutofillPrivateApiUnitTest&) = delete;
   AutofillPrivateApiUnitTest& operator=(const AutofillPrivateApiUnitTest&) =

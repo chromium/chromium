@@ -126,7 +126,7 @@ BASE_FEATURE(kAutofillAiIdentityAndTravelPrefs,
 // If enabled, no account-level capabilities are checked to determine whether
 // a user is eligible for AutofillAI.
 BASE_FEATURE(kAutofillAiIgnoreCapabilityCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, a HaTS survey is shown after a walletable suggestion is
 // displayed and the form submitted. The survey does not require the suggestion
@@ -170,7 +170,7 @@ const base::FeatureParam<bool>
 // Both the allowlist and the blocklist are expected to consist of
 // comma-separated uppercase two-digit country codes (see documentation of
 // `GeoIpCountryCode`.)
-BASE_FEATURE(kAutofillAiIgnoreGeoIp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiIgnoreGeoIp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpAllowlist{
     &kAutofillAiIgnoreGeoIp, "autofill_ai_geo_ip_allowlist", ""};
@@ -179,7 +179,7 @@ const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpBlocklist{
     &kAutofillAiIgnoreGeoIp, "autofill_ai_geo_ip_blocklist", ""};
 
 // If enabled, no locale requirements are imposed for AutofillAi.
-BASE_FEATURE(kAutofillAiIgnoreLocale, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiIgnoreLocale, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, no sign-in requirement is imposed for Autofill. Note that if this
 // feature is enabled, the value of `kAutofillAiIgnoreCapabilityCheck` is
@@ -189,16 +189,16 @@ BASE_FEATURE(kAutofillAiIgnoreSignInState, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, the existence of address or payments data is not required to show
 // the Iph bubble for AutofillAi.
 BASE_FEATURE(kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports known traveler numbers.
-BASE_FEATURE(kAutofillAiKnownTravelerNumber, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiKnownTravelerNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports national id cards.
-BASE_FEATURE(kAutofillAiNationalIdCard, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiNationalIdCard, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, AutofillAi supports redress number.
-BASE_FEATURE(kAutofillAiRedressNumber, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAiRedressNumber, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, this makes the autofill classification logic prefer the
 // AutofillAi predictions sent via the server response over local heuristic

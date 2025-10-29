@@ -103,13 +103,20 @@ TEST(AutofillEntityTypeTest, Disabled) {
 
 // Tests that specifying an "excluded geo-ip" disabled the entity in countries
 // with that geo ip.
-TEST(AutofillEntityTypeTest, EnabledWithCountryCode) {
+TEST(AutofillEntityTypeTest, Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiNationalIdCard);
   EntityType e = EntityType(EntityTypeName::kNationalIdCard);
   EXPECT_FALSE(e.enabled());
   EXPECT_FALSE(e.enabled(GeoIpCountryCode("US")));
+}
 
+// Tests that specifying an "excluded geo-ip" disabled the entity in countries
+// with that geo ip.
+TEST(AutofillEntityTypeTest, EnabledWithCountryCode) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiNationalIdCard};
+  EntityType e = EntityType(EntityTypeName::kNationalIdCard);
   EXPECT_TRUE(e.enabled(GeoIpCountryCode("US")));
   EXPECT_TRUE(e.enabled(GeoIpCountryCode("DE")));
   EXPECT_FALSE(e.enabled(GeoIpCountryCode("IN")));
