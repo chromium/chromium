@@ -37,6 +37,19 @@
 
 namespace webnn {
 
+WebNNContextImpl::TaskRunnerDeleter::TaskRunnerDeleter(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {}
+
+WebNNContextImpl::TaskRunnerDeleter::~TaskRunnerDeleter() = default;
+
+WebNNContextImpl::TaskRunnerDeleter::TaskRunnerDeleter(
+    WebNNContextImpl::TaskRunnerDeleter&&) = default;
+
+WebNNContextImpl::TaskRunnerDeleter&
+WebNNContextImpl::TaskRunnerDeleter::operator=(
+    WebNNContextImpl::TaskRunnerDeleter&&) = default;
+
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -50,12 +63,11 @@ WebNNContextImpl::WebNNContextImpl(
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
-    : WebNNObjectImpl<mojom::WebNNContext,
+    : WebNNObjectBase<mojom::WebNNContext,
                       blink::WebNNContextToken,
                       mojo::Receiver<mojom::WebNNContext>>(
           std::move(receiver),
-          sequence->scheduler_task_runner(),
-          std::move(owning_task_runner)),
+          sequence->scheduler_task_runner()),
       context_provider_(std::move(context_provider)),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
@@ -65,7 +77,8 @@ WebNNContextImpl::WebNNContextImpl(
       read_tensor_producer_(std::move(read_tensor_producer)),
       memory_type_tracker_(std::move(memory_tracker)),
       shared_image_manager_(shared_image_manager),
-      main_task_runner_(std::move(main_task_runner)) {
+      main_task_runner_(std::move(main_task_runner)),
+      owning_task_runner_(std::move(owning_task_runner)) {
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   // Initialize XNNPACK
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
