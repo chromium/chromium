@@ -16,13 +16,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
+import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
-import org.chromium.chrome.browser.tab.TabStateStorageService.LoadedTabState;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
@@ -333,11 +334,11 @@ public class TabStateStore implements TabPersistentStore {
 
     private void loadAllTabsFromService() {
         long loadStartTime = SystemClock.elapsedRealtime();
-        mTabStateStorageService.loadAllTabs(
-                (loadedTabStates) -> onTabsLoaded(loadedTabStates, loadStartTime));
+        mTabStateStorageService.loadAllData(data -> onDataLoaded(data, loadStartTime));
     }
 
-    private void onTabsLoaded(LoadedTabState[] loadedTabStates, long loadStartTime) {
+    private void onDataLoaded(StorageLoadedData data, long loadStartTime) {
+        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
         RecordHistogram.recordTimesHistogram("Tabs.TabStateStore.LoadAllTabsDuration", duration);
 
@@ -383,6 +384,7 @@ public class TabStateStore implements TabPersistentStore {
             clearState();
             catchUpAndBeginTracking();
         }
+        data.destroy();
     }
 
     private @Nullable Tab resolveTab(TabState tabState, @TabId int tabId, int index) {
