@@ -54,7 +54,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         realbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
-        @dropdown-visible-changed="${this.onDropdownVisibleChanged_}"
         @searchbox-input-focus-changed="${this.onInputFocusChanged_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
@@ -62,7 +61,6 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
           ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
           @composebox-initialized="${this.onComposeboxInitialized_}"
           @close-composebox="${this.closeComposebox_}"
-          @composebox-dropdown-visible-changed="${this.onDropdownVisibleChanged_}"
           @composebox-input-focus-changed="${this.onInputFocusChanged_}"
           @open-voice-search="${this.onOpenVoiceSearch_}"
           realbox-layout-mode="${this.realboxLayoutMode_}">

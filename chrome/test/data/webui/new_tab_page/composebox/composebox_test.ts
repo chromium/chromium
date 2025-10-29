@@ -1303,42 +1303,6 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(handler.getCallCount('setCreateImageMode'), 3);
   });
 
-  test(
-      'dropdown visibility change fires an event when Realbox Next is enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          composeboxShowZps: true,
-          composeboxShowTypedSuggest: true,
-        });
-        createComposeboxElement();
-        composeboxElement.ntpRealboxNextEnabled = true;
-
-        let whenDropdownVisibleChanged = eventToPromise(
-            'composebox-dropdown-visible-changed', composeboxElement);
-
-        // Add typed input.
-        composeboxElement.$.input.value = 'Test';
-        composeboxElement.$.input.style.height = '48px';
-        composeboxElement.$.input.dispatchEvent(new Event('input'));
-        await microtasksFinished();
-        const matches = [
-          createSearchMatch(),
-        ];
-        searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResult({
-              input: 'Test',
-              matches: matches,
-            }));
-        const e1 = await whenDropdownVisibleChanged;
-        assertTrue(e1.detail.value);
-
-        whenDropdownVisibleChanged = eventToPromise(
-            'composebox-dropdown-visible-changed', composeboxElement);
-        composeboxElement.closeDropdown();
-        const e2 = await whenDropdownVisibleChanged;
-        assertFalse(e2.detail.value);
-      });
-
   test('arrow up/down moves selection / focus', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});
     createComposeboxElement();
