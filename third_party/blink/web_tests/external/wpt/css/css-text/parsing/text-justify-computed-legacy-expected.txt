@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property text-justify value 'distribute'
-  assert_true: 'distribute' is a supported value for text-justify. expected true got false
-Harness: the test ran to completion.
-

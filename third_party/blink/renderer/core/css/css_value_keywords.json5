@@ -2069,6 +2069,7 @@
     // "none",
     "inter-word",
     // "inter-character",
+    "distribute",
 
     // animation-trigger
     "play",

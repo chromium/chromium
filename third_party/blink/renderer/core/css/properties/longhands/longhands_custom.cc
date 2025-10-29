@@ -10030,7 +10030,23 @@ const CSSValue* TextJustify::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.TextJustify());
+  return CSSIdentifierValue::Create(style.GetTextJustify());
+}
+
+const CSSValue* TextJustify::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (CSSIdentifierValue* value = css_parsing_utils::ConsumeIdent<
+          CSSValueID::kAuto, CSSValueID::kNone, CSSValueID::kInterWord,
+          CSSValueID::kInterCharacter, CSSValueID::kDistribute>(stream)) {
+    if (value->GetValueID() == CSSValueID::kDistribute) {
+      return MakeGarbageCollected<CSSIdentifierValue>(
+          CSSValueID::kInterCharacter);
+    }
+    return value;
+  }
+  return nullptr;
 }
 
 const CSSValue* TextOrientation::CSSValueFromComputedStyleInternal(

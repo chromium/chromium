@@ -673,6 +673,37 @@ inline CSSValueID PlatformEnumToCSSValueID(PositionAreaRegion v) {
   }
 }
 
+template <>
+inline TextJustify CssValueIDToPlatformEnum(CSSValueID v) {
+  switch (v) {
+    case CSSValueID::kNone:
+      return TextJustify::kNone;
+    case CSSValueID::kInterWord:
+      return TextJustify::kInterWord;
+    case CSSValueID::kInterCharacter:
+    case CSSValueID::kDistribute:
+      return TextJustify::kInterCharacter;
+    case CSSValueID::kAuto:
+    default:
+      return TextJustify::kAuto;
+  }
+}
+
+template <>
+inline CSSValueID PlatformEnumToCSSValueID(TextJustify v) {
+  switch (v) {
+    case TextJustify::kAuto:
+      return CSSValueID::kAuto;
+    case TextJustify::kNone:
+      return CSSValueID::kNone;
+    case TextJustify::kInterWord:
+      return CSSValueID::kInterWord;
+    case TextJustify::kInterCharacter:
+      return CSSValueID::kInterCharacter;
+  }
+  NOTREACHED();
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

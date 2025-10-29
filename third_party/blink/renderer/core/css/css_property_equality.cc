@@ -757,7 +757,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTextIndent:
       return a.TextIndent() == b.TextIndent();
     case CSSPropertyID::kTextJustify:
-      return a.TextJustify() == b.TextJustify();
+      return a.GetTextJustify() == b.GetTextJustify();
     case CSSPropertyID::kTextOverflow:
       return a.TextOverflow() == b.TextOverflow();
     case CSSPropertyID::kTextRendering:
