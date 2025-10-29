@@ -557,6 +557,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.enable_perf_uploading = False
         self.args.git_revision = None
         self.args.builder = None
+        self.args.cipd = False
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
