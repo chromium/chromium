@@ -1417,7 +1417,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
   ASSERT_FALSE(GetWebView()->GetEnabled());
 
   // Close the side panel.
-  coordinator->Close();
+  coordinator->Close(
+      controller->results_side_panel_coordinator()->GetPanelType());
 
   // Ensure the overlay closes too.
   ASSERT_TRUE(base::test::RunUntil(

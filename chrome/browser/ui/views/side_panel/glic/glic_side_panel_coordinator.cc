@@ -95,10 +95,10 @@ void GlicSidePanelCoordinator::Show() {
 
 void GlicSidePanelCoordinator::Close() {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
-  if (!window_side_panel_coordinator || !IsShowing()) {
+  if (!window_side_panel_coordinator || !IsShowing() || !entry_) {
     return;
   }
-  window_side_panel_coordinator->Close();
+  window_side_panel_coordinator->Close(entry_->type());
 }
 
 bool GlicSidePanelCoordinator::IsShowing() const {

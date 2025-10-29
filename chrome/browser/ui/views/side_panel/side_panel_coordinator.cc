@@ -53,7 +53,7 @@ void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
   side_panel_toolbar_pinning_controller_.reset();
 }
 
-void SidePanelCoordinator::Close() {
+void SidePanelCoordinator::Close(SidePanelEntry::PanelType panel_type) {
   Close(/*suppress_animations=*/false);
 }
 
@@ -62,10 +62,10 @@ void SidePanelCoordinator::Toggle(
     SidePanelUtil::SidePanelOpenTrigger open_trigger) {
   // If an entry is already showing in the sidepanel, the sidepanel
   // should be closed.
-  SidePanelEntry* entry = GetEntryForKey(key);
+  SidePanelEntry* const entry = GetEntryForKey(key);
   if (entry && IsSidePanelEntryShowing(key) &&
       !GetSidePanelFor(entry->type())->IsClosing()) {
-    Close();
+    Close(entry->type());
     return;
   }
 
@@ -75,7 +75,7 @@ void SidePanelCoordinator::Toggle(
   if (entry && IsSidePanelShowing(entry->type()) &&
       waiter(entry->type())->loading_entry() == entry) {
     waiter(entry->type())->ResetLoadingEntryIfNecessary();
-    Close();
+    Close(entry->type());
     return;
   }
 

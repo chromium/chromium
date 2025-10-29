@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kAboutThisSite)));
 
   // Close side panel.
-  side_panel_coordinator()->Close();
+  side_panel_coordinator()->Close(SidePanelEntry::PanelType::kContent);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kClosed;

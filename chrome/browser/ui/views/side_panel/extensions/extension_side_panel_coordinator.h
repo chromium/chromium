@@ -58,6 +58,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
       const ExtensionSidePanelCoordinator&) = delete;
   ~ExtensionSidePanelCoordinator() override;
 
+  static SidePanelEntry::PanelType GetPanelType();
+
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
 

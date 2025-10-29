@@ -359,7 +359,11 @@ void SidePanelHeaderController::OpenMoreInfoMenu() {
 }
 
 void SidePanelHeaderController::Close() {
-  browser_->GetFeatures().side_panel_ui()->Close();
+  if (!side_panel_entry_) {
+    return;
+  }
+
+  browser_->GetFeatures().side_panel_ui()->Close(side_panel_entry_->type());
 }
 
 void SidePanelHeaderController::MaybeQueuePinPromo(SidePanelEntryId id) {

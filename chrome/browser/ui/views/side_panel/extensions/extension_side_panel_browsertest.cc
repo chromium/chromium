@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   default_path_listener.Reset();
 
   // Close and reopen the side panel. The extension's view should be recreated.
-  side_panel_coordinator()->Close();
+  side_panel_coordinator()->Close(panel_type);
   WaitForSidePanelClose();
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing(panel_type));
   side_panel_coordinator()->Show(extension_key);
@@ -515,13 +515,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, SidePanelQuicklyClosed) {
 
   SidePanelEntry* entry = global_registry()->GetEntryForKey(extension_key);
   EXPECT_TRUE(entry);
-  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing(entry->type()));
+  SidePanelEntry::PanelType panel_type = entry->type();
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing(panel_type));
 
   // Quickly open the side panel showing the extension's side panel entry then
   // close it. The test should not cause any crashes after it is complete.
   side_panel_coordinator()->Show(extension_key);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(extension_key));
-  side_panel_coordinator()->Close();
+  side_panel_coordinator()->Close(panel_type);
 }
 
 // Test that the extension's side panel entry shows the extension's icon.
@@ -2277,9 +2278,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   RunSetOptions(*extension, second_tab_id, "panel_2.html", /*enabled=*/true);
   side_panel_coordinator()->Show(extension_key);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(extension_key));
-  EXPECT_TRUE(second_tab_registry
-                  ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
-                  .has_value());
+  SidePanelEntry::PanelType panel_type =
+      second_tab_registry->GetEntryForKey(extension_key)->type();
+  EXPECT_TRUE(second_tab_registry->GetActiveEntryFor(panel_type).has_value());
 
   // Switch back to the first tab, making the second tab inactive.
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -2292,9 +2293,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   RunClosePanel(*extension, second_tab_id, /*window_id=*/std::nullopt);
 
   // Directly check that the inactive tab's registry has been reset.
-  EXPECT_FALSE(second_tab_registry
-                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
-                   .has_value());
+  EXPECT_FALSE(second_tab_registry->GetActiveEntryFor(panel_type).has_value());
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(extension_key));
 
   // Switch back to the second tab to confirm the panel does not reopen.
@@ -2322,9 +2321,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   // Show the global panel first to set it as the window's active global entry.
   side_panel_coordinator()->Show(global_key);
   ASSERT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(global_key));
-  ASSERT_TRUE(global_registry()
-                  ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
-                  .has_value());
+  SidePanelEntry::PanelType panel_type =
+      global_registry()->GetEntryForKey(global_key)->type();
+
+  ASSERT_TRUE(global_registry()->GetActiveEntryFor(panel_type).has_value());
 
   // Enable and show the contextual panel, which will replace the global
   // panel in the UI.
@@ -2341,9 +2341,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   EXPECT_TRUE(
       side_panel_coordinator()->IsSidePanelEntryShowing(contextual_key));
   // The global registry's active entry should be reset.
-  EXPECT_FALSE(global_registry()
-                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
-                   .has_value());
+  EXPECT_FALSE(global_registry()->GetActiveEntryFor(panel_type).has_value());
 }
 
 class ExtensionOnOpenedEventSidePanelBrowserTest
@@ -2634,7 +2632,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   // extension.
   {
     TestSidePanelEntryWaiter waiter(extension_entry);
-    side_panel_coordinator()->Close();
+    side_panel_coordinator()->Close(panel_type);
     waiter.WaitForEntryHidden();
   }
 
@@ -2695,6 +2693,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
   // Show the extension's panel to ensure it is active before proceeding.
   SidePanelEntry* extension_entry =
       GetCurrentTabRegistry()->GetEntryForKey(GetKey(extension->id()));
+  SidePanelEntry::PanelType panel_type = extension_entry->type();
   ASSERT_TRUE(extension_entry);
   ShowContextualEntryAndWait(GetKey(extension->id()));
 
@@ -2732,7 +2731,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
                       new_window_id, new_tab_id))
                   .GetBool());
 
-  side_panel_coordinator(new_browser)->Close();
+  side_panel_coordinator(new_browser)->Close(panel_type);
   // Verify the extension's test succeeded, confirming onClosed was fired with
   // the correct details from the new window.
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();

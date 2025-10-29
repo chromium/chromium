@@ -38,13 +38,12 @@ WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
 
 WebUIBrowserSidePanelUI::~WebUIBrowserSidePanelUI() = default;
 
-void WebUIBrowserSidePanelUI::Close() {
-  if (!current_key(SidePanelEntry::PanelType::kContent).has_value()) {
+void WebUIBrowserSidePanelUI::Close(SidePanelEntry::PanelType panel_type) {
+  if (!IsSidePanelShowing(panel_type)) {
     return;
   }
 
-  if (SidePanelEntry* entry = GetEntryForUniqueKey(
-          *current_key(SidePanelEntry::PanelType::kContent))) {
+  if (SidePanelEntry* entry = GetEntryForUniqueKey(*current_key(panel_type))) {
     entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
   }
   // Asynchronously close the side panel in webshell.
@@ -74,7 +73,10 @@ void WebUIBrowserSidePanelUI::SetNoDelaysForTesting(
     bool no_delays_for_testing) {}
 
 void WebUIBrowserSidePanelUI::Close(bool suppress_animations) {
-  Close();
+  // TODO(crbug.com/445442616): Close(bool suppress_animations) needs to support
+  // accepting the panel type in the parameter and forward it to
+  // Close(PanelType).
+  Close(SidePanelEntry::PanelType::kContent);
 }
 
 content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForId(

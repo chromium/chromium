@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_pinning_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "ui/views/view_observer.h"
@@ -45,7 +46,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   void TearDownPreBrowserWindowDestruction();
 
   // SidePanelUI:
-  void Close() override;
+  void Close(SidePanelEntry::PanelType panel_type) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void ShowFrom(SidePanelEntryKey entry_key,
