@@ -37,8 +37,8 @@ fi
 
 # Use Bazel Vendor mode to reduce reliance on external dependencies.
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" ]]; then
-  tar -xf "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" -C "${TMP}/"
-  BAZEL_EXTRA_ARGS="--vendor_dir=\"${TMP}/abseil-cpp_vendor\" ${BAZEL_EXTRA_ARGS:-}"
+  tar -xf "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" -C "${HOME}/"
+  BAZEL_EXTRA_ARGS="--vendor_dir=${HOME}/abseil-cpp_vendor ${BAZEL_EXTRA_ARGS:-}"
 fi
 
 # Print the compiler and Bazel versions.

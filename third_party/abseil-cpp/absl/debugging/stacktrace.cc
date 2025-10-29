@@ -78,7 +78,8 @@ template <bool IS_STACK_FRAMES, bool IS_WITH_CONTEXT>
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, uintptr_t* frames,
                                                int* sizes, size_t max_depth,
                                                int skip_count, const void* uc,
-                                               int* min_dropped_frames) {
+                                               int* min_dropped_frames,
+                                               bool unwind_with_fixup = true) {
   static constexpr size_t kMinPageSize = 4096;
 
   // Allow up to ~half a page, leaving some slack space for local variables etc.
@@ -100,7 +101,8 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, uintptr_t* frames,
   bool must_free_frames = false;
   bool must_free_sizes = false;
 
-  bool unwind_with_fixup = internal_stacktrace::ShouldFixUpStack();
+  unwind_with_fixup =
+      unwind_with_fixup && internal_stacktrace::ShouldFixUpStack();
 
 #ifdef _WIN32
   if (unwind_with_fixup) {
@@ -192,6 +194,14 @@ internal_stacktrace::GetStackFramesWithContext(void** result, uintptr_t* frames,
   return Unwind<true, true>(result, frames, sizes,
                             static_cast<size_t>(max_depth), skip_count, uc,
                             min_dropped_frames);
+}
+
+ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int
+internal_stacktrace::GetStackTraceNoFixup(void** result, int max_depth,
+                                          int skip_count) {
+  return Unwind<false, false>(result, nullptr, nullptr,
+                              static_cast<size_t>(max_depth), skip_count,
+                              nullptr, nullptr, /*unwind_with_fixup=*/false);
 }
 
 ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int GetStackTrace(

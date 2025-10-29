@@ -28,6 +28,7 @@
 #include "absl/base/internal/endian.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/internal/unaligned_access.h"
+#include "absl/base/macros.h"
 #include "absl/base/nullability.h"
 #include "absl/strings/ascii.h"
 #include "absl/strings/charset.h"
@@ -35,6 +36,7 @@
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/internal/utf8.h"
 #include "absl/strings/numbers.h"
+#include "absl/strings/resize_and_overwrite.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 
@@ -807,23 +809,18 @@ bool Base64UnescapeInternal(const char* absl_nullable src, size_t slen,
   // 4 characters.  Any leftover chars are added directly for good measure.
   const size_t dest_len = 3 * (slen / 4) + (slen % 4);
 
-  strings_internal::STLStringResizeUninitialized(dest, dest_len);
-
-  // We are getting the destination buffer by getting the beginning of the
-  // string and converting it into a char *.
-  size_t len;
-  const bool ok =
-      Base64UnescapeInternal(src, slen, &(*dest)[0], dest_len, unbase64, &len);
-  if (!ok) {
-    dest->clear();
-    return false;
-  }
-
-  // could be shorter if there was padding
-  assert(len <= dest_len);
-  dest->erase(len);
-
-  return true;
+  bool ok;
+  StringResizeAndOverwrite(
+      *dest, dest_len, [src, slen, unbase64, &ok](char* buf, size_t buf_size) {
+        size_t len;
+        ok = Base64UnescapeInternal(src, slen, buf, buf_size, unbase64, &len);
+        if (!ok) {
+          len = 0;
+        }
+        assert(len <= buf_size);  // Could be shorter if there was padding.
+        return len;
+      });
+  return ok;
 }
 
 /* clang-format off */
@@ -878,15 +875,11 @@ void HexStringToBytesInternal(const char* absl_nullable from, T to,
   }
 }
 
-// This is a templated function so that T can be either a char* or a
-// std::string.
-template <typename T>
-void BytesToHexStringInternal(const unsigned char* absl_nullable src, T dest,
-                              size_t num) {
-  auto dest_ptr = &dest[0];
-  for (auto src_ptr = src; src_ptr != (src + num); ++src_ptr, dest_ptr += 2) {
+void BytesToHexStringInternal(const unsigned char* absl_nullable src,
+                              char* dest, size_t num) {
+  for (auto src_ptr = src; src_ptr != (src + num); ++src_ptr, dest += 2) {
     const char* hex_p = &numbers_internal::kHexTable[*src_ptr * 2];
-    std::copy(hex_p, hex_p + 2, dest_ptr);
+    std::copy(hex_p, hex_p + 2, dest);
   }
 }
 
@@ -966,19 +959,23 @@ bool HexStringToBytes(absl::string_view hex, std::string* absl_nonnull bytes) {
     return false;
   }
 
-  absl::strings_internal::STLStringResizeUninitialized(&output, num_bytes);
-  auto hex_p = hex.cbegin();
-  for (std::string::iterator bin_p = output.begin(); bin_p != output.end();
-       ++bin_p) {
-    int h1 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
-    int h2 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
-    if (h1 == -1 || h2 == -1) {
-      output.resize(static_cast<size_t>(bin_p - output.begin()));
-      return false;
-    }
-    *bin_p = static_cast<char>((h1 << 4) + h2);
-  }
+  StringResizeAndOverwrite(
+      output, num_bytes, [hex](char* buf, size_t buf_size) {
+        auto hex_p = hex.cbegin();
+        for (size_t i = 0; i < buf_size; ++i) {
+          int h1 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+          int h2 = absl::kHexValueStrict[static_cast<size_t>(*hex_p++)];
+          if (h1 == -1 || h2 == -1) {
+            return size_t{0};
+          }
+          buf[i] = static_cast<char>((h1 << 4) + h2);
+        }
+        return buf_size;
+      });
 
+  if (output.size() != num_bytes) {
+    return false;
+  }
   *bytes = std::move(output);
   return true;
 }
@@ -986,16 +983,22 @@ bool HexStringToBytes(absl::string_view hex, std::string* absl_nonnull bytes) {
 std::string HexStringToBytes(absl::string_view from) {
   std::string result;
   const auto num = from.size() / 2;
-  strings_internal::STLStringResizeUninitialized(&result, num);
-  absl::HexStringToBytesInternal<std::string&>(from.data(), result, num);
+  StringResizeAndOverwrite(result, num, [from](char* buf, size_t buf_size) {
+    absl::HexStringToBytesInternal<char*>(from.data(), buf, buf_size);
+    return buf_size;
+  });
   return result;
 }
 
 std::string BytesToHexString(absl::string_view from) {
   std::string result;
-  strings_internal::STLStringResizeUninitialized(&result, 2 * from.size());
-  absl::BytesToHexStringInternal<std::string&>(
-      reinterpret_cast<const unsigned char*>(from.data()), result, from.size());
+  StringResizeAndOverwrite(
+      result, 2 * from.size(), [from](char* buf, size_t buf_size) {
+        absl::BytesToHexStringInternal(
+            reinterpret_cast<const unsigned char*>(from.data()), buf,
+            from.size());
+        return buf_size;
+      });
   return result;
 }
 

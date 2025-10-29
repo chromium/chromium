@@ -292,6 +292,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/cord_buffer.h"
   "strings/escaping.cc"
   "strings/escaping.h"
+  "strings/internal/append_and_overwrite.h"
   "strings/internal/charconv_bigint.cc"
   "strings/internal/charconv_bigint.h"
   "strings/internal/charconv_parse.cc"
