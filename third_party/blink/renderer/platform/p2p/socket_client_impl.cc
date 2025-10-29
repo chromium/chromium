@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/p2p/socket_client_impl.h"
 
-#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -114,9 +113,7 @@ void P2PSocketClientImpl::SendWithPacketId(
     const auto& storage = batched_packets_storage_.back();
     batched_send_packets_.emplace_back(
         network::mojom::blink::P2PSendPacket::New(
-            UNSAFE_TODO(
-                base::span<const uint8_t>(storage.begin(), storage.end())),
-            network::P2PPacketInfo(address, options, packet_id)));
+            storage, network::P2PPacketInfo(address, options, packet_id)));
     if (options.last_packet_in_batch) {
       DoSendBatch();
     }
