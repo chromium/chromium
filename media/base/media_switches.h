@@ -21,133 +21,90 @@ namespace base {
 class CommandLine;
 }
 
+// NOTE: Generally you should not add new switches, instead preferring to add
+// base::Feature entries. If you really must add a switch, you'll need to update
+// other places in the code to ensure it's passed to subprocesses correctly.
+//
+// When adding new switches ensure they are added alphabetically and that the
+// order in the .cc file matches the order here.
 namespace switches {
 
+namespace autoplay {
+MEDIA_EXPORT extern const char kDocumentUserActivationRequiredPolicy[];
+MEDIA_EXPORT extern const char kNoUserGestureRequiredPolicy[];
+MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
+}  // namespace autoplay
+
 MEDIA_EXPORT extern const char kAudioBufferSize[];
+MEDIA_EXPORT extern const char kAutoGrantCapturedSurfaceControlPrompt[];
+MEDIA_EXPORT extern const char kAutoplayPolicy[];
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareH264[];
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp8[];
+MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp9[];
+MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
+MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
+MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp9[];
+MEDIA_EXPORT extern const char kClearKeyCdmPathForTesting[];
+MEDIA_EXPORT extern const char kDisableAcceleratedMjpegDecode[];
+MEDIA_EXPORT extern const char kDisableAudioInput[];
+MEDIA_EXPORT extern const char kDisableAudioOutput[];
+MEDIA_EXPORT extern const char kDisableBackgroundMediaSuspend[];
+MEDIA_EXPORT extern const char kDisableRTCSmoothnessAlgorithm[];
+MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
+MEDIA_EXPORT extern const char kFailAudioStreamCreation[];
+MEDIA_EXPORT extern const char kFakeBackgroundBlurTogglePeriod[];
+MEDIA_EXPORT extern const char kForceVideoOverlays[];
+MEDIA_EXPORT extern const char kMSEAudioBufferSizeLimitMb[];
+MEDIA_EXPORT extern const char kMSEVideoBufferSizeLimitMb[];
+MEDIA_EXPORT extern const char kMuteAudio[];
+MEDIA_EXPORT extern const char kOverrideEnabledCdmInterfaceVersion[];
+MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
+MEDIA_EXPORT extern const char kReportVp9AsAnUnsupportedMimeType[];
+MEDIA_EXPORT extern const char
+    kUnsafelyAllowProtectedMediaIdentifierForDomain[];
+MEDIA_EXPORT extern const char kUseFakeDeviceForMediaStream[];
+MEDIA_EXPORT extern const char kUseFakeMjpegDecodeAccelerator[];
+MEDIA_EXPORT extern const char kUseFileForFakeAudioCapture[];
+MEDIA_EXPORT extern const char kUseFileForFakeVideoCapture[];
+MEDIA_EXPORT extern const char kVideoThreads[];
 
 #if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 MEDIA_EXPORT extern const char kAudioCodecsFromEDID[];
 #endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
-MEDIA_EXPORT extern const char kAutoplayPolicy[];
+#if BUILDFLAG(IS_CHROMEOS)
+MEDIA_EXPORT extern const char kAllowRAInDevMode[];
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-MEDIA_EXPORT extern const char kDisableAudioInput[];
-MEDIA_EXPORT extern const char kDisableAudioOutput[];
-
-MEDIA_EXPORT extern const char kFailAudioStreamCreation[];
-
-MEDIA_EXPORT extern const char kVideoThreads[];
-
-MEDIA_EXPORT extern const char kDisableBackgroundMediaSuspend[];
-
-MEDIA_EXPORT extern const char kReportVp9AsAnUnsupportedMimeType[];
+#if BUILDFLAG(IS_FUCHSIA)
+MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
+MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
+MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
+MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FREEBSD) || \
     BUILDFLAG(IS_SOLARIS)
 MEDIA_EXPORT extern const char kAlsaInputDevice[];
 MEDIA_EXPORT extern const char kAlsaOutputDevice[];
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || ...
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const char kEnableExclusiveAudio[];
 MEDIA_EXPORT extern const char kForceWaveAudio[];
 MEDIA_EXPORT extern const char kTrySupportedChannelLayouts[];
 MEDIA_EXPORT extern const char kWaveOutBuffers[];
-#endif
-
-#if BUILDFLAG(IS_FUCHSIA)
-MEDIA_EXPORT extern const char kEnableProtectedVideoBuffers[];
-MEDIA_EXPORT extern const char kForceProtectedVideoOutputBuffers[];
-MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
-MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
-#endif
-
-MEDIA_EXPORT extern const char kFakeBackgroundBlurTogglePeriod[];
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_CRAS)
-MEDIA_EXPORT extern const char kUseCras[];
 MEDIA_EXPORT extern const char kSystemAecEnabled[];
-#endif
-
-MEDIA_EXPORT extern const char
-    kUnsafelyAllowProtectedMediaIdentifierForDomain[];
-
-MEDIA_EXPORT extern const char kAutoGrantCapturedSurfaceControlPrompt[];
-MEDIA_EXPORT extern const char kUseFakeDeviceForMediaStream[];
-MEDIA_EXPORT extern const char kUseFileForFakeVideoCapture[];
-MEDIA_EXPORT extern const char kUseFileForFakeAudioCapture[];
-MEDIA_EXPORT extern const char kUseFakeMjpegDecodeAccelerator[];
-MEDIA_EXPORT extern const char kDisableAcceleratedMjpegDecode[];
-
-MEDIA_EXPORT extern const char kMuteAudio[];
-
-MEDIA_EXPORT extern const char kDisableRTCSmoothnessAlgorithm[];
-
-MEDIA_EXPORT extern const char kForceVideoOverlays[];
-
-MEDIA_EXPORT extern const char kMSEAudioBufferSizeLimitMb[];
-MEDIA_EXPORT extern const char kMSEVideoBufferSizeLimitMb[];
-
-MEDIA_EXPORT extern const char kClearKeyCdmPathForTesting[];
-MEDIA_EXPORT extern const char kOverrideEnabledCdmInterfaceVersion[];
-MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
-MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
-
-#if BUILDFLAG(IS_CHROMEOS)
-MEDIA_EXPORT extern const char kAllowRAInDevMode[];
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-namespace autoplay {
-
-MEDIA_EXPORT extern const char kDocumentUserActivationRequiredPolicy[];
-MEDIA_EXPORT extern const char kNoUserGestureRequiredPolicy[];
-MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
-
-}  // namespace autoplay
+MEDIA_EXPORT extern const char kUseCras[];
+#endif  // BUILDFLAG(USE_CRAS)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
-MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
-#endif
-
-// NOTE: callers should always use the free functions in
-// /media/cast/encoding/encoding_support.h instead of accessing these features
-// directly.
-//
-// TODO(https://crbug.com/1453388): Guard Cast Sender flags with !IS_ANDROID.
-//
-// If enabled, completely disables use of H264 hardware encoding for Cast
-// Streaming sessions. Takes precedence over
-// kCastStreamingForceEnableHardwareH264.
-MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareH264[];
-
-// If enabled, allows use of H264 hardware encoding for Cast Streaming sessions,
-// even on platforms where it is disabled due to performance and reliability
-// issues. kCastStreamingForceDisableHardwareH264 must be disabled for this flag
-// to take effect.
-MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareH264[];
-
-// If enabled, completely disables use of VP8 hardware encoding for Cast
-// Streaming sessions. Takes precedence over
-// kCastStreamingForceEnableHardwareVp8.
-MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp8[];
-
-// If enabled, allows use of VP8 hardware encoding for Cast Streaming sessions,
-// even on platforms where it is disabled due to performance and reliability
-// issues. kCastStreamingForceDisableHardwareVp8 must be disabled for this flag
-// to take effect.
-MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp8[];
-
-// If enabled, completely disables use of VP9 hardware encoding for Cast
-// Streaming sessions. Takes precedence over
-// kCastStreamingForceEnableHardwareVp9.
-MEDIA_EXPORT extern const char kCastStreamingForceDisableHardwareVp9[];
-
-// If enabled, allows use of VP9 hardware encoding for Cast Streaming sessions,
-// even on platforms where it is disabled due to performance and reliability
-// issues. kCastStreamingForceDisableHardwareVp9 must be disabled for this flag
-// to take effect.
-MEDIA_EXPORT extern const char kCastStreamingForceEnableHardwareVp9[];
+MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
 }  // namespace switches
 

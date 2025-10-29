@@ -33,93 +33,106 @@
 
 namespace switches {
 
+namespace autoplay {
+
+// Autoplay policy that requires a document user activation.
+const char kDocumentUserActivationRequiredPolicy[] =
+    "document-user-activation-required";
+
+// Autoplay policy that does not require any user gesture.
+const char kNoUserGestureRequiredPolicy[] = "no-user-gesture-required";
+
+// Autoplay policy to require a user gesture in order to play.
+const char kUserGestureRequiredPolicy[] = "user-gesture-required";
+
+}  // namespace autoplay
+
 // Allow users to specify a custom buffer size for debugging purpose.
 const char kAudioBufferSize[] = "audio-buffer-size";
 
-#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
-// Audio codecs supported by the HDMI sink is retrieved from the audio
-// service process. EDID contains the Short Audio Descriptors, which list
-// the audio decoders supported, and the information is presented as a
-// bitmask of supported audio codecs.
-const char kAudioCodecsFromEDID[] = "audio-codecs-from-edid";
-#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
+// Skip the permission prompt for Captured Surface Control.
+const char kAutoGrantCapturedSurfaceControlPrompt[] =
+    "auto-grant-captured-surface-control-prompt";
 
 // Command line flag name to set the autoplay policy.
 const char kAutoplayPolicy[] = "autoplay-policy";
+
+// NOTE: callers should always use the free functions in
+// /media/cast/encoding/encoding_support.h instead of accessing these features
+// directly.
+//
+// TODO(crbug.com/286443864): Guard Cast Sender flags with !IS_ANDROID.
+//
+// If enabled, completely disables use of H264 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareH264.
+const char kCastStreamingForceDisableHardwareH264[] =
+    "cast-streaming-force-disable-hardware-h264";
+
+// If enabled, completely disables use of VP8 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareVp8.
+const char kCastStreamingForceDisableHardwareVp8[] =
+    "cast-streaming-force-disable-hardware-vp8";
+
+// If enabled, completely disables use of VP9 hardware encoding for Cast
+// Streaming sessions. Takes precedence over
+// kCastStreamingForceEnableHardwareVp9.
+const char kCastStreamingForceDisableHardwareVp9[] =
+    "cast-streaming-force-disable-hardware-vp9";
+
+// If enabled, allows use of H264 hardware encoding for Cast Streaming sessions,
+// even on platforms where it is disabled due to performance and reliability
+// issues. kCastStreamingForceDisableHardwareH264 must be disabled for this flag
+// to take effect.
+const char kCastStreamingForceEnableHardwareH264[] =
+    "cast-streaming-force-enable-hardware-h264";
+
+// If enabled, allows use of VP8 hardware encoding for Cast Streaming sessions,
+// even on platforms where it is disabled due to performance and reliability
+// issues. kCastStreamingForceDisableHardwareVp8 must be disabled for this flag
+// to take effect.
+const char kCastStreamingForceEnableHardwareVp8[] =
+    "cast-streaming-force-enable-hardware-vp8";
+
+// If enabled, allows use of VP9 hardware encoding for Cast Streaming sessions,
+// even on platforms where it is disabled due to performance and reliability
+// issues. kCastStreamingForceDisableHardwareVp9 must be disabled for this flag
+// to take effect.
+const char kCastStreamingForceEnableHardwareVp9[] =
+    "cast-streaming-force-enable-hardware-vp9";
+
+// Specifies the path to the Clear Key CDM for testing, which is necessary to
+// support External Clear Key key system when library CDM is enabled. Note that
+// External Clear Key key system support is also controlled by feature
+// kExternalClearKeyForTesting.
+const char kClearKeyCdmPathForTesting[] = "clear-key-cdm-path-for-testing";
+
+// Disable hardware acceleration of mjpeg decode for captured frame, where
+// available.
+const char kDisableAcceleratedMjpegDecode[] =
+    "disable-accelerated-mjpeg-decode";
 
 // Forces input and output stream creation to use fake audio streams.
 const char kDisableAudioInput[] = "disable-audio-input";
 const char kDisableAudioOutput[] = "disable-audio-output";
 
-// Causes the AudioManager to fail creating audio streams. Used when testing
-// various failure cases.
-const char kFailAudioStreamCreation[] = "fail-audio-stream-creation";
-
-// Set number of threads to use for video decoding.
-const char kVideoThreads[] = "video-threads";
-
 // Do not immediately suspend media in background tabs.
 const char kDisableBackgroundMediaSuspend[] =
     "disable-background-media-suspend";
 
-// Force to report VP9 as an unsupported MIME type.
-const char kReportVp9AsAnUnsupportedMimeType[] =
-    "report-vp9-as-an-unsupported-mime-type";
+// Disables the new rendering algorithm for webrtc, which is designed to improve
+// the rendering smoothness.
+const char kDisableRTCSmoothnessAlgorithm[] =
+    "disable-rtc-smoothness-algorithm";
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FREEBSD) || \
-    BUILDFLAG(IS_SOLARIS)
-// The Alsa device to use when opening an audio input stream.
-const char kAlsaInputDevice[] = "alsa-input-device";
-// The Alsa device to use when opening an audio stream.
-const char kAlsaOutputDevice[] = "alsa-output-device";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_FREEBSD) || BUILDFLAG(IS_SOLARIS)
+// Sets the default value for the kLiveCaptionEnabled preference to true.
+const char kEnableLiveCaptionPrefForTesting[] =
+    "enable-live-caption-pref-for-testing";
 
-#if BUILDFLAG(IS_WIN)
-// Use exclusive mode audio streaming for Windows Vista and higher.
-// Leads to lower latencies for audio streams which uses the
-// AudioParameters::AUDIO_PCM_LOW_LATENCY audio path.
-// See http://msdn.microsoft.com/en-us/library/windows/desktop/dd370844.aspx
-// for details.
-const char kEnableExclusiveAudio[] = "enable-exclusive-audio";
-
-// Use Windows WaveOut/In audio API even if Core Audio is supported.
-const char kForceWaveAudio[] = "force-wave-audio";
-
-// Instead of always using the hardware channel layout, check if a driver
-// supports the source channel layout.  Avoids outputting empty channels and
-// permits drivers to enable stereo to multichannel expansion.  Kept behind a
-// flag since some drivers lie about supported layouts and hang when used.  See
-// http://crbug.com/259165 for more details.
-const char kTrySupportedChannelLayouts[] = "try-supported-channel-layouts";
-
-// Number of buffers to use for WaveOut.
-const char kWaveOutBuffers[] = "waveout-buffers";
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_FUCHSIA)
-// Enables protected buffers for encrypted video streams.
-const char kEnableProtectedVideoBuffers[] = "enable-protected-video-buffers";
-
-// Forces protected memory for all output video buffers generated by
-// FuchsiaVideoDecoder, including unencrypted streams. Ignored unless
-// --enable-protected-video-buffers is also specified.
-const char kForceProtectedVideoOutputBuffers[] =
-    "force-protected-video-output-buffers";
-
-// Minimum size for buffer size used for output video frames in
-// FuchsiaVideoDecoder. May be set to avoid re-allocating video buffers when an
-// application upgrades video resolution mid-stream.
-const char kMinVideoDecoderOutputBufferSize[] =
-    "min-video-decoder-output-buffer-size";
-
-// Forces AudioManagerFuchsia to assume that the AudioCapturer implements echo
-// cancellation.
-// TODO(crbug.com/42050621): Remove this once AudioManagerFuchsia is updated to
-// get this information from AudioCapturerFactory.
-const char kAudioCapturerWithEchoCancellation[] =
-    "audio-capturer-with-echo-cancellation";
-#endif  // BUILDFLAG(IS_FUCHSIA)
+// Causes the AudioManager to fail creating audio streams. Used when testing
+// various failure cases.
+const char kFailAudioStreamCreation[] = "fail-audio-stream-creation";
 
 // Inserts fake background blur state into `VideoFrameMetadata`. The value
 // represents the period in milliseconds. eg. Setting it to 1000ms, will cause
@@ -127,67 +140,6 @@ const char kAudioCapturerWithEchoCancellation[] =
 // 500ms.
 const char kFakeBackgroundBlurTogglePeriod[] =
     "fake-background-blur-toggle-period";
-
-#if BUILDFLAG(USE_CRAS)
-// Use CRAS, the ChromeOS audio server.
-const char kUseCras[] = "use-cras";
-// Enforce system audio echo cancellation.
-const char kSystemAecEnabled[] = "system-aec-enabled";
-#endif  // BUILDFLAG(USE_CRAS)
-
-// For automated testing of protected content, this switch allows specific
-// domains (e.g. example.com) to always allow the permission to share the
-// protected media identifier. In this context, domain does not include the
-// port number. User's content settings will not be affected by enabling this
-// switch.
-// Reference: http://crbug.com/718608
-// Example:
-// --unsafely-allow-protected-media-identifier-for-domain=a.com,b.ca
-const char kUnsafelyAllowProtectedMediaIdentifierForDomain[] =
-    "unsafely-allow-protected-media-identifier-for-domain";
-
-// Skip the permission prompt for Captured Surface Control.
-const char kAutoGrantCapturedSurfaceControlPrompt[] =
-    "auto-grant-captured-surface-control-prompt";
-
-// Use fake device for Media Stream to replace actual camera and microphone.
-// For the list of allowed parameters, see
-// FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString().
-const char kUseFakeDeviceForMediaStream[] = "use-fake-device-for-media-stream";
-
-// Use an .y4m file to play as the webcam. See the comments in
-// media/capture/video/file_video_capture_device.h for more details.
-const char kUseFileForFakeVideoCapture[] = "use-file-for-fake-video-capture";
-
-// Play a .wav file as the microphone. Note that for WebRTC calls we'll treat
-// the bits as if they came from the microphone, which means you should disable
-// audio processing (lest your audio file will play back distorted). The input
-// file is converted to suit Chrome's audio buses if necessary, so most sane
-// .wav files should work. You can pass either <path> to play the file looping
-// or <path>%noloop to stop after playing the file to completion.
-//
-// Must also be used with kDisableAudioInput or kUseFakeDeviceForMediaStream.
-const char kUseFileForFakeAudioCapture[] = "use-file-for-fake-audio-capture";
-
-// Use a fake device for accelerated decoding of MJPEG. This allows, for
-// example, testing of the communication to the GPU service without requiring
-// actual accelerator hardware to be present.
-const char kUseFakeMjpegDecodeAccelerator[] =
-    "use-fake-mjpeg-decode-accelerator";
-
-// Disable hardware acceleration of mjpeg decode for captured frame, where
-// available.
-const char kDisableAcceleratedMjpegDecode[] =
-    "disable-accelerated-mjpeg-decode";
-
-// Mutes audio sent to the audio device so it is not audible during
-// automated testing.
-const char kMuteAudio[] = "mute-audio";
-
-// Disables the new rendering algorithm for webrtc, which is designed to improve
-// the rendering smoothness.
-const char kDisableRTCSmoothnessAlgorithm[] =
-    "disable-rtc-smoothness-algorithm";
 
 // Force media player using SurfaceView instead of SurfaceTexture on Android.
 // Note: This is used by the Cast playback pipeline and must be kept.
@@ -198,11 +150,9 @@ const char kForceVideoOverlays[] = "force-video-overlays";
 const char kMSEAudioBufferSizeLimitMb[] = "mse-audio-buffer-size-limit-mb";
 const char kMSEVideoBufferSizeLimitMb[] = "mse-video-buffer-size-limit-mb";
 
-// Specifies the path to the Clear Key CDM for testing, which is necessary to
-// support External Clear Key key system when library CDM is enabled. Note that
-// External Clear Key key system support is also controlled by feature
-// kExternalClearKeyForTesting.
-const char kClearKeyCdmPathForTesting[] = "clear-key-cdm-path-for-testing";
+// Mutes audio sent to the audio device so it is not audible during
+// automated testing.
+const char kMuteAudio[] = "mute-audio";
 
 // Overrides the default enabled library CDM interface version(s) with the one
 // specified with this switch, which will be the only version enabled. For
@@ -234,9 +184,56 @@ const char kOverrideEnabledCdmInterfaceVersion[] =
 const char kOverrideHardwareSecureCodecsForTesting[] =
     "override-hardware-secure-codecs-for-testing";
 
-// Sets the default value for the kLiveCaptionEnabled preference to true.
-const char kEnableLiveCaptionPrefForTesting[] =
-    "enable-live-caption-pref-for-testing";
+// Force to report VP9 as an unsupported MIME type.
+const char kReportVp9AsAnUnsupportedMimeType[] =
+    "report-vp9-as-an-unsupported-mime-type";
+
+// For automated testing of protected content, this switch allows specific
+// domains (e.g. example.com) to always allow the permission to share the
+// protected media identifier. In this context, domain does not include the
+// port number. User's content settings will not be affected by enabling this
+// switch.
+// Reference: https://crbug.com/41317087
+// Example:
+// --unsafely-allow-protected-media-identifier-for-domain=a.com,b.ca
+const char kUnsafelyAllowProtectedMediaIdentifierForDomain[] =
+    "unsafely-allow-protected-media-identifier-for-domain";
+
+// Use fake device for Media Stream to replace actual camera and microphone.
+// For the list of allowed parameters, see
+// FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString().
+const char kUseFakeDeviceForMediaStream[] = "use-fake-device-for-media-stream";
+
+// Use a fake device for accelerated decoding of MJPEG. This allows, for
+// example, testing of the communication to the GPU service without requiring
+// actual accelerator hardware to be present.
+const char kUseFakeMjpegDecodeAccelerator[] =
+    "use-fake-mjpeg-decode-accelerator";
+
+// Play a .wav file as the microphone. Note that for WebRTC calls we'll treat
+// the bits as if they came from the microphone, which means you should disable
+// audio processing (lest your audio file will play back distorted). The input
+// file is converted to suit Chrome's audio buses if necessary, so most sane
+// .wav files should work. You can pass either <path> to play the file looping
+// or <path>%noloop to stop after playing the file to completion.
+//
+// Must also be used with kDisableAudioInput or kUseFakeDeviceForMediaStream.
+const char kUseFileForFakeAudioCapture[] = "use-file-for-fake-audio-capture";
+
+// Use an .y4m file to play as the webcam. See the comments in
+// media/capture/video/file_video_capture_device.h for more details.
+const char kUseFileForFakeVideoCapture[] = "use-file-for-fake-video-capture";
+
+// Set number of threads to use for video decoding.
+const char kVideoThreads[] = "video-threads";
+
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
+// Audio codecs supported by the HDMI sink is retrieved from the audio
+// service process. EDID contains the Short Audio Descriptors, which list
+// the audio decoders supported, and the information is presented as a
+// bitmask of supported audio codecs.
+const char kAudioCodecsFromEDID[] = "audio-codecs-from-edid";
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Allows remote attestation (RA) in dev mode for testing purpose. Usually RA
@@ -246,46 +243,80 @@ const char kEnableLiveCaptionPrefForTesting[] =
 const char kAllowRAInDevMode[] = "allow-ra-in-dev-mode";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace autoplay {
+#if BUILDFLAG(IS_FUCHSIA)
+// Forces AudioManagerFuchsia to assume that the AudioCapturer implements echo
+// cancellation.
+// TODO(crbug.com/42050621): Remove this once AudioManagerFuchsia is updated to
+// get this information from AudioCapturerFactory.
+const char kAudioCapturerWithEchoCancellation[] =
+    "audio-capturer-with-echo-cancellation";
 
-// Autoplay policy that requires a document user activation.
-const char kDocumentUserActivationRequiredPolicy[] =
-    "document-user-activation-required";
+// Enables protected buffers for encrypted video streams.
+const char kEnableProtectedVideoBuffers[] = "enable-protected-video-buffers";
 
-// Autoplay policy that does not require any user gesture.
-const char kNoUserGestureRequiredPolicy[] = "no-user-gesture-required";
+// Forces protected memory for all output video buffers generated by
+// FuchsiaVideoDecoder, including unencrypted streams. Ignored unless
+// --enable-protected-video-buffers is also specified.
+const char kForceProtectedVideoOutputBuffers[] =
+    "force-protected-video-output-buffers";
 
-// Autoplay policy to require a user gesture in order to play.
-const char kUserGestureRequiredPolicy[] = "user-gesture-required";
+// Minimum size for buffer size used for output video frames in
+// FuchsiaVideoDecoder. May be set to avoid re-allocating video buffers when an
+// application upgrades video resolution mid-stream.
+const char kMinVideoDecoderOutputBufferSize[] =
+    "min-video-decoder-output-buffer-size";
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-}  // namespace autoplay
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FREEBSD) || \
+    BUILDFLAG(IS_SOLARIS)
+// The Alsa device to use when opening an audio input stream.
+const char kAlsaInputDevice[] = "alsa-input-device";
+// The Alsa device to use when opening an audio stream.
+const char kAlsaOutputDevice[] = "alsa-output-device";
+#endif  // BUILDFLAG(IS_LINUX) || ...
+
+#if BUILDFLAG(IS_WIN)
+// Use exclusive mode audio streaming for Windows Vista and higher.
+// Leads to lower latencies for audio streams which uses the
+// AudioParameters::AUDIO_PCM_LOW_LATENCY audio path.
+// See http://msdn.microsoft.com/en-us/library/windows/desktop/dd370844.aspx
+// for details.
+const char kEnableExclusiveAudio[] = "enable-exclusive-audio";
+
+// Use Windows WaveOut/In audio API even if Core Audio is supported.
+const char kForceWaveAudio[] = "force-wave-audio";
+
+// Instead of always using the hardware channel layout, check if a driver
+// supports the source channel layout.  Avoids outputting empty channels and
+// permits drivers to enable stereo to multichannel expansion.  Kept behind a
+// flag since some drivers lie about supported layouts and hang when used.  See
+// http://crbug.com/259165 for more details.
+const char kTrySupportedChannelLayouts[] = "try-supported-channel-layouts";
+
+// Number of buffers to use for WaveOut.
+const char kWaveOutBuffers[] = "waveout-buffers";
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(USE_CRAS)
+// Enforce system audio echo cancellation.
+const char kSystemAecEnabled[] = "system-aec-enabled";
+// Use CRAS, the ChromeOS audio server.
+const char kUseCras[] = "use-cras";
+#endif  // BUILDFLAG(USE_CRAS)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
-// Some (Qualcomm only at the moment) V4L2 video decoders require setting the
-// framerate so that the hardware decoder can scale the clocks efficiently.
-// This provides a mechanism during testing to lock the decoder framerate
-// to a specific value.
-const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
-
 // This is needed for V4L2 testing using VISL (virtual driver) on cros VM with
 // arm64-generic-vm. Minigbm buffer allocation is done using dumb driver with
 // vkms.
 const char kEnablePrimaryNodeAccessForVkmsTesting[] =
     "enable-primary-node-access-for-vkms-testing";
-#endif
 
-const char kCastStreamingForceDisableHardwareH264[] =
-    "cast-streaming-force-disable-hardware-h264";
-const char kCastStreamingForceEnableHardwareH264[] =
-    "cast-streaming-force-enable-hardware-h264";
-const char kCastStreamingForceDisableHardwareVp8[] =
-    "cast-streaming-force-disable-hardware-vp8";
-const char kCastStreamingForceEnableHardwareVp8[] =
-    "cast-streaming-force-enable-hardware-vp8";
-const char kCastStreamingForceDisableHardwareVp9[] =
-    "cast-streaming-force-disable-hardware-vp9";
-const char kCastStreamingForceEnableHardwareVp9[] =
-    "cast-streaming-force-enable-hardware-vp9";
+// Some (Qualcomm only at the moment) V4L2 video decoders require setting the
+// framerate so that the hardware decoder can scale the clocks efficiently.
+// This provides a mechanism during testing to lock the decoder framerate
+// to a specific value.
+const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
+#endif  // BUILDFLAG(USE_V4L2_CODEC)
 
 }  // namespace switches
 
