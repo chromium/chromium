@@ -119,8 +119,6 @@ class WorkerOptions:
     sandbox: bool
     # An optional path to a gemini-cli binary to use.
     gemini_cli_bin: pathlib.Path | None = None
-    # An optional path to a nodejs binary to use.
-    node_bin: pathlib.Path | None = None
 
 
 class WorkerPool:
@@ -488,9 +486,6 @@ class WorkerThread(threading.Thread):
                     '--var',
                     f'gemini_cli_bin={self._worker_options.gemini_cli_bin}'
                 ])
-            if self._worker_options.node_bin:
-                command.extend(
-                    ['--var', f'node_bin={self._worker_options.node_bin}'])
 
             start_time = time.time()
             proc = self._promptfoo.run(command, cwd=workdir.path / 'src')

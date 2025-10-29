@@ -297,13 +297,12 @@ def _get_gemini_cli_arguments(
     except (ValueError, TypeError):
         return None, f'Failed to parse timeout from {unparsed_timeout}'
 
-    command = []
-    node_bin = provider_vars.get('node_bin')
-    if node_bin:
-        command.append(node_bin)
     gemini_cli_bin = provider_vars.get('gemini_cli_bin',
                                        gemini_helpers.get_gemini_executable())
-    command.extend([gemini_cli_bin, '-y'])
+    command = [
+        gemini_cli_bin,
+        '-y',
+    ]
 
     sandbox_flags = []
     if provider_vars.get('sandbox', False):
