@@ -7,7 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SetupListItemElement} from './setup_list_item.js';
 
 export function getHtml(this: SetupListItemElement) {
-  return html`
+  return html`<!--_html_template_start_-->
 <button id="backing" @click="${this.onClick_}"
     class="${this.completed ? 'completed' : 'pending'}"
     ?disabled="${this.completed}"
@@ -19,5 +19,5 @@ export function getHtml(this: SetupListItemElement) {
   <p id="bodyText">${this.bodyText}</p>
   <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
 </button>
-`;
+<!--_html_template_end_-->`;
 }

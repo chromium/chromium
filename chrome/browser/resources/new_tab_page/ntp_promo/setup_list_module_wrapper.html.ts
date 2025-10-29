@@ -7,7 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SetupListModuleWrapperElement} from './setup_list_module_wrapper.js';
 
 export function getHtml(this: SetupListModuleWrapperElement) {
-  return html`
+  return html`<!--_html_template_start_-->
 <div id="container"
     ?hidden="${this.isModuleHidden_()}"
     @module-ready="${this.onModuleReady_}"
@@ -28,5 +28,5 @@ export function getHtml(this: SetupListModuleWrapperElement) {
     </cr-button>
   ` : ''}
 </cr-toast>
-`;
+<!--_html_template_end_-->`;
 }

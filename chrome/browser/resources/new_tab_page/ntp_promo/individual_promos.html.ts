@@ -7,7 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IndividualPromosElement} from './individual_promos.js';
 
 export function getHtml(this: IndividualPromosElement) {
-  return html`
+  return html`<!--_html_template_start_-->
 <div id="promos">
   ${this.eligiblePromos_.map(item => html`
   <button id="promo" @click="${this.onClick_.bind(this, item.id)}"
@@ -21,5 +21,5 @@ export function getHtml(this: IndividualPromosElement) {
   </button>
   `)}
 </div>
-`;
+<!--_html_template_end_-->`;
 }
