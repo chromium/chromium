@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -86,14 +87,17 @@ UIImage* TabGroupImage(UITraitCollection* trait_collection) {
 }
 
 - (void)start {
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_GOT_IT);
   ConfirmationAlertViewController* confirmationAlert =
-      [[ConfirmationAlertViewController alloc] init];
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:configuration];
   confirmationAlert.titleString =
       l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_TITLE);
   confirmationAlert.subtitleString = l10n_util::GetNSString(
       IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_SUBTITLE);
-  confirmationAlert.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_GOT_IT);
   confirmationAlert.showDismissBarButton = NO;
   confirmationAlert.image = TabGroupImage(confirmationAlert.traitCollection);
   confirmationAlert.imageHasFixedSize = YES;
