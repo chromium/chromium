@@ -132,6 +132,8 @@ class LogMessage {
 RTC_EXPORT void InitDiagnosticLoggingDelegateFunction(
     void (*delegate)(const std::string&));
 
+RTC_EXPORT void ResetDiagnosticLoggingDelegateFunction();
+
 void SetExtraLoggingInit(
     void (*function)(void (*delegate)(const std::string&)));
 
