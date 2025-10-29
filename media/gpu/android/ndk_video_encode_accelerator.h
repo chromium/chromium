@@ -33,7 +33,6 @@ namespace media {
 
 class BitstreamBuffer;
 class TemporalScalabilityIdExtractor;
-class VEAEncodingLatencyMetricsHelper;
 
 class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
     NdkVideoEncodeAccelerator final : public VideoEncodeAccelerator,
@@ -75,15 +74,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   void OnError(media_status_t error) override;
 
  private:
-  struct FrameTimestampInfo {
-    // The original timestamp of the input VideoFrame, it's used for
-    // assigning timestamps to the outputs.
-    base::TimeDelta real_timestamp;
-    // The wall-clock time when the frame is sent to the encoder, it's used
-    // for latency calculation.
-    base::TimeTicks encode_start_time;
-  };
-
   enum class SyncState {
     kReadyForEncoding,
     kNeedsSync,
@@ -142,16 +132,8 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
                              std::string message);
   void NotifyErrorStatus(EncoderStatus status);
 
-  // Generates a monotonically increasing timestamp to be used when feeding
-  // input to the MediaCodec. Stores the original `real_timestamp` and the
-  // current time as the encoding start time in a map
-  // Returns the generated monotonic timestamp.
-  base::TimeDelta RecordFrameTimestamps(base::TimeDelta real_timestamp);
-
-  // Retrieves and removes the FrameTimestampInfo associated with the given
-  // `monotonic_timestamp` from the map.
-  std::optional<FrameTimestampInfo> RetrieveFrameTimestamps(
-      base::TimeDelta monotonic_timestamp);
+  base::TimeDelta AssignMonotonicTimestamp(base::TimeDelta real_timestamp);
+  base::TimeDelta RetrieveRealTimestamp(base::TimeDelta monotonic_timestamp);
 
   EncoderStatus ResetMediaCodec();
 
@@ -201,7 +183,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   base::TimeDelta next_timestamp_;
 
   // Map from artificial monotonically-growing to real frame timestamp.
-  base::flat_map<base::TimeDelta, FrameTimestampInfo>
+  base::flat_map<base::TimeDelta, base::TimeDelta>
       generated_to_real_timestamp_map_;
 
   std::unique_ptr<MediaLog> log_;
@@ -241,8 +223,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   scoped_refptr<CommandBufferHelper> command_buffer_helper_;
-
-  std::unique_ptr<VEAEncodingLatencyMetricsHelper> metrics_helper_;
 
   base::WeakPtrFactory<NdkVideoEncodeAccelerator> weak_ptr_factory_{this};
 };

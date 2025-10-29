@@ -7,11 +7,9 @@
 #include <optional>
 
 #include "base/bits.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -24,7 +22,6 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "media/gpu/command_buffer_helper.h"
-#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/parsers/h264_level_limits.h"
 #include "media/parsers/h264_parser.h"
 #include "media/parsers/temporal_scalability_id_extractor.h"
@@ -492,24 +489,6 @@ void WaitForSyncTokenOnGpuThread(
     base::OnceClosure done_cb) {
   command_buffer_helper->WaitForSyncToken(sync_token, std::move(done_cb));
 }
-
-constexpr std::string_view kEncoderStatusHistogramPrefix =
-    "Media.VideoEncoder.NDKVEA.EncodeStatus.";
-
-std::string GetEncoderStatusHistogramName(VideoCodecProfile profile) {
-  return base::StrCat(
-      {kEncoderStatusHistogramPrefix,
-       GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
-}
-
-constexpr std::string_view kInitStatusHistogramPrefix =
-    "Media.VideoEncoder.NDKVEA.InitStatus.";
-
-std::string GetInitStatusHistogramName(VideoCodecProfile profile) {
-  return base::StrCat(
-      {kInitStatusHistogramPrefix,
-       GetCodecNameForUMA(VideoCodecProfileToVideoCodec(profile))});
-}
 }  // namespace
 
 NdkVideoEncodeAccelerator::PendingEncode::PendingEncode(
@@ -535,12 +514,6 @@ NdkVideoEncodeAccelerator::~NdkVideoEncodeAccelerator() {
   // It's supposed to be cleared by Destroy(), it basically checks
   // that we destroy `this` correctly.
   DCHECK(!media_codec_);
-
-  if (!error_occurred_ && have_encoded_frames_) {
-    base::UmaHistogramEnumeration(
-        GetEncoderStatusHistogramName(config_.output_profile),
-        EncoderStatus::Codes::kOk);
-  }
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -593,10 +566,6 @@ EncoderStatus NdkVideoEncodeAccelerator::Initialize(
   }
 
   const EncoderStatus status = ResetMediaCodec();
-
-  base::UmaHistogramEnumeration(
-      GetInitStatusHistogramName(config_.output_profile), status.code());
-
   if (!status.is_ok()) {
     return status;
   }
@@ -740,7 +709,6 @@ void NdkVideoEncodeAccelerator::Destroy() {
     media_codec_.reset();
   }
   gl_renderer_.reset();
-  metrics_helper_.reset();
   delete this;
 }
 
@@ -845,26 +813,24 @@ bool NdkVideoEncodeAccelerator::SetInputBufferLayout(
   return true;
 }
 
-base::TimeDelta NdkVideoEncodeAccelerator::RecordFrameTimestamps(
+base::TimeDelta NdkVideoEncodeAccelerator::AssignMonotonicTimestamp(
     base::TimeDelta real_timestamp) {
   base::TimeDelta step = base::Seconds(1) / effective_framerate_;
   auto result = next_timestamp_;
-  generated_to_real_timestamp_map_[result] = {real_timestamp,
-                                              base::TimeTicks::Now()};
+  generated_to_real_timestamp_map_[result] = real_timestamp;
   next_timestamp_ += step;
   return result;
 }
 
-std::optional<NdkVideoEncodeAccelerator::FrameTimestampInfo>
-NdkVideoEncodeAccelerator::RetrieveFrameTimestamps(
+base::TimeDelta NdkVideoEncodeAccelerator::RetrieveRealTimestamp(
     base::TimeDelta monotonic_timestamp) {
+  base::TimeDelta result;
   auto it = generated_to_real_timestamp_map_.find(monotonic_timestamp);
   if (it != generated_to_real_timestamp_map_.end()) {
-    FrameTimestampInfo result = it->second;
+    result = it->second;
     generated_to_real_timestamp_map_.erase(it);
-    return result;
   }
-  return std::nullopt;
+  return result;
 }
 
 void NdkVideoEncodeAccelerator::FeedInput() {
@@ -963,7 +929,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   // monotonically increase according to the configured frame rate.
   // We do the opposite for each output buffer, to restore accurate frame
   // timestamps.
-  auto timestamp = RecordFrameTimestamps(frame->timestamp());
+  auto timestamp = AssignMonotonicTimestamp(frame->timestamp());
 
   if (use_surface_as_input_) {
     FeedGLSurface(std::move(frame), timestamp);
@@ -1120,9 +1086,6 @@ void NdkVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   MEDIA_LOG(ERROR, log_) << EncoderStatusCodeToString(status.code()) << " "
                          << status.message();
   if (!error_occurred_) {
-    base::UmaHistogramEnumeration(
-        GetEncoderStatusHistogramName(config_.output_profile), status.code());
-
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VideoEncodeAccelerator::Client::NotifyErrorStatus,
@@ -1245,12 +1208,6 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  base::ScopedClosureRunner release_buffer(base::BindOnce(
-      [](NdkMediaCodecWrapper* media_codec, int index) {
-        AMediaCodec_releaseOutputBuffer(media_codec->codec(), index, false);
-      },
-      base::Unretained(media_codec_.get()), output_buffer.buffer_index));
-
   base::UnsafeSharedMemoryRegion region = bitstream_buffer.TakeRegion();
   auto mapping =
       region.MapAt(bitstream_buffer.offset(), bitstream_buffer.size());
@@ -1267,18 +1224,10 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   }
 
   output_dst.copy_prefix_from(out_buffer_data);
-  auto timestamp_info = RetrieveFrameTimestamps(
+  auto timestamp = RetrieveRealTimestamp(
       base::Microseconds(mc_buffer_info.presentationTimeUs));
-  if (!timestamp_info.has_value()) {
-    MEDIA_LOG(ERROR, log_) << "Failed to find timestamp for encoded frame. ts:"
-                           << mc_buffer_info.presentationTimeUs;
-    NOTREACHED(base::NotFatalUntil::M150)
-        << "Failed to find timestamp for encoded frame. ts:"
-        << mc_buffer_info.presentationTimeUs;
-    timestamp_info = FrameTimestampInfo();
-  }
-  auto metadata = BitstreamBufferMetadata(
-      mc_buffer_size + config_size, key_frame, timestamp_info->real_timestamp);
+  auto metadata = BitstreamBufferMetadata(mc_buffer_size + config_size,
+                                          key_frame, timestamp);
   if (aligned_size_) {
     metadata.encoded_size = aligned_size_;
   }
@@ -1311,15 +1260,13 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     ++input_since_keyframe_count_;
   }
 
-  auto encoding_latency =
-      base::TimeTicks::Now() - timestamp_info->encode_start_time;
-  metrics_helper_->EncodeOneFrame(key_frame, encoding_latency);
-
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::BitstreamBufferReady,
                      client_ptr_factory_->GetWeakPtr(), bitstream_buffer.id(),
                      metadata));
+  AMediaCodec_releaseOutputBuffer(media_codec_->codec(),
+                                  output_buffer.buffer_index, false);
 }
 
 EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
@@ -1439,10 +1386,6 @@ EncoderStatus NdkVideoEncodeAccelerator::ResetMediaCodec() {
     MEDIA_LOG(ERROR, log_) << "Can't start media codec. Error " << status;
     return {EncoderStatus::Codes::kEncoderInitializationError};
   }
-
-  metrics_helper_ = std::make_unique<VEAEncodingLatencyMetricsHelper>(
-      "Media.VideoEncoder.NDKVEA.EncodingLatency.",
-      VideoCodecProfileToVideoCodec(config_.output_profile));
 
   MEDIA_LOG(INFO, log_) << "Created MediaCodec (" << name.value()
                         << ") for config: " << config_.AsHumanReadableString();
