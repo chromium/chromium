@@ -530,212 +530,113 @@ TEST_F(ModelQualityLogsUploaderTest,
   logs_uploader.SetLoggedInCheckQuality(
       login_state_checks,
       CreateLoggingDataForLoginCheck(/*is_logged_in=*/false));
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
   VerifyLoginCheckStep(logs_uploader.GetFinalLog(), unexpected_status,
                        /*expected_retry_count=*/login_state_checks - 1,
                        /*was_skipped=*/false);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, FlowInterruptedAfterLoginCheck) {
-  const int login_state_checks = 3;
+TEST_F(ModelQualityLogsUploaderTest, FlowInterruptedLoginCheck) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
-  const QualityStatus success_status = QualityStatus::
-      PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-  logs_uploader.SetLoggedInCheckQuality(
-      login_state_checks,
-      CreateLoggingDataForLoginCheck(/*is_logged_in=*/true));
-  logs_uploader.SetFlowInterrupted();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  VerifyLoginCheckStep(final_log, success_status,
-                       /*expected_retry_count=*/login_state_checks - 1,
-                       /*was_skipped=*/false);
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
+  EXPECT_EQ(
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
+      logs_uploader.GetFinalLog()
+          .password_change_submission()
+          .quality()
+          .logged_in_check()
+          .status());
+}
+
+TEST_F(ModelQualityLogsUploaderTest, LoginCheckStepOtpDetected) {
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
+  EXPECT_EQ(QualityStatus::
+                PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
+            logs_uploader.GetFinalLog()
+                .password_change_submission()
+                .quality()
+                .logged_in_check()
+                .status());
+}
+
+TEST_F(ModelQualityLogsUploaderTest, OpenFormFlowInterrupted) {
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
   CheckOpenFormStatus(
-      final_log,
+      logs_uploader.GetFinalLog(),
       /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
       /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, LoginCheckStepOtpDetected) {
-  const int login_state_checks = 3;
+TEST_F(ModelQualityLogsUploaderTest, OpenFormStepOtpDetected) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
-  QualityStatus quality_status = QualityStatus::
-      PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-  logs_uploader.SetLoggedInCheckQuality(
-      login_state_checks,
-      CreateLoggingDataForLoginCheck(/*is_logged_in=*/true));
-  logs_uploader.SetOtpDetected();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  VerifyLoginCheckStep(final_log, quality_status,
-                       /*expected_retry_count=*/login_state_checks - 1,
-                       /*was_skipped=*/false);
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
   CheckOpenFormStatus(
-      final_log,
+      logs_uploader.GetFinalLog(),
       /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
       /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, OpenFormFlowInterrupted) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  // Set initial open form data for ACTION_SUCCESS status.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  open_form_response.mutable_open_form_data()->set_page_type(
-      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
-  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest initial_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      initial_log, open_form_request_, open_form_response,
+TEST_F(ModelQualityLogsUploaderTest, SubmitFormFlowInterrupted) {
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  // This should override the most recent log, which is for SUBMIT_FORM.
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-
-  logs_uploader.SetFlowInterrupted();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      final_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
   CheckSubmitFormStatus(
-      final_log,
+      logs_uploader.GetFinalLog(),
       /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
       /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
 }
 
-TEST_F(ModelQualityLogsUploaderTest, SubmitFormFlowInterrupted) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  // Set open form data.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  open_form_response.mutable_open_form_data()->set_page_type(
-      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
-  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-
-  // Set submit form data.
-  optimization_guide::proto::PasswordChangeResponse submit_form_response;
-  submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(
-      123);
-  logs_uploader.SetSubmitFormQuality(submit_form_response,
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
-
+TEST_F(ModelQualityLogsUploaderTest, SubmitFormOtpDetected) {
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   // This should override the most recent log, which is for SUBMIT_FORM.
-  logs_uploader.SetFlowInterrupted();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-
-  CheckOpenFormStatus(
-      final_log, open_form_request_, open_form_response,
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
   CheckSubmitFormStatus(
-      final_log, submit_form_request_, submit_form_response,
+      logs_uploader.GetFinalLog(),
+      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
+      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, VerifySubmissionFlowInterrupted) {
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  // This should override the most recent log, which is for SUBMIT_FORM.
+  logs_uploader.SetFlowInterrupted(
+      FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
   CheckVerifySubmissionStatus(
       logs_uploader.GetFinalLog(),
       /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
       /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
-      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
-}
-
-TEST_F(ModelQualityLogsUploaderTest, OpenFormOtpDetected) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  // Set initial open form data for ACTION_SUCCESS status.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  open_form_response.mutable_open_form_data()->set_page_type(
-      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
-  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-  const optimization_guide::proto::LogAiDataRequest initial_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      initial_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-
-  logs_uploader.SetOtpDetected();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-  CheckOpenFormStatus(
-      final_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-  CheckSubmitFormStatus(
-      final_log,
-      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
-      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
-}
-
-TEST_F(ModelQualityLogsUploaderTest, SubmitFormOtpDetected) {
-  const base::Time fake_start_time = base::Time::Now();
-  ModelQualityLogsUploader logs_uploader(web_contents(),
-                                         GURL(kChangePasswordURL));
-  // Set open form data.
-  optimization_guide::proto::PasswordChangeResponse open_form_response;
-
-  open_form_response.mutable_open_form_data()->set_page_type(
-      PageType::OpenFormResponseData_PageType_SETTINGS_PAGE);
-  open_form_response.mutable_open_form_data()->set_dom_node_id_to_click(123);
-  logs_uploader.SetOpenFormQuality(open_form_response,
-                                   CreateLoggingData(open_form_request_),
-                                   fake_start_time);
-
-  // Set submit form data.
-  optimization_guide::proto::PasswordChangeResponse submit_form_response;
-  submit_form_response.mutable_submit_form_data()->set_dom_node_id_to_click(
-      123);
-  logs_uploader.SetSubmitFormQuality(submit_form_response,
-                                     CreateLoggingData(submit_form_request_),
-                                     fake_start_time);
-
-  // This should override the most recent log, which is for SUBMIT_FORM.
-  logs_uploader.SetOtpDetected();
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
-
-  CheckOpenFormStatus(
-      final_log, open_form_request_, open_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-  CheckSubmitFormStatus(
-      final_log, submit_form_request_, submit_form_response,
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
-  CheckVerifySubmissionStatus(
-      logs_uploader.GetFinalLog(),
-      /*expected_request=*/optimization_guide::proto::PasswordChangeRequest(),
-      /*expected_response=*/optimization_guide::proto::PasswordChangeResponse(),
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
       FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
 }
 
