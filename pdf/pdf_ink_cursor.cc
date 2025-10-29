@@ -71,14 +71,12 @@ SkBitmap GenerateToolCursor(SkColor color, int diameter) {
   paint.setStyle(SkPaint::kFill_Style);
 
   auto rect = SkRect::MakeWH(diameter, diameter);
-  SkPath outline_path;
-  outline_path.addOval(rect, SkPathDirection::kCW, 1);
+  const SkPath outline_path = SkPath::Oval(rect, SkPathDirection::kCW, 1);
   canvas.drawPath(outline_path, paint);
 
   paint.setColor(color);
-  SkPath fill_path;
   rect.inset(1, 1);
-  fill_path.addOval(rect, SkPathDirection::kCW, 1);
+  const SkPath fill_path = SkPath::Oval(rect, SkPathDirection::kCW, 1);
   canvas.drawPath(fill_path, paint);
 
   return bitmap;
