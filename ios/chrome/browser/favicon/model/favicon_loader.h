@@ -14,8 +14,10 @@ class GURL;
 // A class that manages asynchronously loading favicons.
 class FaviconLoader : public KeyedService {
  public:
-  // Type for completion block for FaviconForURL().
-  using FaviconAttributesCompletionBlock = void (^)(FaviconAttributes*);
+  // Type for completion block for FaviconForURL(). `cached` will be true if
+  // this is called synchronously, from cache.
+  using FaviconAttributesCompletionBlock =
+      void (^)(FaviconAttributes* attributes, bool cached);
 
   FaviconLoader() = default;
 

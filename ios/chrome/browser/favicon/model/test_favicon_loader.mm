@@ -21,14 +21,14 @@ void TestFaviconLoader::FaviconForPageUrl(
     float min_size_in_points,
     bool fallback_to_google_server,
     FaviconAttributesCompletionBlock favicon_block_handler) {
-  favicon_block_handler(default_attributes_);
+  favicon_block_handler(default_attributes_, /*cached*/ true);
 }
 
 void TestFaviconLoader::FaviconForPageUrlOrHost(
     const GURL& page_url,
     float size_in_points,
     FaviconAttributesCompletionBlock favicon_block_handler) {
-  favicon_block_handler(default_attributes_);
+  favicon_block_handler(default_attributes_, /*cached*/ true);
 }
 
 void TestFaviconLoader::FaviconForIconUrl(
@@ -36,7 +36,7 @@ void TestFaviconLoader::FaviconForIconUrl(
     float size_in_points,
     float min_size_in_points,
     FaviconAttributesCompletionBlock favicon_block_handler) {
-  favicon_block_handler(default_attributes_);
+  favicon_block_handler(default_attributes_, /*cached*/ true);
 }
 
 void TestFaviconLoader::CancellAllRequests() {

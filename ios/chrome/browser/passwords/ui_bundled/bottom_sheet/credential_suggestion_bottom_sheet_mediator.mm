@@ -486,7 +486,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
         _URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/NO, faviconLoadedBlock);
   } else {
-    faviconLoadedBlock([self defaultGlobeIconAttributes]);
+    faviconLoadedBlock([self defaultGlobeIconAttributes], /*cached*/ true);
   }
 }
 

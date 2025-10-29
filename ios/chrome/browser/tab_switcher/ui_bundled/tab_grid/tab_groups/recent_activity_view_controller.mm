@@ -200,7 +200,7 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
   CrURL* crurl = [[CrURL alloc] initWithGURL:itemIdentifier.faviconURL];
   [_faviconDataSource
       faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                CHECK(attributes);
                // Only set favicon if the cell hasn't been reused.
                if ([cell.uniqueIdentifier isEqualToString:uniqueIdentifier]) {

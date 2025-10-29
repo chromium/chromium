@@ -293,7 +293,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   __weak ShopCardMediator* weakSelf = self;
   _faviconLoader->FaviconForPageUrl(
       productUrl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
         [weakSelf onFaviconReceived:attributes];
       });
 }

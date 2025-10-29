@@ -530,7 +530,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   __weak __typeof(self) weakSelf = self;
   GetSearchEngineFavicon(
       *templateURL, *_regionalCapabilitiesService, _templateURLService,
-      _faviconLoader, ^(FaviconAttributes* attributes) {
+      _faviconLoader, ^(FaviconAttributes* attributes, bool cached) {
         [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
       });
   return item;

@@ -394,7 +394,8 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
     __weak PriceTrackingPromoMediator* weakSelf = self;
     _faviconLoader->FaviconForPageUrl(
         productUrl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-        /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
+        /*fallback_to_google_server=*/false,
+        ^(FaviconAttributes* attributes, bool cached) {
           [weakSelf onFaviconReceived:attributes];
         });
   }

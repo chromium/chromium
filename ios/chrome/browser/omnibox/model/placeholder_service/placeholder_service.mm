@@ -235,7 +235,7 @@ void PlaceholderService::PerformIconFetch(const TemplateURL* template_url,
   auto favicon_completion = base::CallbackToBlock(base::BindRepeating(
       [](base::WeakPtr<PlaceholderService> weak_self,
          TemplateURLID template_url_id, CGFloat icon_point_size,
-         FaviconAttributes* favicon_result) {
+         FaviconAttributes* favicon_result, bool cached) {
         if (!favicon_result.faviconImage || favicon_result.usesDefaultImage) {
           return;
         }

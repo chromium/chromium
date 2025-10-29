@@ -179,8 +179,8 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
 - (void)fetchFaviconForItem:(id<ReadingListListItem>)item {
   __weak id<ReadingListListItem> weakItem = item;
   __weak ReadingListMediator* weakSelf = self;
-  void (^completionBlock)(FaviconAttributes* attributes) =
-      ^(FaviconAttributes* attributes) {
+  void (^completionBlock)(FaviconAttributes* attributes, bool cached) =
+      ^(FaviconAttributes* attributes, bool cached) {
         id<ReadingListListItem> strongItem = weakItem;
         ReadingListMediator* strongSelf = weakSelf;
         if (!strongSelf || !strongItem) {

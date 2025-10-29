@@ -120,7 +120,7 @@ enum ManualFallbackItemType : NSInteger {
   CrURL* crurl = [[CrURL alloc] initWithGURL:plusAddressItem.faviconURL];
   [self.imageDataSource
       faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                // Only set favicon if the cell hasn't been reused.
                if ([plusAddressCell.uniqueIdentifier
                        isEqualToString:itemIdentifier]) {

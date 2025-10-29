@@ -651,7 +651,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // Start loading a favicon.
   __weak BookmarksHomeViewController* weakSelf = self;
   GURL blockURL(node->url());
-  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     BookmarksHomeViewController* strongSelf = weakSelf;
     if (!strongSelf) {
       return;

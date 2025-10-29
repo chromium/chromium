@@ -138,7 +138,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NSString* itemIdentifier = tabListItem.uniqueIdentifier;
   [_faviconDataSource
       faviconForPageURL:tabListItem.URL
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                // Only set favicon if the cell hasn't been reused.
                if ([tabListCell.cellUniqueIdentifier
                        isEqualToString:itemIdentifier]) {

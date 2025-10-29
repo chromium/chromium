@@ -135,7 +135,7 @@
 
 - (BOOL)passwordImportItem:(PasswordImportItem*)item
     loadFaviconAttributesWithUIHandler:(ProceduralBlock)UIHandler {
-  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     item.faviconAttributes = attributes;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(UIHandler));
@@ -148,14 +148,16 @@
     CHECK(item.username.length > 0);
     NSString* monogram =
         [[item.username substringToIndex:1] localizedUppercaseString];
-    faviconLoadedBlock([FaviconAttributes
-        attributesWithMonogram:monogram
-                     textColor:[UIColor
-                                   colorWithWhite:
-                                       kFallbackIconDefaultTextColorGrayscale
-                                            alpha:1]
-               backgroundColor:UIColor.clearColor
-        defaultBackgroundColor:YES]);
+    faviconLoadedBlock(
+        [FaviconAttributes
+            attributesWithMonogram:monogram
+                         textColor:
+                             [UIColor colorWithWhite:
+                                          kFallbackIconDefaultTextColorGrayscale
+                                               alpha:1]
+                   backgroundColor:UIColor.clearColor
+            defaultBackgroundColor:YES],
+        /*cached*/ true);
   }
   return YES;
 }

@@ -359,7 +359,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   if (suggestion.icon) {
     [URLCell replaceFaviconWithSymbol:suggestion.icon];
   } else {
-    auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+    auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
       DCHECK(attributes);
       // It doesn't matter which cell the user sees here, all the credentials
       // listed are for the same page and thus share the same favicon.

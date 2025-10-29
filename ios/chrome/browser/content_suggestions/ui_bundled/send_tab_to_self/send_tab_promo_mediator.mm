@@ -79,7 +79,8 @@
 
   _faviconLoader->FaviconForPageUrl(
       tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+      /*fallback_to_google_server=*/true,
+      ^(FaviconAttributes* attributes, bool cached) {
         [weakSelf onFaviconReceived:attributes];
       });
 }

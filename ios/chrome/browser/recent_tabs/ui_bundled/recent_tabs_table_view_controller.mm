@@ -1187,7 +1187,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
       faviconForPageURL:URLItem.URL
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                // Only set favicon if the cell hasn't been reused.
                if ([URLCell.cellUniqueIdentifier
                        isEqualToString:itemIdentifier]) {

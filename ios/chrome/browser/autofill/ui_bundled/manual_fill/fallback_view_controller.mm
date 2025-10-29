@@ -200,9 +200,9 @@ bool ShouldResizeViewForPopover(
   CrURL* crURL = [[CrURL alloc] initWithGURL:faviconURL];
   [self.imageDataSource
       faviconForPageURL:crURL
-             completion:^(FaviconAttributes* faviconAttributes) {
-               CHECK(faviconAttributes);
-               completion(faviconAttributes);
+             completion:^(FaviconAttributes* attributes, bool cached) {
+               CHECK(attributes);
+               completion(attributes);
              }];
 }
 

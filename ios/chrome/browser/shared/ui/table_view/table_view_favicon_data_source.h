@@ -22,7 +22,7 @@
 //
 // `URL` must be something like foo.com, not foo.com/favicon.ico.
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion;
+               completion:(void (^)(FaviconAttributes*, bool))completion;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_TABLE_VIEW_FAVICON_DATA_SOURCE_H_

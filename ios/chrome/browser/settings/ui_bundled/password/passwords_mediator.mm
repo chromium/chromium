@@ -452,7 +452,8 @@ struct PasswordManagerActiveWidgetPromoData
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   BOOL fallbackToGoogleServer =
       password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
           _syncService);

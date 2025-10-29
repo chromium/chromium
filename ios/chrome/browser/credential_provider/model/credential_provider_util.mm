@@ -136,7 +136,7 @@ void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
   // Fallback to Google server for synced user only.
   favicon_loader->FaviconForPageUrl(
       site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      fallback_to_google_server, ^(FaviconAttributes* attributes) {
+      fallback_to_google_server, ^(FaviconAttributes* attributes, bool cached) {
         SaveFaviconToSharedAppContainer(attributes, filename);
       });
 }

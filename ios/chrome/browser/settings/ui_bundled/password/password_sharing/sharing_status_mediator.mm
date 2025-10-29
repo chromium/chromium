@@ -87,11 +87,13 @@ const CGFloat kProfileImageSize = 60.0;
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   _faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
-        completion(attributes);
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        completion(attributes, cached);
       });
 }
 

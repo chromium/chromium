@@ -186,7 +186,9 @@ class FaviconLoaderImpl::Request {
   }
 
   // Invokes the request's completion block with `attributes`.
-  void completion(FaviconAttributes* attributes) { completion_(attributes); }
+  void completion(FaviconAttributes* attributes, bool cached) {
+    completion_(attributes, cached);
+  }
 
  private:
   Request(Type type,
@@ -263,12 +265,12 @@ void FaviconLoaderImpl::FetchFavicon(Request request) {
 
   // First check whether the favicon is present in the cache.
   if (FaviconAttributes* cached_value = GetCachedAttributes(request.key())) {
-    request.completion(cached_value);
+    request.completion(cached_value, /*cached*/ true);
     return;
   }
 
   // If the favicon was not cached, then return a fallback image synchronously.
-  request.completion(request.fallback());
+  request.completion(request.fallback(), /*cached*/ true);
 
   // Fetch asynchronously a better favicon using the LargeIconServvice.
   DCHECK(large_icon_service_);
@@ -323,7 +325,7 @@ void FaviconLoaderImpl::OnFaviconFetched(
 
     DCHECK(favicon.size.width <= request.size_in_points() &&
            favicon.size.height <= request.size_in_points());
-    request.completion(attributes);
+    request.completion(attributes, /*cached*/ false);
     return;
   }
 
@@ -350,7 +352,7 @@ void FaviconLoaderImpl::OnFaviconFetched(
              backgroundColor:UIColor.clearColor
       defaultBackgroundColor:result.fallback_icon_style->
                              is_default_background_color];
-  request.completion(attributes);
+  request.completion(attributes, /*cached*/ false);
 }
 
 void FaviconLoaderImpl::OnGoogleServerFallbackCompleted(

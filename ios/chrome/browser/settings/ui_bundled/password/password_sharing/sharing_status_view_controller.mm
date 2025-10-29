@@ -347,7 +347,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   // Fetch the actual favicon.
   [self.imageDataSource
       faviconForPageURL:[[CrURL alloc] initWithGURL:_URL]
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                [faviconView configureWithAttributes:attributes];
              }];
 

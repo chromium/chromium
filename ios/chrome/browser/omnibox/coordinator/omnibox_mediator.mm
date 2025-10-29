@@ -471,7 +471,8 @@ using base::UserMetricsAction;
   // before this one completes.
   self.latestFaviconURL = pageURL;
   __weak __typeof(self) weakSelf = self;
-  auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult) {
+  auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult,
+                                   bool cached) {
     if (weakSelf.latestFaviconURL != pageURL ||
         !faviconCacheResult.faviconImage ||
         faviconCacheResult.usesDefaultImage) {

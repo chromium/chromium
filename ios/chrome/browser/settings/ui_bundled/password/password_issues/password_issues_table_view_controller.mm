@@ -399,7 +399,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
       faviconForPageURL:URLItem.URL
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                // Only set favicon if the cell hasn't been reused.
                if ([URLCell.cellUniqueIdentifier
                        isEqualToString:itemIdentifier]) {

@@ -481,7 +481,7 @@ CreateInputDataFromAnnotatedPageContent(
   const base::UnguessableToken token = item.token;
 
   /// Based on the favicon loader API, this callback could be called twice.
-  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
     if (attributes.faviconImage) {
       [weakSelf didLoadFaviconIcon:attributes.faviconImage
                   forItemWithToken:token];

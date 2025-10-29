@@ -147,7 +147,8 @@
   __weak __typeof(self) weakSelf = self;
   GURL requestedURL = self.faviconPageURL;
   [faviconDataSource faviconForPageURL:[[CrURL alloc] initWithGURL:requestedURL]
-                            completion:^(FaviconAttributes* attributes) {
+                            completion:^(FaviconAttributes* attributes,
+                                         bool cached) {
                               DCHECK(attributes);
 
                               __typeof(self) strongSelf = weakSelf;

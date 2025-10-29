@@ -153,7 +153,7 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
       base::apple::ObjCCastStrict<TableViewURLCell>(cell);
   [self.imageDataSource
       faviconForPageURL:URLItem.URL
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                [URLCell.faviconView configureWithAttributes:attributes];
              }];
 
