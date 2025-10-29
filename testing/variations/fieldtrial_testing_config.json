@@ -911,28 +911,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledBoth_20250704",
-                    "enable_features": [
-                        "InputScenarioPriorityBoost",
-                        "RaiseDisplayCriticalThreadPriority"
-                    ]
-                },
-                {
-                    "name": "EnabledRaiseDisplayCriticalThreadPriority_20250704",
+                    "name": "Enabled_20251001",
                     "enable_features": [
                         "RaiseDisplayCriticalThreadPriority"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RaiseDisplayCriticalThreadPriority"
-                    ]
-                },
-                {
-                    "name": "EnabledInputScenarioPriorityBoost_20250704",
-                    "enable_features": [
-                        "InputScenarioPriorityBoost"
                     ]
                 }
             ]
