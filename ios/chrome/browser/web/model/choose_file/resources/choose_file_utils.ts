@@ -216,6 +216,8 @@ interface HtmlInputElementState {
   fileExtensions: string;
   hasSelectedFile: boolean;
   documentContainsInput: boolean;
+  screenLocation: {x: number, y: number};
+  pointerType: string;
 }
 
 /**
@@ -223,11 +225,13 @@ interface HtmlInputElementState {
  * `target` after it was clicked. Otherwise returns `null`.
  *
  * @param target - The HTMLInputElement that was clicked.
+ * @param screenLocation - The location of the click event.
  * @returns An object describing the state of the input element, or null if the
  *     target is not a file input.
  */
-export function processHTMLInputElementClick(target: HTMLInputElement):
-    HtmlInputElementState|null {
+export function processHTMLInputElementClick(
+    target: HTMLInputElement,
+    pointerEvent: PointerEvent|null): HtmlInputElementState|null {
   if (target.type.toLowerCase() !== 'file') {
     return null;
   }
@@ -250,5 +254,8 @@ export function processHTMLInputElementClick(target: HTMLInputElement):
     fileExtensions: parseAcceptAttributeFileExtensions(acceptString),
     hasSelectedFile: hasFiles,
     documentContainsInput: document.contains(target),
+    screenLocation:
+        {x: pointerEvent?.screenX ?? 0, y: pointerEvent?.screenY ?? 0},
+    pointerType: pointerEvent?.pointerType ?? '',
   };
 }

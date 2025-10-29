@@ -26,6 +26,7 @@ source_set("choose_file") {
   deps = [
     ":choose_file_file_utils",
     ":choose_file_js",
+    ":last_tap_location_tab_helper",
     "//base",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -50,6 +51,17 @@ source_set("choose_file_file_utils") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+source_set("last_tap_location_tab_helper") {
+  sources = [
+    "last_tap_location_tab_helper.h",
+    "last_tap_location_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -61,6 +73,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":choose_file",
+    ":last_tap_location_tab_helper",
     ":test_support",
     "//base",
     "//base/test:test_support",

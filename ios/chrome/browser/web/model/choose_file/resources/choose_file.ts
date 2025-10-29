@@ -15,17 +15,24 @@ const CHOOSE_FILE_INPUT_HANDLER_NAME = 'ChooseFileHandler';
 // messages.
 let windowClickEventListenerEnabled = true;
 
+// The last click pointer event in the page with the associated timestamp.
+let lastPointerEvent: PointerEvent|null = null;
+let lastPointerEventTimeStamp = 0;
+
 // Processes a click and forwards it to `processHTMLInputElementClick` if the
 // target of `inputEvent` is indeed an HTMLInputElement.
-function processWindowClickEvent(inputEvent: MouseEvent): void {
+function processWindowClickEvent(pointerEvent: PointerEvent): void {
   if (!windowClickEventListenerEnabled) {
     return;
   }
-  if (!inputEvent.target || !(inputEvent.target instanceof HTMLInputElement)) {
+  lastPointerEvent = pointerEvent;
+  lastPointerEventTimeStamp = performance.now();
+  if (!pointerEvent.target ||
+      !(pointerEvent.target instanceof HTMLInputElement)) {
     return;
   }
-  const target = inputEvent.target as HTMLInputElement;
-  const message = processHTMLInputElementClick(target);
+  const target = pointerEvent.target as HTMLInputElement;
+  const message = processHTMLInputElementClick(target, lastPointerEvent);
   if (message) {
     sendWebKitMessage(CHOOSE_FILE_INPUT_HANDLER_NAME, message);
   }
@@ -43,16 +50,24 @@ registerWindowClickEventListener();
 function registerHTMLInputElementClickListener(): void {
   const originalHTMLInputElementClick = HTMLInputElement.prototype.click;
   HTMLInputElement.prototype.click = function(this: HTMLInputElement) {
+    try {
+      let pointerEvent: PointerEvent|null = null;
+      if (performance.now() < lastPointerEventTimeStamp + 1) {
+        // The last pointer event is only used if it is less than 1 second old.
+        pointerEvent = lastPointerEvent;
+      }
+      const message = processHTMLInputElementClick(this, pointerEvent);
+      if (message) {
+        sendWebKitMessage(CHOOSE_FILE_INPUT_HANDLER_NAME, message);
+      }
+    } catch (e) {
+    }
     // The original implementation will trigger the window click event listener
     // if `document.contains(this)` is true, hence the guards to disable the
     // listener while already processing the click below.
     windowClickEventListenerEnabled = false;
     originalHTMLInputElementClick.call(this);
     windowClickEventListenerEnabled = true;
-    const message = processHTMLInputElementClick(this);
-    if (message) {
-      sendWebKitMessage(CHOOSE_FILE_INPUT_HANDLER_NAME, message);
-    }
   };
 }
 

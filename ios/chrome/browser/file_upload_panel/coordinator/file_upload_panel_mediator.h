@@ -17,6 +17,9 @@ API_AVAILABLE(ios(18.4))
 // Handler for the file upload panel UI.
 @property(nonatomic, weak) id<FileUploadPanelCommands> fileUploadPanelHandler;
 
+// The location in the screen where the file input was triggered.
+@property(nonatomic, readonly) CGPoint screenLocation;
+
 // Initializes the file upload panel and binds it to `controller`.
 - (instancetype)initWithChooseFileController:(ChooseFileController*)controller
     NS_DESIGNATED_INITIALIZER;

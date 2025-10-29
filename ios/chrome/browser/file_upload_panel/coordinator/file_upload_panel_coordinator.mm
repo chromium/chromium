@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface FileUploadPanelCoordinator () <UIContextMenuInteractionDelegate>
@@ -97,9 +96,7 @@
   _contextMenuPresenter = [[ContextMenuPresenter alloc]
       initWithRootView:self.baseViewController.view];
   _contextMenuPresenter.contextMenuInteractionDelegate = self;
-  // TODO(crbug.com/441659098): Choose the location of the last user interaction
-  // in the web page to present the context menu.
-  [_contextMenuPresenter presentAtLocationInRootView:CGPointZero];
+  [_contextMenuPresenter presentAtLocationInRootView:_mediator.screenLocation];
 }
 
 // Returns the context menu to be presented by `-showContextMenu`.

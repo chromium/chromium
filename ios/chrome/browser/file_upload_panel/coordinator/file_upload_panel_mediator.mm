@@ -39,6 +39,13 @@
   return self;
 }
 
+#pragma mark - Public properties
+
+- (CGPoint)screenLocation {
+  CHECK(_chooseFileController);
+  return _chooseFileController->GetChooseFileEvent().screen_location;
+}
+
 #pragma mark - Public
 
 - (void)disconnect {

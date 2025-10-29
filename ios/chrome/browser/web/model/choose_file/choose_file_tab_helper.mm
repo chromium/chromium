@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
+#import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/files/file_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller_impl.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
+#import "ios/chrome/browser/web/model/choose_file/last_tap_location_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 
@@ -91,6 +94,11 @@ void ChooseFileTabHelper::RunOpenPanel(
   base::UmaHistogramBoolean("IOS.Web.FileInput.EventMatched",
                             last_choose_file_event.has_value());
   if (last_choose_file_event.has_value()) {
+    if (CGPointEqualToPoint(last_choose_file_event->screen_location,
+                            CGPointZero)) {
+      last_choose_file_event->screen_location =
+          LastTapLocationTabHelper::FromWebState(web_state)->GetLastTapPoint();
+    }
     if (!!last_choose_file_event->allow_multiple_files !=
         !!parameters.allowsMultipleSelection) {
       // If the `last_choose_file_event->allow_multiple_files` does not have the

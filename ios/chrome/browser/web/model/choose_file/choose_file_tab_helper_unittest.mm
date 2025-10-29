@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
+#import "ios/chrome/browser/web/model/choose_file/last_tap_location_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +32,7 @@ class ChooseFileTabHelperTest : public PlatformTest {
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->WasShown();
     ChooseFileTabHelper::CreateForWebState(web_state_.get());
+    LastTapLocationTabHelper::CreateForWebState(web_state_.get());
     tab_helper_ = ChooseFileTabHelper::FromWebState(web_state_.get());
   }
 

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_TAB_HELPER_H_
 
+#import <CoreGraphics/CGGeometry.h>
+
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
 #import "ios/web/public/web_state_observer.h"

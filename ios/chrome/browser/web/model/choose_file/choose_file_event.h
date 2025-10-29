@@ -31,6 +31,7 @@ struct ChooseFileEvent {
     Builder& SetAcceptFileExtensions(std::vector<std::string> value);
     Builder& SetAcceptMimeTypes(std::vector<std::string> value);
     Builder& SetWebState(web::WebState* value);
+    Builder& SetScreenLocation(CGPoint value);
     Builder& SetTime(base::Time value);
 
     ChooseFileEvent Build();
@@ -42,6 +43,7 @@ struct ChooseFileEvent {
     std::vector<std::string> accept_file_extensions_;
     std::vector<std::string> accept_mime_types_;
     raw_ptr<web::WebState> web_state_ = nullptr;
+    CGPoint screen_location_{};
     base::Time time_ = base::Time::Now();
   };
 
@@ -63,6 +65,8 @@ struct ChooseFileEvent {
   std::vector<std::string> accept_mime_types;
   // The WebState that triggered this event.
   base::WeakPtr<web::WebState> web_state;
+  // The location of the event in the screen.
+  CGPoint screen_location;
   // The time at which this event occurred.
   base::Time time;
 
@@ -73,6 +77,7 @@ struct ChooseFileEvent {
                   std::vector<std::string> accept_file_extensions,
                   std::vector<std::string> accept_mime_types,
                   web::WebState* web_state,
+                  CGPoint screen_location,
                   base::Time time = base::Time::Now());
 };
 
