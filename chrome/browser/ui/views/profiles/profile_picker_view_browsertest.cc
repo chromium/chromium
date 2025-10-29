@@ -175,10 +175,8 @@ using testing::Eq;
 using testing::Pair;
 using testing::UnorderedElementsAre;
 
-// Simulates the account capabilities that make the user eligible for the
-// history sync opt-in, so that the UI is preconfigured to show the opt-in
-// without any delay and wait-ui. Otherwise, UI should be presenting some sort
-// of loading UI and clicking reject or accept buttons should not be available.
+// Sets up account capabilities so that the History Sync Opt-in is shown without
+// any pending UI updates.
 void MakeHistorySyncOptinUiAvailable(signin::IdentityManager& identity_manager,
                                      AccountInfo& account_info,
                                      bool eligible = true) {

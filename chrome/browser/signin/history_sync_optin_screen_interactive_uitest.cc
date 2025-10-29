@@ -32,29 +32,38 @@ const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
     "history-sync-optin-app", "#acceptButton"};
 const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
     "history-sync-optin-app", "#rejectButton"};
+const char kIsVisibleFn[] =
+    "(el) => {"
+    "  if (el.hidden) return false;"
+    "  const style = window.getComputedStyle(el);"
+    "  return style.display !== 'none' && style.visibility !== 'hidden';"
+    "}";
 
-// Simulates the account capabilities that make the user eligible for the
-// history sync opt-in, so that the UI is preconfigured to show the opt-in
-// without any delay and wait-ui. Otherwise, UI should be presenting some sort
-// of loading UI and clicking reject or accept buttons should not be available.
-void MakeHistorySyncOptinEligible(signin::IdentityTestEnvironment& environment,
-                                  AccountInfo& account_info) {
+// Sets up the account capability for history sync opt-in restriction mode.
+// Without this capability, the fallback mode is used after a short delay.
+void SetHistorySyncOptinRestrictionModeCapability(
+    signin::IdentityTestEnvironment& environment,
+    AccountInfo& account_info,
+    bool is_unrestricted) {
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(true);
+      .set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+          is_unrestricted);
   environment.UpdateAccountInfoForAccount(account_info);
 }
 
 // Tests that the history sync optin is displayed from promo entry points.
 class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
     : public SigninBrowserTestBaseT<
-          WebUiInteractiveTestMixin<InteractiveBrowserTest>> {
+          WebUiInteractiveTestMixin<InteractiveBrowserTest>>,
+      public testing::WithParamInterface<bool> {
  public:
   StateChange UiElementHasAppeared(DeepQuery element_selector) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kStateChange);
     StateChange state_change;
-    state_change.type = StateChange::Type::kExists;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
     state_change.where = element_selector;
     state_change.event = kStateChange;
+    state_change.test_function = kIsVisibleFn;
     return state_change;
   }
 
@@ -64,6 +73,8 @@ class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
         ExecuteJsAt(parent_element_id, button_query, "e => e.click()"));
   }
 
+  bool IsUnrestricted() { return GetParam(); }
+
  protected:
   base::UserActionTester user_action_tester_;
   base::HistogramTester histogram_tester_;
@@ -72,7 +83,7 @@ class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
       syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                        ShowHistorySyncOptinScreenAfterSignin) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
@@ -93,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                 ProcessDiceHeaderDelegateImpl::Create(active_contents);
         AccountInfo account_info =
             identity_test_env()->MakeAccountAvailable(kMainEmail);
-        MakeHistorySyncOptinEligible(*identity_test_env(), account_info);
+        SetHistorySyncOptinRestrictionModeCapability(
+            *identity_test_env(), account_info, IsUnrestricted());
         // Mock processing an ENABLE SYNC header as part of the sign-in.
         // This also signs in the user.
         process_dice_header_delegate_impl->EnableSync(account_info);
@@ -101,10 +113,11 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)),
+      // Check that the buttons are visible.
+      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
+                      kHistoryOptinAcceptButton, kIsVisibleFn, true),
+      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
+                      kHistoryOptinRejectButton, kIsVisibleFn, true),
       ClickButton(kHistorySyncOptinDialogContentsId, kHistoryOptinAcceptButton),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
@@ -136,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                        ShowHistorySyncOptinScreenForSignedInUser) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
@@ -146,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         account_info = identity_test_env()->MakePrimaryAccountAvailable(
             kMainEmail, signin::ConsentLevel::kSignin);
-        MakeHistorySyncOptinEligible(*identity_test_env(), account_info);
+        SetHistorySyncOptinRestrictionModeCapability(
+            *identity_test_env(), account_info, IsUnrestricted());
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
@@ -159,6 +173,87 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
+      // Check that the buttons are visible.
+      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
+                      kHistoryOptinAcceptButton, kIsVisibleFn, true),
+      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
+                      kHistoryOptinRejectButton, kIsVisibleFn, true),
+      ClickButton(kHistorySyncOptinDialogContentsId, kHistoryOptinAcceptButton),
+      WaitForHide(SigninViewController::kHistorySyncOptinViewId));
+
+  EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kHistory));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Completed"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Declined"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Aborted"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Signin_HistorySync_AlreadyOptedIn"),
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Started",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "Signin.HistorySyncOptIn.Completed",
+      /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      /*sample=*/
+      IsUnrestricted()
+          ? signin_metrics::SyncButtonsType::kSyncNotEqualWeighted
+          : signin_metrics::SyncButtonsType::kSyncEqualWeightedFromCapability,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.AccountCapabilities.UserVisibleLatency",
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
+                                     /*expected_count=*/0);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountCapabilities.ImmediatelyAvailable",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+    ShowHistorySyncOptinScreenForSignedInUserWithoutRestrictionCapability) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
+  AccountInfo account_info;
+
+  RunTestSequence(
+      Do([&]() {
+        account_info = identity_test_env()->MakePrimaryAccountAvailable(
+            kMainEmail, signin::ConsentLevel::kSignin);
+      }),
+      InstrumentTab(kTabId, 0, browser()), Do([&]() {
+        signin_ui_util::EnableSyncFromSingleAccountPromo(
+            browser()->profile(),
+            /*account=*/account_info,
+            signin_metrics::AccessPoint::kAccountMenu);
+      }),
+      // The user is already signed-in, the history sync optin dialog should
+      // open.
+      WaitForShow(SigninViewController::kHistorySyncOptinViewId),
+      InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
+                              SigninViewController::kHistorySyncOptinViewId),
+      // Check that the buttons are initially hidden.
+      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
+                      kHistoryOptinAcceptButton, kIsVisibleFn, false),
+      CheckJsResultAt(kHistorySyncOptinDialogContentsId,
+                      kHistoryOptinRejectButton, kIsVisibleFn, false),
+      // Wait until the buttons are visible.
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
                          UiElementHasAppeared(kHistoryOptinAcceptButton)),
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
@@ -192,9 +287,23 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       "Signin.HistorySyncOptIn.Completed",
       /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
       /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      /*sample=*/
+      signin_metrics::SyncButtonsType::kSyncEqualWeightedFromDeadline,
+      /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "Signin.AccountCapabilities.UserVisibleLatency",
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountCapabilities.FetchLatency",
+                                     /*expected_count=*/1);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountCapabilities.ImmediatelyAvailable",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                        DeclineHistorySyncOptin) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
@@ -204,7 +313,8 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         account_info = identity_test_env()->MakePrimaryAccountAvailable(
             kMainEmail, signin::ConsentLevel::kSignin);
-        MakeHistorySyncOptinEligible(*identity_test_env(), account_info);
+        SetHistorySyncOptinRestrictionModeCapability(
+            *identity_test_env(), account_info, IsUnrestricted());
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
@@ -217,10 +327,6 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)),
       // Use kFireAndForget because clicking the reject button closes the
       // dialog immediately, causing the default visibility check to fail.
       ExecuteJsAt(kHistorySyncOptinDialogContentsId, kHistoryOptinRejectButton,
@@ -256,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                        HistorySyncOptinAbortedOnEscapeKey) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
@@ -266,6 +372,8 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         account_info = identity_test_env()->MakePrimaryAccountAvailable(
             kMainEmail, signin::ConsentLevel::kSignin);
+        SetHistorySyncOptinRestrictionModeCapability(
+            *identity_test_env(), account_info, IsUnrestricted());
       }),
       InstrumentTab(kTabId, 0, browser()), Do([&]() {
         signin_ui_util::EnableSyncFromSingleAccountPromo(
@@ -278,10 +386,6 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)),
       // Press the Escape key, dismissing the UI.
       SendAccelerator(kHistorySyncOptinDialogContentsId,
                       ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
@@ -315,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       /*expected_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                        HistorySyncOptinSkippedIfUserIsAlreadyOptedIn) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
@@ -327,6 +431,8 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       Do([&]() {
         account_info = identity_test_env()->MakePrimaryAccountAvailable(
             kMainEmail, signin::ConsentLevel::kSignin);
+        SetHistorySyncOptinRestrictionModeCapability(
+            *identity_test_env(), account_info, IsUnrestricted());
         // Optin to syncing history, tabs & tab groups.
         auto* user_settings =
             SyncServiceFactory::GetForProfile(browser()->profile())
@@ -373,5 +479,17 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       /*sample=*/signin_metrics::AccessPoint::kAccountMenu,
       /*expected_count=*/1);
 }
+
+// This boolean parameter controls the value of the account capability
+// `can_show_history_sync_opt_ins_without_minor_mode_restrictions`.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+    ::testing::Bool(),  // `true` for unrestricted, `false` for restricted.
+    [](const testing::TestParamInfo<
+        HistorySyncOptinScreenFromPromoEntryPointInteractiveTest::ParamType>&
+           info) -> std::string {
+      return info.param ? "Unrestricted" : "Restricted";
+    });
 
 }  // namespace
