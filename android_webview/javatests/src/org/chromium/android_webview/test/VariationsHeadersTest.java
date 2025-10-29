@@ -39,11 +39,11 @@ public class VariationsHeadersTest extends AwParameterizedTest {
     public void testGetVariationsHeader() throws Throwable {
         // Check the value is equal to the base64 encoded proto with the forced variations IDs.
         AwContentsStatics.forceVariationIdsForTesting(List.of(), "4,10,34");
-        String expectedHeader = "CAQICggi";
-        Assert.assertEquals(expectedHeader, AwContentsStatics.getVariationsHeader());
+        String expectedHeaderStart = "CAQICggi";
+        Assert.assertTrue(AwContentsStatics.getVariationsHeader().startsWith(expectedHeaderStart));
         Assert.assertEquals(
                 1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.WebView.VariationsHeaderLength", expectedHeader.length()));
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.WebView.VariationsHeaderLength"));
     }
 }

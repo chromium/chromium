@@ -283,8 +283,6 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // Populate FieldTrialList.
   // If you update this, consider whether "WebViewEnvironment" in
   // components/variations/variations_seed_processor_unittest.cc needs updates.
-  // TODO(b/263797385): Re-evaluate if we can add entropy source id to
-  // variations ids for WebView or not.
   // variation_ids can be overridden by calls to ForceVariationIds in other
   // places.
   variations_field_trial_creator_->SetUpFieldTrials(
@@ -294,7 +292,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false,
+      /*add_entropy_source_to_variations_ids=*/true,
       *metrics_client->metrics_state_manager()->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false));
 }
