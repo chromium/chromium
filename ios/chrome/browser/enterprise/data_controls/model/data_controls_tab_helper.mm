@@ -155,6 +155,20 @@ void DataControlsTabHelper::ShouldAllowShare(
   }
 }
 
+bool DataControlsTabHelper::ShouldAllowShare() {
+  if (!IsClipboardDataControlsEnabled()) {
+    return true;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  const GURL& source_url = web_state_->GetLastCommittedURL();
+
+  Verdict verdict = IsShareAllowedByPolicy(source_url, profile);
+
+  return verdict.level() != Rule::Level::kBlock;
+}
+
 void DataControlsTabHelper::SetDataControlsCommandsHandler(
     id<DataControlsCommands> handler) {
   commands_handler_ = handler;

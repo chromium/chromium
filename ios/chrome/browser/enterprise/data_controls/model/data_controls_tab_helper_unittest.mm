@@ -1046,4 +1046,23 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowShare_OtherUrl) {
   EXPECT_TRUE(test_future.Get());
 }
 
+// Tests that share is allowed by default.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShareSync_Default) {
+  EXPECT_TRUE(tab_helper()->ShouldAllowShare());
+}
+
+// Tests that share is blocked when a "BLOCK" rule matches the page URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShareSync_Blocked) {
+  SetCopyBlockRule();
+  web_state_->SetCurrentURL(GURL(kBlockedUrl));
+  EXPECT_FALSE(tab_helper()->ShouldAllowShare());
+}
+
+// Tests that share is allowed when an "ALLOW" rule matches the page URL.
+TEST_F(DataControlsTabHelperTest, ShouldAllowShareSync_Allowed) {
+  SetCopyAllowRule();
+  web_state_->SetCurrentURL(GURL(kAllowedUrl));
+  EXPECT_TRUE(tab_helper()->ShouldAllowShare());
+}
+
 }  // namespace data_controls
