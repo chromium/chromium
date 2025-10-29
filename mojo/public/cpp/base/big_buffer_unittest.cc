@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/rand_util.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -19,10 +19,10 @@ namespace big_buffer_unittest {
 
 namespace {
 
-bool BufferEquals(const BigBuffer& a, const BigBuffer& b) {
-  return a.size() == b.size() &&
-         std::equal(a.data(), UNSAFE_TODO(a.data() + a.size()), b.data(),
-                    UNSAFE_TODO(b.data() + b.size()));
+// Helper to force implicit construction of a span when passed a BigBuffer for
+// equality comparison.
+bool BufferEquals(base::span<const uint8_t> a, base::span<const uint8_t> b) {
+  return a == b;
 }
 
 }  // namespace
