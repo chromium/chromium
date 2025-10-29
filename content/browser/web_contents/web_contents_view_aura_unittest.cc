@@ -924,6 +924,13 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
   DropData drop_data;
   drop_data.url_infos = {ui::ClipboardUrlInfo{GURL(kGoogleUrl), u""}};
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+#endif  //  BUILDFLAG(IS_CHROMEOS)
+
   view->StartDragging(
       drop_data, url::Origin::Create(GURL(kGoogleUrl)),
       blink::DragOperationsMask::kDragOperationNone, gfx::ImageSkia(),
@@ -935,7 +942,14 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
       RenderWidgetHostImpl::From(rvh()->GetWidget()));
 
   ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(https://crbug.com/454552204): Remove #if when either ChromeOS
+  // fixes split screen mode web ui tab strip drag, or web ui tab strip is
+  // fully deprecated.
+  EXPECT_TRUE(exchange_data);
+#else
   EXPECT_FALSE(exchange_data);
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 }
 
 // Test that a drag from an event located outside the source view doesn't start.
