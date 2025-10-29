@@ -13,13 +13,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.Pair;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -182,28 +180,10 @@ public class BookmarkBarCoordinator
         // Bind view/model for 'All Bookmarks' button.
         final var allBookmarksButtonModel =
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS).build();
-
-        final BookmarkBarButton allBookmarksButton =
-                mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_all_bookmarks_button);
-
-        // Binds the model to the view.
         PropertyModelChangeProcessor.create(
-                allBookmarksButtonModel, allBookmarksButton, BookmarkBarButtonViewBinder::bind);
-        ImageView starIcon = allBookmarksButton.findViewById(R.id.bookmark_bar_button_icon);
-
-        // We need this because otherwise the star icon is lower than the "All Bookmarks" text. If
-        // we add setTranslationY directly in bookmark_bar_button_icon in bookmark_bar_button.xml,
-        // the top parts of the web page icons in the bookmarks bar are cut off.
-        if (starIcon != null) {
-            final float translationInDp = -2f;
-            // Converts dp values to raw pixels.
-            float translationInPx =
-                    TypedValue.applyDimension(
-                            TypedValue.COMPLEX_UNIT_DIP,
-                            translationInDp,
-                            activity.getResources().getDisplayMetrics());
-            starIcon.setTranslationY(translationInPx);
-        }
+                allBookmarksButtonModel,
+                mViewResourceFrameLayout.findViewById(R.id.bookmark_bar_all_bookmarks_button),
+                BookmarkBarButtonViewBinder::bind);
 
         // Bind adapter/model and initialize view for bookmark bar items.
         final var itemsModel = new ModelList();
