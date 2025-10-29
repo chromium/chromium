@@ -964,6 +964,43 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    public void testQueueAnimationsForNonStripClosures_ClearedOnFinishAnimations() {
+        // Disable testing mode so we can queue animations.
+        CompositorAnimationHandler.setTestingMode(/* enabled= */ false);
+        initializeTest(/* tabIndex= */ 0);
+
+        // Notify tab closures and verify state.
+        List<Tab> closingTabs = new ArrayList<>();
+        closingTabs.add(mModel.getTabAt(0));
+        closingTabs.add(mModel.getTabAt(1));
+        mModel.closeTabs(TabClosureParams.closeTabs(closingTabs).build());
+        mStripLayoutHelper.multipleTabsClosed(closingTabs);
+
+        // Verify no animations have started yet and closed views are still present.
+        assertNull(
+                "Animations should not yet be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+        assertEquals(
+                "Closed views should still be present.",
+                5,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+
+        // Manually finish animations. Verify the closed views have been removed.
+        mStripLayoutHelper.finishAnimations();
+        assertEquals(
+                "Closed views should no longer be present.",
+                3,
+                mStripLayoutHelper.getStripLayoutViewsForTesting().length);
+
+        // Update layout. Verify the queued animations did not start, as they were cleared by the
+        // previous #finishAnimations call.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+        assertNull(
+                "Animations should still not be started.",
+                mStripLayoutHelper.getRunningAnimatorForTesting());
+    }
+
+    @Test
     @Feature("Pinned Tabs")
     public void testTabSelected_Pinned_HideCloseBtn() {
         initializeTest(false, true, 3);
