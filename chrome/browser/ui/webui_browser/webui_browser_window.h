@@ -279,7 +279,8 @@ class WebUIBrowserWindow : public BrowserWindow,
 
   // content::SecureEmbedDelegate:
   content::WebContents* GetEmbedderWebContents() override;
-  void FocusInEmbedder(content::WebContents* embedded) override;
+  void FocusInEmbedder(content::WebContents* embedded,
+                       SecureEmbedDelegate::FocusOperation focus_op) override;
 
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
   void CloseSidePanel();

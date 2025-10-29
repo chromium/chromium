@@ -105,9 +105,13 @@ void GuestFrameImpl::ForwardKeyboardEvent(
 
 void GuestFrameImpl::SetFocus(bool focused,
                               blink::mojom::FocusType focus_type) {
-  // TODO(secure-embed): Pay attention to traversal `focus_type` values once
-  // we enable tab-focus; we may need to focus either first or last element.
   view_->host()->SetPageFocus(focused);
+  if (focused && (focus_type == blink::mojom::FocusType::kForward ||
+                  focus_type == blink::mojom::FocusType::kBackward)) {
+    static_cast<RenderViewHostImpl*>(guest_web_contents_->GetRenderViewHost())
+        ->SetInitialFocus(
+            /*reverse=*/focus_type == blink::mojom::FocusType::kBackward);
+  }
 }
 
 const viz::FrameSinkId& GuestFrameImpl::GetFrameSinkId() const {

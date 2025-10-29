@@ -228,9 +228,18 @@ void WebContentsViewChildFrame::GotFocus(
 }
 
 void WebContentsViewChildFrame::TakeFocus(bool reverse) {
-  // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
-  // end up here.
-  NOTREACHED();
+  if (SecureEmbedDelegate* secure_embed_delegate =
+          web_contents_->GetSecureEmbedDelegate();
+      secure_embed_delegate) {
+    secure_embed_delegate->FocusInEmbedder(
+        web_contents_,
+        reverse ? SecureEmbedDelegate::FocusOperation::kFocusBeforePlugin
+                : SecureEmbedDelegate::FocusOperation::kFocusAfterPlugin);
+  } else {
+    // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
+    // end up here.
+    NOTREACHED();
+  }
 }
 
 void WebContentsViewChildFrame::ShowContextMenu(

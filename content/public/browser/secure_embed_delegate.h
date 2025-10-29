@@ -13,19 +13,23 @@ namespace content {
 
 // Implementations of this class are passed to WebContents that are going to be
 // embedded via SecureEmbed, to help them communicate with their embedder.
-//
-// TODO(secure-embed): If this remains this simple, we may want to replace it
-// with just passing a WebContents*.
 class CONTENT_EXPORT SecureEmbedDelegate {
  public:
+  enum class FocusOperation {
+    kFocusPlugin,
+    kFocusBeforePlugin,
+    kFocusAfterPlugin
+  };
+
   virtual ~SecureEmbedDelegate() = default;
 
   // Returns the WebContents that currently owns this guest.
   virtual WebContents* GetEmbedderWebContents() = 0;
 
-  // Requests that the representation of this WebContents in the embedder be
-  // given focus, if it doesn't already have it.
-  virtual void FocusInEmbedder(content::WebContents* embedded) = 0;
+  // Requests focus in the embedder document for either the embedding element,
+  // or the elements before or after it in the tab order, based on `focus_op`.
+  virtual void FocusInEmbedder(content::WebContents* embedded,
+                               FocusOperation focus_op) = 0;
 };
 
 }  // namespace content

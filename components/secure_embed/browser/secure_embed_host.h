@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
 #include "content/public/browser/guest_frame.h"
+#include "content/public/browser/secure_embed_delegate.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -53,14 +54,15 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   // content::GuestFrame::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
 
-  // Requests that the <embed> element hosting the plugin be focused
-  // (which will in turn cause the embedded page to receive page focus),
-  // unless it's already known to have focus.
+  // Requests that the <embed> element hosting the plugin, or elements
+  // before or after it in tab focus order (based on `focus_op`) be focused
+  // (which will in turn cause the embedded page to receive or lose page focus).
   //
   // This should be called by implementations of
   // `SecureEmbedDelegate::FocusInEmbedder()`, in order to help give
-  // focus to embedded page in response to mouse clicks.
-  void RequestFocus();
+  // focus to embedded page in response to mouse clicks, and to help
+  // transfer focus out of it to the embedder based on tab or shift-tab.
+  void RequestFocus(content::SecureEmbedDelegate::FocusOperation focus_op);
 
  private:
   explicit SecureEmbedHost(content::RenderFrameHost*);

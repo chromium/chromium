@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "v8/include/v8-local-handle.h"
@@ -260,6 +261,11 @@ void SecureEmbedWebPlugin::DidFailLoading(const blink::WebURLError& error) {
   NOTIMPLEMENTED();
 }
 
+bool SecureEmbedWebPlugin::SupportsKeyboardFocus() const {
+  // TODO(secure-embed): Test with pages with nothing focusable.
+  return true;
+}
+
 void SecureEmbedWebPlugin::SetFrameSinkId(
     const ::viz::FrameSinkId& frame_sink_id) {
   // The same ParentLocalSurfaceIdAllocator cannot provide LocalSurfaceIds for
@@ -274,9 +280,17 @@ void SecureEmbedWebPlugin::SetFrameSinkId(
   SendVisualProperties();
 }
 
-void SecureEmbedWebPlugin::RequestFocus() {
+void SecureEmbedWebPlugin::RequestFocus(mojom::FocusOperation focus_op) {
   if (container_) {
     container_->GetElement().Focus();
+    auto* frame = container_->GetDocument().GetFrame();
+    if (frame) {
+      if (focus_op == mojom::FocusOperation::kFocusBeforePlugin) {
+        frame->View()->AdvanceFocus(/*reverse=*/true);
+      } else if (focus_op == mojom::FocusOperation::kFocusAfterPlugin) {
+        frame->View()->AdvanceFocus(/*reverse=*/false);
+      }
+    }
   }
 }
 

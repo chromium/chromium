@@ -10220,7 +10220,8 @@ void WebContentsImpl::FocusOwningWebContents(
       GetFocusedRenderWidgetHost(main_frame_widget_host);
 
   if (secure_embed_delegate_) {
-    secure_embed_delegate_->FocusInEmbedder(this);
+    secure_embed_delegate_->FocusInEmbedder(
+        this, SecureEmbedDelegate::FocusOperation::kFocusPlugin);
   }
 
   if (focused_widget != render_widget_host &&

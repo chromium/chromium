@@ -57,10 +57,11 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   void DidReceiveData(base::span<const char> data) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError& error) override;
+  bool SupportsKeyboardFocus() const override;
 
   // mojom::SecureEmbed:
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id) override;
-  void RequestFocus() override;
+  void RequestFocus(mojom::FocusOperation focus_op) override;
 
  private:
   explicit SecureEmbedWebPlugin(

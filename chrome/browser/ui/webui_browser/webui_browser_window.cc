@@ -441,10 +441,12 @@ content::WebContents* WebUIBrowserWindow::GetEmbedderWebContents() {
   return GetUIWebContents();
 }
 
-void WebUIBrowserWindow::FocusInEmbedder(content::WebContents* embedded) {
+void WebUIBrowserWindow::FocusInEmbedder(
+    content::WebContents* embedded,
+    SecureEmbedDelegate::FocusOperation focus_op) {
   auto* secure_embed_host = secure_embed::SecureEmbedHost::GetFrom(embedded);
   if (secure_embed_host) {
-    secure_embed_host->RequestFocus();
+    secure_embed_host->RequestFocus(focus_op);
   }
 }
 

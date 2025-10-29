@@ -158,10 +158,31 @@ void SecureEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
   }
 }
 
-void SecureEmbedHost::RequestFocus() {
-  if (secure_embed_ && !know_have_focus_) {
-    secure_embed_->RequestFocus();
+void SecureEmbedHost::RequestFocus(
+    content::SecureEmbedDelegate::FocusOperation focus_op) {
+  if (!secure_embed_) {
+    return;
   }
+
+  if (focus_op == content::SecureEmbedDelegate::FocusOperation::kFocusPlugin &&
+      know_have_focus_) {
+    return;
+  }
+
+  mojom::FocusOperation mojo_focus_op;
+  switch (focus_op) {
+    case content::SecureEmbedDelegate::FocusOperation::kFocusPlugin:
+      mojo_focus_op = mojom::FocusOperation::kFocusPlugin;
+      break;
+    case content::SecureEmbedDelegate::FocusOperation::kFocusBeforePlugin:
+      mojo_focus_op = mojom::FocusOperation::kFocusBeforePlugin;
+      break;
+    case content::SecureEmbedDelegate::FocusOperation::kFocusAfterPlugin:
+      mojo_focus_op = mojom::FocusOperation::kFocusAfterPlugin;
+      break;
+  }
+
+  secure_embed_->RequestFocus(mojo_focus_op);
 }
 
 }  // namespace secure_embed
