@@ -299,7 +299,7 @@ TEST_F(PermissionActionHistoryTest, EntryFilterTest) {
   auto loud_entries =
       GetHistory(std::nullopt,
                  PermissionActionsHistory::EntryFilter::WANT_LOUD_PROMPTS_ONLY);
-  EXPECT_EQ(5u, loud_entries.size());
+  EXPECT_EQ(6u, loud_entries.size());
 
   auto quiet_entries = GetHistory(
       std::nullopt, PermissionActionsHistory::PermissionActionsHistory::

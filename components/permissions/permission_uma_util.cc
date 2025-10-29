@@ -734,9 +734,12 @@ const char* GetPredictionGrantLikelihoodString(
 const char* GetProminenceString(PermissionPromptDisposition disposition) {
   if (PermissionUmaUtil::IsPromptDispositionQuiet(disposition)) {
     return "Quiet";
-  } else {
+  } else if (PermissionUmaUtil::IsPromptDispositionLoud(disposition)) {
     return "Loud";
   }
+
+  DUMP_WILL_BE_NOTREACHED();
+  return "";
 }
 
 PermissionRequestLikelihood
@@ -1196,7 +1199,9 @@ void PermissionUmaUtil::PermissionPromptResolved(
       (predicted_grant_likelihood.value() ==
            PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY ||
        predicted_grant_likelihood.value() ==
-           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY)) {
+           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY) &&
+      ui_disposition != PermissionPromptDisposition::NONE_VISIBLE &&
+      ui_disposition != PermissionPromptDisposition::NOT_APPLICABLE) {
     const char* prominence_string = GetProminenceString(ui_disposition);
     std::string histogram_name = base::StrCat(
         {"Permissions.PredictionService.Action.", permission_type, ".",
@@ -1241,8 +1246,12 @@ void PermissionUmaUtil::PermissionPromptResolved(
     }
   }
 
-  if (requests[0]->request_type() == RequestType::kGeolocation ||
-      requests[0]->request_type() == RequestType::kNotifications) {
+  // `NOT_APPLICABLE` and `NONE_VISIBLE` are special types of disposition that
+  // do not really represent a visible prompt, hence they should be skipped.
+  if ((requests[0]->request_type() == RequestType::kGeolocation ||
+       requests[0]->request_type() == RequestType::kNotifications) &&
+      ui_disposition != PermissionPromptDisposition::NOT_APPLICABLE &&
+      ui_disposition != PermissionPromptDisposition::NONE_VISIBLE) {
     PermissionRequestGestureType gesture_type =
         requests.size() == 1 ? requests[0]->GetGestureType()
                              : PermissionRequestGestureType::UNKNOWN;
@@ -1903,7 +1912,6 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
-    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return true;
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
@@ -1912,6 +1920,7 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::NONE_VISIBLE:
     case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
     case PermissionPromptDisposition::NOT_APPLICABLE:
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return false;
   }
 }
@@ -1922,7 +1931,9 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
   switch (prompt_disposition) {
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
+    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
     case PermissionPromptDisposition::MODAL_DIALOG:
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
       return true;
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
@@ -1932,9 +1943,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
     case PermissionPromptDisposition::NONE_VISIBLE:
-    case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
     case PermissionPromptDisposition::NOT_APPLICABLE:
-    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return false;
   }
 }
