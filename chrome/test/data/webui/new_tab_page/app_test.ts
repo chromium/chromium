@@ -1970,5 +1970,24 @@ suite('NewTabPageAppTest', () => {
           assertTrue(!!composebox);
           assertEquals(1, composeboxHandler.getCallCount('setCreateImageMode'));
         });
+    test(
+        'Deep search chip click opens composebox deep search mode',
+        async () => {
+          const actionChipsElement =
+              app.shadowRoot.querySelector('ntp-action-chips');
+          assertTrue(!!actionChipsElement);
+
+          // Setup.
+          const deepSearchChip =
+              actionChipsElement.shadowRoot.getElementById('deep-search');
+          assertTrue(!!deepSearchChip);
+          deepSearchChip.click();
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.getElementById('composebox');
+          assertTrue(!!composebox);
+          assertEquals(1, composeboxHandler.getCallCount('setDeepSearchMode'));
+        });
   });
 });

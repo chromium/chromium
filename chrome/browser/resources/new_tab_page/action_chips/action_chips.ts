@@ -30,6 +30,10 @@ export class ActionChipsElement extends CrLitElement {
     this.onActionChipClick_('Create an image ', ComposeboxMode.CREATE_IMAGE);
   }
 
+  protected onDeepSearchClick_() {
+    this.onActionChipClick_('Help me research ', ComposeboxMode.DEEP_SEARCH);
+  }
+
   private onActionChipClick_(query: string, mode: ComposeboxMode) {
     this.fire(
         'action-chip-click', {searchboxText: query, contextFiles: [], mode});
