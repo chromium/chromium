@@ -162,10 +162,6 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // transition.
     OnImmersiveModeToolbarRevealChanged(true);
 
-    // Move top chrome to the overlay view.
-    browser_view_->OnImmersiveRevealStarted();
-    browser_view_->InvalidateLayout();
-
     for (Observer& observer : observers_) {
       observer.OnImmersiveFullscreenEntered();
     }

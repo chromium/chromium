@@ -750,8 +750,6 @@ class BrowserView : public BrowserWindow,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // ImmersiveModeController::Observer:
-  void OnImmersiveRevealStarted() override;
-  void OnImmersiveRevealEnded() override;
   void OnImmersiveFullscreenEntered() override;
   void OnImmersiveFullscreenExited() override;
   void OnImmersiveModeControllerDestroyed() override;
@@ -1030,7 +1028,10 @@ class BrowserView : public BrowserWindow,
       version_info::Channel,
       Profile* profile) const;
 
-  // Reparents |top_container_| to |main_container_| instead of |overlay_view_|.
+  // Reparents |top_container_| to |overlay_view_|.
+  void ReparentTopContainerForStartOfImmersive();
+
+  // Reparents |top_container_| to |main_container_|.
   void ReparentTopContainerForEndOfImmersive();
 
   // Ensures that the correct focus order is set for child views, regardless of
