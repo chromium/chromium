@@ -17,6 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/strings/grit/ui_strings.h"
 
@@ -146,7 +147,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Test accessibility on the Language Settings's main page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
   [[EarlGrey selectElementWithMatcher:LanguageSettingsTableView()]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
@@ -179,7 +183,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Verify that the Translate switch is on and enabled. Toggle it off.
   [[EarlGrey
@@ -236,7 +243,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Go to the Add Language page.
   [[EarlGrey selectElementWithMatcher:AddLanguageButton()]
@@ -314,7 +324,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
                  @"Turkish is expected to be Translate-blocked");
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Go to the "Turkish" Language Details page.
   NSString* languageEntryLabel =
@@ -398,7 +411,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [LanguageSettingsAppInterface setRecentTargetLanguage:@"tr"];
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Go to the "Turkish" Language Details page.
   NSString* languageEntryLabel =
@@ -425,7 +441,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [LanguageSettingsAppInterface setRecentTargetLanguage:@"tr"];
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Go to the "Turkish" Language Details page.
   NSString* languageEntryLabel =
@@ -456,7 +475,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
                  @"Aragonese is expected to be Translate-blocked");
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Go to the "Aragonese" Language Details page.
   NSString* languageEntryLabel =
@@ -481,7 +503,10 @@ id<GREYMatcher> LanguageEntryDeleteButton() {
   [ChromeEarlGreyUI openSettingsMenu];
 
   // Go to the Language Settings page.
-  [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  {
+    ScopedSynchronizationDisabler disabler;
+    [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
+  }
 
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:SettingsToolbarEditButton()]
