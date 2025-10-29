@@ -124,11 +124,16 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
   void OnAcceptButtonClicked() {
     CHECK(web_app_provider_);
     CHECK(callback_);
+    CHECK(!browser_->profile()->IsOffTheRecord());
+    auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
+        browser_->profile(), ProfileKeepAliveOrigin::kWebAppUpdate);
+    if (!profile_keep_alive) {
+      // Profile is scheduled for destruction, abort.
+      std::move(callback_).Run(WebAppIdentityUpdateResult::kUnexpectedError);
+      return;
+    }
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
-    CHECK(!browser_->profile()->IsOffTheRecord());
-    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-        browser_->profile(), ProfileKeepAliveOrigin::kWebAppUpdate);
     web_app_provider_->scheduler().ScheduleApplyPendingManifestUpdate(
         app_id_, std::move(keep_alive), std::move(profile_keep_alive),
         base::DoNothing());

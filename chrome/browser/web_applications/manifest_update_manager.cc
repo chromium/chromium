@@ -434,13 +434,17 @@ void ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose(
   CHECK(install_info);
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
   if (!profile->IsOffTheRecord()) {
-    profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+    profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
         profile, ProfileKeepAliveOrigin::kWebAppUpdate);
+    if (!profile_keep_alive) {
+      // Profile is scheduled for destruction, abort.
+      return;
+    }
   }
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
 
   provider_->scheduler().ScheduleManifestUpdateFinalize(
       url, app_id, std::move(install_info), std::move(keep_alive),
