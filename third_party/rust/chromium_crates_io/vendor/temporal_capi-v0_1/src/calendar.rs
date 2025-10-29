@@ -35,9 +35,6 @@ pub mod ffi {
                 // islamic-rgsa / simulated-mecca is supported by ICU4X but not Temporal
                 Ok(icu_calendar::AnyCalendarKind::HijriSimulatedMecca) => None,
                 Ok(c) => Some(c.into()),
-                Err(()) if algorithm == CalendarAlgorithm::Hijri(None) => {
-                    Some(Self::HijriTabularTypeIIFriday)
-                }
                 Err(()) => None,
             }
         }

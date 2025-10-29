@@ -1,0 +1,35 @@
+From 7caa7d115b86edda3dff9a15e2c1a6716966bcee Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Wed, 29 Oct 2025 19:02:39 +0000
+Subject: [PATCH] temporal_rs: Remove support for unqualified islamic calendar
+
+This uplifts https://github.com/boa-dev/temporal/pull/609
+
+The Temporal spec changed to disallow this calendar code, preferring
+specific calendar codes only.
+
+Uplifting this patch so we pass all the tests we care about before
+release.
+
+Change-Id: If4e6ae983828bf5d072e2156a000f924135d08ce
+---
+ .../vendor/temporal_capi-v0_1/src/calendar.rs                  | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_1/src/calendar.rs b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_1/src/calendar.rs
+index b06dce94151cc..c31d6b2a98df3 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_1/src/calendar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_1/src/calendar.rs
+@@ -35,9 +35,6 @@ pub mod ffi {
+                 // islamic-rgsa / simulated-mecca is supported by ICU4X but not Temporal
+                 Ok(icu_calendar::AnyCalendarKind::HijriSimulatedMecca) => None,
+                 Ok(c) => Some(c.into()),
+-                Err(()) if algorithm == CalendarAlgorithm::Hijri(None) => {
+-                    Some(Self::HijriTabularTypeIIFriday)
+-                }
+                 Err(()) => None,
+             }
+         }
+-- 
+2.51.1.851.g4ebd6896fd-goog
+
