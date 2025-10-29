@@ -24191,6 +24191,143 @@ IN_PROC_BROWSER_TEST_P(IgnoreDuplicateNavsBrowserTest,
   EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
 }
 
+class RestrictDuplicateNavsToOriginsBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public ::testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* ignore_duplicate_navs */,
+                     bool /* restrict_duplicate_navs_to_origins */,
+                     bool /* navigate_to_target_origin */>> {
+ public:
+  RestrictDuplicateNavsToOriginsBrowserTest() {
+    // Start the test server on a random port.
+    CHECK(embedded_test_server()->InitializeAndListen());
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (ignore_duplicate_navs()) {
+      if (restrict_duplicate_navs_to_origins()) {
+        enabled_features.push_back(
+            {features::kIgnoreDuplicateNavs,
+             {{"ignore_duplicate_navs_origins",
+               base::StringPrintf(
+                   "http://a.com:%d",
+                   embedded_test_server()->GetOrigin().port())}}});
+      } else {
+        enabled_features.push_back({features::kIgnoreDuplicateNavs, {}});
+      }
+    } else {
+      disabled_features.push_back(features::kIgnoreDuplicateNavs);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [render_document_level, ignore_duplicate_navs,
+          restrict_duplicate_navs_to_origins, navigate_to_target_origin] =
+        info.param;
+    return base::StringPrintf(
+        "%s_%s_%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        ignore_duplicate_navs ? "IgnoreDuplicateNavs" : "NoIgnoreDuplicateNavs",
+        restrict_duplicate_navs_to_origins ? "RestrictToOrigins"
+                                           : "NoRestrictToOrigins",
+        navigate_to_target_origin ? "NavigateToTargetOrigin"
+                                  : "NavigateToOtherOrigin");
+  }
+
+ protected:
+  bool ignore_duplicate_navs() const { return std::get<1>(GetParam()); }
+  bool restrict_duplicate_navs_to_origins() const {
+    return std::get<2>(GetParam());
+  }
+  bool navigate_to_target_origin() const { return std::get<3>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RestrictDuplicateNavsToOriginsBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool()),
+    RestrictDuplicateNavsToOriginsBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
+                       DuplicateNavigationRendererInitiated) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_links.html"));
+  GURL link_url(embedded_test_server()->GetURL(
+      navigate_to_target_origin() ? "a.com" : "b.com",
+      "/navigation_controller/simple_page_1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_TRUE(ExecJs(
+      contents(),
+      JsReplace("document.getElementById('thelink').href = $1;", link_url)));
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  // Start the first navigation.
+  TestNavigationManager nav_manager(shell()->web_contents(), link_url);
+  std::string script = "document.getElementById('thelink').click()";
+  EXPECT_TRUE(ExecJs(contents(), script));
+  // Pause the navigation at request start.
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  int first_link_click_nav_id =
+      nav_manager.GetNavigationHandle()->GetNavigationId();
+  EXPECT_NE(first_link_click_nav_id,
+            root->current_frame_host()->navigation_id());
+
+  // Click the link again, and assert that the first link click navigation is
+  // kept and eventually commits, and the second link click gets ignored.
+  EXPECT_TRUE(ExecJs(contents(), script));
+  // Run script to ensure that the second link click is already processed.
+  EXPECT_TRUE(ExecJs(shell(), "console.log('Success');"));
+
+  // Wait for the first link click navigation to finish.
+  EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  bool should_be_ignored =
+      ignore_duplicate_navs() &&
+      (!restrict_duplicate_navs_to_origins() || navigate_to_target_origin());
+  if (should_be_ignored) {
+    // If the flag is enabled, ensure that the first link click successfully
+    // committed.
+    EXPECT_TRUE(nav_manager.was_committed());
+    EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
+    EXPECT_EQ(first_link_click_nav_id,
+              root->current_frame_host()->navigation_id());
+
+    // Ensure that there's no ongoing navigation, which means the second link
+    // click got ignored.
+    EXPECT_FALSE(root->navigation_request());
+  } else {
+    // If the flag is disabled, the first link click will be cancelled.
+    EXPECT_FALSE(nav_manager.was_committed());
+
+    // The second link click will replace the navigation, and eventually commit.
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
+    EXPECT_NE(first_link_click_nav_id,
+              root->current_frame_host()->navigation_id());
+  }
+}
+
 class IgnoreDuplicateNavsUserGestureBrowserTest
     : public NavigationControllerBrowserTestBase,
       public testing::WithParamInterface<

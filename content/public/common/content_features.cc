@@ -506,6 +506,13 @@ BASE_FEATURE_PARAM(bool,
                    &kIgnoreDuplicateNavs,
                    "skip_ignore_renderer_initiated_navs",
                    false);
+// Comma-separated list of origins for which we ignore duplicate navigations.
+// An empty list means all origins are affected.
+BASE_FEATURE_PARAM(std::string,
+                   kIgnoreDuplicateNavsOrigins,
+                   &kIgnoreDuplicateNavs,
+                   "ignore_duplicate_navs_origins",
+                   "");
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, base::FEATURE_ENABLED_BY_DEFAULT);
