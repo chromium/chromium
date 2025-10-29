@@ -1458,9 +1458,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_horizontal_plain_v1",
+                    "params": {
+                        "probability": "1",
+                        "prompt_arm": "1",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "Geolocation",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "wLrmhfRxr0tK1KeaPYj0R4gRD5YC"
+                    },
                     "enable_features": [
-                        "ApproximateGeolocationPermission"
+                        "ApproximateGeolocationPermission",
+                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
