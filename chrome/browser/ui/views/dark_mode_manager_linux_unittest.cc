@@ -27,8 +27,6 @@ class MockLinuxUi : public FakeLinuxUi {
   MOCK_METHOD(void, SetAccentColor, (std::optional<SkColor> color), (override));
 };
 
-
-
 // Matches a method call to the specified dbus target.
 MATCHER_P2(Calls, interface, member, "") {
   return arg->GetInterface() == interface && arg->GetMember() == member;
@@ -48,7 +46,10 @@ class DarkModeManagerLinuxTest : public testing::Test {
   ~DarkModeManagerLinuxTest() override = default;
 
  protected:
-  bool ManagerPrefersDarkTheme() const { return manager_->prefer_dark_theme(); }
+  bool ManagerPrefersDarkTheme() const {
+    return manager_->preferred_color_scheme_ ==
+           NativeTheme::PreferredColorScheme::kDark;
+  }
 
   dbus::ObjectProxy::SignalCallback& setting_changed_callback() {
     return setting_changed_callback_;
@@ -151,6 +152,8 @@ class DarkModeManagerLinuxTest : public testing::Test {
     linux_ui_themes_ = std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>{
         mock_linux_ui_.get()};
     auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+    native_theme->set_preferred_color_scheme(
+        NativeTheme::PreferredColorScheme::kNoPreference);
     EXPECT_CALL(*mock_linux_ui_, GetNativeTheme())
         .WillOnce(Return(native_theme));
 
@@ -162,9 +165,9 @@ class DarkModeManagerLinuxTest : public testing::Test {
     manager_ = std::make_unique<DarkModeManagerLinux>(
         mock_bus_, mock_linux_ui_.get(), &linux_ui_themes_);
 
-    EXPECT_FALSE(manager_->prefer_dark_theme());
+    EXPECT_FALSE(ManagerPrefersDarkTheme());
     EXPECT_EQ(native_theme->preferred_color_scheme(),
-              NativeTheme::PreferredColorScheme::kLight);
+              NativeTheme::PreferredColorScheme::kNoPreference);
     EXPECT_FALSE(native_theme->user_color().has_value());
   }
 
@@ -231,8 +234,8 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   dbus::MessageWriter writer(response.get());
   dbus::MessageWriter variant_writer(nullptr);
   writer.OpenVariant("v", &variant_writer);
-  variant_writer.AppendVariantOfUint32(
-      DarkModeManagerLinux::kFreedesktopColorSchemeDark);
+  variant_writer.AppendVariantOfUint32(static_cast<uint32_t>(
+      DarkModeManagerLinux::FreedesktopColorScheme::kDark));
   writer.CloseContainer(&variant_writer);
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(true));
   std::move(color_scheme_callback()).Run(response.get(), nullptr);
@@ -248,7 +251,8 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalSetting) {
   dbus::MessageWriter signal_writer(&signal);
   signal_writer.AppendString(DarkModeManagerLinux::kSettingsNamespace);
   signal_writer.AppendString(DarkModeManagerLinux::kColorSchemeKey);
-  signal_writer.AppendVariantOfUint32(0);
+  signal_writer.AppendVariantOfUint32(static_cast<uint32_t>(
+      DarkModeManagerLinux::FreedesktopColorScheme::kLight));
   EXPECT_CALL(*mock_linux_ui(), SetDarkTheme(false));
   std::move(setting_changed_callback()).Run(&signal);
   EXPECT_FALSE(ManagerPrefersDarkTheme());
