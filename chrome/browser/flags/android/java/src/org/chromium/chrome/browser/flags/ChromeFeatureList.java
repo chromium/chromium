@@ -1722,13 +1722,6 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     TAB_STRIP_LAYOUT_OPTIMIZATION, "enable_on_external_display", true);
 
-    public static final StringCachedFeatureParam
-            sTabStripLayoutOptimizationOnExternalDisplayOemDenylist =
-                    newStringCachedFeatureParam(
-                            TAB_STRIP_LAYOUT_OPTIMIZATION,
-                            "external_display_oem_denylist",
-                            "samsung");
-
     public static final IntCachedFeatureParam
             sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs =
                     newIntCachedFeatureParam(
@@ -1825,7 +1818,6 @@ public abstract class ChromeFeatureList {
                     sTabStripLayoutOptimizationOemAllowlist,
                     sTabStripLayoutOptimizationOemDenylist,
                     sTabStripLayoutOptimizationOnExternalDisplay,
-                    sTabStripLayoutOptimizationOnExternalDisplayOemDenylist,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sTouchToSearchCalloutIph,
                     sTouchToSearchCalloutSnippetAsSubtitle,

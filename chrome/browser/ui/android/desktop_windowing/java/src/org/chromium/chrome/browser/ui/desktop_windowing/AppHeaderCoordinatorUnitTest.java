@@ -215,7 +215,7 @@ public class AppHeaderCoordinatorUnitTest {
                         "Android.DesktopWindowHeuristicResult5",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ false, /* oemDenylist= */ "");
+        updateFeatureParams(/* enableOnExternalDisplay= */ false);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -226,15 +226,15 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void notEnabledOnExternalDisplayForDenylistedOem() {
+    @Config(sdk = 35)
+    public void notEnabledOnExternalDisplayForSamsung_PreApi36() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DesktopWindowHeuristicResult5",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
-        // Assume external display support is enabled but denylisted for "samsung".
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
+        updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -245,11 +245,22 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @Config(sdk = 36)
+    public void enabledOnExternalDisplayForSamsung_PostApi36() {
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
+        updateFeatureParams(/* enableOnExternalDisplay= */ true);
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectConsumer();
+
+        verifyDesktopWindowingEnabled();
+    }
+
+    @Test
     public void enabledOnExternalDisplayForNonDenylistedOem() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "lenovo");
-        // Assume external display support is enabled but denylisted for "samsung".
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "samsung");
+        updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -259,7 +270,7 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void enabledOnExternalDisplayWhenAllowed() {
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true, /* oemDenylist= */ "");
+        updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -999,14 +1010,13 @@ public class AppHeaderCoordinatorUnitTest {
         return mAppHeaderCoordinator.onApplyWindowInsets(mSpyRootView, windowInsetsBuilder.build());
     }
 
-    private void updateFeatureParams(boolean enableOnExternalDisplay, String oemDenylist) {
+    private void updateFeatureParams(boolean enableOnExternalDisplay) {
         FeatureOverrides.Builder overrides =
                 FeatureOverrides.newBuilder()
                         .enable(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
                         .param(
                                 "enable_on_external_display",
-                                enableOnExternalDisplay ? "true" : "false")
-                        .param("external_display_oem_denylist", oemDenylist);
+                                enableOnExternalDisplay ? "true" : "false");
         overrides.apply();
     }
 }
