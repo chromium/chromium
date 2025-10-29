@@ -22,16 +22,23 @@ import org.chromium.build.annotations.Nullable;
 @SuppressWarnings("NullAway")
 public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct {
 
-    private static final int STRUCT_SIZE = 40;
-    private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(40, 0)};
+    private static final int STRUCT_SIZE = 64;
+    private static final org.chromium.mojo.bindings.DataHeader[] VERSION_ARRAY = new org.chromium.mojo.bindings.DataHeader[] {new org.chromium.mojo.bindings.DataHeader(64, 0)};
     private static final org.chromium.mojo.bindings.DataHeader DEFAULT_STRUCT_INFO = VERSION_ARRAY[0];
     public @Nullable Integer int;
+    public @Nullable Long long;
     public @Nullable Integer[] uints;
     public @Nullable Boolean[] boolarray;
     public java.util.Map<Boolean, @Nullable Boolean> bitmap;
+    public @Nullable Integer intWithDefault;
+    public @Nullable Long longWithDefault;
+    public @Nullable Boolean boolWithDefault;
 
     private OptionalPrimitives(int version) {
         super(STRUCT_SIZE, version);
+        this.intWithDefault = (Integer) 1;
+        this.longWithDefault = (Long) 2L;
+        this.boolWithDefault = (Boolean) true;
     }
 
     public OptionalPrimitives() {
@@ -73,15 +80,47 @@ public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct 
                 }
                 {
                     
-                result.uints = decoder0.readIntNullables(16, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+                if (decoder0.readBoolean(8, 1)) {
+                  result.long = new Long(decoder0.readLong(16));
+                } else {
+                  result.long = null;
+                }
                 }
                 {
                     
-                result.boolarray = decoder0.readBooleanNullables(24, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+                if (decoder0.readBoolean(8, 2)) {
+                  result.intWithDefault = new Integer(decoder0.readInt(48));
+                } else {
+                  result.intWithDefault = null;
+                }
                 }
                 {
                     
-                org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(32, false);
+                if (decoder0.readBoolean(8, 3)) {
+                  result.longWithDefault = new Long(decoder0.readLong(56));
+                } else {
+                  result.longWithDefault = null;
+                }
+                }
+                {
+                    
+                if (decoder0.readBoolean(8, 4)) {
+                  result.boolWithDefault = new Boolean(decoder0.readBoolean(8, 5));
+                } else {
+                  result.boolWithDefault = null;
+                }
+                }
+                {
+                    
+                result.uints = decoder0.readIntNullables(24, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+                }
+                {
+                    
+                result.boolarray = decoder0.readBooleanNullables(32, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+                }
+                {
+                    
+                org.chromium.mojo.bindings.Decoder decoder1 = decoder0.readPointer(40, false);
                 {
                     decoder1.readDataHeaderForMap();
                     boolean[] keys0;
@@ -119,15 +158,47 @@ public final class OptionalPrimitives extends org.chromium.mojo.bindings.Struct 
         encoder0.encode(int$flag, 8, 0);
         
         encoder0.encode(int$value, 12);
+        final boolean long$flag = this.long != null;
+        final long long$value = long$flag
+            ? this.long
+            : 0;
         
-        encoder0.encode(this.uints, 16, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+        encoder0.encode(long$flag, 8, 1);
         
-        encoder0.encode(this.boolarray, 24, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+        encoder0.encode(long$value, 16);
+        final boolean intWithDefault$flag = this.intWithDefault != null;
+        final int intWithDefault$value = intWithDefault$flag
+            ? this.intWithDefault
+            : 0;
+        
+        encoder0.encode(intWithDefault$flag, 8, 2);
+        
+        encoder0.encode(intWithDefault$value, 48);
+        final boolean longWithDefault$flag = this.longWithDefault != null;
+        final long longWithDefault$value = longWithDefault$flag
+            ? this.longWithDefault
+            : 0;
+        
+        encoder0.encode(longWithDefault$flag, 8, 3);
+        
+        encoder0.encode(longWithDefault$value, 56);
+        final boolean boolWithDefault$flag = this.boolWithDefault != null;
+        final boolean boolWithDefault$value = boolWithDefault$flag
+            ? this.boolWithDefault
+            : false;
+        
+        encoder0.encode(boolWithDefault$flag, 8, 4);
+        
+        encoder0.encode(boolWithDefault$value, 8, 5);
+        
+        encoder0.encode(this.uints, 24, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
+        
+        encoder0.encode(this.boolarray, 32, org.chromium.mojo.bindings.BindingsHelper.ELEMENT_NULLABLE, org.chromium.mojo.bindings.BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
         
         if (this.bitmap == null) {
-            encoder0.encodeNullPointer(32, false);
+            encoder0.encodeNullPointer(40, false);
         } else {
-            org.chromium.mojo.bindings.Encoder encoder1 = encoder0.encoderForMap(32);
+            org.chromium.mojo.bindings.Encoder encoder1 = encoder0.encoderForMap(40);
             int size0 = this.bitmap.size();
             boolean[] keys0 = new boolean[size0];
             Boolean[] values0 = new Boolean[size0];

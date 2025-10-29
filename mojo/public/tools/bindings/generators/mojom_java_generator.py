@@ -434,16 +434,19 @@ def ExpressionToText(context, token, kind_spec=''):
 
   if isinstance(token, mojom.NamedValue):
     return _TranslateNamedValue(token)
-  if kind_spec.startswith('i') or kind_spec.startswith('u'):
+  if kind_spec.startswith('i') or kind_spec.startswith(
+      'u') or kind_spec.startswith('?i') or kind_spec.startswith('?u'):
     number = ast.literal_eval(token.lstrip('+ '))
     if not isinstance(number, int):
-      raise ValueError('got unexpected type %r for int literal %r' % (
-          type(number), token))
+      raise ValueError('got unexpected type %r for int literal %r' %
+                       (type(number), token))
     # If the literal is too large to fit a signed long, convert it to the
     # equivalent signed long.
     if number >= 2 ** 63:
       number -= 2 ** 64
-    if number < 2 ** 31 and number >= -2 ** 31:
+    # Always use a long literal for 64-bit values to allow implicit conversion
+    # to the nullable type.
+    if number < 2**31 and number >= -2**31 and not kind_spec.endswith('64'):
       return '%d' % number
     return '%dL' % number
   if isinstance(token, mojom.BuiltinValue):
