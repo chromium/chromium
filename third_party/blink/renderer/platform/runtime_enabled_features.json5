@@ -1079,7 +1079,7 @@
     // https://chromestatus.com/feature/5162372125818880
     {
       name: "ColorSpaceDisplayP3Linear",
-      status: "experimental",
+      status: "stable",
     },
     // Enable the srgb-linear and display-p3-linear color spaces in
     // PredefinedColorSpace.
