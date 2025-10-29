@@ -9504,6 +9504,21 @@
             ]
         }
     ],
+    "DumpOnOOBFontDataServiceCache": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DumpOnOOBFontDataServiceCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "DwaFeature": [
         {
             "platforms": [
