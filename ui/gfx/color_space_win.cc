@@ -13,8 +13,7 @@ namespace gfx {
 
 DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     const ColorSpace& color_space) {
-  DXVA2_ExtendedFormat format;
-  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
+  DXVA2_ExtendedFormat format{};
   format.SampleFormat = DXVA2_SampleProgressiveFrame;
   format.VideoLighting = DXVA2_VideoLighting_dim;
   format.NominalRange = DXVA2_NominalRange_16_235;
