@@ -16488,6 +16488,21 @@
             ]
         }
     ],
+    "NoPreReadMainDllStartup": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NoPreReadMainDllStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "NoThrottlingVisibleAgent": [
         {
             "platforms": [
