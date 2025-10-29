@@ -63,6 +63,7 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -324,6 +325,10 @@ public class ManageSyncSettingsTest {
     @Policies.Add({
         @Policies.Item(key = "SyncTypesListDisabled", string = "[\"bookmarks\", \"passwords\"]")
     })
+    @DisableIf.Build(
+            sdk_equals = 29,
+            supported_abis_includes = "x86_64",
+            message = "crbug.com/444011887")
     public void testSignInWithManagedDataTypes() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
