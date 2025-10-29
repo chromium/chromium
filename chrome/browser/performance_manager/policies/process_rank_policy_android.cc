@@ -180,15 +180,16 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
 
 content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     const PageNode* page_node) {
-  if (page_node->IsFocused()) {
-    return content::ChildProcessImportance::IMPORTANT;
-  } else if (page_node->IsVisible()) {
-    if (base::FeatureList::IsEnabled(
+  if (page_node->IsVisible()) {
+    // On Android visibility is updated synchronously on tab switch, but focus
+    // is updated asynchronously. Focused status should be checked only if it is
+    // visible.
+    if (page_node->IsFocused() ||
+        !base::FeatureList::IsEnabled(
             chrome::android::kChangeUnfocusedPriority)) {
-      return content::ChildProcessImportance::MODERATE;
-    } else {
       return content::ChildProcessImportance::IMPORTANT;
     }
+    return content::ChildProcessImportance::MODERATE;
   }
 
   if (!base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid) ||

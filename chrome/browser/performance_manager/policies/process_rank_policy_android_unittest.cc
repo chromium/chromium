@@ -94,9 +94,22 @@ TEST_F(ProcessRankPolicyAndroidTest, FocusedPage) {
   DefaultNavigation(page_graph.page.get());
 
   page_graph.page.get()->SetIsFocused(true);
+  page_graph.page.get()->SetIsVisible(true);
 
   EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
             content::ChildProcessImportance::IMPORTANT);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest, FocusedNotVisiblePage) {
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>());
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(true);
+  page_graph.page.get()->SetIsVisible(false);
+
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
+            content::ChildProcessImportance::NORMAL);
 }
 
 TEST_F(ProcessRankPolicyAndroidTest,
