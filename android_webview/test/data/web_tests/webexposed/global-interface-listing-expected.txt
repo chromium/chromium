@@ -12365,8 +12365,6 @@ namespace console
     method getScreenDetails
     method getSelection
     method matchMedia
-    method maximize
-    method minimize
     method moveBy
     method moveTo
     method open
@@ -12383,12 +12381,10 @@ namespace console
     method requestResize
     method resizeBy
     method resizeTo
-    method restore
     method scroll
     method scrollBy
     method scrollTo
     method setInterval
-    method setResizable
     method setTimeout
     method showDirectoryPicker
     method showOpenFilePicker

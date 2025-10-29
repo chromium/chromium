@@ -56,17 +56,7 @@ bool CanUseWindowingControls(LocalDOMWindow* window,
         "API is only supported in primary top-level browsing contexts.");
     return false;
   }
-
-// Additional windowing controls (AWC) is a desktop-only feature.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(
-      DOMExceptionCode::kNotSupportedError,
-      "API is only supported on Desktop platforms. This excludes mobile "
-      "platforms.");
-  return false;
-#else
   return true;
-#endif
 }
 
 ScriptPromise<IDLUndefined> MaybePromptWindowManagementPermission(
@@ -103,9 +93,7 @@ void OnMaximizePermissionRequestComplete(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   window->GetFrame()->GetChromeClient().Maximize(*window->GetFrame());
-#endif
 
   // TODO(crbug.com/1505666): Add wait for the display state change to be
   // completed before resolving the promise.
@@ -121,9 +109,7 @@ void OnMinimizePermissionRequestComplete(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   window->GetFrame()->GetChromeClient().Minimize(*window->GetFrame());
-#endif
 
   // TODO(crbug.com/1505666): Add wait for the display state change to be
   // completed before resolving the promise.
@@ -139,9 +125,7 @@ void OnRestorePermissionRequestComplete(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   window->GetFrame()->GetChromeClient().Restore(*window->GetFrame());
-#endif
 
   // TODO(crbug.com/1505666): Add wait for the display state change to be
   // completed before resolving the promise.
@@ -158,10 +142,8 @@ void OnSetResizablePermissionRequestComplete(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   ChromeClient& chrome_client = window->GetFrame()->GetChromeClient();
   chrome_client.SetResizable(resizable, *window->GetFrame());
-#endif
 
   // TODO(crbug.com/1505666): Add wait for the resizability change to be
   // completed before resolving the promise.

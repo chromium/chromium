@@ -38,7 +38,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/app_banner/before_install_prompt_event_init.idl",
   "//third_party/blink/renderer/modules/app_banner/window_installation.idl",
   "//third_party/blink/renderer/modules/audio_output_devices/html_media_element_audio_output_device.idl",
-  "//third_party/blink/renderer/modules/awc/additional_windowing_controls.idl",
   "//third_party/blink/renderer/modules/background_fetch/background_fetch_event.idl",
   "//third_party/blink/renderer/modules/background_fetch/background_fetch_event_init.idl",
   "//third_party/blink/renderer/modules/background_fetch/background_fetch_manager.idl",
@@ -1333,6 +1332,16 @@ if (!target_os_is_android) {
     "//third_party/blink/renderer/modules/smart_card/smart_card_error.idl",
     "//third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.idl",
   ]
+}
+
+# Additional Windowing Controls
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (!target_os_is_android) {
+  static_idl_files_in_modules += [ "//third_party/blink/renderer/modules/awc/additional_windowing_controls.idl" ]
 }
 
 # Compute Pressure
