@@ -1743,6 +1743,7 @@ source_set("chrome_extensions_browser_client") {
 
     deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
       "//chrome/browser/web_applications",

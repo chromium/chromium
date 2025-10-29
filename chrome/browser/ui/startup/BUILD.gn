@@ -176,6 +176,7 @@ source_set("impl") {
       "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/extensions",
       "//chrome/browser/headless",
       "//chrome/browser/headless:command_processor",

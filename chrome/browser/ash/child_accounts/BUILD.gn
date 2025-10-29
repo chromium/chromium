@@ -145,6 +145,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/child_accounts/time_limits:test_support",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications:web_applications_test_support",

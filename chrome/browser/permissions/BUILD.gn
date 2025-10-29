@@ -309,6 +309,7 @@ if (!is_android) {
       ":permissions",
       ":test_support",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",

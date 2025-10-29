@@ -38,7 +38,10 @@ source_set("impl") {
       "content_setting_image_model.cc",
       "content_setting_image_model_states.cc",
     ]
-    deps += [ "//chrome/browser/ui/web_applications" ]
+    deps += [
+      "//chrome/browser/custom_handlers",
+      "//chrome/browser/ui/web_applications",
+    ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

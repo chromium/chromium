@@ -82,6 +82,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/history",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",

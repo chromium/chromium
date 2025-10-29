@@ -1425,6 +1425,7 @@ static_library("ui") {
       "//chrome/browser/bluetooth",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/contextual_cueing",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/first_party_sets",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/password_manager/factories",

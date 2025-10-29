@@ -232,6 +232,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/ash/wallpaper_handlers",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
     "//chrome/browser/sync",

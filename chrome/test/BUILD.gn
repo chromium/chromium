@@ -520,6 +520,7 @@ static_library("test_support") {
     "//chrome/browser/autofill",
     "//chrome/browser/background_fetch",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/history",
     "//chrome/browser/permissions",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
@@ -1758,6 +1759,7 @@ source_set("platform_browser_tests") {
       "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
     ]
     deps += [
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
@@ -2416,6 +2418,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:browser_tests",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/content_settings:content_settings_util",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/data_saver",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
@@ -6936,6 +6939,7 @@ test("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/contextual_tasks:unit_tests",
     "//chrome/browser/crash_upload_list:unit_tests",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/data_saver",
     "//chrome/browser/devtools",
     "//chrome/browser/download",
@@ -10929,6 +10933,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/banners:test_support",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/devtools",
       "//chrome/browser/history",
       "//chrome/browser/lifetime:termination_notification",
@@ -11584,6 +11589,7 @@ if (!is_android && !is_chromeos_device) {
     # gets modularized.
     deps += [
       "//chrome/browser:flags",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/history",
       "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/ui/location_bar",

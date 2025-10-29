@@ -98,6 +98,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/background",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/status_icons",
     "//chrome/test:test_support",
     "//components/custom_handlers:test_support",

@@ -236,6 +236,7 @@ source_set("unit_tests") {
       ":extensions",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/custom_handlers",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/profiles:profile",
