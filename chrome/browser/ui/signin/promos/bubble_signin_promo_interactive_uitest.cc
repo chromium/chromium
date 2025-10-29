@@ -318,6 +318,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kPasswordBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kPasswordBubble, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -395,6 +399,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kPasswordBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kPasswordBubble, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -474,6 +482,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kPasswordBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kPasswordBubble, 1);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -544,6 +556,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kAddressBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kAddressBubble, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -619,6 +635,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kAddressBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kAddressBubble, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -694,6 +714,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kAddressBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
       signin_metrics::AccessPoint::kAddressBubble, 1);
 }
 
@@ -849,6 +873,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kBookmarkBubble, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -923,6 +951,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kBookmarkBubble, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -1004,6 +1036,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
@@ -1074,4 +1110,8 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.Accepted",
       signin_metrics::AccessPoint::kPasswordBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kPasswordBubble, 0);
 }

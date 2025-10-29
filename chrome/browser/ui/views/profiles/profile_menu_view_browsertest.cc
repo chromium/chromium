@@ -97,6 +97,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -998,20 +999,20 @@ class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
   }
 
   void ClickReauthButton() {
-    base::HistogramTester histogram_tester;
     OpenProfileMenu();
     static_cast<ProfileMenuView*>(profile_menu_view())
         ->OnSigninButtonClicked(
             account_info(),
             ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
             signin_metrics::AccessPoint::kAvatarBubbleSignIn);
-    histogram_tester.ExpectUniqueSample(
+    histogram_tester_.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
         /*expected_bucket_count=*/1);
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   CoreAccountInfo account_info_;
 };
 
@@ -1031,6 +1032,9 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninPendingTest, OpenReauthTab) {
   // The email is pre-filled.
   EXPECT_THAT(reauth_url, testing::HasSubstr(base::EscapeQueryParamValue(
                               account_info_.email, true)));
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kAvatarBubbleSignIn, 1);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

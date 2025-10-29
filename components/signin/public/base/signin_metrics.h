@@ -657,6 +657,9 @@ void LogSignInOffered(AccessPoint access_point, PromoAction promo_action);
 // changes, see `signin::PrimaryAccountMutator`.
 void LogSignInStarted(AccessPoint access_point);
 
+// Logs that sign in was offered when the user is in SigninPending state.
+void LogSigninPendingOffered(AccessPoint access_point);
+
 #if BUILDFLAG(IS_IOS)
 // Records the account type when the user signs in.
 void LogSigninWithAccountType(SigninAccountType account_type);

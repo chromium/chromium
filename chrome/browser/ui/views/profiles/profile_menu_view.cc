@@ -842,6 +842,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
           /*support_title_case=*/true));
       params.has_dotted_ring = true;
+      signin_metrics::LogSigninPendingOffered(
+          explicit_signin_access_point_.value_or(access_point));
       break;
     case signin_util::SignedInState::kSyncPaused:
       // Sync paused is covered by the sync errors path.

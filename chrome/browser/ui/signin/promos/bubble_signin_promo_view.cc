@@ -303,6 +303,9 @@ BubbleSignInPromoView::BubbleSignInPromoView(
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
     signin_metrics::LogSignInOffered(access_point, promo_action);
   }
+  if (signed_in_state == signin_util::SignedInState::kSignInPending) {
+    signin_metrics::LogSigninPendingOffered(access_point);
+  }
 
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
   signin::RecordSignInPromoShown(access_point, profile);
