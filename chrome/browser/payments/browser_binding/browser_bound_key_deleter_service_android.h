@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_ANDROID_H_
-#define COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_ANDROID_H_
+#ifndef CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_ANDROID_H_
+#define CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_ANDROID_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/payments/content/browser_binding/browser_bound_key_deleter.h"
+#include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service.h"
 
 namespace webauthn {
 class InternalAuthenticator;
@@ -19,15 +19,16 @@ struct BrowserBoundKeyMetadata;
 class PasskeyBrowserBinder;
 class WebPaymentsWebDataService;
 
-class BrowserBoundKeyDeleterAndroid : public BrowserBoundKeyDeleter {
+class BrowserBoundKeyDeleterServiceAndroid
+    : public BrowserBoundKeyDeleterService {
  public:
-  explicit BrowserBoundKeyDeleterAndroid(
+  explicit BrowserBoundKeyDeleterServiceAndroid(
       scoped_refptr<WebPaymentsWebDataService> web_data_service,
       scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store);
 
-  ~BrowserBoundKeyDeleterAndroid() override;
+  ~BrowserBoundKeyDeleterServiceAndroid() override;
 
-  // BrowserBoundKeyDeleter:
+  // BrowserBoundKeyDeleterService:
   void RemoveInvalidBBKs() override;
 
   // Sets an InternalAuthenticator to be used for testing. If this is not set, a
@@ -56,9 +57,10 @@ class BrowserBoundKeyDeleterAndroid : public BrowserBoundKeyDeleter {
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_for_testing_;
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_for_testing_;
 
-  base::WeakPtrFactory<BrowserBoundKeyDeleterAndroid> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BrowserBoundKeyDeleterServiceAndroid> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_ANDROID_H_
+#endif  // CHROME_BROWSER_PAYMENTS_BROWSER_BINDING_BROWSER_BOUND_KEY_DELETER_SERVICE_ANDROID_H_

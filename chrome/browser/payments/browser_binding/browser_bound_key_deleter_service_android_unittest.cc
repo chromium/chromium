@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/browser_binding/browser_bound_key_deleter_android.h"
+#include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_android.h"
 
 #include <memory>
 #include <utility>
@@ -67,17 +67,17 @@ Matcher<BrowserBoundKeyMetadata> BrowserBoundKeyMetadataMatcher(
 
 }  // namespace
 
-class BrowserBoundKeyDeleterAndroidTest : public ::testing::Test {
+class BrowserBoundKeyDeleterServiceAndroidTest : public ::testing::Test {
  public:
-  BrowserBoundKeyDeleterAndroidTest() {
+  BrowserBoundKeyDeleterServiceAndroidTest() {
     EXPECT_TRUE(base::Time::FromUTCString("24 Oct 2025 10:30", &last_used_));
 
     auto web_data_service =
         base::MakeRefCounted<MockWebPaymentsWebDataService>();
     auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
 
-    deleter_ = std::make_unique<BrowserBoundKeyDeleterAndroid>(web_data_service,
-                                                               key_store);
+    deleter_ = std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
+        web_data_service, key_store);
 
     auto authenticator = std::make_unique<webauthn::MockInternalAuthenticator>(
         /*web_contents=*/nullptr);
@@ -91,7 +91,7 @@ class BrowserBoundKeyDeleterAndroidTest : public ::testing::Test {
         std::move(passkey_browser_binder));
   }
 
-  ~BrowserBoundKeyDeleterAndroidTest() override = default;
+  ~BrowserBoundKeyDeleterServiceAndroidTest() override = default;
 
   std::vector<BrowserBoundKeyMetadata> CreateBBKMetadataVector() {
     BrowserBoundKeyMetadata bbk_meta;
@@ -109,7 +109,7 @@ class BrowserBoundKeyDeleterAndroidTest : public ::testing::Test {
   base::Time last_used_;
 
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<BrowserBoundKeyDeleterAndroid> deleter_;
+  std::unique_ptr<BrowserBoundKeyDeleterServiceAndroid> deleter_;
   raw_ptr<webauthn::MockInternalAuthenticator> authenticator_;
   raw_ptr<MockPasskeyBrowserBinder> passkey_browser_binder_;
 
@@ -118,7 +118,7 @@ class BrowserBoundKeyDeleterAndroidTest : public ::testing::Test {
       blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
 };
 
-TEST_F(BrowserBoundKeyDeleterAndroidTest, RemoveInvalidBBKs) {
+TEST_F(BrowserBoundKeyDeleterServiceAndroidTest, RemoveInvalidBBKs) {
   base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)>
       get_all_browser_bound_keys_captured_callback;
   EXPECT_CALL(*authenticator_, IsGetMatchingCredentialIdsSupported())
@@ -161,7 +161,7 @@ TEST_F(BrowserBoundKeyDeleterAndroidTest, RemoveInvalidBBKs) {
   std::move(delete_browser_bound_keys_captured_callback).Run();
 }
 
-TEST_F(BrowserBoundKeyDeleterAndroidTest,
+TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
        RemoveInvalidBBKs_WithoutInvalidBBKs) {
   base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)>
       get_all_browser_bound_keys_captured_callback;
@@ -204,7 +204,8 @@ TEST_F(BrowserBoundKeyDeleterAndroidTest,
   std::move(delete_browser_bound_keys_captured_callback).Run();
 }
 
-TEST_F(BrowserBoundKeyDeleterAndroidTest, RemoveInvalidBBKs_WithoutBBKs) {
+TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
+       RemoveInvalidBBKs_WithoutBBKs) {
   base::OnceCallback<void(std::vector<BrowserBoundKeyMetadata>)>
       get_all_browser_bound_keys_captured_callback;
   EXPECT_CALL(*authenticator_, IsGetMatchingCredentialIdsSupported())
@@ -223,7 +224,7 @@ TEST_F(BrowserBoundKeyDeleterAndroidTest, RemoveInvalidBBKs_WithoutBBKs) {
   std::move(get_all_browser_bound_keys_captured_callback).Run({});
 }
 
-TEST_F(BrowserBoundKeyDeleterAndroidTest,
+TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
        RemoveInvalidBBKs_IsGetMatchingCredentialIdsSupportedFalse) {
   EXPECT_CALL(*authenticator_, IsGetMatchingCredentialIdsSupported())
       .WillRepeatedly(Return(false));
@@ -234,9 +235,10 @@ TEST_F(BrowserBoundKeyDeleterAndroidTest,
   deleter_->RemoveInvalidBBKs();
 }
 
-TEST_F(BrowserBoundKeyDeleterAndroidTest, RemoveInvalidBBKs_BbkKeyStoreIsNull) {
+TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
+       RemoveInvalidBBKs_BbkKeyStoreIsNull) {
   auto web_data_service = base::MakeRefCounted<MockWebPaymentsWebDataService>();
-  auto deleter = std::make_unique<BrowserBoundKeyDeleterAndroid>(
+  auto deleter = std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
       web_data_service, nullptr);
 
   auto authenticator = std::make_unique<webauthn::MockInternalAuthenticator>(
@@ -250,11 +252,11 @@ TEST_F(BrowserBoundKeyDeleterAndroidTest, RemoveInvalidBBKs_BbkKeyStoreIsNull) {
   deleter->RemoveInvalidBBKs();
 }
 
-TEST_F(BrowserBoundKeyDeleterAndroidTest,
+TEST_F(BrowserBoundKeyDeleterServiceAndroidTest,
        RemoveInvalidBBKs_WebDataServiceIsNull) {
   auto key_store = base::MakeRefCounted<MockBrowserBoundKeyStore>();
-  auto deleter =
-      std::make_unique<BrowserBoundKeyDeleterAndroid>(nullptr, key_store);
+  auto deleter = std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
+      nullptr, key_store);
 
   auto authenticator = std::make_unique<webauthn::MockInternalAuthenticator>(
       /*web_contents=*/nullptr);
@@ -267,10 +269,10 @@ TEST_F(BrowserBoundKeyDeleterAndroidTest,
   deleter->RemoveInvalidBBKs();
 }
 
-class BrowserBoundKeyDeleterAndroidBbkFeatureDisabledTest
-    : public BrowserBoundKeyDeleterAndroidTest {
+class BrowserBoundKeyDeleterServiceAndroidBbkFeatureDisabledTest
+    : public BrowserBoundKeyDeleterServiceAndroidTest {
  public:
-  BrowserBoundKeyDeleterAndroidBbkFeatureDisabledTest() {
+  BrowserBoundKeyDeleterServiceAndroidBbkFeatureDisabledTest() {
     feature_list_.InitAndDisableFeature(
         blink::features::kSecurePaymentConfirmationBrowserBoundKeys);
   }
@@ -279,7 +281,8 @@ class BrowserBoundKeyDeleterAndroidBbkFeatureDisabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(BrowserBoundKeyDeleterAndroidBbkFeatureDisabledTest, RemoveInvalidBBKs) {
+TEST_F(BrowserBoundKeyDeleterServiceAndroidBbkFeatureDisabledTest,
+       RemoveInvalidBBKs) {
   EXPECT_CALL(*authenticator_, IsGetMatchingCredentialIdsSupported())
       .WillRepeatedly(Return(true));
 

@@ -1,7 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 is_desktop = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
 
 source_set("browser_binding") {
-  visibility = [ "//components/payments/content/*" ]
+  visibility = [
+    "//chrome/browser/payments/browser_binding/*",
+    "//components/payments/content/*",
+  ]
   public_deps = [
     ":interface",
     ":passkey_browser_binder",
@@ -61,45 +68,6 @@ source_set("passkey_browser_binder_unittests") {
   ]
 }
 
-source_set("browser_bound_key_deleter") {
-  sources = [
-    "browser_bound_key_deleter.h",
-    "browser_bound_key_deleter_factory.cc",
-    "browser_bound_key_deleter_factory.h",
-  ]
-  public_deps = [
-    "//base",  # base/no_destructor.h
-    "//components/keyed_service/content",
-  ]
-  deps = [
-    ":passkey_browser_binder",
-    "//components/keyed_service/content",
-    "//components/payments/content:utils",
-    "//components/webdata_services",
-    "//content/public/browser",
-  ]
-
-  if (is_android) {
-    sources += [
-      "browser_bound_key_deleter_android.cc",
-      "browser_bound_key_deleter_android.h",
-    ]
-    deps += [
-      ":android",
-      "//components/webauthn/android",
-      "//components/webauthn/core/browser",
-    ]
-  }
-
-  if (is_desktop) {
-    sources += [
-      "browser_bound_key_deleter_desktop.cc",
-      "browser_bound_key_deleter_desktop.h",
-    ]
-    deps += [ ":desktop" ]
-  }
-}
-
 if (is_android) {
   source_set("android") {
     visibility = [ ":*" ]
@@ -124,24 +92,14 @@ if (is_android) {
 
   source_set("android_unittests") {
     testonly = true
-    sources = [
-      "browser_bound_key_deleter_android_unittest.cc",
-      "browser_bound_key_store_android_unittest.cc",
-    ]
+    sources = [ "browser_bound_key_store_android_unittest.cc" ]
     deps = [
       ":android",
-      ":browser_bound_key_deleter",
       ":interface",
-      ":test_support",
       "//base",
-      "//base/test:test_support",
-      "//components/payments/content:test_support",
       "//components/payments/content/android/spc:browser_binding_jni",
-      "//components/webauthn/core/browser:test_support",
-      "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/blink/public:blink_headers",
     ]
   }
 }
@@ -208,15 +166,12 @@ source_set("browser_bound_key_metadata") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_browser_bound_key_deleter.cc",
-    "mock_browser_bound_key_deleter.h",
     "mock_browser_bound_key_store.cc",
     "mock_browser_bound_key_store.h",
     "mock_passkey_browser_binder.cc",
     "mock_passkey_browser_binder.h",
   ]
   public_deps = [
-    ":browser_bound_key_deleter",
     ":interface",
     ":passkey_browser_binder",
     "//testing/gmock",

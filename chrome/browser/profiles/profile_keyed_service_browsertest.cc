@@ -236,18 +236,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
       CreateProfileAndWaitForAllTasks(ProfileManager::GetSystemProfilePath());
   ASSERT_FALSE(system_profile->IsOffTheRecord());
   ASSERT_TRUE(system_profile->IsSystemProfile());
-  TestKeyedProfileServicesActives(
-      system_profile,
-      /*expected_active_services_names=*/{
-          // There is no control over the creation based on the Profile types in
-          // components/. These services are created for the System Profile by
-          // default because their `ServiceIsCreatedWithBrowserContext()`
-          // returns true.
-          "BrowserBoundKeyDeleter",
-          // `WebDataService` is required because `BrowserBoundKeyDeleter`
-          // depends on it.
-          "WebDataService",
-      });
+  TestKeyedProfileServicesActives(system_profile,
+                                  /*expected_active_services_names=*/{});
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
@@ -265,7 +255,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     // default, however their creation is still possible.
     "AutocompleteControllerEmitter",
     "AutofillInternalsService",
-    "BrowserBoundKeyDeleter",
     "DataControlsRulesService",
     "HasEnrolledInstrumentQuery",
     "LocalPresentationManager",
@@ -621,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "BookmarkUndoService",
     "BookmarksAPI",
     "BrailleDisplayPrivateAPI",
-    "BrowserBoundKeyDeleter",
+    "BrowserBoundKeyDeleterService",
     "BrowsingTopicsService",
     "ChildAccountService",
     "ChromeSigninClient",

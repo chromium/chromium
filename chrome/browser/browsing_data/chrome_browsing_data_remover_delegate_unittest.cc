@@ -63,6 +63,8 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_factory.h"
+#include "chrome/browser/payments/browser_binding/mock_browser_bound_key_deleter_service.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -221,8 +223,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/payments/content/browser_binding/browser_bound_key_deleter_factory.h"
-#include "components/payments/content/browser_binding/mock_browser_bound_key_deleter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "base/task/current_thread.h"
@@ -4541,27 +4541,26 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearNewTabPageLocalStorage) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
 // Verify that clearing cookies will also trigger removing invalid browser bound
 // keys.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ClearInvalidBrowserBoundKeyForSecurePaymentConfirmation) {
-  auto* mock_browser_bound_key_deleter = static_cast<
-      payments::MockBrowserBoundKeyDeleter*>(
-      payments::BrowserBoundKeyDeleterFactory::GetInstance()
-          ->SetTestingFactoryAndUse(
-              GetProfile(),
-              base::BindOnce([](content::BrowserContext*)
-                                 -> std::unique_ptr<KeyedService> {
-                return std::make_unique<payments::MockBrowserBoundKeyDeleter>();
-              })));
+  auto* mock_browser_bound_key_deleter =
+      static_cast<payments::MockBrowserBoundKeyDeleterService*>(
+          payments::BrowserBoundKeyDeleterServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  GetProfile(),
+                  base::BindOnce([](content::BrowserContext*)
+                                     -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        payments::MockBrowserBoundKeyDeleterService>();
+                  })));
 
   EXPECT_CALL(*mock_browser_bound_key_deleter, RemoveInvalidBBKs());
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
                                 false);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 class ChromeBrowsingDataRemoverDelegateOriginTrialsTest
     : public ChromeBrowsingDataRemoverDelegateTest {

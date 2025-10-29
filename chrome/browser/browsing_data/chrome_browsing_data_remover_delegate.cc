@@ -60,6 +60,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service.h"
+#include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_factory.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -120,8 +122,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
-#include "components/payments/content/browser_binding/browser_bound_key_deleter.h"
-#include "components/payments/content/browser_binding/browser_bound_key_deleter_factory.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/features.h"
@@ -733,10 +733,11 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    if (payments::BrowserBoundKeyDeleter* browser_bound_key_deleter =
-            payments::BrowserBoundKeyDeleterFactory::GetForBrowserContext(
-                profile_)) {
-      browser_bound_key_deleter->RemoveInvalidBBKs();
+    if (payments::
+            BrowserBoundKeyDeleterService* browser_bound_key_deleter_service =
+                payments::BrowserBoundKeyDeleterServiceFactory::GetForProfile(
+                    profile_)) {
+      browser_bound_key_deleter_service->RemoveInvalidBBKs();
     }
 
 #if BUILDFLAG(IS_CHROMEOS)

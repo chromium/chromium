@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/browser_binding/browser_bound_key_deleter_android.h"
+#include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_android.h"
 
 #include <memory>
 
@@ -61,21 +61,23 @@ std::vector<BrowserBoundKeyMetadata> RemoveMatchingCredentialIds(
 
 }  // namespace
 
-std::unique_ptr<BrowserBoundKeyDeleter> GetBrowserBoundKeyDeleterInstance(
+std::unique_ptr<BrowserBoundKeyDeleterService>
+GetBrowserBoundKeyDeleterServiceInstance(
     scoped_refptr<WebPaymentsWebDataService> web_data_service) {
-  return std::make_unique<BrowserBoundKeyDeleterAndroid>(
+  return std::make_unique<BrowserBoundKeyDeleterServiceAndroid>(
       web_data_service, GetBrowserBoundKeyStoreInstance());
 }
 
-BrowserBoundKeyDeleterAndroid::BrowserBoundKeyDeleterAndroid(
+BrowserBoundKeyDeleterServiceAndroid::BrowserBoundKeyDeleterServiceAndroid(
     scoped_refptr<WebPaymentsWebDataService> web_data_service,
     scoped_refptr<BrowserBoundKeyStore> browser_bound_key_store)
     : web_data_service_(web_data_service),
       browser_bound_key_store_(browser_bound_key_store) {}
 
-BrowserBoundKeyDeleterAndroid::~BrowserBoundKeyDeleterAndroid() = default;
+BrowserBoundKeyDeleterServiceAndroid::~BrowserBoundKeyDeleterServiceAndroid() =
+    default;
 
-void BrowserBoundKeyDeleterAndroid::RemoveInvalidBBKs() {
+void BrowserBoundKeyDeleterServiceAndroid::RemoveInvalidBBKs() {
   // The WebPaymentsWebDataService, authenticator and BrowserBoundKeyStore are
   // required to remove browser bound keys.
   if (!web_data_service_ || !browser_bound_key_store_) {
@@ -104,23 +106,23 @@ void BrowserBoundKeyDeleterAndroid::RemoveInvalidBBKs() {
           : std::make_unique<PasskeyBrowserBinder>(browser_bound_key_store_,
                                                    web_data_service_);
 
-  passkey_browser_binder->GetAllBrowserBoundKeys(
-      base::BindOnce(&BrowserBoundKeyDeleterAndroid::FilterAndDeleteInvalidBBKs,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(authenticator),
-                     std::move(passkey_browser_binder)));
+  passkey_browser_binder->GetAllBrowserBoundKeys(base::BindOnce(
+      &BrowserBoundKeyDeleterServiceAndroid::FilterAndDeleteInvalidBBKs,
+      weak_ptr_factory_.GetWeakPtr(), std::move(authenticator),
+      std::move(passkey_browser_binder)));
 }
 
-void BrowserBoundKeyDeleterAndroid::SetInternalAuthenticatorForTesting(
+void BrowserBoundKeyDeleterServiceAndroid::SetInternalAuthenticatorForTesting(
     std::unique_ptr<InternalAuthenticator> authenticator) {
   authenticator_for_testing_ = std::move(authenticator);
 }
 
-void BrowserBoundKeyDeleterAndroid::SetPasskeyBrowserBinderForTesting(
+void BrowserBoundKeyDeleterServiceAndroid::SetPasskeyBrowserBinderForTesting(
     std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder) {
   passkey_browser_binder_for_testing_ = std::move(passkey_browser_binder);
 }
 
-void BrowserBoundKeyDeleterAndroid::FilterAndDeleteInvalidBBKs(
+void BrowserBoundKeyDeleterServiceAndroid::FilterAndDeleteInvalidBBKs(
     std::unique_ptr<InternalAuthenticator> authenticator,
     std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder,
     std::vector<BrowserBoundKeyMetadata> bbk_metas) {
