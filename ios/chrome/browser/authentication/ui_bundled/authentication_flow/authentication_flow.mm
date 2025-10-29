@@ -854,12 +854,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   __weak AuthenticationFlow* weakSelf = self;
   [_performer showAuthenticationError:error
                        withCompletion:^{
-                         AuthenticationFlow* strongSelf = weakSelf;
-                         if (!strongSelf) {
-                           return;
-                         }
-                         [strongSelf setHandlingError:NO];
-                         [strongSelf continueFlow];
+                         [weakSelf authenticationErrorDismissed];
                        }
                        viewController:_presentingViewController
                               browser:_browser];
@@ -975,6 +970,11 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 #pragma mark - Private methods
+
+- (void)authenticationErrorDismissed {
+  [self setHandlingError:NO];
+  [self continueFlow];
+}
 
 // Returns the delegate at most once.
 - (id<AuthenticationFlowDelegate>)takeDelegate {
