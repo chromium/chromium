@@ -75,7 +75,9 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   unexportable_keys::UnexportableKeyService* key_service =
-      UnexportableKeyServiceFactory::GetForProfile(profile);
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile, UnexportableKeyServiceFactory::KeyPurpose::
+                       kDeviceBoundSessionCredentialsPrototype);
 
   if (!key_service) {
     // A bound session requires a crypto provider.

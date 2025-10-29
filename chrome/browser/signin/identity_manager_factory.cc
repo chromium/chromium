@@ -147,7 +147,9 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   params.unexportable_key_service =
-      UnexportableKeyServiceFactory::GetForProfile(profile);
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile,
+          UnexportableKeyServiceFactory::KeyPurpose::kRefreshTokenBinding);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 

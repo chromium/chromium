@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_UNEXPORTABLE_KEY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_UNEXPORTABLE_KEY_SERVICE_FACTORY_H_
 
+#include <memory>
+
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -20,16 +23,31 @@ class UnexportableKeyService;
 
 class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  using ServiceFactory = base::RepeatingCallback<
+      std::unique_ptr<unexportable_keys::UnexportableKeyService>()>;
+
+  // An enum to define the intended use of the key.
+  enum class KeyPurpose {
+    kRefreshTokenBinding,
+    kDeviceBoundSessionCredentials,
+    // Temporary, will be removed when replaced by DBSC Standard.
+    kDeviceBoundSessionCredentialsPrototype,
+  };
+
   // Returns nullptr if unexportable key provider is not supported by the
   // platform.
-  static unexportable_keys::UnexportableKeyService* GetForProfile(
-      Profile* profile);
+  static unexportable_keys::UnexportableKeyService* GetForProfileAndPurpose(
+      Profile* profile,
+      KeyPurpose purpose);
 
   static UnexportableKeyServiceFactory* GetInstance();
 
   UnexportableKeyServiceFactory(const UnexportableKeyServiceFactory&) = delete;
   UnexportableKeyServiceFactory& operator=(
       const UnexportableKeyServiceFactory&) = delete;
+
+  // Used in tests to override the service creation.
+  void SetServiceFactoryForTesting(ServiceFactory factory);
 
  private:
   friend class base::NoDestructor<UnexportableKeyServiceFactory>;
@@ -40,6 +58,8 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
   // ProfileKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  ServiceFactory service_factory_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_UNEXPORTABLE_KEY_SERVICE_FACTORY_H_

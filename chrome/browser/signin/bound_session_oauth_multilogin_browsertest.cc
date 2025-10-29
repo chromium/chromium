@@ -103,8 +103,9 @@ class BoundSessionOAuthMultiloginTest : public MixinBasedInProcessBrowserTest {
 
  protected:
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
-    return CHECK_DEREF(
-        UnexportableKeyServiceFactory::GetForProfile(browser()->profile()));
+    return CHECK_DEREF(UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+        browser()->profile(),
+        UnexportableKeyServiceFactory::KeyPurpose::kRefreshTokenBinding));
   }
 
   FakeGaia& fake_gaia() { return CHECK_DEREF(fake_gaia_.fake_gaia()); }

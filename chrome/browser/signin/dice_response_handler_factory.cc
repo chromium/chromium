@@ -82,7 +82,9 @@ DiceResponseHandlerFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   registration_token_helper_factory = CreateRegistrationTokenHelperFactory(
       profile->GetPrefs(),
-      UnexportableKeyServiceFactory::GetForProfile(profile));
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile,
+          UnexportableKeyServiceFactory::KeyPurpose::kRefreshTokenBinding));
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   return std::make_unique<DiceResponseHandler>(
       ChromeSigninClientFactory::GetForProfile(profile),

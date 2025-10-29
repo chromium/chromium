@@ -18,7 +18,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
-#include "chrome/browser/signin/bound_session_credentials/fake_keyed_unexportable_key_service.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -27,6 +26,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,11 +38,6 @@ using base::test::ScopedFeatureList;
 using sync_preferences::TestingPrefServiceSyncable;
 using ::testing::TestWithParam;
 using ::testing::Values;
-
-std::unique_ptr<KeyedService> CreateFakeUnexportableKeyService(
-    content::BrowserContext* context) {
-  return std::make_unique<FakeKeyedUnexportableKeyService>();
-}
 
 bool DoesServiceExistForProfile(Profile* profile) {
   return BoundSessionCookieRefreshServiceFactory::GetForProfile(profile) !=
@@ -134,6 +129,15 @@ class BoundSessionCookieRefreshServiceFactoryTest
   BoundSessionCookieRefreshServiceFactoryTest() {
     feature_list.InitWithFeatures(GetParam().enabled_features,
                                   GetParam().disabled_features);
+
+    // `BoundSessionCookieRefreshService` depends on `UnexportableKeyService`,
+    // ensure it is not null.
+    UnexportableKeyServiceFactory::GetInstance()->SetServiceFactoryForTesting(
+        base::BindRepeating(
+            []() -> std::unique_ptr<unexportable_keys::UnexportableKeyService> {
+              return std::make_unique<
+                  unexportable_keys::FakeUnexportableKeyService>();
+            }));
   }
 
   void CreateProfile(bool otr_profile = false) {
@@ -162,11 +166,6 @@ class BoundSessionCookieRefreshServiceFactoryTest
  private:
   TestingProfile::Builder CreateProfileBuilder() {
     TestingProfile::Builder builder;
-    // `BoundSessionCookieRefreshService` depends on `UnexportableKeyService`,
-    // ensure it is not null.
-    builder.AddTestingFactory(
-        UnexportableKeyServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateFakeUnexportableKeyService));
     // Override `BoundSessionCookieRefreshServiceFactory` in order to bypass the
     // `ServiceIsNULLWhileTesting()` check.
     builder.AddTestingFactory(
@@ -239,7 +238,9 @@ TEST(BoundSessionCookieRefreshServiceFactoryTestNullUnexportableKeyService,
       std::move(unexportable_key_service_factory));
 
   std::unique_ptr<TestingProfile> profile = profile_builder.Build();
-  ASSERT_FALSE(UnexportableKeyServiceFactory::GetForProfile(profile.get()));
+  ASSERT_FALSE(UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+      profile.get(), UnexportableKeyServiceFactory::KeyPurpose::
+                         kDeviceBoundSessionCredentialsPrototype));
   EXPECT_FALSE(DoesServiceExistForProfile(profile.get()));
 }
 
