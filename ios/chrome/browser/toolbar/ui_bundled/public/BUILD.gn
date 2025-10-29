@@ -31,6 +31,7 @@ source_set("public") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
+    "//ui/base",
   ]
 }
 
