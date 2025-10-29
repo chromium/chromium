@@ -267,10 +267,10 @@ TEST_F(
   std::unique_ptr<lens::LensOverlayRequestId> second_id =
       request_id_generator.GetNextRequestId(
           RequestIdUpdateMode::kMultiContextUploadRequest,
-          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+          lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
   ASSERT_EQ(second_id->image_sequence_id(), 1);
   ASSERT_EQ(second_id->sequence_id(), 1);
-  ASSERT_EQ(second_id->long_context_id(), 0);
+  ASSERT_EQ(second_id->long_context_id(), 1);
   ASSERT_NE(first_id->analytics_id(), second_id->analytics_id());
   ASSERT_NE(first_id->uuid(), second_id->uuid());
 }
