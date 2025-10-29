@@ -1014,6 +1014,12 @@ bool IsNTPBackgroundCustomizationEnabled();
 // enabled.
 BASE_DECLARE_FEATURE(kRunDefaultStatusCheck);
 
+// Feature flag to enable the custom color slider on the NTP.
+BASE_DECLARE_FEATURE(kNTPBackgroundColorSlider);
+
+// Checks if the custom color slider is enabled on the NTP.
+bool IsNTPBackgroundColorSliderEnabled();
+
 // Returns whether `kRunDefaultStatusCheck` is enabled.
 bool IsRunDefaultStatusCheckEnabled();
 

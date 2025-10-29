@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/home_customization/ui/rainbow_slider.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -119,7 +120,6 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   layout.sectionInset =
       UIEdgeInsetsMake(kSectionInsetTop, kSectionInsetSides,
                        kSectionInsetBottom, kSectionInsetSides);
-  layout.footerReferenceSize = CGSizeMake(self.view.frame.size.width, 50.0);
 
   _colorCellRegistration = [UICollectionViewCellRegistration
       registrationWithCellClass:[HomeCustomizationColorPaletteCell class]
@@ -132,26 +132,30 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                    atIndexPath:indexPath];
            }];
 
-  _customColorCellRegistration = [UICollectionViewCellRegistration
-      registrationWithCellClass:[HomeCustomizationCustomColorCell class]
-           configurationHandler:^(HomeCustomizationCustomColorCell* cell,
-                                  NSIndexPath* indexPath,
-                                  id<BackgroundCustomizationConfiguration>
-                                      backgroundConfiguration) {
-             cell.color = [UIColor colorWithHue:0.5
-                                     saturation:1.0
-                                     brightness:1.0
-                                          alpha:1.0];
-           }];
+  if (IsNTPBackgroundColorSliderEnabled()) {
+    layout.footerReferenceSize = CGSizeMake(self.view.frame.size.width, 50.0);
 
-  _footerRegistration = [UICollectionViewSupplementaryRegistration
-      registrationWithSupplementaryClass:[UICollectionReusableView class]
-                             elementKind:UICollectionElementKindSectionFooter
-                    configurationHandler:^(UICollectionReusableView* footer,
-                                           NSString* elementKind,
-                                           NSIndexPath* indexPath) {
-                      [weakSelf configureFooterView:footer];
-                    }];
+    _customColorCellRegistration = [UICollectionViewCellRegistration
+        registrationWithCellClass:[HomeCustomizationCustomColorCell class]
+             configurationHandler:^(HomeCustomizationCustomColorCell* cell,
+                                    NSIndexPath* indexPath,
+                                    id<BackgroundCustomizationConfiguration>
+                                        backgroundConfiguration) {
+               cell.color = [UIColor colorWithHue:0.5
+                                       saturation:1.0
+                                       brightness:1.0
+                                            alpha:1.0];
+             }];
+
+    _footerRegistration = [UICollectionViewSupplementaryRegistration
+        registrationWithSupplementaryClass:[UICollectionReusableView class]
+                               elementKind:UICollectionElementKindSectionFooter
+                      configurationHandler:^(UICollectionReusableView* footer,
+                                             NSString* elementKind,
+                                             NSIndexPath* indexPath) {
+                        [weakSelf configureFooterView:footer];
+                      }];
+  }
 
   _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                        collectionViewLayout:layout];
@@ -230,6 +234,10 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
+  if (!IsNTPBackgroundColorSliderEnabled()) {
+    return _backgroundCollectionConfiguration.configurationOrder.count;
+  }
+
   return _backgroundCollectionConfiguration.configurationOrder.count + 1;
 }
 
@@ -242,7 +250,8 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 - (void)collectionView:(UICollectionView*)collectionView
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSUInteger index = static_cast<NSUInteger>(indexPath.item);
-  if (index >= _backgroundCollectionConfiguration.configurationOrder.count) {
+  if (IsNTPBackgroundColorSliderEnabled() &&
+      index >= _backgroundCollectionConfiguration.configurationOrder.count) {
     // Show the color slider and animate the footer if the custom color cell is
     // selected.
     UICollectionReusableView* footerView = [self footerView];
@@ -294,7 +303,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
                                            forIndexPath:indexPath
                                                    item:
                                                        backgroundConfiguration];
-    } else {
+    } else if (IsNTPBackgroundColorSliderEnabled()) {
       // Use currently selected item for custom cell.
       NSIndexPath* selectedIndexPath =
           _collectionView.indexPathsForSelectedItems.firstObject;
@@ -325,7 +334,8 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 - (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView
           viewForSupplementaryElementOfKind:(NSString*)kind
                                 atIndexPath:(NSIndexPath*)indexPath {
-  if (kind == UICollectionElementKindSectionFooter) {
+  if (IsNTPBackgroundColorSliderEnabled() &&
+      kind == UICollectionElementKindSectionFooter) {
     return [collectionView
         dequeueConfiguredReusableSupplementaryViewWithRegistration:
             _footerRegistration

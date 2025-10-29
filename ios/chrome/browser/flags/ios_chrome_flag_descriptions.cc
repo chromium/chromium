@@ -1065,6 +1065,13 @@ const char kMultilineBrowserOmniboxName[] = "Multiline omnibox in browser";
 const char kMultilineBrowserOmniboxDescription[] =
     "Enables multiline for the browser omnibox.";
 
+const char kNTPBackgroundColorSliderName[] =
+    "Enable the background color slider in the background customization color "
+    "picker";
+const char kNTPBackgroundColorSliderDescription[] =
+    "When enabled, the color slider is available in the background "
+    "customization color picker.";
+
 const char kNTPBackgroundCustomizationName[] =
     "Enable background customization menu on the NTP";
 const char kNTPBackgroundCustomizationDescription[] =

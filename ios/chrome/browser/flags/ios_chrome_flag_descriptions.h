@@ -632,6 +632,9 @@ extern const char kMostVisitedTilesHorizontalRenderGroupDescription[];
 extern const char kMultilineBrowserOmniboxName[];
 extern const char kMultilineBrowserOmniboxDescription[];
 
+extern const char kNTPBackgroundColorSliderName[];
+extern const char kNTPBackgroundColorSliderDescription[];
+
 extern const char kNTPBackgroundCustomizationName[];
 extern const char kNTPBackgroundCustomizationDescription[];
 

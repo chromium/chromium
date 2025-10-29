@@ -7176,6 +7176,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ntp-background-color-slider",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "ntp-background-customization",
     "owners": [
       "pabouchard@google.com",
