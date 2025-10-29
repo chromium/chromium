@@ -567,7 +567,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       parent_, browser_, profile_, location_, nodes,
       ShouldCloseOnRemove(folder_or_url));
-  context_menu_->set_observer(this);
+  bookmark_context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(p, source_type);
   return true;
 }
@@ -847,6 +847,7 @@ void BookmarkMenuDelegate::DidRemoveBookmarks() {
 }
 
 void BookmarkMenuDelegate::OnContextMenuClosed() {
+  bookmark_context_menu_observation_.Reset();
   context_menu_.reset();
 }
 

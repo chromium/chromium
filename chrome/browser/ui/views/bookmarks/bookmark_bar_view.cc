@@ -221,7 +221,6 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
     } else {
       show_animation_->Show();
     }
-    SetHideInkDropWhenShowingContextMenu(false);
 
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
@@ -417,6 +416,10 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
 }
 
 BookmarkBarView::~BookmarkBarView() {
+  if (context_menu_) {
+    context_menu_->RemoveObserver(this);
+  }
+
   if (bookmark_service_) {
     bookmark_service_->RemoveObserver(this);
   }
@@ -1466,15 +1469,19 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     return;
   }
 
+  views::Button* context_menu_source = nullptr;
+
   std::vector<const BookmarkNode*> nodes;
   if (source == all_bookmarks_button_) {
     // Do this so the user can open all bookmarks. BookmarkContextMenu makes
     // sure the user can't edit/delete the node in this case.
     nodes = bookmark_service_->GetUnderlyingNodes(
         BookmarkParentFolder::OtherFolder());
+    context_menu_source = all_bookmarks_button_;
   } else if (source == managed_bookmarks_button_) {
     nodes = bookmark_service_->GetUnderlyingNodes(
         BookmarkParentFolder::ManagedFolder());
+    context_menu_source = managed_bookmarks_button_;
   } else if (source != this && source != apps_page_shortcut_) {
     // User clicked on one of the bookmark buttons, find which one they
     // clicked on, except for the apps page shortcut, which must behave as if
@@ -1484,9 +1491,13 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     CHECK_LT(bookmark_button_index, bookmark_buttons_.size());
     const BookmarkNode* node = bookmark_buttons_[bookmark_button_index].second;
     nodes.push_back(node);
+    context_menu_source = bookmark_buttons_[bookmark_button_index].first;
   } else {
     nodes = bookmark_service_->GetUnderlyingNodes(
         BookmarkParentFolder::BookmarkBarFolder());
+    if (source == apps_page_shortcut_) {
+      context_menu_source = apps_page_shortcut_;
+    }
   }
   // |close_on_remove| only matters for nested menus. We're not nested at this
   // point, so this value has no effect.
@@ -1496,7 +1507,16 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
       GetWidget(), browser_, browser_->profile(),
       BookmarkLaunchLocation::kAttachedBar, ToRawPtrVector(nodes),
       close_on_remove);
+  context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(point, source_type);
+  if (context_menu_source) {
+    context_menu_highlight_ = context_menu_source->AddAnchorHighlight();
+  }
+}
+
+void BookmarkBarView::OnContextMenuClosed() {
+  context_menu_observation_.Reset();
+  context_menu_highlight_.reset();
 }
 
 // Calculate the available width for the saved tab group bar.

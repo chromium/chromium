@@ -64,7 +64,6 @@ BookmarkButtonBase::BookmarkButtonBase(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-  SetHideInkDropWhenShowingContextMenu(false);
 
   show_animation_ = std::make_unique<gfx::SlideAnimation>(this);
   if (!BookmarkBarView::GetAnimationsEnabled()) {
