@@ -418,9 +418,14 @@ void RtcTransport::OnCandidateGatheredOnMainThread(
 void RtcTransport::OnPacketReceivedOnMainThread(
     Vector<uint8_t> data,
     webrtc::Timestamp receive_time) {
+  ExecutionContext* context = GetExecutionContext();
+  if (!context) {
+    // Context has gone away - eg page has been closed. Just bail.
+    return;
+  }
   received_packets_.push_back(MakeGarbageCollected<RtcReceivedPacket>(
       DOMArrayBuffer::Create(data),
-      RTCTimeStampFromTimeTicks(GetExecutionContext(),
+      RTCTimeStampFromTimeTicks(context,
                                 ConvertToBaseTimeTicks(receive_time))));
 }
 

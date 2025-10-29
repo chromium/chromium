@@ -260,6 +260,24 @@ TEST_F(RtcTransportTest, WritableUninitialized) {
   EXPECT_FALSE(tester.Value().V8Value()->IsTrue());
 }
 
+// Regression test for crbug.com/455519961
+TEST_F(RtcTransportTest, NoCrashReceivingPacketsAfterContextDestroyed) {
+  CreateInitializedTransport();
+  Vector<uint8_t> data;
+
+  GetDocument().GetExecutionContext()->NotifyContextDestroyed();
+
+  transport_->OnPacketReceivedOnMainThread(data, webrtc::Timestamp::Millis(0));
+}
+
+TEST_F(RtcTransportTest, NoCrashReceivingCandidateAfterContextDestroyed) {
+  CreateInitializedTransport();
+
+  GetDocument().GetExecutionContext()->NotifyContextDestroyed();
+
+  transport_->OnCandidateGatheredOnMainThread(webrtc::Candidate());
+}
+
 class RtcTransportParseStunServersTest : public PageTestBase {
  public:
   void SetUp() override {
