@@ -7,6 +7,7 @@
  * the renderer by shimming the `navigator.credentials` API.
  */
 
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Must be kept in sync with passkey_java_script_feature.mm.
@@ -39,6 +40,77 @@ function isGpmAaguid(aaguid: Uint8Array): boolean {
  */
 const cachedNavigatorCredentials: CredentialsContainer = navigator.credentials;
 
+// Whether to attempt to handle modal passkeys requests directly in Chrome.
+let mayHandleModalPasskeyRequests: boolean = false;
+
+// Returns whether a passkey request uses conditional mediation.
+function isConditionalMediation(
+    options: CredentialRequestOptions|CredentialCreationOptions): boolean {
+  return ('mediation' in options && options.mediation === 'conditional');
+}
+
+// Creates a passthrough registration request from the provided parameters.
+// The passthrough request invokes the WebKit implementation of
+// `navigator.credentials.get()` and, upon completion, informs the browser for
+// metrics purposes.
+function createPassthroughRegistrationRequest(
+    options?: CredentialCreationOptions|undefined): Promise<Credential|null> {
+  sendWebKitMessage(HANDLER_NAME, {'event': 'createRequested'});
+
+  return cachedNavigatorCredentials.create(options).then((credential) => {
+    if (credential && credential instanceof PublicKeyCredential &&
+        credential.response instanceof AuthenticatorAttestationResponse) {
+      // Parse the aaguid from authenticator data according to
+      // https://w3c.github.io/webauthn/#sctn-authenticator-data.
+      const aaguid = new Uint8Array(
+          credential.response.getAuthenticatorData().slice(37).slice(0, 16));
+      sendWebKitMessage(HANDLER_NAME, {
+        'event': isGpmAaguid(aaguid) ? 'createResolvedGpm' :
+                                       'createResolvedNonGpm',
+      });
+    }
+    return credential;
+  });
+}
+
+// Creates a passthrough attestation request from the provided parameters.
+// The passthrough request invokes the WebKit implementation of
+// `navigator.credentials.get()` and, upon completion, informs the browser for
+// metrics purposes.
+function createPassthroughAttestationRequest(
+    options?: CredentialRequestOptions|undefined): Promise<Credential|null> {
+  sendWebKitMessage(HANDLER_NAME, {'event': 'getRequested'});
+
+  return cachedNavigatorCredentials.get(options).then((credential) => {
+    if (credential && credential instanceof PublicKeyCredential) {
+      // rpId is an optional member of publicKey. Default value (caller's
+      // origin domain) should be used if it is not specified
+      // (https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid).
+      const rpId = options!.publicKey!.rpId ?? document.location.host;
+      sendWebKitMessage(HANDLER_NAME, {
+        'event': 'getResolved',
+        'credential_id': credential.id,
+        'rp_id': rpId,
+      });
+    }
+    return credential;
+  });
+}
+
+// Creates a registration request from the provided parameters.
+function createRegistrationRequest(
+    options?: CredentialCreationOptions|undefined): Promise<Credential|null> {
+  // TODO(crbug.com/385174410): Implement non passthrough path.
+  return createPassthroughRegistrationRequest(options);
+}
+
+// Creates an attestation request from the provided parameters.
+function createAttestationRequest(options?: CredentialRequestOptions|undefined):
+    Promise<Credential|null> {
+  // TODO(crbug.com/385174410): Implement non passthrough path.
+  return createPassthroughAttestationRequest(options);
+}
+
 /**
  * Chromium-specific implementation of CredentialsContainer.
  */
@@ -49,22 +121,11 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.get(options);
     }
 
-    sendWebKitMessage(HANDLER_NAME, {'event': 'getRequested'});
-
-    return cachedNavigatorCredentials.get(options).then((credential) => {
-      if (credential && credential instanceof PublicKeyCredential) {
-        // rpId is an optional member of publicKey. Default value (caller's
-        // origin domain) should be used if it is not specified
-        // (https://w3c.github.io/webauthn/#dom-publickeycredentialrequestoptions-rpid).
-        const rpId = options!.publicKey!.rpId ?? document.location.host;
-        sendWebKitMessage(HANDLER_NAME, {
-          'event': 'getResolved',
-          'credential_id': credential.id,
-          'rp_id': rpId,
-        });
-      }
-      return credential;
-    });
+    if (mayHandleModalPasskeyRequests && !isConditionalMediation(options)) {
+      return createAttestationRequest(options);
+    } else {
+      return createPassthroughAttestationRequest(options);
+    }
   },
   create: function(
       options?: CredentialCreationOptions|undefined): Promise<Credential|null> {
@@ -73,22 +134,11 @@ const credentialsContainer: CredentialsContainer = {
       return cachedNavigatorCredentials.create(options);
     }
 
-    sendWebKitMessage(HANDLER_NAME, {'event': 'createRequested'});
-
-    return cachedNavigatorCredentials.create(options).then((credential) => {
-      if (credential && credential instanceof PublicKeyCredential &&
-          credential.response instanceof AuthenticatorAttestationResponse) {
-        // Parse the aaguid from authenticator data according to
-        // https://w3c.github.io/webauthn/#sctn-authenticator-data.
-        const aaguid = new Uint8Array(
-            credential.response.getAuthenticatorData().slice(37).slice(0, 16));
-        sendWebKitMessage(HANDLER_NAME, {
-          'event': isGpmAaguid(aaguid) ? 'createResolvedGpm' :
-                                         'createResolvedNonGpm',
-        });
-      }
-      return credential;
-    });
+    if (mayHandleModalPasskeyRequests && !isConditionalMediation(options)) {
+      return createRegistrationRequest(options);
+    } else {
+      return createPassthroughRegistrationRequest(options);
+    }
   },
   preventSilentAccess: function(): Promise<any> {
     return cachedNavigatorCredentials.preventSilentAccess();
@@ -102,3 +152,15 @@ const credentialsContainer: CredentialsContainer = {
 // of Object.defineProperty (versus just doing `navigator.credentials = ...`) is
 // a workaround for the fact that `navigator.credentials` is readonly.
 Object.defineProperty(navigator, 'credentials', {value: credentialsContainer});
+
+// Sets whether Chrome is allowed to handle passkey requests directly.
+function setCanHandleModalPasskeyRequests(enabled: boolean) {
+  mayHandleModalPasskeyRequests = enabled;
+}
+
+const passkey = new CrWebApi();
+
+passkey.addFunction(
+    'setCanHandleModalPasskeyRequests', setCanHandleModalPasskeyRequests);
+
+gCrWeb.registerApi('passkey', passkey);

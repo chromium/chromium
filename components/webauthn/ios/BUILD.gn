@@ -30,7 +30,10 @@ optimize_ts("passkey_controller_js") {
 
   sources = [ "resources/passkey_controller.ts" ]
 
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("features") {

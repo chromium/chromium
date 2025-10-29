@@ -23,7 +23,7 @@ class PasskeyJavaScriptFeature : public web::JavaScriptFeature {
   static PasskeyJavaScriptFeature* GetInstance();
 
   // Sets whether modal login is allowed.
-  void SetAllowModalLogin(bool allow_modal_login);
+  void SetAllowModalLogin(web::WebState* web_state, bool allow_modal_login);
 
  private:
   friend class base::NoDestructor<PasskeyJavaScriptFeature>;

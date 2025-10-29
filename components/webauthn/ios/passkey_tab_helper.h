@@ -48,8 +48,8 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Provides access to stored WebAuthn credentials.
   const raw_ref<webauthn::PasskeyModel> passkey_model_;
 
-  // The WebState with which this object is associated.
-  const raw_ref<web::WebState> web_state_;
+  // Whether passkey modal login is allowed to be handled by this tab helper.
+  const bool allow_modal_login_;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_PASSKEY_TAB_HELPER_H_

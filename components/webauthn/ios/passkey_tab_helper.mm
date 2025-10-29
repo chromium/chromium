@@ -77,11 +77,12 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
                                    webauthn::PasskeyModel* passkey_model,
                                    bool allow_modal_login)
     : passkey_model_(CHECK_DEREF(passkey_model)),
-      web_state_(CHECK_DEREF(web_state)) {
+      allow_modal_login_(allow_modal_login) {
+  CHECK(web_state);
   web_state->AddObserver(this);
 
   PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
-      allow_modal_login);
+      web_state, allow_modal_login);
 }
 
 // WebStateObserver
@@ -89,7 +90,8 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
 void PasskeyTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // TODO(crbug.com/385174410): Explicitly allow passkey requests.
+  PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
+      web_state, allow_modal_login_);
 }
 
 void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {

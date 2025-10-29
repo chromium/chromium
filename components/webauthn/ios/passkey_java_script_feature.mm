@@ -9,6 +9,7 @@
 #import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 
 namespace {
 
@@ -39,8 +40,23 @@ PasskeyJavaScriptFeature::PasskeyJavaScriptFeature()
 
 PasskeyJavaScriptFeature::~PasskeyJavaScriptFeature() = default;
 
-void PasskeyJavaScriptFeature::SetAllowModalLogin(bool allow_modal_login) {
-  // TODO(crbug.com/385174410): Allow modal login when desired.
+void PasskeyJavaScriptFeature::SetAllowModalLogin(web::WebState* web_state,
+                                                  bool allow_modal_login) {
+  if (!web_state) {
+    return;
+  }
+
+  web::WebFramesManager* web_frames_manager = GetWebFramesManager(web_state);
+  if (!web_frames_manager) {
+    return;
+  }
+
+  std::set<web::WebFrame*> web_frames = web_frames_manager->GetAllWebFrames();
+  base::Value::List parameters = base::Value::List().Append(allow_modal_login);
+  for (auto web_frame : web_frames) {
+    CallJavaScriptFunction(
+        web_frame, "passkey.setCanHandleModalPasskeyRequests", parameters);
+  }
 }
 
 std::optional<std::string>
