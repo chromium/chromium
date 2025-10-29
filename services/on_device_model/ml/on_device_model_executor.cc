@@ -380,8 +380,6 @@ class ContextHolder final {
 BackendImpl::BackendImpl(const ml::ChromeML* chrome_ml)
     : chrome_ml_(chrome_ml), ts_holder_(ml::TsHolder::Create(*chrome_ml_)) {}
 
-BackendImpl::~BackendImpl() = default;
-
 base::expected<void, on_device_model::ServiceDisconnectReason>
 BackendImpl::CanCreate() {
   if (!chrome_ml_) {
@@ -446,6 +444,8 @@ std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
 BackendImpl::GetDeviceAndPerformanceInfo() {
   return ml::GetDeviceAndPerformanceInfo(*chrome_ml_);
 }
+
+BackendImpl::~BackendImpl() = default;
 
 SessionImpl::SessionImpl(const ChromeML& chrome_ml,
                          OnDeviceModelExecutor& executor,

@@ -4,6 +4,7 @@
 #include "services/on_device_model/on_device_model_service.h"
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
@@ -27,14 +28,14 @@ const base::FeatureParam<bool> kForceFastestInference{
     &optimization_guide::features::kOptimizationGuideOnDeviceModel,
     "on_device_model_force_fastest_inference", false};
 
-std::unique_ptr<Backend> DefaultImpl() {
+scoped_refptr<Backend> DefaultImpl() {
   if (base::FeatureList::IsEnabled(features::kUseFakeChromeML)) {
-    return std::make_unique<ml::BackendImpl>(fake_ml::GetFakeChromeML());
+    return base::MakeRefCounted<ml::BackendImpl>(fake_ml::GetFakeChromeML());
   }
 #if defined(ENABLE_ML_INTERNAL)
-  return std::make_unique<ml::BackendImpl>(::ml::ChromeML::Get());
+  return base::MakeRefCounted<ml::BackendImpl>(::ml::ChromeML::Get());
 #else
-  return std::make_unique<ml::BackendImpl>(fake_ml::GetFakeChromeML());
+  return base::MakeRefCounted<ml::BackendImpl>(fake_ml::GetFakeChromeML());
 #endif  // defined(ENABLE_ML_INTERNAL)
 }
 
@@ -44,11 +45,11 @@ OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
     const ml::ChromeML& chrome_ml)
     : receiver_(this, std::move(receiver)),
-      backend_(std::make_unique<ml::BackendImpl>(&chrome_ml)) {}
+      backend_(base::MakeRefCounted<ml::BackendImpl>(&chrome_ml)) {}
 
 OnDeviceModelService::OnDeviceModelService(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-    std::unique_ptr<Backend> backend)
+    scoped_refptr<Backend> backend)
     : receiver_(this, std::move(receiver)), backend_(std::move(backend)) {}
 
 OnDeviceModelService::~OnDeviceModelService() = default;
@@ -56,7 +57,7 @@ OnDeviceModelService::~OnDeviceModelService() = default;
 // static
 std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-    std::unique_ptr<Backend> backend) {
+    scoped_refptr<Backend> backend) {
   if (!backend) {
     backend = DefaultImpl();
   }
@@ -120,26 +121,20 @@ void OnDeviceModelService::GetDeviceAndPerformanceInfo(
 #else
   // This is expected to take awhile in some cases, so run on a background
   // thread to avoid blocking the main thread.
+  scoped_refptr<Backend> backend_ref = backend_;  // Capture strong reference
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
-          [](OnDeviceModelService* service) {
-            if (!service) {
-              return std::make_pair(
-                  on_device_model::mojom::DevicePerformanceInfo::New(),
-                  on_device_model::mojom::DeviceInfo::New());
-            }
+          [](scoped_refptr<Backend> backend)
+              -> std::pair<mojom::DevicePerformanceInfoPtr,
+                           mojom::DeviceInfoPtr> {
             base::ElapsedTimer timer;
-            auto info_pair = service->backend_->GetDeviceAndPerformanceInfo();
+            auto info_pair = backend->GetDeviceAndPerformanceInfo();
             base::UmaHistogramTimes("OnDeviceModel.BenchmarkDuration",
                                     timer.Elapsed());
             return info_pair;
           },
-          // WeakPtr won't work here because they're not thread-safe.
-          // Raw pointers are ok because OnDeviceModelService will always live
-          // as long as the ODML process does, so if this code is running the
-          // service must be alive.
-          base::Unretained(this)),
+          std::move(backend_ref)),  // Pass the strong reference
       base::BindOnce(
           [](GetDeviceAndPerformanceInfoCallback callback,
              std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,

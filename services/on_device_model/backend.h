@@ -17,10 +17,9 @@ namespace on_device_model {
 class BackendModel;
 
 // A backend that is able to create models and get other info about the device.
-class COMPONENT_EXPORT(ON_DEVICE_MODEL) Backend {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL) Backend
+    : public base::RefCountedThreadSafe<Backend> {
  public:
-  virtual ~Backend() = default;
-
   // Whether the backend is able to create a model.
   virtual base::expected<void, ServiceDisconnectReason> CanCreate() = 0;
 
@@ -41,6 +40,11 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) Backend {
   // Gets the device and performance information for this device.
   virtual std::pair<mojom::DevicePerformanceInfoPtr, mojom::DeviceInfoPtr>
   GetDeviceAndPerformanceInfo() = 0;
+
+ protected:
+  friend class base::RefCountedThreadSafe<Backend>;
+  Backend() = default;
+  virtual ~Backend() = default;
 };
 
 }  // namespace on_device_model
