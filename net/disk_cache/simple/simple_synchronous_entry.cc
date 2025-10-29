@@ -614,7 +614,7 @@ void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
     entry_stat->set_last_used(Time::Now());
     if (in_entry_op.request_update_crc) {
       out_result->updated_crc32 = simple_util::IncrementalCrc32(
-          in_entry_op.previous_crc32, out_buf->data(), *bytes_read);
+          in_entry_op.previous_crc32, out_buf->first(*bytes_read));
       out_result->crc_updated = true;
       // Verify checksum after last read, if we've been asked to.
       if (in_entry_op.request_verify_crc &&
@@ -742,7 +742,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
 
   if (in_entry_op.request_update_crc && buf_len > 0) {
     out_write_result->updated_crc32 = simple_util::IncrementalCrc32(
-        in_entry_op.previous_crc32, in_buf->data(), buf_len);
+        in_entry_op.previous_crc32, in_buf->first(buf_len));
     out_write_result->crc_updated = true;
   }
 

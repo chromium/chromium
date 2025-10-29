@@ -102,26 +102,17 @@ int GetFileIndexFromStreamIndex(int stream_index) {
 }
 
 uint32_t Crc32(base::span<const uint8_t> data) {
-  auto chars = base::as_chars(data);
-  return Crc32(chars.data(), base::checked_cast<int>(data.size()));
-}
-
-uint32_t Crc32(const char* data, int length) {
   uint32_t empty_crc = crc32(0, Z_NULL, 0);
-  if (length == 0)
+  if (data.size() == 0) {
     return empty_crc;
-  return crc32(empty_crc, reinterpret_cast<const Bytef*>(data), length);
+  } else {
+    return crc32(empty_crc, data.data(), data.size());
+  }
 }
 
 uint32_t IncrementalCrc32(uint32_t previous_crc,
                           base::span<const uint8_t> data) {
-  auto chars = base::as_chars(data);
-  return IncrementalCrc32(previous_crc, chars.data(),
-                          base::checked_cast<int>(data.size()));
-}
-
-uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length) {
-  return crc32(previous_crc, reinterpret_cast<const Bytef*>(data), length);
+  return crc32(previous_crc, data.data(), data.size());
 }
 
 }  // namespace disk_cache::simple_util

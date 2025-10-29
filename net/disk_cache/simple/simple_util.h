@@ -77,14 +77,10 @@ NET_EXPORT_PRIVATE int GetFileIndexFromStreamIndex(int stream_index);
 // file, it is possible to immediately create a new file with the same name.
 NET_EXPORT_PRIVATE bool SimpleCacheDeleteFile(const base::FilePath& path);
 
-// Prefer span form for new code.
 NET_EXPORT_PRIVATE uint32_t Crc32(base::span<const uint8_t> data);
-uint32_t Crc32(const char* data, int length);
 
-// Prefer span form for new code.
 NET_EXPORT_PRIVATE uint32_t IncrementalCrc32(uint32_t previous_crc,
                                              base::span<const uint8_t> data);
-uint32_t IncrementalCrc32(uint32_t previous_crc, const char* data, int length);
 
 }  // namespace disk_cache::simple_util
 
