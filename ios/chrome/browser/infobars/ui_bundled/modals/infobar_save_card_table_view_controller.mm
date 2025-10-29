@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -56,7 +57,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardSave,
 };
 
-@interface InfobarSaveCardTableViewController () <TableViewTextLinkCellDelegate,
+@interface InfobarSaveCardTableViewController () <TableViewTextEditItemDelegate,
+                                                  TableViewTextLinkCellDelegate,
                                                   UITextFieldDelegate>
 
 // InfobarSaveCardModalDelegate for this ViewController.
@@ -301,13 +303,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardHolderName: {
       TableViewTextEditCell* editCell =
           base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      [editCell.textField addTarget:self
-                             action:@selector(nameEditDidBegin)
-                   forControlEvents:UIControlEventEditingDidBegin];
-      [editCell.textField addTarget:self
-                             action:@selector(nameDidChange:)
-                   forControlEvents:UIControlEventEditingChanged |
-                                    UIControlEventEditingDidEnd];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -315,13 +310,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardExpireMonth: {
       TableViewTextEditCell* editCell =
           base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      [editCell.textField addTarget:self
-                             action:@selector(monthEditDidBegin)
-                   forControlEvents:UIControlEventEditingDidBegin];
-      [editCell.textField addTarget:self
-                             action:@selector(expireMonthDidChange:)
-                   forControlEvents:UIControlEventEditingChanged |
-                                    UIControlEventEditingDidEnd];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -329,13 +317,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeCardExpireYear: {
       TableViewTextEditCell* editCell =
           base::apple::ObjCCast<TableViewTextEditCell>(cell);
-      [editCell.textField addTarget:self
-                             action:@selector(yearEditDidBegin)
-                   forControlEvents:UIControlEventEditingDidBegin];
-      [editCell.textField addTarget:self
-                             action:@selector(expireYearDidChange:)
-                   forControlEvents:UIControlEventEditingChanged |
-                                    UIControlEventEditingDidEnd];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -344,9 +325,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       TableViewTextEditCell* editCell =
           base::apple::ObjCCast<TableViewTextEditCell>(cell);
       editCell.textField.keyboardType = UIKeyboardTypeNumberPad;
-      [editCell.textField addTarget:self
-                             action:@selector(cvcDidChange:)
-                   forControlEvents:UIControlEventEditingChanged];
       editCell.textField.accessibilityIdentifier =
           kSaveCardModalCVCTextFieldIdentifier;
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -437,6 +415,60 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return YES;
 }
 
+#pragma mark - TableViewTextEditItemDelegate
+
+- (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
+  ItemType itemType = static_cast<ItemType>(tableViewItem.type);
+  switch (itemType) {
+    case ItemTypeCardLastDigits:
+      // Not editable.
+      break;
+    case ItemTypeCardHolderName:
+      [self nameEditDidBegin];
+      break;
+    case ItemTypeCardExpireMonth:
+      [self monthEditDidBegin];
+      break;
+    case ItemTypeCardExpireYear:
+      [self yearEditDidBegin];
+      break;
+    case ItemTypeCardCvc:
+      // No metrics recorded.
+      break;
+    case ItemTypeCardLegalMessage:
+    case ItemTypeCardSave:
+      NOTREACHED();
+  }
+}
+
+- (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
+  ItemType itemType = static_cast<ItemType>(tableViewItem.type);
+  switch (itemType) {
+    case ItemTypeCardLastDigits:
+      // Not editable.
+      break;
+    case ItemTypeCardHolderName:
+      [self nameDidChange];
+      break;
+    case ItemTypeCardExpireMonth:
+      [self expireMonthDidChange];
+      break;
+    case ItemTypeCardExpireYear:
+      [self expireYearDidChange];
+      break;
+    case ItemTypeCardCvc:
+      [self cvcDidChange];
+      break;
+    case ItemTypeCardLegalMessage:
+    case ItemTypeCardSave:
+      NOTREACHED();
+  }
+}
+
+- (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
+  // No op.
+}
+
 #pragma mark - TableViewTextLinkCellDelegate
 
 - (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
@@ -487,36 +519,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
       recordModalEvent:MobileMessagesSaveCardModalEvent::EditedCvc];
 }
 
-- (void)nameDidChange:(UITextField*)textField {
-  BOOL isNameValid = [self isCardholderNameValid:textField.text];
+- (void)nameDidChange {
+  BOOL isNameValid =
+      [self isCardholderNameValid:self.cardholderNameItem.textFieldValue];
 
-  self.cardholderNameItem.textFieldValue = textField.text;
   [self.cardholderNameItem setHasValidText:isNameValid];
   [self reconfigureCellsForItems:@[ self.cardholderNameItem ]];
 
   [self updateSaveCardButtonState];
 }
 
-- (void)expireMonthDidChange:(UITextField*)textField {
+- (void)expireMonthDidChange {
   BOOL isMonthValid =
-      [self isExpirationMonthValid:textField.text
+      [self isExpirationMonthValid:self.expirationMonthItem.textFieldValue
                            forYear:self.expirationYearItem.textFieldValue];
 
-  self.expirationMonthItem.textFieldValue = textField.text;
   [self.expirationMonthItem setHasValidText:isMonthValid];
   [self reconfigureCellsForItems:@[ self.expirationMonthItem ]];
 
   [self updateSaveCardButtonState];
 }
 
-- (void)expireYearDidChange:(UITextField*)textField {
-  BOOL isYearValid = [self isExpirationYearValid:textField.text];
+- (void)expireYearDidChange {
+  BOOL isYearValid =
+      [self isExpirationYearValid:self.expirationYearItem.textFieldValue];
   // Check if the card month is valid for the newly entered year.
   BOOL isMonthValid =
       [self isExpirationMonthValid:self.expirationMonthItem.textFieldValue
-                           forYear:textField.text];
+                           forYear:self.expirationYearItem.textFieldValue];
 
-  self.expirationYearItem.textFieldValue = textField.text;
   [self.expirationYearItem setHasValidText:isYearValid];
   [self.expirationMonthItem setHasValidText:isMonthValid];
   [self reconfigureCellsForItems:@[
@@ -526,9 +557,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateSaveCardButtonState];
 }
 
-- (void)cvcDidChange:(UITextField*)textField {
-  self.cardCvcItem.textFieldValue = textField.text;
-  [self.cardCvcItem setHasValidText:[self isCVCValid:textField.text]];
+- (void)cvcDidChange {
+  [self.cardCvcItem
+      setHasValidText:[self isCVCValid:self.cardCvcItem.textFieldValue]];
   [self reconfigureCellsForItems:@[ self.cardCvcItem ]];
   [self updateSaveCardButtonState];
 }
@@ -582,6 +613,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItem.textFieldEnabled = enabled;
   textEditItem.hideIcon = !enabled;
   textEditItem.returnKeyType = UIReturnKeyDone;
+  textEditItem.delegate = self;
 
   return textEditItem;
 }
