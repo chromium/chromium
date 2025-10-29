@@ -179,6 +179,8 @@ config("skia_library_config") {
 
     # https://crbug.com/443057959
     #"SK_DISABLE_LEGACY_INIT_DECODERS",
+
+    "SK_DISABLE_LEGACY_PNG_WRITEBUFFER",
   ]
 
   if (use_blink) {
