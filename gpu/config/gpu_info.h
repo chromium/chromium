@@ -551,11 +551,6 @@ struct GPU_CONFIG_EXPORT GPUInfo {
     virtual void BeginVideoEncodeAcceleratorSupportedProfile() = 0;
     virtual void EndVideoEncodeAcceleratorSupportedProfile() = 0;
 
-    // Markers indicating that an ImageDecodeAcceleratorSupportedProfile is
-    // being described.
-    virtual void BeginImageDecodeAcceleratorSupportedProfile() = 0;
-    virtual void EndImageDecodeAcceleratorSupportedProfile() = 0;
-
     // Markers indicating that "auxiliary" attributes of the GPUInfo
     // (according to the DevTools protocol) are being described.
     virtual void BeginAuxAttributes() = 0;
