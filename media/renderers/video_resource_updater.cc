@@ -89,26 +89,25 @@ VideoFrameResourceType ExternalResourceTypeForHardware(
     return VideoFrameResourceType::RGB;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // Hardware video decode on Android requires using external formats which are
+  // currently not expressible by SharedImageFormat, so images are created as
+  // RGBA+GL_TEXTURE_EXTERNAL_OES.
+  if (frame.shared_image()->GetTextureTarget() == GL_TEXTURE_EXTERNAL_OES &&
+      frame.shared_image()->format() == viz::SinglePlaneFormat::kRGBA_8888) {
+    return VideoFrameResourceType::RGB;
+  }
+#endif
+
   const VideoPixelFormat format = frame.format();
   switch (format) {
-    case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
+      return VideoFrameResourceType::RGB;
+    case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
-      switch (frame.shared_image()->GetTextureTarget()) {
-        case GL_TEXTURE_EXTERNAL_OES:
-#if BUILDFLAG(IS_ANDROID)
-          return VideoFrameResourceType::RGB;
-#endif
-        case GL_TEXTURE_2D:
-        case GL_TEXTURE_RECTANGLE_ARB:
-          return (format == PIXEL_FORMAT_XRGB)
-                     ? VideoFrameResourceType::RGB
-                     : VideoFrameResourceType::RGBA_PREMULTIPLIED;
-        default:
-          NOTREACHED();
-      }
+      return VideoFrameResourceType::RGBA_PREMULTIPLIED;
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_I420:
