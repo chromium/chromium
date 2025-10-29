@@ -400,7 +400,6 @@ void WebHistoryService::ExpireHistory(
   for (const auto& expire : expire_list) {
     // Convert the times to server timestamps.
     std::string min_timestamp = ServerTimeString(expire.begin_time);
-    // TODO(dubroy): Use sane time (crbug.com/146090) here when it's available.
     base::Time end_time = expire.end_time;
     if (end_time.is_null() || end_time > now) {
       end_time = now;

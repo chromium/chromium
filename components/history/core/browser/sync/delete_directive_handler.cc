@@ -404,7 +404,6 @@ bool DeleteDirectiveHandler::CreateTimeRangeDeleteDirective(
       begin_time.is_null() ? 0 : TimeToUnixUsec(begin_time);
 
   // Determine the actual end time -- it should not be null or in the future.
-  // TODO(dubroy): Use sane time (crbug.com/146090) here when it's available.
   base::Time end = (end_time.is_null() || end_time > now) ? now : end_time;
   // -1 because end time in delete directives is inclusive.
   int64_t end_time_usecs = TimeToUnixUsec(end) - 1;

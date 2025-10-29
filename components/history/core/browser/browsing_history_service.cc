@@ -432,7 +432,6 @@ void BrowsingHistoryService::RemoveVisits(
         (expire_args->begin_time - base::Time::UnixEpoch()).InMicroseconds());
 
     // Delete directives shouldn't have an end time in the future.
-    // TODO(dubroy): Use sane time (crbug.com/146090) here when it's ready.
     base::Time end_time = std::min(expire_args->end_time, now);
 
     // -1 because end time in delete directives is inclusive.
@@ -616,12 +615,11 @@ void BrowsingHistoryService::QueryComplete(
   output.reserve(output.size() + results.size());
 
   for (const auto& page : results) {
-    // TODO(dubroy): Use sane time (crbug.com/146090) here when it's ready.
-    output.emplace_back(HistoryEntry(
+    output.emplace_back(
         HistoryEntry::LOCAL_ENTRY, page.url(), page.title(), page.visit_time(),
         std::string(), !state->search_text.empty(), page.snippet().text(),
         page.blocked_visit(), GURL(), page.visit_count(), page.typed_count(),
-        page.has_actor_source(), page.app_id()));
+        page.has_actor_source(), page.app_id());
   }
 
   state->local_status =
