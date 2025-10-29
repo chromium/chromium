@@ -1,6 +1,3 @@
 This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] interop / destroy device after export
-  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

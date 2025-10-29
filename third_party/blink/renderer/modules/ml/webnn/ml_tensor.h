@@ -54,6 +54,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
            webnn::OperandDescriptor descriptor,
            webnn::MLTensorUsage usage,
            scoped_refptr<gpu::ClientSharedImage> shared_image,
+           GPUDevice* gpu_device,
            webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
            base::PassKey<MLContext> pass_key);
   MLTensor(const MLTensor&) = delete;
@@ -66,7 +67,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // ml_tensor.idl
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
-  bool exportableToGPU() const;
+  GPUDevice* gpuDevice() const;
   bool readable() const;
   bool writable() const;
   bool constant() const;
@@ -96,7 +97,6 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // operations have completed.
   ScriptPromise<GPUBuffer> ExportToGPUImpl(webnn::ScopedTrace scoped_trace,
                                            ScriptState* script_state,
-                                           GPUDevice* device,
                                            ExceptionState& exception_state);
 
   // Read data from the MLTensor. The resolver should be resolved with a copy of
@@ -132,7 +132,6 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   void OnDidExportTensor(
       webnn::ScopedTrace scoped_trace,
       ScriptPromiseResolver<GPUBuffer>* resolver,
-      GPUDevice* device,
       base::expected<gpu::SyncToken, webnn::mojom::blink::ErrorPtr> result);
 
   void OnConnectionError();
@@ -161,6 +160,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
 
   // Exists when `WebNNTensor` is a tensor created for WebGPUInterop.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  WeakMember<GPUDevice> gpu_device_;
 
   // Exists when this `WebNNTensor` has been exported to WebGPU.
   WeakMember<GPUBuffer> gpu_buffer_;

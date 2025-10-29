@@ -315,6 +315,12 @@ typedef record<USVString, MLTensor> MLNamedTensors;
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
+  ] Promise<MLTensor> createExportableTensor(MLTensorDescriptor descriptor, GPUDevice device);
+
+  [
+    RuntimeEnabled=MachineLearningNeuralNetwork,
+    CallWith=ScriptState,
+    RaisesException
   ] void writeTensor(MLTensor dstTensor, AllowSharedBufferSource srcData);
 
   [

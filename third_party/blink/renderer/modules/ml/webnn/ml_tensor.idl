@@ -10,7 +10,7 @@
 ] interface MLTensor {
   readonly attribute MLOperandDataType dataType;
   readonly attribute FrozenArray<unsigned long> shape;
-  readonly attribute boolean exportableToGPU;
+  readonly attribute GPUDevice? gpuDevice;
   readonly attribute boolean readable;
   readonly attribute boolean writable;
   readonly attribute boolean constant;

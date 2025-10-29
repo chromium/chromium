@@ -127,59 +127,6 @@ void ML::OnWebNNServiceConnectionError() {
   pending_resolvers_.clear();
 }
 
-ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
-                                           GPUDevice* gpu_device,
-                                           ExceptionState& exception_state) {
-  webnn::ScopedTrace scoped_trace("ML::createContext(GPUDevice)");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return EmptyPromise();
-  }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLContext>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
-  // Ensure `resolver` is rejected if the `CreateWebNNContext()` callback isn't
-  // run due to a WebNN service connection error.
-  pending_resolvers_.insert(resolver);
-
-  EnsureWebNNServiceConnection();
-
-  // TODO(crbug.com/409110243): implement WebNNContextImpl creation from
-  // GPUDevice.
-  webnn_context_provider_->CreateWebNNContext(
-      webnn::mojom::blink::CreateContextOptions::New(
-          ConvertBlinkDeviceTypeToMojo(
-              V8MLDeviceType(V8MLDeviceType::Enum::kGpu)),
-          ConvertBlinkPowerPreferenceToMojo(
-              V8MLPowerPreference(V8MLPowerPreference::Enum::kDefault))),
-      BindOnce(
-          [](ML* ml, ScriptPromiseResolver<MLContext>* resolver,
-             webnn::ScopedTrace scoped_trace, GPUDevice* gpu_device,
-             webnn::mojom::blink::CreateContextResultPtr result) {
-            ml->pending_resolvers_.erase(resolver);
-
-            if (result->is_error()) {
-              const webnn::mojom::blink::Error& create_context_error =
-                  *result->get_error();
-              resolver->RejectWithDOMException(
-                  WebNNErrorCodeToDOMExceptionCode(create_context_error.code),
-                  create_context_error.message);
-              return;
-            }
-
-            resolver->Resolve(MakeGarbageCollected<MLContext>(
-                resolver->GetExecutionContext(), gpu_device,
-                std::move(result->get_success())));
-          },
-          WrapPersistent(this), WrapPersistent(resolver),
-          std::move(scoped_trace), WrapPersistent(gpu_device)));
-
-  return promise;
-}
-
 void ML::EnsureWebNNServiceConnection() {
   if (webnn_context_provider_.is_bound()) {
     return;

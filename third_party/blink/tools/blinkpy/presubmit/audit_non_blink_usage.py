@@ -2609,6 +2609,7 @@ _CONFIG = [
         'allowed': [
             'blink_mojom::.+',
             'webnn::.+',
+            'gpu::SharedImageInterface',
         ]
     },
     {

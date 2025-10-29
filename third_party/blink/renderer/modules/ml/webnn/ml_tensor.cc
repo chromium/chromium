@@ -29,6 +29,9 @@ const char kTensorDestroyedError[] =
 
 const char kTensorExportedError[] = "Tensor has been exported to WebGPU.";
 
+const char kTensorWebGPUInteropUnsupportedError[] =
+    "The tensor does not support WebGPU interop.";
+
 void RecordReadTensorTime(base::ElapsedTimer read_tensor_timer) {
   base::UmaHistogramMediumTimes("WebNN.MLTensor.TimingMs.Read",
                                 read_tensor_timer.Elapsed());
@@ -42,6 +45,7 @@ MLTensor::MLTensor(
     webnn::OperandDescriptor descriptor,
     webnn::MLTensorUsage usage,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
+    GPUDevice* gpu_device,
     webnn::mojom::blink::CreateTensorSuccessPtr create_tensor_success,
     base::PassKey<MLContext> /*pass_key*/)
     : ml_context_(context),
@@ -49,7 +53,8 @@ MLTensor::MLTensor(
       usage_(usage),
       webnn_handle_(std::move(create_tensor_success->tensor_handle)),
       remote_tensor_(execution_context),
-      shared_image_(std::move(shared_image)) {
+      shared_image_(std::move(shared_image)),
+      gpu_device_(gpu_device) {
   remote_tensor_.Bind(
       std::move(create_tensor_success->tensor_remote),
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
@@ -66,6 +71,7 @@ void MLTensor::Trace(Visitor* visitor) const {
   visitor->Trace(pending_byob_resolvers_);
   visitor->Trace(pending_gpu_buffer_resolver_);
   visitor->Trace(gpu_buffer_);
+  visitor->Trace(gpu_device_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -77,8 +83,8 @@ Vector<uint32_t> MLTensor::shape() const {
   return Vector<uint32_t>(descriptor_.shape());
 }
 
-bool MLTensor::exportableToGPU() const {
-  return usage_.Has(webnn::MLTensorUsageFlags::kWebGpuInterop);
+GPUDevice* MLTensor::gpuDevice() const {
+  return gpu_device_;
 }
 
 bool MLTensor::readable() const {
@@ -385,9 +391,12 @@ void MLTensor::OnConnectionError() {
 ScriptPromise<GPUBuffer> MLTensor::ExportToGPUImpl(
     webnn::ScopedTrace scoped_trace,
     ScriptState* script_state,
-    GPUDevice* device,
     ExceptionState& exception_state) {
-  DCHECK(device);
+
+  if (!gpu_device_) {
+    exception_state.ThrowTypeError(kTensorWebGPUInteropUnsupportedError);
+    return EmptyPromise();
+  }
 
   // Remote context gets automatically unbound when the execution context
   // destructs.
@@ -412,8 +421,7 @@ ScriptPromise<GPUBuffer> MLTensor::ExportToGPUImpl(
 
   remote_tensor_->ExportTensor(
       blink::BindOnce(&MLTensor::OnDidExportTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver),
-                    WrapPersistent(device)));
+                    std::move(scoped_trace), WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -421,7 +429,6 @@ ScriptPromise<GPUBuffer> MLTensor::ExportToGPUImpl(
 void MLTensor::OnDidExportTensor(
     webnn::ScopedTrace scoped_trace,
     ScriptPromiseResolver<GPUBuffer>* resolver,
-    GPUDevice* device,
     base::expected<gpu::SyncToken, webnn::mojom::blink::ErrorPtr> result) {
   pending_gpu_buffer_resolver_ = nullptr;
 
@@ -433,7 +440,7 @@ void MLTensor::OnDidExportTensor(
     return;
   }
 
-  if (device->IsDestroyed()) {
+  if (gpu_device_->IsDestroyed()) {
     resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                      "GPUDevice was lost or destroyed.");
     return;
@@ -473,12 +480,12 @@ void MLTensor::OnDidExportTensor(
   // ClientSharedImage::BeginWebGPUBufferAccess calls WaitSyncToken.
   scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer =
       WebGPUMailboxBuffer::FromExistingSharedImage(
-          device->GetDawnControlClient(), device->GetHandle(),
+          gpu_device_->GetDawnControlClient(), gpu_device_->GetHandle(),
           tensor_buffer_desc, shared_image_, result.value(),
           std::move(webgpu_finished_access_callback));
   CHECK(mailbox_buffer);
 
-  gpu_buffer_ = MakeGarbageCollected<GPUBuffer>(device, tensor_buffer_desc.size,
+  gpu_buffer_ = MakeGarbageCollected<GPUBuffer>(gpu_device_, tensor_buffer_desc.size,
                                                 std::move(mailbox_buffer),
                                                 String::FromUTF8(tensor_buffer_desc.label));
   resolver->Resolve(gpu_buffer_);
