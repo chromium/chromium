@@ -209,6 +209,11 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   // with the original update_time).
   void MergeFrom(const NoVarySearchCache& newer);
 
+  // Changes the maximum number of entries stored in the cache to the supplied
+  // value, evicting entries if necessary to fit within the new limit. Optimized
+  // for the case when `max_size_` doesn't change.
+  void SetMaxSize(size_t max_size);
+
   // Returns the size (number of stored original query strings) of the cache.
   size_t size() const { return size_; }
 
@@ -323,7 +328,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCache {
   size_t size_ = 0u;
 
   // Query objects will be evicted to avoid exceeding `max_size_`.
-  const size_t max_size_;
+  size_t max_size_;
 
   // An object to be notified about changes to this cache.
   raw_ptr<Journal> journal_ = nullptr;

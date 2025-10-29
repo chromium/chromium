@@ -1771,6 +1771,12 @@ void HttpCache::OnNoVarySearchCacheLoadComplete(
   auto provisional_no_vary_search_cache = std::move(no_vary_search_cache_);
   no_vary_search_cache_ = std::move(result.value());
   no_vary_search_cache_->MergeFrom(*provisional_no_vary_search_cache);
+  // The persisted cache may have had a different size than our current
+  // configuration. Reconfigure it and evict entries if necessary.
+  const size_t max_size = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
+  if (max_size >= 1) {
+    no_vary_search_cache_->SetMaxSize(max_size);
+  }
 }
 
 }  // namespace net

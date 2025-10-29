@@ -534,6 +534,18 @@ void NoVarySearchCache::MergeFrom(const NoVarySearchCache& newer) {
   }
 }
 
+void NoVarySearchCache::SetMaxSize(size_t max_size) {
+  if (max_size == max_size_) {
+    return;
+  }
+  CHECK_GE(max_size, 1u);
+  // Evict entries while size_ > max_size_.
+  max_size_ = max_size;
+  while (size_ > max_size_) {
+    EraseQuery(lru_.tail()->value());
+  }
+}
+
 bool NoVarySearchCache::IsTopLevelMapEmptyForTesting() const {
   return partitions_.empty();
 }

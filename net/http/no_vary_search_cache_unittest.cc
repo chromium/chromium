@@ -1393,6 +1393,71 @@ TEST_P(NoVarySearchCacheReplayTest, LRUOrderPreserved) {
   expect_to_evict(1u);
 }
 
+TEST_P(NoVarySearchCacheTest, SetMaxSizeSame) {
+  Insert("a=1", "key-order");
+  Insert("a=2", "key-order");
+  ASSERT_EQ(cache().size(), 2u);
+  ASSERT_EQ(cache().max_size(), kMaxSize);
+
+  cache().SetMaxSize(kMaxSize);
+
+  EXPECT_EQ(cache().size(), 2u);
+  EXPECT_EQ(cache().max_size(), kMaxSize);
+  EXPECT_TRUE(Exists("a=1"));
+  EXPECT_TRUE(Exists("a=2"));
+}
+
+TEST_P(NoVarySearchCacheTest, SetMaxSizeSmaller) {
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    Insert(QueryWithIParameter(i), "key-order");
+  }
+  ASSERT_EQ(cache().size(), kMaxSize);
+
+  cache().SetMaxSize(kMaxSize - 2);
+
+  EXPECT_EQ(cache().size(), kMaxSize - 2);
+  EXPECT_EQ(cache().max_size(), kMaxSize - 2);
+
+  // The two least recently used items should be evicted.
+  EXPECT_FALSE(Exists("i=0"));
+  EXPECT_FALSE(Exists("i=1"));
+  EXPECT_TRUE(Exists("i=2"));
+  EXPECT_TRUE(Exists("i=3"));
+  EXPECT_TRUE(Exists("i=4"));
+}
+
+TEST_P(NoVarySearchCacheTest, SetMaxSizeLarger) {
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    Insert(QueryWithIParameter(i), "key-order");
+  }
+  ASSERT_EQ(cache().size(), kMaxSize);
+
+  cache().SetMaxSize(kMaxSize + 2);
+
+  EXPECT_EQ(cache().size(), kMaxSize);
+  EXPECT_EQ(cache().max_size(), kMaxSize + 2);
+
+  // All original items should still be there.
+  for (size_t i = 0; i < kMaxSize; ++i) {
+    EXPECT_TRUE(Exists(QueryWithIParameter(i)));
+  }
+
+  // Add two more items.
+  Insert(QueryWithIParameter(kMaxSize), "key-order");
+  Insert(QueryWithIParameter(kMaxSize + 1), "key-order");
+
+  EXPECT_EQ(cache().size(), kMaxSize + 2);
+  EXPECT_TRUE(Exists(QueryWithIParameter(kMaxSize)));
+  EXPECT_TRUE(Exists(QueryWithIParameter(kMaxSize + 1)));
+}
+
+TEST_P(NoVarySearchCacheTest, SetMaxSizeOnEmptyCache) {
+  ASSERT_EQ(cache().size(), 0u);
+  cache().SetMaxSize(kMaxSize + 5);
+  EXPECT_EQ(cache().size(), 0u);
+  EXPECT_EQ(cache().max_size(), kMaxSize + 5);
+}
+
 // TODO(https://crbug.com/390216627): Test the various experiments that affect
 // the cache key and make sure they also affect NoVarySearchCache.
 
