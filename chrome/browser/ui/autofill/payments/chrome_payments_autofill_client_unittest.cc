@@ -15,9 +15,12 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -115,6 +118,12 @@ class MockAutofillSnackbarControllerImpl
                base::TimeDelta,
                base::OnceClosure,
                std::optional<base::OnceClosure>),
+              (override));
+  MOCK_METHOD(void,
+              ShowPaymentsSnackbar,
+              (AutofillSnackbarType type,
+               const CreditCard& filled_card,
+               base::OnceClosure),
               (override));
 };
 
@@ -571,6 +580,85 @@ TEST_F(
               Show(AutofillSnackbarType::kSaveServerIbanSuccess, _));
   chrome_payments_client()->IbanUploadCompleted(/*iban_saved=*/true,
                                                 /*max_strikes=*/false);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_BnplCard_ShowsBnplSnackbar) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card.set_issuer_id(kBnplAffirmIssuerId);
+  card.set_is_bnpl_card(true);
+
+  FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+
+  EXPECT_CALL(
+      *snackbar_controller,
+      ShowPaymentsSnackbar(AutofillSnackbarType::kBnpl, options.filled_card, _))
+      .WillOnce([=](AutofillSnackbarType type, const CreditCard& card,
+                    base::OnceClosure callback) {
+        snackbar_controller
+            ->AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+                type, card, std::move(callback));
+      });
+  EXPECT_CALL(*snackbar_controller, Show(AutofillSnackbarType::kBnpl, _));
+
+  chrome_payments_client()->OnCardDataAvailable(options);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_VirtualCard_ShowsVirtualCardSnackbar) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+
+  FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+
+  EXPECT_CALL(*snackbar_controller,
+              ShowPaymentsSnackbar(AutofillSnackbarType::kVirtualCard,
+                                   options.filled_card, _))
+      .WillOnce([=](AutofillSnackbarType type, const CreditCard& card,
+                    base::OnceClosure callback) {
+        snackbar_controller
+            ->AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+                type, card, std::move(callback));
+      });
+  EXPECT_CALL(*snackbar_controller,
+              Show(AutofillSnackbarType::kVirtualCard, _));
+
+  chrome_payments_client()->OnCardDataAvailable(options);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_ShowsCardInfoRetrievalSnackbar) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+
+  FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+
+  EXPECT_CALL(*snackbar_controller,
+              ShowPaymentsSnackbar(AutofillSnackbarType::kCardInfoRetrieval,
+                                   options.filled_card, _))
+      .WillOnce([=](AutofillSnackbarType type, const CreditCard& card,
+                    base::OnceClosure callback) {
+        snackbar_controller
+            ->AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+                type, card, std::move(callback));
+      });
+  EXPECT_CALL(*snackbar_controller,
+              Show(AutofillSnackbarType::kCardInfoRetrieval, _));
+
+  chrome_payments_client()->OnCardDataAvailable(options);
 }
 
 // Test that calling `ShowLoyaltyCards` passes the correct lists of loyalty

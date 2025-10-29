@@ -204,6 +204,12 @@ class CreditCardAccessorySheetViewBinder {
                 return R.drawable.verve_metadata_card;
             case "visaCC":
                 return R.drawable.visa_metadata_card;
+            case "affirm":
+                return R.drawable.affirm_linked;
+            case "zip":
+                return R.drawable.zip_linked;
+            case "klarna":
+                return R.drawable.klarna_linked;
         }
         return R.drawable.infobar_autofill_cc;
     }

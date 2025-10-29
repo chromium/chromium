@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -103,6 +104,8 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
                  enabled);
 }
 
+// TODO(crbug.com/430575808): Consolidate `TranslateCard()` and
+// `TranslateCachedCard()` into one method.
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   DCHECK(data);
   UserInfo user_info(data->network(), GetCardArtUrl(*data));
@@ -131,10 +134,13 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   DCHECK(data);
 
   const CreditCard& card = data->card;
-  UserInfo user_info(card.network(), GetCardArtUrl(card));
+  UserInfo user_info(card.is_bnpl_card() ? card.issuer_id() : card.network(),
+                     GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
   std::u16string card_number_a11y_description =
-      card_number + u" " + card.NetworkForDisplay();
+      card_number + u" " +
+      (card.is_bnpl_card() ? card.CardNameForAutofillDisplay()
+                           : card.NetworkForDisplay());
   user_info.add_field(
       AccessorySheetField::Builder()
           .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)

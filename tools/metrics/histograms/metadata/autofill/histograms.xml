@@ -348,6 +348,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.Snackbar.Type">
+  <variant name="BnplVirtualCard"
+      summary="Snackbar shown after BNPL virtual card is autofilled."/>
   <variant name="MandatoryReauth"
       summary="Snackbar shown after opting into mandatory reauth."/>
   <variant name="PlusAddressEmailOverride"
