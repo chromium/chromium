@@ -13,8 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ui/omnibox/features.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_config.h"
@@ -26,7 +26,6 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/page_classification_functions.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 

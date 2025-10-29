@@ -4,7 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/config/coverage/buildflags.h"
-#include "chrome/browser/ui/omnibox/features.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/omnibox/common/omnibox_features.h"

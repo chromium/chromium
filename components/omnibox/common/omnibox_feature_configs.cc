@@ -823,4 +823,5 @@ ComposeboxSuggestionLimit&
 ComposeboxSuggestionLimit::ComposeboxSuggestionLimit::operator=(
     ComposeboxSuggestionLimit&&) = default;
 ComposeboxSuggestionLimit::~ComposeboxSuggestionLimit() = default;
+
 }  // namespace omnibox_feature_configs
