@@ -3025,8 +3025,13 @@ void NavigationRequest::SetWaitingForRendererResponse() {
 
 bool NavigationRequest::ShouldAddCookieChangeListener() {
   // Cookies can only be set for http/http(s) URLs, so only create listeners
-  // for those navigations.
-  return common_params_->url.SchemeIsHTTPOrHTTPS();
+  // for those navigations. Also only create for non-activation cross-document
+  // primary main frame navigations (or if
+  // `ShouldAddDeviceBoundSessionObserver()` returns true, which allows
+  // prerenders).
+  return (!IsPageActivation() && !IsSameDocument() && IsInPrimaryMainFrame() &&
+          common_params_->url.SchemeIsHTTPOrHTTPS()) ||
+         ShouldAddDeviceBoundSessionObserver();
 }
 
 bool NavigationRequest::DidCookiesChangeAfterStart(
