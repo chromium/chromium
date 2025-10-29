@@ -935,6 +935,15 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDnsFilteringDetails);
 NET_EXPORT BASE_DECLARE_FEATURE(kUpdateIsMainFrameOriginRecentlyAccessed);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kRecentlyAccessedOriginCacheSize);
 
+// When enabled, the browser tries QUIC by default.
+NET_EXPORT BASE_DECLARE_FEATURE(kTryQuicByDefault);
+
+// The QUIC connection options which will be sent to the server in order to
+// enable certain QUIC features. This should be set using `QuicTag`s (32-bit
+// value represented in ASCII equivalent e.g. EXMP). To set multiple features,
+// separate the values with a comma (e.g. "ABCD,EFGH").
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicOptions);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
