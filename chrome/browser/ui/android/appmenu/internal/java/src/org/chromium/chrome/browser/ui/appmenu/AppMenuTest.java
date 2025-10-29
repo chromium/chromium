@@ -77,6 +77,8 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -365,6 +367,72 @@ public class AppMenuTest {
                 "Item selected callback should not have been called.",
                 0,
                 mDelegate.itemSelectedCallbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testSubmenu_ItemWithSubmenuAdded() throws TimeoutException {
+        showMenuAndAssert(mAppMenuHandler);
+
+        int menuItemWithSubmenuId = 30;
+        int menuItemSubmenuOneId = 31;
+        int menuItemSubmenuTwoId = 32;
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<ListItem> submenuItems = new ArrayList<>();
+                    submenuItems.add(
+                            new MVCListAdapter.ListItem(
+                                    AppMenuItemType.STANDARD,
+                                    new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                                            .with(
+                                                    AppMenuItemProperties.MENU_ITEM_ID,
+                                                    menuItemSubmenuOneId)
+                                            .with(AppMenuItemProperties.TITLE, "Submenu Item One")
+                                            .build()));
+
+                    submenuItems.add(
+                            new MVCListAdapter.ListItem(
+                                    AppMenuItemType.STANDARD,
+                                    new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                                            .with(
+                                                    AppMenuItemProperties.MENU_ITEM_ID,
+                                                    menuItemSubmenuTwoId)
+                                            .with(AppMenuItemProperties.TITLE, "Submenu Item Two")
+                                            .build()));
+
+                    ListItem menuItemWithSubmenu =
+                            new MVCListAdapter.ListItem(
+                                    AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                                    new PropertyModel.Builder(
+                                                    AppMenuItemWithSubmenuProperties.ALL_KEYS)
+                                            .with(
+                                                    AppMenuItemProperties.MENU_ITEM_ID,
+                                                    menuItemWithSubmenuId)
+                                            .with(
+                                                    AppMenuItemProperties.TITLE,
+                                                    "Menu Item With Submenu")
+                                            .with(
+                                                    AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS,
+                                                    submenuItems)
+                                            .build());
+
+                    mAppMenuHandler.getModelListForTesting().add(menuItemWithSubmenu);
+
+                    PropertyModel submenuItemOneModel =
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                    mAppMenuCoordinator, menuItemSubmenuOneId);
+                    Assert.assertNotNull(
+                            submenuItemOneModel.get(AppMenuItemProperties.CLICK_HANDLER));
+                    Assert.assertEquals(0, submenuItemOneModel.get(AppMenuItemProperties.POSITION));
+
+                    PropertyModel submenuItemTwoModel =
+                            AppMenuTestSupport.getMenuItemPropertyModel(
+                                    mAppMenuCoordinator, menuItemSubmenuTwoId);
+                    Assert.assertNotNull(
+                            submenuItemTwoModel.get(AppMenuItemProperties.CLICK_HANDLER));
+                    Assert.assertEquals(1, submenuItemTwoModel.get(AppMenuItemProperties.POSITION));
+                });
     }
 
     @Test
