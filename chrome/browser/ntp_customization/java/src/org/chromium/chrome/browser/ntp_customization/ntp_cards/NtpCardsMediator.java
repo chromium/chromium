@@ -127,6 +127,5 @@ public class NtpCardsMediator {
     void destroy() {
         mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, null);
-        updateUserPrefs();
     }
 }
