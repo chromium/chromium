@@ -311,6 +311,9 @@ extern const char kAIMPrototypeTabPickerParamOnFlightAPC[];
 // Feature flag for the tab picker in the aim prototype.
 BASE_DECLARE_FEATURE(kAIMPrototypeTabPicker);
 
+// Returns true is we should use cached APCs in the aim prototype.
+bool IsAimPrototypeTabPickerCachedAPCEnabled();
+
 // Variations of AIM prototype.
 extern const char kAIMPrototypeParam[];
 extern const char kAIMPrototypeParamAllOmniboxEntrypoints[];

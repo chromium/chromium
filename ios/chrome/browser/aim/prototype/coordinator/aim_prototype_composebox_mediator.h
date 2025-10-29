@@ -20,6 +20,7 @@
 class ComposeboxQueryControllerIOS;
 class FaviconLoader;
 class GURL;
+class PersistTabContextBrowserAgent;
 class WebStateList;
 
 // Mediator for the AIM prototype composebox.
@@ -33,11 +34,13 @@ class WebStateList;
 @property(nonatomic, weak) id<AIMPrototypeComposeboxConsumer> consumer;
 @property(nonatomic, weak) id<AIMPrototypeURLLoader> URLLoader;
 
-- (instancetype)initWithComposeboxQueryController:
-                    (std::unique_ptr<ComposeboxQueryControllerIOS>)
-                        composeboxQueryController
-                                     webStateList:(WebStateList*)webStateList
-                                    faviconLoader:(FaviconLoader*)faviconLoader;
+- (instancetype)
+    initWithComposeboxQueryController:
+        (std::unique_ptr<ComposeboxQueryControllerIOS>)composeboxQueryController
+                         webStateList:(WebStateList*)webStateList
+                        faviconLoader:(FaviconLoader*)faviconLoader
+               persistTabContextAgent:
+                   (PersistTabContextBrowserAgent*)persistTabContextAgent;
 
 - (void)disconnect;
 

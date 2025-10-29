@@ -19,6 +19,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/sequence_checker.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -244,6 +246,8 @@ CreateInputDataFromAnnotatedPageContent(
   PageContextWrapper* _pageContextWrapper;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
+  // A browser agent for retrieving APC from the cache.
+  raw_ptr<PersistTabContextBrowserAgent> _persistTabContextAgent;
 
   // Stores the page context wrappers for the duration of the APC retrieval.
   std::unordered_map<web::WebStateID, PageContextWrapper*> _pageContextWrappers;
@@ -264,7 +268,9 @@ CreateInputDataFromAnnotatedPageContent(
     initWithComposeboxQueryController:
         (std::unique_ptr<ComposeboxQueryControllerIOS>)composeboxQueryController
                          webStateList:(WebStateList*)webStateList
-                        faviconLoader:(FaviconLoader*)faviconLoader {
+                        faviconLoader:(FaviconLoader*)faviconLoader
+               persistTabContextAgent:
+                   (PersistTabContextBrowserAgent*)persistTabContextAgent {
   self = [super init];
   if (self) {
     _items = [NSMutableArray array];
@@ -276,6 +282,7 @@ CreateInputDataFromAnnotatedPageContent(
     _webStateList = webStateList;
     _faviconLoader = faviconLoader;
     _webStateDefferedExecutor = [[WebStateDefferedExecutor alloc] init];
+    _persistTabContextAgent = persistTabContextAgent;
   }
   return self;
 }
@@ -449,6 +456,12 @@ CreateInputDataFromAnnotatedPageContent(
     const base::UnguessableToken token =
         [self createInputItemForWebState:webState];
     _latestTabSelectionMapping[token] = webState->GetUniqueIdentifier();
+
+    if (IsAimPrototypeTabPickerCachedAPCEnabled()) {
+      [self attachWebStateContent:webState includeSnapshot:NO token:token];
+      return;
+    }
+
     [_webStateDefferedExecutor webState:webState
                       executeOnceLoaded:^{
                         [weakSelf attachWebStateContent:webState
@@ -495,21 +508,41 @@ CreateInputDataFromAnnotatedPageContent(
   return token;
 }
 
+// Retrieves and attaches web state content (specifically the APC) to an item.
+// The content can be fetched from the cache or computed on the fly. An optional
+// snapshot of the page can be included.
 - (void)attachWebStateContent:(web::WebState*)webState
               includeSnapshot:(BOOL)includeSnapshot
                         token:(const base::UnguessableToken)token {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   __weak __typeof(self) weakSelf = self;
-
   base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
+
+  if (IsAimPrototypeTabPickerCachedAPCEnabled() && _persistTabContextAgent) {
+    _persistTabContextAgent->GetSingleContextAsync(
+        base::NumberToString(weakWebState->GetUniqueIdentifier().identifier()),
+        base::BindOnce(^(std::optional<std::unique_ptr<
+                             optimization_guide::proto::PageContext>> context) {
+          if (context.has_value()) {
+            [weakSelf handlePageContextResponse:std::move(context.value())
+                                       webState:weakWebState.get()
+                                includeSnapshot:NO
+                                          token:token];
+          }
+        }));
+    return;
+  }
+
   PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
         initWithWebState:webState
       completionCallback:base::BindOnce(^(
                              PageContextWrapperCallbackResponse response) {
-        [weakSelf handlePageContextResponse:std::move(response)
-                                   webState:weakWebState.get()
-                            includeSnapshot:includeSnapshot
-                                      token:token];
+        if (response.has_value()) {
+          [weakSelf handlePageContextResponse:std::move(response.value())
+                                     webState:weakWebState.get()
+                              includeSnapshot:includeSnapshot
+                                        token:token];
+        }
       })];
 
   pageContextWrapper.shouldGetAnnotatedPageContent = YES;
@@ -522,7 +555,8 @@ CreateInputDataFromAnnotatedPageContent(
 // Transforms the page context into input data and uploads the data after a page
 // snapshot is generated.
 - (void)handlePageContextResponse:
-            (PageContextWrapperCallbackResponse)pageContextResponse
+            (std::unique_ptr<optimization_guide::proto::PageContext>)
+                page_context
                          webState:(web::WebState*)webState
                   includeSnapshot:(BOOL)includeSnapshot
                             token:(const base::UnguessableToken)token {
@@ -530,12 +564,9 @@ CreateInputDataFromAnnotatedPageContent(
 
   _pageContextWrappers.erase(webState->GetUniqueIdentifier());
 
-  if (!pageContextResponse.has_value() || !webState) {
+  if (!webState || !page_context) {
     return;
   }
-
-  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
-      std::move(pageContextResponse.value());
 
   __block std::unique_ptr<lens::ContextualInputData> input_data =
       CreateInputDataFromAnnotatedPageContent(

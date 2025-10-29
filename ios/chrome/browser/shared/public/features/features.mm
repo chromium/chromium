@@ -228,6 +228,12 @@ const char kAIMPrototypeTabPickerParamOnFlightAPC[] =
 // Feature flag for the tab picker in the aim prototype.
 BASE_FEATURE(kAIMPrototypeTabPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsAimPrototypeTabPickerCachedAPCEnabled() {
+  std::string param = base::GetFieldTrialParamValueByFeature(
+      kAIMPrototypeTabPicker, kAIMPrototypeTabPickerParam);
+  return param == kAIMPrototypeTabPickerParamCachedAPC;
+}
+
 BASE_FEATURE(kOmniboxDRSPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableTraitCollectionWorkAround,

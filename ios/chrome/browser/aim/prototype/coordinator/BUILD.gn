@@ -44,6 +44,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",

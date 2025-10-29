@@ -13,9 +13,11 @@
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_composebox_mediator.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_tab_picker_coordinator.h"
+#import "ios/chrome/browser/aim/prototype/public/features.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_composebox_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_delegate.h"
 #import "ios/chrome/browser/location_bar/model/web_location_bar_impl.h"
@@ -33,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -118,8 +121,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   auto query_contoller_config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
   query_contoller_config_params->send_lns_surface = false;
-  query_contoller_config_params->enable_multi_context_input_flow = false;
-  query_contoller_config_params->enable_viewport_images = true;
+  query_contoller_config_params->enable_multi_context_input_flow =
+      base::FeatureList::IsEnabled(kAIMPrototypeTabPicker);
+  query_contoller_config_params->enable_viewport_images =
+      !base::FeatureList::IsEnabled(kAIMPrototypeTabPicker);
+
   auto composeboxQueryController =
       std::make_unique<ComposeboxQueryControllerIOS>(
           identityManager, GetApplicationContext()->GetSharedURLLoaderFactory(),
@@ -134,7 +140,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _mediator = [[AIMPrototypeComposeboxMediator alloc]
       initWithComposeboxQueryController:std::move(composeboxQueryController)
                            webStateList:self.browser->GetWebStateList()
-                          faviconLoader:faviconLoader];
+                          faviconLoader:faviconLoader
+                 persistTabContextAgent:PersistTabContextBrowserAgent::
+                                            FromBrowser(self.browser)];
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;
   _tabPickerCoordinator.delegate = _mediator;

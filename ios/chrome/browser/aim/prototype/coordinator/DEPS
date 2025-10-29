@@ -36,4 +36,5 @@ include_rules = [
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_switcher_item.h",
+  "+ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h",
 ]
