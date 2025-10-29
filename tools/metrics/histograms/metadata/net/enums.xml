@@ -426,6 +426,14 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="NoNameServerFound"/>
 </enum>
 
+<enum name="DnsConfigLocalNameserverState">
+  <int value="0" label="DNS Config without local nameservers"/>
+  <int value="1" label="DNS Config with loopback local nameservers"/>
+  <int value="2" label="DNS Config with non-loopback local nameservers"/>
+  <int value="3"
+      label="DNS Config with local nameservers (including loopback)"/>
+</enum>
+
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>
