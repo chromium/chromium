@@ -56,7 +56,6 @@ class SwitchAccessTestUtils {
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
-  std::optional<ManifestVersion> version_;
 };
 
 }  // namespace ash
