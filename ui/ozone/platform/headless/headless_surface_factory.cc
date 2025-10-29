@@ -144,7 +144,7 @@ class FileGLSurface : public GLSurfaceEglReadback {
 
 class TestPixmap : public gfx::NativePixmap {
  public:
-  explicit TestPixmap(gfx::BufferFormat format) : format_(format) {}
+  explicit TestPixmap(viz::SharedImageFormat format) : format_(format) {}
 
   TestPixmap(const TestPixmap&) = delete;
   TestPixmap& operator=(const TestPixmap&) = delete;
@@ -156,12 +156,9 @@ class TestPixmap : public gfx::NativePixmap {
   size_t GetDmaBufPlaneSize(size_t plane) const override { return 0; }
   uint64_t GetBufferFormatModifier() const override { return 0; }
   viz::SharedImageFormat GetSharedImageFormat() const override {
-    return viz::GetSharedImageFormat(format_);
+    return format_;
   }
-  size_t GetNumberOfPlanes() const override {
-    viz::SharedImageFormat si_format = viz::GetSharedImageFormat(format_);
-    return si_format.NumberOfPlanes();
-  }
+  size_t GetNumberOfPlanes() const override { return format_.NumberOfPlanes(); }
   bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
@@ -179,7 +176,7 @@ class TestPixmap : public gfx::NativePixmap {
  private:
   ~TestPixmap() override {}
 
-  gfx::BufferFormat format_;
+  viz::SharedImageFormat format_;
 };
 
 class GLOzoneEGLHeadless : public GLOzoneEGL {
@@ -265,7 +262,7 @@ scoped_refptr<gfx::NativePixmap> HeadlessSurfaceFactory::CreateNativePixmap(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
-  return new TestPixmap(format);
+  return new TestPixmap(viz::GetSharedImageFormat(format));
 }
 
 void HeadlessSurfaceFactory::CheckBasePath() const {
