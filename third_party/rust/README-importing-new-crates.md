@@ -57,6 +57,8 @@ To import a third-party crate follow the steps below:
    * `./tools/crates/run_gnrt.py vendor` to download the new crate.
    * This will also apply any patches in `//third_party/rust/chromium_crates_io/patches`.
      See `//third_party/rust/chromium_crates_io/patches/README.md` for more details.
+1. Exempt vendored code from inclusive-language checks - e.g.:
+   `infra/update_inclusive_language_presubmit_exempt_dirs.sh > infra/inclusive_language_presubmit_exempt_dirs.txt`
 1. (optional) If the crate is only to be used by tests and tooling, then
    specify the `"test"` group in `//third_party/rust/chromium_crates_io/gnrt_config.toml`:
    ```
