@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+
+#import <array>
+#import <string_view>
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -39,15 +37,17 @@ TEST_F(ChromeURLUtilTest, TestUrlIsDownloadedFile) {
   EXPECT_FALSE(UrlIsDownloadedFile(not_downloaded_file_url));
 }
 
-const char* kSchemeTestData[] = {
-    "http://foo.com", "https://foo.com",   "data:text/html;charset=utf-8,Hello",
-    "about:blank",    "chrome://settings",
-};
+constexpr auto kSchemeTestData = std::to_array<std::string_view>({
+    "http://foo.com",
+    "https://foo.com",
+    "data:text/html;charset=utf-8,Hello",
+    "about:blank",
+    "chrome://settings",
+});
 
 // Tests UrlHasChromeScheme with NSURL* parameter.
 TEST_F(ChromeURLUtilTest, NSURLHasChromeScheme) {
-  for (unsigned int i = 0; i < std::size(kSchemeTestData); ++i) {
-    const char* url = kSchemeTestData[i];
+  for (const std::string_view url : kSchemeTestData) {
     NSURL* nsurl = [NSURL URLWithString:base::SysUTF8ToNSString(url)];
     bool nsurl_result = UrlHasChromeScheme(nsurl);
     EXPECT_EQ(GURL(url).SchemeIs(kChromeUIScheme), nsurl_result)
@@ -57,11 +57,10 @@ TEST_F(ChromeURLUtilTest, NSURLHasChromeScheme) {
 
 // Tests UrlHasChromeScheme with const GURL& paramter.
 TEST_F(ChromeURLUtilTest, GURLHasChromeScheme) {
-  for (unsigned int i = 0; i < std::size(kSchemeTestData); ++i) {
-    GURL gurl(kSchemeTestData[i]);
-    bool result = UrlHasChromeScheme(gurl);
-    EXPECT_EQ(gurl.SchemeIs(kChromeUIScheme), result)
-        << "Scheme check failed for " << gurl.spec();
+  for (const std::string_view url : kSchemeTestData) {
+    bool result = UrlHasChromeScheme(GURL(url));
+    EXPECT_EQ(GURL(url).SchemeIs(kChromeUIScheme), result)
+        << "Scheme check failed for " << url;
   }
 }
 
