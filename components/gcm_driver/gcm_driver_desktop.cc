@@ -162,17 +162,19 @@ void GCMDriverDesktop::IOWorker::Initialize(
     os_crypt_async::Encryptor encryptor) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
 
-  gcm_client_ = gcm_client_factory->BuildInstance();
+  auto gcm_client = gcm_client_factory->BuildInstance();
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_for_io =
       network::SharedURLLoaderFactory::Create(
           std::move(pending_loader_factory));
 
-  gcm_client_->Initialize(
+  gcm_client->Initialize(
       chrome_build_info, store_path, blocking_task_runner, io_thread_,
       std::move(get_socket_factory_callback), url_loader_factory_for_io,
       network_connection_tracker,
       std::make_unique<SystemEncryptor>(std::move(encryptor)), this);
+  gcm_client_ = std::move(gcm_client);
+
   if (start_mode_) {
     gcm_client_->Start(*start_mode_);
     start_mode_ = std::nullopt;
