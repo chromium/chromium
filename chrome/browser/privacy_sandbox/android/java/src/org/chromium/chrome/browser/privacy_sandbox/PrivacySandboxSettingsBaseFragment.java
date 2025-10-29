@@ -51,7 +51,12 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, PrivacySandboxSettingsFragment.class, fragmentArgs);
+                .startSettings(
+                        context,
+                        PrivacySandboxSettingsFragment.class,
+                        fragmentArgs,
+                        // If this comes from "Privacy and security" page, open it as a child of it.
+                        /* addToBackStack= */ referrer == PrivacySandboxReferrer.PRIVACY_SETTINGS);
     }
 
     @Override

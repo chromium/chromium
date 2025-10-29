@@ -512,7 +512,8 @@ public final class PrivacySandboxDialogV3Test {
                 .startSettings(
                         any(Context.class),
                         eq(PrivacySandboxSettingsFragment.class),
-                        any(Bundle.class));
+                        any(Bundle.class),
+                        eq(false));
     }
 
     @Test
@@ -677,7 +678,8 @@ public final class PrivacySandboxDialogV3Test {
                 .startSettings(
                         any(Context.class),
                         eq(PrivacySandboxSettingsFragment.class),
-                        any(Bundle.class));
+                        any(Bundle.class),
+                        eq(false));
     }
 
     @Test
@@ -846,7 +848,8 @@ public final class PrivacySandboxDialogV3Test {
                 .startSettings(
                         any(Context.class),
                         eq(PrivacySandboxSettingsFragment.class),
-                        any(Bundle.class));
+                        any(Bundle.class),
+                        eq(false));
     }
 
     @Test
