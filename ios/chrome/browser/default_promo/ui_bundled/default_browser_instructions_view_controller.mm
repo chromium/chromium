@@ -8,6 +8,7 @@
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -237,7 +238,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   } else {
     alertScreen.titleString = titleText;
   }
-  alertScreen.primaryActionString = l10n_util ::GetNSString(
+  alertScreen.configuration.primaryActionString = l10n_util ::GetNSString(
       IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
   alertScreen.imageHasFixedSize = YES;
   alertScreen.showDismissBarButton = NO;
@@ -288,14 +289,15 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   }
 
   if (hasDismissButton) {
-    alertScreen.secondaryActionString = l10n_util::GetNSString(
+    alertScreen.configuration.secondaryActionString = l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
   }
 
   if (hasRemindMeLater) {
-    alertScreen.tertiaryActionString = l10n_util::GetNSString(
+    alertScreen.configuration.tertiaryActionString = l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_PROMO_TERTIARY_BUTTON_TEXT);
   }
+  [alertScreen reloadConfiguration];
 
   [self addChildViewController:alertScreen];
   [self.view addSubview:alertScreen.view];

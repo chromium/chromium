@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -163,10 +164,11 @@ using l10n_util::GetNSString;
   self.promoViewController.titleString = [self promoTitle];
   self.promoViewController.subtitleString = [self promoSubtitle];
 
-  self.promoViewController.primaryActionString =
+  self.promoViewController.configuration.primaryActionString =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
-  self.promoViewController.secondaryActionString =
+  self.promoViewController.configuration.secondaryActionString =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
+  [self.promoViewController reloadConfiguration];
 }
 
 // Records that a default browser promo has been shown.
