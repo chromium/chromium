@@ -90,10 +90,8 @@ struct BlockLineClampData {
 
   // Returns false if we need to relayout with a different clamp BFC offset.
   bool UpdateAfterLayout(const LayoutResult* layout_result,
-                         Document& document,
-                         LayoutUnit bfc_block_offset,
                          const PreviousInflowPosition& previous_inflow_position,
-                         LayoutUnit block_end_padding);
+                         const BoxFragmentBuilder& container_builder);
 
   // If a child box's layout fails because it overflows, and we're propagating
   // that failure up until the line-clamp container, this method returns the
