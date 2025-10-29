@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 139 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 130 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGElement interface: attribute correspondingElement
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
@@ -36,24 +36,6 @@ Found 139 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.title must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGSymbolElement interface: existence and properties of interface object
-  assert_equals: prototype of SVGSymbolElement is not SVGGraphicsElement expected function "function SVGGraphicsElement() { [native code] }" but got function "function SVGElement() { [native code] }"
-[FAIL] SVGSymbolElement interface: existence and properties of interface prototype object
-  assert_equals: prototype of SVGSymbolElement.prototype is not SVGGraphicsElement.prototype expected object "[object SVGGraphicsElement]" but got object "[object SVGElement]"
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "transform" with the proper type
-  assert_inherits: property "transform" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "getBBox(optional SVGBoundingBoxOptions)" with the proper type
-  assert_inherits: property "getBBox" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: calling getBBox(optional SVGBoundingBoxOptions) on objects.symbol with too few arguments must throw TypeError
-  assert_inherits: property "getBBox" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "getCTM()" with the proper type
-  assert_inherits: property "getCTM" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "getScreenCTM()" with the proper type
-  assert_inherits: property "getScreenCTM" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "requiredExtensions" with the proper type
-  assert_inherits: property "requiredExtensions" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "systemLanguage" with the proper type
-  assert_inherits: property "systemLanguage" not found in prototype chain
 [FAIL] SVGElement interface: objects.symbol must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.symbol must inherit property "correspondingUseElement" with the proper type

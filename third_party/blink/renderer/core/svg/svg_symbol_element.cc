@@ -27,7 +27,7 @@
 namespace blink {
 
 SVGSymbolElement::SVGSymbolElement(Document& document)
-    : SVGElement(svg_names::kSymbolTag, document),
+    : SVGGraphicsElement(svg_names::kSymbolTag, document),
       SVGFitToViewBox(this),
       x_(MakeGarbageCollected<SVGAnimatedLength>(
           this,
@@ -59,7 +59,7 @@ void SVGSymbolElement::Trace(Visitor* visitor) const {
   visitor->Trace(y_);
   visitor->Trace(width_);
   visitor->Trace(height_);
-  SVGElement::Trace(visitor);
+  SVGGraphicsElement::Trace(visitor);
   SVGFitToViewBox::Trace(visitor);
 }
 
@@ -83,7 +83,7 @@ SVGAnimatedPropertyBase* SVGSymbolElement::PropertyFromAttribute(
     if (ret) {
       return ret;
     } else {
-      return SVGElement::PropertyFromAttribute(attribute_name);
+      return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
     }
   }
 }
@@ -93,7 +93,7 @@ void SVGSymbolElement::SynchronizeAllSVGAttributes() const {
                                    height_.Get()};
   SynchronizeListOfSVGAttributes(attrs);
   SVGFitToViewBox::SynchronizeAllSVGAttributes();
-  SVGElement::SynchronizeAllSVGAttributes();
+  SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGSymbolElement::CollectExtraStyleForPresentationAttribute(
@@ -101,7 +101,7 @@ void SVGSymbolElement::CollectExtraStyleForPresentationAttribute(
   auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
-  SVGElement::CollectExtraStyleForPresentationAttribute(style);
+  SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

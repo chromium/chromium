@@ -2346,7 +2346,15 @@ svg element switch
     property systemLanguage
     property transform
 svg element symbol
+    property farthestViewportElement
+    property getBBox
+    property getCTM
+    property getScreenCTM
+    property nearestViewportElement
     property preserveAspectRatio
+    property requiredExtensions
+    property systemLanguage
+    property transform
     property viewBox
 svg element text
     property LENGTHADJUST_SPACING

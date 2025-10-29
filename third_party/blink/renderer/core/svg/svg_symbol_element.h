@@ -23,12 +23,14 @@
 
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
+#include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 
 namespace blink {
 
 class SVGAnimatedLength;
 
-class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
+class SVGSymbolElement final : public SVGGraphicsElement,
+                               public SVGFitToViewBox {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

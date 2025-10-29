@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Non-rendered symbol with rect
+  assert_approx_equals: symbol1.getBBox().x {} expected 0 +/- 0.1 but got 50
+[FAIL] display:none <g> with rect
+  assert_approx_equals: g_none.getBBox().x {} expected 0 +/- 0.1 but got 70
+[FAIL] display:none <rect>
+  assert_approx_equals: none_rect.getBBox().x {} expected 90 +/- 0.1 but got 0
+Harness: the test ran to completion.
+
