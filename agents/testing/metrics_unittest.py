@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unittests for the metrics module."""
 
+import datetime
 import unittest
 from unittest import mock
 
@@ -319,14 +320,20 @@ class UploadDashboardJsonUnittest(fake_filesystem_unittest.TestCase):
         self.mock_run = self.run_patcher.start()
         self.addCleanup(self.run_patcher.stop)
 
+        self.datetime_patcher = mock.patch('metrics.datetime')
+        self.mock_dt_module = self.datetime_patcher.start()
+        self.addCleanup(self.datetime_patcher.stop)
+
     def test_success(self):
+        self.mock_dt_module.datetime.now.return_value = datetime.datetime(
+            2025, 10, 29, 12, 30, 0, tzinfo=datetime.timezone.utc)
         metrics._upload_dashboard_json({}, 'test-bucket')
         self.mock_run.assert_called_once()
         self.assertIn('/path/to/gsutil.py', self.mock_run.call_args[0][0])
         self.assertRegex(
             self.mock_run.call_args[0][0][-1],
-            r'gs://test-bucket/chromium_prompt_eval/\d{4}/\d{2}/'
-            r'\d{2}/\d{2}/[a-f0-9]{40}\.json')
+            r'gs://test-bucket/chromium_prompt_eval/2025/10/29/12/'
+            r'[a-f0-9]{40}\.json')
 
     def test_no_gsutil(self):
         self.mock_which.return_value = None

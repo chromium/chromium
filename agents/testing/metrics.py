@@ -222,7 +222,7 @@ def _upload_dashboard_json(dashboard_json: dict, bucket: str) -> None:
 
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     # YYYY/MM/DD/HH
-    timestamp_path_component = now.strftime('%Y/%m/%d/%M')
+    timestamp_path_component = now.strftime('%Y/%m/%d/%H')
     gcs_path = posixpath.join(f'gs://{bucket}', BUCKET_SUBDIR,
                               timestamp_path_component, gcs_filename)
 
