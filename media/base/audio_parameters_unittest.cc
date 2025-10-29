@@ -217,4 +217,12 @@ TEST(AudioParameters, ChannelLayoutConfig_GuessUnsupported) {
   EXPECT_EQ(0, channel_layout_config.channels());
 }
 
+TEST(AudioParameters, ChannelLayoutConfig_GuessDiscrete) {
+  constexpr int kNumChannels = 12;
+  ChannelLayoutConfig channel_layout_config =
+      ChannelLayoutConfig::Guess(kNumChannels);
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, channel_layout_config.channel_layout());
+  EXPECT_EQ(kNumChannels, channel_layout_config.channels());
+}
+
 }  // namespace media

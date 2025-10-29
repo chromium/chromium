@@ -284,4 +284,21 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
   CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
 }
 
+TEST(MediaTypeConvertersTest, ConvertAudioBuffer_DISCRETE) {
+  // Original.
+  const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_DISCRETE;
+  const int kChannelCount = 12;
+  const int kSampleRate = 48000;
+  const base::TimeDelta start_time = base::Seconds(1000.0);
+  scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
+      kSampleFormatPlanarF32, kChannelLayout, kChannelCount, kSampleRate, 0.0f,
+      1.0f, kSampleRate / 10, start_time);
+  // Convert to and back.
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
+  scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
+
+  // Compare.
+  CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
+}
+
 }  // namespace media

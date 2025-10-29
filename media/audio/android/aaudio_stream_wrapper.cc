@@ -151,7 +151,8 @@ static constexpr REQUIRES_ANDROID_API(
 
 REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
 std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
-    ChannelLayout layout) {
+    ChannelLayout layout,
+    int channels) {
   // Note: ChannelLayout comments define mono as Front Center, but AAudio's
   // AAUDIO_CHANNEL_MONO constant define it as Front Left. Returning Front
   // Center here breaks mono playback, so prefer AAudio's definition.
@@ -185,6 +186,23 @@ std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
     return AAUDIO_CHANNEL_5POINT1;
   }
 
+  if (layout == CHANNEL_LAYOUT_DISCRETE) {
+    switch (channels) {
+      case 10:
+        // Map to canonical AAUDIO_CHANNEL_5POINT1POINT4 channel mask for
+        // 10-channel PCM MediaCodec decoded audio. This ensures
+        // compatibility with Android devices for signaling 10-channel output.
+        return AAUDIO_CHANNEL_5POINT1POINT4;
+      case 12:
+        // Map to canonical AAUDIO_CHANNEL_7POINT1POINT4 channel mask for
+        // 12-channel PCM MediaCodec decoded audio. This ensures
+        // compatibility with Android devices for signaling 12-channel output.
+        return AAUDIO_CHANNEL_7POINT1POINT4;
+      default:
+        return std::nullopt;
+    }
+  }
+
   aaudio_channel_mask_t mask = 0;
 
   for (int ch = 0; ch <= Channels::CHANNELS_MAX; ++ch) {
@@ -206,7 +224,7 @@ REQUIRES_ANDROID_API(AAUDIO_CHANNEL_MASK_MIN_API)
 void SetChannelMask(AAudioStreamBuilder* builder,
                     const AudioParameters& params) {
   std::optional<aaudio_channel_mask_t> channel_mask =
-      ChannelMaskFromChannelLayout(params.channel_layout());
+      ChannelMaskFromChannelLayout(params.channel_layout(), params.channels());
 
   if (channel_mask.has_value()) {
     AAudioStreamBuilder_setChannelMask(builder, channel_mask.value());
