@@ -933,9 +933,10 @@ class HistorySyncOptinCoordinator
 
   // syncer::SyncServiceObserver
   void OnStateChanged(syncer::SyncService* sync_service) override {
-    if (sync_service->IsEngineInitialized()) {
+    if (sync_service->GetTransportState() ==
+        syncer::SyncService::TransportState::ACTIVE) {
       sync_service_observation_.Reset();
-      TriggerWithSyncServiceInitialized();
+      TriggerWithSyncServiceTransportStateActive();
     }
   }
 
@@ -971,21 +972,23 @@ class HistorySyncOptinCoordinator
 
     // TODO(crbug.com/448615704): Refactor this condition to be part of
     // `BatchUploadService` return value directly; e.g. returning std::nullopt
-    // instead of 0 (no local data) when the `syncer::SyncService` is not
-    // initialized.
-    if (!sync_service->IsEngineInitialized()) {
+    // instead of 0 (no local data) when the `syncer::SyncService` transport
+    // state is not active.
+    if (sync_service->GetTransportState() !=
+        syncer::SyncService::TransportState::ACTIVE) {
       if (!sync_service_observation_.IsObserving()) {
         sync_service_observation_.Observe(sync_service);
       }
       return;
     }
 
-    TriggerWithSyncServiceInitialized();
+    TriggerWithSyncServiceTransportStateActive();
   }
 
-  void TriggerWithSyncServiceInitialized() {
-    CHECK(SyncServiceFactory::GetForProfile(&profile_.get())
-              ->IsEngineInitialized());
+  void TriggerWithSyncServiceTransportStateActive() {
+    CHECK_EQ(
+        SyncServiceFactory::GetForProfile(&profile_.get())->GetTransportState(),
+        syncer::SyncService::TransportState::ACTIVE);
 
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
         profile_.get(),
