@@ -468,7 +468,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   // Make sure the SSO view controller is fully removed before ending the test.
   // The tear down needs to remove other view controllers, and it cannot be done
-  // during the animation of the SSO view controler.
+  // during the animation of the SSO view controller.
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
