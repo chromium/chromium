@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/find_bar_host.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -25,7 +27,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
-#include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -89,8 +90,7 @@ const int kMoveIterations = 30;
 
 class FindInPageControllerTest : public InProcessBrowserTest {
  public:
-  FindInPageControllerTest() { DisableFindBarAnimationsDuringTesting(true); }
-
+  FindInPageControllerTest() = default;
  protected:
   void SetUpOnMainThread() override {
     views::test::WaitForAnimatingLayoutManager(
@@ -227,6 +227,10 @@ class FindInPageControllerTest : public InProcessBrowserTest {
         base::FilePath().AppendASCII("find_in_page"),
         base::FilePath().AppendASCII(filename));
   }
+
+ private:
+  base::AutoReset<bool> enable_animation_for_test_ =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 };
 
 // This test loads a page with frames and starts FindInPage requests.

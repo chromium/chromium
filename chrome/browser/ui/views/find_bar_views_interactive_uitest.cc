@@ -133,10 +133,9 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(FindResulStateObserver, kFindResultState);
 // FindBarViewsUiTest.
 class LegacyFindInPageTest : public InProcessBrowserTest {
  public:
-  LegacyFindInPageTest() {
-    // TODO(https://crbug.com/40183900): Undo this in the destructor!
-    FindBarHost::SetEnableAnimationsForTesting(false);
-  }
+  LegacyFindInPageTest() = default;
+  base::AutoReset<bool> enable_animation_for_test_ =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 
   LegacyFindInPageTest(const LegacyFindInPageTest&) = delete;
   LegacyFindInPageTest& operator=(const LegacyFindInPageTest&) = delete;
@@ -205,10 +204,7 @@ class LegacyFindInPageTest : public InProcessBrowserTest {
 class FindBarViewsUiTest : public InteractiveBrowserTest,
                            public ::testing::WithParamInterface<bool> {
  public:
-  FindBarViewsUiTest() {
-    // TODO(https://crbug.com/40183900): Undo this in the destructor!
-    FindBarHost::SetEnableAnimationsForTesting(false);
-  }
+  FindBarViewsUiTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
@@ -309,6 +305,9 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
         browser()->GetFeatures().GetFindBarController()->find_bar();
     return static_cast<FindBarHost*>(find_bar);
   }
+
+  base::AutoReset<bool> enable_animation_for_test_ =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 };
 
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, CrashEscHandlers) {

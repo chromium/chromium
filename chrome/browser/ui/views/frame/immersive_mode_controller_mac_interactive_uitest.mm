@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
+#include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
@@ -184,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 // "Always Show Toolbar in Full Screen" is off.
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        MinimumContentOffset) {
-  DisableFindBarAnimationsDuringTesting(true);
+  base::AutoReset<bool> enable_animation_for_test =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 
   auto* const controller = ImmersiveModeController::From(browser());
   controller->SetEnabled(true);
@@ -216,7 +217,6 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
     chrome::CloseFind(browser());
     EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
   }
-  DisableFindBarAnimationsDuringTesting(false);
 }
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
@@ -385,7 +385,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ContentFullscreenChildren) {
-  DisableFindBarAnimationsDuringTesting(true);
+  base::AutoReset<bool> enable_animation_for_test =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 
   // Enter browser fullscreen.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
@@ -413,7 +414,6 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_EQ(browser_view->overlay_widget(), find_bar->parent());
 
   chrome::CloseFind(browser());
-  DisableFindBarAnimationsDuringTesting(false);
 }
 
 // Regression test for crbug.com/431671448. Asserts that the Browser is able to

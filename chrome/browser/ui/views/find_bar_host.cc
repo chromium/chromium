@@ -47,6 +47,11 @@
 
 using input::NativeWebKeyboardEvent;
 
+// During testing we can disable animations by setting this flag to true,
+// so that opening and closing the dropdown bar is shown instantly, instead of
+// having to poll it while it animates to open/closed status.
+static bool g_disable_animation_for_test_ = false;
+
 namespace {
 
 class FindBarHostHelper
@@ -129,13 +134,6 @@ gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
 
   return new_pos;
 }
-
-// During testing we can disable animations by setting this flag to true,
-// so that opening and closing the dropdown bar is shown instantly, instead of
-// having to poll it while it animates to open/closed status.
-// TODO(https://crbug.com/40183900): Make this private and push disabling for
-// testing into here instead of `find_bar_host_unittest_util`.
-static bool kDisableAnimationsForTesting = false;
 
 }  // namespace
 
@@ -273,7 +271,7 @@ void FindBarHost::Show(bool animate, bool focus) {
 
   bool was_visible = is_visible_;
   is_visible_ = true;
-  if (!animate || kDisableAnimationsForTesting) {
+  if (!animate || g_disable_animation_for_test_) {
     animation_->Reset(1);
     AnimationProgressed(animation_.get());
   } else if (!was_visible) {
@@ -297,7 +295,7 @@ void FindBarHost::Hide(bool animate) {
     return;
   }
 
-  if (animate && !kDisableAnimationsForTesting && !animation_->IsClosing()) {
+  if (animate && !g_disable_animation_for_test_ && !animation_->IsClosing()) {
     animation_->Hide();
   } else {
     if (animation_->IsClosing()) {
@@ -507,9 +505,11 @@ FindBarView* FindBarHost::GetFindBarViewForTesting() {
   return view_;
 }
 
-void FindBarHost::SetEnableAnimationsForTesting(bool enable_animations) {
+base::AutoReset<bool> FindBarHost::SetEnableAnimationsForTesting(
+    bool enable_animation) {
   CHECK_IS_TEST();
-  kDisableAnimationsForTesting = !enable_animations;
+  return base::AutoReset<bool>(&g_disable_animation_for_test_,
+                               !enable_animation);
 }
 ////////////////////////////////////////////////////////////////////////////////
 // private:

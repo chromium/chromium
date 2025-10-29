@@ -115,7 +115,10 @@ class FindBarHost : public FindBar,
   std::u16string GetAccessibleWindowTitle() const override;
 
   FindBarView* GetFindBarViewForTesting();
-  static void SetEnableAnimationsForTesting(bool enable_animations);
+
+  // static
+  static base::AutoReset<bool> SetEnableAnimationsForTesting(
+      bool enable_animation);
 
  private:
   friend class FindInPageTest;
