@@ -34,8 +34,6 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
   void UpdateSharedImage(const SyncToken& sync_token,
                          std::unique_ptr<gfx::GpuFence> acquire_fence,
                          const Mailbox& mailbox) override;
-  void PresentSwapChain(const SyncToken& sync_token,
-                        const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,
@@ -100,13 +98,6 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
       base::OnceCallback<void(bool)> callback) override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
-                                        const gfx::Size& size,
-                                        const gfx::ColorSpace& color_space,
-                                        GrSurfaceOrigin surface_origin,
-                                        SkAlphaType alpha_type,
-                                        SharedImageUsageSet usage,
-                                        std::string_view debug_label) override;
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
   void DestroySharedImage(

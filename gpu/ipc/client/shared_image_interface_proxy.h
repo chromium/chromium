@@ -109,14 +109,6 @@ class SharedImageInterfaceProxy {
   void VerifyFlush();
   void WaitSyncToken(const SyncToken& sync_token);
 
-  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     gpu::SharedImageUsageSet usage);
-  void PresentSwapChain(const SyncToken& sync_token, const Mailbox& mailbox);
-
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,

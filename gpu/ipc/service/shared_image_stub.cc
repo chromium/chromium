@@ -146,13 +146,6 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
 
 #if BUILDFLAG(IS_WIN)
-    case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
-      OnCreateSwapChain(std::move(request->get_create_swap_chain()));
-      break;
-
-    case mojom::DeferredSharedImageRequest::Tag::kPresentSwapChain:
-      OnPresentSwapChain(request->get_present_swap_chain()->mailbox);
-      break;
     case mojom::DeferredSharedImageRequest::Tag::kRegisterDxgiFence: {
       auto& reg = *request->get_register_dxgi_fence();
       OnRegisterDxgiFence(reg.mailbox, reg.dxgi_token,
@@ -432,39 +425,6 @@ void SharedImageStub::CopyToGpuMemoryBufferAsync(
                                             std::move(split_cb.first))) {
     DLOG(ERROR) << "SharedImageStub: Unable to update shared GMB";
     std::move(split_cb.second).Run(false);
-    OnError();
-    return;
-  }
-}
-
-void SharedImageStub::OnCreateSwapChain(
-    mojom::CreateSwapChainParamsPtr params) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->CreateSwapChain(params->front_buffer_mailbox,
-                                 params->back_buffer_mailbox, params->format,
-                                 params->size, params->color_space,
-                                 params->surface_origin, params->alpha_type,
-                                 SharedImageUsageSet(params->usage))) {
-    DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
-    OnError();
-    return;
-  }
-}
-
-void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnPresentSwapChain");
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->PresentSwapChain(mailbox)) {
-    DLOG(ERROR) << "SharedImageStub: Unable to present swap chain";
     OnError();
     return;
   }

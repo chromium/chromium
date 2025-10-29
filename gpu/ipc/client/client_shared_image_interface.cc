@@ -56,11 +56,6 @@ void ClientSharedImageInterface::UpdateSharedImage(
   proxy_->UpdateSharedImage(sync_token, std::move(acquire_fence), mailbox);
 }
 
-void ClientSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
-                                                  const Mailbox& mailbox) {
-  proxy_->PresentSwapChain(sync_token, mailbox);
-}
-
 #if BUILDFLAG(IS_FUCHSIA)
 void ClientSharedImageInterface::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
@@ -282,30 +277,6 @@ void ClientSharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-
-ClientSharedImageInterface::SwapChainSharedImages
-ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
-                                            const gfx::Size& size,
-                                            const gfx::ColorSpace& color_space,
-                                            GrSurfaceOrigin surface_origin,
-                                            SkAlphaType alpha_type,
-                                            gpu::SharedImageUsageSet usage,
-                                            std::string_view debug_label) {
-  DCHECK(gpu::IsValidClientUsage(usage));
-  auto mailboxes = proxy_->CreateSwapChain(format, size, color_space,
-                                           surface_origin, alpha_type, usage);
-  AddMailbox(mailboxes.front_buffer);
-  AddMailbox(mailboxes.back_buffer);
-  SyncToken sync_token = GenUnverifiedSyncToken();
-  SharedImageMetadata metadata(format, size, color_space, surface_origin,
-                               alpha_type, usage);
-  SharedImageInfo info(metadata, debug_label);
-  return ClientSharedImageInterface::SwapChainSharedImages(
-      base::MakeRefCounted<ClientSharedImage>(
-          mailboxes.front_buffer, info, sync_token, holder_, gfx::EMPTY_BUFFER),
-      base::MakeRefCounted<ClientSharedImage>(
-          mailboxes.back_buffer, info, sync_token, holder_, gfx::EMPTY_BUFFER));
-}
 
 void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
                                                     const Mailbox& mailbox) {

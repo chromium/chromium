@@ -427,14 +427,6 @@ union DeferredSharedImageRequest {
 
   AddReferenceToSharedImageParams add_reference_to_shared_image;
 
-  // See CreateSwapChainParams.
-  [EnableIf=is_win]
-  CreateSwapChainParams create_swap_chain;
-
-  // See PresentSwapChainParams.
-  [EnableIf=is_win]
-  PresentSwapChainParams present_swap_chain;
-
   // See RegisterDxgiFenceParams.
   [EnableIf=is_win]
   RegisterDxgiFenceParams register_dxgi_fence;
@@ -552,40 +544,6 @@ struct AddReferenceToSharedImageParams {
 // complete after the command runs.
 struct CopyToGpuMemoryBufferParams {
   // The mailbox identifying the shared image which should update its GMB.
-  Mailbox mailbox;
-};
-
-[EnableIf=is_win]
-struct CreateSwapChainParams {
-  // Mailbox identifying the front buffer of the swap chain.
-  Mailbox front_buffer_mailbox;
-
-  // Mailbox identifying the back buffer of the swap chain.
-  Mailbox back_buffer_mailbox;
-
-  // Pixel format of the front and back buffers.
-  viz.mojom.SharedImageFormat format;
-
-  // Size of the buffers.
-  gfx.mojom.Size size;
-
-  // Color space of the buffers.
-  gfx.mojom.ColorSpace color_space;
-
-  // Usage flags corresponding to values defined in
-  // gpu/command_buffer/common/shared_image_usage.h.
-  uint32 usage;
-
-  // Which corner is considered the origin of the swap chain's buffers.
-  skia.mojom.SurfaceOrigin surface_origin;
-
-  // Indicates how the alpha component of each pixel is interpreted.
-  skia.mojom.AlphaType alpha_type;
-};
-
-[EnableIf=is_win]
-struct PresentSwapChainParams {
-  // Mailbox identifying the swap chain to present.
   Mailbox mailbox;
 };
 

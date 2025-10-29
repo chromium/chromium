@@ -275,28 +275,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
     scoped_refptr<gpu::ClientSharedImage> back_buffer;
   };
 
-  // Creates a swap chain.
-  // Returns shared images for front and back buffers of a DXGI Swap Chain that
-  // can be imported into GL command buffer using shared image functions (e.g.
-  // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM).
-  virtual SwapChainSharedImages CreateSwapChain(
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string_view debug_label) = 0;
-
-  // Swaps front and back buffer of a swap chain. Back buffer mailbox still
-  // refers to the back buffer of the swap chain after calling PresentSwapChain.
-  // The mailbox argument should be back buffer mailbox. Sync token is required
-  // for synchronization between shared image stream and command buffer stream,
-  // to ensure that all the rendering commands to a frame are executed before
-  // presenting the swap chain.
-  virtual void PresentSwapChain(const SyncToken& sync_token,
-                                const Mailbox& mailbox) = 0;
-
 #if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. `service_handle` contains a handle
   // for the eventpair that controls the lifetime of the collection. The

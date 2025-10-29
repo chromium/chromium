@@ -208,20 +208,6 @@ scoped_refptr<ClientSharedImage> ArcSharedImageInterface::ImportSharedImage(
     ExportedSharedImage exported_shared_image) {
   NOTREACHED();
 }
-SharedImageInterface::SwapChainSharedImages
-ArcSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
-                                         const gfx::Size& size,
-                                         const gfx::ColorSpace& color_space,
-                                         GrSurfaceOrigin surface_origin,
-                                         SkAlphaType alpha_type,
-                                         SharedImageUsageSet usage,
-                                         std::string_view debug_label) {
-  NOTREACHED();
-}
-void ArcSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
-                                               const Mailbox& mailbox) {
-  NOTREACHED();
-}
 SyncToken ArcSharedImageInterface::GenUnverifiedSyncToken() {
   NOTREACHED();
 }

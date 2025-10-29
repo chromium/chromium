@@ -488,62 +488,6 @@ bool SharedImageInterfaceProxy::GetSHMForPixelData(
   return true;
 }
 
-SharedImageInterfaceProxy::SwapChainMailboxes
-SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
-                                           const gfx::Size& size,
-                                           const gfx::ColorSpace& color_space,
-                                           GrSurfaceOrigin surface_origin,
-                                           SkAlphaType alpha_type,
-                                           gpu::SharedImageUsageSet usage) {
-#if BUILDFLAG(IS_WIN)
-  const SwapChainMailboxes mailboxes = {Mailbox::Generate(),
-                                        Mailbox::Generate()};
-  auto params = mojom::CreateSwapChainParams::New();
-  params->front_buffer_mailbox = mailboxes.front_buffer;
-  params->back_buffer_mailbox = mailboxes.back_buffer;
-  params->format = format;
-  params->size = size;
-  params->color_space = color_space;
-  params->usage = uint32_t(usage);
-  params->surface_origin = surface_origin;
-  params->alpha_type = alpha_type;
-  {
-    base::AutoLock lock(lock_);
-
-    AddMailbox(mailboxes.front_buffer);
-    AddMailbox(mailboxes.back_buffer);
-
-    last_flush_id_ = host_->EnqueueDeferredMessage(
-        mojom::DeferredRequestParams::NewSharedImageRequest(
-            mojom::DeferredSharedImageRequest::NewCreateSwapChain(
-                std::move(params))),
-        /*sync_token_fences=*/{}, ++next_release_id_);
-  }
-  return mailboxes;
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_WIN)
-}
-
-void SharedImageInterfaceProxy::PresentSwapChain(const SyncToken& sync_token,
-                                                 const Mailbox& mailbox) {
-#if BUILDFLAG(IS_WIN)
-  std::vector<SyncToken> dependencies =
-      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
-  {
-    base::AutoLock lock(lock_);
-    last_flush_id_ = host_->EnqueueDeferredMessage(
-        mojom::DeferredRequestParams::NewSharedImageRequest(
-            mojom::DeferredSharedImageRequest::NewPresentSwapChain(
-                mojom::PresentSwapChainParams::New(mailbox))),
-        std::move(dependencies), ++next_release_id_);
-    host_->EnsureFlush(last_flush_id_);
-  }
-#else
-  NOTREACHED();
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 #if BUILDFLAG(IS_FUCHSIA)
 void SharedImageInterfaceProxy::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,

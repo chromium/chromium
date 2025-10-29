@@ -114,8 +114,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub {
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
   void OnCopyToGpuMemoryBuffer(const Mailbox& mailbox);
 #if BUILDFLAG(IS_WIN)
-  void OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params);
-  void OnPresentSwapChain(const Mailbox& mailbox);
   void OnRegisterDxgiFence(const Mailbox& mailbox,
                            gfx::DXGIHandleToken dxgi_token,
                            gfx::GpuFenceHandle fence_handle);

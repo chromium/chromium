@@ -386,24 +386,6 @@ void SharedImageInterfaceInProcessBase::CreateSharedImageWithBufferOnGpuThread(
   }
 }
 
-SharedImageInterface::SwapChainSharedImages
-SharedImageInterfaceInProcessBase::CreateSwapChain(
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string_view debug_label) {
-  NOTREACHED();
-}
-
-void SharedImageInterfaceInProcessBase::PresentSwapChain(
-    const SyncToken& sync_token,
-    const Mailbox& mailbox) {
-  NOTREACHED();
-}
-
 #if BUILDFLAG(IS_FUCHSIA)
 void SharedImageInterfaceInProcessBase::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
