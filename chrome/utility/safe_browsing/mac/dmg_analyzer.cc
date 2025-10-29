@@ -174,8 +174,8 @@ bool DMGAnalyzer::ResumeExtraction() {
         continue;
       }
 
-      if (UNSAFE_TODO(memcmp(kDERPKCS7SignedData, signature_contents.data(),
-                             std::size(kDERPKCS7SignedData))) != 0) {
+      if (base::span(signature_contents)
+              .first(std::size(kDERPKCS7SignedData)) != kDERPKCS7SignedData) {
         continue;
       }
 

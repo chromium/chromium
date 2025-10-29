@@ -155,8 +155,8 @@ TEST_P(UDIFParserTest, ParseUDIF) {
       HFSPlusVolumeHeader alternate_header = {0};
       EXPECT_TRUE(stream->ReadType(alternate_header));
 
-      EXPECT_EQ(
-          0, UNSAFE_TODO(memcmp(&header, &alternate_header, sizeof(header))));
+      EXPECT_EQ(base::byte_span_from_ref(header),
+                base::byte_span_from_ref(alternate_header));
       EXPECT_EQ(kHFSPlusSigWord, OSSwapBigToHostInt16(header.signature));
     }
 
