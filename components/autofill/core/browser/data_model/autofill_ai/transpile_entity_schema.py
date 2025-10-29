@@ -148,8 +148,10 @@ def generate_cpp_functions(schema):
   yield 'DenseSet<AttributeType> EntityType::attributes() const {'
   yield '  switch (name_) {'
   for entity in schema:
-    yield f'    case {entity_name(entity["name"])}:'
-    yield f'      return {attribute_dense_set(entity["name"], entity["attributes"])};'
+    yield f'    case {entity_name(entity["name"])}: {{'
+    yield f'      static constexpr auto s = {attribute_dense_set(entity["name"], entity["attributes"])};'
+    yield f'      return s;'
+    yield f'    }}'
   yield '  }'
   yield '  NOTREACHED();'
   yield '}'
