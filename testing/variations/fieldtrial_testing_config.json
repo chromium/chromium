@@ -2629,7 +2629,7 @@
             ]
         }
     ],
-    "AutofillEnableKeyboardAccessoryChipRedesign": [
+    "AutofillEnableKeyboardAccessoryRedesign": [
         {
             "platforms": [
                 "android"
@@ -2638,21 +2638,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableKeyboardAccessoryChipRedesign"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableKeyboardAccessoryChipWidthAdjustment": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
+                        "AutofillEnableKeyboardAccessoryChipRedesign",
                         "AutofillEnableKeyboardAccessoryChipWidthAdjustment"
                     ]
                 }
