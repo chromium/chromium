@@ -712,13 +712,15 @@ void MetricsService::Flush() {
     {
       ScopedTerminationChecker scoped_termination_checker(
           "UMA.MetricsService.OnFlushScopedTerminationChecker");
-      PushPendingLogsToPersistentStorage(
-          MetricsLogsEventManager::CreateReason::kFlush);
+      // Trim and store unsent logs so that they're not lost in case of a crash
+      // before upload time. However, the in-memory log store is unchanged.
+      // I.e., logs that are trimmed will still be available in memory. After
+      // uploading (whether successful or not), the log store is trimmed and
+      // stored again, and at that time, the in-memory log store will be
+      // updated.
+      log_store()->TrimAndPersistUnsentLogs(
+          /*overwrite_in_memory_store=*/false);
     }
-
-    // Persisting logs closes the current log, so start recording a new log
-    // immediately.
-    OpenNewLog();
   }
 }
 
