@@ -380,7 +380,7 @@ bool SharedImageFactory::IsNativeBufferSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     const gfx::GpuExtraInfo& gpu_extra_info) {
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE_X11)
   // Ozone/X11 requires gpu initialization to be done before it can determine
   // what formats gmb can use. This limitation comes from the requirement to
   // have GLX bindings initialized. The buffer formats will be passed through
@@ -388,16 +388,12 @@ bool SharedImageFactory::IsNativeBufferSupported(
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformProperties()
           .fetch_buffer_formats_for_gmb_on_gpu) {
-#if BUILDFLAG(IS_OZONE_X11)
     return base::Contains(
         gpu_extra_info.gpu_memory_buffer_support_x11,
         gfx::BufferUsageAndFormat(
             usage, viz::SharedImageFormatToBufferFormat(format)));
-#else
-    return false;
-#endif  // BUILDFLAG(IS_OZONE_X11)
   }
-#endif  // BUILDFLAG(IS_OZONE)
+#endif  // BUILDFLAG(IS_OZONE_X11)
 
   return gpu::GpuMemoryBufferSupport::
       IsNativeGpuMemoryBufferConfigurationSupported(format, usage);
