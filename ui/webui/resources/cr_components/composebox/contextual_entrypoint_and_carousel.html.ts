@@ -38,7 +38,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         </composebox-tool-chip>
   `;
   const contextMenu = html`
-      <div class="context-menu-container">
+      <div class="context-menu-container" part="context-menu-and-tools">
         <composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             class="upload-icon no-overlap"

@@ -12,23 +12,28 @@
 :host .button-content {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 #recentTabButton {
-  border: 1px solid var(--cr-focus-outline-color);
-  border-radius: 10px;
-  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  height: 28px;
+  line-height: 18px;
+  padding: 6px 8px;
+  width: 210px;
+  --cr-button-border-color:
+      var(--color-new-tab-page-composebox-recent-tab-chip-outline);
   --cr-button-text-color: var(--color-new-tab-page-composebox-upload-button);
   --cr-button-disabled-text-color:
       var(--color-new-tab-page-composebox-context-entrypoint-text-disabled);
   --cr-hover-background-color:
       var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
-  --cr-focus-outline-color:
-      var(--color-searchbox-results-icon-focused-outline);
-  --cr-icon-button-margin-start: 2px;
 }
 
 .favicon {
   border-radius: 100px;
+  height: 16px;
+  width: 16px;
 }
