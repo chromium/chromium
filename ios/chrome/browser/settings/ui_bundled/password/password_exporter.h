@@ -59,7 +59,7 @@ enum class ExportState {
 // prepared to be exported and gives them the option of cancelling the export.
 - (void)showPreparingPasswordsAlert;
 
-// Displays an alert detailing an error that has occured during export.
+// Displays an alert detailing an error that has occurred during export.
 - (void)showExportErrorAlertWithLocalizedReason:(NSString*)errorReason;
 
 // Displays an activity view that allows the user to pick an app to process
