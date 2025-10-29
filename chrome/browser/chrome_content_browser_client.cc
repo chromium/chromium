@@ -2829,17 +2829,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             error_page::switches::kDisableDinosaurEasterEgg);
       }
 
-      auto* management_service_factory =
-          policy::ManagementServiceFactory::GetInstance();
-      auto* browser_managment_service =
-          management_service_factory->GetForProfile(profile);
-      if ((browser_managment_service &&
-           browser_managment_service->IsManaged()) ||
-          management_service_factory->GetForPlatform()->IsManaged()) {
-        command_line->AppendSwitch(
-            error_page::switches::kEnableDinosaurEasterEggAltGameImages);
-      }
-
       MaybeAppendSecureOriginsAllowlistSwitch(command_line);
 
       if (prefs->HasPrefPath(prefs::kScrollToTextFragmentEnabled) &&
