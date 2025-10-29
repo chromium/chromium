@@ -5625,7 +5625,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.PaymentsNetworkInterface.{PaymentsRequestType}.ClientSideTimedOut"
-    enum="Boolean" expires_after="2025-11-02">
+    enum="Boolean" expires_after="2026-03-15">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
