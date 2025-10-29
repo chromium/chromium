@@ -1475,6 +1475,23 @@
       "features": [
         "direct_rendering_display_compositor"
       ]
+    },
+    {
+      "id": 186,
+      "cr_bugs": [442791440],
+      "description": "Disable webgpu on vk via gl interop",
+      "exceptions": [
+        {
+          "vendor_id": "0x8086",
+          "intel_gpu_generation": {
+            "op": ">=",
+            "value": "12"
+          }
+        }
+      ],
+      "features": [
+        "webgpu_on_vk_via_gl_interop"
+      ]
     }
   ]
 }

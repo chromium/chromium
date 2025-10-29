@@ -89,6 +89,7 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
   GpuDriverBugWorkarounds workarounds_;
   const GLFormatCaps gl_format_caps_;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
+  bool enable_webgpu_on_vk_via_gl_interop_ = false;
 
   // Used to notify the watchdog before a buffer allocation in case it takes
   // long.
