@@ -2659,8 +2659,8 @@
       <message name="IDS_IOS_EXPORT_PASSWORDS_PREPARING_ALERT_TITLE" desc="The title of the alert displayed to indicate that the passwords are being prepared for export. [iOS only]">
         Preparing passwords…
       </message>
-      <message name="IDS_IOS_EXPORT_PASSWORDS_UNKNOWN_ERROR_ALERT_MESSAGE" desc="The message of the alert informing the user that an error has occured while exporting passwords. [iOS only]">
-        An error occured. Try again later.
+      <message name="IDS_IOS_EXPORT_PASSWORDS_UNKNOWN_ERROR_ALERT_MESSAGE" desc="The message of the alert informing the user that an error has occurred while exporting passwords. [iOS only]">
+        An error occurred. Try again later.
       </message>
       <message name="IDS_IOS_FACETIME_BUTTON" desc="Text in the confirmation dialog button that will initiate a FaceTime call for the presented number. [Length: 10em] [iOS only]">
         FaceTime

@@ -1068,7 +1068,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_ERROR_DESC" desc="Description text for when updates can't be checked because there was an issue with the check">
         Chromium can't check for updates
       </message>
-      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_ERROR_INFO" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="An error occured while performing the update check.">
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_ERROR_INFO" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="An error occurred while performing the update check.">
         Chromium couldn't check for updates. Try again later.
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OFFLINE_DESC" desc="Description text for when updates can't be checked because the user is offline">
