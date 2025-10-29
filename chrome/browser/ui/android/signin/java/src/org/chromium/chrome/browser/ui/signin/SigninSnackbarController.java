@@ -13,11 +13,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 
 /**
  * Shows a snackbar after a successful sign-in, which allows the user to undo the sign-in. This
@@ -42,9 +46,22 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
         void onUndoSignin();
     }
 
+    private final ComponentActivity mActivity;
+    private final Profile mProfile;
+    private final SyncService mSyncService;
+    private final SnackbarManager mSnackbarManager;
     private @Nullable Listener mListener;
 
-    private SigninSnackbarController(Listener listener) {
+    private SigninSnackbarController(
+            ComponentActivity activity,
+            Profile profile,
+            SyncService syncService,
+            SnackbarManager snackbarManager,
+            Listener listener) {
+        mActivity = activity;
+        mProfile = profile;
+        mSyncService = syncService;
+        mSnackbarManager = snackbarManager;
         mListener = listener;
     }
 
@@ -54,13 +71,24 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
      */
     @Override
     public void onAction(@Nullable Object actionData) {
-        assert actionData instanceof SigninAndHistorySyncCoordinator.Result;
-        // TODO(crbug.com/437039311):
-        // - Disable history sync if it was enabled during the flow.
-        // - Signout.
-        // - Show signout snackbar, but not the confirmation dialog.
-        assertNonNull(mListener).onUndoSignin();
-        mListener = null;
+        SigninAndHistorySyncCoordinator.Result result =
+                (SigninAndHistorySyncCoordinator.Result) assertNonNull(actionData);
+        if (result.hasOptedInHistorySync) {
+            // We disable history sync only if the user explicitly opted into it during the flow.
+            // This ensure we don't interfere with sticky settings from prior sessions.
+            mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ false);
+            mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ false);
+        }
+
+        SignOutCoordinator.undoSignInWithSnackbar(
+                mActivity.getApplicationContext(),
+                mProfile,
+                mSnackbarManager,
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN,
+                () -> {
+                    assertNonNull(mListener).onUndoSignin();
+                    mListener = null;
+                });
     }
 
     @Override
@@ -89,7 +117,12 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
             Snackbar snackbar =
                     Snackbar.make(
                             activity.getString(R.string.snackbar_signed_in_as, email),
-                            new SigninSnackbarController(assertNonNull(listener)),
+                            new SigninSnackbarController(
+                                    activity,
+                                    profile,
+                                    assumeNonNull(SyncServiceFactory.getForProfile(profile)),
+                                    snackbarManager,
+                                    assertNonNull(listener)),
                             Snackbar.TYPE_ACTION,
                             Snackbar.UMA_SIGN_IN);
             snackbar.setAction(activity.getString(R.string.snackbar_undo_signin), result);
