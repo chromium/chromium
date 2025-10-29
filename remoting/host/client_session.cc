@@ -79,6 +79,7 @@
 #include "remoting/protocol/display_size.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/input_event_timestamps.h"
+#include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/keyboard_layout_stub.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/network_settings.h"
@@ -119,12 +120,18 @@ ClientSession::ClientSession(
     : event_handler_(event_handler),
       desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),
-      remote_input_filter_(&input_tracker_),
+      desktop_and_cursor_composer_notifier_(&input_tracker_, this),
+      remote_input_filter_(
+          &desktop_and_cursor_composer_notifier_,
+          // Unretained() is safe because `remote_input_filter_` will be
+          // destroyed before `input_tracker_`, after which the callback will no
+          // longer be called.
+          base::BindRepeating(&protocol::InputEventTracker::ReleaseAll,
+                              base::Unretained(&input_tracker_))),
       fractional_input_filter_(&remote_input_filter_, &coordinate_converter_),
       mouse_clamping_filter_(&fractional_input_filter_),
       observing_input_filter_(&mouse_clamping_filter_),
-      desktop_and_cursor_composer_notifier_(&observing_input_filter_, this),
-      disable_input_filter_(&desktop_and_cursor_composer_notifier_),
+      disable_input_filter_(&observing_input_filter_),
       host_clipboard_filter_(clipboard_echo_filter_.host_filter()),
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
       client_clipboard_factory_(&client_clipboard_filter_),
