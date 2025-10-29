@@ -261,7 +261,8 @@ class ChildProcessLauncherHelper
 
   void SetRenderProcessPriorityOnLauncherThread(
       base::Process process,
-      const RenderProcessPriority& priority);
+      const RenderProcessPriority& priority,
+      base::TimeTicks post_from_ui_thread_time);
 #else   // !BUILDFLAG(IS_ANDROID)
   void SetProcessPriorityOnLauncherThread(base::Process process,
                                           base::Process::Priority priority);

@@ -1271,6 +1271,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Android.ChildProcessBinding.SetPriorityLatency"
+    units="microseconds" expires_after="2026-03-08">
+  <owner>kawasin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the latency from posting SetRenderProcessPriorityOnLauncherThread on
+    the main thread to its execution complete on the launcher thread. It is
+    recorded when SetRenderProcessPriorityOnLauncherThread is executed. This
+    metrics is recorded on all Android clients.
+  </summary>
+</histogram>
+
 <histogram name="Android.ChildProcessBinding.TotalBindingCount"
     units="bindings" expires_after="2026-03-08">
   <owner>kawasin@google.com</owner>

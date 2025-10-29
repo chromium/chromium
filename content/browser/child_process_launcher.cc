@@ -163,7 +163,7 @@ void ChildProcessLauncher::SetRenderProcessPriority(
       FROM_HERE,
       base::BindOnce(
           &ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread,
-          helper_, std::move(to_pass), priority));
+          helper_, std::move(to_pass), priority, base::TimeTicks::Now()));
 }
 #else   // !BUILDFLAG(IS_ANDROID)
 void ChildProcessLauncher::SetProcessPriority(

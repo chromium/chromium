@@ -20,7 +20,9 @@
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/launch.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
@@ -305,7 +307,8 @@ void ChildProcessLauncherHelper::DumpProcessStack(
 
 void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
     base::Process process,
-    const RenderProcessPriority& priority) {
+    const RenderProcessPriority& priority,
+    base::TimeTicks post_from_ui_thread_time) {
   TRACE_EVENT(
       "content",
       "ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread",
@@ -319,6 +322,9 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
       priority.intersects_viewport, priority.boost_for_pending_views,
       priority.boost_for_loading, priority.is_spare_renderer,
       static_cast<jint>(priority.importance));
+  base::UmaHistogramMicrosecondsTimes(
+      "Android.ChildProcessBinding.SetPriorityLatency",
+      base::TimeTicks::Now() - post_from_ui_thread_time);
 }
 
 // Called from ChildProcessLauncher.java when the ChildProcess was started.
