@@ -819,7 +819,7 @@ TEST_F(AmountExtractionManagerTest, ResponseBeforeTimeout) {
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_EmptyResult_BnplManagerNotified) {
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnAmountExtractionReturned(std::optional<uint64_t>(),
+              OnAmountExtractionReturned(std::optional<int64_t>(),
                                          /*timeout_reached=*/false))
       .Times(1);
 
@@ -830,10 +830,9 @@ TEST_F(AmountExtractionManagerTest,
 // extraction receives a result with correct format.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceived_AmountInCorrectFormat_BnplManagerNotified) {
-  EXPECT_CALL(
-      *autofill_manager().GetPaymentsBnplManager(),
-      OnAmountExtractionReturned(std::optional<uint64_t>(123'450'000ULL),
-                                 /*timeout_reached=*/false))
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturned(std::optional<int64_t>(123'450'000LL),
+                                         /*timeout_reached=*/false))
       .Times(1);
 
   FakeCheckoutAmountReceived("$ 123.45");
@@ -856,9 +855,8 @@ TEST_F(AmountExtractionManagerTest,
 // server-side AI.
 TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_InvalidResult) {
-  EXPECT_CALL(
-      *autofill_manager().GetPaymentsBnplManager(),
-      OnAmountExtractionReturnedFromAi(std::optional<uint64_t>(), false))
+  EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
+              OnAmountExtractionReturnedFromAi(std::optional<int64_t>(), false))
       .Times(1);
 
   FakeCheckoutAmountReceivedFromAi(123.45, "InvalidCurrency", true);
@@ -871,7 +869,7 @@ TEST_F(AmountExtractionManagerTest,
        OnCheckoutAmountReceivedFromAi_ValidResult) {
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
               OnAmountExtractionReturnedFromAi(
-                  std::optional<uint64_t>(123'450'000ULL), false))
+                  std::optional<int64_t>(123'450'000LL), false))
       .Times(1);
 
   FakeCheckoutAmountReceivedFromAi(123.45, "USD", true);

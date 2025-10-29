@@ -1640,7 +1640,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*should_show_scan_credit_card=*/false, summary,
       /*is_card_number_field_empty=*/false);
 
-  uint64_t extracted_amount_in_micros = 50'000'000;
+  int64_t extracted_amount_in_micros = 50'000'000;
 
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(suggestions,
@@ -1729,7 +1729,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       /*should_show_scan_credit_card=*/false, summary,
       /*is_card_number_field_empty=*/false);
 
-  uint64_t extracted_amount_in_micros = 50'000'000;
+  int64_t extracted_amount_in_micros = 50'000'000;
 
   BnplSuggestionUpdateResult update_suggestions_result =
       MaybeUpdateDesktopSuggestionsWithBnpl(suggestions,

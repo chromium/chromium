@@ -104,7 +104,7 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                bool first_time_usage));
   MOCK_METHOD(bool,
               UpdateBnplPaymentMethod,
-              (std::optional<uint64_t> extracted_amount,
+              (std::optional<int64_t> extracted_amount,
                bool is_amount_supported_by_any_issuer));
   MOCK_METHOD(bool,
               ShowProgressScreen,
@@ -386,7 +386,7 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        UpdateBnplPaymentMethodOnPreexistingView) {
-  std::optional<uint64_t> extracted_amount = 12345;
+  std::optional<int64_t> extracted_amount = 12345;
   EXPECT_CALL(*mock_view_,
               ShowPaymentMethods(&payment_method_controller(),
                                  ElementsAreArray(suggestions_),

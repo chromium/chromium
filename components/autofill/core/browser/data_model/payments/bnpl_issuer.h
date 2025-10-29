@@ -41,8 +41,8 @@ class BnplIssuer {
   // a BNPL issuer.
   struct EligiblePriceRange {
     EligiblePriceRange(std::string currency,
-                       uint64_t price_lower_bound,
-                       uint64_t price_upper_bound)
+                       int64_t price_lower_bound,
+                       int64_t price_upper_bound)
         : currency(std::move(currency)),
           price_lower_bound(price_lower_bound),
           price_upper_bound(price_upper_bound) {}
@@ -61,13 +61,13 @@ class BnplIssuer {
     // accepts, in micros of currency. A micro of currency is one millionths of
     // the base unit (dollars, not cents for example). e.g. $1.05 == 1050000.
     // Bound is inclusive.
-    uint64_t price_lower_bound;
+    int64_t price_lower_bound;
 
     // Upper bound for the US dollar price range that this BNPL provider
     // accepts, in micros of currency. A micro of currency is one millionths of
     // the base unit (dollars, not cents for example). e.g. $1.05 == 1050000.
     // Bound is inclusive.
-    uint64_t price_upper_bound;
+    int64_t price_upper_bound;
   };
 
   // The resource IDs for the light and dark mode BNPL issuer icons.
@@ -118,7 +118,7 @@ class BnplIssuer {
 
   // Returns true if the given `amount_in_micros` is supported by this issuer in
   // the given `currency`.
-  bool IsEligibleAmount(uint64_t amount_in_micros,
+  bool IsEligibleAmount(int64_t amount_in_micros,
                         const std::string& currency) const;
 
   // Returns the display name for the issuer when shown in UI.

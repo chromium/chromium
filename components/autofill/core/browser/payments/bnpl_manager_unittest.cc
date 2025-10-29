@@ -137,7 +137,7 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
 
   MOCK_METHOD(bool,
               UpdateTouchToFillBnplPaymentMethod,
-              (std::optional<uint64_t> extracted_amount,
+              (std::optional<int64_t> extracted_amount,
                bool is_amount_supported_by_any_issuer),
               (override));
 };
@@ -199,7 +199,7 @@ class BnplManagerTest : public Test,
   const std::u16string kLegalMessage = u"LEGAL_MESSAGE";
   const std::string kCurrency = "USD";
   const GURL kDomain = GURL("https://dummytest.com/somepathforurl");
-  const uint64_t kAmount = 1'000'000;
+  const int64_t kAmount = 1'000'000;
 
   Matcher<BnplIssuerContext> EqualsBnplIssuerContext(
       IssuerId issuer_id,
@@ -265,8 +265,8 @@ class BnplManagerTest : public Test,
   }
 
   // Sets up the PersonalDataManager with a unlinked bnpl issuer.
-  void SetUpUnlinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
-                               uint64_t price_higher_bound_in_micros,
+  void SetUpUnlinkedBnplIssuer(int64_t price_lower_bound_in_micros,
+                               int64_t price_higher_bound_in_micros,
                                IssuerId issuer_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
     eligible_price_ranges.emplace_back(kCurrency, price_lower_bound_in_micros,
@@ -277,8 +277,8 @@ class BnplManagerTest : public Test,
   }
 
   // Sets up the PersonalDataManager with a linked bnpl issuer.
-  void SetUpLinkedBnplIssuer(uint64_t price_lower_bound_in_micros,
-                             uint64_t price_higher_bound_in_micros,
+  void SetUpLinkedBnplIssuer(int64_t price_lower_bound_in_micros,
+                             int64_t price_higher_bound_in_micros,
                              IssuerId issuer_id,
                              const int64_t instrument_id) {
     std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
@@ -290,10 +290,9 @@ class BnplManagerTest : public Test,
                                   std::move(eligible_price_ranges)));
   }
 
-  void TriggerBnplUpdateSuggestionsFlow(
-      bool expect_suggestions_are_updated,
-      std::optional<uint64_t> extracted_amount,
-      bool timeout_reached = false) {
+  void TriggerBnplUpdateSuggestionsFlow(bool expect_suggestions_are_updated,
+                                        std::optional<int64_t> extracted_amount,
+                                        bool timeout_reached = false) {
     std::vector<Suggestion> suggestions = {
         Suggestion(SuggestionType::kCreditCardEntry),
         Suggestion(SuggestionType::kManageCreditCard)};
@@ -370,7 +369,7 @@ TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_SetsInitialState) {
 // locales.
 TEST_F(BnplManagerTest,
        OnDidAcceptBnplSuggestion_SetsInitialStateWithDifferentAppLocale) {
-  uint64_t final_checkout_amount = 1000000;
+  int64_t final_checkout_amount = 1000000;
   autofill_client().set_app_locale("en_GB");
   bnpl_manager_->OnDidAcceptBnplSuggestion(final_checkout_amount,
                                            base::DoNothing());
@@ -2120,7 +2119,7 @@ TEST_F(BnplManagerTest, IsBnplIssuerSupported_KlarnaDisabled) {
 #if BUILDFLAG(IS_ANDROID)
 
 TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithTimeout) {
-  const uint64_t extracted_amount = 12345;
+  const int64_t extracted_amount = 12345;
   EXPECT_CALL(
       GetPaymentsAutofillClient(),
       UpdateTouchToFillBnplPaymentMethod(
@@ -2141,7 +2140,7 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithInvalidAmount) {
 }
 
 TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithUnsupportedAmount) {
-  const uint64_t extracted_amount = 0;
+  const int64_t extracted_amount = 0;
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
                           IssuerId::kBnplZip);
@@ -2155,7 +2154,7 @@ TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithUnsupportedAmount) {
 }
 
 TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithValidAmount) {
-  const uint64_t extracted_amount = 1000000000;
+  const int64_t extracted_amount = 1000000000;
   SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
                           /*price_higher_bound_in_micros=*/2'000'000'000,
                           IssuerId::kBnplZip);

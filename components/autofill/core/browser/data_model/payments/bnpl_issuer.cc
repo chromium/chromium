@@ -78,7 +78,7 @@ BnplIssuer::GetEligiblePriceRangeForCurrency(
   return std::nullopt;
 }
 
-bool BnplIssuer::IsEligibleAmount(uint64_t amount_in_micros,
+bool BnplIssuer::IsEligibleAmount(int64_t amount_in_micros,
                                   const std::string& currency) const {
   base::optional_ref<const EligiblePriceRange> range =
       GetEligiblePriceRangeForCurrency(currency);

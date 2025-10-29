@@ -378,13 +378,8 @@ void TouchToFillDelegateAndroidImpl::BnplSuggestionSelected(
     std::optional<int64_t> extracted_amount) {
   payments::BnplManager* bnpl_manager = manager_->GetPaymentsBnplManager();
   CHECK(bnpl_manager);
-  std::optional<uint64_t> final_extracted_amount;
-  if (extracted_amount.has_value()) {
-    final_extracted_amount = static_cast<uint64_t>(extracted_amount.value());
-  }
-
   bnpl_manager->OnDidAcceptBnplSuggestion(
-      final_extracted_amount,
+      extracted_amount,
       /*on_bnpl_vcn_fetched_callback=*/base::BindOnce(
           [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,
              const CreditCard& card) {

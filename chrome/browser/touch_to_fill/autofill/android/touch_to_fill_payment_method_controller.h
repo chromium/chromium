@@ -73,7 +73,7 @@ class TouchToFillPaymentMethodController
   // UI is updated with a grayed-out BNPL option. If the amount is available
   // and supported by at least one issuer, it is set to continue the flow.
   virtual bool UpdateBnplPaymentMethod(
-      std::optional<uint64_t> extracted_amount,
+      std::optional<int64_t> extracted_amount,
       bool is_amount_supported_by_any_issuer) = 0;
 
   // Shows the Touch To Fill progress screen. If the TTF surface is already

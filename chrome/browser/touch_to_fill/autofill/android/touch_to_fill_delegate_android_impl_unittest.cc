@@ -343,9 +343,8 @@ class TouchToFillDelegateAndroidImplUnitTest
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
        BnplSuggestionSelected_WithValidAmount) {
   std::optional<int64_t> extracted_amount = 12345;
-  std::optional<uint64_t> final_checkout_amount = 12345;
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnDidAcceptBnplSuggestion(final_checkout_amount, _));
+              OnDidAcceptBnplSuggestion(extracted_amount, _));
 
   touch_to_fill_delegate_->BnplSuggestionSelected(extracted_amount);
 }

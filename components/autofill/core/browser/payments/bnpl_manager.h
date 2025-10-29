@@ -59,7 +59,7 @@ class BnplManager {
   // flow is completed successfully, to fill the form with the VCN that will
   // facilitate the BNPL transaction.
   virtual void OnDidAcceptBnplSuggestion(
-      std::optional<uint64_t> final_checkout_amount,
+      std::optional<int64_t> final_checkout_amount,
       OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback);
 
   // Notifies the BNPL manager that suggestion generation has been requested
@@ -81,7 +81,7 @@ class BnplManager {
   // result. This must be called after `NotifyOfSuggestionGeneration()`, so
   // that the manager can update suggestions for buy-now-pay-later.
   virtual void OnAmountExtractionReturned(
-      const std::optional<uint64_t>& extracted_amount,
+      const std::optional<int64_t>& extracted_amount,
       bool timeout_reached);
 
   // Runs after amount extraction is complete from the server-side AI.
@@ -90,7 +90,7 @@ class BnplManager {
   // prediction takes more than
   // `AmountExtractionManager::kAiBasedAmountExtractionWaitTime` time to finish.
   virtual void OnAmountExtractionReturnedFromAi(
-      const std::optional<uint64_t>& extracted_amount_in_micros,
+      const std::optional<int64_t>& extracted_amount_in_micros,
       bool timeout_reached);
 
   // Returns true if the issuer for the ongoing flow contains the required
@@ -145,7 +145,7 @@ class BnplManager {
     // The final checkout amount on the page (in micros), used for the ongoing
     // BNPL flow. It is present if amount extraction has been completed
     // successfully, and is empty if amount extraction has not finished running.
-    std::optional<uint64_t> final_checkout_amount;
+    std::optional<int64_t> final_checkout_amount;
 
     // The callback that will fill the fetched BNPL VCN into the form.
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback;
@@ -228,7 +228,7 @@ class BnplManager {
   void MaybeUpdateDesktopSuggestionsWithBnpl(
       const AutofillSuggestionTriggerSource trigger_source,
       std::vector<std::variant<SuggestionsShownResponse,
-                               std::optional<uint64_t>>> responses);
+                               std::optional<int64_t>>> responses);
 
   // Callback triggered when the user accepts the ToS dialog. It will first load
   // risk data, and once risk data is loaded, initiate a call to the Payments
@@ -299,7 +299,7 @@ class BnplManager {
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.
   std::optional<base::RepeatingCallback<void(
-      std::variant<SuggestionsShownResponse, std::optional<uint64_t>>)>>
+      std::variant<SuggestionsShownResponse, std::optional<int64_t>>)>>
       update_suggestions_barrier_callback_;
 
   base::WeakPtrFactory<BnplManager> weak_factory_{this};

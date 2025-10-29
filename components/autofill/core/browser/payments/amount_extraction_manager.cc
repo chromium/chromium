@@ -40,7 +40,7 @@ AmountExtractionManager::AmountExtractionManager(
 AmountExtractionManager::~AmountExtractionManager() = default;
 
 // static
-std::optional<uint64_t>
+std::optional<int64_t>
 AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
     const std::string& amount) {
   const RE2 re(
@@ -53,18 +53,18 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
   }
   std::erase(dollar, ',');
 
-  uint64_t dollar_value = 0;
-  uint64_t cent_value = 0;
-  base::StringToUint64(dollar, &dollar_value);
-  base::StringToUint64(cent, &cent_value);
+  int64_t dollar_value = 0;
+  int64_t cent_value = 0;
+  base::StringToInt64(dollar, &dollar_value);
+  base::StringToInt64(cent, &cent_value);
 
   // Safely multiply to convert amount to micro.
-  uint64_t micro_amount = 0;
-  base::CheckedNumeric<uint64_t> checked_dollar_value =
-      base::CheckedNumeric<uint64_t>(dollar_value) * kMicrosPerDollar;
-  base::CheckedNumeric<uint64_t> checked_cent_value =
-      base::CheckedNumeric<uint64_t>(cent_value) * (kMicrosPerDollar / 100);
-  base::CheckedNumeric<uint64_t> checked_result =
+  int64_t micro_amount = 0;
+  base::CheckedNumeric<int64_t> checked_dollar_value =
+      base::CheckedNumeric<int64_t>(dollar_value) * kMicrosPerDollar;
+  base::CheckedNumeric<int64_t> checked_cent_value =
+      base::CheckedNumeric<int64_t>(cent_value) * (kMicrosPerDollar / 100);
+  base::CheckedNumeric<int64_t> checked_result =
       checked_dollar_value + checked_cent_value;
   if (!checked_result.AssignIfValid(&micro_amount)) {
     return std::nullopt;
@@ -241,7 +241,7 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
   // amount is found.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  std::optional<uint64_t> parsed_extracted_amount =
+  std::optional<int64_t> parsed_extracted_amount =
       MaybeParseAmountToMonetaryMicroUnits(extracted_amount);
 
   if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager()) {
@@ -289,7 +289,7 @@ void AmountExtractionManager::OnCheckoutAmountReceivedFromAi(
     return;
   }
 
-  uint64_t parsed_extracted_amount = static_cast<uint64_t>(
+  int64_t parsed_extracted_amount = static_cast<int64_t>(
       response->final_checkout_amount() * kMicrosPerDollar);
 
   bnpl_manager->OnAmountExtractionReturnedFromAi(parsed_extracted_amount,

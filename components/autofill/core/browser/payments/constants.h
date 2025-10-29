@@ -49,7 +49,7 @@ inline constexpr std::string_view kCapitalOneLargeCardArtUrl =
 
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
-inline constexpr uint64_t kMicrosPerDollar = 1e6;
+inline constexpr int64_t kMicrosPerDollar = 1'000'000;
 
 // Field types that specified as the CVC field.
 inline constexpr FieldTypeSet kCvcFieldTypes = {

@@ -52,7 +52,7 @@ namespace {
 // `bnpl_issuers`.
 bool IsExtractedAmountSupportedByAnyBnplIssuer(
     const std::vector<BnplIssuer>& bnpl_issuers,
-    uint64_t extracted_amount_in_micros) {
+    int64_t extracted_amount_in_micros) {
   return std::any_of(
       bnpl_issuers.begin(), bnpl_issuers.end(),
       [extracted_amount_in_micros](const BnplIssuer& bnpl_issuer) {
@@ -96,7 +96,7 @@ bool BnplManager::IsBnplIssuerSupported(std::string_view issuer_id) {
 }
 
 void BnplManager::OnDidAcceptBnplSuggestion(
-    std::optional<uint64_t> final_checkout_amount,
+    std::optional<int64_t> final_checkout_amount,
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback) {
   ongoing_flow_state_ = std::make_unique<OngoingFlowState>();
 
@@ -165,7 +165,7 @@ void BnplManager::NotifyOfSuggestionGeneration(
   }
 
   update_suggestions_barrier_callback_ = base::BarrierCallback<
-      std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>(
+      std::variant<SuggestionsShownResponse, std::optional<int64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl,
                          weak_factory_.GetWeakPtr(), trigger_source));
 }
@@ -199,7 +199,7 @@ void BnplManager::OnSuggestionsShown(
 }
 
 void BnplManager::OnAmountExtractionReturned(
-    const std::optional<uint64_t>& extracted_amount,
+    const std::optional<int64_t>& extracted_amount,
     bool timeout_reached) {
   CHECK(payments_autofill_client().GetBnplStrategy());
   using enum BnplStrategy::BnplAmountExtractionReturnedNextAction;
@@ -243,7 +243,7 @@ void BnplManager::OnAmountExtractionReturned(
 }
 
 void BnplManager::OnAmountExtractionReturnedFromAi(
-    const std::optional<uint64_t>& extracted_amount_in_micros,
+    const std::optional<int64_t>& extracted_amount_in_micros,
     bool timeout_reached) {
   CHECK(payments_autofill_client().GetBnplStrategy());
   using enum BnplStrategy::BnplAmountExtractionReturnedNextAction;
@@ -538,18 +538,18 @@ void BnplManager::OnPopupWindowCompleted(
 
 void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
     const AutofillSuggestionTriggerSource trigger_source,
-    std::vector<std::variant<SuggestionsShownResponse, std::optional<uint64_t>>>
+    std::vector<std::variant<SuggestionsShownResponse, std::optional<int64_t>>>
         responses) {
   update_suggestions_barrier_callback_ = std::nullopt;
 
   SuggestionsShownResponse* suggestions_shown_response = nullptr;
-  std::optional<uint64_t>* extracted_amount = nullptr;
+  std::optional<int64_t>* extracted_amount = nullptr;
   for (auto& response : responses) {
     if (std::holds_alternative<SuggestionsShownResponse>(response)) {
       suggestions_shown_response =
           std::get_if<SuggestionsShownResponse>(&response);
     } else {
-      extracted_amount = std::get_if<std::optional<uint64_t>>(&response);
+      extracted_amount = std::get_if<std::optional<int64_t>>(&response);
     }
   }
 

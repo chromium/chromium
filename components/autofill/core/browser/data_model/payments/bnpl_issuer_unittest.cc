@@ -42,7 +42,7 @@ TEST(BnplIssuerTest, SetAndGetPaymentInstrument) {
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
-  uint64_t price_lower_bound = 20'000'000;
+  int64_t price_lower_bound = 20'000'000;
   ASSERT_NE(issuer.eligible_price_ranges()[0].price_lower_bound,
             price_lower_bound);
   BnplIssuer::EligiblePriceRange price_range(
@@ -57,7 +57,7 @@ TEST(BnplIssuerTest, SetAndGetPriceLowerBound) {
 // model.
 TEST(BnplIssuerTest, SetAndGetPriceUpperBound) {
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
-  uint64_t price_upper_bound = 300'000'000;
+  int64_t price_upper_bound = 300'000'000;
   ASSERT_NE(issuer.eligible_price_ranges()[0].price_upper_bound,
             price_upper_bound);
   BnplIssuer::EligiblePriceRange price_range(

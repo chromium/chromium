@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -68,7 +69,7 @@ namespace autofill {
 
 namespace {
 
-constexpr uint64_t kCentsPerDollar = 100;
+constexpr int64_t kCentsPerDollar = 100;
 constexpr char16_t kEllipsisDotSeparator[] = u"\u2022";
 
 Suggestion CreateUndoOrClearFormSuggestion() {
@@ -883,7 +884,7 @@ Suggestion CreateCreditCardSuggestion(
 // Returns the lowest eligible price in all `bnpl_issuers`.
 std::u16string GetBnplPriceLowerBound(
     const std::vector<BnplIssuer>& bnpl_issuers) {
-  uint64_t lower_bound = UINT64_MAX;
+  int64_t lower_bound = INT64_MAX;
 
   // Get the lowest eligible price in USD as it's the only supported currency
   // for now.
@@ -897,12 +898,16 @@ std::u16string GetBnplPriceLowerBound(
     }
   }
 
+  if (lower_bound < 0) {
+    lower_bound = 0;
+  }
+
   // Suggestion update shouldn't be triggered if there is no matching
   // `eligible_price_range`.
-  CHECK(lower_bound != UINT64_MAX);
+  CHECK(lower_bound != INT64_MAX);
 
   // Round the lower_bound to the nearest higher cents.
-  if (uint64_t remainder = lower_bound % (kMicrosPerDollar / kCentsPerDollar);
+  if (int64_t remainder = lower_bound % (kMicrosPerDollar / kCentsPerDollar);
       remainder != 0) {
     lower_bound = lower_bound - remainder + kMicrosPerDollar / kCentsPerDollar;
   }
@@ -1224,7 +1229,7 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
 BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     const base::span<const Suggestion>& current_suggestions,
     std::vector<BnplIssuer> bnpl_issuers,
-    uint64_t extracted_amount_in_micros) {
+    int64_t extracted_amount_in_micros) {
   // No need to add BNPL suggestion if the current suggestion list is empty.
   if (current_suggestions.empty()) {
     return BnplSuggestionUpdateResult();
@@ -1272,7 +1277,7 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
 
 Suggestion CreateBnplSuggestion(
     std::vector<BnplIssuer> bnpl_issuers,
-    std::optional<uint64_t> extracted_amount_in_micros) {
+    std::optional<int64_t> extracted_amount_in_micros) {
   Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
   bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
   bnpl_suggestion.main_text = Suggestion::Text(

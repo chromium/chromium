@@ -244,18 +244,14 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
 }
 
 bool TouchToFillPaymentMethodViewImpl::UpdateBnplPaymentMethod(
-    std::optional<uint64_t> extracted_amount,
+    std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer) {
   if (!java_object_) {
     return false;
   }
-  std::optional<int64_t> final_extracted_amount;
-  if (extracted_amount.has_value()) {
-    final_extracted_amount = static_cast<int64_t>(extracted_amount.value());
-  }
   Java_TouchToFillPaymentMethodViewBridge_updateBnplPaymentMethod(
-      base::android::AttachCurrentThread(), java_object_,
-      final_extracted_amount, is_amount_supported_by_any_issuer);
+      base::android::AttachCurrentThread(), java_object_, extracted_amount,
+      is_amount_supported_by_any_issuer);
   return true;
 }
 

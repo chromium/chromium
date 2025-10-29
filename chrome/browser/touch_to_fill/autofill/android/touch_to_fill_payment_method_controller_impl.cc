@@ -144,7 +144,7 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
 }
 
 bool TouchToFillPaymentMethodControllerImpl::UpdateBnplPaymentMethod(
-    std::optional<uint64_t> extracted_amount,
+    std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer) {
   if (!view_ || !view_->UpdateBnplPaymentMethod(
                     extracted_amount, is_amount_supported_by_any_issuer)) {

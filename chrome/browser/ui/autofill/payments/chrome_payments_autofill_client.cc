@@ -976,7 +976,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
 }
 
 bool ChromePaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
-    std::optional<uint64_t> extracted_amount,
+    std::optional<int64_t> extracted_amount,
     bool is_amount_supported_by_any_issuer) {
 #if BUILDFLAG(IS_ANDROID)
   return GetTouchToFillPaymentMethodController()->UpdateBnplPaymentMethod(
