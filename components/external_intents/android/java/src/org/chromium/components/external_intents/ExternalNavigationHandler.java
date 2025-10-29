@@ -1295,8 +1295,7 @@ public class ExternalNavigationHandler {
     private OverrideUrlLoadingResult fallBackToHandlingInApp(ExternalNavigationParams params) {
         // The default behavior for Desktop windowing should be to open a browser tab. In case
         // a new frame navigation starts in a PWA, we should reparent the tab to the browser.
-        if (ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA.isEnabled()
-                && params.isInDesktopWindowingMode()
+        if (params.isInDesktopWindowingMode()
                 && params.isInitialNavigationInFrame()
                 && params.isTabInPWA()
                 && !params.isFromIntent()
@@ -1702,8 +1701,7 @@ public class ExternalNavigationHandler {
             boolean isInitialNavigationInFrame,
             boolean isInDesktopWindowingMode) {
         WebContents webContents = mDelegate.getWebContents();
-        return ExternalIntentsFeatures.REPARENT_AUXILIARY_NAVIGATION_FROM_PWA.isEnabled()
-                && isInitialNavigationInFrame
+        return isInitialNavigationInFrame
                 && isTabInPWA
                 && isInDesktopWindowingMode
                 && webContents != null
@@ -1713,14 +1711,15 @@ public class ExternalNavigationHandler {
                 && UrlUtilities.isHttpOrHttps(url);
     }
 
-    // A new auxiliary browsing context navigation starting in the browser should not be captured.
-    private boolean isBrowserAuxiliaryNavigation(ExternalNavigationParams params) {
+    // A new auxiliary browsing context navigation starting in the browser in desktop windowing
+    // should not be captured.
+    private boolean isDesktopBrowserAuxiliaryNavigation(ExternalNavigationParams params) {
         // TODO(crbug.com/424781882): open discussion on whether self navigations in auxiliary page
         // should be capturable or not. If opening apps is desirable, add
-        // `isInitialNavigationInFrame()` in
-        // the return statement below, otherwise remove it.
+        // `isInitialNavigationInFrame()`.
         WebContents webContents = mDelegate.getWebContents();
-        if (params.isTabInBrowser()
+        if (params.isInDesktopWindowingMode()
+                && params.isTabInBrowser()
                 && webContents != null
                 && webContents.hasOpener()
                 && webContents.getOriginalWindowOpenDisposition()
@@ -1803,9 +1802,7 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forReparentToBrowser();
         }
 
-        if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER.isEnabled(
-                params.isInDesktopWindowingMode()) &&
-                isBrowserAuxiliaryNavigation(params)) {
+        if (isDesktopBrowserAuxiliaryNavigation(params)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 

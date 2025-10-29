@@ -5176,12 +5176,6 @@ inline constexpr char kAutomotiveBackButtonBarStreamlineDescription[] =
     "If enabled, streamline the Android Automotive back button bar on CaRMA "
     "devices when not in full screen.";
 
-inline constexpr char kAuxiliaryNavigationStaysInBrowserName[] =
-    "Prevent app opening for auxiliary navigations that start in the browser";
-inline constexpr char kAuxiliaryNavigationStaysInBrowserDescription[] =
-    "If enabled, any new auxiliary browsing context navigation started in "
-    "the browser will open in a new tab.";
-
 inline constexpr char kBackgroundNotPerceptibleBindingName[] =
     "Enable not perceptible binding without cpu priority boosting";
 inline constexpr char kBackgroundNotPerceptibleBindingDescription[] =
@@ -5687,17 +5681,6 @@ inline constexpr char kRelatedSearchesSwitchName[] =
     "Enables an experiment for Related Searches on Android";
 inline constexpr char kRelatedSearchesSwitchDescription[] =
     "Enables requesting related searches suggestions.";
-
-inline constexpr char kReparentAuxiliaryNavigationFromPWAName[] =
-    "Reparent Auxiliary Navigation From PWA";
-inline constexpr char kReparentAuxiliaryNavigationFromPWADescription[] =
-    "Opens a new browser tab every time a new auxiliary navigation "
-    "starts in a PWA.";
-inline constexpr char kReparentTopLevelNavigationFromPWAName[] =
-    "Reparent Top Level Navigation From PWA";
-inline constexpr char kReparentTopLevelNavigationFromPWADescription[] =
-    "Opens a new browser tab when a new top level navigation "
-    "that starts in a PWA has no specialized handler.";
 
 inline constexpr char kRightEdgeGoesForwardGestureNavName[] =
     "RightEdgeGoesForwardGestureNav";

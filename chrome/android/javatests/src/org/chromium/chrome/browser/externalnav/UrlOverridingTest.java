@@ -2264,7 +2264,6 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @EnableFeatures({ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME})
     @LargeTest
     public void testAuxiliaryNavigationShouldStayInBrowser() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
@@ -2305,7 +2304,6 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @EnableFeatures({ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME})
     @LargeTest
     @DisabledTest(message = "https://issuetracker.google.com/446837985")
     public void testTopLevelNavigationShouldBeIntercepted() throws Exception {
@@ -2346,7 +2344,6 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @EnableFeatures({ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_BROWSER_NAME})
     @LargeTest
     public void testSelfNavigationInAuxiliaryPage() throws Exception {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
@@ -2430,7 +2427,6 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @EnableFeatures({ExternalIntentsFeatures.REPARENT_AUXILIARY_NAVIGATION_FROM_PWA_NAME})
     @LargeTest
     public void testAuxiliaryNavigationWasReparented() throws TimeoutException {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
@@ -2447,7 +2443,6 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @EnableFeatures({ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA_NAME})
     @LargeTest
     public void testTopLevelNavigationWasReparented() throws TimeoutException {
         InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);

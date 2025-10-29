@@ -2150,7 +2150,6 @@ public class ExternalNavigationHandlerTest {
     }
 
     @Test
-    @Features.EnableFeatures(ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA_NAME)
     @SmallTest
     public void testReparentTopLevelNavigationWithNoSpecializedHandler() {
         mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
@@ -2175,7 +2174,6 @@ public class ExternalNavigationHandlerTest {
     }
 
     @Test
-    @Features.EnableFeatures(ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA_NAME)
     @SmallTest
     public void testDoNotReparentTopLevelNavigationWithSpecializedHandler() {
         mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
@@ -2198,7 +2196,6 @@ public class ExternalNavigationHandlerTest {
     }
 
     @Test
-    @Features.EnableFeatures(ExternalIntentsFeatures.REPARENT_TOP_LEVEL_NAVIGATION_FROM_PWA_NAME)
     @SmallTest
     public void testDoNotReparentSelfNavigation() {
         mUrlHandler = new ExternalNavigationHandlerForTesting(mDelegate);

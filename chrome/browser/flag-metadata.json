@@ -3055,14 +3055,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-auxiliary-navigation-stays-in-browser",
-    "owners": [
-      "muratori@google.org",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-ax-tree-fixing",
     "owners": [ "mschillaci@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 150
@@ -4281,22 +4273,6 @@
     "name": "enable-render-pass-drawn-rect",
     "owners": [ "petermcneeley@chromium.org" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "enable-reparent-auxiliary-navigation-from-pwa",
-    "owners": [
-      "muratori@google.org",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "enable-reparent-top-level-navigation-from-pwa",
-    "owners": [
-      "muratori@google.org",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
   },
   {
     "name": "enable-resampling-scroll-events-experimental-prediction",
