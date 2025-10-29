@@ -48,6 +48,7 @@ class FakeBaseTabStripController : public TabStripController {
   std::optional<int> GetActiveIndex() const override;
   bool IsTabSelected(int index) const override;
   bool IsTabPinned(int index) const override;
+  bool IsBrowserClosing() const override;
   void SelectTab(int index, const ui::Event& event) override;
   void RecordMetricsOnTabSelectionChange(
       std::optional<tab_groups::TabGroupId> group) override;

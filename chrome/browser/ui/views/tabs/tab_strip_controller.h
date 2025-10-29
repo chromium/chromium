@@ -75,6 +75,9 @@ class TabStripController {
   // Returns true if the selected index is pinned.
   virtual bool IsTabPinned(int index) const = 0;
 
+  // Returns true if all tabs are currently being closed.
+  virtual bool IsBrowserClosing() const = 0;
+
   // Select the tab at the specified index in the model.
   // `event` is the input event that triggers the tab selection.
   virtual void SelectTab(int index, const ui::Event& event) = 0;

@@ -249,6 +249,7 @@ class TabStrip : public views::View,
   std::optional<int> GetActiveIndex() const override;
   int NumPinnedTabsInModel() const override;
   void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
+  bool IsBrowserClosing() const override;
   std::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override;
   gfx::Range ListTabsInGroup(

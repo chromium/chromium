@@ -1618,6 +1618,10 @@ void TabStrip::OnDropIndexUpdate(const std::optional<int> index,
   controller_->OnDropIndexUpdate(index, drop_before);
 }
 
+bool TabStrip::IsBrowserClosing() const {
+  return controller_->IsBrowserClosing();
+}
+
 std::optional<int> TabStrip::GetFirstTabInGroup(
     const tab_groups::TabGroupId& group) const {
   return controller_->GetFirstTabInGroup(group);

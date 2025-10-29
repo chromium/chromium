@@ -75,6 +75,9 @@ class TabContainerController {
   // Returns true if any tabs are being animated, anywhere in the TabStrip.
   virtual bool IsAnimatingInTabStrip() const = 0;
 
+  // Returns true if the browser is in the process of closing all tabs.
+  virtual bool IsBrowserClosing() const = 0;
+
   // Retargets the animation of `tab_slot_view` to
   // `target_bounds_in_tab_container_coords`, without disrupting its timing.
   virtual void UpdateAnimationTarget(

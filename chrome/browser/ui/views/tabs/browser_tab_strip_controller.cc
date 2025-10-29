@@ -349,6 +349,10 @@ bool BrowserTabStripController::IsTabPinned(int model_index) const {
   return model_->ContainsIndex(model_index) && model_->IsTabPinned(model_index);
 }
 
+bool BrowserTabStripController::IsBrowserClosing() const {
+  return model_->closing_all();
+}
+
 void BrowserTabStripController::SelectTab(int model_index,
                                           const ui::Event& event) {
   // When selecting a split tab, activate the most recently focused tab in the

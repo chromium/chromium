@@ -80,6 +80,7 @@ TabContainerImpl::RemoveTabDelegate::RemoveTabDelegate(
 
 void TabContainerImpl::RemoveTabDelegate::AnimationEnded(
     const gfx::Animation* animation) {
+  StopObserving();
   tab_container()->OnTabCloseAnimationCompleted(static_cast<Tab*>(slot_view()));
 }
 
@@ -203,13 +204,23 @@ void TabContainerImpl::RemoveTab(int model_index, bool was_active) {
   UpdateClosingModeOnRemovedTab(model_index, was_active);
 
   Tab* const tab = GetTabAtModelIndex(model_index);
+  if (!tab) {
+    return;
+  }
+
   tab->SetClosing(true);
 
   CloseTabInViewModel(model_index);
 
   MarkZOrderCacheDirty();
 
-  StartRemoveTabAnimation(tab, model_index);
+  if (controller_->IsBrowserClosing()) {
+    // If all tabs are closing, we should not animated to tab close, but instead
+    // immediately close tabs.
+    OnTabCloseAnimationCompleted(tab);
+  } else {
+    StartRemoveTabAnimation(tab, model_index);
+  }
 
   UpdateAccessibleTabIndices();
 }

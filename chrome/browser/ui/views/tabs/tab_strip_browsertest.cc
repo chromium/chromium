@@ -39,6 +39,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/test/ax_event_counter.h"

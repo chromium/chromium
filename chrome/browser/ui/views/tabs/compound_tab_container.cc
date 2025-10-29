@@ -87,6 +87,10 @@ class PinnedTabContainerController final : public TabContainerController {
     return base_controller_->IsAnimatingInTabStrip();
   }
 
+  bool IsBrowserClosing() const override {
+    return base_controller_->IsBrowserClosing();
+  }
+
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
                              gfx::Rect target_bounds) override {
     compound_tab_container_->UpdateAnimationTarget(tab_slot_view, target_bounds,
@@ -171,6 +175,10 @@ class UnpinnedTabContainerController final : public TabContainerController {
 
   bool IsAnimatingInTabStrip() const override {
     return base_controller_->IsAnimatingInTabStrip();
+  }
+
+  bool IsBrowserClosing() const override {
+    return base_controller_->IsBrowserClosing();
   }
 
   void UpdateAnimationTarget(TabSlotView* tab_slot_view,
