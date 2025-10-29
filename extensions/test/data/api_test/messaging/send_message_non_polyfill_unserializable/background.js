@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function onMessageListener(message, sender, sendResponse) {
+function onMessageListener(message, unusedSender, sendResponse) {
   let listenerReturn = undefined;
   switch (message) {
-    case 'hold sendResponse reference but never respond':
-      self.holdSendResponse = sendResponse;
-      listenerReturn = true;
-      break;
     // JS functions are not JSON serializable. The below two cases cause
     // extensions v8 C++ logic to throw a TypeError in this context.
     case 'respond synchronously with an unserializable value':

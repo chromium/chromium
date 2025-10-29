@@ -7,20 +7,6 @@
 // https://github.com/mozilla/webextension-polyfill.
 
 chrome.test.runTests([
-  // Tests that a runtime.onMessage() listener that throws an error
-  // synchronously returns an `undefined` response.
-  async function onMessageSyncThrowsError() {
-    let response =
-        await chrome.runtime.sendMessage('synchronously throw an error');
-    chrome.test.assertEq(undefined, response);
-    // TODO(crbug.com/40753031): This is the future desired behavior.
-    // await chrome.test.assertPromiseRejects(
-    //     chrome.runtime.sendMessage(
-    //         'respond synchronously with an unserializable value'),
-    //     'synchronous error thrown');
-    chrome.test.succeed();
-  },
-
   // Tests that a runtime.onMessage() listener that synchronously calls
   // sendResponse() causes the the sender's promise to be resolved with the
   // synchronous response call's value.

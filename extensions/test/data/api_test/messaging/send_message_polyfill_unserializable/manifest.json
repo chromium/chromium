@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "manifest_version": 3,
-  "name": "Test extension for sendMessage() promise behavior when the listener responds with unserializable data",
+  "name": "Test extension for sendMessage() behavior when the listener responds with unserializable data (when polyfill feature is enabled)",
   "background": {
     "service_worker": "background.js"
   },

@@ -11,25 +11,6 @@ response by returning true, but the message channel closed before a response \
 was received`
 
 chrome.test.runTests([
-  // Tests that when the listener holds a reference to sendResponse, and
-  // indicates it will reply asynchronously but then never responds, we
-  // eventually get an error that it never responded.
-  async function onMessageHoldSendResponseReferenceAndNeverRespond() {
-    let assertPromiseRejects = chrome.test.assertPromiseRejects(
-        chrome.runtime.sendMessage(
-            'hold sendResponse reference but never respond'),
-        asyncResponseFailureError);
-    await chrome.test.sendMessage('shutdown_worker');
-    await assertPromiseRejects;
-    chrome.test.succeed();
-  },
-
-  // TODO(crbug.com/40753031): If the
-  // extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport feature
-  // is enabled by default then the tests for
-  // UnserializableOneTimeMessageResponseMessagingApiTest can take the place of
-  // the two below.
-
   // Tests that when the listener responds synchronously with a value that
   // cannot be serialized into JSON the sender is eventually notified of the
   // error.

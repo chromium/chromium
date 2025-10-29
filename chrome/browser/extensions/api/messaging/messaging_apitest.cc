@@ -770,85 +770,117 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
       << message_;
 }
 
-using PolyfillSupportMessagingApiTest = MessagingApiTest;
+// TODO(crbug.com/439644930): PolyfillSupportMessagingApiTest and its test case
+// becomes unnecessary when the feature becomes the default (there are plenty of
+// other tests that test synchronous responses).
+// Helps test messaging behavior when
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// enabled or disabled.
+class PolyfillSupportMessagingApiTest : public base::test::WithFeatureOverride,
+                                        public MessagingApiTest {
+ public:
+ public:
+  PolyfillSupportMessagingApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+  }
+};
 
-// Tests that runtime.sendMessage() promise version behavior matches the
-// mozilla/webextension-polyfill
-// (https://github.com/mozilla/webextension-polyfill). The polyfill doesn't
-// support callbacks so we do not test the sendMessage() callback version
-// (https://github.com/mozilla/webextension-polyfill/issues/102). The test is
-// split into sync and async versions due to needing to stop the worker to
-// elicit the response for some test cases.
-IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
-                       SendMessageListenerBehavior_Synchronous) {
+// The PolyfillSupport* tests are testing various runtime.sendMessage()
+// behaviors compared to mozilla/webextension-polyfill
+// (https://github.com/mozilla/webextension-polyfill) when
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// enabled or disabled. The polyfill doesn't support callbacks so we do not test
+// the sendMessage() callback version
+// (https://github.com/mozilla/webextension-polyfill/issues/102).
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingApiTest,
+                       SendMessageListenerBehavior) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
   ASSERT_TRUE(RunExtensionTest(
-      "messaging/send_message_promise_polyfill_sync",
+      "messaging/send_message_polyfill_sync",
       {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
       << message_;
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingApiTest);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-// See above.
-IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
-                       SendMessageListenerBehavior_Asynchronous) {
-  const Extension* extension = LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/send_message_promise_polyfill_async"));
-  ASSERT_TRUE(extension);
-
-  ExtensionTestMessageListener message_processed_listener(
-      "listener_processed_message");
-  ExtensionTestMessageListener worker_shutdown_listener(
-      "shutdown_worker", ReplyBehavior::kWillReply);
-
-  auto OnShutdownMessage = [&](const std::string& message) {
+// TODO(crbug.com/439644930):PolyfillSupportWithWorkerShutdownMessagingApiTest
+// and its test case becomes unnecessary when the feature becomes the default
+// (the polyfill feature makes it so the errors tested here are handled without
+// worker shutdown).
+// Helps with testing messaging scenarios where the worker background must be
+// stopped in order to elicit a response to message. The polyfill feature
+// handles these scenarios without worker shutdown so we keep it disabled.
+class PolyfillSupportWithWorkerShutdownMessagingApiTest
+    : public MessagingApiTest {
+ public:
+  // Wait until the message listener finishes running and then stop the worker.
+  // Then inform the message sender that the worker shutdown.
+  void OnShutdownMessage(const ExtensionId& extension_id,
+                         const std::string& message) {
     // Wait for the worker listener to process the message so we don't shutdown
     // the worker so quickly that the sender's message never gets to the
     // listener.
-    ASSERT_TRUE(message_processed_listener.WaitUntilSatisfied(
+    ASSERT_TRUE(message_processed_listener_.WaitUntilSatisfied(
         base::RunLoop::Type::kNestableTasksAllowed));
-    message_processed_listener.Reset();
+    message_processed_listener_.Reset();
     // Shut down the worker to start garbage collection of the sendResponse in
     // the listener context. This elicits the browser to respond on behalf of
     // the listener.
     browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-        profile(), extension->id(), base::RunLoop::Type::kNestableTasksAllowed);
+        profile(), extension_id, base::RunLoop::Type::kNestableTasksAllowed);
     // Notify the test cases to proceed.
-    worker_shutdown_listener.Reply("");
-    worker_shutdown_listener.Reset();
-  };
-  worker_shutdown_listener.SetOnRepeatedlySatisfied(
-      base::BindLambdaForTesting(OnShutdownMessage));
-
-  // Navigate to a webpage where content script is injected and
-  // runtime.sendMessage() is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+    worker_shutdown_listener_.Reply("");
+    worker_shutdown_listener_.Reset();
   }
+
+ protected:
+  PolyfillSupportWithWorkerShutdownMessagingApiTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+  }
+
+  void SetUpOnMainThread() override {
+    MessagingApiTest::SetUpOnMainThread();
+    worker_shutdown_listener_.SetOnRepeatedlySatisfied(base::BindRepeating(
+        &PolyfillSupportWithWorkerShutdownMessagingApiTest::OnShutdownMessage,
+        base::Unretained(this), extension_id_));
+  }
+
+ private:
+  // Waits for the message listener to finish processing the message it
+  // received.
+  ExtensionTestMessageListener message_processed_listener_ =
+      ExtensionTestMessageListener("listener_processed_message");
+  // Waits for message sender to indicate that it would like for the worker to
+  // shutdown so it can receive a reply.
+  ExtensionTestMessageListener worker_shutdown_listener_ =
+      ExtensionTestMessageListener("shutdown_worker",
+                                   ReplyBehavior::kWillReply);
+  ExtensionId extension_id_ = ExtensionId("iegclhlplifhodhkoafiokenjoapiobj");
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test how does messaging handle when the listener never responds but also
+// never releases its reference to the v8 reply function (when the polyfill
+// feature is disabled). Also see PolyfillSupportMessagingApiTest.
+IN_PROC_BROWSER_TEST_F(PolyfillSupportWithWorkerShutdownMessagingApiTest,
+                       SendMessageListenerBehavior_Asynchronous) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/send_message_polyfill_async",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
 }
 
-// Test class that supports running tests with the
-// extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport feature
-// enabled and disabled. It also sets `chrome.test.getConfig()`'s 'customArg'
-// key to the feature state so the extension test can adjust it's expectations
-// at test runtime.
+// Test class that sets `chrome.test.getConfig()`'s 'customArg' key to the
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` state so
+// the extension test can adjust its expectations at test runtime.
 class PolyfillSupportMessagingErrorsApiTest
-    : public base::test::WithFeatureOverride,
-      public PolyfillSupportMessagingApiTest {
+    : public PolyfillSupportMessagingApiTest {
  public:
-  PolyfillSupportMessagingErrorsApiTest()
-      : base::test::WithFeatureOverride(
-            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
-  }
 
   void SetUpOnMainThread() override {
     PolyfillSupportMessagingApiTest::SetUpOnMainThread();
@@ -986,10 +1018,24 @@ IN_PROC_BROWSER_TEST_F(PolyfillFeatureEnabledMessagingApiTest,
       << message_;
 }
 
+using PolyfillUnserializableMessageResponseShutdownTest =
+    PolyfillSupportWithWorkerShutdownMessagingApiTest;
+
+// Tests messaging behavior when a listener sends a response that is not JSON
+// serializable and the polyfill feature is not enabled.
+IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseShutdownTest,
+                       UnserializableResponse) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/send_message_non_polyfill_unserializable",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
 // The tests for when the feature is disabled are in
-// PolyfillSupportMessagingApiTest.SendMessageListenerBehavior_Asynchronous
+// PolyfillUnserializableMessageResponseShutdownTest.UnserializableResponse
 // since they require extra logic to test.
-using UnserializableOneTimeMessageResponseMessagingApiTest =
+using PolyfillUnserializableMessageResponseTest =
     PolyfillFeatureEnabledMessagingApiTest;
 
 // Tests similar behavior to PolyfillSupportMessagingApiTest, but specifically
@@ -998,11 +1044,11 @@ using UnserializableOneTimeMessageResponseMessagingApiTest =
 // to the behavior of mozilla/webextension-polyfill
 // (https://github.com/mozilla/webextension-polyfill), but different in that an
 // error is returned.
-IN_PROC_BROWSER_TEST_F(UnserializableOneTimeMessageResponseMessagingApiTest,
+IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseTest,
                        UnserializableResponseClosesChannel) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
   ASSERT_TRUE(RunExtensionTest(
-      "messaging/send_message_promise_polyfill_unserializable",
+      "messaging/send_message_polyfill_unserializable",
       {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
       << message_;
 }
