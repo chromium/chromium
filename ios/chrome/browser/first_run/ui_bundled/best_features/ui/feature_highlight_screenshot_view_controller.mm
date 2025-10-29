@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/metrics_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -102,17 +103,18 @@ NSString* const kFeatureHighlightScreenshotViewDarkAnimationId =
   alertScreen.titleString = _bestFeaturesItem.title;
   alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   alertScreen.subtitleString = _bestFeaturesItem.subtitle;
-  alertScreen.primaryActionString =
+  alertScreen.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
 
   // The secondary action string changes depending on the FRE Sequence.
   if ([self isBestFeaturesLast]) {
-    alertScreen.secondaryActionString =
+    alertScreen.configuration.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_START_BROWSING_BUTTON);
   } else {
-    alertScreen.secondaryActionString =
+    alertScreen.configuration.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_CONTINUE_BUTTON);
   }
+  [alertScreen reloadConfiguration];
   alertScreen.imageHasFixedSize = YES;
   alertScreen.topAlignedLayout = YES;
   alertScreen.showDismissBarButton = NO;
