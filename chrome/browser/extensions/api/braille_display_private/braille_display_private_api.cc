@@ -15,7 +15,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
