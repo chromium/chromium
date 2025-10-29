@@ -109,6 +109,9 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                                         getDrawable().getBounds().right
                                                 - getDrawable().getBounds().left);
                         mAnimatingView.update(getProgress() * width);
+                        if (shouldAnimateCompositedLayer()) {
+                            mAnimatingView.setVisibility(VISIBLE);
+                        }
                         mAnimatingView.startAnimation();
                     }
                 }
@@ -181,6 +184,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
     public void setAnimatingView(ToolbarProgressBarAnimatingView animatingView) {
         mAnimatingView = animatingView;
+
+        // TODO(peilinwang): after AndroidAnimatedCompositedProgressBar launches, make the xml
+        // property for this view default invisible and remove this.
+        if (shouldAnimateCompositedLayer()) {
+            mAnimatingView.setVisibility(INVISIBLE);
+        }
+
         if (useGradientDrawable()) {
             mAnimatingView.setCornerRadius((float) mProgressBarHeight / 2);
         }

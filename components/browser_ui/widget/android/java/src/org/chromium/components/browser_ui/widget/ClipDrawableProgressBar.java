@@ -442,17 +442,12 @@ public class ClipDrawableProgressBar extends ImageView {
         return super.onSetAlpha(alpha);
     }
 
-    private boolean shouldAnimateCompositedLayer() {
+    public boolean shouldAnimateCompositedLayer() {
         return ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
                 || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled();
     }
 
-    @Override
-    public int getVisibility() {
-        if (shouldAnimateCompositedLayer()) {
-            return mCompositedLayersVisibility;
-        } else {
-            return super.getVisibility();
-        }
+    public int getCompositedVisibilityForTesting() {
+        return mCompositedLayersVisibility;
     }
 }
