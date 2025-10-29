@@ -20,7 +20,7 @@
 @property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetDelegate>
     delegate;
 
-// User actions are delagated to this mutator.
+// User actions are delegated to this mutator.
 @property(nonatomic, weak) id<VirtualCardEnrollmentBottomSheetMutator> mutator;
 
 @end
