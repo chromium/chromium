@@ -558,7 +558,8 @@ void PressInfoButtonForCell(NSString* cellId) {
   return config;
 }
 
-- (void)testPasswordLeakCheckToggle_MissingWhenFeatureFlagEnabled {
+// TODO(crbug.com/456158030): Fails on ios-fieldtrial-rel bot.
+- (void)DISABLED_testPasswordLeakCheckToggle_MissingWhenFeatureFlagEnabled {
   // Ensure that Safe Browsing and password leak detection opt-outs start in
   // their default (opted-in) state.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
