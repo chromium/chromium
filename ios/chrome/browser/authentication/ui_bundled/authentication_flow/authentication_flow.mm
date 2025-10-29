@@ -674,17 +674,17 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       accountsOnDevice, _identityToSignIn.gaiaId, &AccountInfo::gaia);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
-  BOOL isValidIdentityInProfile = base::Contains(
+  BOOL isValidIdentityInCurrentProfile = base::Contains(
       accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
   if (!isValidIdentityOnDevice ||
-      (!isValidIdentityInProfile &&
+      (!isValidIdentityInCurrentProfile &&
        !AreSeparateProfilesForManagedAccountsEnabled())) {
     // Handle the case where the identity is no longer valid.
     NSError* error = ios::provider::CreateMissingIdentitySigninError();
     [self handleAuthenticationError:error];
     return;
   }
-  if (isValidIdentityInProfile) {
+  if (isValidIdentityInCurrentProfile) {
     // If the identity is in the current profile, the flow should continue,
     // without switching profile.
     RecordUnsyncedDataHistogramIfNeeded(
@@ -719,6 +719,22 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     [self continueFlow];
     return;
   }
+  BOOL isValidIdentityInSomeProfile =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(_identityToSignIn.gaiaId)
+          .has_value();
+  if (!isValidIdentityInSomeProfile) {
+    __weak __typeof(self) weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](__typeof(self) weakSelf) {
+                         [weakSelf didFailToSwitchToProfile];
+                       },
+                       weakSelf));
+    return;
+  }
+
   RecordUnsyncedDataHistogramIfNeeded(
       UnsyncedDataTypeHistogram::kUnsyncedDataOnProfileSwitching,
       _unsyncedDataTypes.value());
@@ -730,7 +746,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   //   profile switch must be due to an account change.
   // * Otherwise, it must be due to a signin with a managed account (because a
   //   signin with a non-managed account wouldn't cause a profile switch - that
-  //   case is handled in the `isValidIdentityInProfile` check above).
+  //   case is handled in the `isValidIdentityInCurrentProfile` check above).
   ChangeProfileReason reason =
       identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
           ? ChangeProfileReason::kSwitchAccounts
@@ -832,6 +848,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
   DCHECK(error);
+  CHECK(_browser, base::NotFatalUntil::M150);
   _cancelationReason = signin_ui::CancelationReason::kFailed;
   self.handlingError = YES;
   __weak AuthenticationFlow* weakSelf = self;

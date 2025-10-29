@@ -245,16 +245,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       GetApplicationContext()
           ->GetAccountProfileMapper()
           ->FindProfileNameForGaiaID(identity.gaiaId);
-  if (!profileName.has_value()) {
-    __weak __typeof(_delegate) weakDelegate = _delegate;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](__typeof(_delegate) delegate) {
-                         [delegate didFailToSwitchToProfile];
-                       },
-                       weakDelegate));
-    return;
-  }
+  CHECK(profileName.has_value(), base::NotFatalUntil::M150);
 
   __weak __typeof(self) weakSelf = self;
   auto profileSwitchReadyCompletion = base::BindOnce(
