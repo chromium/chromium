@@ -13,6 +13,7 @@
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
@@ -182,7 +183,7 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
     }
   }
 
-  std::vector<Environment::SessionConfigEntry> ep_config_entries =
+  std::vector<SessionConfigEntry> ep_config_entries =
       env->GetEpConfigEntries(device_type);
   for (const auto& config_entry : ep_config_entries) {
     CHECK_STATUS(ort_api->AddSessionConfigEntry(

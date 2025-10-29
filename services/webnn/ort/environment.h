@@ -10,36 +10,18 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/cstring_view.h"
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "gpu/config/gpu_info.h"
 #include "services/webnn/ort/scoped_ort_types.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
+#include "services/webnn/public/mojom/ep_package_info.mojom.h"
 #include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
-
-inline constexpr base::cstring_view kOpenVINOExecutionProvider =
-    "OpenVINOExecutionProvider";
-
-// Describes the workarounds needed for execution provider limitations.
-// TODO(crbug.com/428740146): Remove this struct once all the execution
-// providers fix these issues.
-struct EpWorkarounds {
-  // TODO(crbug.com/429253567): Specify the minimum package version that
-  // supports these features without requiring workarounds.
-
-  // By default ONNX Resize op supports any axes, but some EPs may only support
-  // NCHW layout. `ContextProperties.resample_2d_axes` setting will respect to
-  // this limit.
-  bool resample2d_limit_to_nchw = false;
-
-  EpWorkarounds& operator|=(const EpWorkarounds& other) {
-    resample2d_limit_to_nchw |= other.resample2d_limit_to_nchw;
-    return *this;
-  }
-};
 
 // A wrapper of `OrtEnv` which is thread-safe and can be shared across sessions.
 // It should be kept alive until all sessions using it are destroyed.
@@ -48,7 +30,9 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
   static base::expected<scoped_refptr<Environment>, std::string> GetInstance(
-      const gpu::GPUInfo& gpu_info);
+      const gpu::GPUInfo& gpu_info,
+      const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
+          ep_package_info_map);
 
   Environment(base::PassKey<Environment> pass_key, ScopedOrtEnv env);
   Environment(const Environment&) = delete;
@@ -86,11 +70,6 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
 
   const OrtEnv* get() const { return env_.get(); }
 
-  struct SessionConfigEntry {
-    base::cstring_view key;
-    base::cstring_view value;
-  };
-
   // Get all EP-specific session configuration entries for the EPs that will be
   // selected according to the given device type.
   std::vector<SessionConfigEntry> GetEpConfigEntries(
@@ -98,7 +77,9 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
 
  private:
   static base::expected<scoped_refptr<Environment>, std::string> Create(
-      const gpu::GPUInfo& gpu_info);
+      const gpu::GPUInfo& gpu_info,
+      const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
+          ep_package_info_map);
 
   ~Environment();
 

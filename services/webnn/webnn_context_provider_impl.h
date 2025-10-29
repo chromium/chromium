@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/optional_ref.h"
 #include "gpu/command_buffer/service/sequence_id.h"
@@ -17,6 +18,10 @@
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
+#include "services/webnn/buildflags.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
@@ -53,7 +58,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      int32_t client_id);
+      int32_t client_id,
+      mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
 
   // Called to add a another WebNNContextProvider receiver to this
   // existing `WebNNContextProviderImpl` instance.
@@ -129,7 +135,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      int32_t client_id);
+      int32_t client_id,
+      mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
 
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
@@ -147,6 +154,39 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::ScopedDataPipeProducerHandle write_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
       scoped_refptr<WebNNContextImpl> context_impl);
+
+#if BUILDFLAG(WEBNN_USE_TFLITE)
+  void CreateTFLiteContext(
+      ScopedTrace scoped_trace,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      CreateWebNNContextCallback callback);
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+
+#if BUILDFLAG(IS_WIN)
+  void DidEnsureWebNNExecutionProvidersReady(
+      ScopedTrace scoped_trace,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedSequence> sequence,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      CreateWebNNContextCallback callback,
+      base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info);
+#endif  // BUILDFLAG(IS_WIN)
 
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
@@ -183,6 +223,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // TODO(crbug.com/345352987): give WebNN its own memory source and
   // tracker.
   scoped_refptr<gpu::MemoryTracker> memory_tracker_;
+
+  mojo::SharedRemote<viz::mojom::GpuHost> gpu_host_;
 
   base::WeakPtrFactory<WebNNContextProviderImpl> weak_factory_{this};
 };

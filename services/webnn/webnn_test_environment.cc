@@ -5,6 +5,9 @@
 #include "services/webnn/webnn_test_environment.h"
 
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 
 namespace webnn::test {
 
@@ -44,12 +47,15 @@ WebNNTestEnvironment::WebNNTestEnvironment(
   // All tests use the same client ID since no other client exists.
   constexpr int32_t kFakeClientIdForTesting = 0;
 
+  mojo::PendingRemote<viz::mojom::GpuHost> gpu_host_proxy;
+  std::ignore = gpu_host_proxy.InitWithNewPipeAndPassReceiver();
   context_provider_ = WebNNContextProviderImpl::Create(
       /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
       std::move(gpu_info), /*shared_image_manager=*/nullptr,
       std::move(lose_all_contexts_callback),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
-      g_webnn_scheduler.get(), kFakeClientIdForTesting);
+      g_webnn_scheduler.get(), kFakeClientIdForTesting,
+      mojo::SharedRemote(std::move(gpu_host_proxy)));
 }
 
 void WebNNTestEnvironment::BindWebNNContextProvider(

@@ -46,6 +46,7 @@ viz_component("host") {
     "//gpu/ipc/common",
     "//gpu/webgpu:common",
     "//services/viz/privileged/mojom",
+    "//services/webnn/host",
     "//services/webnn/public/mojom",
     "//ui/base",
     "//ui/base:ozone_buildflags",

@@ -25,6 +25,12 @@ component("cpp") {
     "webnn_types.h",
   ]
 
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//third_party/fp16",
+  ]
+
   if (is_mac) {
     sources += [
       "coreml_initializer.cc",
@@ -32,11 +38,15 @@ component("cpp") {
     ]
   }
 
-  deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//third_party/fp16",
-  ]
+  if (is_win) {
+    sources += [
+      "execution_providers_info.h",
+      "platform_functions_win.cc",
+      "platform_functions_win.h",
+    ]
+
+    deps += [ "//third_party/windows_app_sdk_headers" ]
+  }
 
   defines = [ "IS_WEBNN_PUBLIC_CPP_IMPL" ]
 }

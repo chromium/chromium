@@ -289,6 +289,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
                        const std::string& key,
                        const std::string& blob) override;
   void ClearGrShaderDiskCache() override;
+#if BUILDFLAG(IS_WIN)
+  void EnsureWebNNExecutionProvidersReady(
+      EnsureWebNNExecutionProvidersReadyCallback cb) override;
+#endif
 
   // mojom::GpuLogging:
   void RecordLogMessage(int32_t severity,

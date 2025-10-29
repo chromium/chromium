@@ -24,125 +24,6 @@ namespace webnn::ort {
 
 namespace {
 
-struct EpInfo {
-  base::wcstring_view package_family_name;
-  base::wcstring_view library_name;
-  PACKAGE_VERSION package_version;
-  // Represents the vendor id of the hardware device used by the execution
-  // provider.
-  uint32_t vendor_id;
-  EpWorkarounds workarounds;
-  base::raw_span<const Environment::SessionConfigEntry> config_entries;
-};
-
-constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
-    // Intel
-    {
-        kOpenVINOExecutionProvider,
-        {
-            .package_family_name = L"MicrosoftCorporationII.WinML.Intel."
-                                   L"OpenVINO.EP.1.8_8wekyb3d8bbwe",
-            .library_name = L"onnxruntime_providers_openvino_plugin.dll",
-            .package_version =
-                {
-                    .Major = 0,
-                    .Minor = 0,
-                    .Build = 0,
-                    .Revision = 0,
-                },
-            .vendor_id = 0x8086,
-            .workarounds =
-                {
-                    .resample2d_limit_to_nchw = true,
-                },
-            // OpenVINO EP configuration. Keys and values must align with the
-            // ORT OpenVINO EP implementation. See:
-            // https://github.com/microsoft/onnxruntime/blob/f46113d7b11af3fa0b3918029e442c3a14265522/onnxruntime/core/providers/openvino/openvino_provider_factory.cc#L459
-            // and
-            // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options.
-            //
-            // To get more accurate inference results, WebNN requires the
-            // accuracy execution mode on OpenVINO GPU/NPU to avoid lowering the
-            // execution accuracy for performance reasons, maintain original
-            // model precision (f32→f32, f16→f16) and disable dynamic
-            // quantization. See:
-            // https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html.
-            //
-            // On OpenVINO GPU, the default `fp16` precision specified by
-            // `INFERENCE_PRECISION_HINT` can override the `ACCURACY` mode set
-            // by `EXECUTION_MODE_HINT`. To improve robustness and ensure
-            // accurate inference results, we explicitly set
-            // `INFERENCE_PRECISION_HINT`
-            //  to `dynamic`.
-            .config_entries =
-                (const Environment::SessionConfigEntry[]){
-                    {.key = "ep.openvinoexecutionprovider.load_config",
-                     .value = R"({
-                            "GPU": {
-                                "EXECUTION_MODE_HINT": "ACCURACY",
-                                "INFERENCE_PRECISION_HINT": "dynamic"
-                            },
-                            "NPU": {
-                                "EXECUTION_MODE_HINT": "ACCURACY"
-                            }
-                        })"},
-                },
-        },
-    },
-    // NVidia
-    {
-        "NvTensorRTRTXExecutionProvider",
-        {
-            .package_family_name = L"MicrosoftCorporationII.WinML.NVIDIA.TRT-"
-                                   L"RTX.EP.1.8_8wekyb3d8bbwe",
-            .library_name = L"onnxruntime_providers_nv_tensorrt_rtx.dll",
-            .package_version =
-                {
-                    .Major = 0,
-                    .Minor = 0,
-                    .Build = 0,
-                    .Revision = 0,
-                },
-            .vendor_id = 0x10de,
-        },
-    },
-    // Qualcomm
-    {
-        "QNNExecutionProvider",
-        {
-            .package_family_name = L"MicrosoftCorporationII.WinML.Qualcomm.QNN."
-                                   L"EP.1.8_8wekyb3d8bbwe",
-            .library_name = L"onnxruntime_providers_qnn.dll",
-            .package_version =
-                {
-                    .Major = 0,
-                    .Minor = 0,
-                    .Build = 0,
-                    .Revision = 0,
-                },
-            .vendor_id = 0x4d4f4351,
-        },
-    },
-});
-
-// Returns true if the `vendor_id` exists in the `gpu_info`.
-bool VendorIdExistsInGpuInfo(const gpu::GPUInfo& gpu_info, uint32_t vendor_id) {
-  if (gpu_info.active_gpu().vendor_id == vendor_id) {
-    return true;
-  }
-  for (const auto& secondary_gpu : gpu_info.secondary_gpus) {
-    if (secondary_gpu.vendor_id == vendor_id) {
-      return true;
-    }
-  }
-  for (const auto& npu : gpu_info.npus) {
-    if (npu.vendor_id == vendor_id) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Returns a span of registered execution provider devices in `env`. The span is
 // guaranteed to be valid until `env` is released or the list of execution
 // providers is modified.
@@ -525,17 +406,22 @@ std::vector<const OrtEpDevice*> SortEpDevices(
 
 // static
 base::expected<scoped_refptr<Environment>, std::string>
-Environment::GetInstance(const gpu::GPUInfo& gpu_info) {
+Environment::GetInstance(
+    const gpu::GPUInfo& gpu_info,
+    const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
+        ep_package_info_map) {
   base::AutoLock auto_lock(GetLock());
   if (instance_) {
     return base::WrapRefCounted(instance_);
   }
-  return Create(gpu_info);
+  return Create(gpu_info, ep_package_info_map);
 }
 
 // static
 base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
-    const gpu::GPUInfo& gpu_info) {
+    const gpu::GPUInfo& gpu_info,
+    const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
+        ep_package_info_map) {
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.ORT.TimingMs.CreateEnvironment");
 
   auto* platform_functions = PlatformFunctions::GetInstance();
@@ -572,32 +458,27 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
     }
   }
 
-  // Register the execution provider based on the GPU/NPU vendor id if it's not
-  // registered yet. Ultimately, ignore the failure of registering the EP.
-  for (const auto& [ep_name, ep_info] : kKnownEPs) {
-    if (!VendorIdExistsInGpuInfo(gpu_info, ep_info.vendor_id)) {
-      continue;
-    }
-
+  // Register known execution providers if they are not registered yet.
+  // Failure is ignored.
+  for (const auto& [ep_name, package_info] : ep_package_info_map) {
     if (IsExecutionProviderRegistered(ort_api, env.get(), ep_name)) {
       continue;
     }
 
     // First try to load EP libraries from the specified path by
     // `kWebNNOrtEpLibraryPathForTesting` switch if the EP name matches the
-    // specified EP name. Otherwise, try to load it from the EP package path.
+    // specified EP name. Otherwise, try to load it from the EP package info.
     base::FilePath ep_library_path;
     if (specified_ep_path_info && ep_name == specified_ep_path_info->first) {
       ep_library_path = specified_ep_path_info->second;
     } else {
-      const std::optional<base::FilePath>& ep_package_path =
+      base::FilePath ep_package_path =
           platform_functions->InitializePackageDependency(
-              ep_info.package_family_name, ep_info.package_version);
-      if (!ep_package_path) {
+              package_info->family_name, package_info->version);
+      if (ep_package_path.empty()) {
         continue;
       }
-      ep_library_path = ep_package_path->Append(L"ExecutionProvider")
-                            .Append(ep_info.library_name);
+      ep_library_path = package_info->library_path;
     }
 
     CALL_ORT_FUNC(ort_api->RegisterExecutionProviderLibrary(
@@ -692,7 +573,7 @@ EpWorkarounds Environment::GetEpWorkarounds(mojom::Device device_type) const {
   return workarounds;
 }
 
-std::vector<Environment::SessionConfigEntry> Environment::GetEpConfigEntries(
+std::vector<SessionConfigEntry> Environment::GetEpConfigEntries(
     mojom::Device device_type) const {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   base::span<const OrtEpDevice* const> registered_ep_devices =

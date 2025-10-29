@@ -63,6 +63,7 @@ component("webnn_service") {
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
     "//services/webnn/public/mojom",
     "//third_party/tflite:buildflags",
   ]
@@ -233,6 +234,7 @@ source_set("webnn_test_support") {
     "//gpu/command_buffer/service",
     "//gpu/config",
     "//mojo/public/cpp/bindings",
+    "//services/viz/privileged/mojom/gl",
     "//services/webnn/public/mojom",
   ]
 }

@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
     return ort_model_editor_api_.get();
   }
 
-  std::optional<base::FilePath> InitializePackageDependency(
+  base::FilePath InitializePackageDependency(
       base::wcstring_view package_family_name,
       PACKAGE_VERSION min_version);
 
@@ -43,15 +43,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
   ~PlatformFunctions();
 
   bool AllFunctionsLoaded();
-
-  // Library and functions for package dependency initialization.
-  base::ScopedNativeLibrary app_model_library_;
-
-  using TryCreatePackageDependencyProc = decltype(TryCreatePackageDependency)*;
-  TryCreatePackageDependencyProc try_create_package_dependency_proc_ = nullptr;
-
-  using AddPackageDependencyProc = decltype(AddPackageDependency)*;
-  AddPackageDependencyProc add_package_dependency_proc_ = nullptr;
 
   base::ScopedNativeLibrary ort_library_;
   raw_ptr<const OrtApi> ort_api_ = nullptr;
