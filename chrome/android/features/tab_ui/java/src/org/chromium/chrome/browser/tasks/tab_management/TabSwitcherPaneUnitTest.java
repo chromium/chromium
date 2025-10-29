@@ -177,7 +177,6 @@ public class TabSwitcherPaneUnitTest {
     private ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
-    @Captor private ArgumentCaptor<Callback<Boolean>> mHairlineVisibilityCallbackCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
@@ -252,7 +251,6 @@ public class TabSwitcherPaneUnitTest {
                         any(),
                         mIsAnimatingSupplierCaptor.capture(),
                         mOnTabClickedCallbackCaptor.capture(),
-                        mHairlineVisibilityCallbackCaptor.capture(),
                         anyBoolean(),
                         any(),
                         any(),
@@ -719,21 +717,6 @@ public class TabSwitcherPaneUnitTest {
 
         mOnTabClickedCallbackCaptor.getValue().onResult(tabId);
         verify(mPaneHubController).selectTabAndHideHub(tabId);
-    }
-
-    @Test
-    public void testHairlineVisibilitySupplier() {
-        mTabSwitcherPane.initWithNative();
-        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
-
-        var hairlineVisibilitySupplier = mTabSwitcherPane.getHairlineVisibilitySupplier();
-        assertNull(hairlineVisibilitySupplier.get());
-
-        mHairlineVisibilityCallbackCaptor.getValue().onResult(true);
-        assertTrue(hairlineVisibilitySupplier.get());
-
-        mHairlineVisibilityCallbackCaptor.getValue().onResult(false);
-        assertFalse(hairlineVisibilitySupplier.get());
     }
 
     @Test

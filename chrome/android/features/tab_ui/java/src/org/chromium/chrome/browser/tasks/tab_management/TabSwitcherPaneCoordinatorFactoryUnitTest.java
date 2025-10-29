@@ -123,7 +123,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
     @Mock private Callback<Integer> mOnTabClickedCallback;
-    @Mock private Callback<Boolean> mHairlineVisibilityCallback;
     @Mock private Callback<View> mSetOverlayViewCallback;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private DataSharingTabManager mDataSharingTabManager;
@@ -232,7 +231,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
@@ -259,7 +257,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
@@ -278,7 +275,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
@@ -304,7 +300,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         mOnTabClickedCallback,
-                        mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
                         /* onTabGroupCreation= */ null,
                         mEdgeToEdgeSupplier,
