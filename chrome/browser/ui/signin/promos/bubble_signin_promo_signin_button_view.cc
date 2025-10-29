@@ -93,8 +93,8 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   std::unique_ptr<HoverButton> hover_button = std::make_unique<HoverButton>(
       views::Button::PressedCallback(),
       std::make_unique<BadgedProfilePhoto>(
-          is_signin_promo ? BadgedProfilePhoto::BADGE_TYPE_NONE
-                          : BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF,
+          is_signin_promo ? BadgedProfilePhoto::BadgeType::kNone
+                          : BadgedProfilePhoto::BadgeType::kSyncOff,
           account_icon),
       card_title, base::ASCIIToUTF16(account_->email));
 
