@@ -19686,7 +19686,26 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledAll_20250731",
+                    "name": "EnabledSubframePriorityContribution_20251027",
+                    "enable_features": [
+                        "SubframePriorityContribution"
+                    ],
+                    "disable_features": [
+                        "ChangeUnfocusedPriority",
+                        "ProcessRankPolicyAndroid",
+                        "ProtectedTabsAndroid",
+                        "SubframeImportance"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledAll_20251027",
                     "enable_features": [
                         "ChangeUnfocusedPriority",
                         "ProcessRankPolicyAndroid",
