@@ -411,8 +411,7 @@ void TabsEventRouter::OnFaviconUpdated(
 
 void TabsEventRouter::OnLifecycleUnitStateChanged(
     resource_coordinator::LifecycleUnit* lifecycle_unit,
-    ::mojom::LifecycleUnitState previous_state,
-    ::mojom::LifecycleUnitStateChangeReason reason) {
+    ::mojom::LifecycleUnitState previous_state) {
   const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   auto previous_or_new_state_is = [&](::mojom::LifecycleUnitState state) {
     return previous_state == state || new_state == state;

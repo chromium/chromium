@@ -103,10 +103,8 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
 
  private:
   // LifecycleUnitObserver:
-  void OnLifecycleUnitStateChanged(
-      LifecycleUnit* lifecycle_unit,
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason) override {
+  void OnLifecycleUnitStateChanged(LifecycleUnit* lifecycle_unit,
+                                   LifecycleUnitState last_state) override {
     EXPECT_EQ(lifecycle_unit, lifecycle_unit_);
     if (lifecycle_unit_->GetState() == expected_state_) {
       run_loop_.Quit();
@@ -134,10 +132,8 @@ class DiscardWaiter : public LifecycleUnitObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  void OnLifecycleUnitStateChanged(
-      LifecycleUnit* lifecycle_unit,
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason) override {
+  void OnLifecycleUnitStateChanged(LifecycleUnit* lifecycle_unit,
+                                   LifecycleUnitState last_state) override {
     if (lifecycle_unit->GetState() == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_.Quit();
     }

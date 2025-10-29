@@ -354,11 +354,10 @@ void TabLifecycleUnitSource::OnBrowserNoLongerActive(Browser* browser) {
 
 void TabLifecycleUnitSource::OnLifecycleUnitStateChanged(
     LifecycleUnit* lifecycle_unit,
-    LifecycleUnitState last_state,
-    LifecycleUnitStateChangeReason reason) {
+    LifecycleUnitState last_state) {
   lifecycle_unit_observers_.Notify(
       &LifecycleUnitObserver::OnLifecycleUnitStateChanged, lifecycle_unit,
-      last_state, reason);
+      last_state);
 }
 
 void TabLifecycleUnitSource::OnLifecycleUnitDestroyed(

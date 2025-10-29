@@ -20,10 +20,8 @@ class LifecycleUnitObserver {
   virtual ~LifecycleUnitObserver();
 
   // Invoked when the state of the observed LifecycleUnit changes.
-  virtual void OnLifecycleUnitStateChanged(
-      LifecycleUnit* lifecycle_unit,
-      LifecycleUnitState last_state,
-      LifecycleUnitStateChangeReason reason);
+  virtual void OnLifecycleUnitStateChanged(LifecycleUnit* lifecycle_unit,
+                                           LifecycleUnitState last_state);
 
   // Invoked before the observed LifecycleUnit starts being destroyed (i.e.
   // |lifecycle_unit| is still valid when this is invoked).

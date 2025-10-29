@@ -96,8 +96,7 @@ class TabsEventRouter : public TabStripModelObserver,
   // resource_coordinator::LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
-      ::mojom::LifecycleUnitState previous_state,
-      ::mojom::LifecycleUnitStateChangeReason reason) override;
+      ::mojom::LifecycleUnitState previous_state) override;
 
   // performance_manager::PageLiveStateObserver:
   void OnIsAutoDiscardableChanged(

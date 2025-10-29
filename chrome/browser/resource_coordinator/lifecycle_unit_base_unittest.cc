@@ -26,10 +26,8 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
   MockLifecycleUnitObserver& operator=(const MockLifecycleUnitObserver&) =
       delete;
 
-  MOCK_METHOD3(OnLifecycleUnitStateChanged,
-               void(LifecycleUnit*,
-                    LifecycleUnitState,
-                    LifecycleUnitStateChangeReason));
+  MOCK_METHOD2(OnLifecycleUnitStateChanged,
+               void(LifecycleUnit*, LifecycleUnitState));
   MOCK_METHOD1(OnLifecycleUnitDestroyed, void(LifecycleUnit*));
 };
 
@@ -93,10 +91,8 @@ TEST_F(LifecycleUnitBaseTest, SetStateNotifiesObservers) {
   lifecycle_unit.AddObserver(&observer_);
 
   // Observer is notified when the state changes.
-  EXPECT_CALL(observer_,
-              OnLifecycleUnitStateChanged(
-                  &lifecycle_unit, lifecycle_unit.GetState(),
-                  LifecycleUnitStateChangeReason::BROWSER_INITIATED));
+  EXPECT_CALL(observer_, OnLifecycleUnitStateChanged(
+                             &lifecycle_unit, lifecycle_unit.GetState()));
   lifecycle_unit.SetState(LifecycleUnitState::DISCARDED,
                           LifecycleUnitStateChangeReason::BROWSER_INITIATED);
   testing::Mock::VerifyAndClear(&observer_);

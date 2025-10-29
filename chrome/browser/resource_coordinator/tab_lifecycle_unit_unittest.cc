@@ -80,9 +80,7 @@ class MockLifecycleUnitObserver : public LifecycleUnitObserver {
 
   MOCK_METHOD(void,
               OnLifecycleUnitStateChanged,
-              (LifecycleUnit*,
-               LifecycleUnitState,
-               LifecycleUnitStateChangeReason),
+              (LifecycleUnit*, LifecycleUnitState),
               (override));
 };
 

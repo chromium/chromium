@@ -247,8 +247,7 @@ class TestTabStatsTracker : public TabStatsTracker {
     const auto previous_state = is_discarded
                                     ? ::mojom::LifecycleUnitState::ACTIVE
                                     : ::mojom::LifecycleUnitState::DISCARDED;
-    OnLifecycleUnitStateChanged(&lifecycle_unit, previous_state,
-                                kStateChangeReason);
+    OnLifecycleUnitStateChanged(&lifecycle_unit, previous_state);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -706,8 +706,7 @@ void TabStatsTracker::OnResume() {
 // Android.
 void TabStatsTracker::OnLifecycleUnitStateChanged(
     resource_coordinator::LifecycleUnit* lifecycle_unit,
-    ::mojom::LifecycleUnitState previous_state,
-    ::mojom::LifecycleUnitStateChangeReason reason) {
+    ::mojom::LifecycleUnitState previous_state) {
   const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   if (previous_state == ::mojom::LifecycleUnitState::DISCARDED ||
       new_state == ::mojom::LifecycleUnitState::DISCARDED) {

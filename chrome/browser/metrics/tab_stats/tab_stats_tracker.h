@@ -265,8 +265,7 @@ class TabStatsTracker :
   // resource_coordinator::LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
-      ::mojom::LifecycleUnitState previous_state,
-      ::mojom::LifecycleUnitStateChangeReason reason) override;
+      ::mojom::LifecycleUnitState previous_state) override;
 #endif
 
   // Functions to call when a tab strip (or the Android equivalent) is added,
