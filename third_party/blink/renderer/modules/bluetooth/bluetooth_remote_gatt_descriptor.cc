@@ -149,9 +149,10 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
 }
 
 String BluetoothRemoteGATTDescriptor::CreateInvalidDescriptorErrorMessage() {
-  return "Descriptor with UUID " + uuid() +
-         " is no longer valid. Remember to retrieve the Descriptor again "
-         "after reconnecting.";
+  return StrCat(
+      {"Descriptor with UUID ", uuid(),
+       " is no longer valid. Remember to retrieve the Descriptor again "
+       "after reconnecting."});
 }
 
 void BluetoothRemoteGATTDescriptor::Trace(Visitor* visitor) const {

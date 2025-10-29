@@ -177,8 +177,9 @@ EntrySync* WorkerGlobalScopeFileSystem::webkitResolveLocalFileSystemSyncURL(
   }
 
   if (!completed_url.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
-                                      "the URL '" + url + "' is invalid.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kEncodingError,
+        StrCat({"the URL '", url, "' is invalid."}));
     return nullptr;
   }
 

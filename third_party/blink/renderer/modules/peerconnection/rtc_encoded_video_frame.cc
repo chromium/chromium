@@ -123,7 +123,7 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
     if (!set_metadata.has_value()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Cannot create a new VideoFrame: " + set_metadata.error());
+          StrCat({"Cannot create a new VideoFrame: ", set_metadata.error()}));
       return nullptr;
     }
   }
@@ -302,7 +302,7 @@ void RTCEncodedVideoFrame::setMetadata(ExecutionContext* context,
   if (!set_metadata.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Cannot setMetadata: " + set_metadata.error());
+        StrCat({"Cannot setMetadata: ", set_metadata.error()}));
   }
 }
 

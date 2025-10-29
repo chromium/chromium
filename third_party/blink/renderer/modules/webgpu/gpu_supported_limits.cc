@@ -97,9 +97,10 @@ bool GPUSupportedLimits::Populate(
     if (!value.IsValid() || value.ValueOrDie() == UndefinedLimitValue<T>()) { \
       resolver->RejectWithDOMException(                                       \
           DOMExceptionCode::kOperationError,                                  \
-          "Required " #name " limit (" +                                      \
-              String::Number(limitRawIntegerValue) +                          \
-              ") exceeds the maximum representable value for its type.");     \
+          StrCat(                                                             \
+              {"Required " #name " limit (",                                  \
+               String::Number(limitRawIntegerValue),                          \
+               ") exceeds the maximum representable value for its type."}));  \
       return false;                                                           \
     }                                                                         \
     out->name = value.ValueOrDie();                                           \
@@ -111,13 +112,13 @@ bool GPUSupportedLimits::Populate(
       auto* console_message = MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kWarning,
-          "The limit \"" + limitName + "\" is not recognized.");
+          StrCat({"The limit \"", limitName, "\" is not recognized."}));
       context->AddConsoleMessage(console_message);
     } else {
       resolver->RejectWithDOMException(
           DOMExceptionCode::kOperationError,
-          "The limit \"" + limitName +
-              "\" with a non-undefined value is not recognized.");
+          StrCat({"The limit \"", limitName,
+                  "\" with a non-undefined value is not recognized."}));
       return false;
     }
   }

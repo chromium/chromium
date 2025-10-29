@@ -81,8 +81,8 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
   }
 
   String error =
-      "Refused to connect to '" + provider_url.ElidedString() +
-      "' because it violates the document's Content Security Policy.";
+      StrCat({"Refused to connect to '", provider_url.ElidedString(),
+              "' because it violates the document's Content Security Policy."});
   resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError, error);
   return true;
 }

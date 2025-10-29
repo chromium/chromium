@@ -539,10 +539,10 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
   media::EmeInitDataType init_data_type =
       EncryptedMediaUtils::ConvertToInitDataType(init_data_type_string);
   if (init_data_type == media::EmeInitDataType::UNKNOWN) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "The initialization data type '" +
-                                          init_data_type_string +
-                                          "' is not supported.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({"The initialization data type '", init_data_type_string,
+                "' is not supported."}));
     return EmptyPromise();
   }
 

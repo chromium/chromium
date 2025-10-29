@@ -169,7 +169,7 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
   if (paint_definitions_.Contains(name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "A class with name:'" + name + "' is already registered.");
+        StrCat({"A class with name:'", name, "' is already registered."}));
     return;
   }
 

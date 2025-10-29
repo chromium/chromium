@@ -374,9 +374,9 @@ ServiceWorkerContainer::registerServiceWorker(
           page_url.Protocol())) {
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kType,
-        String("Failed to register a ServiceWorker: The URL protocol of the "
-               "current origin ('" +
-               document_origin->ToString() + "') is not supported.")));
+        StrCat({"Failed to register a ServiceWorker: The URL protocol of the "
+                "current origin ('",
+                document_origin->ToString(), "') is not supported."})));
     return promise;
   }
 
@@ -387,9 +387,9 @@ ServiceWorkerContainer::registerServiceWorker(
           script_url.Protocol())) {
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kType,
-        String("Failed to register a ServiceWorker: The URL protocol of the "
-               "script ('" +
-               script_url.GetString() + "') is not supported.")));
+        StrCat({"Failed to register a ServiceWorker: The URL protocol of the "
+                "script ('",
+                script_url.GetString(), "') is not supported."})));
     return promise;
   }
 
@@ -398,11 +398,11 @@ ServiceWorkerContainer::registerServiceWorker(
         SecurityOrigin::Create(script_url);
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kSecurity,
-        String("Failed to register a ServiceWorker: The "
-               "origin of the provided scriptURL ('" +
-               script_origin->ToString() +
-               "') does not match the current origin ('" +
-               document_origin->ToString() + "').")));
+        StrCat({"Failed to register a ServiceWorker: The "
+                "origin of the provided scriptURL ('",
+                script_origin->ToString(),
+                "') does not match the current origin ('",
+                document_origin->ToString(), "')."})));
     return promise;
   }
 
@@ -417,9 +417,9 @@ ServiceWorkerContainer::registerServiceWorker(
           scope_url.Protocol())) {
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kType,
-        String("Failed to register a ServiceWorker: The URL protocol of the "
-               "scope ('" +
-               scope_url.GetString() + "') is not supported.")));
+        StrCat({"Failed to register a ServiceWorker: The URL protocol of the "
+                "scope ('",
+                scope_url.GetString(), "') is not supported."})));
     return promise;
   }
 
@@ -428,11 +428,11 @@ ServiceWorkerContainer::registerServiceWorker(
         SecurityOrigin::Create(scope_url);
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kSecurity,
-        String("Failed to register a ServiceWorker: The "
-               "origin of the provided scope ('" +
-               scope_origin->ToString() +
-               "') does not match the current origin ('" +
-               document_origin->ToString() + "').")));
+        StrCat({"Failed to register a ServiceWorker: The origin of the "
+                "provided scope ('",
+                scope_origin->ToString(),
+                "') does not match the current origin ('",
+                document_origin->ToString(), "')."})));
     return promise;
   }
 
@@ -458,9 +458,9 @@ ServiceWorkerContainer::registerServiceWorker(
   if (csp && !csp->AllowWorkerContextFromSource(script_url)) {
     resolver->Reject(ServiceWorkerErrorForUpdate::AsJSException(
         script_state, mojom::blink::ServiceWorkerErrorType::kSecurity,
-        String("Failed to register a ServiceWorker: The provided scriptURL ('" +
-               script_url.GetString() +
-               "') violates the Content Security Policy.")));
+        StrCat({"Failed to register a ServiceWorker: The provided scriptURL ('",
+                script_url.GetString(),
+                "') violates the Content Security Policy."})));
     return promise;
   }
 
@@ -533,9 +533,9 @@ ServiceWorkerContainer::getRegistration(ScriptState* script_state,
           page_url.Protocol())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
-        "Failed to get a ServiceWorkerRegistration: The URL protocol of the "
-        "current origin ('" +
-            document_origin->ToString() + "') is not supported."));
+        StrCat({"Failed to get a ServiceWorkerRegistration: The URL protocol "
+                "of the current origin ('",
+                document_origin->ToString(), "') is not supported."})));
     return promise;
   }
 
@@ -546,11 +546,11 @@ ServiceWorkerContainer::getRegistration(ScriptState* script_state,
         SecurityOrigin::Create(completed_url);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
-        "Failed to get a ServiceWorkerRegistration: The "
-        "origin of the provided documentURL ('" +
-            document_url_origin->ToString() +
-            "') does not match the current origin ('" +
-            document_origin->ToString() + "')."));
+        StrCat({"Failed to get a ServiceWorkerRegistration: The origin of the "
+                "provided documentURL ('",
+                document_url_origin->ToString(),
+                "') does not match the current origin ('",
+                document_origin->ToString(), "')."})));
     return promise;
   }
 
@@ -596,9 +596,9 @@ ServiceWorkerContainer::getRegistrations(ScriptState* script_state) {
           page_url.Protocol())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
-        "Failed to get ServiceWorkerRegistration objects: The URL protocol of "
-        "the current origin ('" +
-            document_origin->ToString() + "') is not supported."));
+        StrCat({"Failed to get ServiceWorkerRegistration objects: The URL "
+                "protocol of the current origin ('",
+                document_origin->ToString(), "') is not supported."})));
     return promise;
   }
 

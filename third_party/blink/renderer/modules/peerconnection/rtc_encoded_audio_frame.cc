@@ -107,7 +107,7 @@ RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
     if (!set_metadata.has_value()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Cannot create a new AudioFrame: " + set_metadata.error());
+          StrCat({"Cannot create a new AudioFrame: ", set_metadata.error()}));
       return nullptr;
     }
   }
@@ -198,8 +198,8 @@ base::expected<void, String> RTCEncodedAudioFrame::SetMetadata(
       IsAllowedSetMetadataChange(getMetadata(execution_context), metadata);
   if (!validation.allowed) {
     return base::unexpected(
-        "Invalid modification of RTCEncodedAudioFrameMetadata. " +
-        validation.error_msg);
+        StrCat({"Invalid modification of RTCEncodedAudioFrameMetadata. ",
+                validation.error_msg}));
   }
 
   return delegate_->SetWebRtcFrameMetadata(execution_context, metadata);
@@ -213,7 +213,7 @@ void RTCEncodedAudioFrame::setMetadata(ExecutionContext* execution_context,
   if (!set_metadata.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Cannot setMetadata: " + set_metadata.error());
+        StrCat({"Cannot setMetadata: ", set_metadata.error()}));
   }
 }
 

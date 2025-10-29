@@ -125,7 +125,7 @@ ScriptPromise<StorageBucket> StorageBucketManager::open(
   if (!IsValidName(name)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
-        "The bucket name '" + name + "' is not a valid name."));
+        StrCat({"The bucket name '", name, "' is not a valid name."})));
     return promise;
   }
 
@@ -194,7 +194,7 @@ ScriptPromise<IDLUndefined> StorageBucketManager::Delete(
   if (!IsValidName(name)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
-        "The bucket name " + name + " is not a valid name."));
+        StrCat({"The bucket name ", name, " is not a valid name."})));
     return promise;
   }
 

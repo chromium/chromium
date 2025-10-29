@@ -66,7 +66,7 @@ PresentationRequest* PresentationRequest::Create(
     if (!parsed_url.IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "'" + url + "' can't be resolved to a valid URL.");
+          StrCat({"'", url, "' can't be resolved to a valid URL."}));
       return nullptr;
     }
 
@@ -74,8 +74,8 @@ PresentationRequest* PresentationRequest::Create(
         MixedContentChecker::IsMixedContent(
             execution_context->GetSecurityOrigin(), parsed_url)) {
       exception_state.ThrowSecurityError(
-          "Presentation of an insecure document [" + url +
-          "] is prohibited from a secure context.");
+          StrCat({"Presentation of an insecure document [", url,
+                  "] is prohibited from a secure context."}));
       return nullptr;
     }
 

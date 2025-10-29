@@ -532,8 +532,8 @@ void BluetoothRemoteGATTCharacteristic::GetDescriptorsCallback(
     if (result == mojom::blink::WebBluetoothResult::DESCRIPTOR_NOT_FOUND) {
       resolver->Reject(BluetoothError::CreateDOMException(
           BluetoothErrorCode::kDescriptorNotFound,
-          "No Descriptors matching UUID " + requested_descriptor_uuid +
-              " found in Characteristic with UUID " + uuid() + "."));
+          StrCat({"No Descriptors matching UUID ", requested_descriptor_uuid,
+                  " found in Characteristic with UUID ", uuid(), "."})));
     } else {
       resolver->Reject(BluetoothError::CreateDOMException(result));
     }
@@ -542,9 +542,9 @@ void BluetoothRemoteGATTCharacteristic::GetDescriptorsCallback(
 
 String
 BluetoothRemoteGATTCharacteristic::CreateInvalidCharacteristicErrorMessage() {
-  return "Characteristic with UUID " + uuid() +
-         " is no longer valid. Remember to retrieve the characteristic again "
-         "after reconnecting.";
+  return StrCat({"Characteristic with UUID ", uuid(),
+                 " is no longer valid. Remember to retrieve the characteristic "
+                 "again after reconnecting."});
 }
 
 void BluetoothRemoteGATTCharacteristic::Trace(Visitor* visitor) const {

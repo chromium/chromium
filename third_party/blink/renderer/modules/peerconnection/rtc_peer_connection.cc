@@ -350,14 +350,14 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
         if (!url.IsValid()) {
           exception_state->ThrowDOMException(
               DOMExceptionCode::kSyntaxError,
-              "'" + url_string + "' is not a valid URL.");
+              StrCat({"'", url_string, "' is not a valid URL."}));
           return {};
         }
         bool is_valid_turn = IsValidTurnURL(url);
         if (!is_valid_turn && !IsValidStunURL(url)) {
           exception_state->ThrowDOMException(
               DOMExceptionCode::kSyntaxError,
-              "'" + url_string + "' is not a valid stun or turn URL.");
+              StrCat({"'", url_string, "' is not a valid stun or turn URL."}));
           return {};
         }
         if (is_valid_turn &&
@@ -417,7 +417,7 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
 bool SdpMismatch(String old_sdp, String new_sdp, String attribute) {
   // Look for an attribute that is present in both old and new SDP
   // and is modified which is not allowed.
-  String attribute_with_prefix = "\na=" + attribute + ":";
+  String attribute_with_prefix = StrCat({"\na=", attribute, ":"});
   const wtf_size_t new_attribute_pos = new_sdp.Find(attribute_with_prefix);
   if (new_attribute_pos == kNotFound) {
     return true;

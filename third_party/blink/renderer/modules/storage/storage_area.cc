@@ -129,8 +129,9 @@ NamedPropertySetterResult StorageArea::setItem(
     return NamedPropertySetterResult::kIntercepted;
   }
   if (!cached_area_->SetItem(key, value, this)) {
-    QuotaExceededError::Throw(exception_state, "Setting the value of '" + key +
-                                                   "' exceeded the quota.");
+    QuotaExceededError::Throw(
+        exception_state,
+        StrCat({"Setting the value of '", key, "' exceeded the quota."}));
     return NamedPropertySetterResult::kIntercepted;
   }
   return NamedPropertySetterResult::kIntercepted;

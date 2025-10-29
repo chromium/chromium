@@ -145,8 +145,8 @@ TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() ||
       EqualIgnoringASCIICase(encoding.GetName(), "replacement")) {
-    exception_state.ThrowRangeError("The encoding label provided ('" + label +
-                                    "') is invalid.");
+    exception_state.ThrowRangeError(
+        StrCat({"The encoding label provided ('", label, "') is invalid."}));
     return nullptr;
   }
 

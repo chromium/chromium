@@ -166,10 +166,10 @@ ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
       sub_apps_to_add.size() > kMaximumNumberOfSubappsPerAddCall) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "Unable to add sub-apps. The maximum number of apps added per call "
-        "is " +
-            String::Number(kMaximumNumberOfSubappsPerAddCall) + ", but " +
-            String::Number(sub_apps_to_add.size()) + " were provided.");
+        StrCat({"Unable to add sub-apps. The maximum number of apps added per "
+                "call is ",
+                String::Number(kMaximumNumberOfSubappsPerAddCall), ", but ",
+                String::Number(sub_apps_to_add.size()), " were provided."}));
     return ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>>();
   }
 

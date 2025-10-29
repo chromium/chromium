@@ -45,82 +45,75 @@ namespace {
 // unusual failures.
 const String GetMessageForResponseError(ServiceWorkerResponseError error,
                                         const KURL& request_url) {
-  String error_message = "The FetchEvent for \"" + request_url.GetString() +
-                         "\" resulted in a network error response: ";
+  StringView error_message;
   switch (error) {
     case ServiceWorkerResponseError::kPromiseRejected:
-      error_message = error_message + "the promise was rejected.";
+      error_message = "the promise was rejected.";
       break;
     case ServiceWorkerResponseError::kDefaultPrevented:
       error_message =
-          error_message +
           "preventDefault() was called without calling respondWith().";
       break;
     case ServiceWorkerResponseError::kNoV8Instance:
       error_message =
-          error_message +
           "an object that was not a Response was passed to respondWith().";
       break;
     case ServiceWorkerResponseError::kResponseTypeError:
-      error_message = error_message +
-                      "the promise was resolved with an error response object.";
+      error_message = "the promise was resolved with an error response object.";
       break;
     case ServiceWorkerResponseError::kResponseTypeOpaque:
       error_message =
-          error_message +
-          "an \"opaque\" response was used for a request whose type "
-          "is not no-cors";
+          "an \"opaque\" response was used for a request whose type is not "
+          "no-cors";
       break;
     case ServiceWorkerResponseError::kResponseTypeNotBasicOrDefault:
       NOTREACHED();
     case ServiceWorkerResponseError::kBodyUsed:
       error_message =
-          error_message +
-          "a Response whose \"bodyUsed\" is \"true\" cannot be used "
-          "to respond to a request.";
+          "a Response whose \"bodyUsed\" is \"true\" cannot be used to respond "
+          "to a request.";
       break;
     case ServiceWorkerResponseError::kResponseTypeOpaqueForClientRequest:
-      error_message = error_message +
-                      "an \"opaque\" response was used for a client request.";
+      error_message = "an \"opaque\" response was used for a client request.";
       break;
     case ServiceWorkerResponseError::kResponseTypeOpaqueRedirect:
-      error_message = error_message +
-                      "an \"opaqueredirect\" type response was used for a "
-                      "request whose redirect mode is not \"manual\".";
+      error_message =
+          "an \"opaqueredirect\" type response was used for a request whose "
+          "redirect mode is not \"manual\".";
       break;
     case ServiceWorkerResponseError::kResponseTypeCorsForRequestModeSameOrigin:
-      error_message = error_message +
-                      "a \"cors\" type response was used for a request whose "
-                      "mode is \"same-origin\".";
+      error_message =
+          "a \"cors\" type response was used for a request whose mode is "
+          "\"same-origin\".";
       break;
     case ServiceWorkerResponseError::kBodyLocked:
-      error_message = error_message +
-                      "a Response whose \"body\" is locked cannot be used to "
-                      "respond to a request.";
+      error_message =
+          "a Response whose \"body\" is locked cannot be used to respond to a "
+          "request.";
       break;
     case ServiceWorkerResponseError::kRedirectedResponseForNotFollowRequest:
-      error_message = error_message +
-                      "a redirected response was used for a request whose "
-                      "redirect mode is not \"follow\".";
+      error_message =
+          "a redirected response was used for a request whose redirect mode is "
+          "not \"follow\".";
       break;
     case ServiceWorkerResponseError::kDataPipeCreationFailed:
-      error_message = error_message + "insufficient resources.";
+      error_message = "insufficient resources.";
       break;
     case ServiceWorkerResponseError::kResponseBodyBroken:
-      error_message =
-          error_message + "a response body's status could not be checked.";
+      error_message = "a response body's status could not be checked.";
       break;
     case ServiceWorkerResponseError::kDisallowedByCorp:
-      error_message = error_message +
-                      "Cross-Origin-Resource-Policy prevented from serving the "
-                      "response to the client.";
+      error_message =
+          "Cross-Origin-Resource-Policy prevented from serving the response to "
+          "the client.";
       break;
     case ServiceWorkerResponseError::kUnknown:
     default:
-      error_message = error_message + "an unexpected error occurred.";
+      error_message = "an unexpected error occurred.";
       break;
   }
-  return error_message;
+  return StrCat({"The FetchEvent for \"", request_url.GetString(),
+                 "\" resulted in a network error response: ", error_message});
 }
 
 bool IsNavigationRequest(mojom::RequestContextFrameType frame_type) {

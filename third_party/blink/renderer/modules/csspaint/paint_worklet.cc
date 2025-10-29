@@ -161,8 +161,8 @@ void PaintWorklet::RegisterCSSPaintDefinition(const String& name,
       document_definition_map_.Set(name, nullptr);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "A class with name:'" + name +
-              "' was registered with a different definition.");
+          StrCat({"A class with name:'", name,
+                  "' was registered with a different definition."}));
       return;
     }
     // Notify the generator ready only when register paint is called the

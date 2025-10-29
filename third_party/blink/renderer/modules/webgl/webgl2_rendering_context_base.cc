@@ -4802,14 +4802,15 @@ ScriptValue WebGL2RenderingContextBase::getParameter(ScriptState* script_state,
     case GL_SHADING_LANGUAGE_VERSION: {
       return WebGLAny(
           script_state,
-          "WebGL GLSL ES 3.00 (" +
-              String(ContextGL()->GetString(GL_SHADING_LANGUAGE_VERSION)) +
-              ")");
+          StrCat({"WebGL GLSL ES 3.00 (",
+                  String(ContextGL()->GetString(GL_SHADING_LANGUAGE_VERSION)),
+                  ")"}));
     }
     case GL_VERSION:
       return WebGLAny(
           script_state,
-          "WebGL 2.0 (" + String(ContextGL()->GetString(GL_VERSION)) + ")");
+          StrCat({"WebGL 2.0 (", String(ContextGL()->GetString(GL_VERSION)),
+                  ")"}));
 
     case GL_COPY_READ_BUFFER_BINDING:
       return WebGLAny(script_state, bound_copy_read_buffer_.Get());

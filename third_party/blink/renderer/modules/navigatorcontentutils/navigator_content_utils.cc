@@ -112,8 +112,8 @@ bool VerifyCustomHandlerScheme(const String& scheme,
                                String& error_string,
                                ProtocolHandlerSecurityLevel security_level) {
   if (!IsValidProtocol(scheme)) {
-    error_string = "The scheme name '" + scheme +
-                   "' is not allowed by URI syntax (RFC3986).";
+    error_string = StrCat({"The scheme name '", scheme,
+                           "' is not allowed by URI syntax (RFC3986)."});
     return false;
   }
 
@@ -122,14 +122,15 @@ bool VerifyCustomHandlerScheme(const String& scheme,
   if (!IsValidCustomHandlerScheme(scheme_adaptor.AsStringView(), security_level,
                                   &has_custom_scheme_prefix)) {
     if (has_custom_scheme_prefix) {
-      error_string = "The scheme name '" + scheme +
-                     "' is not allowed. Schemes starting with '" + scheme +
-                     "' must be followed by one or more ASCII letters.";
+      error_string =
+          StrCat({"The scheme name '", scheme,
+                  "' is not allowed. Schemes starting with '", scheme,
+                  "' must be followed by one or more ASCII letters."});
     } else {
-      error_string = "The scheme '" + scheme +
-                     "' doesn't belong to the scheme allowlist. "
-                     "Please prefix non-allowlisted schemes "
-                     "with the string 'web+'.";
+      error_string =
+          StrCat({"The scheme '", scheme,
+                  "' doesn't belong to the scheme allowlist. Please prefix "
+                  "non-allowlisted schemes with the string 'web+'."});
     }
     return false;
   }
@@ -149,13 +150,13 @@ bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
     case URLSyntaxErrorCode::kNoError:
       return true;
     case URLSyntaxErrorCode::kMissingToken:
-      error_message =
-          "The url provided ('" + user_url + "') does not contain '%s'.";
+      error_message = StrCat(
+          {"The url provided ('", user_url, "') does not contain '%s'."});
       break;
     case URLSyntaxErrorCode::kInvalidUrl:
-      error_message =
-          "The custom handler URL created by removing '%s' and prepending '" +
-          base_url.GetString() + "' is invalid.";
+      error_message = StrCat(
+          {"The custom handler URL created by removing '%s' and prepending '",
+           base_url.GetString(), "' is invalid."});
       break;
   }
 

@@ -3914,12 +3914,12 @@ bool WebGLRenderingContextWebGPUBase::ValidateFitsNonNegInt32(
     const char* param_name,
     int64_t value) {
   if (value < 0) {
-    String error_msg = String(param_name) + " < 0";
+    String error_msg = StrCat({param_name, " < 0"});
     InsertGLError(GL_INVALID_VALUE, function_name, error_msg.Ascii().c_str());
     return false;
   }
   if (value > static_cast<int64_t>(std::numeric_limits<int32_t>::max())) {
-    String error_msg = String(param_name) + " more than 32-bit";
+    String error_msg = StrCat({param_name, " more than 32-bit"});
     InsertGLError(GL_INVALID_OPERATION, function_name,
                   error_msg.Ascii().c_str());
     return false;
@@ -4098,8 +4098,8 @@ void WebGLRenderingContextWebGPUBase::InsertGLError(GLenum error,
   }
 
   String error_type = GetErrorString(error);
-  String message = String("WebGL: ") + error_type + ": " +
-                   String(function_name) + ": " + String(description);
+  String message =
+      StrCat({"WebGL: ", error_type, ": ", function_name, ": ", description});
 
   PrintGLErrorToConsole(message);
   probe::DidFireWebGLError(canvas(), error_type);

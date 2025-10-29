@@ -30,8 +30,8 @@ ScriptPromise<IDLUndefined> NavigationPreloadManager::setHeaderValue(
     ExceptionState& exception_state) {
   if (!IsValidHTTPHeaderValue(value)) {
     exception_state.ThrowTypeError(
-        "The string provided to setHeaderValue ('" + value +
-        "') is not a valid HTTP header field value.");
+        StrCat({"The string provided to setHeaderValue ('", value,
+                "') is not a valid HTTP header field value."}));
     return EmptyPromise();
   }
 

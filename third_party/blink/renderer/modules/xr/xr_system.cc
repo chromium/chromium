@@ -1193,26 +1193,27 @@ XRSystem::RequestedXRSessionFeatureSet XRSystem::ParseRequestedFeatures(
     auto feature_enum = StringToXRSessionFeature(feature_string);
 
     if (!feature_enum) {
-      AddConsoleMessage(error_level,
-                        "Unrecognized feature requested: " + feature_string);
+      AddConsoleMessage(error_level, StrCat({"Unrecognized feature requested: ",
+                                             feature_string}));
       result.invalid_features = true;
     } else if (!IsFeatureEnabledForContext(feature_enum.value(),
                                            GetExecutionContext())) {
-      AddConsoleMessage(error_level,
-                        "Unsupported feature requested: " + feature_string);
+      AddConsoleMessage(error_level, StrCat({"Unsupported feature requested: ",
+                                             feature_string}));
       result.invalid_features = true;
     } else if (!IsFeatureValidForMode(feature_enum.value(), session_mode,
                                       session_init, GetExecutionContext(),
                                       error_level)) {
-      AddConsoleMessage(error_level, "Feature '" + feature_string +
-                                         "' is not supported for mode: " +
-                                         SessionModeToString(session_mode));
+      AddConsoleMessage(
+          error_level,
+          StrCat({"Feature '", feature_string, "' is not supported for mode: ",
+                  SessionModeToString(session_mode)}));
       result.invalid_features = true;
     } else if (!HasRequiredPermissionsPolicy(GetExecutionContext(),
                                              feature_enum.value())) {
       AddConsoleMessage(error_level,
-                        "Feature '" + feature_string +
-                            "' is not permitted by permissions policy");
+                        StrCat({"Feature '", feature_string,
+                                "' is not permitted by permissions policy"}));
       result.invalid_features = true;
     } else {
       DVLOG(3) << __func__ << ": Adding feature " << feature_string
@@ -1307,11 +1308,12 @@ ScriptPromise<XRSession> XRSystem::requestSession(
       DVLOG(2) << __func__
                << ": permissions policy not satisfied for a default feature: "
                << feature;
-      AddConsoleMessage(mojom::blink::ConsoleMessageLevel::kError,
-                        "Permissions policy is not satisfied for feature '" +
-                            XRSessionFeatureToString(feature) +
-                            "' please ensure that appropriate permissions "
-                            "policy is enabled.");
+      AddConsoleMessage(
+          mojom::blink::ConsoleMessageLevel::kError,
+          StrCat({"Permissions policy is not satisfied for feature '",
+                  XRSessionFeatureToString(feature),
+                  "' please ensure that appropriate permissions policy is "
+                  "enabled."}));
       required_features.invalid_features = true;
     }
   }

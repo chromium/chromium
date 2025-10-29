@@ -211,9 +211,9 @@ void BluetoothRemoteGATTServer::GetPrimaryServicesCallback(
   } else {
     if (result == mojom::blink::WebBluetoothResult::SERVICE_NOT_FOUND) {
       resolver->Reject(BluetoothError::CreateDOMException(
-          BluetoothErrorCode::kServiceNotFound, "No Services matching UUID " +
-                                                    requested_service_uuid +
-                                                    " found in Device."));
+          BluetoothErrorCode::kServiceNotFound,
+          StrCat({"No Services matching UUID ", requested_service_uuid,
+                  " found in Device."})));
     } else {
       resolver->Reject(BluetoothError::CreateDOMException(result));
     }
