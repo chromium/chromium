@@ -17,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_writer.h"
@@ -32,7 +31,6 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -57,8 +55,6 @@ namespace values = manifest_values;
 namespace errors = manifest_errors;
 
 namespace {
-
-BASE_FEATURE(kValidateGetResourceURLPath, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr int kMinimumSupportedManifestVersion = 2;
 constexpr int kMaximumSupportedManifestVersion = 3;
@@ -311,12 +307,6 @@ GURL Extension::ResolveExtensionURL(const GURL& extension_url,
 GURL Extension::GetResourceURL(const GURL& extension_url,
                                std::string_view relative_url) {
   GURL resolved = Extension::ResolveExtensionURL(extension_url, relative_url);
-
-  // TODO(crbug.com/407932132): Remove this if-check and always validate the
-  // path in M142.
-  if (!base::FeatureList::IsEnabled(kValidateGetResourceURLPath)) {
-    return resolved;
-  }
 
   // Make sure that the relative path is valid. The validation is aligned with
   // GetResource, i.e. we don't allow retrieving resource URLs for paths that

@@ -49,24 +49,13 @@ namespace extensions {
 
 namespace {
 
-BASE_FEATURE(kContentVerifierAssumeRelativePaths,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ContentVerifier::TestObserver* g_content_verifier_test_observer = nullptr;
 using content_verifier_utils::CanonicalRelativePath;
 
 // This function converts paths like "foo/bar", "./foo/bar", and "foo/x/../bar"
 // to "foo/bar". It also converts path separators to "/".
 base::FilePath NormalizeRelativePath(const base::FilePath& relative_path) {
-  // TODO(crbug.com/407932132): Remove this if-check and always assume relative
-  // paths in M144.
-  if (!base::FeatureList::IsEnabled(kContentVerifierAssumeRelativePaths)) {
-    if (relative_path.IsAbsolute()) {
-      return base::FilePath();
-    }
-  } else {
-    CHECK(!relative_path.IsAbsolute());
-  }
+  CHECK(!relative_path.IsAbsolute());
 
   base::FilePath relative_path_normalized =
       content_verifier_utils::NormalizePathComponents(relative_path);
