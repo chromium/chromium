@@ -61,17 +61,20 @@ public class ComposeplateMetricsUtilsUnitTest {
 
     @Test
     public void testRecordFakeSearchBoxImpression() {
-        String histogramName = "NewTabPage.FakeSearchBox.Impression";
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
-        ComposeplateMetricsUtils.recordFakeSearchBoxImpression();
+        String histogramName = "NewTabPage.FakeSearchBox.Impression2";
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        ComposeplateMetricsUtils.recordFakeSearchBoxImpression2();
         histogramWatcher.assertExpected();
     }
 
     @Test
     public void testRecordFakeSearchBoxComposeplateButtonImpression() {
-        String histogramName = "NewTabPage.FakeSearchBox.ComposeplateButton.Impression";
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, 1);
-        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression();
+        String histogramName = "NewTabPage.FakeSearchBox.ComposeplateButton.Impression2";
+        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression2(true);
+
+        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonImpression2(false);
         histogramWatcher.assertExpected();
     }
 }
