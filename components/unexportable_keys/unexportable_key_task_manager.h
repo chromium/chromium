@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/thread_pool.h"
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
@@ -41,8 +42,7 @@ namespace unexportable_keys {
 // tasks are getting scheduled.
 class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
  public:
-  explicit UnexportableKeyTaskManager(
-      crypto::UnexportableKeyProvider::Config config);
+  explicit UnexportableKeyTaskManager();
   ~UnexportableKeyTaskManager();
 
   UnexportableKeyTaskManager(const UnexportableKeyTaskManager&) = delete;
@@ -63,6 +63,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   //   `acceptable_algorithms` is supported, or if there was an error creating
   //   the key.
   void GenerateSigningKeySlowlyAsync(
+      crypto::UnexportableKeyProvider::Config config,
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       BackgroundTaskPriority priority,
@@ -77,6 +78,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
   // - non-null unexportable signing key if it was imported successfully, or
   // - `ServiceError` if `wrapped_key` import failed.
   void FromWrappedSigningKeySlowlyAsync(
+      crypto::UnexportableKeyProvider::Config config,
       base::span<const uint8_t> wrapped_key,
       BackgroundTaskPriority priority,
       base::OnceCallback<
@@ -97,9 +99,12 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyTaskManager {
 
  private:
   // Scheduler to run long tasks in background.
-  BackgroundLongTaskScheduler task_scheduler_;
-
-  const crypto::UnexportableKeyProvider::Config config_;
+  BackgroundLongTaskScheduler task_scheduler_{
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          // Using a dedicated thread to run long and blocking TPM tasks.
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED)};
 };
 
 }  // namespace unexportable_keys

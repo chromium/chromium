@@ -39,10 +39,6 @@ constexpr char kGenerateAssertionResultHistogram[] =
 
 class TokenBindingHelperTest : public testing::Test {
  public:
-  TokenBindingHelperTest()
-      : unexportable_key_service_(unexportable_key_task_manager_),
-        helper_(unexportable_key_service_) {}
-
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   TokenBindingHelper& helper() { return helper_; }
@@ -76,14 +72,15 @@ class TokenBindingHelperTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
-  TokenBindingHelper helper_;
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      unexportable_key_task_manager_,
+      crypto::UnexportableKeyProvider::Config(),
+  };
+  TokenBindingHelper helper_{unexportable_key_service_};
   base::HistogramTester histogram_tester_;
 };
 

@@ -71,15 +71,13 @@ class UnexportableKeyTaskManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   // Provides a fake key provider by default.
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
-  UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
+  UnexportableKeyTaskManager task_manager_;
 };
 
 TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
@@ -90,8 +88,8 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
 
   task_manager().GenerateSigningKeySlowlyAsync(
-      supported_algorithm, BackgroundTaskPriority::kBestEffort,
-      future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), supported_algorithm,
+      BackgroundTaskPriority::kBestEffort, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
   RunBackgroundTasks();
 
@@ -116,8 +114,8 @@ TEST_F(UnexportableKeyTaskManagerTest,
   auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA1};
 
   task_manager().GenerateSigningKeySlowlyAsync(
-      unsupported_algorithm, BackgroundTaskPriority::kBestEffort,
-      future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), unsupported_algorithm,
+      BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
   EXPECT_EQ(future.Get(),
@@ -139,8 +137,8 @@ TEST_F(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
 
   DisableKeyProvider();
   task_manager().GenerateSigningKeySlowlyAsync(
-      supported_algorithm, BackgroundTaskPriority::kBestEffort,
-      future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), supported_algorithm,
+      BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
   EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
@@ -159,8 +157,8 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
       generate_key_future;
   auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
-      supported_algorithm, BackgroundTaskPriority::kBestEffort,
-      generate_key_future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), supported_algorithm,
+      BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(scoped_refptr<RefCountedUnexportableSigningKey> key,
                        generate_key_future.Get());
@@ -173,8 +171,8 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
       unwrap_key_future;
 
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      wrapped_key, BackgroundTaskPriority::kBestEffort,
-      unwrap_key_future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), wrapped_key,
+      BackgroundTaskPriority::kBestEffort, unwrap_key_future.GetCallback());
   EXPECT_FALSE(unwrap_key_future.IsReady());
   RunBackgroundTasks();
 
@@ -202,8 +200,8 @@ TEST_F(UnexportableKeyTaskManagerTest, FromWrappedKeyAsyncFailureEmptyKey) {
   std::vector<uint8_t> empty_wrapped_key;
 
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      empty_wrapped_key, BackgroundTaskPriority::kBestEffort,
-      future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), empty_wrapped_key,
+      BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
   EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kCryptoApiFailed));
@@ -223,8 +221,8 @@ TEST_F(UnexportableKeyTaskManagerTest,
       generate_key_future;
   auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
-      supported_algorithm, BackgroundTaskPriority::kBestEffort,
-      generate_key_future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), supported_algorithm,
+      BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(scoped_refptr<RefCountedUnexportableSigningKey> key,
                        generate_key_future.Get());
@@ -239,7 +237,8 @@ TEST_F(UnexportableKeyTaskManagerTest,
 
   DisableKeyProvider();
   task_manager().FromWrappedSigningKeySlowlyAsync(
-      wrapped_key, BackgroundTaskPriority::kBestEffort, future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), wrapped_key,
+      BackgroundTaskPriority::kBestEffort, future.GetCallback());
   RunBackgroundTasks();
 
   EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
@@ -258,8 +257,8 @@ TEST_F(UnexportableKeyTaskManagerTest, SignAsync) {
       generate_key_future;
   auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
-      supported_algorithm, BackgroundTaskPriority::kBestEffort,
-      generate_key_future.GetCallback());
+      crypto::UnexportableKeyProvider::Config(), supported_algorithm,
+      BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(auto key, generate_key_future.Get());
 
@@ -312,6 +311,7 @@ TEST_F(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
   task_manager().GenerateSigningKeySlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
       /*acceptable_algorithms=*/{crypto::SignatureVerifier::ECDSA_SHA256},
       BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();
@@ -379,6 +379,7 @@ TEST_F(UnexportableKeyTaskManagerTest,
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
   task_manager().GenerateSigningKeySlowlyAsync(
+      crypto::UnexportableKeyProvider::Config(),
       /*acceptable_algorithms=*/{crypto::SignatureVerifier::ECDSA_SHA256},
       BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();

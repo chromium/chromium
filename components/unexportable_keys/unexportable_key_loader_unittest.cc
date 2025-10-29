@@ -4,6 +4,7 @@
 
 #include "components/unexportable_keys/unexportable_key_loader.h"
 
+#include <optional>
 #include <variant>
 
 #include "base/check.h"
@@ -32,20 +33,13 @@ constexpr BackgroundTaskPriority kTaskPriority =
 
 class UnexportableKeyLoaderTest : public testing::Test {
  public:
-  UnexportableKeyLoaderTest()
-      : task_manager_(std::make_unique<UnexportableKeyTaskManager>(
-            crypto::UnexportableKeyProvider::Config())),
-        service_(std::make_unique<UnexportableKeyServiceImpl>(*task_manager_)) {
-  }
-
   UnexportableKeyServiceImpl& service() { return *service_; }
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   void ResetService() {
-    task_manager_ = std::make_unique<UnexportableKeyTaskManager>(
-        crypto::UnexportableKeyProvider::Config());
-    service_ = std::make_unique<UnexportableKeyServiceImpl>(*task_manager_);
+    task_manager_.emplace();
+    service_.emplace(*task_manager_, crypto::UnexportableKeyProvider::Config());
   }
 
   void DisableKeyProvider() {
@@ -77,8 +71,9 @@ class UnexportableKeyLoaderTest : public testing::Test {
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
-  std::unique_ptr<UnexportableKeyTaskManager> task_manager_;
-  std::unique_ptr<UnexportableKeyServiceImpl> service_;
+  std::optional<UnexportableKeyTaskManager> task_manager_{std::in_place};
+  std::optional<UnexportableKeyServiceImpl> service_{
+      std::in_place, *task_manager_, crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(UnexportableKeyLoaderTest, CreateFromWrappedKeySync) {

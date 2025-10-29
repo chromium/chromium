@@ -104,8 +104,9 @@ MaybePendingUnexportableKeyId::GetCallbacks() {
 }
 
 UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
-    UnexportableKeyTaskManager& task_manager)
-    : task_manager_(task_manager) {}
+    UnexportableKeyTaskManager& task_manager,
+    crypto::UnexportableKeyProvider::Config config)
+    : task_manager_(task_manager), config_(config) {}
 
 UnexportableKeyServiceImpl::~UnexportableKeyServiceImpl() = default;
 
@@ -122,7 +123,7 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
   task_manager_->GenerateSigningKeySlowlyAsync(
-      acceptable_algorithms, priority,
+      config_, acceptable_algorithms, priority,
       base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGenerated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -150,7 +151,7 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
     // As long as `this` is alive, `it` should only be invalidated by the call
     // below.
     task_manager_->FromWrappedSigningKeySlowlyAsync(
-        wrapped_key, priority,
+        config_, wrapped_key, priority,
         base::BindOnce(&UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey,
                        weak_ptr_factory_.GetWeakPtr(), it));
   }

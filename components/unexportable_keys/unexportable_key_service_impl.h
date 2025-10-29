@@ -31,7 +31,9 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
     : public UnexportableKeyService {
  public:
   // `task_manager` must outlive `UnexportableKeyServiceImpl`.
-  explicit UnexportableKeyServiceImpl(UnexportableKeyTaskManager& task_manager);
+  explicit UnexportableKeyServiceImpl(
+      UnexportableKeyTaskManager& task_manager,
+      crypto::UnexportableKeyProvider::Config config);
 
   ~UnexportableKeyServiceImpl() override;
 
@@ -97,6 +99,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
           key_or_error);
 
   const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
+
+  const crypto::UnexportableKeyProvider::Config config_;
 
   // Helps mapping multiple `FromWrappedSigningKeySlowlyAsync()` requests with
   // the same wrapped key into the same key ID.

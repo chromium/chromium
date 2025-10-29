@@ -84,7 +84,6 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
  public:
   DeviceBoundSessionManagerTest()
       : context_(net::CreateTestURLRequestContextBuilder()->Build()),
-        unexportable_key_service_(task_manager_),
         service_(std::make_unique<SessionServiceImpl>(unexportable_key_service_,
                                                       context_.get(),
                                                       /*store=*/nullptr)),
@@ -102,8 +101,7 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
             nullptr,
             nullptr)),
         manager_(DeviceBoundSessionManager::Create(service_.get(),
-                                                   cookie_manager_.get())) {
-  }
+                                                   cookie_manager_.get())) {}
 
   DeviceBoundSessionManager& manager() { return *manager_; }
   CookieManager& cookie_manager() { return *cookie_manager_; }
@@ -125,9 +123,9 @@ class DeviceBoundSessionManagerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   std::unique_ptr<net::URLRequestContext> context_;
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   std::unique_ptr<SessionServiceImpl> service_;
   std::unique_ptr<CookieManager> cookie_manager_;
   std::unique_ptr<DeviceBoundSessionManager> manager_;

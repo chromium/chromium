@@ -113,8 +113,7 @@ class BoundSessionCookieControllerImplTest
       public BoundSessionCookieController::Delegate {
  public:
   explicit BoundSessionCookieControllerImplTest(bool build_controller = true)
-      : unexportable_key_service_(unexportable_key_task_manager_),
-        key_id_(GenerateNewKey()) {
+      : key_id_(GenerateNewKey()) {
     storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
 
     SetUpNetworkConnection(true,
@@ -406,9 +405,10 @@ class BoundSessionCookieControllerImplTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      unexportable_key_task_manager_,
       crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   BoundSessionTestCookieManager cookie_manager_;
   content::TestStoragePartition storage_partition_;
   UnexportableKeyId key_id_;

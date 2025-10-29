@@ -40,9 +40,6 @@ constexpr std::string_view kSessionBindingResultHistogram =
 
 class BindingKeyRegistrationTokenHelperTest : public testing::Test {
  public:
-  BindingKeyRegistrationTokenHelperTest()
-      : unexportable_key_service_(task_manager_) {}
-
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
@@ -88,12 +85,11 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   base::HistogramTester histogram_tester_;
 };
 

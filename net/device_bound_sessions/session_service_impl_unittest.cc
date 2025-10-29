@@ -95,8 +95,8 @@ class SessionServiceImplTest : public ::testing::Test,
                                public WithTaskEnvironment {
  public:
   SessionServiceImplTest()
-      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        unexportable_key_service_(task_manager_) {
+      : WithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     auto context_builder = CreateTestURLRequestContextBuilder();
     auto network_delegate = std::make_unique<TestNetworkDelegate>();
     network_delegate_ = network_delegate.get();
@@ -143,9 +143,9 @@ class SessionServiceImplTest : public ::testing::Test,
  private:
   raw_ptr<TestNetworkDelegate> network_delegate_;
   std::unique_ptr<URLRequestContext> context_;
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
   std::unique_ptr<SessionServiceImpl> service_;
 };

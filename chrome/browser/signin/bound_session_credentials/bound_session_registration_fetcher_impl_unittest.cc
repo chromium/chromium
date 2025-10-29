@@ -135,8 +135,7 @@ bound_session_credentials::BoundSessionParams CreateTestBoundSessionParams(
 
 class BoundSessionRegistrationFetcherImplTest : public testing::Test {
  public:
-  BoundSessionRegistrationFetcherImplTest()
-      : unexportable_key_service_(task_manager_) {
+  BoundSessionRegistrationFetcherImplTest() {
     url_loader_factory_.SetInterceptor(base::BindRepeating(
         &BoundSessionRegistrationFetcherImplTest::OnRequestIntercepted,
         base::Unretained(this)));
@@ -221,18 +220,17 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   // Provides a fake key provider by default.
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   network::TestURLLoaderFactory url_loader_factory_;
   base::HistogramTester histogram_tester_;
 

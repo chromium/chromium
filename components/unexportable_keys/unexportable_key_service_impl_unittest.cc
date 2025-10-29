@@ -46,20 +46,13 @@ constexpr BackgroundTaskPriority kTaskPriority =
 
 class UnexportableKeyServiceImplTest : public testing::Test {
  public:
-  UnexportableKeyServiceImplTest()
-      : task_manager_(std::make_unique<UnexportableKeyTaskManager>(
-            crypto::UnexportableKeyProvider::Config())),
-        service_(std::make_unique<UnexportableKeyServiceImpl>(*task_manager_)) {
-  }
-
   UnexportableKeyServiceImpl& service() { return *service_; }
 
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   void ResetService() {
-    task_manager_ = std::make_unique<UnexportableKeyTaskManager>(
-        crypto::UnexportableKeyProvider::Config());
-    service_ = std::make_unique<UnexportableKeyServiceImpl>(*task_manager_);
+    task_manager_.emplace();
+    service_.emplace(*task_manager_, crypto::UnexportableKeyProvider::Config());
   }
 
   void DisableKeyProvider() {
@@ -86,8 +79,8 @@ class UnexportableKeyServiceImplTest : public testing::Test {
         ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
         generate_key_future;
     task_manager_->GenerateSigningKeySlowlyAsync(
-        kAcceptableAlgorithms, BackgroundTaskPriority::kBestEffort,
-        generate_key_future.GetCallback());
+        crypto::UnexportableKeyProvider::Config(), kAcceptableAlgorithms,
+        BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
     RunBackgroundTasks();
     auto key = generate_key_future.Get();
     CHECK(key.has_value());
@@ -96,16 +89,16 @@ class UnexportableKeyServiceImplTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
   // Provides a fake key provider by default.
   std::variant<crypto::ScopedFakeUnexportableKeyProvider,
                crypto::ScopedNullUnexportableKeyProvider,
                unexportable_keys::ScopedMockUnexportableKeyProvider>
       scoped_key_provider_;
-  std::unique_ptr<UnexportableKeyTaskManager> task_manager_;
-  std::unique_ptr<UnexportableKeyServiceImpl> service_;
+  std::optional<UnexportableKeyTaskManager> task_manager_{std::in_place};
+  std::optional<UnexportableKeyServiceImpl> service_{
+      std::in_place, *task_manager_, crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(UnexportableKeyServiceImplTest, IsUnexportableKeyProviderSupported) {

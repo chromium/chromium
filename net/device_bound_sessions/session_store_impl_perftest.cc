@@ -56,8 +56,6 @@ perf_test::PerfResultReporter SetUpDbscSSReporter(const std::string& story) {
 
 class DBSCSessionStorePerfTest : public testing::Test {
  public:
-  DBSCSessionStorePerfTest() : key_service_(task_manager_) {}
-
   void CreateStore() {
     store_ = std::make_unique<SessionStoreImpl>(
         temp_dir_.GetPath().Append(dbsc_filename), key_service_);
@@ -166,9 +164,9 @@ class DBSCSessionStorePerfTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<SessionStoreImpl> store_;
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl key_service_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   base::Time perf_measurement_start_;
 };
 

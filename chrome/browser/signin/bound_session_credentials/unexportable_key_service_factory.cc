@@ -9,6 +9,8 @@
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/chrome_version.h"
@@ -22,26 +24,24 @@
 
 namespace {
 
+// Returns the configuration for the `UnexportableKeyProvider`.
+crypto::UnexportableKeyProvider::Config GetConfig() {
+  return {
 #if BUILDFLAG(IS_MAC)
-constexpr char kKeychainAccessGroup[] = MAC_TEAM_IDENTIFIER_STRING
-    "." MAC_BUNDLE_IDENTIFIER_STRING ".unexportable-keys";
+      .keychain_access_group = MAC_TEAM_IDENTIFIER_STRING
+      "." MAC_BUNDLE_IDENTIFIER_STRING ".unexportable-keys",
 #endif  // BUILDFLAG(IS_MAC)
+  };
+}
 
 // Returns a newly created task manager instance, or nullptr if unexportable
 // keys are not available.
 std::unique_ptr<unexportable_keys::UnexportableKeyTaskManager>
 CreateTaskManagerInstance() {
-  crypto::UnexportableKeyProvider::Config config{
-#if BUILDFLAG(IS_MAC)
-      .keychain_access_group = kKeychainAccessGroup,
-#endif  // BUILDFLAG(IS_MAC)
-  };
-  if (!unexportable_keys::UnexportableKeyServiceImpl::
-          IsUnexportableKeyProviderSupported(config)) {
-    return nullptr;
-  }
-  return std::make_unique<unexportable_keys::UnexportableKeyTaskManager>(
-      std::move(config));
+  return unexportable_keys::UnexportableKeyServiceImpl::
+                 IsUnexportableKeyProviderSupported(GetConfig())
+             ? std::make_unique<unexportable_keys::UnexportableKeyTaskManager>()
+             : nullptr;
 }
 
 // Returns an `UnexportableKeyTaskManager` instance that is shared across all
@@ -63,7 +63,7 @@ unexportable_keys::UnexportableKeyTaskManager* GetSharedTaskManagerInstance() {
 std::unique_ptr<unexportable_keys::UnexportableKeyService>
 CreateUnexportableKeyServiceImpl() {
   return std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
-      CHECK_DEREF(GetSharedTaskManagerInstance()));
+      CHECK_DEREF(GetSharedTaskManagerInstance()), GetConfig());
 }
 
 // Manages `UnexportableKeyService` instances for different purposes.

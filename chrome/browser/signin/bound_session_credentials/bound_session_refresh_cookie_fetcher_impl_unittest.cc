@@ -134,8 +134,7 @@ std::string CreateChallengeHeaderValue(
 
 class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
  public:
-  BoundSessionRefreshCookieFetcherImplTest()
-      : unexportable_key_service_(unexportable_key_task_manager_) {
+  BoundSessionRefreshCookieFetcherImplTest() {
     binding_key_id_ = GenerateNewKey(unexportable_key_service_);
     session_binding_helper_ = std::make_unique<SessionBindingHelper>(
         unexportable_key_service_,
@@ -330,9 +329,10 @@ class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      unexportable_key_task_manager_,
       crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
   UnexportableKeyId binding_key_id_;
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;
   network::TestURLLoaderFactory test_url_loader_factory_;

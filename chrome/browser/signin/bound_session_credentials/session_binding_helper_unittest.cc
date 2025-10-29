@@ -39,9 +39,6 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 
 class SessionBindingHelperTest : public testing::Test {
  public:
-  SessionBindingHelperTest()
-      : unexportable_key_service_(unexportable_key_task_manager_) {}
-
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
@@ -69,9 +66,10 @@ class SessionBindingHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      unexportable_key_task_manager_,
       crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
 };
 
 TEST_F(SessionBindingHelperTest, MaybeLoadBindingKey) {

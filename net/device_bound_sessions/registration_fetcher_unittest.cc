@@ -151,7 +151,6 @@ class RegistrationTestBase : public TestWithTaskEnvironment {
  protected:
   RegistrationTestBase()
       : server_(test_server::EmbeddedTestServer::TYPE_HTTPS),
-        unexportable_key_service_(task_manager_),
         host_resolver_(
             base::MakeRefCounted<net::RuleBasedHostResolverProc>(nullptr)) {
     host_resolver_->AddRule("*", "127.0.0.1");
@@ -234,9 +233,9 @@ class RegistrationTestBase : public TestWithTaskEnvironment {
   std::unique_ptr<URLRequestContext> context_;
 
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   SessionServiceMock session_service_;
   scoped_refptr<net::RuleBasedHostResolverProc> host_resolver_;
 };
@@ -2926,8 +2925,6 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 
 class RegistrationTokenHelperTest : public testing::Test {
  public:
-  RegistrationTokenHelperTest() : unexportable_key_service_(task_manager_) {}
-
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
@@ -2936,12 +2933,11 @@ class RegistrationTokenHelperTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(RegistrationTokenHelperTest, CreateSuccess) {
