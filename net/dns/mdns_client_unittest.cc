@@ -1519,7 +1519,13 @@ TEST_F(MDnsConnectionSendTest, SendQueued) {
   std::move(callback).Run(OK);
 }
 
-TEST(MDnsSocketTest, CreateSocket) {
+#if BUILDFLAG(IS_FUCHSIA)
+// Fails on Fuchsia due to conflict with the system MDNS service.
+#define MAYBE_CreateSocket DISABLED_CreateSocket
+#else
+#define MAYBE_CreateSocket CreateSocket
+#endif
+TEST(MDnsSocketTest, MAYBE_CreateSocket) {
   // Verifies that socket creation hasn't been broken.
   auto socket = CreateAndBindMDnsSocket(AddressFamily::ADDRESS_FAMILY_IPV4, 1,
                                         net::NetLog::Get());
