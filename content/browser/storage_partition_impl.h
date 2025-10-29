@@ -47,7 +47,7 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -525,7 +525,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // `NetworkService` crash.
   void RevokeNetworkForNoncesInNetworkContext(
       const std::vector<base::UnguessableToken>& nonces,
-      network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback);
+      base::OnceClosure callback);
 
   // Forward the call to `NetworkContext::ClearNonces` and remove the stored
   // nonce values in `StoragePartitionImpl`. Clients should clear nonces using
