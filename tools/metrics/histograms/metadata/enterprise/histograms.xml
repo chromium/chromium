@@ -4076,7 +4076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.InvalidPoliciesDetected"
-    units="disabled policies" expires_after="2025-12-05">
+    units="disabled policies" expires_after="2026-10-01">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chomium.org</owner>
   <summary>
@@ -4142,7 +4142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsLocalUser" enum="Boolean"
-    expires_after="2025-12-01">
+    expires_after="2026-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -4187,7 +4187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsCurrentUserDomainUser" enum="Boolean"
-    expires_after="2025-12-01">
+    expires_after="2026-10-01">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -4207,7 +4207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.Mac.IsDeviceMDMEnrolledNew"
-    enum="EnterpriseMacMDMStatusNew" expires_after="2025-12-01">
+    enum="EnterpriseMacMDMStatusNew" expires_after="2026-10-01">
   <owner>pastarmovj@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
