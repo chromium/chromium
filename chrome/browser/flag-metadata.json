@@ -9441,11 +9441,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "simplified-tab-drag-ui",
-    "owners": [ "max@igalia.com", "nickdiego@igalia.com", "thomasanderson@chromium.org"],
-    "expiry_milestone": 138
-  },
-  {
     "name": "single-ca-cert-verification-phase-0",
     "owners": ["olsa@chromium.org", "chromeos-commercial-networking@google.com"],
     "expiry_milestone": 150

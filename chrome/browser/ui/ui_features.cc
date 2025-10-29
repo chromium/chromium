@@ -17,11 +17,6 @@
 
 namespace features {
 
-// Enables the tab dragging fallback when full window dragging is not supported
-// by the platform (e.g. Wayland). See https://crbug.com/896640
-BASE_FEATURE(kAllowWindowDragUsingSystemDragDrop,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the use of WGC for the Eye Dropper screen capture.
 BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #if BUILDFLAG(IS_WIN)

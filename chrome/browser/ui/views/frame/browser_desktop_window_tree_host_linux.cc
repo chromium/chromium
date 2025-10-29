@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
@@ -181,10 +180,8 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
           ui::GetWaylandToplevelExtension(*platform_window())) {
     if (tab_drag_kind != TabDragKind::kNone) {
       if (auto event_source = GetCurrentTabDragEventSource()) {
-        const auto allow_system_drag = base::FeatureList::IsEnabled(
-            features::kAllowWindowDragUsingSystemDragDrop);
         wayland_extension->StartWindowDraggingSessionIfNeeded(
-            *event_source, allow_system_drag);
+            *event_source, /*allow_system_drag=*/true);
       }
     }
   }

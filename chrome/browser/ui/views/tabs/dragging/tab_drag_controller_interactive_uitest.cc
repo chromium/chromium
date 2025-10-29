@@ -4388,9 +4388,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   // Skip this test for fallback tab dragging, see the note in
   // TabDragController::TabWasAdded() for more context.
   views::Widget* widget = tab_strip->GetDragContext()->GetWidget();
-  if (base::FeatureList::IsEnabled(
-          features::kAllowWindowDragUsingSystemDragDrop) &&
-      !widget->IsMoveLoopSupported()) {
+  if (!widget->IsMoveLoopSupported()) {
     GTEST_SKIP() << "Not relevant for fallback tab dragging";
   }
 
