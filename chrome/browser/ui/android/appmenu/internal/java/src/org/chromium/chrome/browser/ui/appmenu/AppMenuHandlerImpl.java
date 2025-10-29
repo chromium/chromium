@@ -181,6 +181,7 @@ class AppMenuHandlerImpl
                                 AppMenuHandlerImpl.this,
                                 /* startIndex= */ index,
                                 /* withAssertions= */ false);
+                        mAppMenu.updateMenuHeight();
                     }
 
                     @Override
@@ -192,6 +193,7 @@ class AppMenuHandlerImpl
                                 AppMenuHandlerImpl.this,
                                 /* startIndex= */ index,
                                 /* withAssertions= */ false);
+                        mAppMenu.updateMenuHeight();
                     }
                 };
     }
@@ -386,6 +388,9 @@ class AppMenuHandlerImpl
         assumeNonNull(mAppMenuDragHelper);
         mAppMenuDragHelper.finishDragging();
         mDelegate.onMenuDismissed();
+        if (mModelList != null) {
+            mModelList.removeObserver(mListObserver);
+        }
     }
 
     @Override
@@ -408,9 +413,6 @@ class AppMenuHandlerImpl
     public void hideAppMenu() {
         if (mAppMenu != null && mAppMenu.isShowing()) {
             mAppMenu.dismiss();
-            if (mModelList != null) {
-                mModelList.removeObserver(mListObserver);
-            }
         }
     }
 

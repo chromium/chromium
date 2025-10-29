@@ -96,6 +96,46 @@ class AppMenu implements OnKeyListener {
         boolean canBeLastVisibleInitialView(int index);
     }
 
+    /**
+     * A data structure that holds the parameters and constraints for calculating the height of the
+     * app menu.
+     */
+    static class MenuSpec {
+
+        /** The display area rect in which AppMenu is supposed to fit in. */
+        public final Rect visibleDisplayFrame;
+
+        /** The padding to use for the menu. */
+        public final Rect padding;
+
+        /** The height of the footer. */
+        public final int footerHeight;
+
+        /** The height of the header. */
+        public final int headerHeight;
+
+        /** The anchor {@link View} of the menu. */
+        public final View anchorView;
+
+        /** Unusable space either above or below the anchor. */
+        public final int anchorViewOffset;
+
+        MenuSpec(
+                Rect visibleDisplayFrame,
+                Rect padding,
+                int footerHeight,
+                int headerHeight,
+                View anchorView,
+                int anchorViewOffset) {
+            this.visibleDisplayFrame = visibleDisplayFrame;
+            this.padding = padding;
+            this.footerHeight = footerHeight;
+            this.headerHeight = headerHeight;
+            this.anchorView = anchorView;
+            this.anchorViewOffset = anchorViewOffset;
+        }
+    }
+
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;
 
     /** A means of reporting an exception/stack without crashing. */
@@ -117,6 +157,7 @@ class AppMenu implements OnKeyListener {
     private long mMenuShownTimeMs;
     private boolean mSelectedItemBeforeDismiss;
     private InitialSizingHelper mInitialSizingHelper;
+    private @Nullable MenuSpec mMenuSpec;
 
     /**
      * Creates and sets up the App Menu.
@@ -193,6 +234,7 @@ class AppMenu implements OnKeyListener {
                     mListView = null;
                     mFooterView = null;
                     mMenuItemEnterAnimator = null;
+                    mMenuSpec = null;
                 });
 
         // Some OEMs don't actually let us change the background... but they still return the
@@ -247,12 +289,12 @@ class AppMenu implements OnKeyListener {
 
         mPopup.setWidth(popupWidth);
 
-        Rect sizingPadding = new Rect(bgPadding);
+        Rect padding = new Rect(bgPadding);
         if (isByPermanentButton && originalBgDrawable != null) {
             Rect originalPadding = new Rect();
             originalBgDrawable.getPadding(originalPadding);
-            sizingPadding.top = originalPadding.top;
-            sizingPadding.bottom = originalPadding.bottom;
+            padding.top = originalPadding.top;
+            padding.bottom = originalPadding.bottom;
         }
 
         mListView = contentView.findViewById(R.id.app_menu_list);
@@ -294,14 +336,18 @@ class AppMenu implements OnKeyListener {
                 Math.min(
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.top),
                         Math.abs(mTempLocation[1] - visibleDisplayFrame.bottom));
-        setMenuHeight(
-                mInitialSizingHelper,
-                visibleDisplayFrame,
-                sizingPadding,
-                footerHeight,
-                headerHeight,
-                anchorView,
-                anchorViewOffset);
+
+        mMenuSpec =
+                new MenuSpec(
+                        visibleDisplayFrame,
+                        padding,
+                        footerHeight,
+                        headerHeight,
+                        anchorView,
+                        anchorViewOffset);
+
+        mPopup.setHeight(calculateMenuHeight());
+
         int[] popupPosition =
                 getPopupPosition(
                         mTempLocation,
@@ -309,7 +355,7 @@ class AppMenu implements OnKeyListener {
                         mNegativeSoftwareVerticalOffset,
                         mCurrentScreenRotation,
                         visibleDisplayFrame,
-                        sizingPadding,
+                        padding,
                         anchorView,
                         popupWidth,
                         anchorView.getRootView().getLayoutDirection());
@@ -494,45 +540,50 @@ class AppMenu implements OnKeyListener {
         return mListView;
     }
 
-    @RequiresNonNull("mPopup")
-    private void setMenuHeight(
-            InitialSizingHelper sizingHelper,
-            Rect appDimensions,
-            Rect padding,
-            int footerHeight,
-            int headerHeight,
-            View anchorView,
-            int anchorViewOffset) {
+    /** Recalculates and updates the height of the popup window while it is showing. */
+    public void updateMenuHeight() {
+        assert mPopup != null;
+        assert mPopup.isShowing();
+
+        mPopup.update(mPopup.getWidth(), calculateMenuHeight());
+    }
+
+    private int calculateMenuHeight() {
         assert mAdapter != null;
-        int anchorViewImpactHeight = mIsByPermanentButton ? anchorView.getHeight() : 0;
+
+        if (mInitialSizingHelper == null || mMenuSpec == null) {
+            return 0;
+        }
+
+        int anchorViewImpactHeight = mIsByPermanentButton ? mMenuSpec.anchorView.getHeight() : 0;
 
         int availableScreenSpace =
-                appDimensions.height()
-                        - anchorViewOffset
-                        - padding.bottom
-                        - footerHeight
-                        - headerHeight
+                mMenuSpec.visibleDisplayFrame.height()
+                        - mMenuSpec.anchorViewOffset
+                        - mMenuSpec.padding.bottom
+                        - mMenuSpec.footerHeight
+                        - mMenuSpec.headerHeight
                         - anchorViewImpactHeight;
 
-        if (mIsByPermanentButton) availableScreenSpace -= padding.top;
+        if (mIsByPermanentButton) availableScreenSpace -= mMenuSpec.padding.top;
         if (availableScreenSpace <= 0 && sExceptionReporter != null) {
             String logMessage =
                     "there is no screen space for app menu, mIsByPermanentButton = "
                             + mIsByPermanentButton
                             + ", anchorViewOffset = "
-                            + anchorViewOffset
-                            + ", appDimensions.height() = "
-                            + appDimensions.height()
+                            + mMenuSpec.anchorViewOffset
+                            + ", visibleDisplayFrame.height() = "
+                            + mMenuSpec.visibleDisplayFrame.height()
                             + ", anchorView.getHeight() = "
-                            + anchorView.getHeight()
-                            + " padding.top = "
-                            + padding.top
+                            + mMenuSpec.anchorView.getHeight()
+                            + ", padding.top = "
+                            + mMenuSpec.padding.top
                             + ", padding.bottom = "
-                            + padding.bottom
+                            + mMenuSpec.padding.bottom
                             + ", footerHeight = "
-                            + footerHeight
+                            + mMenuSpec.footerHeight
                             + ", headerHeight = "
-                            + headerHeight;
+                            + mMenuSpec.headerHeight;
             PostTask.postTask(
                     TaskTraits.BEST_EFFORT_MAY_BLOCK,
                     () -> sExceptionReporter.onResult(new Throwable(logMessage)));
@@ -543,13 +594,18 @@ class AppMenu implements OnKeyListener {
         int[] heightList = new int[itemCount];
         boolean[] canBeLastList = new boolean[itemCount];
         for (int i = 0; i < itemCount; i++) {
-            heightList[i] = sizingHelper.getInitialHeightForView(i);
-            canBeLastList[i] = sizingHelper.canBeLastVisibleInitialView(i);
+            heightList[i] = mInitialSizingHelper.getInitialHeightForView(i);
+            canBeLastList[i] = mInitialSizingHelper.canBeLastVisibleInitialView(i);
         }
 
         int menuHeight = calculateHeightForItems(heightList, canBeLastList, availableScreenSpace);
-        menuHeight += footerHeight + headerHeight + padding.top + padding.bottom;
-        mPopup.setHeight(menuHeight);
+        menuHeight +=
+                mMenuSpec.footerHeight
+                        + mMenuSpec.headerHeight
+                        + mMenuSpec.padding.top
+                        + mMenuSpec.padding.bottom;
+
+        return menuHeight;
     }
 
     @VisibleForTesting
