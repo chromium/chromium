@@ -26,11 +26,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -449,17 +450,18 @@ AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
 }
 
 Browser* FindWebAppBrowser(Profile* profile, const webapps::AppId& app_id) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile) {
-      continue;
-    }
-
-    if (AppBrowserController::IsForWebApp(browser, app_id)) {
-      return browser;
-    }
-  }
-
-  return nullptr;
+  Browser* found = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &app_id, &found](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
+        if (AppBrowserController::IsForWebApp(browser, app_id)) {
+          found = browser->GetBrowserForMigrationOnly();
+        }
+        return !found;
+      });
+  return found;
 }
 
 void CloseAndWait(BrowserWindowInterface* browser) {
@@ -469,15 +471,20 @@ void CloseAndWait(BrowserWindowInterface* browser) {
 }
 
 bool IsBrowserOpen(const Browser* test_browser) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->IsAttemptingToCloseBrowser() || browser->IsBrowserClosing()) {
-      continue;
-    }
-    if (browser == test_browser) {
-      return true;
-    }
-  }
-  return false;
+  bool is_open = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [test_browser, &is_open](BrowserWindowInterface* browser) {
+        Browser* const current_browser = browser->GetBrowserForMigrationOnly();
+        if (current_browser->IsAttemptingToCloseBrowser() ||
+            current_browser->is_delete_scheduled()) {
+          return true;
+        }
+        if (current_browser == test_browser) {
+          is_open = true;
+        }
+        return !is_open;
+      });
+  return is_open;
 }
 
 std::optional<webapps::AppId> ForceInstallWebApp(Profile* profile, GURL url) {
@@ -605,30 +612,15 @@ void SimulateClickOnElement(content::WebContents* contents,
 void RunForAllTabs(
     base::RepeatingCallback<void(content::WebContents&)> action) {
   std::unordered_set<content::WebContents*> processed_tabs;
-  auto get_next_unprocessed_tab = [&processed_tabs]() -> content::WebContents* {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (browser->is_delete_scheduled()) {
-        continue;
-      }
-      for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
-        if (web_contents->IsBeingDestroyed()) {
-          continue;
-        }
-        if (processed_tabs.contains(web_contents)) {
-          continue;
-        }
-        processed_tabs.insert(web_contents);
-        return web_contents;
-      }
+  for (content::WebContents* web_contents : AllTabContentses()) {
+    if (web_contents->IsBeingDestroyed()) {
+      continue;
     }
-    return nullptr;
-  };
-
-  while (content::WebContents* current_web_contents =
-             get_next_unprocessed_tab()) {
-    action.Run(*current_web_contents);
+    if (processed_tabs.contains(web_contents)) {
+      continue;
+    }
+    processed_tabs.insert(web_contents);
+    action.Run(*web_contents);
   }
 }
 

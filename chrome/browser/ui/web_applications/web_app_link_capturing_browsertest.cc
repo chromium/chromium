@@ -24,8 +24,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -199,25 +200,25 @@ class WebAppLinkCapturingBrowserTest
                   std::vector<GURL> urls,
                   base::Location location = FROM_HERE) {
     std::string debug_info = "\nOpen browsers:\n";
-    for (Browser* open_browser : *BrowserList::GetInstance()) {
-      debug_info += "  ";
-      if (open_browser == browser()) {
-        debug_info += "Main browser";
-      } else if (open_browser->app_controller()) {
-        debug_info += "App browser";
-      } else {
-        debug_info += "Browser";
-      }
-      debug_info += ":\n";
-      for (int i = 0; i < open_browser->tab_strip_model()->count(); ++i) {
-        debug_info += "   - " +
-                      open_browser->tab_strip_model()
-                          ->GetWebContentsAt(i)
-                          ->GetVisibleURL()
-                          .spec() +
-                      "\n";
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this, &debug_info](BrowserWindowInterface* browser) {
+          debug_info += "  ";
+          if (browser == this->browser()) {
+            debug_info += "Main browser";
+          } else if (browser->GetAppBrowserController()) {
+            debug_info += "App browser";
+          } else {
+            debug_info += "Browser";
+          }
+          debug_info += ":\n";
+          const TabStripModel* const tab_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_model->count(); ++i) {
+            debug_info +=
+                "   - " +
+                tab_model->GetWebContentsAt(i)->GetVisibleURL().spec() + "\n";
+          }
+          return true;
+        });
     SCOPED_TRACE(location.ToString());
     SCOPED_TRACE(debug_info);
     TabStripModel& tab_strip = *test_browser->tab_strip_model();

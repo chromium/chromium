@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
@@ -1775,24 +1776,22 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   // Info bar should only be shown on pages with the same origin and
   // on the same profile, or on any pages where changes to a double-keyed
   // setting occurred.
-  for (Browser* it : *BrowserList::GetInstance()) {
-    TabStripModel* tab_strip = it->tab_strip_model();
-    for (int i = 0; i < tab_strip->count(); ++i) {
-      content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
-      GURL tab_url = web_contents->GetLastCommittedURL();
-      const bool tab_is_same_origin = url::IsSameOriginWith(origin, tab_url);
-      const bool tab_might_embed_origin = std::ranges::any_of(
-          additional_patterns_for_infobar, [&](const auto& additional_pattern) {
-            return additional_pattern.Matches(tab_url);
-          });
+  auto& all_tabs = AllTabContentses();
+  for (auto it = all_tabs.begin(); it != all_tabs.end(); ++it) {
+    content::WebContents* const web_contents = *it;
+    const GURL tab_url = web_contents->GetLastCommittedURL();
+    const bool tab_is_same_origin = url::IsSameOriginWith(origin, tab_url);
+    const bool tab_might_embed_origin = std::ranges::any_of(
+        additional_patterns_for_infobar, [&](const auto& additional_pattern) {
+          return additional_pattern.Matches(tab_url);
+        });
 
-      if ((tab_is_same_origin || tab_might_embed_origin) &&
-          it->profile()->GetOriginalProfile() ==
-              profile_->GetOriginalProfile()) {
-        infobars::ContentInfoBarManager* infobar_manager =
-            infobars::ContentInfoBarManager::FromWebContents(web_contents);
-        PageInfoInfoBarDelegate::Create(infobar_manager);
-      }
+    if ((tab_is_same_origin || tab_might_embed_origin) &&
+        it.browser()->profile()->GetOriginalProfile() ==
+            profile_->GetOriginalProfile()) {
+      infobars::ContentInfoBarManager* const infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents);
+      PageInfoInfoBarDelegate::Create(infobar_manager);
     }
   }
 }

@@ -480,8 +480,9 @@ bool TabStripPageHandler::CanDragEnter(
   if (auto it = data.custom_data.find(kWebUITabGroupIdDataType);
       it != data.custom_data.end()) {
     std::string group_id = base::UTF16ToUTF8(it->second);
-    Browser* found_browser = tab_strip_ui::GetBrowserWithGroupId(
-        Profile::FromBrowserContext(browser_->profile()), group_id);
+    BrowserWindowInterface* const found_browser =
+        tab_strip_ui::GetBrowserWithGroupId(
+            Profile::FromBrowserContext(browser_->profile()), group_id);
     return found_browser != nullptr;
   }
 
@@ -644,18 +645,19 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
   }
 
   auto* target_browser = browser_.get();
-  Browser* source_browser =
+  BrowserWindowInterface* const source_browser =
       tab_strip_ui::GetBrowserWithGroupId(browser_->profile(), group_id_string);
   if (!source_browser) {
     return;
   }
 
+  TabStripModel* const source_tab_strip_model =
+      source_browser->GetTabStripModel();
   std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
-          source_browser->tab_strip_model()->group_model(), group_id_string);
-  TabGroup* group =
-      source_browser->tab_strip_model()->group_model()->GetTabGroup(
-          group_id.value());
+          source_tab_strip_model->group_model(), group_id_string);
+  TabGroup* const group =
+      source_tab_strip_model->group_model()->GetTabGroup(group_id.value());
   const gfx::Range tabs_in_group = group->ListTabs();
 
   if (source_browser == target_browser) {

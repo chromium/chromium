@@ -59,8 +59,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -179,10 +180,11 @@ base::Value::Dict BuildTargetDescriptor(content::RenderViewHost* rvh) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-base::Value::Dict BuildTargetDescriptor(Browser* browser) {
+base::Value::Dict BuildTargetDescriptor(BrowserWindowInterface* browser) {
   base::Value::Dict target_data;
-  target_data.Set(kSessionIdField, browser->session_id().id());
-  target_data.Set(kNameField, browser->GetWindowTitleForCurrentTab(false));
+  target_data.Set(kSessionIdField, browser->GetSessionID().id());
+  target_data.Set(kNameField, browser->GetBrowserForMigrationOnly()
+                                  ->GetWindowTitleForCurrentTab(false));
   target_data.Set(kTypeField, kBrowser);
   return target_data;
 }
@@ -354,9 +356,11 @@ void HandleAccessibilityRequestCallback(
 
   base::Value::List browser_list;
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser_list.Append(BuildTargetDescriptor(browser));
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&browser_list](BrowserWindowInterface* browser) {
+        browser_list.Append(BuildTargetDescriptor(browser));
+        return true;
+      });
 #endif  // !BUILDFLAG(IS_ANDROID)
   data.Set(kBrowsersField, std::move(browser_list));
 
@@ -925,17 +929,25 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
                      AXPropertyFilter::ALLOW_EMPTY);
   AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id().id() == session_id) {
-      base::Value::Dict result = BuildTargetDescriptor(browser);
-      gfx::NativeWindow native_window = browser->window()->GetNativeWindow();
-      ui::AXPlatformNode* node =
-          ui::AXPlatformNode::FromNativeWindow(native_window);
-      result.Set(kTreeField, RecursiveDumpAXPlatformNodeAsString(
-                                 node, 0, property_filters));
-      FireWebUIListener(request_type, result);
-      return;
-    }
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, session_id, &property_filters, &request_type,
+       &found](BrowserWindowInterface* browser) {
+        if (browser->GetSessionID().id() == session_id) {
+          base::Value::Dict result = BuildTargetDescriptor(browser);
+          gfx::NativeWindow const native_window =
+              browser->GetWindow()->GetNativeWindow();
+          ui::AXPlatformNode* const node =
+              ui::AXPlatformNode::FromNativeWindow(native_window);
+          result.Set(kTreeField, RecursiveDumpAXPlatformNodeAsString(
+                                     node, 0, property_filters));
+          FireWebUIListener(request_type, result);
+          found = true;
+        }
+        return !found;
+      });
+  if (found) {
+    return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   // No browser with the specified |session_id| was found.

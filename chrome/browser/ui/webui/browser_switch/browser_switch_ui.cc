@@ -21,7 +21,8 @@
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -56,16 +57,15 @@ void GotoNewTabPage(content::WebContents* web_contents) {
 bool IsLastTab(const Profile* profile) {
   profile = profile->GetOriginalProfile();
   int tab_count = 0;
-  for (const Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->GetOriginalProfile() != profile) {
-      continue;
-    }
-    tab_count += browser->tab_strip_model()->count();
-    if (tab_count > 1) {
-      return false;
-    }
-  }
-  return true;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &tab_count](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->GetOriginalProfile() != profile) {
+          return true;
+        }
+        tab_count += browser->GetTabStripModel()->count();
+        return tab_count <= 1;  // Continue only if we haven't found 2+ tabs yet
+      });
+  return tab_count <= 1;
 }
 
 // Returns a dictionary like:

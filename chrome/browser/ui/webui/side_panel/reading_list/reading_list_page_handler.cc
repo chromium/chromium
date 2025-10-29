@@ -26,8 +26,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
@@ -276,17 +277,24 @@ void ReadingListPageHandler::CloseUI() {
 
 void ReadingListPageHandler::GetWindowData(GetWindowDataCallback callback) {
   std::vector<reading_list::mojom::WindowPtr> windows;
-  Browser* active_browser = chrome::FindLastActive();
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != Profile::FromWebUI(web_ui_) ||
-        browser->type() != Browser::Type::TYPE_NORMAL) {
-      continue;
-    }
-    auto window = reading_list::mojom::Window::New();
-    window->active = (browser == active_browser);
-    window->height = browser->window()->GetContentsSize().height();
-    windows.push_back(std::move(window));
-  }
+  BrowserWindowInterface* const active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  const Profile* const profile = Profile::FromWebUI(web_ui_);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [active_browser, profile, &windows](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile ||
+            browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+          return true;
+        }
+        auto window = reading_list::mojom::Window::New();
+        window->active = (browser == active_browser);
+        window->height = browser->GetBrowserForMigrationOnly()
+                             ->window()
+                             ->GetContentsSize()
+                             .height();
+        windows.push_back(std::move(window));
+        return true;
+      });
   std::move(callback).Run(std::move(windows));
 }
 

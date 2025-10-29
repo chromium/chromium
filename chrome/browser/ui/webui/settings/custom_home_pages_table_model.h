@@ -13,7 +13,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "ui/base/models/table_model.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -66,7 +66,7 @@ class CustomHomePagesTableModel : public ui::TableModel {
   struct Entry;
 
   // Returns false if pages from |browser| should not be considered.
-  bool ShouldIncludeBrowser(Browser* browser);
+  bool ShouldIncludeBrowser(BrowserWindowInterface* browser);
 
   // Loads the title for the specified entry.
   void LoadTitle(Entry* entry);

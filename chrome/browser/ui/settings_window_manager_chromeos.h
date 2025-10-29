@@ -15,6 +15,7 @@
 #include "ui/display/types/display_constants.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -76,7 +77,7 @@ class SettingsWindowManager : public ash::SettingsAppManager {
   Browser* FindBrowserForProfile(Profile* profile);
 
   // Returns true if |browser| is a settings window.
-  bool IsSettingsBrowser(Browser* browser) const;
+  bool IsSettingsBrowser(BrowserWindowInterface* browser) const;
 
  private:
   typedef std::map<Profile*, SessionID> ProfileSessionMap;

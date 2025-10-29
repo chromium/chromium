@@ -33,11 +33,11 @@
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -748,7 +748,7 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
     return std::nullopt;
   }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-  if (!browser || !ShouldTrackBrowser(browser->GetBrowserForMigrationOnly())) {
+  if (!browser || !ShouldTrackBrowser(browser)) {
     return std::nullopt;
   }
   return TabDetails(tab);
@@ -1094,49 +1094,59 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
 
   std::set<DedupKey> tab_dedup_keys;
   std::set<tab_groups::TabGroupId> tab_group_ids;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!ShouldTrackBrowser(browser)) {
-      continue;
-    }
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &profile_data, &tab_dedup_keys,
+       &tab_group_ids](BrowserWindowInterface* browser) {
+        if (!ShouldTrackBrowser(browser)) {
+          return true;
+        }
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
 
-    auto window = tab_search::mojom::Window::New();
-    window->active = browser->IsActive();
-    window->is_host_window = browser == browser_;
-    window->height = browser->window()->GetContentsSize().height();
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-      // A Tab can potentially be in a state where it has no committed entries
-      // during loading and thus has no title/URL. Skip any such pending tabs.
-      // These tabs will be added to the list later on once loading has
-      // finished.
-      if (!web_contents->GetController().GetLastCommittedEntry()) {
-        continue;
-      }
-      tab_search::mojom::TabPtr tab = GetTab(tab_strip_model, web_contents, i);
-      tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
-      window->tabs.push_back(std::move(tab));
-    }
-    profile_data->windows.push_back(std::move(window));
+        auto window = tab_search::mojom::Window::New();
+        window->active = browser->IsActive();
+        window->is_host_window = browser == browser_;
+        window->height = browser->GetBrowserForMigrationOnly()
+                             ->window()
+                             ->GetContentsSize()
+                             .height();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          content::WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          // A Tab can potentially be in a state where it has no committed
+          // entries during loading and thus has no title/URL. Skip any such
+          // pending tabs. These tabs will be added to the list later on once
+          // loading has finished.
+          if (!web_contents->GetController().GetLastCommittedEntry()) {
+            continue;
+          }
+          tab_search::mojom::TabPtr tab =
+              GetTab(tab_strip_model, web_contents, i);
+          tab_dedup_keys.insert(DedupKey(tab->url, tab->group_id));
+          window->tabs.push_back(std::move(tab));
+        }
+        profile_data->windows.push_back(std::move(window));
 
-    if (tab_strip_model->group_model()) {
-      for (auto tab_group_id :
-           tab_strip_model->group_model()->ListTabGroups()) {
-        const tab_groups::TabGroupVisualData* tab_group_visual_data =
-            tab_strip_model->group_model()
-                ->GetTabGroup(tab_group_id)
-                ->visual_data();
+        // Collect tab groups from this browser
+        if (tab_strip_model->group_model()) {
+          for (auto tab_group_id :
+               tab_strip_model->group_model()->ListTabGroups()) {
+            const tab_groups::TabGroupVisualData* const tab_group_visual_data =
+                tab_strip_model->group_model()
+                    ->GetTabGroup(tab_group_id)
+                    ->visual_data();
 
-        auto tab_group = tab_search::mojom::TabGroup::New();
-        tab_group->id = tab_group_id.token();
-        tab_group->title = base::UTF16ToUTF8(tab_group_visual_data->title());
-        tab_group->color = tab_group_visual_data->color();
+            auto tab_group = tab_search::mojom::TabGroup::New();
+            tab_group->id = tab_group_id.token();
+            tab_group->title =
+                base::UTF16ToUTF8(tab_group_visual_data->title());
+            tab_group->color = tab_group_visual_data->color();
 
-        tab_group_ids.insert(tab_group_id);
-        profile_data->tab_groups.push_back(std::move(tab_group));
-      }
-    }
-  }
+            tab_group_ids.insert(tab_group_id);
+            profile_data->tab_groups.push_back(std::move(tab_group));
+          }
+        }
+        return true;
+      });
 
   AddRecentlyClosedEntries(profile_data->recently_closed_tabs,
                            profile_data->recently_closed_tab_groups,
