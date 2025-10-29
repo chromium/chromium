@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/partial_translate/ui_bundled",
   "+ios/chrome/browser/search_with/ui_bundled",
@@ -14,4 +15,5 @@ include_rules = [
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  "+ios/components/enterprise/data_controls/features.h",
 ]

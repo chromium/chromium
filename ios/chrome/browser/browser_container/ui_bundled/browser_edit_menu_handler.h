@@ -25,6 +25,10 @@
 // The delegate to handle Search With button selection.
 @property(nonatomic, weak) id<EditMenuBuilder> searchWithDelegate;
 
+// The delegate for updating the Edit menu according to enterprise Data
+// Controls.
+@property(nonatomic, weak) id<EditMenuBuilder> dataControlsDelegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_CONTAINER_UI_BUNDLED_BROWSER_EDIT_MENU_HANDLER_H_

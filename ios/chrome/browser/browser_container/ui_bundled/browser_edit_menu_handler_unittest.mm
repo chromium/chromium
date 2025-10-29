@@ -8,6 +8,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_mediator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -20,6 +22,7 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -283,6 +286,17 @@ void AddChromeMenu(NSMutableArray* menu) {
 void AddLinkToText(NSMutableArray* menu) {
   [menu addObjectsFromArray:@[ @"0:m:chromecommand.menu.linktotext", @"1:d" ]];
 }
+
+// Modify the expected menu to remove Share items.
+void RemoveShareMenu(NSMutableArray* menu) {
+  for (NSInteger i = menu.count - 1; i >= 0; --i) {
+    NSString* item = menu[i];
+    if ([item hasPrefix:@"0:m:com.apple.menu.share"] ||
+        [item hasPrefix:@"1:c:share:"] || [item hasPrefix:@"1:c:_share:"]) {
+      [menu removeObjectAtIndex:i];
+    }
+  }
+}
 }  // namespace
 
 // A test View controller that forwards the edit menu handling.
@@ -451,10 +465,13 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   search_with_mediator.applicationCommandHandler = application_commands_handler;
 
   LinkToTextMediator* link_to_text_mediator = [[LinkToTextMediator alloc] init];
+  DataControlsEditMenuBuilder* data_controls_menu_builder =
+      [[DataControlsEditMenuBuilder alloc] init];
   BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
   handler.partialTranslateDelegate = partial_translate_mediator;
   handler.linkToTextDelegate = link_to_text_mediator;
   handler.searchWithDelegate = search_with_mediator;
+  handler.dataControlsDelegate = data_controls_menu_builder;
   BrowserContainerViewController* container_vc =
       [[BrowserContainerViewController alloc] init];
   [container_vc willMoveToParentViewController:base_view_controller_];
@@ -468,4 +485,73 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
   handler.partialTranslateDelegate = nil;
   [partial_translate_mediator shutdown];
+}
+
+// Tests that the share option is removed when sharing is blocked by Data
+// Controls.
+TEST_F(BrowserEditMenuHandlerTest, CheckShareRemoved) {
+  base::test::ScopedFeatureList feature_list(
+      data_controls::kEnableClipboardDataControlsIOS);
+
+  // Set a policy to block sharing/copying from `kDataControlsBlockedUrl`.
+  SetCopyBlockRule(profile_->GetPrefs());
+
+  NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+  AddOpenInNewCanvas(expectedMenuDescription);
+  RemoveShareMenu(expectedMenuDescription);
+
+  BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
+  DataControlsEditMenuBuilder* menu_builder =
+      [[DataControlsEditMenuBuilder alloc] init];
+  handler.dataControlsDelegate = menu_builder;
+  [base_view_controller_ setHandler:handler];
+  [base_view_controller_.view addSubview:web_state_->GetView()];
+  web::test::LoadHtml(kPageHTML, GURL(kDataControlsBlockedUrl),
+                      web_state_.get());
+
+  EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
+}
+
+// Tests that the share option is not removed when sharing is allowed by Data
+// Controls.
+TEST_F(BrowserEditMenuHandlerTest, CheckShareNotRemovedByPolicy) {
+  base::test::ScopedFeatureList feature_list(
+      data_controls::kEnableClipboardDataControlsIOS);
+
+  NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+  AddOpenInNewCanvas(expectedMenuDescription);
+
+  BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
+  DataControlsEditMenuBuilder* menu_builder =
+      [[DataControlsEditMenuBuilder alloc] init];
+  handler.dataControlsDelegate = menu_builder;
+
+  [base_view_controller_ setHandler:handler];
+  [base_view_controller_.view addSubview:web_state_->GetView()];
+  web::test::LoadHtml(kPageHTML, web_state_.get());
+
+  // Sharing should be allowed because there are no data control rules set.
+  EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
+}
+
+// Tests that the share option is not removed when Data Controls feature is
+// disabled.
+TEST_F(BrowserEditMenuHandlerTest, CheckShareNotRemovedFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      data_controls::kEnableClipboardDataControlsIOS);
+
+  NSMutableArray* expectedMenuDescription = GetExpectedMenu();
+  AddOpenInNewCanvas(expectedMenuDescription);
+
+  BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
+  DataControlsEditMenuBuilder* menu_builder =
+      [[DataControlsEditMenuBuilder alloc] init];
+  handler.dataControlsDelegate = menu_builder;
+  [base_view_controller_ setHandler:handler];
+  [base_view_controller_.view addSubview:web_state_->GetView()];
+  web::test::LoadHtml(kPageHTML, web_state_.get());
+
+  // Sharing should be allowed because the feature is disabled.
+  EXPECT_NSEQ(expectedMenuDescription, GetMenuDescription());
 }

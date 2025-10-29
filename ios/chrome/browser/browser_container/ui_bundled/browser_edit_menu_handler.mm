@@ -16,6 +16,8 @@
                                                 inWebState:webState];
   [self.partialTranslateDelegate buildEditMenuWithBuilder:builder
                                                inWebState:webState];
+  [self.dataControlsDelegate buildEditMenuWithBuilder:builder
+                                           inWebState:webState];
 }
 
 @end
