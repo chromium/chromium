@@ -628,6 +628,8 @@ source_set("extensions") {
       "api/identity/identity_unimplemented_functions_android.cc",
       "api/identity/identity_unimplemented_functions_android.h",
       "api/management/chrome_management_api_delegate_android.cc",
+      "api/messaging/native_message_android_host.cc",
+      "api/messaging/native_message_android_host.h",
       "api/tabs/tabs_api_android.cc",
       "api/tabs/tabs_event_router_android.cc",
       "api/tabs/tabs_event_router_android.h",
@@ -653,17 +655,19 @@ source_set("extensions") {
   }
 
   if (!is_chromeos) {
-    sources += [
-      "api/messaging/launch_context.cc",
-      "api/messaging/launch_context.h",
-      "api/messaging/native_message_process_host.cc",
-      "api/messaging/native_message_process_host.h",
-      "api/messaging/native_messaging_launch_from_native.cc",
-      "api/messaging/native_messaging_launch_from_native.h",
-      "api/messaging/native_process_launcher.cc",
-      "api/messaging/native_process_launcher.h",
-      "chrome_kiosk_delegate_non_chromeos.cc",
-    ]
+    sources += [ "chrome_kiosk_delegate_non_chromeos.cc" ]
+    if (!is_android) {
+      sources += [
+        "api/messaging/launch_context.cc",
+        "api/messaging/launch_context.h",
+        "api/messaging/native_message_process_host.cc",
+        "api/messaging/native_message_process_host.h",
+        "api/messaging/native_messaging_launch_from_native.cc",
+        "api/messaging/native_messaging_launch_from_native.h",
+        "api/messaging/native_process_launcher.cc",
+        "api/messaging/native_process_launcher.h",
+      ]
+    }
     if (is_posix) {
       sources += [ "api/messaging/launch_context_posix.cc" ]
     }
