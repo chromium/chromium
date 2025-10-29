@@ -642,7 +642,7 @@ class AutofillClient {
   virtual bool IsContextSecure() const = 0;
 
   // Returns whether Google Wallet storage is supported.
-  virtual bool IsImportingToWalletEnabled() const = 0;
+  virtual bool IsWalletStorageEnabled() const = 0;
 
   // Returns true if the client supports saving CVCs. This allows specific
   // clients (IosWebView) to opt out of the CVC saving feature.

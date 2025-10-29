@@ -260,7 +260,7 @@ bool WebViewAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
   return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
 }
 
-bool WebViewAutofillClientIOS::IsImportingToWalletEnabled() const {
+bool WebViewAutofillClientIOS::IsWalletStorageEnabled() const {
   return false;
 }
 

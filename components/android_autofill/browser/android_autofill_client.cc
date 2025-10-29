@@ -235,7 +235,7 @@ bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
   NOTREACHED();
 }
 
-bool AndroidAutofillClient::IsImportingToWalletEnabled() const {
+bool AndroidAutofillClient::IsWalletStorageEnabled() const {
   return false;
 }
 

@@ -628,7 +628,7 @@ class AutofillAiMayPerformImportToWalletTest
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_TrueWhenSyncingWallet) {
-  client().SetImportingToWalletEnabled(true);
+  client().SetWalletStorageEnabled(true);
   EXPECT_TRUE(MayPerformAutofillAiAction(client(),
                                          AutofillAiAction::kImportToWallet,
                                          EntityType(EntityTypeName::kVehicle)));
@@ -636,7 +636,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseWhenWalletPrefDisabled) {
-  client().SetImportingToWalletEnabled(false);
+  client().SetWalletStorageEnabled(false);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kVehicle)));
@@ -644,7 +644,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseEntityTypeIsNotWalletable) {
-  client().SetImportingToWalletEnabled(true);
+  client().SetWalletStorageEnabled(true);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kPassport)));
@@ -655,7 +655,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillAiWalletVehicleRegistration);
-  client().SetImportingToWalletEnabled(true);
+  client().SetWalletStorageEnabled(true);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kPassport)));
@@ -665,7 +665,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseWhenNotSyncingWallet) {
   client().GetSyncService()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPayments, false);
-  client().SetImportingToWalletEnabled(true);
+  client().SetWalletStorageEnabled(true);
   EXPECT_FALSE(
       MayPerformAutofillAiAction(client(), AutofillAiAction::kImportToWallet,
                                  EntityType(EntityTypeName::kVehicle)));

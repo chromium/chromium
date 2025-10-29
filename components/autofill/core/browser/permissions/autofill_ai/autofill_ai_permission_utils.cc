@@ -305,7 +305,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kAddServerEntityInstanceInSettings:
     case AutofillAiAction::kImportToWallet:
       return policy_pref_enabled && user_opted_in &&
-             client.IsImportingToWalletEnabled();
+             client.IsWalletStorageEnabled();
     case AutofillAiAction::kIphForOptIn:
       // The IPH should only show if the user has not opted in yet.
       return policy_pref_enabled && !user_opted_in;

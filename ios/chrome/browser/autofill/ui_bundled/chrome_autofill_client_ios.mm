@@ -402,7 +402,7 @@ bool ChromeAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
   return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
 }
 
-bool ChromeAutofillClientIOS::IsImportingToWalletEnabled() const {
+bool ChromeAutofillClientIOS::IsWalletStorageEnabled() const {
   return false;
 }
 

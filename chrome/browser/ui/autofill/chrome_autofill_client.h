@@ -205,7 +205,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillPaymentMethodsEnabled() const final;
   bool IsAutocompleteEnabled() const final;
-  bool IsImportingToWalletEnabled() const final;
+  bool IsWalletStorageEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
   void DidFillForm(AutofillTriggerSource trigger_source, bool is_refill) final;
   bool IsContextSecure() const final;

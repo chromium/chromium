@@ -132,7 +132,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
   bool IsAutofillPaymentMethodsEnabled() const override;
-  bool IsImportingToWalletEnabled() const override;
+  bool IsWalletStorageEnabled() const override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
   void DidFillForm(AutofillTriggerSource trigger_source,
