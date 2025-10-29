@@ -587,16 +587,23 @@ message PolicyFetchRequest {
   //
   // For users signed in to Chrome,
   //   google/chromeos/user => ChromeSettingsProto
+  //   google/chromeos/user-level-extension-install
+  //        => ExtensionInstallPolicies
   //   google/android/user => ChromeSettingsProto
   //   google/chrome/user => ChromeSettingsProto
   //   google/ios/user => ChromeSettingsProto
   //   google/chrome/extension => ExternalPolicyData
+  //   google/chrome/user-level-extension-install
+  //       => ExtensionInstallPolicies
   //
   // For Chrome Browser Cloud Management,
   //   google/chrome/machine-level-user => ChromeSettingsProto
   //   google/chrome/machine-level-user-android => ChromeSettingsProto
   //   google/chrome/machine-level-user-ios => ChromeSettingsProto
-  //   google/chrome/machine-level-extension => ExternalPolicyData
+  //   google/chrome/machine-level-extension
+  //       => ExternalPolicyData
+  //   google/chrome/machine-level-extension-install
+  //       => ExtensionInstallPolicies
   //   google/machine-level-apps =>
   //       Omaha policy fetch is translated into two policy types
   //       google/chrome/machine-level-user => ChromeSettingsProto
@@ -5335,4 +5342,27 @@ message DeviceManagementResponse {
 message DeviceStateRetrievalInfo {
   // Whether the device should retrieve initial state or not.
   optional bool has_initial_state = 1;
+}
+
+message ExtensionInstallPolicy {
+  enum Action {
+    ACTION_UNSPECIFIED = 0;
+    ACTION_ALLOW = 1;
+    ACTION_BLOCK = 2;
+  }
+
+  enum Reason {
+    REASON_UNSPECIFIED = 0;
+    REASON_BLOCKED_CATEGORY = 1;
+    REASON_RISK_SCORE = 2;
+  }
+
+  optional string extension_id = 1;
+  optional string extension_version = 2;
+  optional Action action = 3;
+  repeated Reason reasons = 4;
+}
+
+message ExtensionInstallPolicies {
+  repeated ExtensionInstallPolicy policies = 1;
 }

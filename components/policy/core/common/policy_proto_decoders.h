@@ -12,6 +12,7 @@
 
 namespace enterprise_management {
 class CloudPolicySettings;
+class ExtensionInstallPolicies;
 }  // namespace enterprise_management
 
 namespace policy {
@@ -27,6 +28,34 @@ enum class PolicyPerProfileFilter {
   // Any user policy.
   kAny
 };
+
+// Decode all the fields in `policy` and store them in the given `map`, with the
+// given `source` and `scope`.
+// Writes a value for each extension ID and version, with the action and reasons
+// as a dictionary under the extension ID key of the following format:
+// {
+//   "extension_id": {
+//     "version_1": {
+//       "action": 1,
+//       "reasons": [1, 2]
+//     },
+//     "version_2": {
+//       "action": 2,
+//       "reasons": [1]
+//     }
+//   },
+//   "extension_id_2": {
+//     "version_1": {
+//       "action": 1,
+//       "reasons": [1]
+//     }
+//   }
+// }
+POLICY_EXPORT void DecodeProtoFields(
+    const enterprise_management::ExtensionInstallPolicies& policies,
+    PolicySource source,
+    PolicyScope scope,
+    PolicyMap* map);
 
 // Decode all the fields in `policy` that match the needed `per_profile` flag
 // which are recognized (see the metadata in policy_constants.cc) and store them

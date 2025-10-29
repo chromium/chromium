@@ -99,6 +99,11 @@ extern const char kChromeBrowserRemoteCommandType[];
 // Command for browser profile.
 extern const char kChromeUserRemoteCommandType[];
 
+// Policy type strings for the policy_type field in PolicyFetchRequest for
+// extension install cloud policy.
+extern const char kChromeExtensionInstallUserCloudPolicyType[];
+extern const char kChromeExtensionInstallMachineLevelCloudPolicyType[];
+
 extern const char kChromeMachineLevelUserCloudPolicyTypeBase64[];
 
 // These codes are sent in the |error_code| field of PolicyFetchResponse.

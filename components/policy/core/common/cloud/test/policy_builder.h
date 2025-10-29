@@ -219,6 +219,9 @@ class StringPolicyBuilder : public PolicyBuilder {
 using UserPolicyBuilder =
     TypedPolicyBuilder<enterprise_management::CloudPolicySettings>;
 
+using ExtensionInstallPoliciesBuilder =
+    TypedPolicyBuilder<enterprise_management::ExtensionInstallPolicies>;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ComponentCloudPolicyBuilder =
     TypedPolicyBuilder<enterprise_management::ExternalPolicyData>;

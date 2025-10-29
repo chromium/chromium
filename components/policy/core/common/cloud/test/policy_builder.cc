@@ -537,6 +537,15 @@ TypedPolicyBuilder<em::CloudPolicySettings>::TypedPolicyBuilder()
 // Have the instantiation compiled into the module.
 template class TypedPolicyBuilder<em::CloudPolicySettings>;
 
+template <>
+TypedPolicyBuilder<em::ExtensionInstallPolicies>::TypedPolicyBuilder() {
+  CreatePayload();
+  policy_data().set_policy_type(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
+}
+
+template class TypedPolicyBuilder<em::ExtensionInstallPolicies>;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 template <>
 TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
