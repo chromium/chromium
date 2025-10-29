@@ -18,6 +18,9 @@ BASE_FEATURE(kAimServerEligibilityChangedNotification,
 BASE_FEATURE(kAimServerRequestOnStartupEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimServerRequestOnIdentityChangeEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kRequestOnCookieJarChanges{

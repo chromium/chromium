@@ -233,6 +233,7 @@ if (!is_android) {
       "//components/variations/service",
       "//content/public/browser",
       "//content/test:test_support",
+      "//net:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/metrics_proto",

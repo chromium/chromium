@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/network_change_notifier.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 
 class PrefRegistrySimple;
@@ -38,8 +39,10 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 // Utility service to check if the profile is eligible for AI mode features.
-class AimEligibilityService : public KeyedService,
-                              public signin::IdentityManager::Observer {
+class AimEligibilityService
+    : public KeyedService,
+      public net::NetworkChangeNotifier::NetworkChangeObserver,
+      public signin::IdentityManager::Observer {
  public:
   // Helper that individual AIM features can use to check if they should be
   // enabled. Unlike most chrome features, which simply check if the
@@ -109,7 +112,8 @@ class AimEligibilityService : public KeyedService,
     kStartup = 0,
     kCookieChange = 1,
     kPrimaryAccountChange = 2,
-    kMaxValue = kPrimaryAccountChange,
+    kNetworkChange = 3,
+    kMaxValue = kNetworkChange,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
 
@@ -149,6 +153,10 @@ class AimEligibilityService : public KeyedService,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+
+  // net::NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
 
   // Callback for when the eligibility response changes. Notifies observers.
   void OnEligibilityResponseChanged();
@@ -203,6 +211,9 @@ class AimEligibilityService : public KeyedService,
 
   // Tracks whether the service has been initialized.
   bool initialized_ = false;
+
+  // Tracks whether the startup request has been sent.
+  bool startup_request_sent_ = false;
 
   // For binding the `OnServerEligibilityResponse()` callback.
   base::WeakPtrFactory<AimEligibilityService> weak_factory_{this};
