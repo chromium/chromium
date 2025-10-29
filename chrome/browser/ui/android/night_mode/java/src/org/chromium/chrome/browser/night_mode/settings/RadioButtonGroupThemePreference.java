@@ -95,9 +95,6 @@ public class RadioButtonGroupThemePreference extends ContainedRadioButtonGroupPr
         mButtons.set(
                 ThemeType.SYSTEM_DEFAULT,
                 (RadioButtonWithDescription) holder.findViewById(R.id.system_default));
-        mButtons.get(ThemeType.SYSTEM_DEFAULT)
-                .setDescriptionText(
-                        getContext().getString(R.string.themes_system_default_summary_api_29));
         mButtons.set(ThemeType.LIGHT, (RadioButtonWithDescription) holder.findViewById(R.id.light));
         mButtons.set(ThemeType.DARK, (RadioButtonWithDescription) holder.findViewById(R.id.dark));
 

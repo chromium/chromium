@@ -103,7 +103,6 @@ import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -268,8 +267,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     public CustomTabNightModeStateController getCustomTabNightModeStateController() {
         if (mNightModeStateController == null) {
             mNightModeStateController =
-                    new CustomTabNightModeStateController(
-                            getLifecycleDispatcher(), PowerSavingModeMonitor.getInstance());
+                    new CustomTabNightModeStateController(getLifecycleDispatcher());
         }
         return mNightModeStateController;
     }
