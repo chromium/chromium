@@ -77,11 +77,10 @@ base::OnceClosure MappableBufferNativePixmap::AllocateForTesting(
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
   scoped_refptr<gfx::NativePixmap> pixmap;
-  auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   pixmap = ui::OzonePlatform::GetInstance()
                ->GetSurfaceFactoryOzone()
                ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
-                                    buffer_format, usage);
+                                    format, usage);
   if (!pixmap) {
     // https://crrev.com/c/5348599
     // In some format + usage combination the pixmap may be null. For example,
