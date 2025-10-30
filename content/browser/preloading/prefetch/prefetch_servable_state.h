@@ -8,10 +8,11 @@
 #include <optional>
 #include <ostream>
 
-#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/common/content_export.h"
 
 namespace content {
+
+enum class PrefetchContainerLoadState;
 
 // TODO(crbug.com/372186548): Revisit the shape of `PrefetchServableState`.
 //
@@ -72,7 +73,7 @@ class PrefetchMatchResolverAction {
 
   // `is_expired` must be non null iff `kind == ActionKind::kMaybeServe`.
   PrefetchMatchResolverAction(ActionKind kind,
-                              PrefetchContainer::LoadState reason,
+                              PrefetchContainerLoadState reason,
                               std::optional<bool> is_expired);
   ~PrefetchMatchResolverAction();
 
@@ -87,14 +88,14 @@ class PrefetchMatchResolverAction {
   PrefetchServableState ToServableState() const;
 
   ActionKind kind() const { return kind_; }
-  PrefetchContainer::LoadState prefetch_container_load_state() const {
+  PrefetchContainerLoadState prefetch_container_load_state() const {
     return prefetch_container_load_state_;
   }
   std::optional<bool> is_expired() const { return is_expired_; }
 
  private:
   ActionKind kind_;
-  PrefetchContainer::LoadState prefetch_container_load_state_;
+  PrefetchContainerLoadState prefetch_container_load_state_;
   std::optional<bool> is_expired_;
 };
 
