@@ -222,18 +222,10 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
 void PictureLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
-    AppendQuadsData* append_quads_data) {
-  viz::SharedQuadState* shared_quad_state =
-      render_pass->CreateAndAppendSharedQuadState();
-
+    AppendQuadsData* append_quads_data,
+    viz::SharedQuadState* shared_quad_state) {
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
-  // If we don't have tilings, we're likely going to append a checkerboard quad
-  // the size of the layer. In that case, use scale 1 for more stable
-  // to-screen-space mapping.
-  float max_contents_scale =
-      tilings_->num_tilings() ? MaximumTilingContentsScale() : 1.f;
-  PopulateScaledSharedQuadState(shared_quad_state, max_contents_scale,
-                                contents_opaque());
+  float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
 
   if (IsDirectlyCompositedImage()) {
     // Directly composited images should be clipped to the layer's content rect.
@@ -2249,6 +2241,13 @@ DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
     reasons.Put(DamageReason::kUntracked);
   }
   return reasons;
+}
+
+float PictureLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
+  // If we don't have tilings, we're likely going to append a checkerboard quad
+  // the size of the layer. In that case, use scale 1 for more stable
+  // to-screen-space mapping.
+  return tilings_->num_tilings() ? MaximumTilingContentsScale() : 1.f;
 }
 
 }  // namespace cc

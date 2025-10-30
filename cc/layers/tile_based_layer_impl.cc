@@ -30,7 +30,14 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
     return;
   }
 
-  AppendQuadsSpecialization(context, render_pass, append_quads_data);
+  viz::SharedQuadState* shared_quad_state =
+      render_pass->CreateAndAppendSharedQuadState();
+  PopulateScaledSharedQuadState(shared_quad_state,
+                                GetMaximumContentsScaleForUseInAppendQuads(),
+                                contents_opaque());
+
+  AppendQuadsSpecialization(context, render_pass, append_quads_data,
+                            shared_quad_state);
 }
 
 void TileBasedLayerImpl::AppendSolidQuad(viz::CompositorRenderPass* render_pass,

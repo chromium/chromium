@@ -189,14 +189,9 @@ void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
 void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
-    AppendQuadsData* append_quads_data) {
-  const float max_contents_scale =
-      tilings_.empty() ? 1.0 : tilings_.front()->contents_scale_key();
-
-  viz::SharedQuadState* shared_quad_state =
-      render_pass->CreateAndAppendSharedQuadState();
-  PopulateScaledSharedQuadState(shared_quad_state, max_contents_scale,
-                                contents_opaque());
+    AppendQuadsData* append_quads_data,
+    viz::SharedQuadState* shared_quad_state) {
+  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
 
   if (is_directly_composited_image_) {
     // Directly composited images should be clipped to the layer's content rect.
@@ -330,6 +325,10 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
   shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
   shared_quad_state->quad_layer_rect.Offset(quad_offset);
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
+}
+
+float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
+  return tilings_.empty() ? 1.0 : tilings_.front()->contents_scale_key();
 }
 
 void TileDisplayLayerImpl::GetContentsResourceId(
