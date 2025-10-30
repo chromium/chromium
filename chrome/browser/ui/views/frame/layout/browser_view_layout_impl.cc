@@ -206,22 +206,6 @@ void BrowserViewLayoutImpl::MaybeLayoutTopContainerOverlay(
   gfx::Rect top_container_bounds =
       CalculateTopContainerLayout(top_container_layout, params, true);
 
-  // In certain circumstances, the bounds require adjustment.
-  if (delegate().IsTopControlsSlideBehaviorEnabled() &&
-      delegate().GetTopControlsSlideBehaviorShownRatio() == 0.0) {
-    // In slide mode, if the top container is hidden completely, it is placed
-    // outside the window bounds.
-    top_container_bounds.set_y(-top_container_bounds.height());
-  } else if (auto* const controller = delegate().GetImmersiveModeController();
-             controller && controller->IsEnabled()) {
-    // If the immersive mode controller is animating the top container overlay,
-    // it may be partly offscreen. The controller knows where the container
-    // needs to be.
-    top_container_bounds.set_y(
-        delegate().GetImmersiveModeController()->GetTopContainerVerticalOffset(
-            top_container_bounds.size()));
-  }
-
   // Position the top container in its parent, whatever that is.
   views().top_container->SetBoundsRect(top_container_bounds);
 
@@ -644,10 +628,28 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
                     separator_visible);
   }
 
+  // In certain circumstances, the top container bounds require adjustment.
+  int top = params.visual_client_area.y();
+  const int height = y - params.visual_client_area.y();
+
+  if (delegate().IsTopControlsSlideBehaviorEnabled()) {
+    // In slide mode, if the top container is hidden completely, it is placed
+    // outside the window bounds.
+    top =
+        delegate().GetTopControlsSlideBehaviorShownRatio() == 0.0 ? -height : 0;
+  } else if (auto* const controller = delegate().GetImmersiveModeController();
+             controller && controller->IsEnabled()) {
+    // If the immersive mode controller is animating the top container overlay,
+    // it may be partly offscreen. The controller knows where the container
+    // needs to be.
+    top =
+        delegate().GetImmersiveModeController()->GetTopContainerVerticalOffset(
+            gfx::Size(params.visual_client_area.width(), height));
+  }
+
   // These are the bounds for the top container.
-  return gfx::Rect(params.visual_client_area.x(), params.visual_client_area.y(),
-                   params.visual_client_area.width(),
-                   y - params.visual_client_area.y());
+  return gfx::Rect(params.visual_client_area.x(), top,
+                   params.visual_client_area.width(), height);
 }
 
 // Dialog positioning.
