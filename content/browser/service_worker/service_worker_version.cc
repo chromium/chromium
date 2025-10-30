@@ -2183,17 +2183,22 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
   // Check for policy overrides on LNA. For service workers, we apply
   // policy overrides based on the storage key's origin (which should be the
   // same as the scope's origin).
-  BrowserContext* browser_context = context_->wrapper()->browser_context();
-  // Check that the browser context is not nullptr.  It becomes nullptr
-  // when the service worker process manager is being shutdown.
-  if (browser_context) {
-    ContentBrowserClient* client = GetContentClient()->browser();
-    url::Origin origin = key_.origin();
-    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
-        client->ShouldOverridePrivateNetworkRequestPolicy(browser_context,
-                                                          origin);
-    private_network_request_policy = OverrideLocalNetworkAccessPolicy(
-        private_network_request_policy, policy_override);
+  //
+  // A worker that is shutting down may not get the overrides, but the worker is
+  // shutting down so that shouldn't matter too much.
+  if (context_) {
+    BrowserContext* browser_context = context_->wrapper()->browser_context();
+    // Check that the browser context is not nullptr.  It becomes nullptr
+    // when the service worker process manager is being shutdown.
+    if (browser_context) {
+      ContentBrowserClient* client = GetContentClient()->browser();
+      url::Origin origin = key_.origin();
+      ContentBrowserClient::PrivateNetworkRequestPolicyOverride
+          policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
+              browser_context, origin);
+      private_network_request_policy = OverrideLocalNetworkAccessPolicy(
+          private_network_request_policy, policy_override);
+    }
   }
 
   // TODO(crbug.com/395895368): try replacing the below with
