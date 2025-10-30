@@ -150,7 +150,7 @@ class GlicWindowController {
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {
     return base::FeatureList::IsEnabled(features::kGlicDetached) &&
-           !base::FeatureList::IsEnabled(features::kGlicMultiInstance);
+           !GlicEnabling::IsMultiInstanceEnabledByFlags();
   }
 
   // Same as GlicInstance::AddStateObserver, but applies globally, provides

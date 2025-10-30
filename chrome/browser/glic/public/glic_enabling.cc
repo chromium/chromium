@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -184,6 +185,25 @@ void GlicEnabling::OnGlicSettingsPolicyChanged() {
 
 bool GlicEnabling::IsUnifiedFreEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kGlicUnifiedFreScreen);
+}
+
+bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
+  const bool multi_instance_enabled =
+      base::FeatureList::IsEnabled(features::kGlicMultiInstance);
+  const bool multi_tab_enabled =
+      base::FeatureList::IsEnabled(mojom::features::kGlicMultiTab);
+  const bool tab_underlines_enabled =
+      base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines);
+
+  if (multi_instance_enabled &&
+      !(multi_tab_enabled && tab_underlines_enabled)) {
+    LOG(ERROR)
+        << "GlicMultiInstance is enabled without kGlicMultiTab and/or "
+           "kGlicMultitabUnderlines. All of these features must be enabled to "
+           "ensure proper behavior.";
+  }
+
+  return multi_instance_enabled && multi_tab_enabled && tab_underlines_enabled;
 }
 
 GlicEnabling::GlicEnabling(Profile* profile,

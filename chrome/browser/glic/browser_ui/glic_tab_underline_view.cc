@@ -76,7 +76,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
     auto* glic_service = GetGlicKeyedService();
     GlicSharingManager& sharing_manager = glic_service->sharing_manager();
 
-    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       // Subscribe to changes in the focused tab.
       focus_change_subscription_ =
           sharing_manager.AddFocusedTabChangedCallback(base::BindRepeating(
@@ -108,7 +108,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   UnderlineViewUpdater(const UnderlineViewUpdater&) = delete;
   UnderlineViewUpdater& operator=(const UnderlineViewUpdater&) = delete;
   ~UnderlineViewUpdater() override {
-    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       GetGlicKeyedService()
           ->GetSingleInstanceWindowController()
           .RemoveStateObserver(this);
@@ -311,7 +311,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
         // Underline should be hidden, with exception to pinned tabs while the
         // glic panel remains open.
         if (IsUnderlineTabPinned() &&
-            (base::FeatureList::IsEnabled(features::kGlicMultiInstance) ||
+            (GlicEnabling::IsMultiInstanceEnabledByFlags() ||
              IsGlicWindowShowing())) {
           break;
         }
@@ -361,7 +361,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
         }
         break;
       case UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet:
-        if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+        if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
           ShowAndAnimateUnderline();
         } else {
           // If `underline_view_` is not visible, then this tab was just added
@@ -433,7 +433,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
     }
     // For multi-instance, we rely on the umbrella sharing manager behavior to
     // determine when to show or not show underlines via the pinned tabs api.
-    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       // Pinned underlines should never be visible if the glic window is closed.
       if (!IsGlicWindowShowing()) {
         return;

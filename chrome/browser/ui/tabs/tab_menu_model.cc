@@ -284,7 +284,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   const bool display_share_with_glic =
       base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab) &&
       glic::GlicEnabling::IsReadyForProfile(tab_strip->profile()) &&
-      !base::FeatureList::IsEnabled(features::kGlicMultiInstance);
+      !glic::GlicEnabling::IsMultiInstanceEnabledByFlags();
 #else
   const bool display_share_with_glic = false;
 #endif

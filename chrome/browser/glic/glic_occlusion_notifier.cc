@@ -27,7 +27,7 @@ void GlicOcclusionNotifier::PanelStateChanged(
     const GlicWindowController::PanelStateContext& context) {
   // Under GlicMultiInstance, occlusion tracking is managed through
   // GlicFloatingUi.
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     return;
   }
 

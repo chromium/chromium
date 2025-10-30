@@ -48,7 +48,7 @@ GlicFocusedBrowserManager::GlicFocusedBrowserManager(
     Profile* profile)
     : window_controller_(*window_controller), profile_(profile) {
   BrowserList::GetInstance()->AddObserver(this);
-  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     GlicWindowControllerImpl* window_controller_impl =
         static_cast<GlicWindowControllerImpl*>(window_controller);
     window_activation_subscription_ =

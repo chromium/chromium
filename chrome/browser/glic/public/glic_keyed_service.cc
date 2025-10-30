@@ -97,7 +97,7 @@ base::TimeDelta GetWarmingDelay() {
 }
 
 bool UseDefaultWindowController() {
-  return !base::FeatureList::IsEnabled(features::kGlicMultiInstance);
+  return !GlicEnabling::IsMultiInstanceEnabledByFlags();
 }
 
 std::unique_ptr<GlicWindowController> CreateWindowController(
@@ -224,7 +224,7 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     window_controller().Shutdown();
     fre_controller_->Shutdown();
   } else {
@@ -286,7 +286,7 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
 }
 
 void GlicKeyedService::CloseAndShutdown() {
-  CHECK(!base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+  CHECK(!GlicEnabling::IsMultiInstanceEnabledByFlags());
   window_controller().Shutdown();
   host_manager().Shutdown();
   fre_controller_->Shutdown();
@@ -628,7 +628,7 @@ void GlicKeyedService::OnMemoryPressure(base::MemoryPressureLevel level) {
       (this == GlicProfileManager::GetInstance()->GetLastActiveGlic())) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     CloseAndShutdown();
   }
   // TODO(crbug.com/453747043): Handle Multi Instance.
