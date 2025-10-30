@@ -1045,8 +1045,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
             "Scanning.DiscoverySession.Result", session.response.result(),
             static_cast<lorgnette::OperationResult>(
                 lorgnette::OperationResult_ARRAYSIZE));
-        base::UmaHistogramMediumTimes("Scanning.DiscoverySession.MaxInterval",
-                                      session.max_event_interval);
         DCHECK(session.session_end_callback);
         std::move(*session.session_end_callback)
             .Run(std::move(session.response));
