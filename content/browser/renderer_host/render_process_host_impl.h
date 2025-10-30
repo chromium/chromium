@@ -286,8 +286,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool HasPriorityOverride() override;
   void ClearPriorityOverride() override;
 #endif
-  void GraduateSpareToNormalRendererPriority() override;
 #if BUILDFLAG(IS_ANDROID)
+  void GraduateSpareToNormalRendererPriority() override;
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
   void DumpProcessStack() override;
@@ -1640,6 +1640,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Maximum number of outermost main frames this process hosted concurrently.
   size_t max_outermost_main_frames_ = 0;
 
+#if BUILDFLAG(IS_ANDROID)
   // Whether to consider the process as a spare renderer when
   // calculating the priority.
   // The attribute starts out as false and is set to true if this renderer
@@ -1649,6 +1650,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // will be set to false when the process is taken from the
   // SpareRenderProcessHostManager.
   bool has_spare_renderer_priority_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Tracing track used to emit async event related to lifecycle.
   perfetto::NamedTrack tracing_track_;

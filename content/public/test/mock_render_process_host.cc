@@ -374,9 +374,9 @@ bool MockRenderProcessHost::HasPriorityOverride() {
 void MockRenderProcessHost::ClearPriorityOverride() {}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
 void MockRenderProcessHost::GraduateSpareToNormalRendererPriority() {}
 
-#if BUILDFLAG(IS_ANDROID)
 ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
   NOTIMPLEMENTED();
   return ChildProcessImportance::NORMAL;

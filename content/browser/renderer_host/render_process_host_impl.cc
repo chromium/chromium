@@ -1614,13 +1614,10 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 true /* boost_for_pending_views */,
                 false /*boost_for_loading*/,
                 false /* boost_for_discard */,
-                is_spare_renderer
 #if BUILDFLAG(IS_ANDROID)
-                ,
+                is_spare_renderer,
                 ChildProcessImportance::NORMAL
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-                ,
+#else
                 std::nullopt
 #endif
                 ),
@@ -1628,7 +1625,9 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       browser_context_(browser_context),
       storage_partition_impl_(storage_partition_impl),
       flags_(flags),
+#if BUILDFLAG(IS_ANDROID)
       has_spare_renderer_priority_(is_spare_renderer),
+#endif
       tracing_track_(
           perfetto::NamedTrack::FromPointer("RenderProcessHostImpl",
                                             this,
@@ -3127,6 +3126,13 @@ bool RenderProcessHostImpl::GetIntersectsViewport() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void RenderProcessHostImpl::GraduateSpareToNormalRendererPriority() {
+  if (has_spare_renderer_priority_) {
+    has_spare_renderer_priority_ = false;
+    UpdateProcessPriority();
+  }
+}
+
 ChildProcessImportance RenderProcessHostImpl::GetEffectiveImportance() {
   return effective_importance_;
 }
@@ -5647,13 +5653,10 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       media_stream_count_ > 0, has_immersive_xr_session_,
       foreground_service_worker_count_ > 0, frame_depth_, intersects_viewport_,
       pending_views_ > 0, /* boost_for_pending_views */
-      boost_for_loading_count_ > 0, is_discarding_, has_spare_renderer_priority_
+      boost_for_loading_count_ > 0, is_discarding_,
 #if BUILDFLAG(IS_ANDROID)
-      ,
-      GetEffectiveImportance()
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-          ,
+      has_spare_renderer_priority_, GetEffectiveImportance()
+#else
       priority_override_
 #endif
   );
@@ -5899,7 +5902,7 @@ bool RenderProcessHostImpl::CanUseWarmUpConnection() {
   // warmed up connection is only created during the start up of the Chrome
   // application and will not be used by the spare renderer. The filter is
   // only added for test purposes.
-  return !has_spare_renderer_priority_;
+  return !HasSpareRendererPriority();
 }
 
 bool RenderProcessHostImpl::HasSpareRendererPriority() {
@@ -6135,13 +6138,6 @@ void RenderProcessHostImpl::GetBoundInterfacesForTesting(
   io_thread_host_impl_->AsyncCall(&IOThreadHostImpl::GetInterfacesForTesting)
       .WithArgs(std::ref(out));
   io_thread_host_impl_->FlushPostedTasksForTesting();  // IN-TEST
-}
-
-void RenderProcessHostImpl::GraduateSpareToNormalRendererPriority() {
-  if (has_spare_renderer_priority_) {
-    has_spare_renderer_priority_ = false;
-    UpdateProcessPriority();
-  }
 }
 
 bool RenderProcessHostImpl::IsOnlyHostingPrerenderedFramesOrEmpty() {

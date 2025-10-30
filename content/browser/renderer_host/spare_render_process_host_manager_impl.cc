@@ -704,12 +704,14 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kProcessLimit);
   }
 
+#if BUILDFLAG(IS_ANDROID)
   // SetHasSpareRendererPriority(false) will cause the priority to drop until
   // further updates are made. For navigation requests we will keep the priority
   // until the RenderFrameHostImpl constructor sets the priority.
   if (returned_process && !allocation_context.IsForNavigation()) {
     returned_process->GraduateSpareToNormalRendererPriority();
   }
+#endif
 
   return returned_process;
 }

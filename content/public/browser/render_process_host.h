@@ -389,6 +389,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   virtual void ClearPriorityOverride() = 0;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
   // Sets whether to consider the process as a spare renderer when
   // calculating the priority. Note that this is not exactly the same
   // as IsSpare(). The value will be kept true after the spare renderer
@@ -398,7 +399,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // and should not be called outside of content/.
   virtual void GraduateSpareToNormalRendererPriority() = 0;
 
-#if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.
   virtual ChildProcessImportance GetEffectiveImportance() = 0;
 

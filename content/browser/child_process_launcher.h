@@ -96,13 +96,10 @@ struct RenderProcessPriority {
                         bool boost_for_pending_views,
                         bool boost_for_loading,
                         bool boost_for_discard,
-                        bool is_spare_renderer
 #if BUILDFLAG(IS_ANDROID)
-                        ,
+                        bool is_spare_renderer,
                         ChildProcessImportance importance
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-                        ,
+#else
                         std::optional<base::Process::Priority> priority_override
 #endif
   );
@@ -172,12 +169,12 @@ struct RenderProcessPriority {
   // discard logic.
   bool boost_for_discard;
 
+#if BUILDFLAG(IS_ANDROID)
   // |is_spare_renderer| is true if this process should be treated as a spare
   // renderer. The process will be given a moderate priority even it is not
   // visible and used.
   bool is_spare_renderer;
 
-#if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance importance;
 #endif
 
