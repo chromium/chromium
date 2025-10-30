@@ -8089,25 +8089,6 @@
             ]
         }
     ],
-    "DbdRevampDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DbdRevampDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "DecommitPooledPages": [
         {
             "platforms": [

@@ -488,6 +488,8 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
 };
 
 TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(browsing_data::features::kDbdRevampDesktop);
   // This test assumes that the strings are served exactly as defined, i.e. that
   // the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
