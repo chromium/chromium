@@ -4,6 +4,8 @@
 
 #include "components/viz/common/quads/aggregated_render_pass.h"
 
+#include <unordered_map>
+
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -218,7 +220,9 @@ bool AggregatedRenderPass::HasCapture() const {
 
 void AggregatedRenderPass::AsValueInto(
     base::trace_event::TracedValue* value) const {
-  RenderPassInternal::AsValueInto(value);
+  // TODO(zmo): Improve this mapping for AggregatedFrame.
+  std::unordered_map<ResourceId, size_t> resource_id_to_index_map;
+  RenderPassInternal::AsValueInto(value, resource_id_to_index_map);
 
   value->SetInteger("content_color_usage",
                     base::to_underlying(content_color_usage));

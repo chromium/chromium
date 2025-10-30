@@ -122,12 +122,6 @@ void CompositorFrameMetadata::AsValueInto(
   // Ignore trees_in_viz_timing_details because it's for metrics only.
 }
 
-std::string CompositorFrameMetadata::ToString() const {
-  base::trace_event::TracedValueJSON value;
-  AsValueInto(&value);
-  return value.ToFormattedJSON();
-}
-
 CompositorFrameMetadata::CompositorFrameMetadata(
     const CompositorFrameMetadata& other)
     : device_scale_factor(other.device_scale_factor),

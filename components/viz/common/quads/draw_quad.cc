@@ -43,10 +43,19 @@ void DrawQuad::SetAll(const SharedQuadState* quad_state,
 
 DrawQuad::~DrawQuad() = default;
 
-void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
+void DrawQuad::AsValueInto(
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<const SharedQuadState*, size_t>&
+        sqs_pointer_to_index_map,
+    const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map)
+    const {
   value->SetInteger("material", static_cast<int>(material));
-  TracedValue::SetIDRef(TracedValue::Id(shared_quad_state), value,
-                        "shared_state");
+
+  value->BeginDictionary("shared_quad_state");
+  auto it = sqs_pointer_to_index_map.find(shared_quad_state);
+  DCHECK(it != sqs_pointer_to_index_map.end());
+  value->SetInteger("index", it->second);
+  value->EndDictionary();
 
   cc::MathUtil::AddToTracedValue("content_space_rect", rect, value);
 
@@ -74,7 +83,22 @@ void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
 
   value->SetBoolean("needs_blending", needs_blending);
   value->SetBoolean("should_draw_with_blending", ShouldDrawWithBlending());
-  ExtendValue(value);
+  ExtendValue(value, resource_id_to_index_map);
+}
+
+int DrawQuad::ResourceIdIndex(
+    const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map,
+    ResourceId id) const {
+  if (!resource_id_to_index_map.size()) {
+    // Not all code paths set up |resource_id_to_index_map|. In such cases,
+    // just log the original resource id.
+    return static_cast<int>(id.GetUnsafeValue());
+  }
+  auto it = resource_id_to_index_map.find(id);
+  if (it == resource_id_to_index_map.end()) {
+    return -1;
+  }
+  return static_cast<int>(it->second);
 }
 
 }  // namespace viz

@@ -7,12 +7,13 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/render_pass_draw_quad_internal.h"
 #include "components/viz/common/viz_common_export.h"
-
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -60,7 +61,9 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
   static const CompositorRenderPassDrawQuad* MaterialCast(const DrawQuad*);
 
  private:
-  void ExtendValue(base::trace_event::TracedValue* value) const override;
+  void ExtendValue(base::trace_event::TracedValue* value,
+                   const std::unordered_map<ResourceId, size_t>&
+                       resource_id_to_index_map) const override;
 };
 
 }  // namespace viz

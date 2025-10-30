@@ -42,7 +42,8 @@ const VideoHoleDrawQuad* VideoHoleDrawQuad::MaterialCast(const DrawQuad* quad) {
 }
 
 void VideoHoleDrawQuad::ExtendValue(
-    base::trace_event::TracedValue* value) const {
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>&) const {
   value->SetString("overlay_plane_id", overlay_plane_id.ToString());
 }
 

@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "cc/paint/filter_operations.h"
@@ -111,7 +112,9 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
       out->push_back(source->DeepCopy());
   }
 
-  void AsValueInto(base::trace_event::TracedValue* value) const;
+  void AsValueInto(base::trace_event::TracedValue* value,
+                   const std::unordered_map<ResourceId, size_t>&
+                       resource_id_to_index_map) const;
 
  protected:
   RenderPassInternal();

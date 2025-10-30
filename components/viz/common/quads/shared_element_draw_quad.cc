@@ -47,7 +47,8 @@ const SharedElementDrawQuad* SharedElementDrawQuad::MaterialCast(
 }
 
 void SharedElementDrawQuad::ExtendValue(
-    base::trace_event::TracedValue* value) const {
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>&) const {
   value->SetString("view_transition_element_resource_id",
                    element_resource_id.ToString());
 }

@@ -34,8 +34,7 @@ class VIZ_COMMON_EXPORT TransitionUtils {
 
   // If |full_data| is false, only essential information are included.
   static std::string CompositorFrameToString(
-      const CompositorFrame& render_passes,
-      bool full_data);
+      const CompositorFrame& render_passes);
 };
 
 }  // namespace viz

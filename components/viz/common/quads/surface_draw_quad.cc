@@ -56,7 +56,9 @@ const SurfaceDrawQuad* SurfaceDrawQuad::MaterialCast(const DrawQuad* quad) {
   return static_cast<const SurfaceDrawQuad*>(quad);
 }
 
-void SurfaceDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
+void SurfaceDrawQuad::ExtendValue(
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>&) const {
   value->SetString("surface_range", surface_range.ToString());
 }
 

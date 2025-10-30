@@ -5,6 +5,7 @@
 #include "cc/trees/frame_data.h"
 
 #include <string>
+#include <unordered_map>
 
 #include "base/trace_event/traced_value.h"
 #include "base/trace_event/typed_macros.h"
@@ -41,10 +42,12 @@ void FrameData::AsValueInto(base::trace_event::TracedValue* value) const {
                                        &quads_enabled);
   }
   if (quads_enabled) {
+    // TODO(zmo): Improve this mapping for FrameData.
+    std::unordered_map<viz::ResourceId, size_t> resource_id_to_index_map;
     value->BeginArray("render_passes");
     for (const auto& render_pass : render_passes) {
       value->BeginDictionary();
-      render_pass->AsValueInto(value);
+      render_pass->AsValueInto(value, resource_id_to_index_map);
       value->EndDictionary();
     }
     value->EndArray();

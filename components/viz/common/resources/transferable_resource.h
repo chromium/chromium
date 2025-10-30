@@ -26,6 +26,10 @@
 #include "gpu/vulkan/vulkan_ycbcr_info.h"
 #endif
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace gpu {
 class ClientSharedImage;
 }
@@ -142,6 +146,8 @@ struct VIZ_COMMON_EXPORT TransferableResource {
            synchronization_type == o.synchronization_type &&
            resource_source == o.resource_source;
   }
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // TODO(danakj): Some of these fields are only GL, some are only Software,
   // some are both but used for different purposes (like the mailbox name).

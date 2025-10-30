@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -84,7 +85,7 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("transform", quad_to_target_transform, value);
-  cc::MathUtil::AddToTracedValue("layer_content_rect", quad_layer_rect, value);
+  cc::MathUtil::AddToTracedValue("quad_layer_rect", quad_layer_rect, value);
   cc::MathUtil::AddToTracedValue("visible_quad_layer_rect",
                                  visible_quad_layer_rect, value);
   value->SetString("mask_filter_info", mask_filter_info.ToString());
@@ -97,15 +98,13 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
   value->SetInteger("sorting_context_id", sorting_context_id);
   value->SetInteger("layer_id", layer_id);
-  value->SetInteger("layer_namespace_id", layer_id);
+  value->SetString("layer_namespace_id",
+                   base::StringPrintf("%u,%u", layer_namespace_id.first,
+                                      layer_namespace_id.second));
   value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
   if (offset_tag) {
     value->SetString("offset_tag", offset_tag.ToString());
   }
-
-  TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
-      TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
-      TracedValue::Id(this));
 }
 
 }  // namespace viz

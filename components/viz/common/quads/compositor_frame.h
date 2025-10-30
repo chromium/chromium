@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -13,6 +14,10 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/viz_common_export.h"
+
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
 
 namespace viz {
 
@@ -43,6 +48,9 @@ class VIZ_COMMON_EXPORT CompositorFrame {
   }
 
   bool HasCopyOutputRequests() const;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+  std::string ToString() const;
 
   CompositorFrameMetadata metadata;
   std::vector<TransferableResource> resource_list;

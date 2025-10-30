@@ -83,8 +83,11 @@ const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
   return static_cast<const TextureDrawQuad*>(quad);
 }
 
-void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
-  value->SetInteger("resource_id", resource_id.GetUnsafeValue());
+void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value,
+                                  const std::unordered_map<ResourceId, size_t>&
+                                      resource_id_to_index_map) const {
+  value->SetInteger("resource_id",
+                    ResourceIdIndex(resource_id_to_index_map, resource_id));
 
   cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);
   cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);

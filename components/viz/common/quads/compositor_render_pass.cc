@@ -120,8 +120,10 @@ void CompositorRenderPass::SetAll(
 }
 
 void CompositorRenderPass::AsValueInto(
-    base::trace_event::TracedValue* value) const {
-  RenderPassInternal::AsValueInto(value);
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map)
+    const {
+  RenderPassInternal::AsValueInto(value, resource_id_to_index_map);
 
   value->SetString("id", base::NumberToString(id.GetUnsafeValue()));
 
@@ -138,12 +140,6 @@ void CompositorRenderPass::AsValueInto(
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "CompositorRenderPass",
       TracedValue::Id(reinterpret_cast<void*>(id.value())));
-}
-
-std::string CompositorRenderPass::ToString() const {
-  base::trace_event::TracedValueJSON value;
-  AsValueInto(&value);
-  return value.ToFormattedJSON();
 }
 
 CompositorRenderPassDrawQuad*

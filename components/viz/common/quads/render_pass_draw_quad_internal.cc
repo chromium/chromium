@@ -20,8 +20,11 @@ RenderPassDrawQuadInternal::RenderPassDrawQuadInternal(
 RenderPassDrawQuadInternal::~RenderPassDrawQuadInternal() = default;
 
 void RenderPassDrawQuadInternal::ExtendValue(
-    base::trace_event::TracedValue* value) const {
-  value->SetInteger("mask_resource_id", resource_id.GetUnsafeValue());
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map)
+    const {
+  value->SetInteger("mask_resource_id",
+                    ResourceIdIndex(resource_id_to_index_map, resource_id));
   cc::MathUtil::AddToTracedValue("mask_texture_size", mask_texture_size, value);
   cc::MathUtil::AddToTracedValue("mask_uv_rect", mask_uv_rect, value);
   cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect, value);

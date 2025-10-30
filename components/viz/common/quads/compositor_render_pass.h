@@ -9,7 +9,7 @@
 
 #include <memory>
 #include <optional>
-#include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -83,8 +83,9 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               bool generate_mipmap,
               bool per_quad_damage);
 
-  void AsValueInto(base::trace_event::TracedValue* dict) const;
-  std::string ToString() const;
+  void AsValueInto(base::trace_event::TracedValue* dict,
+                   const std::unordered_map<ResourceId, size_t>&
+                       resource_id_to_index_map) const;
 
   template <typename DrawQuadType>
   DrawQuadType* CreateAndAppendDrawQuad() {

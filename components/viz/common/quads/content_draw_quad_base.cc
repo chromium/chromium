@@ -45,7 +45,8 @@ void ContentDrawQuadBase::SetAll(const SharedQuadState* shared_quad_state,
 }
 
 void ContentDrawQuadBase::ExtendValue(
-    base::trace_event::TracedValue* value) const {
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>&) const {
   cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect, value);
 
   value->SetBoolean("nearest_neighbor", nearest_neighbor);

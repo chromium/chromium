@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
 #include "base/unguessable_token.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
@@ -44,7 +46,9 @@ class VIZ_COMMON_EXPORT VideoHoleDrawQuad : public DrawQuad {
   base::UnguessableToken overlay_plane_id;
 
  private:
-  void ExtendValue(base::trace_event::TracedValue* value) const override;
+  void ExtendValue(
+      base::trace_event::TracedValue* value,
+      const std::unordered_map<ResourceId, size_t>&) const override;
 };
 
 }  // namespace viz

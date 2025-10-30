@@ -5,6 +5,9 @@
 #include "components/viz/common/resources/transferable_resource.h"
 
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
+#include "base/values.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -65,6 +68,12 @@ std::vector<ReturnedResource> TransferableResource::ReturnResources(
   for (const auto& r : input)
     out.push_back(r.ToReturnedResource());
   return out;
+}
+
+void TransferableResource::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  // TODO(zmo): Include all fields.
+  value->SetString("memory_buffer_id", memory_buffer_id_.ToDebugString());
 }
 
 }  // namespace viz

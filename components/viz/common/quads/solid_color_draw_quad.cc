@@ -49,7 +49,8 @@ const SolidColorDrawQuad* SolidColorDrawQuad::MaterialCast(
 }
 
 void SolidColorDrawQuad::ExtendValue(
-    base::trace_event::TracedValue* value) const {
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>&) const {
   value->SetString("color", color_utils::SkColor4fToRgbaString(color));
   value->SetBoolean("force_anti_aliasing_off", force_anti_aliasing_off);
 }

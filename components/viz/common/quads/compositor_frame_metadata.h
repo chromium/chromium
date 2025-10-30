@@ -10,7 +10,6 @@
 #include <limits>
 #include <memory>
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -94,7 +93,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   CompositorFrameMetadata Clone() const;
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
-  std::string ToString() const;
 
   // The device scale factor used to generate this compositor frame. Must be
   // greater than zero.

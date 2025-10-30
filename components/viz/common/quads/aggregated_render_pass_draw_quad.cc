@@ -122,13 +122,15 @@ const AggregatedRenderPassDrawQuad* AggregatedRenderPassDrawQuad::MaterialCast(
 }
 
 void AggregatedRenderPassDrawQuad::ExtendValue(
-    base::trace_event::TracedValue* value) const {
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map)
+    const {
   // render_pass_id.value() is a 64-bit uint even on 32-bit architectures, so
   // using reinterpret_cast for the intentional conversion to a TracedValue::Id.
   TracedValue::SetIDRef(
       TracedValue::Id(reinterpret_cast<void*>(render_pass_id.value())), value,
       "render_pass_id");
-  RenderPassDrawQuadInternal::ExtendValue(value);
+  RenderPassDrawQuadInternal::ExtendValue(value, resource_id_to_index_map);
 }
 
 }  // namespace viz
