@@ -1,7 +1,6 @@
 // META: title=Language Model Clone
 // META: script=/resources/testdriver.js
-// META: script=/resources/testdriver-vendor.js
-// META: script=resources/utils.js
+// META: script=../resources/util.js
 // META: timeout=long
 
 'use strict';
@@ -11,8 +10,8 @@ promise_test(async () => {
 
   // Start a new session and test it.
   const session = await createLanguageModel();
-  let result = await testSession(session);
-  assert_true(result.success, result.error);
+  const result = await session.prompt(kTestPrompt);
+  assert_equals(typeof result, 'string');
 
   // Clone a session and test it.
   const cloned_session = await session.clone();
@@ -32,6 +31,7 @@ promise_test(async () => {
     cloned_session.temperature, session.temperature,
     'cloned session should have the same temperature as the original session.'
   );
-  result = await testSession(cloned_session);
-  assert_true(result.success, result.error);
+
+  const clone_result = await cloned_session.prompt(kTestPrompt);
+  assert_equals(typeof clone_result, 'string');
 });

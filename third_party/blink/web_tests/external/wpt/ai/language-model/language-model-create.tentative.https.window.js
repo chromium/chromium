@@ -1,7 +1,6 @@
 // META: title=Language Model Create
 // META: script=/resources/testdriver.js
-// META: script=/resources/testdriver-vendor.js
-// META: script=resources/utils.js
+// META: script=../resources/util.js
 // META: timeout=long
 
 'use strict';
@@ -12,8 +11,22 @@ promise_test(async t => {
 
 promise_test(async t => {
   let session = await createLanguageModel();
-  assert_true(!!session);
-}, 'Create with no options');
+  assert_true(session instanceof LanguageModel);
+
+  assert_equals(typeof session.prompt, 'function');
+  assert_equals(typeof session.promptStreaming, 'function');
+  assert_equals(typeof session.append, 'function');
+  assert_equals(typeof session.measureInputUsage, 'function');
+  assert_equals(typeof session.clone, 'function');
+  assert_equals(typeof session.destroy, 'function');
+
+  assert_equals(typeof session.inputUsage, 'number');
+  assert_equals(typeof session.inputQuota, 'number');
+  assert_equals(typeof session.topK, 'number');
+  assert_equals(typeof session.temperature, 'number');
+
+  assert_equals(typeof session.onquotaoverflow, 'object');
+}, 'LanguageModel.create() returns a valid object with default options');
 
 promise_test(async t => {
   await testMonitor(createLanguageModel);

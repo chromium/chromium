@@ -1,16 +1,15 @@
 // META: title=Language Model Prompt Multimodal
 // META: script=/resources/testdriver.js
-// META: script=/resources/testdriver-vendor.js
-// META: script=resources/utils.js
+// META: script=../resources/util.js
 // META: timeout=long
 
 'use strict';
 
 const kPrompt = 'describe this';
-const kValidImagePath = 'resources/media/apple.jpg';
-const kValidAudioPath = 'resources/media/speech.mp3';
-const kValidSVGImagePath = 'resources/media/wikipedia-logo.svg';
-const kValidVideoPath = 'resources/media/video.webm';
+const kValidImagePath = '/images/computer.jpg';
+const kValidAudioPath = '/media/speech.wav';
+const kValidSVGImagePath = '/images/pattern.svg';
+const kValidVideoPath = '/media/test.webm';
 
 const kImageOptions = {expectedInputs: [{type: 'image'}]};
 const kAudioOptions = {expectedInputs: [{type: 'audio'}]};

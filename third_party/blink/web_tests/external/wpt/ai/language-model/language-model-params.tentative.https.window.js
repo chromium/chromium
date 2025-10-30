@@ -1,5 +1,6 @@
 // META: title=Language Model Params
-// META: script=resources/utils.js
+// META: script=/resources/testdriver.js
+// META: script=../resources/util.js
 // META: timeout=long
 
 'use strict';
