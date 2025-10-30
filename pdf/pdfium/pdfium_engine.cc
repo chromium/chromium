@@ -52,7 +52,6 @@
 #include "pdf/loader/url_loader.h"
 #include "pdf/loader/url_loader_wrapper_impl.h"
 #include "pdf/page_character_index.h"
-#include "pdf/pdf_accessibility_constants.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_transform.h"
