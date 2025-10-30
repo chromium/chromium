@@ -48,6 +48,10 @@ public class SettingsSearchCoordinator {
     private @Nullable Runnable mSearchRunnable;
     private @Nullable Fragment mEmptyFragment;
 
+    // Whether the back action handler for MultiColumnSettings was set. This is set lazily when
+    // search UI gets focus for the first time.
+    private boolean mMultiColumnSettingsBackActionHandlerSet;
+
     // States for search operation. These states are managed to go back and forth between viewing
     // the search results and browsing result fragments. We perform some UI tasks such as
     // initializing search widget UI, creating/restoring fragments as the state changes.
@@ -106,7 +110,6 @@ public class SettingsSearchCoordinator {
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_box, searchBoxParent, true);
         LayoutInflater.from(mActivity).inflate(R.layout.settings_search_query, actionBar, true);
         View searchBox = mActivity.findViewById(R.id.search_box);
-        View queryContainer = mActivity.findViewById(R.id.search_query_container);
         if (mUseMultiColumn) {
             // Adjust the view width after the Fragment layout is completed.
             mHandler.post(this::updateDetailPanelWidth);
@@ -114,22 +117,7 @@ public class SettingsSearchCoordinator {
 
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
         setUpQueryEdit(queryEdit);
-        searchBox.setOnClickListener(
-                v -> {
-                    searchBox.setVisibility(View.GONE);
-                    queryContainer.setVisibility(View.VISIBLE);
-                    if (!mUseMultiColumn) {
-                        assumeNonNull(mActivity.getSupportActionBar())
-                                .setDisplayHomeAsUpEnabled(false);
-                    }
-                    queryEdit.requestFocus();
-                    queryEdit.setText("");
-                    KeyboardUtils.showKeyboard(queryEdit);
-                    mQueryEntered = false;
-                    clearFragment(/* addToBackStack= */ true);
-                    mFragmentState = FS_SEARCH;
-                    mBackActionCallback.setEnabled(true);
-                });
+        searchBox.setOnClickListener(v -> enterSearchState());
         View backToSettings = mActivity.findViewById(R.id.back_arrow_icon);
         backToSettings.setOnClickListener(v -> handleBackAction());
         mBackActionCallback =
@@ -144,39 +132,61 @@ public class SettingsSearchCoordinator {
     }
 
     private void handleBackAction() {
-        FragmentManager fragmentManager = getSettingsFragmentManager();
-        int stackCount = fragmentManager.getBackStackEntryCount();
         if (mFragmentState == FS_SETTINGS) {
-            // Viewing settings. Delegate the action to the activity back action handler.
-            if (stackCount == 0) {
-                mBackActionCallback.setEnabled(false);
-                mEmptyFragment = null;
-                mActivity.onBackPressed();
-            } else {
-                fragmentManager.popBackStack();
-            }
+            // Do nothing. Let the default back action handler take care of it.
         } else if (mFragmentState == FS_SEARCH) {
-            // Back button in search state. Restore the settings fragment and search UI.
-            mFragmentState = FS_SETTINGS;
-            View searchBox = mActivity.findViewById(R.id.search_box);
-            View queryContainer = mActivity.findViewById(R.id.search_query_container);
-            queryContainer.setVisibility(View.GONE);
-            searchBox.setVisibility(View.VISIBLE);
-            mQueryEntered = false;
-            clearFragment(/* addToBackStack= */ false);
-            if (!mUseMultiColumn) {
-                var actionBar = mActivity.getSupportActionBar();
-                if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-            }
-            EditText queryEdit = mActivity.findViewById(R.id.search_query);
-            KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
-            fragmentManager.popBackStack();
+            exitSearchState();
         } else if (mFragmentState == FS_RESULTS) {
             // TODO(jinsukkim): Handle this state in which user taps one of the search results to
             //    update/navigate through the chosen settings.
         } else {
             assert false : "Unreachable state.";
         }
+    }
+
+    private void enterSearchState() {
+        if (mMultiColumnSettings != null && !mMultiColumnSettingsBackActionHandlerSet) {
+            mActivity
+                    .getOnBackPressedDispatcher()
+                    .addCallback(mMultiColumnSettings, mBackActionCallback);
+            mMultiColumnSettingsBackActionHandlerSet = true;
+        }
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        searchBox.setVisibility(View.GONE);
+        queryContainer.setVisibility(View.VISIBLE);
+        if (!mUseMultiColumn) {
+            assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+        }
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+        queryEdit.requestFocus();
+        queryEdit.setText("");
+        KeyboardUtils.showKeyboard(queryEdit);
+        mQueryEntered = false;
+        clearFragment(/* addToBackStack= */ true);
+        mFragmentState = FS_SEARCH;
+        mBackActionCallback.setEnabled(true);
+    }
+
+    private void exitSearchState() {
+        // Back action in search state. Restore the settings fragment and search UI.
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        queryContainer.setVisibility(View.GONE);
+        searchBox.setVisibility(View.VISIBLE);
+        mQueryEntered = false;
+        if (!mUseMultiColumn) {
+            assumeNonNull(mActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        }
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+        KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
+
+        // Clearing the fragment first before popping the back stack. Otherwise the existing
+        // fragment is visible behind the popped one through the transparent background.
+        clearFragment(/* addToBackStack= */ false);
+        getSettingsFragmentManager().popBackStack();
+        mFragmentState = FS_SETTINGS;
+        mBackActionCallback.setEnabled(false);
     }
 
     private FragmentManager getSettingsFragmentManager() {
