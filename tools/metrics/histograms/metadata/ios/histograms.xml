@@ -5321,7 +5321,7 @@ chromium-metrics-reviews@google.com.
   <owner>tmartino@chromium.org</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using suggestions
-    from the password bottom sheet.
+    from the credential bottom sheet.
   </summary>
 </histogram>
 
@@ -5352,7 +5352,7 @@ chromium-metrics-reviews@google.com.
   <owner>sugoi@chromium.org</owner>
   <owner>tmartino@chromium.org</owner>
   <summary>
-    Tracks the number of times in a row the Password Bottom Sheet had been
+    Tracks the number of times in a row the Credential Bottom Sheet had been
     dismissed at the moment the dismiss count was reset to 0 (between 1 and 3).
 
     Note: this metric was expired from 2024-05 to 2025-05; data may be missing.

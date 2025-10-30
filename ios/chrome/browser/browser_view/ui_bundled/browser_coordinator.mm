@@ -2054,9 +2054,9 @@ const char kChromeAppStoreUrl[] =
   _autoDeletionCoordinator = nil;
 }
 
-#pragma mark - AutofillBottomSheetCommands
+#pragma mark - AutofillCommands
 
-- (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
+- (void)showCredentialBottomSheet:(const autofill::FormActivityParams&)params {
   // Do not present the bottom sheet if it is already being presented.
   if (self.credentialSuggestionBottomSheetCoordinator) {
     return;

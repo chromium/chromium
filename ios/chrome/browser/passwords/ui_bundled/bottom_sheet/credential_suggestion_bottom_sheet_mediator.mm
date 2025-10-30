@@ -579,7 +579,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     int currentDismissCount =
         _prefService->GetInteger(prefs::kIosPasswordBottomSheetDismissCount);
     if (currentDismissCount <
-        AutofillBottomSheetTabHelper::kPasswordBottomSheetMaxDismissCount) {
+        AutofillBottomSheetTabHelper::kCredentialBottomSheetMaxDismissCount) {
       _prefService->SetInteger(prefs::kIosPasswordBottomSheetDismissCount,
                                currentDismissCount + 1);
     }

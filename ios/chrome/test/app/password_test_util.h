@@ -25,7 +25,7 @@ SetUpAndReturnMockReauthenticationModuleForPasswordManager();
 // with a fake one to avoid being blocked with a reauth prompt, and return the
 // fake reauthentication module.
 std::unique_ptr<ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
-SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet();
+SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet();
 
 // Replaces the reauthentication module in Form Input Accessory with
 // a fake one to avoid being blocked with a reauth prompt, and return the fake

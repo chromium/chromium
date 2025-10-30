@@ -191,7 +191,7 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
       registered_password_generation_renderer_ids_[frame_id], renderer_id);
 
   if (is_password_related) {
-    ShowPasswordBottomSheet(params);
+    ShowCredentialBottomSheet(params);
   } else if (is_payments_related) {
     MaybeShowPaymentsBottomSheet(params);
   } else if (is_password_generation_related) {
@@ -199,11 +199,11 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   }
 }
 
-void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
+void AutofillBottomSheetTabHelper::ShowCredentialBottomSheet(
     const autofill::FormActivityParams& params) {
-  // Attempt to show the password suggestions bottom sheet. There is no
+  // Attempt to show the credential suggestions bottom sheet. There is no
   // guarantee that it will be actually shown.
-  [commands_handler_ showPasswordBottomSheet:params];
+  [commands_handler_ showCredentialBottomSheet:params];
   // Detach the listeners right now since they've filled their purpose of
   // attempting to trigger the bottom sheet upon focusing on the login
   // field, making the listeners inoperative from now on. This helps
@@ -281,7 +281,7 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
   if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios)) {
     // In V2, detach the listeners right away to make sure they're always
     // cleaned up to avoid issues with rogue listeners, see the
-    // documentation in ShowPasswordBottomSheet() for more details. Postpone
+    // documentation in ShowCredentialBottomSheet() for more details. Postpone
     // refocus for later once the bottom sheet is dismissed.
     DetachPaymentsListenersForAllFrames(/*refocus=*/false);
   }
@@ -295,7 +295,7 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
 
   // Detach the listeners right away to make sure they're always
   // cleaned up to avoid issues with rogue listeners, see the documentation in
-  // ShowPasswordBottomSheet() for more details. Postpone refocus for
+  // ShowCredentialBottomSheet() for more details. Postpone refocus for
   // later once the bottom sheet is dismissed.
   DetachPasswordGenerationListenersForAllFrames();
 
@@ -316,7 +316,7 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     const std::string& frame_id) {
-  bool silenced = HasReachedPasswordSuggestionDismissLimit();
+  bool silenced = HasReachedCredentialBottomSheetDismissLimit();
 
   base::UmaHistogramBoolean("IOS.PasswordBottomSheet.Activated",
                             /*sample=*/!silenced);
@@ -634,12 +634,13 @@ AutofillBottomSheetTabHelper::GetVirtualCardEnrollmentCallbacks() {
 
 // Private methods
 
-bool AutofillBottomSheetTabHelper::HasReachedPasswordSuggestionDismissLimit() {
+bool AutofillBottomSheetTabHelper::
+    HasReachedCredentialBottomSheetDismissLimit() {
   const PrefService* pref_service =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
   bool dismissLimitReached =
       pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
-      kPasswordBottomSheetMaxDismissCount;
+      kCredentialBottomSheetMaxDismissCount;
   base::UmaHistogramBoolean("IOS.IsEnabled.Password.BottomSheet",
                             !dismissLimitReached);
   return dismissLimitReached;

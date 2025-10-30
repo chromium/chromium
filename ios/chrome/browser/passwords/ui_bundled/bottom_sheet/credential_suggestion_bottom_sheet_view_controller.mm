@@ -82,7 +82,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   // protocol.
   NSArray<FormSuggestion*>* _suggestions;
 
-  // The current's page domain. This is used for the password bottom sheet
+  // The current's page domain. This is used for the credential bottom sheet
   // description label.
   NSString* _domain;
 

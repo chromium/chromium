@@ -138,8 +138,8 @@ void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
 
-// Types `text` on an input field with `fieldID`. Dismisses the password bottom
-// sheet if `dismissBottomSheet` is true.
+// Types `text` on an input field with `fieldID`. Dismisses the credential
+// bottom sheet if `dismissBottomSheet` is true.
 void TypeTextOnField(NSString* text,
                      const std::string& fieldID,
                      bool dismissBottomSheet = false) {
@@ -156,7 +156,7 @@ void TypeUsernameAndPasswordOnUFF(NSString* username,
                                   NSString* password,
                                   bool dismissBottomSheetOnUsername = false) {
   // Type username and dismiss the bottom sheet because it is the first login
-  // field to be focused on, which triggers the password bottom sheet. Once
+  // field to be focused on, which triggers the credential bottom sheet. Once
   // dismissed the bottom sheet isn't shown again when focusing on other login
   // fields, as long as the page isn't reloaded.
   TypeTextOnField(username, "single_un", dismissBottomSheetOnUsername);
@@ -267,7 +267,7 @@ void LoginOnUff() {
     config.features_disabled.push_back(kAutofillBadgeRemoval);
   }
 
-  // The proactive password suggestion bottom sheet isn't tested here, it
+  // The proactive password generation bottom sheet isn't tested here, it
   // is tested in its own suite in password_suggestion_egtest.mm.
   config.features_disabled.push_back(
       password_manager::features::kIOSProactivePasswordGenerationBottomSheet);

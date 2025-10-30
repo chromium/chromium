@@ -378,7 +378,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   // to fields which must trigger a specific behavior. In this case,
   // the username and password fields' renderer ids are sent through
   // "attachListenersForBottomSheet" so that they may trigger the
-  // password bottom sheet on focus events for these specific fields.
+  // credential bottom sheet on focus events for these specific fields.
   std::vector<autofill::FieldRendererId> rendererIds(2);
   rendererIds[0] = formData.username_element_renderer_id;
   rendererIds[1] = formData.password_element_renderer_id;

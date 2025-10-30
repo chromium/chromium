@@ -76,7 +76,7 @@
 }
 - (void)continueCardUnmaskWithCvcAuth {
 }
-- (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params {
+- (void)showCredentialBottomSheet:(const autofill::FormActivityParams&)params {
 }
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
 }

@@ -15,7 +15,7 @@
 #import "ios/chrome/test/app/password_test_util.h"
 
 using chrome_test_util::
-    SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet;
+    SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet;
 
 @implementation CredentialSuggestionBottomSheetAppInterface
 
@@ -25,7 +25,7 @@ static std::unique_ptr<
 
 + (void)setUpMockReauthenticationModule {
   _scopedReauthOverride =
-      SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet();
+      SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet();
 }
 
 + (void)mockReauthenticationModuleExpectedResult:
@@ -49,7 +49,7 @@ static std::unique_ptr<
 + (void)disableBottomSheet {
   chrome_test_util::GetOriginalProfile()->GetPrefs()->SetInteger(
       prefs::kIosPasswordBottomSheetDismissCount,
-      AutofillBottomSheetTabHelper::kPasswordBottomSheetMaxDismissCount);
+      AutofillBottomSheetTabHelper::kCredentialBottomSheetMaxDismissCount);
 }
 
 @end
