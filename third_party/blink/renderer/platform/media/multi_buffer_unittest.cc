@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -279,15 +279,15 @@ TEST_F(MultiBufferTest, ReadAll) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
-    int64_t bytes_read = reader.TryRead(buffer, to_read);
+    int64_t bytes_read = reader.TryRead(base::span(buffer).first(to_read));
     if (bytes_read) {
       EXPECT_EQ(buffer[17], 17);
       for (int64_t i = 0; i < bytes_read; i++) {
         uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-        UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
+        EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
         pos++;
       }
     } else {
@@ -308,17 +308,17 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
     while (AdvanceAll()) {
     }
-    int64_t bytes = reader.TryRead(buffer, to_read);
+    int64_t bytes = reader.TryRead(base::span(buffer).first(to_read));
     EXPECT_GT(bytes, 0);
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
+      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
       pos++;
     }
   }
@@ -339,17 +339,17 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
     while (AdvanceAll()) {
     }
-    int64_t bytes = reader.TryRead(buffer, to_read);
+    int64_t bytes = reader.TryRead(base::span(buffer).first(to_read));
     EXPECT_GT(bytes, 0);
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
+      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
       pos++;
     }
   }
@@ -371,17 +371,17 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer2) {
   reader.SetPinRange(2000, 5000);
   reader.SetPreload(1000, 1000);
   while (pos < end) {
-    unsigned char buffer[27];
+    std::array<uint8_t, 27> buffer;
     buffer[17] = 17;
     size_t to_read = std::min<size_t>(end - pos, 17);
     while (AdvanceAll()) {
     }
-    int64_t bytes = reader.TryRead(buffer, to_read);
+    int64_t bytes = reader.TryRead(base::span(buffer).first(to_read));
     EXPECT_GT(bytes, 0);
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos;
+      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
       pos++;
     }
   }
@@ -518,14 +518,15 @@ class ReadHelper {
   bool Read() {
     if (read_size_ == 0)
       return true;
-    unsigned char buffer[4096];
+    std::array<uint8_t, 4096> buffer;
     CHECK_LE(read_size_, static_cast<int64_t>(sizeof(buffer)));
     CHECK_EQ(pos_, reader_.Tell());
-    int64_t bytes_read = reader_.TryRead(buffer, read_size_);
+    int64_t bytes_read = reader_.TryRead(
+        base::span(buffer).first(base::checked_cast<size_t>(read_size_)));
     if (bytes_read) {
       for (int64_t i = 0; i < bytes_read; i++) {
         unsigned char expected = (pos_ * 15485863) >> 16;
-        UNSAFE_TODO(EXPECT_EQ(expected, buffer[i])) << " pos = " << pos_;
+        EXPECT_EQ(expected, buffer[i]) << " pos = " << pos_;
         pos_++;
       }
       CHECK_EQ(pos_, reader_.Tell());
