@@ -8,3 +8,5 @@ file://ui/webui/PLATFORM_OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+per-file *handoff_button_controller*=michelleabreo@google.com
