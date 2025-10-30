@@ -28,7 +28,7 @@ found in the LICENSE file.
             android:layout_marginLeft="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/signin_promo_title"
@@ -37,7 +37,7 @@ found in the LICENSE file.
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-                android:lineHeight="20sp"
+                android:includeFontPadding="false"
                 tools:text="@string/signin_promo_title"/>
 
             <org.chromium.ui.widget.ChromeImageButton
@@ -80,10 +80,12 @@ found in the LICENSE file.
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="28dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
+                android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                android:lineHeight="20sp"
+                android:lineHeight="16sp"
+                android:includeFontPadding="false"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
                 tools:text="@string/signin_promo_description_recent_tabs" />
         </LinearLayout>
 

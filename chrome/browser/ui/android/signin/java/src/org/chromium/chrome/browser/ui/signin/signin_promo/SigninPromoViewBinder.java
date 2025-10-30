@@ -34,6 +34,7 @@ final class SigninPromoViewBinder {
                     view.getSelectedAccountView().setVisibility(View.GONE);
                 } else {
                     view.getImage().setImageResource(R.drawable.chrome_sync_logo);
+                    // TODO(crbug.com/456378546): move this logic to SigninPromoCoordinator
                     setImageSize(
                             context,
                             view,
@@ -45,7 +46,12 @@ final class SigninPromoViewBinder {
             } else {
                 Drawable accountImage = profileData.getImage();
                 view.getImage().setImageDrawable(accountImage);
-                setImageSize(context, view, R.dimen.sync_promo_account_image_size);
+                // TODO(crbug.com/456378546): move this logic to SigninPromoCoordinator
+                int imageDim =
+                        seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT
+                                ? R.dimen.seamless_signin_promo_account_image_size_compact
+                                : R.dimen.sync_promo_account_image_size;
+                setImageSize(context, view, imageDim);
                 if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
                     TextView accountTextPrimary = view.findViewById(R.id.account_text_primary);
                     TextView accountTextSecondary = view.findViewById(R.id.account_text_secondary);

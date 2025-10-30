@@ -33,8 +33,9 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
-        android:lineHeight="20sp"
+        android:includeFontPadding="false"
         tools:text="@string/signin_promo_title" />
 
       <org.chromium.ui.widget.ChromeImageButton
@@ -62,9 +63,10 @@ found in the LICENSE file.
       android:layout_marginTop="0dp"
       android:layout_marginRight="20dp"
       android:layout_marginBottom="12dp"
-      android:gravity="center_horizontal"
+      android:gravity="center"
       android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-      android:lineHeight="20sp"
+      android:lineHeight="16sp"
+      android:includeFontPadding="false"
       tools:text="@string/signin_promo_description_recent_tabs" />
 
     <LinearLayout
@@ -83,7 +85,7 @@ found in the LICENSE file.
       android:clickable="false">
        <!-- android:clickable="false" is necessary here. See crbug.com/448982483 -->
 
-      <include layout="@layout/account_row" />
+      <include layout="@layout/account_row_compact_layout" />
 
       <ImageView
         android:id="@+id/account_picker_selected_account_expand_icon"
@@ -93,6 +95,7 @@ found in the LICENSE file.
         app:srcCompat="@drawable/ic_expand_more_black_24dp"
         app:tint="?attr/colorOnSurfaceVariant"
         tools:ignore="ContentDescription"/>
+
     </LinearLayout>
 
     <org.chromium.ui.widget.ButtonCompat

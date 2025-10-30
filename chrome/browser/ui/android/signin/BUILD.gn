@@ -155,6 +155,7 @@ android_resources("java_resources") {
     "java/res/layout/account_picker_state_no_account.xml",
     "java/res/layout/account_picker_state_signin_in_progress.xml",
     "java/res/layout/account_row.xml",
+    "java/res/layout/account_row_compact_layout.xml",
     "java/res/layout/batch_upload_dialog_view.xml",
     "java/res/layout/bottom_sheet_signin_history_sync_container.xml",
     "java/res/layout/central_account_card_view.xml",
