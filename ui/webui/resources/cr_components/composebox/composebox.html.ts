@@ -19,9 +19,14 @@ export function getHtml(this: ComposeboxElement) {
                      this.contextFilesSize_ === 0}"
     @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
   </ntp-error-scrim>
+  <div id="dragDropPlaceholder"> Drop your file here </div>
   <div id="composebox" @keydown="${this.onKeydown_}"
-      @focusin="${this.handleComposeboxFocusIn_}"
-      @focusout="${this.handleComposeboxFocusOut_}">
+      @focusin=${this.handleComposeboxFocusIn_}
+      @focusout=${this.handleComposeboxFocusOut_}
+      @dragenter=${this.handleDragEnter_}
+      @dragover=${this.handleDragOver_}
+      @drop=${this.handleDrop_}
+      @dragleave=${this.handleDragLeave_}>
     <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">

@@ -141,6 +141,42 @@
   overflow: hidden;
 }
 
+:host([is-dragging-file_])::before {
+  /*  TODO(crbug.com/454730356): change color and add border */
+  background: linear-gradient(
+    90deg,
+    rgba(255, 240, 230, 0.8),
+    rgba(230, 240, 255, 0.8)
+  ), white;
+  border-radius: var(--expanded-border-radius);
+  content: '';
+  inset: 0;
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+:host([is-dragging-file_]) #composebox * {
+  pointer-events: none;
+}
+
+#dragDropPlaceholder {
+  display: none;
+  position: absolute;
+  top: 21px;
+  left: 20px;
+  pointer-events: none;
+}
+
+:host([realbox-layout-mode='Compact']) #dragDropPlaceholder {
+  top: 16px;
+}
+
+:host([is-dragging-file_]) #dragDropPlaceholder {
+  display: block;
+  z-index: 3;
+}
+
 :host([is-collapsible]) #composebox {
   transition:
     min-height var(--emphasized-curve),
@@ -230,6 +266,11 @@
   padding-inline: 12px var(--text-input-inline-end-spacing);
   scrollbar-width: none;
   width: 100%;
+}
+
+#composebox.is-dragging-file #input {
+  position: relative;
+  z-index: 3;
 }
 
 :host(:not[ntp-realbox-next-enabled]) #input {

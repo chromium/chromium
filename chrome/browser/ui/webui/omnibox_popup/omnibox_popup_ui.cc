@@ -99,6 +99,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      composebox_config.close_by_escape());
   source->AddBoolean("composeboxCloseByClickOutside",
                      composebox_config.close_by_click_outside());
+  source->AddBoolean("dragAndDropEnabled", false);
 
   webui::SetupWebUIDataSource(
       source, kOmniboxPopupResources,

@@ -275,6 +275,10 @@ const base::FeatureParam<int> kContextMenuMaxTabSuggestions(
 
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
 
+const base::FeatureParam<bool> kEnableDragAndDrop(&kNtpComposebox,
+                                                  "EnableDragAndDrop",
+                                                  true);
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
