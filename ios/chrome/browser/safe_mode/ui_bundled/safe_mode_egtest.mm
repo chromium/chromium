@@ -82,8 +82,15 @@ void AssertTryAgainButtonOnPage() {
   AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP"));
   AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE"));
   AssertTryAgainButtonOnPage();
-  AssertMessageOnPage(
-      LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
+  // The crash report might be in the process of sending or already sent, code
+  // below handles both cases.
+  id<GREYMatcher> textMatcher = grey_anyOf(
+      grey_text(LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT")),
+      grey_text(LocalizedString(@"IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT")), nil);
+  id<GREYMatcher> labelMatcher =
+      grey_allOf(textMatcher, grey_kindOfClass([UILabel class]), nil);
+  [[EarlGrey selectElementWithMatcher:labelMatcher]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that Safe Mode screen is displayed with a message that there are
