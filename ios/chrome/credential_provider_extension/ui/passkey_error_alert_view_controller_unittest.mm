@@ -43,7 +43,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
        TestContentWithEnterpriseErrorType) {
   PasskeyErrorAlertViewController* controller =
       CreateController(ErrorType::kEnterpriseDisabledSavingCredentials);
-  [controller loadView];
+  [controller viewDidLoad];
 
   EXPECT_NSEQ(controller.image,
               GetImage(@"cpe_enterprise_icon", /*is_multicolor_symbol=*/NO));
@@ -59,7 +59,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
                                 @"ENTERPRISE_DISABLED_SUBTITLE",
                                 @""));
   EXPECT_NSEQ(
-      controller.primaryActionString,
+      controller.primaryActionButton.titleLabel.text,
       NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
           @""));
@@ -70,7 +70,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
 TEST_F(PasskeyErrorAlertViewControllerTest, TestContentWithSignedOutErrorType) {
   PasskeyErrorAlertViewController* controller =
       CreateController(ErrorType::kSignedOut);
-  [controller loadView];
+  [controller viewDidLoad];
 
   EXPECT_NSEQ(controller.image,
               GetImage(@"multicolor_chrome", /*is_multicolor_symbol=*/YES));
@@ -85,7 +85,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest, TestContentWithSignedOutErrorType) {
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_SIGNED_OUT_USER_SUBTITLE",
                         @""));
   EXPECT_NSEQ(
-      controller.primaryActionString,
+      controller.primaryActionButton.titleLabel.text,
       NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
           @""));
@@ -97,7 +97,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
        TestContentWithPasswordSettingsErrorType) {
   PasskeyErrorAlertViewController* controller = CreateController(
       ErrorType::kUserDisabledSavingCredentialsInPasswordSettings);
-  [controller loadView];
+  [controller viewDidLoad];
 
   EXPECT_NSEQ(controller.image,
               GetImage(@"multicolor_chrome", /*is_multicolor_symbol=*/YES));
@@ -114,7 +114,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
                                 @"USER_DISABLED_IN_PASSWORD_SETTINGS_SUBTITLE",
                                 @""));
   EXPECT_NSEQ(
-      controller.primaryActionString,
+      controller.primaryActionButton.titleLabel.text,
       NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
           @""));
@@ -126,7 +126,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
        TestContentWithAccountSettingsErrorType) {
   PasskeyErrorAlertViewController* controller =
       CreateController(ErrorType::kUserDisabledSavingCredentialsToAccount);
-  [controller loadView];
+  [controller viewDidLoad];
 
   EXPECT_NSEQ(controller.image,
               GetImage(@"multicolor_chrome", /*is_multicolor_symbol=*/YES));
@@ -143,7 +143,7 @@ TEST_F(PasskeyErrorAlertViewControllerTest,
                                 @"USER_DISABLED_FOR_ACCOUNT_SUBTITLE",
                                 @""));
   EXPECT_NSEQ(
-      controller.primaryActionString,
+      controller.primaryActionButton.titleLabel.text,
       NSLocalizedString(
           @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
           @""));

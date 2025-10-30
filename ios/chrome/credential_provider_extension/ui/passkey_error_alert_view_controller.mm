@@ -111,7 +111,12 @@ NSString* GetSubtitleString(ErrorType error_type) {
 }
 
 - (instancetype)initForErrorType:(ErrorType)errorType {
-  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = NSLocalizedString(
+      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
+      @"The primary action title.");
+  self = [super initWithConfiguration:configuration];
   if (self) {
     _errorType = errorType;
   }
@@ -120,7 +125,7 @@ NSString* GetSubtitleString(ErrorType error_type) {
 
 #pragma mark - UIViewController
 
-- (void)loadView {
+- (void)viewDidLoad {
   self.image = GetImage(_errorType);
   self.imageHasFixedSize = YES;
   if (ShouldShowImageAsFavicon(_errorType)) {
@@ -131,11 +136,7 @@ NSString* GetSubtitleString(ErrorType error_type) {
   self.titleString = GetTitleString(_errorType);
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.subtitleString = GetSubtitleString(_errorType);
-  self.primaryActionString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ERROR_ALERT_BUTTON_TITLE",
-      @"The primary action title.");
-
-  [super loadView];
+  [super viewDidLoad];
 }
 
 @end
