@@ -18,6 +18,7 @@
 #import "base/feature_list.h"
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -49,6 +50,16 @@ void ConditionallyAppendPromoToPrefList(promos_manager::Promo promo,
   update->EraseValue(base::Value(promo_name));
 
   update->Append(promo_name);
+}
+
+// Records the promo registration state change to a UMA histogram.
+void RecordRegistrationStateChanges(
+    promos_manager::Promo promo,
+    promos_manager::PromoRegistrationState state) {
+  std::string metric_name =
+      base::StrCat({"IOS.PromosManager.", promos_manager::NameForPromo(promo),
+                    ".RegistrationStateChanged"});
+  base::UmaHistogramEnumeration(metric_name.c_str(), state);
 }
 
 }  // namespace
@@ -87,12 +98,24 @@ void PromosManagerImpl::DeregisterAfterDisplay(promos_manager::Promo promo) {
   // match the same type.
   if (base::Contains(single_display_active_promos_, promo) ||
       base::Contains(single_display_pending_promos_, promo)) {
-    DeregisterPromo(promo);
+    DeregisterPromoInternal(promo);
+    // Record promo deregistration after the promo was displayed.
+    RecordRegistrationStateChanges(promo,
+                                   promos_manager::PromoRegistrationState::
+                                       kDeregistrationAfterPromoDisplay);
   }
 }
 
 void PromosManagerImpl::RegisterPromoForContinuousDisplay(
     promos_manager::Promo promo) {
+  // Log promo registration only if the promo does not already exist in the
+  // queue.
+  if (!base::Contains(active_promos_, promo)) {
+    // Record promo registration.
+    RecordRegistrationStateChanges(
+        promo, promos_manager::PromoRegistrationState::kRegistration);
+  }
+
   ConditionallyAppendPromoToPrefList(
       promo, prefs::kIosPromosManagerActivePromos, pref_service_);
 
@@ -102,6 +125,14 @@ void PromosManagerImpl::RegisterPromoForContinuousDisplay(
 
 void PromosManagerImpl::RegisterPromoForSingleDisplay(
     promos_manager::Promo promo) {
+  // Log promo registration only if the promo does not already exist in the
+  // queue.
+  if (!base::Contains(single_display_active_promos_, promo)) {
+    // Record promo registration.
+    RecordRegistrationStateChanges(
+        promo, promos_manager::PromoRegistrationState::kRegistration);
+  }
+
   ConditionallyAppendPromoToPrefList(
       promo, prefs::kIosPromosManagerSingleDisplayActivePromos, pref_service_);
 
@@ -113,6 +144,14 @@ void PromosManagerImpl::RegisterPromoForSingleDisplay(
     promos_manager::Promo promo,
     base::TimeDelta becomes_active_after_period) {
   DCHECK(pref_service_);
+
+  // Log promo registration only if the promo does not already exist in the
+  // queue.
+  if (!base::Contains(single_display_pending_promos_, promo)) {
+    // Record promo registration.
+    RecordRegistrationStateChanges(
+        promo, promos_manager::PromoRegistrationState::kRegistration);
+  }
 
   // update the pending promos saved in pref.
   ScopedDictPrefUpdate pending_promos_update(
@@ -128,6 +167,20 @@ void PromosManagerImpl::RegisterPromoForSingleDisplay(
 }
 
 void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
+  // If the promo is still registered in any active or pending list, record its
+  // deregistration due to an eligibility change.
+  if (base::Contains(single_display_active_promos_, promo) ||
+      base::Contains(single_display_pending_promos_, promo) ||
+      base::Contains(active_promos_, promo)) {
+    RecordRegistrationStateChanges(promo,
+                                   promos_manager::PromoRegistrationState::
+                                       kDeregistrationBeforePromoDisplay);
+  }
+
+  DeregisterPromoInternal(promo);
+}
+
+void PromosManagerImpl::DeregisterPromoInternal(promos_manager::Promo promo) {
   DCHECK(pref_service_);
 
   ScopedListPrefUpdate active_promos_update(
