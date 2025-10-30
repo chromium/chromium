@@ -87,7 +87,6 @@ source_set("internal") {
     "//components/strings",
     "//components/url_formatter",
     "//components/url_matcher",
-    "//components/user_prefs",
     "//components/version_info",
     "//extensions/buildflags",
     "//net",
