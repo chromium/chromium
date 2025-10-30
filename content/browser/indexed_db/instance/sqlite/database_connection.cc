@@ -1225,7 +1225,6 @@ void DatabaseConnection::RollBackTransaction(
   }
 
   // Abort ongoing blob writes, if any.
-  // TODO(crbug.com/419208485): Be sure to test this case.
   blob_write_callback_.Reset();
   CancelBlobWriting();
 

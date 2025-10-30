@@ -123,6 +123,55 @@ TEST_P(BackingStoreTest, PutBrokenBlob) {
   transaction->Rollback();
 }
 
+// Tests what happens when a transaction is being committed and a blob is being
+// written (asynchronously) when Rollback() is invoked.
+TEST_P(BackingStoreTest, RollbackDuringBlobWrite) {
+  const IndexedDBKey& key = key1_;
+  IndexedDBValue& value = value1_;
+  value.external_objects.emplace_back(
+      CreateBlobInfo(u"text/plain", "contents"));
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                       backing_store()->CreateOrOpenDatabase(u"name"));
+  ASSERT_TRUE(db.get());
+
+  std::unique_ptr<BackingStore::Transaction> transaction =
+      db->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                            blink::mojom::IDBTransactionMode::ReadWrite);
+
+  transaction->Begin(CreateDummyLock());
+  EXPECT_TRUE(transaction->PutRecord(1, key, value.Clone()).has_value());
+
+  bool blob_write_callback_lives = false;
+  EXPECT_TRUE(
+      transaction
+          ->CommitPhaseOne(
+              /*blob_write_callback=*/
+              base::IgnoreArgs<BlobWriteResult,
+                               storage::mojom::WriteBlobToFileResult>(
+                  base::BindOnce(
+                      [](base::AutoReset<bool> auto_reset) {
+                        ADD_FAILURE();
+                        return Status::OK();
+                      },
+                      base::AutoReset(&blob_write_callback_lives, true))),
+              /*serialize_fsa_handle=*/base::DoNothing())
+          .ok());
+  EXPECT_TRUE(blob_write_callback_lives);
+  transaction->Rollback();
+
+  // Make sure the blob write callback was dropped without being called. If
+  // called, it will cause the test to fail with ADD_FAILURE().
+  EXPECT_FALSE(blob_write_callback_lives);
+
+  // Make sure there are no other errors as the backing store potentially
+  // attempts to write blobs in the background. In particular, the LevelDB
+  // store has to explicitly handle the Rollback case to prevent a crash, and
+  // spinning a runloop is necessary to give it a chance to not crash.
+  base::RunLoop().RunUntilIdle();
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_P(BackingStoreTest, Snapshots) {
   auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
   ASSERT_TRUE(db_creation_result.has_value());
