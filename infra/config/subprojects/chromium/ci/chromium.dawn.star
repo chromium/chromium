@@ -24,6 +24,9 @@ ci.defaults.set(
     gardener_rotations = gardener_rotations.DAWN,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     health_spec = health_spec.default(),
     # This property is read by the the dawn_top_of_tree gclient config and must
     # be set for branched builders in order to check out the appropriate branch.

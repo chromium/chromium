@@ -14,6 +14,9 @@ ci.defaults.set(
     builder_group = "chromium.bedrock",
     pool = ci_constants.DEFAULT_POOL,
     builderless = True,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
 )
 

@@ -22,6 +22,9 @@ ci.defaults.set(
     pool = gpu.ci.POOL,
     gardener_rotations = gardener_rotations.ANGLE,
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     health_spec = health_spec.default(),
     properties = {
         "perf_dashboard_machine_group": "ChromiumANGLE",

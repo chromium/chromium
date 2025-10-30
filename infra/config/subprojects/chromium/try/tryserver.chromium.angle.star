@@ -22,6 +22,9 @@ try_.defaults.set(
     ssd = None,
     contact_team_email = "angle-team@google.com",
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     max_concurrent_builds = 5,
     service_account = gpu.try_.SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
