@@ -920,7 +920,10 @@ void LensOverlaySidePanelCoordinator::DidStartNavigation(
   }
 
   // If the search URL should be opened in a new tab, open it here.
-  if (ShouldOpenSearchURLInNewTab(nav_url)) {
+  auto* const profile = lens_search_controller_->GetTabInterface()
+                            ->GetBrowserWindowInterface()
+                            ->GetProfile();
+  if (ShouldOpenSearchURLInNewTab(nav_url, lens::IsAimM3Enabled(profile))) {
     lens_search_controller_->GetTabInterface()
         ->GetBrowserWindowInterface()
         ->OpenGURL(nav_url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
