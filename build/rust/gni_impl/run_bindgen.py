@@ -21,7 +21,8 @@ from filter_clang_args import filter_clang_args
 
 def main():
   parser = argparse.ArgumentParser("run_bindgen.py")
-  parser.add_argument("--exe", help="Path to bindgen", required=True),
+  parser.add_argument("--bindgen-exe", help="Path to bindgen", required=True),
+  parser.add_argument("--rustfmt-exe", help="Path to rustfmt", required=True),
   parser.add_argument("--header",
                       help="C header file to generate bindings for",
                       required=True)
@@ -103,7 +104,13 @@ def main():
     if args.libclang_path:
       env["LIBCLANG_PATH"] = args.libclang_path
     try:
-      subprocess.check_call([args.exe, *genargs], env=env)
+      subprocess.check_call([args.bindgen_exe, *genargs], env=env)
+
+      fmtargs = [
+          args.output,
+          "--config=normalize_doc_attributes=true",
+      ]
+      subprocess.check_call([args.rustfmt_exe, *fmtargs])
     except:
       # Make sure we don't emit anything if bindgen failed. The other files use
       # action_helpers for this.

@@ -16,6 +16,11 @@ if (host_os == "win") {
   _bindgen_path = "${_bindgen_path}.exe"
 }
 
+_rustfmt_path = "${rust_bindgen_root}/bin/rustfmt"
+if (host_os == "win") {
+  _rustfmt_path = "${_rustfmt_path}.exe"
+}
+
 # On Windows, the libclang.dll is beside the bindgen.exe, otherwise it is in
 # ../lib.
 _libclang_path = rust_bindgen_root
@@ -137,6 +142,7 @@ template("rust_bindgen_generator") {
     script = rebase_path("//build/rust/gni_impl/run_bindgen.py")
     inputs = [
       _bindgen_path,
+      _rustfmt_path,
       "//build/action_helpers.py",
       "//build/gn_helpers.py",
       "//build/rust/gni_impl/filter_clang_args.py",
@@ -146,8 +152,10 @@ template("rust_bindgen_generator") {
     outputs = [ output_file ]
 
     args = [
-      "--exe",
+      "--bindgen-exe",
       rebase_path(_bindgen_path, root_build_dir),
+      "--rustfmt-exe",
+      rebase_path(_rustfmt_path, root_build_dir),
       "--header",
       rebase_path(invoker.header, root_build_dir),
       "--depfile",
