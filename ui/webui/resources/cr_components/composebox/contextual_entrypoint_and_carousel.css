@@ -12,7 +12,7 @@
 #carousel {
   box-sizing: border-box;
   margin-bottom: 12px;
-  margin-top: 13px;
+  margin-top: 4px;
   padding-inline-end: var(--context-carousel-inline-end-spacing, 50px);
   padding-inline-start: var(--context-carousel-inline-start-spacing, 50px);
 }

@@ -43,11 +43,11 @@
   align-items: center;
   border-radius: 8px;
   display: flex;
-  height: 36px;
+  height: 44px;
   justify-content: center;
   overflow: hidden;
   position: relative;
-  width: 36px;
+  width: 44px;
 }
 
 .img-overlay {
@@ -72,26 +72,28 @@
 
 .chip {
   align-items: center;
-  background-color: var(--color-new-tab-page-composebox-file-chip-background);
-  border-radius: 10px;
+  background-color: var(--color-new-tab-footer-background);
+  border-radius: 8px;
   display: flex;
-  gap: 8px;
-  height: 36px;
+  gap: 6px;
+  height: 44px;
   overflow: hidden;
-  padding: 0px 0px 0px 4px;
+  padding: 0px 12px 0px 8px;
   position: relative;
   width: 174px;
 }
 
 .thumbnail {
   align-items: center;
+  background-color: var(--color-compose-dialog-result-background);
+  border-radius: 4px;
   display: flex;
   flex-shrink: 0;
-  height: 20px;
+  height: 16px;
   justify-content: center;
-  margin-left: 4px;
+  padding: 6px;
   position: relative;
-  width: 20px;
+  width: 16px;
 }
 
 .pdf-icon {
@@ -135,7 +137,6 @@
   --cr-icon-button-fill-color: white;
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-start: 0;
-  --cr-icon-button-margin-end: 8px;
   background-color: var(--color-new-tab-page-composebox-file-image-overlay);
   border-radius: 4px;
   color: var(--color-new-tab-page-composebox-pdf-chip-icon);
@@ -149,9 +150,10 @@
 .title {
   color: var(--color-new-tab-page-composebox-file-chip-text);
   font-family: inherit;
-  font-size: 14px;
-  font-weight: 400;
-  margin-inline-end: 12px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 16px;
   overflow: hidden;
   position: relative;
   text-overflow: ellipsis;
@@ -166,7 +168,7 @@
 }
 
 #tabThumbnail composebox-tab-favicon {
-  border-radius: 4px;
-  height: 20px;
-  width: 20px;
+  border-radius: 50%;
+  height: 16px;
+  width: 16px;
 }
