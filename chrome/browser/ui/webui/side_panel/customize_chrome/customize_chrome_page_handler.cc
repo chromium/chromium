@@ -697,7 +697,8 @@ std::set<ntp_tiles::TileType> CustomizeChromePageHandler::GetTileTypes() const {
     tile_types.insert(ntp_tiles::TileType::kEnterpriseShortcuts);
     // Skip adding personal shortcuts if enterprise shortcuts mixing is not
     // allowed.
-    if (!ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
+    if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+        !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
       return tile_types;
     }
   }

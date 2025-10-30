@@ -614,7 +614,9 @@ TEST_P(CustomizeChromePageHandlerUpdateMostVisitedTest,
           ntp_tiles::kNtpEnterpriseShortcuts,
           {{ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.name, "true"}});
     } else {
-      features.InitAndEnableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
+      features.InitAndEnableFeatureWithParameters(
+          ntp_tiles::kNtpEnterpriseShortcuts,
+          {{ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.name, "false"}});
     }
   } else {
     features.InitAndDisableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
@@ -651,7 +653,8 @@ const UpdateMostVisitedSettingsTestCase kUpdateMostVisitedSettingsTestCases[] =
       .custom_links_visible = true,
       .enterprise_shortcuts_visible = true,
       .personal_shortcuts_visible = true,
-      .expected_types = {ntp_tiles::TileType::kEnterpriseShortcuts},
+      .expected_types = {ntp_tiles::TileType::kCustomLinks,
+                         ntp_tiles::TileType::kEnterpriseShortcuts},
       .expected_disabled_shortcuts =
           {ntp_tiles::TileType::kEnterpriseShortcuts}},
      {.test_name = "EnterpriseFeatureDisabled_PersonalShortcutsNotVisible",
@@ -661,7 +664,8 @@ const UpdateMostVisitedSettingsTestCase kUpdateMostVisitedSettingsTestCases[] =
       .custom_links_visible = true,
       .enterprise_shortcuts_visible = true,
       .personal_shortcuts_visible = false,
-      .expected_types = {ntp_tiles::TileType::kEnterpriseShortcuts},
+      .expected_types = {ntp_tiles::TileType::kCustomLinks,
+                         ntp_tiles::TileType::kEnterpriseShortcuts},
       .expected_disabled_shortcuts =
           {ntp_tiles::TileType::kEnterpriseShortcuts}},
      {.test_name = "EnterpriseMixingFeatureDisabled_EnterprisePolicyEmpty",
@@ -743,9 +747,11 @@ TEST_F(CustomizeChromePageHandlerTest,
                             SaveArg<2>(&personal_shortcuts_visible),
                             SaveArg<3>(&disabled_shortcuts)));
 
-  // Enable enterprise shortcuts policy.
+  // Enable enterprise shortcuts policy with mixing disabled.
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
+  features.InitAndEnableFeatureWithParameters(
+      ntp_tiles::kNtpEnterpriseShortcuts,
+      {{ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.name, "false"}});
 
   SetEnterpriseShortcutsPolicy(true);
   SetMostVisitedPrefs(
