@@ -209,23 +209,17 @@ ExtensionsMenuMainPageView::~ExtensionsMenuMainPageView() = default;
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
     extensions::ExtensionId extension_id,
-    bool is_enterprise,
-    ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
-    ExtensionMenuItemView::SitePermissionsButtonState
-        site_permissions_button_state,
-    ExtensionMenuItemView::SitePermissionsButtonAccess
-        site_permissions_button_access,
+    ExtensionsMenuViewModel::MenuItemInfo menu_item,
     int index) {
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, is_enterprise, std::move(action_controller),
+      browser_, menu_item.is_enterprise, std::move(action_controller),
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
                           base::Unretained(menu_handler_), extension_id));
-  item->Update(site_access_toggle_state, site_permissions_button_state,
-               site_permissions_button_access, is_enterprise);
+  item->Update(menu_item);
 
   // Add vertical spacing in between menu items.
   if (index > 0) {

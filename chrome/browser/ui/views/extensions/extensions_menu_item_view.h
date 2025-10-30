@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -37,36 +38,6 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   METADATA_HEADER(ExtensionMenuItemView, views::FlexLayoutView)
 
  public:
-  enum class SiteAccessToggleState {
-    // Button is not visible.
-    kHidden,
-    // Button is visible and off.
-    kOff,
-    // Button is visible and on.
-    kOn,
-  };
-
-  enum class SitePermissionsButtonState {
-    // Button is not visible.
-    kHidden,
-    // Button is visible, but disabled.
-    kDisabled,
-    // Button is visible and enabled.
-    kEnabled,
-  };
-
-  // Extension site access displayed in the site permissions button.
-  enum class SitePermissionsButtonAccess {
-    // Extension has no site access.
-    kNone,
-    // Extension has site access when clicked.
-    kOnClick,
-    // Extension has site access to this site.
-    kOnSite,
-    // Extension has site access to all sites.
-    kOnAllSites
-  };
-
   ExtensionMenuItemView(Browser* browser,
                         std::unique_ptr<ToolbarActionViewController> controller,
                         bool allow_pinning);
@@ -83,10 +54,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   ~ExtensionMenuItemView() override;
 
   // Updates the controller and child views to be on sync with the parent views.
-  void Update(SiteAccessToggleState site_access_toggle_state,
-              SitePermissionsButtonState site_permissions_button_state,
-              SitePermissionsButtonAccess site_permissions_button_access,
-              bool is_enterprise);
+  void Update(ExtensionsMenuViewModel::MenuItemInfo menu_item);
 
   // Updates the pin button.
   void UpdatePinButton(bool is_force_pinned, bool is_pinned);

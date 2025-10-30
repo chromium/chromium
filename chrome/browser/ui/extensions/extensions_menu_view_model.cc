@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -14,12 +15,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace {
 
@@ -76,6 +79,116 @@ bool CanUserCustomizeExtensionSiteAccess(
   return permissions_manager->GetUserSiteSetting(
              web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin()) ==
          PermissionsManager::UserSiteSetting::kCustomizeByExtension;
+}
+
+// Returns whether the site permissions button should be visible.
+bool IsSitePermissionsButtonVisible(const extensions::Extension& extension,
+                                    Profile& profile,
+                                    const ToolbarActionsModel& toolbar_model,
+                                    content::WebContents& web_contents) {
+  // Button is never visible when site is restricted.
+  if (toolbar_model.IsRestrictedUrl(web_contents.GetLastCommittedURL())) {
+    return false;
+  }
+
+  PermissionsManager::UserSiteSetting user_site_setting =
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  switch (user_site_setting) {
+    case PermissionsManager::UserSiteSetting::kCustomizeByExtension: {
+      // Extensions should always display the button.
+      return true;
+    }
+    case PermissionsManager::UserSiteSetting::kBlockAllExtensions: {
+      // Extension should only display the button when it's an enterprise
+      // extension and has granted access.
+      bool enterprise_forced_access =
+          extensions::ExtensionSystem::Get(&profile)
+              ->management_policy()
+              ->HasEnterpriseForcedAccess(extension);
+      SitePermissionsHelper::SiteInteraction site_interaction =
+          SitePermissionsHelper(&profile).GetSiteInteraction(extension,
+                                                             &web_contents);
+      return enterprise_forced_access &&
+             site_interaction ==
+                 SitePermissionsHelper::SiteInteraction::kGranted;
+    }
+    case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
+      NOTREACHED();
+    }
+  }
+}
+
+// Returns the state for the `extension`'s site permissions button.
+ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonState
+GetSitePermissionsButtonState(const extensions::Extension& extension,
+                              Profile& profile,
+                              const ToolbarActionsModel& toolbar_model,
+                              content::WebContents& web_contents) {
+  bool is_site_permissions_button_visible = IsSitePermissionsButtonVisible(
+      extension, profile, toolbar_model, web_contents);
+  if (!is_site_permissions_button_visible) {
+    return ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonState::
+        kHidden;
+  }
+
+  bool is_site_permissions_button_enabled = CanUserCustomizeExtensionSiteAccess(
+      extension, profile, toolbar_model, web_contents);
+  return is_site_permissions_button_enabled
+             ? ExtensionsMenuViewModel::MenuItemInfo::
+                   SitePermissionsButtonState::kEnabled
+             : ExtensionsMenuViewModel::MenuItemInfo::
+                   SitePermissionsButtonState::kDisabled;
+}
+
+// Returns the sites access displayed by the `extension`'s site permissions
+// button.
+ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess
+GetSitePermissionsButtonAccess(const extensions::Extension& extension,
+                               Profile& profile,
+                               const ToolbarActionsModel& toolbar_model,
+                               content::WebContents& web_contents) {
+  auto site_interaction = SitePermissionsHelper(&profile).GetSiteInteraction(
+      extension, &web_contents);
+  if (site_interaction == SitePermissionsHelper::SiteInteraction::kNone) {
+    return ExtensionsMenuViewModel::MenuItemInfo::SitePermissionsButtonAccess::
+        kNone;
+  }
+
+  auto site_access = PermissionsManager::Get(&profile)->GetUserSiteAccess(
+      extension, web_contents.GetLastCommittedURL());
+  switch (site_access) {
+    case PermissionsManager::UserSiteAccess::kOnClick:
+      return ExtensionsMenuViewModel::MenuItemInfo::
+          SitePermissionsButtonAccess::kOnClick;
+    case PermissionsManager::UserSiteAccess::kOnSite:
+      return ExtensionsMenuViewModel::MenuItemInfo::
+          SitePermissionsButtonAccess::kOnSite;
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
+      return ExtensionsMenuViewModel::MenuItemInfo::
+          SitePermissionsButtonAccess::kOnAllSites;
+  }
+}
+
+// Returns the state for the `extension`'s site access toggle button.
+ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState
+GetSiteAccessToggleState(const extensions::Extension& extension,
+                         Profile& profile,
+                         const ToolbarActionsModel& toolbar_model,
+                         content::WebContents& web_contents) {
+  if (!CanUserCustomizeExtensionSiteAccess(extension, profile, toolbar_model,
+                                           web_contents)) {
+    return ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::
+        kHidden;
+  }
+
+  // Button is on iff the extension has access to the site.
+  auto site_interaction = SitePermissionsHelper(&profile).GetSiteInteraction(
+      extension, &web_contents);
+  return site_interaction == SitePermissionsHelper::SiteInteraction::kGranted
+             ? ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::kOn
+             : ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::
+                   kOff;
 }
 
 void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
@@ -242,6 +355,34 @@ void ExtensionsMenuViewModel::UpdateSiteSetting(
       ->UpdateUserSiteSetting(origin, site_setting);
 
   LogSiteSettingsUpdate(site_setting);
+}
+
+ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
+    ToolbarActionViewController* action_controller) {
+  Profile* profile = browser_->GetProfile();
+  // TODO(crbug.com/456285449): If there is an action controller, then the
+  // extension should be enabled. We should retrieve the extension from the
+  // extension action controller, but here we are getting the toolbar action
+  // controller interface. For that we either need to (a) pass the action view
+  // controller instead or (b) add the extension getter method to toolbar action
+  // view controller.
+  auto* registry = extensions::ExtensionRegistry::Get(profile);
+  scoped_refptr<const extensions::Extension> extension =
+      registry->enabled_extensions().GetByID(action_controller->GetId());
+  CHECK(extension);
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  MenuItemInfo menu_item;
+  menu_item.site_access_toggle_state = GetSiteAccessToggleState(
+      *extension, *profile, *toolbar_model_, *web_contents);
+  menu_item.site_permissions_button_access = GetSitePermissionsButtonAccess(
+      *extension, *profile, *toolbar_model_, *web_contents);
+  menu_item.site_permissions_button_state = GetSitePermissionsButtonState(
+      *extension, *profile, *toolbar_model_, *web_contents);
+  menu_item.is_enterprise = extensions::ExtensionSystem::Get(profile)
+                                ->management_policy()
+                                ->HasEnterpriseForcedAccess(*extension);
+  return menu_item;
 }
 
 void ExtensionsMenuViewModel::OnHostAccessRequestAdded(

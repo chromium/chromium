@@ -51,12 +51,7 @@ class ExtensionsMenuMainPageView : public views::View {
   void CreateAndInsertMenuItem(
       std::unique_ptr<ExtensionActionViewController> action_controller,
       extensions::ExtensionId extension_id,
-      bool is_enterprise,
-      ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
-      ExtensionMenuItemView::SitePermissionsButtonState
-          site_permissions_button_state,
-      ExtensionMenuItemView::SitePermissionsButtonAccess
-          site_permissions_button_access,
+      ExtensionsMenuViewModel::MenuItemInfo menu_item,
       int index);
 
   // Removes the menu item corresponding to `action_id`.
