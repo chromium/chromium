@@ -727,6 +727,10 @@ template <typename E>
 bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const E& event,
                           const gfx::PointF& point) {
+  if (!IsCheckHitEligible()) {
+    return false;
+  }
+
   if (event_handler_) {
     if (bounds_dips_.origin().IsOrigin()) {  // (x, y) == (0, 0)
       if (handler_callback.Run(event_handler_.get(), event))
@@ -748,8 +752,7 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
       bool matched = child->match_parent();
       if (!matched)
         matched = child->bounds_dips_.Contains(int_point);
-      if (matched && child->HitTest(handler_callback, event, offset_point) &&
-          child->IsCheckHitEligible()) {
+      if (matched && child->HitTest(handler_callback, event, offset_point)) {
         return true;
       }
     }
