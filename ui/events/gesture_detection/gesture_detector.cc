@@ -97,15 +97,13 @@ class GestureDetector::TimeoutGestureHandler {
           break;
         }
       }
+      // As confirmed by field reports: https://crbug.com/456494259, we can have
+      // non-positive `event_processing_delay`, which can happen when event
+      // timestamps in `MotionEvent` are malformed.
       compensate_timeouts =
           event_processing_delay.is_positive() &&
           (has_only_positive_compensated_delays ||
            kCompensateGestureTimeoutsForLongDelayedSequences.Get());
-      if (!event_processing_delay.is_positive()) {
-        // TODO(crbug.com/450845471): Cleanup after investigation. Convert to
-        // a CHECK if it doesn't occur in field.
-        base::debug::DumpWithoutCrashing();
-      }
     }
 
     for (TimeoutEvent event : timeouts_to_start_) {
