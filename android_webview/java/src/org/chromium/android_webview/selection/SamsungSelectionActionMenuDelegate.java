@@ -120,9 +120,10 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
             String selectedText) {
-        List<SelectionMenuItem> additionalItems =
-                super.getAdditionalMenuItems(
-                        menuType, isSelectionPassword, isSelectionReadOnly, selectedText);
+        ArrayList<SelectionMenuItem> additionalItems =
+                new ArrayList<>(
+                        super.getAdditionalMenuItems(
+                                menuType, isSelectionPassword, isSelectionReadOnly, selectedText));
         if (menuType == MenuType.DROPDOWN) return additionalItems;
         if (isManageAppsSupported()) {
             additionalItems.add(
