@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "base/hash/sha1.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
@@ -35,6 +35,7 @@
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "content/public/test/browser_test.h"
+#include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -191,7 +192,8 @@ ArcPlayTermsOfServiceConsent BuildArcPlayTermsOfServiceConsent(
       IDS_CONSOLIDATED_CONSENT_ACCEPT_AND_CONTINUE);
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
   play_consent.set_play_terms_of_service_hash(
-      base::SHA1HashString(tos_content));
+      std::string(base::as_string_view(crypto::obsolete::Sha1::HashForTesting(
+          base::as_byte_span(tos_content)))));
   play_consent.set_play_terms_of_service_text_length(tos_content.length());
   return play_consent;
 }
@@ -651,11 +653,13 @@ class ConsolidatedConsentScreenArcEnabledParameterizedTest
     FakeConsentAuditor* auditor = static_cast<FakeConsentAuditor*>(
         ConsentAuditorFactory::GetForProfile(profile));
 
-    if (!accept_backup_restore_)
+    if (!accept_backup_restore_) {
       test::OobeJS().ClickOnPath(kBackupToggle);
+    }
 
-    if (!accept_location_service_)
+    if (!accept_location_service_) {
       test::OobeJS().ClickOnPath(kLocationToggle);
+    }
 
     EXPECT_CALL(*auditor, RecordArcPlayConsent(
                               testing::_,

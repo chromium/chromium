@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash/sha1.h"
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -25,6 +24,7 @@
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
+#include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -684,7 +684,8 @@ class TokenHandleStoreHistogramTest
 
   // Returns a Base16 encoded SHA1 digest of `data`.
   std::string Sha1Digest(const std::string& data) {
-    return base::HexEncode(base::SHA1Hash(base::as_byte_span(data)));
+    return base::HexEncode(
+        crypto::obsolete::Sha1::HashForTesting(base::as_byte_span(data)));
   }
 
  protected:

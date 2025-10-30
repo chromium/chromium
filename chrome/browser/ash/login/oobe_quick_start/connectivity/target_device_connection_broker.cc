@@ -4,12 +4,19 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
-#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace ash::quick_start {
+std::string GetHashedAuthToken(std::string_view authentication_token) {
+  return std::string(
+      base::as_string_view(crypto::obsolete::Sha1::Hash(authentication_token)));
+}
 
 TargetDeviceConnectionBroker::TargetDeviceConnectionBroker() = default;
 TargetDeviceConnectionBroker::~TargetDeviceConnectionBroker() = default;
@@ -54,7 +61,7 @@ void TargetDeviceConnectionBroker::OnConnectionClosed(
 
 std::string TargetDeviceConnectionBroker::DerivePin(
     const std::string& authentication_token) const {
-  std::string hash_str = base::SHA1HashString(authentication_token);
+  std::string hash_str = GetHashedAuthToken(authentication_token);
   std::vector<int8_t> hash_ints =
       std::vector<int8_t>(hash_str.begin(), hash_str.end());
   return base::NumberToString(
