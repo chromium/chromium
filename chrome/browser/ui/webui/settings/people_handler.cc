@@ -928,11 +928,7 @@ void PeopleHandler::HandleShowSyncPassphraseDialog(
     return;
   }
 
-  ShowSyncPassphraseDialog(
-      *browser,
-      base::BindRepeating(&SyncPassphraseDialogDecryptData,
-                          base::Unretained(SyncServiceFactory::GetForProfile(
-                              browser->profile()))));
+  ShowSyncPassphraseDialogAndDecryptData(*browser);
 }
 
 void PeopleHandler::HandleShowAccountSettingsUI(const base::Value::List& args) {

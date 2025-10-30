@@ -659,11 +659,18 @@ bool ProfileSubMenuModel::BuildSyncSection() {
           command_id = IDC_SHOW_SIGNIN_WHEN_PAUSED;
           icon = &vector_icons::kAccountCircleOffChromeRefreshIcon;
           break;
-        case syncer::SyncService::UserActionableError::kNeedsPassphrase:
         case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
+          command_id = IDC_UPGRADE_DIALOG;
+          icon = &vector_icons::kErrorOutlineIcon;
+          break;
+        case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+          command_id = IDC_SHOW_SYNC_PASSPHRASE_DIALOG;
+          icon = &vector_icons::kErrorOutlineIcon;
+          break;
         case syncer::SyncService::UserActionableError::
             kNeedsSettingsConfirmation:
         case syncer::SyncService::UserActionableError::kUnrecoverableError:
+          // Only shown for "Sync-the-feature".
           command_id = IDC_SHOW_SYNC_SETTINGS;
           icon = &vector_icons::kErrorOutlineIcon;
           break;
