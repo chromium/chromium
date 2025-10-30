@@ -8,17 +8,17 @@ import type {RecentTabChipElement} from './recent_tab_chip.js';
 
 export function getHtml(this: RecentTabChipElement) {
   // clang-format off
-  return this.recentTab_ ? html`<!--_html_template_start_-->
+  return this.recentTab ? html`<!--_html_template_start_-->
   <cr-button id="recentTabButton"
       @click="${this.addTabContext_}"
-      ?disabled="${this.inputsDisabled_}"
-      title="${this.recentTab_.title}"
+      ?disabled="${this.inputsDisabled}"
+      title="${this.recentTab.title}"
       aria-label="${this.i18n('askAboutThisTabAriaLabel',
-          this.recentTab_.title)}">
+          this.recentTab.title)}">
     <div class="button-content">
       <composebox-tab-favicon
           class="favicon"
-          .url="${this.recentTab_.url?.url}">
+          .url="${this.recentTab.url?.url}">
       </composebox-tab-favicon>
       <span class="recent-tab-button-text">
         ${this.i18n('askAboutThisTab')}

@@ -77,8 +77,17 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   static override get properties() {
     return {
+      // =========================================================================
+      // Public properties
+      // =========================================================================
       showDropdown: {type: Boolean},
       realboxLayoutMode: {type: String},
+      tabSuggestions: {type: Array},
+      entrypointName: {type: String},
+
+      // =========================================================================
+      // Protected properties
+      // =========================================================================
       attachmentFileTypes_: {type: String},
       contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
@@ -106,8 +115,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
-      tabSuggestions_: {type: Array},
-      entrypointName: {type: String},
       recentTabInContext_: {type: Boolean},
     };
   }
@@ -115,6 +122,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor showDropdown: boolean = false;
   accessor realboxLayoutMode: string = '';
   accessor entrypointName: string = '';
+  accessor tabSuggestions: TabInfo[] = [];
+
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
   protected accessor contextMenuEnabled_: boolean =
@@ -133,11 +142,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor showFileCarousel_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor inCreateImageMode_: boolean = false;
-  accessor tabSuggestions_: TabInfo[] = [];
   protected accessor recentTabInContext_: boolean = false;
 
   private hasTabSuggestions_(): boolean {
-    return this.tabSuggestions_?.length > 0;
+    return this.tabSuggestions?.length > 0;
   }
 
   protected get inToolMode_(): boolean {
@@ -176,13 +184,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     if (changedPrivateProperties.has('files_') ||
-        changedPrivateProperties.has('tabSuggestions_')) {
+        changedProperties.has('tabSuggestions')) {
       this.recentTabInContext_ = this.computeRecentTabInContext_();
     }
   }
 
   private computeRecentTabInContext_(): boolean {
-    const recentTab = this.tabSuggestions_?.[0];
+    const recentTab = this.tabSuggestions?.[0];
     if (!recentTab) {
       return false;
     }

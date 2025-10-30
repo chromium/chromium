@@ -21,7 +21,7 @@ suite('ContextMenuEntrypoint', () => {
   let searchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
 
   async function openContextMenuWithSuggestions(suggestions: TabInfo[]) {
-    (entrypoint as any).tabSuggestions_ = suggestions;
+    entrypoint.tabSuggestions = suggestions;
     $$(entrypoint, '#entrypoint')!.click();
     await microtasksFinished();
   }
@@ -76,7 +76,7 @@ suite('ContextMenuEntrypoint', () => {
       'tab header is not displayed when there are no tab suggestions',
       async () => {
         // Arrange & Act.
-        (entrypoint as any).tabSuggestions_ = [];
+        entrypoint.tabSuggestions = [];
         $$(entrypoint, '#entrypoint')!.click();
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
@@ -93,7 +93,7 @@ suite('ContextMenuEntrypoint', () => {
   test(
       'clicking entrypoint shows context menu with correct items', async () => {
         // Arrange.
-        (entrypoint as any).tabSuggestions_ = [
+        entrypoint.tabSuggestions = [
           {
             title: 'Tab 1',
             url: {url: 'https://www.google.com'},
@@ -129,7 +129,7 @@ suite('ContextMenuEntrypoint', () => {
   test('disabled tabs cannot be added as context', async () => {
     // Arrange.
     $$(entrypoint, '#entrypoint')!.click();
-    (entrypoint as any).tabSuggestions_ = [
+    entrypoint.tabSuggestions = [
       {
         title: 'Tab 1',
         url: {url: 'https://www.google.com'},

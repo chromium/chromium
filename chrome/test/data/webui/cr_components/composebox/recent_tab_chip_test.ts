@@ -24,8 +24,7 @@ suite('RecentTabChipTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     recentTabChip = document.createElement('composebox-recent-tab-chip');
     document.body.appendChild(recentTabChip);
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.recentTab_ = MOCK_TAB_INFO;
+    recentTabChip.recentTab = MOCK_TAB_INFO;
     await microtasksFinished();
   });
 
@@ -38,8 +37,7 @@ suite('RecentTabChipTest', function() {
   }
 
   test('is hidden when no tab suggestions', async () => {
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.recentTab_ = undefined;
+    recentTabChip.recentTab = undefined;
     await microtasksFinished();
     const button = $$(recentTabChip, '#recentTabButton');
     assertEquals(null, button);
@@ -62,8 +60,7 @@ suite('RecentTabChipTest', function() {
   });
 
   test('is disabled when inputsDisabled is true', async () => {
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.inputsDisabled_ = true;
+    recentTabChip.inputsDisabled = true;
     await microtasksFinished();
 
     const button = getButton();
@@ -71,8 +68,7 @@ suite('RecentTabChipTest', function() {
   });
 
   test('is not disabled when inputsDisabled is false', async () => {
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.inputsDisabled_ = false;
+    recentTabChip.inputsDisabled = false;
     await microtasksFinished();
 
     const button = getButton();
@@ -89,13 +85,11 @@ suite('RecentTabChipTest', function() {
   });
 
   test('becomes visible when tabs are added', async () => {
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.recentTab_ = undefined;
+    recentTabChip.recentTab = undefined;
     await microtasksFinished();
     assertEquals(null, $$(recentTabChip, '#recentTabButton'));
 
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.recentTab_ = MOCK_TAB_INFO;
+    recentTabChip.recentTab = MOCK_TAB_INFO;
     await microtasksFinished();
     assertTrue(getButton() !== null);
   });
@@ -106,8 +100,7 @@ suite('RecentTabChipTest', function() {
       eventFired = true;
     });
 
-    // @ts-expect-error: Private property access for testing.
-    recentTabChip.inputsDisabled_ = true;
+    recentTabChip.inputsDisabled = true;
     await microtasksFinished();
 
     const button = getButton();
