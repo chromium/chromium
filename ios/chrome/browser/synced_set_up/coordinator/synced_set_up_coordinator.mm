@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 
+#import "base/functional/bind.h"
 #import "base/not_fatal_until.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
@@ -18,8 +21,18 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
+#import "ios/chrome/browser/synced_set_up/ui/synced_set_up_animator.h"
+#import "ios/chrome/browser/synced_set_up/ui/synced_set_up_view_controller.h"
 
-@interface SyncedSetUpCoordinator () <SyncedSetUpMediatorDelegate>
+namespace {
+
+// Time delay before automatically dismissing the Synced Set Up interstitial.
+constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
+
+}  // namespace
+
+@interface SyncedSetUpCoordinator () <SyncedSetUpMediatorDelegate,
+                                      UIViewControllerTransitioningDelegate>
 @end
 
 @implementation SyncedSetUpCoordinator {
@@ -28,7 +41,9 @@
   AppStartupParameters* _startupParameters;
   // Mediator for Synced Set Up. Used to determine and apply a set of synced
   // prefs to the local device.
-  SyncedSetUpMediator* _syncedSetUpMediator;
+  SyncedSetUpMediator* _mediator;
+  // View controller responsible for displaying the Synced Set Up interstitial.
+  SyncedSetUpViewController* _viewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -46,8 +61,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // Create the `SyncedSetUpMediator` to query and apply synced prefs.
   ProfileIOS* profile = self.profile;
+
   sync_preferences::CrossDevicePrefTracker* tracker =
       CrossDevicePrefTrackerFactory::GetForProfile(profile);
   AuthenticationService* authService =
@@ -59,7 +74,7 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  _syncedSetUpMediator =
+  _mediator =
       [[SyncedSetUpMediator alloc] initWithPrefTracker:tracker
                                  authenticationService:authService
                                  accountManagerService:accountManagerService
@@ -67,22 +82,87 @@
                                     profilePrefService:profile->GetPrefs()
                                      startupParameters:_startupParameters
                                        identityManager:identityManager];
-  _syncedSetUpMediator.delegate = self;
+  _mediator.delegate = self;
+
+  _viewController = [[SyncedSetUpViewController alloc] init];
+  _viewController.modalPresentationStyle = UIModalPresentationCustom;
+  _viewController.transitioningDelegate = self;
+
+  _mediator.consumer = _viewController;
 }
 
 - (void)stop {
-  _syncedSetUpMediator.delegate = nil;
-  _syncedSetUpMediator.consumer = nil;
-  [_syncedSetUpMediator disconnect];
-  _syncedSetUpMediator = nil;
+  if (!_viewController.isBeingDismissed) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
+
+  _mediator.delegate = nil;
+  _mediator.consumer = nil;
+  [_mediator disconnect];
+  _mediator = nil;
+  _viewController = nil;
   _startupParameters = nil;
 }
 
 #pragma mark - SyncedSetUpMediatorDelegate
 
 - (void)syncedSetUpMediatorDidComplete:(SyncedSetUpMediator*)mediator {
-  CHECK_EQ(_syncedSetUpMediator, mediator);
-  [self.delegate syncedSetUpCoordinatorWantsToBeDismissed:self];
+  CHECK_EQ(_mediator, mediator);
+  [self dismissSyncedSetUp];
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+// Called when the view controller is being presented.
+- (id<UIViewControllerAnimatedTransitioning>)
+    animationControllerForPresentedController:(UIViewController*)presented
+                         presentingController:(UIViewController*)presenting
+                             sourceController:(UIViewController*)source {
+  return [[SyncedSetUpAnimator alloc] initForPresenting:YES];
+}
+
+// Called when the view controller is being dismissed.
+- (id<UIViewControllerAnimatedTransitioning>)
+    animationControllerForDismissedController:(UIViewController*)dismissed {
+  return [[SyncedSetUpAnimator alloc] initForPresenting:NO];
+}
+
+#pragma mark - Private Methods
+
+// Shows the full-screen welcome interstitial for the Synced Set Up flow.
+- (void)showSyncedSetUpInterstitial {
+  if (!_viewController || _viewController.presentingViewController) {
+    return;
+  }
+
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
+
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf dismissSyncedSetUp];
+      }),
+      kDismissalDelay);
+}
+
+// Dismisses the full-screen interstitial.
+- (void)dismissSyncedSetUp {
+  if (_viewController.isBeingDismissed) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf.delegate
+                               syncedSetUpCoordinatorWantsToBeDismissed:
+                                   weakSelf];
+                         }];
 }
 
 @end

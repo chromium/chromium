@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid",
+  # keep-sorted end
+]
