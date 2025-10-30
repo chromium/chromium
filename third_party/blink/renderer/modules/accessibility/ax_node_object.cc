@@ -1101,6 +1101,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kMathMLUnder,
           ax::mojom::blink::Role::kMathMLUnderOver,
           ax::mojom::blink::Role::kMeter,
+          ax::mojom::blink::Role::kMenuBar,
           ax::mojom::blink::Role::kMenuListOption,
           ax::mojom::blink::Role::kMenuListPopup,
           ax::mojom::blink::Role::kNavigation,
