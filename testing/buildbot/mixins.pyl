@@ -580,6 +580,16 @@
       },
     },
   },
+  'linux_nvidia_rtx_4070_super_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'gpu': '10de:2783-580.95.05',
+        'os': 'Ubuntu-24.04',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'long_skylab_timeout': {
     'skylab': {
       'timeout_sec': 10800,

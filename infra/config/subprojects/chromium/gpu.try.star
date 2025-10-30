@@ -301,6 +301,15 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-nvidia-rtx-4070-super-rel",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (NVIDIA RTX 4070 Super)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-tsn",
     mirrors = [
         "ci/Linux FYI GPU TSAN Release",

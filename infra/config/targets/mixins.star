@@ -1692,6 +1692,20 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "linux_nvidia_rtx_4070_super_stable",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "10de:2783-580.95.05",
+            "os": "Ubuntu-24.04",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "linux_vulkan",
     generate_pyl_entry = False,
     linux_args = [

@@ -818,6 +818,7 @@
     "gpu-fyi-try-linux-nvidia-dbg": "try/gpu-fyi-try-linux-nvidia-dbg/gn-args.json",
     "gpu-fyi-try-linux-nvidia-exp": "try/gpu-fyi-try-linux-nvidia-exp/gn-args.json",
     "gpu-fyi-try-linux-nvidia-rel": "try/gpu-fyi-try-linux-nvidia-rel/gn-args.json",
+    "gpu-fyi-try-linux-nvidia-rtx-4070-super-rel": "try/gpu-fyi-try-linux-nvidia-rtx-4070-super-rel/gn-args.json",
     "gpu-fyi-try-linux-nvidia-tsn": "try/gpu-fyi-try-linux-nvidia-tsn/gn-args.json",
     "gpu-fyi-try-linux-wayland-amd-rel": "try/gpu-fyi-try-linux-wayland-amd-rel/gn-args.json",
     "gpu-fyi-try-linux-wayland-intel-rel": "try/gpu-fyi-try-linux-wayland-intel-rel/gn-args.json",
