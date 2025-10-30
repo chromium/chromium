@@ -37,11 +37,26 @@ class CORE_EXPORT TimeZoneController final
     kInvalidTimezone,
   };
 
+  // An RAII-style handle that represents exclusive ownership of the global
+  // timezone override.
+  //
+  // The timezone override remains active as long as an instance of this handle
+  // exists. The destructor automatically clears the override, ensuring the
+  // resource is always released correctly.
+  //
+  // This class forms an ownership model with the static `SetTimeZoneOverride()`
+  // function:
+  // 1. Acquisition: Call the static `SetTimeZoneOverride()` to acquire a
+  //    handle.
+  // 2. Usage: Call the `change()` method on an acquired handle to modify the
+  //    timezone.
+  // 3. Release: The override is cleared when the handle is destroyed.
   class TimeZoneOverride {
     friend TimeZoneController;
     TimeZoneOverride() = default;
 
    public:
+    // Modifies the timezone for an existing, active override.
     void change(const String& timezone_id) {
       ChangeTimeZoneOverride(timezone_id);
     }
@@ -51,9 +66,14 @@ class CORE_EXPORT TimeZoneController final
 
   struct TimeZoneOverrideResult {
     TimeZoneOverrideStatus status;
+
+    // The handle managing the override's lifetime (RAII). The override remains
+    // in effect as long as this handle is alive.
     std::unique_ptr<TimeZoneOverride> handle;
   };
 
+  // Atomically attempts to acquire the global timezone override, succeeding
+  // only if no other override is currently active.
   static TimeZoneOverrideResult SetTimeZoneOverride(const String& timezone_id);
 
   static void ChangeTimeZoneForTesting(const String&);
