@@ -1702,6 +1702,12 @@ const char kWebPageDefaultZoomFromDynamicTypeDescription[] =
     "When enabled, the default text zoom level for a website comes from the "
     "current dynamic type setting.";
 
+const char kWebPageReportedImagesSheetName[] =
+    "Surface web page-reported images";
+const char kWebPageReportedImagesSheetDescription[] =
+    "When enabled, surface a sheet on page load which shows web page-reported "
+    "images and associated metadata.";
+
 const char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
 const char kWebPageTextZoomIPadDescription[] =
     "When enabled, text zoom works again on iPad";

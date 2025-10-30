@@ -243,3 +243,9 @@ bool IsGeminiOnboardingCardsEnabled() {
 }
 
 BASE_FEATURE(kPageContextExtractorRefactored, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebPageReportedImagesSheet, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsWebPageReportedImagesSheetEnabled() {
+  return base::FeatureList::IsEnabled(kWebPageReportedImagesSheet);
+}
