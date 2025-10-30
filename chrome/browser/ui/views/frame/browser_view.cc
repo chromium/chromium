@@ -3965,42 +3965,42 @@ int BrowserView::GetAccessibleTabLabelFormatStringForSplit(
 int BrowserView::GetAccessibleTabLabelFormatStringForTabAlert(
     tabs::TabAlert alert) const {
   switch (alert) {
-    case tabs::TabAlert::AUDIO_PLAYING:
+    case tabs::TabAlert::kAudioPlaying:
       return IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT;
-    case tabs::TabAlert::USB_CONNECTED:
+    case tabs::TabAlert::kUsbConnected:
       return IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT;
-    case tabs::TabAlert::BLUETOOTH_CONNECTED:
+    case tabs::TabAlert::kBluetoothConnected:
       return IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT;
-    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
+    case tabs::TabAlert::kBluetoothScanActive:
       return IDS_TAB_AX_LABEL_BLUETOOTH_SCAN_ACTIVE_FORMAT;
-    case tabs::TabAlert::HID_CONNECTED:
+    case tabs::TabAlert::kHidConnected:
       return IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT;
-    case tabs::TabAlert::SERIAL_CONNECTED:
+    case tabs::TabAlert::kSerialConnected:
       return IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT;
-    case tabs::TabAlert::MEDIA_RECORDING:
+    case tabs::TabAlert::kMediaRecording:
       return IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT;
-    case tabs::TabAlert::AUDIO_RECORDING:
+    case tabs::TabAlert::kAudioRecording:
       return IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT;
-    case tabs::TabAlert::VIDEO_RECORDING:
+    case tabs::TabAlert::kVideoRecording:
       return IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT;
-    case tabs::TabAlert::AUDIO_MUTING:
+    case tabs::TabAlert::kAudioMuting:
       return IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT;
-    case tabs::TabAlert::TAB_CAPTURING:
+    case tabs::TabAlert::kTabCapturing:
       return IDS_TAB_AX_LABEL_TAB_CAPTURING_FORMAT;
-    case tabs::TabAlert::PIP_PLAYING:
+    case tabs::TabAlert::kPipPlaying:
       return IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT;
-    case tabs::TabAlert::DESKTOP_CAPTURING:
+    case tabs::TabAlert::kDesktopCapturing:
       return IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT;
-    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
+    case tabs::TabAlert::kVrPresentingInHeadset:
       return IDS_TAB_AX_LABEL_VR_PRESENTING;
-    case tabs::TabAlert::ACTOR_ACCESSING:
-    case tabs::TabAlert::GLIC_ACCESSING:
+    case tabs::TabAlert::kActorAccessing:
+    case tabs::TabAlert::kGlicAccessing:
 #if BUILDFLAG(ENABLE_GLIC)
       return IDS_TAB_AX_LABEL_GLIC_ACCESSING;
 #else
       NOTREACHED();
 #endif
-    case tabs::TabAlert::GLIC_SHARING:
+    case tabs::TabAlert::kGlicSharing:
 #if BUILDFLAG(ENABLE_GLIC)
       return IDS_TAB_AX_LABEL_GLIC_SHARING;
 #else

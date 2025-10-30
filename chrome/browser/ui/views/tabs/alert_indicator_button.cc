@@ -107,10 +107,10 @@ ui::ImageModel GetTabAlertIndicatorImageForPressedState(
     tabs::TabAlert alert_state,
     ui::ColorId button_color) {
   tabs::TabAlert pressed_alert_state = alert_state;
-  if (alert_state == tabs::TabAlert::AUDIO_PLAYING) {
-    alert_state = tabs::TabAlert::AUDIO_MUTING;
-  } else if (alert_state == tabs::TabAlert::AUDIO_MUTING) {
-    alert_state = tabs::TabAlert::AUDIO_PLAYING;
+  if (alert_state == tabs::TabAlert::kAudioPlaying) {
+    alert_state = tabs::TabAlert::kAudioMuting;
+  } else if (alert_state == tabs::TabAlert::kAudioMuting) {
+    alert_state = tabs::TabAlert::kAudioPlaying;
   }
 
   return tabs::GetAlertImageModel(pressed_alert_state, button_color);
@@ -226,10 +226,10 @@ void AlertIndicatorButton::TransitionToAlertState(
     UpdateIconForAlertState(next_state.value());
   }
 
-  if ((alert_state_ == tabs::TabAlert::AUDIO_PLAYING &&
-       next_state == tabs::TabAlert::AUDIO_MUTING) ||
-      (alert_state_ == tabs::TabAlert::AUDIO_MUTING &&
-       next_state == tabs::TabAlert::AUDIO_PLAYING)) {
+  if ((alert_state_ == tabs::TabAlert::kAudioPlaying &&
+       next_state == tabs::TabAlert::kAudioMuting) ||
+      (alert_state_ == tabs::TabAlert::kAudioMuting &&
+       next_state == tabs::TabAlert::kAudioPlaying)) {
     // Instant user feedback: No fade animation.
     showing_alert_state_ = next_state;
     fade_animation_.reset();
@@ -260,8 +260,8 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
   const bool was_enabled = GetEnabled();
 
   bool enable = base::FeatureList::IsEnabled(media::kEnableTabMuting) &&
-                (alert_state_ == tabs::TabAlert::AUDIO_PLAYING ||
-                 alert_state_ == tabs::TabAlert::AUDIO_MUTING);
+                (alert_state_ == tabs::TabAlert::kAudioPlaying ||
+                 alert_state_ == tabs::TabAlert::kAudioMuting);
 
   // If the tab is not the currently-active tab, make sure it is wide enough
   // before enabling click-to-mute.  This ensures that there is enough click
@@ -281,8 +281,8 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
 }
 
 void AlertIndicatorButton::OnParentTabButtonColorChanged() {
-  if (alert_state_ == tabs::TabAlert::AUDIO_PLAYING ||
-      alert_state_ == tabs::TabAlert::AUDIO_MUTING) {
+  if (alert_state_ == tabs::TabAlert::kAudioPlaying ||
+      alert_state_ == tabs::TabAlert::kAudioMuting) {
     UpdateIconForAlertState(alert_state_.value());
   }
 }
@@ -325,13 +325,13 @@ void AlertIndicatorButton::NotifyClick(const ui::Event& event) {
   // instant feedback.  In the very unlikely event that the mute toggle fails,
   // TransitionToAlertState() will be called again, via another code path, to
   // set the image to be consistent with the final outcome.
-  if (alert_state_ == tabs::TabAlert::AUDIO_PLAYING) {
+  if (alert_state_ == tabs::TabAlert::kAudioPlaying) {
     base::RecordAction(base::UserMetricsAction("AlertIndicatorButton_Mute"));
-    TransitionToAlertState(tabs::TabAlert::AUDIO_MUTING);
+    TransitionToAlertState(tabs::TabAlert::kAudioMuting);
   } else {
-    DCHECK(alert_state_ == tabs::TabAlert::AUDIO_MUTING);
+    DCHECK(alert_state_ == tabs::TabAlert::kAudioMuting);
     base::RecordAction(base::UserMetricsAction("AlertIndicatorButton_Unmute"));
-    TransitionToAlertState(tabs::TabAlert::AUDIO_PLAYING);
+    TransitionToAlertState(tabs::TabAlert::kAudioPlaying);
   }
 
   GetTab()->controller()->ToggleTabAudioMute(GetTab());
@@ -383,7 +383,7 @@ gfx::ImageSkia AlertIndicatorButton::GetImageToPaint() {
 void AlertIndicatorButton::UpdateAlertIndicatorAnimation() {
   // Can add different cases for other alert states that require an animation.
   if (alert_state_.has_value() &&
-      alert_state_.value() == tabs::TabAlert::ACTOR_ACCESSING) {
+      alert_state_.value() == tabs::TabAlert::kActorAccessing) {
     MaybeLoadActorAccessingSpinner();
 
     actor_indicator_spinner_->SetVisible(true);
@@ -397,14 +397,14 @@ void AlertIndicatorButton::UpdateAlertIndicatorAnimation() {
 std::unique_ptr<gfx::Animation>
 AlertIndicatorButton::CreateTabAlertIndicatorFadeAnimation(
     std::optional<tabs::TabAlert> alert_state) {
-  if (alert_state == tabs::TabAlert::MEDIA_RECORDING ||
-      alert_state == tabs::TabAlert::AUDIO_RECORDING ||
-      alert_state == tabs::TabAlert::VIDEO_RECORDING ||
-      alert_state == tabs::TabAlert::TAB_CAPTURING ||
-      alert_state == tabs::TabAlert::DESKTOP_CAPTURING) {
-    if ((alert_state == tabs::TabAlert::MEDIA_RECORDING ||
-         alert_state == tabs::TabAlert::AUDIO_RECORDING ||
-         alert_state == tabs::TabAlert::VIDEO_RECORDING) &&
+  if (alert_state == tabs::TabAlert::kMediaRecording ||
+      alert_state == tabs::TabAlert::kAudioRecording ||
+      alert_state == tabs::TabAlert::kVideoRecording ||
+      alert_state == tabs::TabAlert::kTabCapturing ||
+      alert_state == tabs::TabAlert::kDesktopCapturing) {
+    if ((alert_state == tabs::TabAlert::kMediaRecording ||
+         alert_state == tabs::TabAlert::kAudioRecording ||
+         alert_state == tabs::TabAlert::kVideoRecording) &&
         camera_mic_indicator_start_time_ == base::Time()) {
       camera_mic_indicator_start_time_ = base::Time::Now();
     }

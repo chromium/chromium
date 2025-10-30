@@ -417,10 +417,10 @@ TEST_F(TabTest, HitTest) {
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
   static const std::optional<tabs::TabAlert> kAlertStatesToTest[] = {
       std::nullopt,
-      tabs::TabAlert::TAB_CAPTURING,
-      tabs::TabAlert::AUDIO_PLAYING,
-      tabs::TabAlert::AUDIO_MUTING,
-      tabs::TabAlert::PIP_PLAYING,
+      tabs::TabAlert::kTabCapturing,
+      tabs::TabAlert::kAudioPlaying,
+      tabs::TabAlert::kAudioMuting,
+      tabs::TabAlert::kPipPlaying,
   };
 
   auto controller = std::make_unique<FakeTabSlotController>();
@@ -660,7 +660,7 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
     views::View* icon = GetTabIcon(tab);
     int icon_x = icon->x();
     TabRendererData data;
-    data.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
+    data.alert_state = {tabs::TabAlert::kAudioPlaying};
     tab->SetData(data);
     EXPECT_EQ(icon_x, icon->x());
   }
@@ -709,7 +709,7 @@ TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
   controller->set_active_tab(tab);
   TabRendererData data;
-  data.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
+  data.alert_state = {tabs::TabAlert::kAudioPlaying};
   tab->SetData(data);
 
   tab->SetBounds(0, 0, 200, 50);
@@ -807,7 +807,7 @@ TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
   EXPECT_FALSE(showing_close_button(media_tab));
 
   TabRendererData start_media;
-  start_media.alert_state = {tabs::TabAlert::AUDIO_PLAYING};
+  start_media.alert_state = {tabs::TabAlert::kAudioPlaying};
   start_media.pinned = media_tab->data().pinned;
   media_tab->SetData(std::move(start_media));
 
@@ -848,7 +848,7 @@ TEST_F(TabContentsTest, MinHoldDurationTest) {
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
 
   TabRendererData start_media;
-  start_media.alert_state = {tabs::TabAlert::MEDIA_RECORDING};
+  start_media.alert_state = {tabs::TabAlert::kMediaRecording};
   start_media.pinned = media_tab->data().pinned;
   media_tab->SetData(std::move(start_media));
 
@@ -879,7 +879,7 @@ TEST_F(TabContentsTest, 1SecondFadeoutAnimationTest) {
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
 
   TabRendererData start_media;
-  start_media.alert_state = {tabs::TabAlert::MEDIA_RECORDING};
+  start_media.alert_state = {tabs::TabAlert::kMediaRecording};
   start_media.pinned = media_tab->data().pinned;
   media_tab->SetData(std::move(start_media));
 

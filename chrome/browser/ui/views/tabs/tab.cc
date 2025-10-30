@@ -1123,8 +1123,8 @@ void Tab::UpdateIconVisibility() {
   std::optional<tabs::TabAlert> current_alert_state =
       alert_indicator_button_->showing_alert_state();
   if (glic_tab_underline_view_ &&
-      (current_alert_state == tabs::TabAlert::GLIC_ACCESSING ||
-       current_alert_state == tabs::TabAlert::GLIC_SHARING)) {
+      (current_alert_state == tabs::TabAlert::kGlicAccessing ||
+       current_alert_state == tabs::TabAlert::kGlicSharing)) {
     // Tab underlines for glic multitab replace `alert_indicator_button` as the
     // UI indicator for sharing. In this case, ensure the alert indicator is
     // hidden.
@@ -1269,7 +1269,7 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
   if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible()) {
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
   } else if (GetAlertStateToShow(data_.alert_state) ==
-             tabs::TabAlert::AUDIO_PLAYING) {
+             tabs::TabAlert::kAudioPlaying) {
     base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
   } else {
     base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));

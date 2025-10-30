@@ -42,27 +42,27 @@ ui::ColorId GetTabAlertColor(tabs::TabAlert alert_state) {
   // AlertIndicatorButton.
   ui::ColorId icon_color = gfx::kPlaceholderColor;
   switch (alert_state) {
-    case tabs::TabAlert::MEDIA_RECORDING:
-    case tabs::TabAlert::AUDIO_RECORDING:
-    case tabs::TabAlert::VIDEO_RECORDING:
-    case tabs::TabAlert::DESKTOP_CAPTURING:
+    case tabs::TabAlert::kMediaRecording:
+    case tabs::TabAlert::kAudioRecording:
+    case tabs::TabAlert::kVideoRecording:
+    case tabs::TabAlert::kDesktopCapturing:
       icon_color = kColorHoverCardTabAlertMediaRecordingIcon;
       break;
-    case tabs::TabAlert::TAB_CAPTURING:
-    case tabs::TabAlert::PIP_PLAYING:
-    case tabs::TabAlert::ACTOR_ACCESSING:
-    case tabs::TabAlert::GLIC_ACCESSING:
-    case tabs::TabAlert::GLIC_SHARING:
+    case tabs::TabAlert::kTabCapturing:
+    case tabs::TabAlert::kPipPlaying:
+    case tabs::TabAlert::kActorAccessing:
+    case tabs::TabAlert::kGlicAccessing:
+    case tabs::TabAlert::kGlicSharing:
       icon_color = kColorHoverCardTabAlertPipPlayingIcon;
       break;
-    case tabs::TabAlert::AUDIO_PLAYING:
-    case tabs::TabAlert::AUDIO_MUTING:
-    case tabs::TabAlert::BLUETOOTH_CONNECTED:
-    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
-    case tabs::TabAlert::USB_CONNECTED:
-    case tabs::TabAlert::HID_CONNECTED:
-    case tabs::TabAlert::SERIAL_CONNECTED:
-    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
+    case tabs::TabAlert::kAudioPlaying:
+    case tabs::TabAlert::kAudioMuting:
+    case tabs::TabAlert::kBluetoothConnected:
+    case tabs::TabAlert::kBluetoothScanActive:
+    case tabs::TabAlert::kUsbConnected:
+    case tabs::TabAlert::kHidConnected:
+    case tabs::TabAlert::kSerialConnected:
+    case tabs::TabAlert::kVrPresentingInHeadset:
       icon_color = kColorHoverCardTabAlertAudioPlayingIcon;
       break;
   }

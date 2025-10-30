@@ -540,7 +540,7 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
           [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
             auto* window1 = profile_tabs->windows[0].get();
             auto* tab1 = window1->tabs[0].get();
-            EXPECT_EQ(tabs::TabAlert::AUDIO_PLAYING, tab1->alert_states[0]);
+            EXPECT_EQ(tabs::TabAlert::kAudioPlaying, tab1->alert_states[0]);
           });
   handler()->GetProfileData(std::move(callback));
 

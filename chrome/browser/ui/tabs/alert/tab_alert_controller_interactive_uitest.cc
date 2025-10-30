@@ -101,11 +101,11 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
       SelectTab(kTabStripElementId, 0),
       ClickMockGlicElement(kMockGlicContextAccessButton),
       WaitForState(kTab1AlertState,
-                   std::make_optional(tabs::TabAlert::GLIC_ACCESSING)),
+                   std::make_optional(tabs::TabAlert::kGlicAccessing)),
       SelectTab(kTabStripElementId, 1),
       WaitForState(kTab1AlertState, std::nullopt),
       WaitForState(kTab2AlertState,
-                   std::make_optional(tabs::TabAlert::GLIC_ACCESSING)));
+                   std::make_optional(tabs::TabAlert::kGlicAccessing)));
 }
 
 IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
@@ -129,14 +129,14 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
       ObserveState(kTab2AlertState, browser2, 0),
       ClickMockGlicElement(kMockGlicContextAccessButton),
       WaitForState(kTab1AlertState,
-                   std::make_optional(tabs::TabAlert::GLIC_ACCESSING)),
+                   std::make_optional(tabs::TabAlert::kGlicAccessing)),
       InContext(BrowserElements::From(browser2)->GetContext(),
                 ActivateSurface(kBrowserViewElementId)),
       WaitForState(kTab1AlertState, std::nullopt),
       InContext(BrowserElements::From(browser2)->GetContext(),
                 SelectTab(kTabStripElementId, 0)),
       WaitForState(kTab2AlertState,
-                   std::make_optional(tabs::TabAlert::GLIC_ACCESSING)));
+                   std::make_optional(tabs::TabAlert::kGlicAccessing)));
 }
 
 IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
             .PinTabs({tab_strip_model->GetTabAtIndex(0)->GetHandle()});
       }),
       WaitForState(kTab1AlertState,
-                   std::make_optional(tabs::TabAlert::GLIC_SHARING)),
+                   std::make_optional(tabs::TabAlert::kGlicSharing)),
       Do([this]() {
         glic::GlicKeyedService::Get(browser()->profile())
             ->sharing_manager()

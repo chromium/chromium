@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   tabs::TabAlertController* const tab_alert_controller =
       tabs::TabAlertController::From(tab);
   EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner(), nullptr);
 
   // Start acting on the tab.
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
   // The indicator should now be visible.
   EXPECT_TRUE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   ASSERT_NE(GetSpinner(), nullptr);
   EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kPlaying);
   EXPECT_TRUE(GetSpinner()->GetVisible());
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
   // The indicator should be hidden again.
   EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
 }
 
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   tabs::TabAlertController* const tab_alert_controller =
       tabs::TabAlertController::From(tab);
   EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner(), nullptr);
 
   // Start acting on the tab.
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 
   // The indicator should still not be visible.
   EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner(), nullptr);
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
   tabs::TabAlertController* const tab_alert_controller =
       tabs::TabAlertController::From(tab);
   EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner(), nullptr);
   // Start acting on the tab.
   TestFuture<ActionResultPtr> result;
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
 
   // The indicator should still not be visible.
   EXPECT_FALSE(
-      tab_alert_controller->IsAlertActive(tabs::TabAlert::ACTOR_ACCESSING));
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kActorAccessing));
   EXPECT_EQ(GetSpinner(), nullptr);
 }
 

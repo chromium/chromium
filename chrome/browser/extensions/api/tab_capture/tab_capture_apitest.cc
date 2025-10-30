@@ -301,11 +301,11 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   IndicatorChangeObserver observer(browser());
   while (!base::Contains(GetTabAlertStatesForContents(contents),
-                         tabs::TabAlert::TAB_CAPTURING)) {
+                         tabs::TabAlert::kTabCapturing)) {
     if (base::TimeTicks::Now() - start_time >
             TestTimeouts::action_max_timeout()) {
       EXPECT_THAT(GetTabAlertStatesForContents(contents),
-                  ::testing::Contains(tabs::TabAlert::TAB_CAPTURING));
+                  ::testing::Contains(tabs::TabAlert::kTabCapturing));
       return;
     }
     observer.WaitForTabChange();

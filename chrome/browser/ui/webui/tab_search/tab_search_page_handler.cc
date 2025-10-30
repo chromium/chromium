@@ -1491,12 +1491,12 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   std::ranges::copy_if(alert_states.begin(), alert_states.end(),
                        std::back_inserter(tab_data->alert_states),
                        [](tabs::TabAlert alert) {
-                         return alert == tabs::TabAlert::MEDIA_RECORDING ||
-                                alert == tabs::TabAlert::AUDIO_RECORDING ||
-                                alert == tabs::TabAlert::VIDEO_RECORDING ||
-                                alert == tabs::TabAlert::AUDIO_PLAYING ||
-                                alert == tabs::TabAlert::AUDIO_MUTING ||
-                                alert == tabs::TabAlert::GLIC_ACCESSING;
+                         return alert == tabs::TabAlert::kMediaRecording ||
+                                alert == tabs::TabAlert::kAudioRecording ||
+                                alert == tabs::TabAlert::kVideoRecording ||
+                                alert == tabs::TabAlert::kAudioPlaying ||
+                                alert == tabs::TabAlert::kAudioMuting ||
+                                alert == tabs::TabAlert::kGlicAccessing;
                        });
 
   return tab_data;

@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, AlertStateAudioPlaying) {
   TabRendererData data = TabRendererData::FromTabInModel(tab_strip_model, 0);
   EXPECT_NE(data.alert_state.end(),
             std::find(data.alert_state.begin(), data.alert_state.end(),
-                      tabs::TabAlert::AUDIO_PLAYING));
+                      tabs::TabAlert::kAudioPlaying));
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldHideThrobber) {

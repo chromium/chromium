@@ -134,16 +134,16 @@ TEST_F(TabAlertControllerTest, NotifiedOnAlertShouldShowChanged) {
   // tab alert active.
   EXPECT_CALL(*mock_subscriber,
               OnPrioritizedAlertStateChanged(
-                  std::make_optional(TabAlert::AUDIO_PLAYING)));
+                  std::make_optional(TabAlert::kAudioPlaying)));
   SimulateAudioState(true);
   ::testing::Mock::VerifyAndClearExpectations(mock_subscriber.get());
 
   // Simulate a higher priority alert being activated.
   EXPECT_CALL(*mock_subscriber, OnPrioritizedAlertStateChanged(
-                                    std::make_optional(TabAlert::PIP_PLAYING)));
+                                    std::make_optional(TabAlert::kPipPlaying)));
   tab_alert_controller()->MediaPictureInPictureChanged(true);
   ::testing::Mock::VerifyAndClearExpectations(mock_subscriber.get());
-  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::PIP_PLAYING);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kPipPlaying);
 
   // Removing a lower priority tab alert shouldn't notify observers since the
   // prioritized alert wouldn't change.
@@ -171,16 +171,16 @@ TEST_F(TabAlertControllerTest, GetAllAlert) {
   std::optional<TabAlert> prioritized_alert =
       tab_alert_controller()->GetAlertToShow();
   ASSERT_TRUE(prioritized_alert.has_value());
-  EXPECT_EQ(prioritized_alert.value(), TabAlert::BLUETOOTH_CONNECTED);
+  EXPECT_EQ(prioritized_alert.value(), TabAlert::kBluetoothConnected);
   EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 4U);
 
   // Verify that the active alerts list is in sorted order
   std::vector<TabAlert> active_alerts =
       tab_alert_controller()->GetAllActiveAlerts();
-  EXPECT_EQ(active_alerts[0], TabAlert::BLUETOOTH_CONNECTED);
-  EXPECT_EQ(active_alerts[1], TabAlert::PIP_PLAYING);
-  EXPECT_EQ(active_alerts[2], TabAlert::AUDIO_MUTING);
-  EXPECT_EQ(active_alerts[3], TabAlert::AUDIO_PLAYING);
+  EXPECT_EQ(active_alerts[0], TabAlert::kBluetoothConnected);
+  EXPECT_EQ(active_alerts[1], TabAlert::kPipPlaying);
+  EXPECT_EQ(active_alerts[2], TabAlert::kAudioMuting);
+  EXPECT_EQ(active_alerts[3], TabAlert::kAudioPlaying);
 }
 
 TEST_F(TabAlertControllerTest, AlertIsActive) {
@@ -189,15 +189,15 @@ TEST_F(TabAlertControllerTest, AlertIsActive) {
       content::WebContentsCapabilityType::kBluetoothConnected, true);
   tab_alert_controller()->MediaPictureInPictureChanged(true);
 
-  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::AUDIO_PLAYING));
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kAudioPlaying));
   EXPECT_TRUE(
-      tab_alert_controller()->IsAlertActive(TabAlert::BLUETOOTH_CONNECTED));
-  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::PIP_PLAYING));
+      tab_alert_controller()->IsAlertActive(TabAlert::kBluetoothConnected));
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kPipPlaying));
 
   // When the non-prioritized alert is no longer active, the alert controller
   // should be updated to reflect that.
   tab_alert_controller()->MediaPictureInPictureChanged(false);
-  EXPECT_FALSE(tab_alert_controller()->IsAlertActive(TabAlert::PIP_PLAYING));
+  EXPECT_FALSE(tab_alert_controller()->IsAlertActive(TabAlert::kPipPlaying));
 }
 
 TEST_F(TabAlertControllerTest, VrStateUpdatesAlertController) {
@@ -207,7 +207,7 @@ TEST_F(TabAlertControllerTest, VrStateUpdatesAlertController) {
   vr_tab_helper->SetIsContentDisplayedInHeadset(true);
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::VR_PRESENTING_IN_HEADSET);
+            TabAlert::kVrPresentingInHeadset);
   vr_tab_helper->SetIsContentDisplayedInHeadset(false);
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
 }
@@ -217,14 +217,14 @@ TEST_F(TabAlertControllerTest, AudioStateUpdatesAlertController) {
   SimulateAudioState(true);
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::AUDIO_PLAYING);
+            TabAlert::kAudioPlaying);
 
   // The audio playing alert should still be active even though the audio has
   // stopped to prevent the audio state from toggling too frequently on pause.
   SimulateAudioState(false);
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::AUDIO_PLAYING);
+            TabAlert::kAudioPlaying);
 
   // The tab alert should go away after 2 seconds of consistently not playing
   // audio.
@@ -242,12 +242,12 @@ TEST_F(TabAlertControllerTest, MutedStateReliesOnRecentlyAudible) {
   // Simulating the tab to be audible should trigger the muted alert to be
   // active since the tab was already muted.
   SimulateAudioState(true);
-  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::AUDIO_MUTING);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kAudioMuting);
 
   // Turning off the audio state shouldn't immediately deactivate the muted
   // alert since the tab is still recently audible.
   SimulateAudioState(false);
-  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::AUDIO_MUTING);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), TabAlert::kAudioMuting);
 
   // After waiting until the tab is no longer recently audible, the muted alert
   // state should go away.
@@ -278,7 +278,7 @@ TEST_F(TabAlertControllerTest, MediaStatesUpdate) {
                              std::string(), {}, base::DoNothing());
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::AUDIO_RECORDING);
+            TabAlert::kAudioRecording);
 
   // Simulate video also being captured.
   blink::mojom::StreamDevices video_device;
@@ -296,7 +296,7 @@ TEST_F(TabAlertControllerTest, MediaStatesUpdate) {
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::MEDIA_RECORDING);
+            TabAlert::kMediaRecording);
 
   // Resetting the audio capture should leave only the video capture alert as
   // active.
@@ -304,7 +304,7 @@ TEST_F(TabAlertControllerTest, MediaStatesUpdate) {
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::VIDEO_RECORDING);
+            TabAlert::kVideoRecording);
 
   video_stream_ui.reset();
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
@@ -335,7 +335,7 @@ TEST_F(TabAlertControllerTest, DesktopCapturingUpdates) {
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::DESKTOP_CAPTURING);
+            TabAlert::kDesktopCapturing);
 
   // Start a second stream but capture the window instead.
   blink::mojom::StreamDevices second_video_device;
@@ -355,7 +355,7 @@ TEST_F(TabAlertControllerTest, DesktopCapturingUpdates) {
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::DESKTOP_CAPTURING);
+            TabAlert::kDesktopCapturing);
 
   // Even though the first stream has stopped, the desktop capturing alert
   // should remain active because the is still being captured by the window.
@@ -363,7 +363,7 @@ TEST_F(TabAlertControllerTest, DesktopCapturingUpdates) {
   EXPECT_TRUE(tab_alert_controller()->GetAlertToShow().has_value());
   EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
   EXPECT_EQ(tab_alert_controller()->GetAlertToShow().value(),
-            TabAlert::DESKTOP_CAPTURING);
+            TabAlert::kDesktopCapturing);
 
   // The desktop capturing alert should no longer be active after the second
   // video stream stopped.
