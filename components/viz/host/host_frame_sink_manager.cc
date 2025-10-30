@@ -117,8 +117,9 @@ void HostFrameSinkManager::InvalidateFrameSinkId(
   data.client = nullptr;
 
   // There may be frame sink hierarchy information left in FrameSinkData.
-  if (data.IsEmpty())
+  if (data.IsEmpty()) {
     frame_sink_data_map_.erase(frame_sink_id);
+  }
 
   display_hit_test_query_.erase(frame_sink_id);
 
@@ -255,8 +256,9 @@ void HostFrameSinkManager::OnFrameTokenChanged(
     base::TimeTicks activation_time) {
   DCHECK(frame_sink_id.is_valid());
   auto iter = frame_sink_data_map_.find(frame_sink_id);
-  if (iter == frame_sink_data_map_.end())
+  if (iter == frame_sink_data_map_.end()) {
     return;
+  }
 
   const FrameSinkData& data = iter->second;
   if (data.client) {
@@ -295,8 +297,9 @@ void HostFrameSinkManager::UnregisterFrameSinkHierarchy(
   size_t num_erased = std::erase(parent_data.children, child_frame_sink_id);
   CHECK_EQ(num_erased, 1u);
 
-  if (parent_data.IsEmpty())
+  if (parent_data.IsEmpty()) {
     frame_sink_data_map_.erase(parent_frame_sink_id);
+  }
 
   frame_sink_manager_->UnregisterFrameSinkHierarchy(parent_frame_sink_id,
                                                     child_frame_sink_id);
@@ -438,8 +441,9 @@ void HostFrameSinkManager::OnConnectionLost() {
 
   frame_sink_invalidate_callbacks_.clear();
 
-  if (!connection_lost_callback_.is_null())
+  if (!connection_lost_callback_.is_null()) {
     connection_lost_callback_.Run();
+  }
 }
 
 void HostFrameSinkManager::RegisterAfterConnectionLoss() {
@@ -471,16 +475,17 @@ void HostFrameSinkManager::RegisterAfterConnectionLoss() {
 
 void HostFrameSinkManager::OnFirstSurfaceActivation(
     const SurfaceInfo& surface_info) {
-
   auto it = frame_sink_data_map_.find(surface_info.id().frame_sink_id());
 
   // If we've received a bogus or stale SurfaceId from Viz then just ignore it.
-  if (it == frame_sink_data_map_.end())
+  if (it == frame_sink_data_map_.end()) {
     return;
+  }
 
   FrameSinkData& frame_sink_data = it->second;
-  if (frame_sink_data.client)
+  if (frame_sink_data.client) {
     frame_sink_data.client->OnFirstSurfaceActivation(surface_info);
+  }
 }
 
 void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
@@ -489,15 +494,17 @@ void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
   auto iter = display_hit_test_query_.find(frame_sink_id);
   // The corresponding HitTestQuery has already been deleted, so drop the
   // in-flight hit-test data.
-  if (iter == display_hit_test_query_.end())
+  if (iter == display_hit_test_query_.end()) {
     return;
+  }
 
   iter->second->OnAggregatedHitTestRegionListUpdated(hit_test_data);
 
   // Ensure that HitTestQuery are updated so that observers are not working with
   // stale data.
-  for (HitTestRegionObserver& observer : observers_)
+  for (HitTestRegionObserver& observer : observers_) {
     observer.OnAggregatedHitTestRegionListUpdated(frame_sink_id, hit_test_data);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -542,8 +549,9 @@ uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
 void HostFrameSinkManager::EvictCachedBackBuffer(uint32_t cache_id) {
   DCHECK(frame_sink_manager_remote_);
 
-  if (cache_id < min_valid_cache_back_buffer_id_)
+  if (cache_id < min_valid_cache_back_buffer_id_) {
     return;
+  }
 
   // This synchronous call ensures that the GL context/surface that draw to
   // the platform window (eg. XWindow or HWND) get destroyed before the
@@ -611,7 +619,7 @@ HostFrameSinkManager::FrameSinkData::FrameSinkData(FrameSinkData&& other) =
 
 HostFrameSinkManager::FrameSinkData::~FrameSinkData() = default;
 
-HostFrameSinkManager::FrameSinkData& HostFrameSinkManager::FrameSinkData::
-operator=(FrameSinkData&& other) = default;
+HostFrameSinkManager::FrameSinkData&
+HostFrameSinkManager::FrameSinkData::operator=(FrameSinkData&& other) = default;
 
 }  // namespace viz
