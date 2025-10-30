@@ -839,8 +839,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   auto* controller = AbortController::Create(script_state);
   init->setSignal(controller->signal());
   init->setDownloadRequest(params->download_filename);
-  if (params->source_element &&
-      params->source_element->GetExecutionContext() == window_) {
+  if (params->source_element) {
     init->setSourceElement(params->source_element);
   }
   init->setHasUAVisualTransition(params->has_ua_visual_transition);
