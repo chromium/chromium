@@ -129,6 +129,10 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
             continue;
           }
 
+          if (!web_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+            continue;
+          }
+
           // See if any passage embeddings are closely related to the query
           // embedding. Just add if at least one is high enough.
           std::vector<passage_embeddings::PassageEmbedding>
