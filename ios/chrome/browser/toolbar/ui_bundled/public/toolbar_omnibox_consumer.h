@@ -19,6 +19,12 @@
 - (void)setKeyboardAttachedBottomOmniboxHeight:
     (CGFloat)keyboardAttachedBottomOmniboxHeight;
 
+/// Sets whether the underlying page is NTP.
+- (void)setIsNTP:(BOOL)isNTP;
+
+/// Sets the preferred omnibox position.
+- (void)setPreferredOmniboxPosition:(ToolbarType)preferredOmniboxPosition;
+
 /// Sets the offset to be applied in the bottom of the popup when using the
 /// bottom omnibox.
 - (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset;

@@ -60,6 +60,12 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   /// animation of focusing/defocusing the omnibox changes depending on this
   /// position.
   ToolbarType _unfocusedOmniboxToolbarType;
+  /// Whether the presentation is on top on NTP.
+  BOOL _isNTP;
+  /// The preffered omnibox position of the user.
+  /// Due to various constraints of the system this will no guarantee the actual
+  /// position.
+  ToolbarType _preferredOmniboxPosition;
   // The context in which the omnibox is presented.
   OmniboxPresentationContext _presentationContext;
   /// The amount of padding to add to the bottom of the popup.
@@ -211,6 +217,14 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 #pragma mark - ToolbarOmniboxConsumer
+
+- (void)setPreferredOmniboxPosition:(ToolbarType)preferredOmniboxPosition {
+  _preferredOmniboxPosition = preferredOmniboxPosition;
+}
+
+- (void)setIsNTP:(BOOL)isNTP {
+  _isNTP = isNTP;
+}
 
 - (void)steadyStateOmniboxMovedToToolbar:(ToolbarType)toolbarType {
   _unfocusedOmniboxToolbarType = toolbarType;
@@ -379,12 +393,22 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 - (BOOL)useBottomOmniboxInPopup {
+  BOOL inPortrait = IsPortrait(self.viewController.view.window);
   if (omnibox::ForceBottomOmniboxInEditState()) {
-    return IsPortrait(self.viewController.view.window);
+    return inPortrait;
   }
 
-  return omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() &&
-         _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
+  BOOL unfocusedToolbarBottom =
+      _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
+  BOOL userPreferenceBottom =
+      _preferredOmniboxPosition == ToolbarType::kSecondary;
+  if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
+    // NTP portrait with bottom omnibox has a special handling.
+    return (userPreferenceBottom && _isNTP && inPortrait) ||
+           unfocusedToolbarBottom;
+  }
+
+  return NO;
 }
 
 @end
