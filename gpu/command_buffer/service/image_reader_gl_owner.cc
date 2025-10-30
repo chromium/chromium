@@ -267,10 +267,6 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 bool ImageReaderGLOwner::UpdateTexImage(bool discard) {
   base::AutoLock auto_lock(lock_);
 
-  // If we've lost the texture, then do nothing.
-  if (!texture())
-    return false;
-
   DCHECK(image_reader_);
 
   // Acquire the latest image asynchronously. We must release the current image
