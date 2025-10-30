@@ -1184,6 +1184,9 @@ const char kMultilineOmniboxFullLineAndPeeking[] =
     "kMultilineOmniboxFullLineAndPeeking";
 
 bool IsMultilineBrowserOmniboxEnabled() {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kMultilineBrowserOmnibox);
 }
 
