@@ -462,7 +462,7 @@ void GetAIPageContent(content::WebContents* web_contents,
           return;
         }
 
-        auto* parent_frame = rfh->GetParentOrOuterDocument();
+        auto* parent_frame = rfh->GetParentOrOuterDocumentOrEmbedder();
         content::GlobalRenderFrameHostToken frame_token =
             rfh->GetGlobalFrameToken();
 
@@ -487,6 +487,7 @@ void GetAIPageContent(content::WebContents* web_contents,
           return;
         }
 
+        // Also true for the main frame of a GuestView.
         const bool is_subframe = parent_frame != nullptr;
         auto options_to_use =
             is_subframe ? ApplyOptionsOverridesForSubframe(
