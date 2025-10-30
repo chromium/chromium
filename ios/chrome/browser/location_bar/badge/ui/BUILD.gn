@@ -42,3 +42,15 @@ source_set("constants") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "location_bar_badge_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/location_bar/badge/model",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
