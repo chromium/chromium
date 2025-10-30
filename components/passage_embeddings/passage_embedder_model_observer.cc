@@ -17,15 +17,10 @@ namespace passage_embeddings {
 
 PassageEmbedderModelObserver::PassageEmbedderModelObserver(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    PassageEmbeddingsServiceController* service_controller,
-    bool experimental)
+    PassageEmbeddingsServiceController* service_controller)
     : model_provider_(model_provider),
       service_controller_(service_controller),
-      target_(experimental ? optimization_guide::proto::
-                                 OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER
-                           : optimization_guide::proto::
-                                 OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
-  VLOG(3) << "Target: " << target_;
+      target_(optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
   if (model_provider_) {
 #if BUILDFLAG(IS_ANDROID)
     download::SchedulingParams scheduling_params;

@@ -61,9 +61,7 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
   // Observe launched target by default, as the user could opt in at any time.
   return std::make_unique<PassageEmbedderModelObserver>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      ChromePassageEmbeddingsServiceController::Get(),
-      /*experimental=*/base::FeatureList::IsEnabled(kPassageEmbedder) &&
-          !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile));
+      ChromePassageEmbeddingsServiceController::Get());
 }
 
 }  // namespace passage_embeddings

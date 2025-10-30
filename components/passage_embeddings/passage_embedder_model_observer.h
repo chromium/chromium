@@ -29,8 +29,7 @@ class PassageEmbedderModelObserver
   // and never nullptr.
   PassageEmbedderModelObserver(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      PassageEmbeddingsServiceController* service_controller,
-      bool experimental);
+      PassageEmbeddingsServiceController* service_controller);
   ~PassageEmbedderModelObserver() override;
 
  private:

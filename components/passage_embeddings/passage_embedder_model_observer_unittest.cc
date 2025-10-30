@@ -111,8 +111,8 @@ TEST_F(PassageEmbedderModelObserverTest, ObservesTargetAndNotifiesObserver) {
   EXPECT_FALSE(model_info_received_future_.IsReady());
 
   auto passage_embedder_model_observer =
-      std::make_unique<PassageEmbedderModelObserver>(
-          model_provider.get(), service_controller.get(), false);
+      std::make_unique<PassageEmbedderModelObserver>(model_provider.get(),
+                                                     service_controller.get());
 
   EXPECT_TRUE(target_observed_future_.IsReady());
   EXPECT_TRUE(target_observed_future_.Take());
