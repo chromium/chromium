@@ -13398,6 +13398,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(unexportable_keys::kUnexportableKeyDeletion)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {flag_descriptions::kTabbedBrowserUseNewLayoutId,
+     flag_descriptions::kTabbedBrowserUseNewLayoutName,
+     flag_descriptions::kTabbedBrowserUseNewLayoutDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabbedBrowserUseNewLayout)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

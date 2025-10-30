@@ -10794,6 +10794,7 @@ from previous Chrome versions.
   <int value="-1246125067" label="SearchInSettings:enabled"/>
   <int value="-1245617305" label="NewProfilePicker:enabled"/>
   <int value="-1244772303" label="NtpRealboxMatchOmniboxTheme:enabled"/>
+  <int value="-1244267485" label="TabbedBrowserUseNewLayout:disabled"/>
   <int value="-1243870410" label="CrOSLateBootCrasProcessorWavDump:disabled"/>
   <int value="-1243694853" label="DeferAllScript:disabled"/>
   <int value="-1243449299" label="WebPrinting:disabled"/>
@@ -12259,6 +12260,7 @@ from previous Chrome versions.
   <int value="-722635250" label="ChromeRefresh2023NTB:disabled"/>
   <int value="-722474177" label="browser-side-navigation:disabled"/>
   <int value="-722172419" label="SystemChinesePhysicalTyping:disabled"/>
+  <int value="-721757044" label="TabbedBrowserUseNewLayout:enabled"/>
   <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>
   <int value="-721649087" label="HighEfficiencyModeAvailable:enabled"/>
   <int value="-721245076" label="DesktopPWAsStayInWindow:disabled"/>
