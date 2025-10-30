@@ -260,12 +260,13 @@ LayoutUnit AlignContentOffset(
 
 LayoutUnit MasonryLayoutAlgorithm::CalculateItemInlineContribution(
     const GridItemData& masonry_item,
+    const GridLayoutTrackCollection& track_collection,
     SizingConstraint sizing_constraint) {
   CHECK_NE(sizing_constraint, SizingConstraint::kLayout);
   // We need to compute the available space for the item if we are using it
   // to compute min/max content sizes.
-  const ConstraintSpace space_for_measure =
-      CreateConstraintSpaceForMeasure(masonry_item);
+  const ConstraintSpace space_for_measure = CreateConstraintSpaceForMeasure(
+      masonry_item, /*opt_fixed_inline_size=*/std::nullopt, &track_collection);
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
                                 masonry_item.node, space_for_measure)
                                 .sizes;
@@ -330,14 +331,16 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     LogicalRect containing_rect;
 
     const ConstraintSpace space =
-        is_for_layout ? CreateConstraintSpaceForLayout(
-                            masonry_item, track_collection,
-                            opt_fixed_inline_size, &containing_rect)
-                      : CreateConstraintSpaceForMeasure(
-                            masonry_item,
-                            CalculateItemInlineContribution(masonry_item,
-                                                            *sizing_constraint),
-                            /*is_for_min_max_sizing=*/true);
+        is_for_layout
+            ? CreateConstraintSpaceForLayout(masonry_item, track_collection,
+                                             opt_fixed_inline_size,
+                                             &containing_rect)
+            : CreateConstraintSpaceForMeasure(
+                  masonry_item,
+                  CalculateItemInlineContribution(
+                      masonry_item, track_collection, *sizing_constraint),
+                  &track_collection,
+                  /*is_for_min_max_sizing=*/true);
 
     const auto& item_node = masonry_item.node;
     const auto& item_style = item_node.Style();
@@ -1176,15 +1179,28 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item,
     std::optional<LayoutUnit> opt_fixed_inline_size,
+    const GridLayoutTrackCollection* track_collection,
     bool is_for_min_max_sizing) const {
   LogicalSize containing_size = masonry_available_size_;
   const auto writing_mode = GetConstraintSpace().GetWritingMode();
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
+  const bool is_parallel_with_root_grid =
+      masonry_item.is_parallel_with_root_grid;
 
   // Check against columns, as opposed to whether the item is parallel, because
   // the ConstraintSpaceBuilder takes care of handling orthogonal items.
   if (grid_axis_direction == kForColumns) {
     containing_size.inline_size = kIndefiniteSize;
+
+    // Only set a definite inline size if the item is orthogonal because the
+    // block and inline constraints get swapped for such items later on, and
+    // unlike the inline constraint, the block constraint can be definite in
+    // a measure pass.
+    if (track_collection && !is_parallel_with_root_grid) {
+      LayoutUnit start_offset;
+      containing_size.inline_size =
+          masonry_item.CalculateAvailableSize(*track_collection, &start_offset);
+    }
   } else {
     if (is_for_min_max_sizing) {
       // In the row direction, we use this method to create a space for
@@ -1193,6 +1209,15 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
       containing_size.inline_size = kIndefiniteSize;
     }
     containing_size.block_size = kIndefiniteSize;
+
+    // Don't set a definite block size if the item is orthogonal because the
+    // block and inline constraints get swapped later on for such items, and the
+    // inline constraint should always be indefinite in a measure pass.
+    if (track_collection && is_parallel_with_root_grid) {
+      LayoutUnit start_offset;
+      containing_size.block_size =
+          masonry_item.CalculateAvailableSize(*track_collection, &start_offset);
+    }
   }
 
   // TODO(almaher): Do we need to do something special here for subgrid like

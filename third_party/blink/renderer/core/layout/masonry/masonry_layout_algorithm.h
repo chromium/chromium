@@ -151,6 +151,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   // min-width or the max-width based on `sizing_constraint`.
   LayoutUnit CalculateItemInlineContribution(
       const GridItemData& masonry_item,
+      const GridLayoutTrackCollection& track_collection,
       SizingConstraint sizing_constraint);
 
   // If `containing_rect` is provided, it will store the available size for the
@@ -165,6 +166,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& masonry_item,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
+      const GridLayoutTrackCollection* track_collection = nullptr,
       bool is_for_min_max_sizing = false) const;
 
   LayoutUnit ContributionSizeForVirtualItem(
