@@ -71,6 +71,12 @@ public class ContentFeatureList {
 
     public static final String DIPS_TTL = "DIPSTtl";
 
+    public static final MutableFlagWithSafeDefault sAccessibilityCheckJavaNodeCacheFreshness =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    ContentFeatures.ACCESSIBILITY_CHECK_JAVA_NODE_CACHE_FRESHNESS,
+                    false);
+
     public static final MutableFlagWithSafeDefault sAccessibilityDeprecateJavaNodeCache =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
