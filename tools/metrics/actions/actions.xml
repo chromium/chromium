@@ -828,9 +828,34 @@ should be able to be added at any place in this file.
   <variant name=".UnfamiliarSite" summary="Recorded on an unfamiliar site."/>
 </variants>
 
+<variants name="SidePanelEntry">
+  <variant name="AboutThisSite" summary="about this site"/>
+  <variant name="Assistant" summary="assistant"/>
+  <variant name="Bookmarks" summary="bookmarks"/>
+  <variant name="Comments" summary="comments"/>
+  <variant name="Companion" summary="companion"/>
+  <variant name="ContextualTasks" summary="contextual tasks"/>
+  <variant name="CustomizeChrome" summary="customize chrome"/>
+  <variant name="Extension" summary="extension"/>
+  <variant name="Feed" summary="feed"/>
+  <variant name="Glic" summary="glic"/>
+  <variant name="History" summary="history"/>
+  <variant name="HistoryClusters" summary="history clusters"/>
+  <variant name="Lens" summary="lens"/>
+  <variant name="LensOverlayResults" summary="lens overlay results"/>
+  <variant name="MerchantTrust" summary="merchant trust"/>
+  <variant name="Performance" summary="performance"/>
+  <variant name="ReadAnything" summary="read anything"/>
+  <variant name="ReadingList" summary="reading list"/>
+  <variant name="ShoppingInsights" summary="shopping insights"/>
+  <variant name="SideSearch" summary="side search"/>
+  <variant name="UserNotes" summary="user notes"/>
+  <variant name="WebView" summary="web view"/>
+</variants>
+
 <variants name="SidePanelType">
   <variant name="SidePanel" summary="content height side panel"/>
-  <variant name="ToolbarHeightSidePanel" summary="toolbar height side panel"/>
+  <variant name="SidePanelToolbarHeight" summary="toolbar height side panel"/>
 </variants>
 
 <variants name="TabsSuggestions_Type">
@@ -41513,14 +41538,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.Assistant.Shown">
-  <owner>brunobraga@google.com</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the assistant side panel entry is shown.
-  </description>
-</action>
-
 <action name="SidePanel.Bookmarks.FolderClose">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -41554,28 +41571,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.Bookmarks.Shown">
-  <owner>johntlee@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the bookmarks side panel entry is shown.
-  </description>
-</action>
-
 <action name="SidePanel.Bookmarks.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the bookmarks side panel entry is unpinned via the pin button
     in the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.Comments.Shown">
-  <owner>mickeyburks@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the comments side panel entry is shown.
   </description>
 </action>
 
@@ -41586,15 +41587,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the companion side panel entry is pinned via the pin button in
     the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.Companion.Shown">
-  <obsolete>Deprecated 11/2024. Companion was deprecated and removed.</obsolete>
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the companion side panel entry is shown.
   </description>
 </action>
 
@@ -41628,12 +41620,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.Feed.Shown">
-  <owner>jianli@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>Recorded when the feed side panel entry is shown.</description>
-</action>
-
 <action name="SidePanel.Feed.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>jianli@chromium.org</owner>
@@ -41641,20 +41627,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the feed side panel entry is unpinned via the pin button in
     the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.Glic.Shown">
-  <owner>perrier@chromium.org</owner>
-  <owner>dewittj@google.com</owner>
-  <description>Recorded when the Glic side panel entry is shown.</description>
-</action>
-
-<action name="SidePanel.History.Shown">
-  <owner>mfacey@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the history side panel entry is shown.
   </description>
 </action>
 
@@ -41677,14 +41649,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.HistoryClusters.Shown">
-  <owner>mfacey@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the history clusters side panel entry is shown.
-  </description>
-</action>
-
 <action name="SidePanel.HistoryClusters.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>mfacey@chromium.org</owner>
@@ -41704,35 +41668,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.Lens.Shown">
-  <owner>lens-chrome-eng@google.com</owner>
-  <owner>juanmojica@google.com</owner>
-  <description>Recorded when the Lens side panel entry is shown.</description>
-</action>
-
 <action name="SidePanel.LensOverlayResults.NewTabButtonClicked">
   <owner>lens-chrome-eng@google.com</owner>
   <owner>nguyenbryan@google.com</owner>
   <description>
     Recorded when the new tab button is clicked with the Lens Overlay side panel
     entry showing.
-  </description>
-</action>
-
-<action name="SidePanel.LensOverlayResults.Shown">
-  <owner>lens-chrome-eng@google.com</owner>
-  <owner>juanmojica@google.com</owner>
-  <owner>mercerd@google.com</owner>
-  <description>
-    Recorded when the Lens Overlay side panel entry is shown.
-  </description>
-</action>
-
-<action name="SidePanel.MerchantTrust.Shown">
-  <owner>tommasin@chromium.org</owner>
-  <owner>privacy-on-the-web@google.com</owner>
-  <description>
-    Recorded when the merchant trust side panel entry is shown.
   </description>
 </action>
 
@@ -41743,15 +41684,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the performance side panel entry is pinned via the pin button
     in the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.Performance.Shown">
-  <obsolete>Deprecated 07/2024. No longer needed.</obsolete>
-  <owner>agale@chromium.org</owner>
-  <owner>chrome-performance-ui-sea@google.com</owner>
-  <description>
-    Recorded when the performance side panel entry is shown.
   </description>
 </action>
 
@@ -41772,14 +41704,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the read anything side panel entry is pinned via the pin
     button in the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.ReadAnything.Shown">
-  <owner>abigailbklein@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the read anything side panel entry is shown.
   </description>
 </action>
 
@@ -41818,28 +41742,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.ReadingList.Shown">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the reading list side panel entry is shown.
-  </description>
-</action>
-
 <action name="SidePanel.ReadingList.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the reading list side panel entry is unpinned via the pin
     button in the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.ShoppingInsights.Shown">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <description>
-    Recorded when the shopping insights side panel entry is shown.
   </description>
 </action>
 
@@ -41852,28 +41760,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="SidePanel.SideSearch.Shown">
-  <owner>tluk@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the side search side panel entry is shown.
-  </description>
-</action>
-
 <action name="SidePanel.UserNotes.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the user notes side panel entry is pinned via the pin button
     in the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.UserNotes.Shown">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the user notes side panel entry is shown.
   </description>
 </action>
 
@@ -52673,6 +52565,17 @@ should be able to be added at any place in this file.
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>The user opened the {SidePanelType}.</description>
   <token key="SidePanelType" variants="SidePanelType"/>
+</action>
+
+<action name="{SidePanelType}.{SidePanelEntry}.Shown">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the {SidePanelEntry} side panel entry is shown in the
+    {SidePanelType}.
+  </description>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
 </action>
 
 </actions>

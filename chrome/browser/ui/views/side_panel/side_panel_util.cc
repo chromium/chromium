@@ -42,7 +42,7 @@ namespace {
 
 std::string GetSidePanelNameFor(SidePanelEntry::PanelType type) {
   return type == SidePanelEntry::PanelType::kContent ? "SidePanel"
-                                                     : "ToolbarHeightSidePanel";
+                                                     : "SidePanelToolbarHeight";
 }
 
 }  // namespace
@@ -163,26 +163,30 @@ void SidePanelUtil::RecordSidePanelClosed(SidePanelEntry::PanelType type,
       base::TimeTicks::Now() - opened_timestamp);
 }
 
-void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
+void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::PanelType type,
+                                                 SidePanelEntry::Id id,
                                                  int side_panel_contents_width,
                                                  int browser_window_width) {
   std::string entry_name = SidePanelEntryIdToHistogramName(id);
 
   // Metrics per-id and overall for side panel width after resize.
-  base::UmaHistogramCounts10000(
-      base::StrCat({"SidePanel.", entry_name, ".ResizedWidth"}),
-      side_panel_contents_width);
-  base::UmaHistogramCounts10000("SidePanel.ResizedWidth",
+  base::UmaHistogramCounts10000(base::StrCat({GetSidePanelNameFor(type), ".",
+                                              entry_name, ".ResizedWidth"}),
                                 side_panel_contents_width);
+  base::UmaHistogramCounts10000(
+      base::StrCat({GetSidePanelNameFor(type), ".ResizedWidth"}),
+      side_panel_contents_width);
 
   // Metrics per-id and overall for side panel width after resize as a
   // percentage of browser width.
   int width_percentage = side_panel_contents_width * 100 / browser_window_width;
   base::UmaHistogramPercentage(
-      base::StrCat({"SidePanel.", entry_name, ".ResizedWidthPercentage"}),
+      base::StrCat({GetSidePanelNameFor(type), ".", entry_name,
+                    ".ResizedWidthPercentage"}),
       width_percentage);
-  base::UmaHistogramPercentage("SidePanel.ResizedWidthPercentage",
-                               width_percentage);
+  base::UmaHistogramPercentage(
+      base::StrCat({GetSidePanelNameFor(type), ".ResizedWidthPercentage"}),
+      width_percentage);
 }
 
 void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
@@ -192,23 +196,27 @@ void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
 }
 
 void SidePanelUtil::RecordEntryShownMetrics(
+    SidePanelEntry::PanelType type,
     SidePanelEntry::Id id,
     base::TimeTicks load_started_timestamp) {
-  base::RecordComputedAction(base::StrCat(
-      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".Shown"}));
+  base::RecordComputedAction(
+      base::StrCat({GetSidePanelNameFor(type), ".",
+                    SidePanelEntryIdToHistogramName(id), ".Shown"}));
   if (load_started_timestamp != base::TimeTicks()) {
     base::UmaHistogramLongTimes(
-        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+        base::StrCat({GetSidePanelNameFor(type), ".",
+                      SidePanelEntryIdToHistogramName(id),
                       ".TimeFromEntryTriggerToShown"}),
         base::TimeTicks::Now() - load_started_timestamp);
   }
 }
 
-void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
+void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::PanelType type,
+                                             SidePanelEntry::Id id,
                                              base::TimeTicks shown_timestamp) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
-                    ".ShownDuration"}),
+      base::StrCat({GetSidePanelNameFor(type), ".",
+                    SidePanelEntryIdToHistogramName(id), ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
 }
 
@@ -233,7 +241,9 @@ void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordSidePanelAnimationMetrics(
+    SidePanelEntry::PanelType type,
     base::TimeDelta largest_step_time) {
-  base::UmaHistogramTimes("SidePanel.TimeOfLongestAnimationStep",
-                          largest_step_time);
+  base::UmaHistogramTimes(
+      base::StrCat({GetSidePanelNameFor(type), ".TimeOfLongestAnimationStep"}),
+      largest_step_time);
 }

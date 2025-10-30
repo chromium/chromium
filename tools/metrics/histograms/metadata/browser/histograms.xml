@@ -47,28 +47,33 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
 
 <variants name="SidePanelEntry">
-  <variant name="AboutThisSite"/>
-  <variant name="Assistant"/>
-  <variant name="Bookmarks"/>
-  <variant name="Companion"/>
-  <variant name="CustomizeChrome"/>
-  <variant name="Extension"/>
-  <variant name="Feed"/>
-  <variant name="HistoryClusters"/>
-  <variant name="Lens"/>
-  <variant name="LensOverlayResults"/>
-  <variant name="MerchantTrust"/>
-  <variant name="ReadAnything"/>
-  <variant name="ReadingList"/>
-  <variant name="ShoppingInsights"/>
-  <variant name="SideSearch"/>
-  <variant name="UserNotes"/>
-  <variant name="WebView"/>
+  <variant name="AboutThisSite" summary="about this site"/>
+  <variant name="Assistant" summary="assistant"/>
+  <variant name="Bookmarks" summary="bookmarks"/>
+  <variant name="Comments" summary="comments"/>
+  <variant name="Companion" summary="companion"/>
+  <variant name="ContextualTasks" summary="contextual tasks"/>
+  <variant name="CustomizeChrome" summary="customize chrome"/>
+  <variant name="Extension" summary="extension"/>
+  <variant name="Feed" summary="feed"/>
+  <variant name="Glic" summary="glic"/>
+  <variant name="History" summary="history"/>
+  <variant name="HistoryClusters" summary="history clusters"/>
+  <variant name="Lens" summary="lens"/>
+  <variant name="LensOverlayResults" summary="lens overlay results"/>
+  <variant name="MerchantTrust" summary="merchant trust"/>
+  <variant name="Performance" summary="performance"/>
+  <variant name="ReadAnything" summary="read anything"/>
+  <variant name="ReadingList" summary="reading list"/>
+  <variant name="ShoppingInsights" summary="shopping insights"/>
+  <variant name="SideSearch" summary="side search"/>
+  <variant name="UserNotes" summary="user notes"/>
+  <variant name="WebView" summary="web view"/>
 </variants>
 
 <variants name="SidePanelType">
   <variant name="SidePanel" summary="content height side panel"/>
-  <variant name="ToolbarHeightSidePanel" summary="toolbar height side panel"/>
+  <variant name="SidePanelToolbarHeight" summary="toolbar height side panel"/>
 </variants>
 
 <!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
@@ -2104,81 +2109,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SidePanel.ResizedWidth" units="px" expires_after="2026-04-05">
-  <owner>emshack@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the width of the side panel contents after the side panel was
-    resized.
-  </summary>
-</histogram>
-
-<histogram name="SidePanel.ResizedWidthPercentage" units="% of window width"
-    expires_after="2026-04-05">
-  <owner>emshack@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the width of the side panel contents as a percentage of the browser
-    window width after the side panel was resized.
-  </summary>
-</histogram>
-
-<histogram name="SidePanel.TimeOfLongestAnimationStep" units="ms"
-    expires_after="2025-08-24">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records elapsed time between animation steps for the longest step in a side
-    panel open or close animation.
-  </summary>
-</histogram>
-
-<histogram name="SidePanel.{SidePanelEntry}.ResizedWidth" units="px"
-    expires_after="2026-04-05">
-  <owner>emshack@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the width of the side panel contents after the side panel was
-    resized, while the {SidePanelEntry} side panel entry was displayed.
-  </summary>
-  <token key="SidePanelEntry" variants="SidePanelEntry"/>
-</histogram>
-
-<histogram name="SidePanel.{SidePanelEntry}.ResizedWidthPercentage"
-    units="% of window width" expires_after="2026-04-05">
-  <owner>emshack@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the width of the side panel contents as a percentage of the browser
-    window width after the side panel was resized, while the {SidePanelEntry}
-    side panel entry was displayed.
-  </summary>
-  <token key="SidePanelEntry" variants="SidePanelEntry"/>
-</histogram>
-
-<histogram name="SidePanel.{SidePanelEntry}.ShownDuration" units="ms"
-    expires_after="2026-03-22">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records how long the {SidePanelEntry} side panel entry was open for (capped
-    at 1 hour). This is recorded in SidePanelEntry::OnEntryHidden when the entry
-    is hidden (ie. switching entries or the side panel closing).
-  </summary>
-  <token key="SidePanelEntry" variants="SidePanelEntry"/>
-</histogram>
-
-<histogram name="SidePanel.{SidePanelEntry}.TimeFromEntryTriggerToShown"
-    units="ms" expires_after="2026-03-01">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records elapsed time between when the {SidePanelEntry} side panel entry
-    triggered to be shown and when it was shown.
-  </summary>
-  <token key="SidePanelEntry" variants="SidePanelEntry"/>
-</histogram>
-
 <histogram name="{SidePanelType}.OpenDuration" units="ms"
     expires_after="2026-03-22">
   <owner>corising@chromium.org</owner>
@@ -2216,6 +2146,77 @@ chromium-metrics-reviews@google.com.
   <token key="SidePanelType" variants="SidePanelType"/>
 </histogram>
 
+<histogram name="{SidePanelType}.ResizedWidth" units="px"
+    expires_after="2026-04-05">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the width of the side panel contents after the side panel was
+    resized.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.ResizedWidthPercentage"
+    units="% of window width" expires_after="2026-04-05">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the width of the side panel contents as a percentage of the browser
+    window width after the side panel was resized.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.TimeOfLongestAnimationStep" units="ms"
+    expires_after="2026-04-05">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records elapsed time between animation steps for the longest step in a side
+    panel open or close animation.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.{SidePanelEntry}.ResizedWidth" units="px"
+    expires_after="2026-04-05">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the width of the side panel contents after the side panel was
+    resized, while the {SidePanelEntry} side panel entry was displayed.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
+<histogram name="{SidePanelType}.{SidePanelEntry}.ResizedWidthPercentage"
+    units="% of window width" expires_after="2026-04-05">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the width of the side panel contents as a percentage of the browser
+    window width after the side panel was resized, while the {SidePanelEntry}
+    side panel entry was displayed.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
+<histogram name="{SidePanelType}.{SidePanelEntry}.ShownDuration" units="ms"
+    expires_after="2026-03-22">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how long the {SidePanelEntry} side panel entry was open for (capped
+    at 1 hour). This is recorded in SidePanelEntry::OnEntryHidden when the entry
+    is hidden (ie. switching entries or the side panel closing).
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
 <histogram name="{SidePanelType}.{SidePanelEntry}.ShowTriggered"
     enum="SidePanelOpenTrigger" expires_after="2026-03-22">
   <owner>corising@chromium.org</owner>
@@ -2225,6 +2226,18 @@ chromium-metrics-reviews@google.com.
     toolbar button, by commbobox selection). This is recorded when a new
     {SidePanelType} entry is triggered to be shown regardless any
     {SidePanelType} entry is currently open.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelEntry" variants="SidePanelEntry"/>
+</histogram>
+
+<histogram name="{SidePanelType}.{SidePanelEntry}.TimeFromEntryTriggerToShown"
+    units="ms" expires_after="2026-03-01">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records elapsed time between when the {SidePanelEntry} side panel entry
+    triggered to be shown and when it was shown.
   </summary>
   <token key="SidePanelType" variants="SidePanelType"/>
   <token key="SidePanelEntry" variants="SidePanelEntry"/>

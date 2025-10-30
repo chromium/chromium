@@ -579,7 +579,7 @@ void SidePanel::AnimationEnded(const gfx::Animation* animation) {
   }
   if (largest_animation_step_time_.has_value()) {
     SidePanelUtil::RecordSidePanelAnimationMetrics(
-        largest_animation_step_time_.value());
+        type_, largest_animation_step_time_.value());
   }
   InvalidateLayout();
 }
@@ -644,7 +644,7 @@ void SidePanel::RecordMetricsIfResized() {
     int side_panel_contents_width = width() - GetBorderInsets().width();
     int browser_window_width = browser_view_->width();
     SidePanelUtil::RecordSidePanelResizeMetrics(
-        id.value(), side_panel_contents_width, browser_window_width);
+        type_, id.value(), side_panel_contents_width, browser_window_width);
     did_resize_ = false;
   }
 }

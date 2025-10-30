@@ -12,11 +12,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "ui/actions/action_id.h"
 
-// Note: this order matches that of the combobox options in the side panel.
 // Once provided the histogram name should not be changed since it
-// is persisted to logs. When adding a new Id please add actions to
-// tools/metrics/actions/actions.xml for "SidePanel.[new id name].Shown"
-// since we cannot autogenerate this in actions.xml.
+// is persisted to logs.
+// LINT.IfChange(SIDE_PANEL_ENTRY_IDS)
 #define SIDE_PANEL_ENTRY_IDS(V)                                               \
   /* Global Entries */                                                        \
   V(kReadingList, kActionSidePanelShowReadingList, "ReadingList")             \
@@ -44,6 +42,8 @@
   V(kGlic, kActionSidePanelShowGlic, "Glic")                                  \
   /* Extensions (nothing more should be added below here) */                  \
   V(kExtension, std::nullopt, "Extension")
+
+// LINT.ThenChange(//tools/metrics/actions/actions.xml:SidePanelEntry,//tools/metrics/histograms/metadata/browser/histograms.xml:SidePanelEntry)
 
 #define SIDE_PANEL_ENTRY_ID_ENUM(entry_id, action_id, histogram_name) entry_id,
 enum class SidePanelEntryId { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_ENTRY_ID_ENUM) };

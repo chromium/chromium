@@ -73,7 +73,7 @@ void SidePanelEntry::ClearCachedView() {
 
 void SidePanelEntry::OnEntryShown() {
   entry_shown_timestamp_ = base::TimeTicks::Now();
-  SidePanelUtil::RecordEntryShownMetrics(key_.id(),
+  SidePanelUtil::RecordEntryShownMetrics(type(), key_.id(),
                                          entry_show_triggered_timestamp_);
   // After the initial load time is recorded, we need to reset the triggered
   // timestamp so we don't keep recording this entry after its selected from the
@@ -91,7 +91,8 @@ void SidePanelEntry::OnEntryHideCancelled() {
 }
 
 void SidePanelEntry::OnEntryHidden() {
-  SidePanelUtil::RecordEntryHiddenMetrics(key_.id(), entry_shown_timestamp_);
+  SidePanelUtil::RecordEntryHiddenMetrics(type(), key_.id(),
+                                          entry_shown_timestamp_);
   observers_.Notify(&SidePanelEntryObserver::OnEntryHidden, this);
 }
 

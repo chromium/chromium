@@ -50,12 +50,15 @@ class SidePanelUtil {
       std::optional<SidePanelOpenTrigger> trigger);
   static void RecordSidePanelClosed(SidePanelEntry::PanelType type,
                                     base::TimeTicks opened_timestamp);
-  static void RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
+  static void RecordSidePanelResizeMetrics(SidePanelEntry::PanelType type,
+                                           SidePanelEntry::Id id,
                                            int side_panel_contents_width,
                                            int browser_window_width);
-  static void RecordEntryShownMetrics(SidePanelEntry::Id id,
+  static void RecordEntryShownMetrics(SidePanelEntry::PanelType type,
+                                      SidePanelEntry::Id id,
                                       base::TimeTicks load_started_timestamp);
-  static void RecordEntryHiddenMetrics(SidePanelEntry::Id id,
+  static void RecordEntryHiddenMetrics(SidePanelEntry::PanelType type,
+                                       SidePanelEntry::Id id,
                                        base::TimeTicks shown_timestamp);
   static void RecordEntryShowTriggeredMetrics(
       SidePanelEntry::PanelType type,
@@ -64,6 +67,7 @@ class SidePanelUtil {
       std::optional<SidePanelOpenTrigger> trigger);
   static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
   static void RecordSidePanelAnimationMetrics(
+      SidePanelEntry::PanelType type,
       base::TimeDelta largest_step_time);
 };
 
