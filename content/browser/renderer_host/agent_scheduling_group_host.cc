@@ -21,6 +21,7 @@
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
+#include "ipc/constants.mojom.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -452,7 +453,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 Listener* AgentSchedulingGroupHost::GetListener(int32_t routing_id) {
-  DCHECK_NE(routing_id, MSG_ROUTING_CONTROL);
+  DCHECK_NE(routing_id, IPC::mojom::kRoutingIdControl);
 
   return listener_map_.Lookup(routing_id);
 }

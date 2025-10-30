@@ -68,36 +68,6 @@ class COMPONENT_EXPORT(IPC) Channel final
     MODE_CLIENT = MODE_CLIENT_FLAG,
   };
 
-  // Messages internal to the IPC implementation are defined here.
-  // Uses Maximum value of message type (uint16_t), to avoid conflicting
-  // with normal message types, which are enumeration constants starting from 0.
-  enum {
-    // The Hello message is sent by the peer when the channel is connected.
-    // The message contains just the process id (pid).
-    // The message has a special routing_id (MSG_ROUTING_NONE)
-    // and type (HELLO_MESSAGE_TYPE).
-    HELLO_MESSAGE_TYPE = UINT16_MAX,
-    // The CLOSE_FD_MESSAGE_TYPE is used in the IPC class to
-    // work around a bug in sendmsg() on Mac. When an FD is sent
-    // over the socket, a CLOSE_FD_MESSAGE is sent with hops = 2.
-    // The client will return the message with hops = 1, *after* it
-    // has received the message that contains the FD. When we
-    // receive it again on the sender side, we close the FD.
-    CLOSE_FD_MESSAGE_TYPE = HELLO_MESSAGE_TYPE - 1
-  };
-
-  // The maximum message size in bytes. Attempting to receive a message of this
-  // size or bigger results in a channel error.
-  static constexpr size_t kMaximumMessageSize = 128 * 1024 * 1024;
-
-  // Amount of data to read at once from the pipe.
-  static const size_t kReadBufferSize = 4 * 1024;
-
-  // Maximum persistent read buffer size. Read buffer can grow larger to
-  // accommodate large messages, but it's recommended to shrink back to this
-  // value because it fits 99.9% of all messages (see issue 529940 for data).
-  static const size_t kMaximumReadBufferSize = 64 * 1024;
-
   // Initialize a Channel.
   //
   // |channel_handle| identifies the communication Channel. For POSIX, if

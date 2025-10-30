@@ -94,9 +94,6 @@ base::ProcessId GetSelfPID() {
 }  // namespace
 
 // static
-constexpr size_t Channel::kMaximumMessageSize;
-
-// static
 std::unique_ptr<Channel> Channel::Create(
     mojo::ScopedMessagePipeHandle handle,
     Mode mode,

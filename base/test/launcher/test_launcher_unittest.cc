@@ -1608,18 +1608,18 @@ TEST(TestLauncherTools, TruncateSnippetFocusedTest) {
       "libva error: va_getDriverName() failed with unknown libva error,driver"
       "_name=(null)\n"
       "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
-      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "] Check failed: message->routing_id() != IPC::mojom::kRoutingIdControl "
       "(2147483647 vs. 2147483647)\n";
-  const std::string result_three = TruncateSnippetFocused(snippet_three, 300);
+  const std::string result_three = TruncateSnippetFocused(snippet_three, 310);
   EXPECT_EQ(
       result_three,
       "[ RUN      ] All/PDFExtensionAccessibilityTreeDumpTest.Hi\n"
       "<truncated (432 bytes)>\n"
       "Name() failed with unknown libva error,driver_name=(null)\n"
       "[6741:6741:0716/171817.688633:FATAL:agent_scheduling_group_host.cc(290)"
-      "] Check failed: message->routing_id() != MSG_ROUTING_CONTROL "
+      "] Check failed: message->routing_id() != IPC::mojom::kRoutingIdControl "
       "(2147483647 vs. 2147483647)\n");
-  EXPECT_EQ(result_three.length(), 300UL);
+  EXPECT_EQ(result_three.length(), 310UL);
 
   // Test where FATAL message does not appear.
   const std::string snippet_four =

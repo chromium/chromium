@@ -27,6 +27,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
@@ -228,7 +229,7 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
-  } else if (frame_routing_id != MSG_ROUTING_NONE) {
+  } else if (frame_routing_id != IPC::mojom::kRoutingIdNone) {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;

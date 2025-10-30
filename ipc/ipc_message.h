@@ -95,16 +95,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT Message : public base::Pickle {
   FRIEND_TEST_ALL_PREFIXES(IPCMessageTest, FindNextOverflow);
 };
 
-//------------------------------------------------------------------------------
-
 }  // namespace IPC
-
-enum SpecialRoutingIDs {
-  // indicates that we don't have a routing ID yet.
-  MSG_ROUTING_NONE = -2,
-
-  // indicates a general message not sent to a particular tab.
-  MSG_ROUTING_CONTROL = INT32_MAX,
-};
 
 #endif  // IPC_IPC_MESSAGE_H_
