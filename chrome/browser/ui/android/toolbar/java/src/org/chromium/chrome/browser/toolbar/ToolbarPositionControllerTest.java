@@ -1102,8 +1102,7 @@ public class ToolbarPositionControllerTest {
         doReturn(mRootView).when(mControlContainerView).getRootView();
         WindowInsets rootViewInsets =
                 new WindowInsets.Builder()
-                        .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 450))
-                        .setTappableElementInsets(Insets.of(0, 0, 0, 50))
+                        .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 400))
                         .build();
         doReturn(rootViewInsets).when(mControlContainerView).getRootWindowInsets();
 
