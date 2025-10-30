@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,10 +26,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,7 +56,7 @@ public class DragAndDropLauncherActivityUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ExpectedException exception = ExpectedException.none();
     @Mock private Profile mProfile;
-
+    @Mock private ChromeTabbedActivity mActivity;
     private Context mContext;
     private String mLinkUrl;
 
@@ -63,6 +66,10 @@ public class DragAndDropLauncherActivityUnitTest {
         mContext = ContextUtils.getApplicationContext();
         mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
+
+        when(mActivity.getApplicationContext()).thenReturn(mContext);
+        when(mActivity.getSupportedProfileType())
+                .thenReturn(ChromeTabbedActivity.SupportedProfileType.UNSET);
     }
 
     @Test
@@ -175,6 +182,46 @@ public class DragAndDropLauncherActivityUnitTest {
                 DragAndDropLauncherActivity.isIntentValid(intent));
     }
 
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void testGetTabOrGroupIntent_sourceActivityHasIncognitoProfileType() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        tab.setIsPinned(true);
+        ChromeDropDataAndroid dropData =
+                createTabDropData(tab, /* allowDragToCreateNewInstance= */ true);
+
+        int sourceWindowId = 1;
+
+        when(mActivity.getSupportedProfileType())
+                .thenReturn(ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+        Intent intent =
+                DragAndDropLauncherActivity.buildTabOrGroupIntent(
+                        dropData, mActivity, sourceWindowId, /* destWindowId= */ 2);
+        assertTrue(
+                "Incognito extra should be true",
+                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void testGetTabOrGroupIntent_sourceActivityRegularProfileType() {
+        Tab tab = MockTab.createAndInitialize(1, mProfile);
+        tab.setIsPinned(true);
+        ChromeDropDataAndroid dropData =
+                createTabDropData(tab, /* allowDragToCreateNewInstance= */ true);
+
+        int sourceWindowId = 1;
+
+        when(mActivity.getSupportedProfileType())
+                .thenReturn(ChromeTabbedActivity.SupportedProfileType.REGULAR);
+        Intent intent =
+                DragAndDropLauncherActivity.buildTabOrGroupIntent(
+                        dropData, mActivity, sourceWindowId, /* destWindowId= */ 2);
+        assertFalse(
+                "Incognito extra should be false",
+                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+    }
+
     private void testGetTabOrGroupIntent(boolean isGroupDrag, int destWindowId) {
         testGetTabOrGroupIntent(isGroupDrag, /* isMultiTabDrag= */ false, destWindowId);
     }
@@ -194,8 +241,7 @@ public class DragAndDropLauncherActivityUnitTest {
         int sourceWindowId = 1;
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
-                        dropData, mContext, sourceWindowId, destWindowId);
-        IntentUtils.addTrustedIntentExtras(intent);
+                        dropData, mActivity, sourceWindowId, destWindowId);
         assertEquals(
                 "The intent action should be DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW.",
                 DragAndDropLauncherActivity.ACTION_DRAG_DROP_VIEW,

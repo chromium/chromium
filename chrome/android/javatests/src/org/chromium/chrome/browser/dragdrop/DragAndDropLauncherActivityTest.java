@@ -450,7 +450,7 @@ public class DragAndDropLauncherActivityTest {
 
                     return DragAndDropLauncherActivity.buildTabOrGroupIntent(
                             createTabDropData(tab, /* allowDragToCreateNewInstance= */ true),
-                            mContext,
+                            sourceActivity,
                             sourceWindowId,
                             /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
                 });
@@ -464,7 +464,7 @@ public class DragAndDropLauncherActivityTest {
                             TabWindowManagerSingleton.getInstance().getIdForWindow(sourceActivity);
                     return DragAndDropLauncherActivity.buildTabOrGroupIntent(
                             createMultiTabDropData(tabs, /* allowDragToCreateNewInstance= */ true),
-                            mContext,
+                            sourceActivity,
                             sourceWindowId,
                             /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
                 });
@@ -491,7 +491,7 @@ public class DragAndDropLauncherActivityTest {
                     return DragAndDropLauncherActivity.buildTabOrGroupIntent(
                             createTabGroupDropData(
                                     tabGroupMetadata, /* allowDragToCreateNewInstance= */ true),
-                            mContext,
+                            sourceActivity,
                             sourceWindowId,
                             /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
                 });

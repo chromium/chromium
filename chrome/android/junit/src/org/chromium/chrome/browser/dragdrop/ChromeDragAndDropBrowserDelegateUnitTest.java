@@ -353,7 +353,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                         ? new Item(
                                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                                         dropData,
-                                        mApplicationContext,
+                                        mActivity,
                                         sourceWindowId,
                                         /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID))
                         : null;
