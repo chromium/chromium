@@ -57,6 +57,7 @@ interface PowerBookmarksDragDelegate extends HTMLElement {
   getFallbackBookmark(): BookmarksTreeNode;
   getFallbackDropTargetElement(): HTMLElement;
   onFinishDrop(dropTarget: BookmarksTreeNode): void;
+  setHasActiveDrag(hasActiveDrag: boolean): void;
 }
 
 class DragSession {
@@ -86,7 +87,10 @@ class DragSession {
       return target instanceof PowerBookmarkRowElement && !target.bookmark.url;
     }) as PowerBookmarkRowElement;
 
-    if (!bookmarkRowElement) {
+    const isTreeViewEnabled =
+        loadTimeData.getBoolean('bookmarksTreeViewEnabled');
+
+    if (!isTreeViewEnabled && !bookmarkRowElement) {
       // Invalid drag over element. Cancel session.
       this.cancel();
       return;
@@ -97,24 +101,32 @@ class DragSession {
 
     this.resetState_();
 
-    let dropTargetBookmark = bookmarkRowElement.bookmark;
+    let dropTargetBookmark: BookmarksTreeNode = bookmarkRowElement?.bookmark;
     let dragOverElement: HTMLElement = bookmarkRowElement;
 
-    const invalidDropTarget = dropTargetBookmark.unmodifiable ||
-        dropTargetBookmark.url ||
-        (this.dragData_.elements &&
-         this.dragData_.elements.some(
-             element => element.id === dropTargetBookmark.id));
-    if (invalidDropTarget) {
-      dropTargetBookmark = this.delegate_.getFallbackBookmark();
-      dragOverElement = this.delegate_.getFallbackDropTargetElement();
+    if (isTreeViewEnabled) {
+      if (!bookmarkRowElement || bookmarkRowElement.bookmark.unmodifiable) {
+        dropTargetBookmark = this.delegate_.getFallbackBookmark();
+        dragOverElement = this.delegate_.getFallbackDropTargetElement();
+      }
+    } else {
+      const invalidDropTarget = dropTargetBookmark.unmodifiable ||
+          dropTargetBookmark.url ||
+          (this.dragData_.elements &&
+           this.dragData_.elements.some(
+               element => element.id === dropTargetBookmark.id));
+      if (invalidDropTarget) {
+        dropTargetBookmark = this.delegate_.getFallbackBookmark();
+        dragOverElement = this.delegate_.getFallbackDropTargetElement();
+      }
     }
 
     const draggedBookmarks = this.dragData_.elements!;
-    const dropTargetIsParent = !draggedBookmarks.some(
+    const dropTargetIsParentOrSelf = !draggedBookmarks.some(
         (bookmark: chrome.bookmarks.BookmarkTreeNode) =>
-            bookmark.parentId !== dropTargetBookmark.id);
-    if (draggedBookmarks.length === 0 || dropTargetIsParent) {
+            bookmark.parentId !== dropTargetBookmark.id &&
+            bookmark.id !== dropTargetBookmark.id);
+    if (draggedBookmarks.length === 0 || dropTargetIsParentOrSelf) {
       this.cancel();
       return;
     }
@@ -148,8 +160,6 @@ class DragSession {
     if (this.lastDragOverElement_) {
       this.lastDragOverElement_.removeAttribute(DROP_POSITION_ATTR);
     }
-    this.delegate_.getFallbackDropTargetElement().removeAttribute(
-        DROP_POSITION_ATTR);
   }
 
   static createFromBookmark(
@@ -214,6 +224,7 @@ export class PowerBookmarksDragManager {
     }
     this.dragSession_.cancel();
     this.dragSession_ = null;
+    this.delegate_.setHasActiveDrag(false);
   }
 
   private onChromeDragEnter_(dragData: chrome.bookmarkManagerPrivate.DragData) {
@@ -244,6 +255,7 @@ export class PowerBookmarksDragManager {
     this.dragSession_ =
         DragSession.createFromBookmark(this.delegate_, bookmark);
     this.dragSession_.start(e);
+    this.delegate_.setHasActiveDrag(true);
   }
 
   private onDragOver_(e: DragEvent) {
@@ -270,5 +282,6 @@ export class PowerBookmarksDragManager {
     e.preventDefault();
     this.dragSession_.finish();
     this.dragSession_ = null;
+    this.delegate_.setHasActiveDrag(false);
   }
 }

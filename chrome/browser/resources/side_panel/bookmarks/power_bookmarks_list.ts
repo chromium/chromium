@@ -276,6 +276,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
         observer: 'onCanDragChange_',
       },
 
+      hasActiveDrag_: {
+        type: Boolean,
+        value: false,
+      },
+
       sectionVisibility_: {
         type: Object,
         computed: 'computeSectionVisibility_(hasLoadedData_,' +
@@ -328,6 +333,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private contextMenuBookmark_: BookmarksTreeNode|undefined;
   declare private hasLoadedData_: boolean;
   declare private canDrag_: boolean;
+  declare private hasActiveDrag_: boolean;
   declare private hasSomeActiveFilter_: boolean;
   declare private hasShownBookmarks_: boolean;
   declare private sectionVisibility_: SectionVisibility;
@@ -585,6 +591,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
     document.addEventListener('mousedown', () => {
       this.focusOutlineManager_.visible = false;
     }, {once: true});
+  }
+
+  /** PowerBookmarksDragDelegate */
+  setHasActiveDrag(hasActiveDrag: boolean): void {
+    this.hasActiveDrag_ = hasActiveDrag;
   }
 
   clickBookmarkRowForTests(bookmark: BookmarksTreeNode) {
@@ -1347,10 +1358,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
     this.hasScrollbars_ =
         this.$.bookmarks.scrollHeight > this.$.bookmarks.offsetHeight;
-  }
-
-  private hasActiveDrag_() {
-    return this.bookmarksDragManager_.hasActiveDrag();
   }
 }
 
