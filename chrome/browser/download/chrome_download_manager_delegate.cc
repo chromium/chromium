@@ -748,7 +748,7 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
 
   if (download->IsTransient()) {
     if (download_path.empty() && download->GetMimeType() == pdf::kPDFMimeType &&
-        !download->IsMustDownload()) {
+        download->AllowAutoOpenAfterCompletion()) {
       if (profile_->IsOffTheRecord() && download->GetDownloadFile() &&
           download->GetDownloadFile()->IsMemoryFile()) {
         download_path = download->GetDownloadFile()->FullPath();
@@ -1349,7 +1349,7 @@ void ChromeDownloadManagerDelegate::GetInsecureDownloadStatus(
 #if BUILDFLAG(IS_ANDROID)
   // Allow insecure PDF download to go through if it is displayed inline.
   if (download->IsTransient() && download->GetMimeType() == pdf::kPDFMimeType &&
-      !download->IsMustDownload()) {
+      download->AllowAutoOpenAfterCompletion()) {
     if (ShouldOpenPdfInline() &&
         base::FeatureList::IsEnabled(
             download::features::kAllowedMixedContentInlinePdf)) {

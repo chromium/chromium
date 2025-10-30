@@ -215,7 +215,8 @@ void ResourceDownloader::InterceptResponse(
   url_loader_.Bind(std::move(endpoints->url_loader));
 
 #if BUILDFLAG(IS_ANDROID)
-  is_must_download_ = IsContentDispositionAttachmentInHead(*response_head);
+  allow_auto_open_after_completion_ =
+      !IsContentDispositionAttachmentInHead(*response_head);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Create the new URLLoaderClient that will intercept the navigation.
@@ -256,7 +257,8 @@ void ResourceDownloader::OnResponseStarted(
   download_create_info->transition_type =
       ui::PageTransitionFromInt(resource_request_->transition_type);
 #if BUILDFLAG(IS_ANDROID)
-  download_create_info->is_must_download = is_must_download_;
+  download_create_info->allow_auto_open_after_completion =
+      allow_auto_open_after_completion_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   delegate_task_runner_->PostTask(

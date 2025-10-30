@@ -190,9 +190,11 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
   std::optional<net::IsolationInfo> isolation_info;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Whether the original URL must be downloaded, e.g. from context menu
-  // or download service, or has "attachment" in content-disposition.
-  bool is_must_download = true;
+  // Whether the original URL may allow auto open after download completion.
+  // Some download, such as those from context menu or download service, or has
+  // "attachment" in content-disposition, will disallow auto-open after
+  // completion.
+  bool allow_auto_open_after_completion = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

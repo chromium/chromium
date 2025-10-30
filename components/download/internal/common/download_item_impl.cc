@@ -472,7 +472,7 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
       download_source_(info.download_source)
 #if BUILDFLAG(IS_ANDROID)
       ,
-      is_must_download_(info.is_must_download)
+      allow_auto_open_after_completion_(info.allow_auto_open_after_completion)
 #endif  // BUILDFLAG(IS_ANDROID)
 {
   delegate_->Attach();
@@ -1050,8 +1050,8 @@ bool DownloadItemImpl::IsFromExternalApp() {
   return is_from_external_app_;
 }
 
-bool DownloadItemImpl::IsMustDownload() {
-  return is_must_download_;
+bool DownloadItemImpl::AllowAutoOpenAfterCompletion() {
+  return allow_auto_open_after_completion_;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

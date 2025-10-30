@@ -627,8 +627,8 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
           content::DownloadItemUtils::GetBrowserContext(download_);
       bool isOffTheRecord =
           Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
-      if (isOffTheRecord &&
-          (!download_->IsTransient() || download_->IsMustDownload())) {
+      if (isOffTheRecord && (!download_->IsTransient() ||
+                             !download_->AllowAutoOpenAfterCompletion())) {
         delegate_->RequestIncognitoWarningConfirmation(base::BindOnce(
             &DownloadTargetDeterminer::RequestIncognitoWarningConfirmationDone,
             weak_ptr_factory_.GetWeakPtr()));

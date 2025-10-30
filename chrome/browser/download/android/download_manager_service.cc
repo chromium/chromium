@@ -166,7 +166,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       static_cast<int>(
           OfflineItemUtils::ConvertDownloadInterruptReasonToFailState(
               item->GetLastReason())),
-      item->IsTransient());
+      item->IsTransient(), item->AllowAutoOpenAfterCompletion());
 }
 
 static jlong JNI_DownloadManagerService_Init(JNIEnv* env,

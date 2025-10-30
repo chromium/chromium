@@ -64,6 +64,7 @@ public final class DownloadInfo {
     @PendingState private final int mPendingState;
     @FailState private final int mFailState;
     private final boolean mShouldPromoteOrigin;
+    private final boolean mAllowAutoOpenAfterCompletion;
 
     private DownloadInfo(Builder builder) {
         mUrl = builder.mUrl == null ? GURL.emptyGURL() : builder.mUrl;
@@ -105,6 +106,7 @@ public final class DownloadInfo {
         mPendingState = builder.mPendingState;
         mFailState = builder.mFailState;
         mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
+        mAllowAutoOpenAfterCompletion = builder.mAllowAutoOpenAfterCompletion;
     }
 
     public GURL getUrl() {
@@ -246,6 +248,10 @@ public final class DownloadInfo {
         return mShouldPromoteOrigin;
     }
 
+    public boolean getAllowAutoOpenAfterCompletion() {
+        return mAllowAutoOpenAfterCompletion;
+    }
+
     /**
      * Helper method to build a {@link DownloadInfo} from an {@link OfflineItem}.
      *
@@ -317,7 +323,8 @@ public final class DownloadInfo {
                 .setIcon(visuals == null ? null : visuals.icon)
                 .setPendingState(item.pendingState)
                 .setFailState(item.failState)
-                .setShouldPromoteOrigin(item.promoteOrigin);
+                .setShouldPromoteOrigin(item.promoteOrigin)
+                .setAllowAutoOpenAfterCompletion(item.allowAutoOpenAfterCompletion);
     }
 
     /** Helper class for building the DownloadInfo object. */
@@ -356,6 +363,7 @@ public final class DownloadInfo {
         @PendingState private int mPendingState;
         @FailState private int mFailState;
         private boolean mShouldPromoteOrigin;
+        private boolean mAllowAutoOpenAfterCompletion;
 
         public Builder setUrl(@Nullable GURL url) {
             mUrl = url;
@@ -523,6 +531,11 @@ public final class DownloadInfo {
             return this;
         }
 
+        public Builder setAllowAutoOpenAfterCompletion(boolean allowAutoOpenAfterCompletion) {
+            mAllowAutoOpenAfterCompletion = allowAutoOpenAfterCompletion;
+            return this;
+        }
+
         public DownloadInfo build() {
             return new DownloadInfo(this);
         }
@@ -564,7 +577,9 @@ public final class DownloadInfo {
                     .setIcon(downloadInfo.getIcon())
                     .setPendingState(downloadInfo.getPendingState())
                     .setFailState(downloadInfo.getFailState())
-                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin());
+                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin())
+                    .setAllowAutoOpenAfterCompletion(
+                            downloadInfo.getAllowAutoOpenAfterCompletion());
             return builder;
         }
     }
@@ -592,7 +607,8 @@ public final class DownloadInfo {
             @DownloadDangerType int dangerType,
             boolean isDangerous,
             @FailState int failState,
-            boolean isTransient) {
+            boolean isTransient,
+            boolean allowAutoOpenAfterCompletion) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 
         Progress progress =
@@ -624,6 +640,7 @@ public final class DownloadInfo {
                 .setUrl(url)
                 .setFailState(failState)
                 .setIsTransient(isTransient)
+                .setAllowAutoOpenAfterCompletion(allowAutoOpenAfterCompletion)
                 .build();
     }
 }

@@ -112,6 +112,7 @@ public class OfflineItem implements Cloneable {
     public boolean isDangerous;
     @FailState public int failState;
     @PendingState public int pendingState;
+    public boolean allowAutoOpenAfterCompletion;
 
     public OfflineItem() {
         id = new ContentId();
@@ -157,6 +158,7 @@ public class OfflineItem implements Cloneable {
         clone.isDangerous = isDangerous;
         clone.failState = failState;
         clone.pendingState = pendingState;
+        clone.allowAutoOpenAfterCompletion = allowAutoOpenAfterCompletion;
 
         if (progress != null) {
             clone.progress = new Progress(progress.value, progress.max, progress.unit);

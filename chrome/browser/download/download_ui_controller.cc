@@ -226,7 +226,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
 #if BUILDFLAG(IS_ANDROID)
   if (manager && manager->GetDelegate() &&
       manager->GetDelegate()->ShouldOpenPdfInline() &&
-      !item->IsMustDownload() &&
+      item->AllowAutoOpenAfterCompletion() &&
       item->GetState() == download::DownloadItem::IN_PROGRESS &&
       base::EqualsCaseInsensitiveASCII(item->GetMimeType(),
                                        pdf::kPDFMimeType)) {

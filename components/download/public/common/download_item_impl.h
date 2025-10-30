@@ -312,7 +312,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadItemRenameHandler* GetRenameHandler() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
-  bool IsMustDownload() override;
+  bool AllowAutoOpenAfterCompletion() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;
@@ -905,7 +905,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_from_external_app_ = false;
-  bool is_must_download_ = false;
+  bool allow_auto_open_after_completion_ = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   THREAD_CHECKER(thread_checker_);

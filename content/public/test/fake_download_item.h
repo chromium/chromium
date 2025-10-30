@@ -98,7 +98,7 @@ class FakeDownloadItem : public download::DownloadItem {
   download::DownloadItemRenameHandler* GetRenameHandler() override;
 #if BUILDFLAG(IS_ANDROID)
   bool IsFromExternalApp() override;
-  bool IsMustDownload() override;
+  bool AllowAutoOpenAfterCompletion() override;
 #endif  // BUILDFLAG(IS_ANDROID)
   bool IsDangerous() const override;
   bool IsInsecure() const override;

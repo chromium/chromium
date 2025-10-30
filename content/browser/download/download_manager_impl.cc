@@ -717,7 +717,7 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
     download::InProgressDownloadManager::StartDownloadItemCallback callback,
     uint32_t id) {
 #if BUILDFLAG(IS_ANDROID)
-  if (info->transient && !info->is_must_download &&
+  if (info->transient && info->allow_auto_open_after_completion &&
       delegate_->ShouldOpenPdfInline() &&
       base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
     if (IsOffTheRecord()) {
@@ -735,7 +735,7 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
           continue;
         }
 
-        if (!item->IsTransient() || item->IsMustDownload()) {
+        if (!item->IsTransient() || !item->AllowAutoOpenAfterCompletion()) {
           continue;
         }
 

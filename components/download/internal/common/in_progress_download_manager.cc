@@ -598,7 +598,7 @@ void InProgressDownloadManager::StartDownloadWithItem(
   if (download_start_observer_)
     download_start_observer_->OnDownloadStarted(download);
 #if BUILDFLAG(IS_ANDROID)
-  if (info->transient && !info->is_must_download &&
+  if (info->transient && info->allow_auto_open_after_completion &&
       base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
     base::UmaHistogramBoolean("Download.Android.OpenPdfFromDuplicates",
                               !duplicate_download_file_path.empty());

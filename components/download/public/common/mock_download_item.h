@@ -103,7 +103,7 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD0(GetRenameHandler, DownloadItemRenameHandler*());
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD0(IsFromExternalApp, bool());
-  MOCK_METHOD0(IsMustDownload, bool());
+  MOCK_METHOD0(AllowAutoOpenAfterCompletion, bool());
 #endif  // BUILDFLAG(IS_ANDROID)
   MOCK_CONST_METHOD0(IsDangerous, bool());
   MOCK_CONST_METHOD0(IsInsecure, bool());
