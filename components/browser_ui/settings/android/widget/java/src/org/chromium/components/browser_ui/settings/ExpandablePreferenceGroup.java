@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.CallSuper;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceViewHolder;
 
@@ -19,14 +20,20 @@ import org.chromium.ui.widget.CheckableImageView;
 
 /**
  * A preference category that can be in either expanded or collapsed state. It shows expand/collapse
- * arrow and changes content description for a11y according to the current state. Use
- * {@link #setExpanded} to toggle collapsed/expanded state. Please note that this preference group
- * won't modify the set of children preferences on expanded state change.
+ * arrow and changes content description for a11y according to the current state. Use {@link
+ * #setExpanded} to toggle collapsed/expanded state. Please note that this preference group won't
+ * modify the set of children preferences on expanded state change.
  */
 @NullMarked
 public class ExpandablePreferenceGroup extends PreferenceGroup {
+    /** A listener to be notified when the preference is expanded or collapsed. */
+    public interface OnExpandedListener {
+        void onExpanded();
+    }
+
     private boolean mExpanded = true;
     private @Nullable Drawable mDrawable;
+    private @Nullable OnExpandedListener mOnExpandedListener;
 
     public ExpandablePreferenceGroup(Context context, AttributeSet attrs) {
         super(context, attrs, R.attr.preferenceStyle);
@@ -50,8 +57,18 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
         notifyChanged();
     }
 
+    /** Sets a listener to be notified when the preference is expanded or collapsed. */
+    public void setOnExpandedListener(OnExpandedListener listener) {
+        mOnExpandedListener = listener;
+    }
+
     /** Subclasses may override this method to handle changes to the expanded/collapsed state. */
-    protected void onExpandedChanged(boolean expanded) {}
+    @CallSuper
+    protected void onExpandedChanged(boolean expanded) {
+        if (mOnExpandedListener != null) {
+            mOnExpandedListener.onExpanded();
+        }
+    }
 
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {

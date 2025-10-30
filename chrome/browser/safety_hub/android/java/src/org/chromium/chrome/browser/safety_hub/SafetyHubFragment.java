@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOpti
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -205,8 +204,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpSafetyTipsModule() {
-        ExpandablePreferenceGroup safetyTipsPreference = findPreference(PREF_SAFETY_TIPS);
+        SafetyHubExpandablePreferenceCategory safetyTipsPreference =
+                findPreference(PREF_SAFETY_TIPS);
         safetyTipsPreference.setExpanded(false);
+        safetyTipsPreference.setOnExpandedListener(this::notifyPreferencesUpdated);
 
         findPreference(PREF_SAFETY_TIPS_SAFETY_TOOLS)
                 .setOnPreferenceClickListener(
