@@ -291,6 +291,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"shortcutAlreadyExists", IDS_NTP_CUSTOM_LINKS_ALREADY_EXISTS},
       {"urlField", IDS_NTP_CUSTOM_LINKS_URL},
       {"showMore", IDS_NTP_SHOW_MORE_BUTTON_LABEL},
+      {"showLess", IDS_NTP_SHOW_LESS_BUTTON_LABEL},
 
       // Customize button and dialog.
       {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},

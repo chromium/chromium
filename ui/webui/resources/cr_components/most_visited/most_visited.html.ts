@@ -63,17 +63,30 @@ export function getHtml(this: MostVisitedElement) {
       <span>${this.i18n('addLinkTitle')}</span>
     </div>
   </cr-button>
-  <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
-      ?hidden="${!this.showShowMore_}"
-      aria-label="${this.i18n('showMore')}"
-      title="${this.i18n('showMore')}" noink>
-    <div class="tile-icon tile-icon-container">
-      <div id="showMoreIcon" draggable="false"></div>
-    </div>
-    <div class="tile-title">
-      <span>${this.i18n('showMore')}</span>
-    </div>
-  </cr-button>
+  <div>
+    <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
+        ?hidden="${!this.showShowMore_}"
+        aria-label="${this.i18n('showMore')}"
+        title="${this.i18n('showMore')}" noink>
+      <div class="tile-icon tile-icon-container">
+        <div id="showMoreIcon" draggable="false"></div>
+      </div>
+      <div class="tile-title">
+        <span>${this.i18n('showMore')}</span>
+      </div>
+    </cr-button>
+    <cr-button id="showLess" tabindex="0" @click="${this.onShowLessClick_}"
+        ?hidden="${!this.showShowLess_}"
+        aria-label="${this.i18n('showLess')}"
+        title="${this.i18n('showLess')}" noink>
+      <div class="tile-icon tile-icon-container">
+        <div id="showLessIcon" draggable="false"></div>
+      </div>
+      <div class="tile-title">
+        <span>${this.i18n('showLess')}</span>
+      </div>
+    </cr-button>
+  </div>
   <cr-dialog id="dialog" @close="${this.onDialogClose_}">
     <div slot="title">${this.dialogTitle_}</div>
     <div slot="body" id="dialogContent">

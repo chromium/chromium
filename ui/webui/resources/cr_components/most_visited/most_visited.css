@@ -58,6 +58,7 @@
 
 #addShortcutIcon,
 #showMoreIcon,
+#showLessIcon,
 .query-tile-icon {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
@@ -84,6 +85,12 @@
       var(--add-shortcut-foreground-color, var(--google-grey-900));
 }
 
+#showLessIcon {
+  -webkit-mask-image: url(chrome://resources/cr_components/most_visited/collapse_content.svg);
+  background-color:
+      var(--add-shortcut-foreground-color, var(--google-grey-900));
+}
+
 .query-tile-icon {
   -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
   background-color: var(--google-grey-700);
@@ -92,13 +99,15 @@
 @media (forced-colors: active) {
   #addShortcutIcon,
   #showMoreIcon,
+  #showLessIcon,
   .query-tile-icon {
     background-color: ButtonText;
   }
 }
 
 :host([use-white-tile-icon_]) #addShortcutIcon,
-:host([use-white-tile-icon_]) #showMoreIcon {
+:host([use-white-tile-icon_]) #showMoreIcon,
+:host([use-white-tile-icon_]) #showLessIcon {
   background-color: white;
 }
 
@@ -108,7 +117,8 @@
 
 .tile,
 #addShortcut,
-#showMore {
+#showMore,
+#showLess {
   -webkit-tap-highlight-color: transparent;
   align-items: center;
   border-radius: 4px;
@@ -155,7 +165,8 @@
 }
 
 #addShortcut,
-#showMore {
+#showMore,
+#showLess {
   background-color: transparent;
   border: none;
   box-shadow: none;
