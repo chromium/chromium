@@ -97,23 +97,13 @@ NotifyObserversCallback(Functor&& functor, Args&&... args) {
 
 // Returns true if `live_form` has changed compared to `cached_form` in aspects
 // that may affect type predictions.
-// TODO(crbug.com/40183094): This should be some form of FormData::DeepEqual().
 bool NeedsReparse(const FormData& live_form, const FormStructure& cached_form) {
-  if (cached_form.version() > live_form.version()) {
-    return false;
-  }
-
-  if (live_form.fields().size() != cached_form.field_count()) {
-    return true;
-  }
-
-  for (auto [cached_field, live_field] :
-       base::zip(cached_form.fields(), live_form.fields())) {
-    if (!FormFieldData::DeepEqual(*cached_field, live_field)) {
-      return true;
-    }
-  }
-  return false;
+  return live_form.version() >= cached_form.version() &&
+         !std::ranges::equal(live_form.fields(), cached_form.fields(),
+                             [](const FormFieldData& f,
+                                const std::unique_ptr<AutofillField>& g) {
+                               return FormFieldData::DeepEqual(f, *g);
+                             });
 }
 
 bool IsCreditCardFormForSignaturePurposes(const FormStructure& form_structure) {
