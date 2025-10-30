@@ -84,6 +84,7 @@ void AudioHelperChromeOsImpl::StartAudioStream(
   }
 
   stream_->Start(this);
+  LOG(WARNING) << "Audio input stream successfully started.";
 }
 
 void AudioHelperChromeOsImpl::StopAudioStream() {
