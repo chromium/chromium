@@ -58,6 +58,10 @@ void ZeroStatePromoPageHandler::LaunchWebStoreLink(
         kCustomUiChipIphV2:
       utm_source = extension_urls::kCustomUiChipIphV2UtmSource;
       break;
+    case feature_engagement::IPHExtensionsZeroStatePromoVariant::
+        kCustomUiChipIphV3:
+      utm_source = extension_urls::kCustomUiChipIphV3UtmSource;
+      break;
     default:
       utm_source = extension_urls::kCustomUiPlainLinkIphUtmSource;
       break;

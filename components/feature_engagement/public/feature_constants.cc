@@ -95,6 +95,8 @@ const base::FeatureParam<IPHExtensionsZeroStatePromoVariant>::Option
          "custom-ui-chip-iph"},
         {IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV2,
          "custom-ui-chip-iph-v2"},
+        {IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV3,
+         "custom-ui-chip-iph-v3"},
         {IPHExtensionsZeroStatePromoVariant::kCustomUIPlainLinkIph,
          "custom-ui-plain-link-iph"}};
 BASE_FEATURE_ENUM_PARAM(

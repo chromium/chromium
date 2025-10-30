@@ -53,6 +53,8 @@ extern const char kCustomUiChipIphV1UtmSource[];
 // version 2.
 extern const char kCustomUiChipIphV2UtmSource[];
 // From the Extensions Zero State Promo, custom UI IPH, text link variant.
+extern const char kCustomUiChipIphV3UtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, text link variant.
 extern const char kCustomUiPlainLinkIphUtmSource[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the

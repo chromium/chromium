@@ -36,8 +36,14 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"extensionsZeroStateIphHeader", IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER},
+      {"extensionsZeroStateIphHeaderV2",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER_V2},
       {"extensionsZeroStateChipsIphDesc",
        IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION},
+      {"extensionsZeroStateChipsWithLinkIphLinkLabel",
+       IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_LINK_LABEL},
+      {"extensionsZeroStateChipsWithLinkIphDesc",
+       IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_DESCRIPTION},
       {"extensionsZeroStatePlainLinkIphDesc",
        IDS_EXTENSIONS_ZERO_STATE_PLAIN_LINK_IPH_DESCRIPTION},
       {"extensionsZeroStateIphShoppingCategoryLabel",
@@ -78,6 +84,9 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
   source->AddBoolean("showChipsUiV2",
                      feature_engagement::IPHExtensionsZeroStatePromoVariant::
                              kCustomUiChipIphV2 == promoVariant);
+  source->AddBoolean("showChipsUiV3",
+                     feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                             kCustomUiChipIphV3 == promoVariant);
 
   webui::SetupWebUIDataSource(
       source, kExtensionsZeroStatePromoResources,
