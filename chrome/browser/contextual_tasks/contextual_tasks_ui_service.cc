@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -189,8 +187,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // TODO: This currently should be passed the bounds of the
   // contents_container_view from BrowserView, though the view is not accessible
   // from here. This API could be changed to simply accept the web_contents.
-  browser_window_interface->GetFeatures().side_panel_coordinator()->ShowFrom(
-      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks), gfx::Rect());
+  ContextualTasksSidePanelCoordinator::From(browser_window_interface)->Show();
 }
 
 bool ContextualTasksUiService::HandleNavigation(
