@@ -82,13 +82,11 @@ class TabletModeWindowState : public WindowState::State {
                     chromeos::WindowStateType new_state_type,
                     bool animate);
 
-  // If `target_state` is PRIMARY/SECONDARY_SNAPPED or TRUSTED_PINNED/PINNED,
-  // returns `target_state`. Otherwise depending on the capabilities of the
-  // window either returns `WindowStateType::kMaximized` or
-  // `WindowStateType::kNormal`.
-  chromeos::WindowStateType AdjustStateForTabletMode(
-      WindowState* window_state,
-      chromeos::WindowStateType target_state);
+  // Returns desired state for the tablet mode for the given 'window_state`.
+  // If the window is in `kNormal` state, and can be maximized, returns
+  // maximzied, otherwise it returns the same state (snapped, pinned, or
+  // fullscreen).
+  chromeos::WindowStateType AdjustStateForTabletMode(WindowState* window_state);
 
   // Updates the bounds to the maximum possible bounds according to the current
   // window state. If `animate` is set we animate the change.

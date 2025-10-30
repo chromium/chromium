@@ -1596,6 +1596,23 @@ TEST_F(TabletModeWindowManagerTest, SetPropertyOnUnmanagedWindow) {
   window->Show();
 }
 
+// Test that showing after creation keeps the fullscreen state in tablet mode.
+// See crbug.com/7073232 for the regression.
+TEST_F(TabletModeWindowManagerTest, ShowAfterCreateionKeepsFullscreenState) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  InitParams params(aura::client::WINDOW_TYPE_NORMAL);
+  params.bounds = {10, 10, 100, 100};
+  params.show_on_creation = false;
+  std::unique_ptr<aura::Window> window(CreateWindowInWatchedContainer(params));
+  ::wm::SetWindowFullscreen(window.get(), true);
+
+  // Show after creation will trigger ADDED_TO_WORKSPACE event.
+  window->Show();
+
+  EXPECT_TRUE(::wm::WindowStateIs(window.get(),
+                                  ui::mojom::WindowShowState::kFullscreen));
+}
+
 // Test that the minimized window bounds doesn't change until it's unminimized.
 TEST_F(TabletModeWindowManagerTest, DontChangeBoundsForMinimizedWindow) {
   gfx::Rect rect(10, 10, 200, 50);
