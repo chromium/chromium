@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "net/cookies/canonical_cookie.h"
+#include "ui/base/interaction/element_identifier.h"
 
 class GaiaId;
 class Profile;
@@ -34,6 +35,9 @@ class SyncService;
 }
 
 namespace signin_util {
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSigninErrorDialogId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSigninErrorDialogOkButtonId);
 
 enum class ProfileSeparationPolicyState {
   kEnforcedByExistingProfile,

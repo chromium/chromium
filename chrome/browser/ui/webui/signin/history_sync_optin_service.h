@@ -98,6 +98,9 @@ class HistorySyncOptinService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
+  // Virtual for testing purposes only.
+  virtual void ShowErrorDialogWithMessage(int error_message_id);
+
   std::unique_ptr<HistorySyncOptinHelper::Delegate>
       history_sync_optin_delegate_ = nullptr;
 

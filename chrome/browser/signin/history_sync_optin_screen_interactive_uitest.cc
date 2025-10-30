@@ -5,15 +5,18 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -22,6 +25,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/service/sync_user_settings_impl.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/events/event_modifiers.h"
@@ -38,6 +42,11 @@ const char kIsVisibleFn[] =
     "  const style = window.getComputedStyle(el);"
     "  return style.display !== 'none' && style.visibility !== 'hidden';"
     "}";
+
+std::unique_ptr<KeyedService> BuildTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
 
 // Sets up the account capability for history sync opt-in restriction mode.
 // Without this capability, the fallback mode is used after a short delay.
@@ -491,5 +500,48 @@ INSTANTIATE_TEST_SUITE_P(
            info) -> std::string {
       return info.param ? "Unrestricted" : "Restricted";
     });
+
+class HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService
+    : public HistorySyncOptinScreenFromPromoEntryPointInteractiveTest {
+ protected:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTest::
+        OnWillCreateBrowserContextServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildTestSyncService));
+  }
+};
+IN_PROC_BROWSER_TEST_F(
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService,
+    ShowsErrorDialog) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  signin::AccountAvailabilityOptionsBuilder builder =
+      identity_test_env()->CreateAccountAvailabilityOptionsBuilder();
+  builder.WithAccessPoint(signin_metrics::AccessPoint::kRecentTabs);
+
+  // Mark the management as accepted, so that the disclaimer service progresses
+  // the flow immediately on the present profile when
+  // `EnsureManagedProfileForAccount` is invoked.
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+
+  syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(browser()->profile()));
+  sync_service->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
+  sync_service->GetUserSettings()->SetTypeIsManagedByPolicy(
+      syncer::UserSelectableType::kTabs, /*managed=*/true);
+
+  RunTestSequence(
+      InstrumentTab(kTabId, 0, browser()), Do([&]() {
+        identity_test_env()->MakeAccountAvailable(
+            builder.AsPrimary(signin::ConsentLevel::kSignin).Build(kMainEmail));
+      }),
+      WaitForShow(signin_util::kSigninErrorDialogId),
+      WaitForShow(signin_util::kSigninErrorDialogOkButtonId),
+      PressButton(signin_util::kSigninErrorDialogOkButtonId),
+      WaitForHide(signin_util::kSigninErrorDialogOkButtonId));
+}
 
 }  // namespace

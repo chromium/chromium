@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 
@@ -72,6 +73,9 @@ void SetForceSigninPolicy(bool enable) {
 }
 
 }  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSigninErrorDialogId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kSigninErrorDialogOkButtonId);
 
 ScopedForceSigninSetterForTesting::ScopedForceSigninSetterForTesting(
     bool enable) {
@@ -529,10 +533,12 @@ void ShowErrorDialogWithMessage(Browser* browser, int error_message_id) {
 
   auto dialog_model =
       ui::DialogModel::Builder()
-          .AddParagraph(ui::DialogModelLabel(error_message_id))
+          .AddParagraph(ui::DialogModelLabel(error_message_id),
+                        /*header=*/std::u16string(), kSigninErrorDialogId)
           .AddOkButton(base::DoNothing(),
-                       ui::DialogModel::Button::Params().SetLabel(
-                           l10n_util::GetStringUTF16(IDS_OK)))
+                       ui::DialogModel::Button::Params()
+                           .SetLabel(l10n_util::GetStringUTF16(IDS_OK))
+                           .SetId(kSigninErrorDialogOkButtonId))
           .Build();
 
   chrome::ShowBrowserModal(browser, std::move(dialog_model));
