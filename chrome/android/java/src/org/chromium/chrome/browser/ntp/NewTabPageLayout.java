@@ -397,6 +397,7 @@ public class NewTabPageLayout extends LinearLayout
                                                 R.dimen.omnibox_search_engine_logo_composed_size)
                                 / 2));
         mDseIconView.setClipToOutline(true);
+        mSearchEngineUtils.addIconObserver(this);
         ImageViewCompat.setImageTintList(mDseIconView, null);
         setDseIconViewVisibility(shouldShowDesIconView);
     }
