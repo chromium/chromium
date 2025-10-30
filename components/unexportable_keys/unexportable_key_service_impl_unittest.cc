@@ -29,6 +29,7 @@
 
 namespace unexportable_keys {
 
+using ::base::test::ErrorIs;
 using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
 using ::testing::Invoke;
@@ -112,7 +113,7 @@ TEST_F(UnexportableKeyServiceImplTest, IsUnexportableKeyProviderSupported) {
   base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
                                           future.GetCallback());
-  EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kNoKeyProvider));
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kNoKeyProvider));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, GenerateKey) {
@@ -166,8 +167,7 @@ TEST_F(UnexportableKeyServiceImplTest, GenerateKeyFails) {
   service().GenerateSigningKeySlowlyAsync(unsupported_algorithm, kTaskPriority,
                                           future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_EQ(future.Get(),
-            base::unexpected(ServiceError::kAlgorithmNotSupported));
+  EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kAlgorithmNotSupported));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, FromWrappedKey) {
@@ -244,8 +244,8 @@ TEST_F(UnexportableKeyServiceImplTest,
           }));
   RunBackgroundTasks();
   EXPECT_TRUE(inner_request_future.IsReady());
-  EXPECT_EQ(inner_request_future.Get(),
-            base::unexpected(ServiceError::kCryptoApiFailed));
+  EXPECT_THAT(inner_request_future.Get(),
+              ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
 TEST_F(UnexportableKeyServiceImplTest,
@@ -266,7 +266,7 @@ TEST_F(UnexportableKeyServiceImplTest,
   // All callbacks should return failure.
   for (auto& future : from_wrapped_key_futures) {
     EXPECT_TRUE(future.IsReady());
-    EXPECT_EQ(future.Get(), base::unexpected(ServiceError::kCryptoApiFailed));
+    EXPECT_THAT(future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
   }
 }
 
@@ -311,10 +311,10 @@ TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
   UnexportableKeyId fake_key_id;
 
   // `service()` does not return any info about non-existing key ID.
-  EXPECT_EQ(service().GetSubjectPublicKeyInfo(fake_key_id),
-            base::unexpected(ServiceError::kKeyNotFound));
-  EXPECT_EQ(service().GetWrappedKey(fake_key_id),
-            base::unexpected(ServiceError::kKeyNotFound));
+  EXPECT_THAT(service().GetSubjectPublicKeyInfo(fake_key_id),
+              ErrorIs(ServiceError::kKeyNotFound));
+  EXPECT_THAT(service().GetWrappedKey(fake_key_id),
+              ErrorIs(ServiceError::kKeyNotFound));
 
   // `SignSlowlyAsync()` should fail.
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
@@ -322,7 +322,7 @@ TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
   service().SignSlowlyAsync(fake_key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   EXPECT_TRUE(sign_future.IsReady());
-  EXPECT_EQ(sign_future.Get(), base::unexpected(ServiceError::kKeyNotFound));
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
@@ -347,8 +347,7 @@ TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
   service().SignSlowlyAsync(key_id, data, kTaskPriority,
                             sign_future.GetCallback());
   RunBackgroundTasks();
-  EXPECT_EQ(sign_future.Get(),
-            base::unexpected(ServiceError::kCryptoApiFailed));
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kCryptoApiFailed));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
@@ -384,6 +383,111 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
                             sign_future.GetCallback());
   RunBackgroundTasks();
   EXPECT_TRUE(sign_future.Get().has_value());
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteKey) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  // The key should exist before deletion.
+  ASSERT_TRUE(service().GetWrappedKey(key_id).has_value());
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_TRUE(delete_future.IsReady());
+  EXPECT_EQ(delete_future.Get(), base::ok());
+
+  // The key should not exist after deletion.
+  EXPECT_THAT(service().GetWrappedKey(key_id),
+              ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteNonExistingKey) {
+  UnexportableKeyId fake_key_id;
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(fake_key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_TRUE(delete_future.IsReady());
+  EXPECT_THAT(delete_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, SignWithDeletedKey) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_EQ(delete_future.Get(), base::ok());
+
+  base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
+  std::vector<uint8_t> data = {1, 2, 3};
+  service().SignSlowlyAsync(key_id, data, kTaskPriority,
+                            sign_future.GetCallback());
+  EXPECT_TRUE(sign_future.IsReady());
+  EXPECT_THAT(sign_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
+}
+
+TEST_F(UnexportableKeyServiceImplTest, FromWrappedKeyAfterDeletingOriginalKey) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> wrapped_key,
+                       service().GetWrappedKey(key_id));
+
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_EQ(delete_future.Get(), base::ok());
+
+  // Do NOT reset the service. The key should be gone from the service's maps.
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> from_wrapped_future;
+  service().FromWrappedSigningKeySlowlyAsync(wrapped_key, kTaskPriority,
+                                             from_wrapped_future.GetCallback());
+  // The request should be pending since the key was deleted from the cache.
+  EXPECT_FALSE(from_wrapped_future.IsReady());
+  RunBackgroundTasks();
+  EXPECT_TRUE(from_wrapped_future.IsReady());
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId new_key_id, from_wrapped_future.Get());
+  // The new key ID should be different from the old one, as it's a new entry.
+  EXPECT_NE(key_id, new_key_id);
+}
+
+TEST_F(UnexportableKeyServiceImplTest, DeleteKeyTwice) {
+  base::test::TestFuture<ServiceErrorOr<UnexportableKeyId>> generate_future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          generate_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(UnexportableKeyId key_id, generate_future.Get());
+
+  // The first deletion should succeed.
+  base::test::TestFuture<ServiceErrorOr<void>> delete_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_EQ(delete_future.Get(), base::ok());
+
+  // The second deletion should fail.
+  base::test::TestFuture<ServiceErrorOr<void>> delete_twice_future;
+  service().DeleteKeySlowlyAsync(key_id, kTaskPriority,
+                                 delete_twice_future.GetCallback());
+  RunBackgroundTasks();
+  EXPECT_THAT(delete_twice_future.Get(), ErrorIs(ServiceError::kKeyNotFound));
 }
 
 }  // namespace unexportable_keys

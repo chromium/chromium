@@ -35,10 +35,10 @@ class MaybePendingUnexportableKeyId {
 
   // Returns true if a key has been assigned to this instance. Otherwise,
   // returns false which means that this instance holds a list of callbacks.
-  bool HasKeyId();
+  bool HasKeyId() const;
 
   // This method should be called only if `HasKeyId()` is true.
-  UnexportableKeyId GetKeyId();
+  UnexportableKeyId GetKeyId() const;
 
   // These methods should be called only if `HasKeyId()` is false.
   void AddCallback(CallbackType callback);
@@ -61,12 +61,12 @@ MaybePendingUnexportableKeyId::MaybePendingUnexportableKeyId(
 
 MaybePendingUnexportableKeyId::~MaybePendingUnexportableKeyId() = default;
 
-bool MaybePendingUnexportableKeyId::HasKeyId() {
+bool MaybePendingUnexportableKeyId::HasKeyId() const {
   return std::holds_alternative<UnexportableKeyId>(
       key_id_or_pending_callbacks_);
 }
 
-UnexportableKeyId MaybePendingUnexportableKeyId::GetKeyId() {
+UnexportableKeyId MaybePendingUnexportableKeyId::GetKeyId() const {
   CHECK(HasKeyId());
   return std::get<UnexportableKeyId>(key_id_or_pending_callbacks_);
 }
@@ -169,6 +169,30 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
   }
   task_manager_->SignSlowlyAsync(it->second, data, priority,
                                  std::move(callback));
+}
+
+void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
+    UnexportableKeyId key_id,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
+  auto key_id_it = key_by_key_id_.find(key_id);
+  if (key_id_it == key_by_key_id_.end()) {
+    std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+    return;
+  }
+
+  const std::vector<uint8_t> wrapped_key =
+      key_id_it->second->key().GetWrappedKey();
+  auto wrapped_key_it = key_id_by_wrapped_key_.find(wrapped_key);
+  CHECK(wrapped_key_it != key_id_by_wrapped_key_.end());
+  CHECK(wrapped_key_it->second.HasKeyId());
+  CHECK_EQ(wrapped_key_it->second.GetKeyId(), key_id);
+
+  key_by_key_id_.erase(key_id_it);
+  key_id_by_wrapped_key_.erase(wrapped_key_it);
+
+  // TODO: crbug.com/455538141 - Implement deletion in the task manager.
+  std::move(callback).Run(base::ok());
 }
 
 ServiceErrorOr<std::vector<uint8_t>>
