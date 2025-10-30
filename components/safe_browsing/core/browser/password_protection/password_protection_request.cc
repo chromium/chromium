@@ -449,7 +449,7 @@ void PasswordProtectionRequest::Finish(
       LogPasswordOnFocusRequestOutcome(outcome);
     } else if (trigger_type_ ==
                LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
-      // TODO(crbug.com/415273169): Log metrics.
+      LogOneTimePasswordFieldDetectedRequestOutcome(outcome);
     } else {
       LogPasswordEntryRequestOutcome(outcome, password_account_type);
 
