@@ -22,10 +22,12 @@ int GetIndexOfLastActiveTab(TabStripModel* tab_strip_model,
   // Check if a tab is activated first before comparing the WebContent's last
   // focused time because the activation happens before focus time updates and
   // wouldn't be accurate for tabs that just had its activation state changed.
-  for (tabs::TabInterface* tab : split_tabs) {
+  for (int index = tab_strip_model->GetIndexOfTab(split_tabs[0]);
+       tabs::TabInterface* tab : split_tabs) {
     if (tab->IsActivated()) {
-      return tab_strip_model->GetIndexOfTab(tab);
+      return index;
     }
+    index++;
   }
 
   tabs::TabInterface* const recently_active = *std::max_element(
