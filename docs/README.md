@@ -434,7 +434,7 @@ used when committed.
     in Chrome to bootstrap CrOS services' Mojo connection.
 
 ### Security
-*   [The Rule Of 2](security/rule-of-2.md) - An imoportant security rule when
+*   [The Rule Of 2](security/rule-of-2.md) - An important security rule when
     handling untrustworthy contents (like anything downloaded from the web).
 
 ### Speed
