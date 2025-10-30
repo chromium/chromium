@@ -225,8 +225,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
                          bool is_nav_prerender,
                          base::WeakPtr<PrefetchServingPageMetricsContainer>
                              serving_page_metrics_container);
-  PrefetchContainer* FindPrefetchAheadOfPrerenderForMetrics(
-      const PreloadPipelineInfo& pipeline_info);
 
   // Exposes methods for `PrefetchScheduler`. See documentation of private
   // methods with the same names except for `PrepareProgress()`.
@@ -242,9 +240,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   bool StartSinglePrefetchForTesting(
       base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  const PrefetchScheduler& GetPrefetchSchedulerForMetrics() {
-    return *scheduler_;
-  }
   PrefetchScheduler& GetPrefetchSchedulerForTesting() { return *scheduler_; }
 
   base::WeakPtr<PrefetchService> GetWeakPtr();

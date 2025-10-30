@@ -98,10 +98,7 @@ enum class PrefetchPotentialCandidateServingResult {
   // don't expect to enter this path.
   kNotServedOnDeterminedHeadWithNotServableUnknown = 13,
 
-  // A special value for `PrefetchMatchResolver::UnblockForNoCandidates()`.
-  kNotServedNoCandidates = 13,
-
-  kMaxValue = kNotServedNoCandidates,
+  kMaxValue = kNotServedOnDeterminedHeadWithNotServableUnknown,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/prefetch/enums.xml)
 
@@ -165,8 +162,6 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container,
       Callback callback);
-
-  void AttachPrefetchMatchPrerenderDebugMetrics();
 
  private:
   struct CandidateData final {
