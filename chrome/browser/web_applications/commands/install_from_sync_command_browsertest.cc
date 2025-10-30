@@ -45,10 +45,6 @@
 namespace web_app {
 namespace {
 
-constexpr base::FilePath::CharType kManifestIconName[] =
-    FILE_PATH_LITERAL("launcher-icon-2x.png");
-constexpr base::FilePath::CharType kTrustedIconName[] =
-    FILE_PATH_LITERAL("launcher-icon-1x.png");
 constexpr int kIconSize = 96;
 
 class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
@@ -58,23 +54,27 @@ class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride{features::kWebAppUsePrimaryIcon} {}
   ~InstallFromSyncCommandTest() override = default;
 
-  bool TrustedIconsEnabled() { return GetParam(); }
-
   GURL GetManifestIcon() {
     return https_server()->GetURL("/banners/launcher-icon-2x.png");
   }
 
   GURL GetTrustedIcon() {
-    return https_server()->GetURL("/banners/launcher-icon-1x.png");
+    return https_server()->GetURL("/banners/image-512px.png");
   }
 
   base::FilePath LoadImageFile() {
     base::FilePath path;
     base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-    if (TrustedIconsEnabled()) {
-      return path.AppendASCII("banners").Append(kTrustedIconName);
+    if (GetParam()) {
+      // This corresponds to the largest icon in
+      // chrome/test/data/banners/manifest.json, which will be used on ChromeOS
+      // always if trusted icons are enabled.
+      return path.AppendASCII("banners").Append(
+          FILE_PATH_LITERAL("image-512px.png"));
+    } else {
+      return path.AppendASCII("banners").Append(
+          FILE_PATH_LITERAL("launcher-icon-2x.png"));
     }
-    return path.AppendASCII("banners").Append(kManifestIconName);
   }
 
   // Get the primary icon for `app_id` of `size` from the disk.
@@ -89,7 +89,7 @@ class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
   }
 
   // Read the expected icon from the image file that will be set according to
-  // `TrustedIconsEnabled()`.
+  // `GetParam()`.
   SkBitmap GetExpectedIconFromDisk(int size) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::optional<std::vector<uint8_t>> file_contents =

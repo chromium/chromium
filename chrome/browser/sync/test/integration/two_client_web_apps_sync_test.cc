@@ -401,9 +401,17 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   webapps::AppId synced_app_id = dest_install_observer.Wait();
   EXPECT_EQ(synced_app_id, app_id);
 
+  bool should_use_fallback = GetParam();
+  // ChromeOS always installs from the manifest, even when trusted icons are
+  // enabled.
+#if BUILDFLAG(IS_CHROMEOS)
+  should_use_fallback = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Post trusted icons infrastructure launch, sync installs always use fallback
   // information.
-  std::string app_name = GetParam() ? "Incorrect App Name" : "Basic web app";
+  std::string app_name =
+      should_use_fallback ? "Incorrect App Name" : "Basic web app";
   EXPECT_EQ(GetRegistrar(dest_profile).GetAppShortName(app_id), app_name);
 }
 
