@@ -85,6 +85,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       base::OnceCallback<void(std::unique_ptr<UserContext>)> on_skip_migration)
       final;
   void ShowSigninError(SigninError error, const std::string& details) final;
+  void ShowOobeNotCompletedError() final;
+
   void SAMLConfirmPassword(::login::StringList scraped_passwords,
                            std::unique_ptr<UserContext> user_context) final;
   WizardContext* GetWizardContextForTesting() final;

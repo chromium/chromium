@@ -83,6 +83,8 @@ class SigninUI {
   virtual void ShowSigninError(SigninError error,
                                const std::string& details) = 0;
 
+  virtual void ShowOobeNotCompletedError() = 0;
+
   // Show the SAML Confirm Password screen and continue authentication after
   // that (or show the error screen).
   virtual void SAMLConfirmPassword(

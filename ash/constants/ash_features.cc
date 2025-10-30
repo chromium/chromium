@@ -1565,6 +1565,9 @@ BASE_FEATURE(kFeatureManagementOobeSimon, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables the OOBE QuickStart flow on the login screen.
 BASE_FEATURE(kOobeQuickStartOnLoginScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the enforcement of AutoEnrollment check in OOBE.
+BASE_FEATURE(kOobeAutoEnrollmentCheckForced, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Orca for ARC apps.
 BASE_FEATURE(kOrcaArc, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -3270,6 +3273,10 @@ bool IsOobeDisplaySizeEnabled() {
 bool IsOobeInputMethodsEnabled() {
   return IsOobeChoobeEnabled() &&
          base::FeatureList::IsEnabled(kOobeInputMethods);
+}
+
+bool IsOobeAutoEnrollmentCheckForcedEnabled() {
+  return base::FeatureList::IsEnabled(kOobeAutoEnrollmentCheckForced);
 }
 
 bool IsOobeSplitModifierKeyboardInfoEnabled() {

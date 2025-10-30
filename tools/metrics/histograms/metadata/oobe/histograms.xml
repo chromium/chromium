@@ -1068,6 +1068,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.OobeNotCompletedErrorTrigger"
+    enum="OobeNotCompletedErrorTrigger" expires_after="2026-10-22">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the specific trigger cause when the &quot;OOBE Not Completed&quot;
+    error screen is displayed. This is emitted before showing the error screen.
+    The enum values capture the different locations in the code where the check
+    for OOBE completion was performed and determined to have failed, leading to
+    this error.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.OobeStartToOnboardingStartTime" units="ms"
     expires_after="2026-04-01">
   <owner>osamafathy@google.com</owner>

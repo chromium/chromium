@@ -47,6 +47,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
     ENTERPRISE_ENROLL,
     ENTER_QUICK_START,
     QUICK_START_ONGOING,
+    ERROR_OOBE_NOT_COMPLETED,
   };
 
   static std::string GetResultString(Result result);

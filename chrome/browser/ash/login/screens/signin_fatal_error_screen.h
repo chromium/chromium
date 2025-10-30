@@ -30,7 +30,8 @@ class SignInFatalErrorScreen : public BaseScreen {
     kScrapedPasswordVerificationFailure = 1,
     kInsecureContentBlocked = 2,
     kMissingGaiaInfo = 3,
-    kCustom = 4,
+    kOobeCompletionSkipped = 4,
+    kCustom = 5,
   };
 
   explicit SignInFatalErrorScreen(base::WeakPtr<SignInFatalErrorView> view,

@@ -77,7 +77,7 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   // Runs `exit_callback_` - used to prevent `exit_callback_` from running after
   // `this` has been destroyed (by wrapping it with a callback bound to a weak
   // ptr).
-  void RunExitCallback(Result result) { exit_callback_.Run(result); }
+  void RunExitCallback(Result result);
 
  private:
   // Handles update notifications regarding the auto-enrollment check.

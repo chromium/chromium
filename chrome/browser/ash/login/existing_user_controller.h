@@ -200,6 +200,10 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // not localized.
   void ShowError(SigninError error, const std::string& details);
 
+  // Shows an error message because the OOBE is not marked as completed.
+  // This occurs if StartupUtils::IsOobeCompleted() returns false unexpectedly.
+  void ShowOobeNotCompletedError();
+
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();
 

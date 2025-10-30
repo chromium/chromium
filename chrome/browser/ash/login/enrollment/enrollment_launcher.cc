@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/enrollment/oauth2_token_revoker.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
@@ -48,6 +50,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -437,7 +440,14 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
   }
 
   success_ = true;
-  StartupUtils::MarkOobeCompleted();
+
+  // TODO(crbug.com/454136007): Investigate why OOBE is marked completed here
+  if (!features::IsOobeAutoEnrollmentCheckForcedEnabled() ||
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kAutoEnrollmentCheckExited)) {
+    StartupUtils::MarkOobeCompleted();
+  }
+
   status_consumer_->OnDeviceEnrolled();
 }
 

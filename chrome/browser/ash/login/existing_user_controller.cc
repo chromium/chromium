@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
@@ -1398,6 +1399,24 @@ void ExistingUserController::ShowError(SigninError error,
   signin_ui->ShowSigninError(error, details);
 }
 
+void ExistingUserController::ShowOobeNotCompletedError() {
+  CHECK(features::IsOobeAutoEnrollmentCheckForcedEnabled())
+      << "ExistingUserController::ShowOobeNotCompletedError() should only be "
+         "called when OobeAutoEnrollmentCheckForced is enabled";
+  auto* signin_ui = GetLoginDisplayHost()->GetSigninUI();
+  if (!signin_ui) {
+    DCHECK(session_manager::SessionManager::Get()->IsInSecondaryLoginScreen());
+    // Silently ignore the error on the secondary login screen. The screen is
+    // being deprecated anyway.
+    return;
+  }
+  GetLoginDisplayHost()
+      ->GetOobeMetricsHelper()
+      ->RecordOobeNotCompletedErrorTrigger(
+          OobeMetricsHelper::OobeNotCompletedTrigger::kExistingUserController);
+  signin_ui->ShowOobeNotCompletedError();
+}
+
 void ExistingUserController::SendAccessibilityAlert(
     const std::string& alert_text) {
   AutomationManagerAura::GetInstance()->HandleAlert(alert_text);
@@ -1512,6 +1531,27 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
     // and refuse to log in.
     ++num_login_attempts_;
     ShowError(SigninError::kOwnerKeyLost, /*details=*/std::string());
+
+    // Re-enable clicking on other windows and the status area. Do not start the
+    // auto-login timer though. Without trusted `cros_settings_`, no auto-login
+    // can succeed.
+    if (GetLoginDisplayHost()->GetWebUILoginView()) {
+      GetLoginDisplayHost()
+          ->GetWebUILoginView()
+          ->SetKeyboardEventsAndSystemTrayEnabled(true);
+    }
+    return;
+  }
+
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
+      !StartupUtils::IsOobeCompleted()) {
+    // If OOBE is not yet completed, abort the current login attempt. This
+    // indicates a potential bypass attempt and an error screen is shown.
+    ++num_login_attempts_;
+
+    auto* wizard_controller = GetLoginDisplayHost()->GetWizardController();
+    CHECK(wizard_controller);
+    ShowOobeNotCompletedError();
 
     // Re-enable clicking on other windows and the status area. Do not start the
     // auto-login timer though. Without trusted `cros_settings_`, no auto-login

@@ -34,6 +34,17 @@ class OobeMetricsHelper {
   // or deleted. Only additions possible.
   enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
+  enum class OobeNotCompletedTrigger {
+    kPerformOobeCompletedAction = 0,
+    kGaiaScreen = 1,
+    kExistingUserController = 2,
+    kMaxValue = kExistingUserController
+  };
+
   // The type of flow completed when pre-login OOBE is completed.
   enum class CompletedPreLoginOobeFlowType {
     kAutoEnrollment = 0,
@@ -159,6 +170,8 @@ class OobeMetricsHelper {
   void RecordEnrollingUserType();
 
   void RecordChromeVersion();
+
+  void RecordOobeNotCompletedErrorTrigger(OobeNotCompletedTrigger trigger);
 
   void AddObserver(Observer* observer);
 

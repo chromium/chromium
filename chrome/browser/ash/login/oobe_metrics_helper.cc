@@ -492,6 +492,11 @@ void OobeMetricsHelper::OnStatsReportingSettingUpdated() {
   }
 }
 
+void OobeMetricsHelper::RecordOobeNotCompletedErrorTrigger(
+    OobeNotCompletedTrigger trigger) {
+  base::UmaHistogramEnumeration("OOBE.OobeNotCompletedErrorTrigger", trigger);
+}
+
 void OobeMetricsHelper::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

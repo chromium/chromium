@@ -1546,6 +1546,15 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::QUICK_START_ONGOING:
       ShowQuickStartScreen();
       break;
+    case GaiaScreen::Result::ERROR_OOBE_NOT_COMPLETED:
+      GetLoginDisplayHost()
+          ->GetOobeMetricsHelper()
+          ->RecordOobeNotCompletedErrorTrigger(
+              OobeMetricsHelper::OobeNotCompletedTrigger::kGaiaScreen);
+      ShowSignInFatalErrorScreen(
+          SignInFatalErrorScreen::Error::kOobeCompletionSkipped,
+          base::Value::Dict());
+      break;
   }
 }
 
@@ -3047,6 +3056,25 @@ void WizardController::PerformOOBECompletedActions(
   // to enrollment screen (and back).
   if (StartupUtils::IsOobeCompleted()) {
     return;
+  }
+
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    // To prevent auto-enrollment bypass, check if `kAutoEnrollmentCheckExited`
+    // has been set. If it's false, the auto-enrollment check was not properly
+    // completed.
+    if (!GetLocalState()->GetBoolean(prefs::kAutoEnrollmentCheckExited)) {
+      GetLoginDisplayHost()
+          ->GetOobeMetricsHelper()
+          ->RecordOobeNotCompletedErrorTrigger(
+              OobeMetricsHelper::OobeNotCompletedTrigger::
+                  kPerformOobeCompletedAction);
+
+      // Show a fatal error and do not mark OOBE as completed.
+      ShowSignInFatalErrorScreen(
+          SignInFatalErrorScreen::Error::kOobeCompletionSkipped,
+          base::Value::Dict());
+      return;
+    }
   }
 
   StartupUtils::MarkOobeCompleted();

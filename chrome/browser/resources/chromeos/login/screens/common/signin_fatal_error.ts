@@ -127,7 +127,11 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
   }
 
   private onClick(): void {
-    this.userActed('screen-dismissed');
+    if (this.errorState === OobeTypes.FatalErrorCode.OOBE_COMPLETION_SKIPPED) {
+      this.userActed('restart-and-powerwash');
+    } else {
+      this.userActed('screen-dismissed');
+    }
   }
 
   /**
@@ -137,6 +141,8 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
   private computeButtonKey(errorState: OobeTypes.FatalErrorCode) {
     if (errorState === OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED) {
       return 'fatalErrorDoneButton';
+    } else if (errorState == OobeTypes.FatalErrorCode.OOBE_COMPLETION_SKIPPED) {
+      return 'fatalErrorRestartAndPowerwash';
     }
 
     return 'fatalErrorTryAgainButton';
@@ -158,6 +164,8 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
         const url = params.url;
         return this.i18nDynamic(
             locale, 'fatalErrorMessageInsecureURL', url || '');
+      case OobeTypes.FatalErrorCode.OOBE_COMPLETION_SKIPPED:
+        return this.i18nDynamic(locale, 'fatalErrorAutoEnrollmentSkipped');
       case OobeTypes.FatalErrorCode.CUSTOM:
         return params.errorText || '';
       default:

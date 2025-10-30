@@ -1881,6 +1881,13 @@
   <message name="IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN" desc="Message to show when the authentication could not be completed because the user's auth token retrieved.">
     Sign-in failed because your access token could not be retrieved. Please check your network connection and try again.
   </message>
+  <message name="IDS_LOGIN_FATAL_ERROR_AUTO_ENROLLMENT_SKIPPED" desc="Message to show when the auto enrollment check is skipped.">
+    Sign-in failed due to a device configuration check issue. Please powerwash your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and try again.
+  </message>
+  <message name="IDS_LOGIN_FATAL_ERROR_RESTART_AND_POWERWASH_BUTTON" desc="Button to trigger a reboot and a powerwash.">
+    Restart and Powerwash
+  </message>
+
   <message name="IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE" desc="Message to show on the SAML interstitial page to tell the user to continue signing in using their enterprise account. MANAGER can be a domain or an email address.">
     This device is managed by <ph name="MANAGER">$1<ex>acmecorp.com</ex></ph> and requires you to sign in every time.
   </message>

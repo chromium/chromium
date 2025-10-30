@@ -53,6 +53,7 @@ class MockSigninUI : public SigninUI {
               ShowSigninError,
               (SigninError, const std::string&),
               (override));
+  MOCK_METHOD(void, ShowOobeNotCompletedError, (), (override));
   MOCK_METHOD(void,
               SAMLConfirmPassword,
               (::login::StringList, std::unique_ptr<UserContext>),

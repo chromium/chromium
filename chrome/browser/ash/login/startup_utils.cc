@@ -137,6 +137,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kAuthenticationFlowAutoReloadInterval,
       constants::kDefaultAuthenticationFlowAutoReloadInterval);
+
+  registry->RegisterBooleanPref(prefs::kAutoEnrollmentCheckExited, false);
 }
 
 // static
@@ -271,6 +273,8 @@ void StartupUtils::ClearSpecificOobePrefs() {
       prefs::kOobeScreenAfterConsumerUpdate);
   g_browser_process->local_state()->ClearPref(
       prefs::kOobeCriticalUpdateCompleted);
+  g_browser_process->local_state()->ClearPref(
+      prefs::kAutoEnrollmentCheckExited);
 }
 
 // static

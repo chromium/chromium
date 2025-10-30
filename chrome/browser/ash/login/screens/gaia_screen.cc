@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
@@ -84,6 +85,7 @@ std::string GaiaScreen::GetResultString(Result result) {
       return "EnterpriseEnroll";
     case Result::ENTER_QUICK_START:
       return "EnterQuickStart";
+    case Result::ERROR_OOBE_NOT_COMPLETED:
     case Result::QUICK_START_ONGOING:
       return BaseScreen::kNotApplicable;
   }
@@ -107,6 +109,12 @@ bool GaiaScreen::MaybeSkip(WizardContext& context) {
       context.gaia_config.gaia_path !=
           WizardContext::GaiaPath::kQuickStartFallback) {
     exit_callback_.Run(Result::QUICK_START_ONGOING);
+    return true;
+  }
+
+  if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
+      !StartupUtils::IsOobeCompleted()) {
+    exit_callback_.Run(Result::ERROR_OOBE_NOT_COMPLETED);
     return true;
   }
 

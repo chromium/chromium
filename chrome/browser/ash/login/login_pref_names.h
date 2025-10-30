@@ -193,6 +193,11 @@ inline constexpr char kAuthenticationFlowAutoReloadInterval[] =
 // serialization obtained from PrefService::SetTime().
 inline constexpr char kLastOnlineSignInTime[] = "last_online_sign_in_time";
 
+// A boolean pref that indicates whether the auto enrollment check has
+// completed and exited. This is used to prevent OOBE completion if the
+// auto enrollment check was bypassed.
+inline constexpr char kAutoEnrollmentCheckExited[] =
+    "AutoEnrollmentCheckExited";
 }  // namespace ash::prefs
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_PREF_NAMES_H_
