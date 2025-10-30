@@ -127,6 +127,9 @@ public class NavigationAttachmentsCoordinator
 
     public void destroy() {
         mMediator = null;
+        if (mTemplateUrlService != null) {
+            mTemplateUrlService.removeObserver(this);
+        }
         if (mComposeBoxQueryControllerBridge != null) {
             mComposeBoxQueryControllerBridge.destroy();
             mComposeBoxQueryControllerBridge = null;
