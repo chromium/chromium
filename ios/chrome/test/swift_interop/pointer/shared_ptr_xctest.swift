@@ -38,6 +38,8 @@ class SharedPointerTest: XCTestCase {
     XCTAssertEqual(GetSharedObjectLiveCount(), 2, "The count of living objects is wrong")
 
     var object3: SharedObject? = object
+    XCTAssertEqual(object3!.IsValid(), true, "Object should be valid")
+    XCTAssertEqual(object3!.GetValue(), 42, "The value is wrong")
     XCTAssertEqual(GetSharedObjectLiveCount(), 3, "The count of living objects is wrong")
 
     object = nil
