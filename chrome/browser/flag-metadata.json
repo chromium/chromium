@@ -9779,11 +9779,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "tab-strip-layout-optimization",
-    "owners": [ "wenyufu@chromium.org", "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "tab-strip-mouse-close-resize-delay",
     "owners": [ "nemco@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 149

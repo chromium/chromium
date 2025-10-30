@@ -743,7 +743,6 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     public void testThemeColorChange() {
         int color = Color.BLACK;
         mToolbarTablet.onThemeColorChanged(color, false);

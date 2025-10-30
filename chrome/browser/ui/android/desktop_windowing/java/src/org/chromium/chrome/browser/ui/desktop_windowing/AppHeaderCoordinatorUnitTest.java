@@ -46,7 +46,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.util.ReflectionHelpers;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -209,23 +208,6 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void notEnabledOnExternalDisplayWhenDisallowed() {
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult4",
-                        DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ false);
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
-
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop windowing should not be enabled on an external display when"
-                        + " it is disallowed.");
-        watcher.assertExpected();
-    }
-
-    @Test
     @Config(sdk = 35)
     public void notEnabledOnExternalDisplayForSamsung_PreApi36() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
@@ -234,7 +216,6 @@ public class AppHeaderCoordinatorUnitTest {
                         "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -249,18 +230,6 @@ public class AppHeaderCoordinatorUnitTest {
     public void enabledOnExternalDisplayForSamsung_PostApi36() {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true);
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectConsumer();
-
-        verifyDesktopWindowingEnabled();
-    }
-
-    @Test
-    public void enabledOnExternalDisplayForNonDenylistedOem() {
-        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "lenovo");
-        DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -270,7 +239,6 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void enabledOnExternalDisplayWhenAllowed() {
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
-        updateFeatureParams(/* enableOnExternalDisplay= */ true);
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectConsumer();
 
@@ -984,15 +952,5 @@ public class AppHeaderCoordinatorUnitTest {
                     WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, navBarInset));
         }
         return mAppHeaderCoordinator.onApplyWindowInsets(mSpyRootView, windowInsetsBuilder.build());
-    }
-
-    private void updateFeatureParams(boolean enableOnExternalDisplay) {
-        FeatureOverrides.Builder overrides =
-                FeatureOverrides.newBuilder()
-                        .enable(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
-                        .param(
-                                "enable_on_external_display",
-                                enableOnExternalDisplay ? "true" : "false");
-        overrides.apply();
     }
 }

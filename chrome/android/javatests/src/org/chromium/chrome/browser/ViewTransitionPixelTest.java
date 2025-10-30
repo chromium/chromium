@@ -30,10 +30,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -328,18 +326,17 @@ public class ViewTransitionPixelTest {
     }
 
     /**
-     * Same as {@code #testVirtualKeyboardResizesContent()}, but with TabStripLayoutOptimization
-     * enabled. This tablet feature uses caption bar insets to draw custom app headers and is known
-     * to have caused regressions in bottom Chrome UI placement when OSK is visible.
+     * Same as {@code #testVirtualKeyboardResizesContent()}, but assuming the presence of caption
+     * bar insets to draw custom app headers. This is known to have caused regressions in bottom
+     * Chrome UI placement when OSK is visible.
      */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     @MinAndroidSdkLevel(VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @DisabledTest(message = "crbug.com/435692206")
-    public void testVirtualKeyboardResizesContent_TSLOEnabled() throws Throwable {
+    public void testVirtualKeyboardResizesContent_ValidCaptionBarFrame() throws Throwable {
         // Simulate fullscreen window behavior in an environment that supports Android V custom app
         // header APIs.
         WindowInsetsUtils.setFrameForTesting(new Size(2560, 1600));

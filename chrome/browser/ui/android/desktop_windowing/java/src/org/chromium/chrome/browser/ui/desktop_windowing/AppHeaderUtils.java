@@ -19,7 +19,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -354,11 +353,7 @@ public class AppHeaderUtils {
                             && EXTERNAL_DISPLAY_OEM_DENYLIST.contains(
                                     Build.MANUFACTURER.toLowerCase(Locale.US));
         }
-        if (sHeaderCustomizationDisallowedOnExternalDisplayForOem) {
-            return false;
-        }
-
-        return ChromeFeatureList.sTabStripLayoutOptimizationOnExternalDisplay.getValue();
+        return !sHeaderCustomizationDisallowedOnExternalDisplayForOem;
     }
 
     /**

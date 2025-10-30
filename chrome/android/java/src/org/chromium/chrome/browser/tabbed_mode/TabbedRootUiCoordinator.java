@@ -1472,7 +1472,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
-        if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
+        if (!ToolbarFeatures.isAppHeaderCustomizationSupported(
                 isTablet, DisplayUtil.isContextInDefaultDisplay(activity))) {
             return null;
         }

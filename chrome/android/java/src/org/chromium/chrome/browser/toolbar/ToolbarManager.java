@@ -930,7 +930,7 @@ public class ToolbarManager
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
                         /* context= */ mActivity,
-                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(
+                        ToolbarFeatures.isAppHeaderCustomizationSupported(
                                         mIsTablet, isDefaultDisplay)
                                 ? mActivityLifecycleDispatcher
                                 : null,

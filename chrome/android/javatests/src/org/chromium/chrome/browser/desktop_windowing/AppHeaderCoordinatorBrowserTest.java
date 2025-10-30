@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
@@ -119,7 +118,6 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Before
     public void setup() {
-        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         InsetObserver.setInitialRawWindowInsetsForTesting(BOTTOM_NAV_BAR_INSETS);
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
 
@@ -139,7 +137,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Test
     @MediumTest
-    public void testTabStripHeightChangeForTabStripLayoutOptimization() {
+    public void testTabStripHeightChangeInDesktopWindow() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
 
@@ -597,7 +595,6 @@ public class AppHeaderCoordinatorBrowserTest {
 
     private void doTestOnTopResumedActivityChanged(
             boolean isInDesktopWindow, boolean isActivityFocused) {
-        ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         CriteriaHelper.pollUiThread(

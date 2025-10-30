@@ -368,7 +368,6 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testToggleTabStripVisibility() {
         int tabStripHeightResource =
