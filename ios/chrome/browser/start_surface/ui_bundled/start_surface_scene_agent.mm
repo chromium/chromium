@@ -445,6 +445,9 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
+  // Increment the IOS.TabGroupInGridOnStart.Show metric.
+  base::RecordAction(base::UserMetricsAction("IOS.TabGroupInGridOnStart.Show"));
+
   // Activate the tab group in grid view.
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<ApplicationCommands> applicationHandler =
