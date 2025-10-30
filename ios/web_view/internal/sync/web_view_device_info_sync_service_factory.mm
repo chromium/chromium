@@ -6,6 +6,8 @@
 
 #import <utility>
 
+#import "base/feature_list.h"
+#import "base/features.h"
 #import "base/functional/bind.h"
 #import "base/memory/singleton.h"
 #import "base/time/default_clock.h"
@@ -19,6 +21,8 @@
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
 #import "components/version_info/version_info.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/sync/web_view_data_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -141,7 +145,11 @@ WebViewDeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
-      std::move(device_info_sync_client), sync_invalidations_service);
+      std::move(device_info_sync_client), sync_invalidations_service,
+      /*pulse_task_runner=*/
+      base::FeatureList::IsEnabled(base::features::kReducePPMs)
+          ? web::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+          : web::GetUIThreadTaskRunner({}));
 }
 
 }  // namespace ios_web_view

@@ -130,6 +130,7 @@ source_set("device_info_sync_service_factory") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
+    "//ios/web/public/thread",
   ]
 }
 

@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -24,7 +26,8 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
     std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
     std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client,
-    SyncInvalidationsService* sync_invalidations_service)
+    SyncInvalidationsService* sync_invalidations_service,
+    scoped_refptr<base::SequencedTaskRunner> pulse_task_runner)
     : device_info_sync_client_(std::move(device_info_sync_client)),
       sync_invalidations_service_(sync_invalidations_service) {
   DCHECK(local_device_info_provider);
@@ -42,7 +45,7 @@ DeviceInfoSyncServiceImpl::DeviceInfoSyncServiceImpl(
           DEVICE_INFO,
           /*dump_stack=*/base::BindRepeating(&ReportUnrecoverableError,
                                              channel)),
-      std::move(device_info_prefs));
+      std::move(device_info_prefs), std::move(pulse_task_runner));
 
   sync_invalidations_service_->AddTokenObserver(this);
   sync_invalidations_service_->SetInterestedDataTypesHandler(this);

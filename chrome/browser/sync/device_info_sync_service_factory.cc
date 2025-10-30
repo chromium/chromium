@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/time/default_clock.h"
@@ -25,6 +27,7 @@
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_service_impl.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
+#include "content/public/browser/browser_thread.h"
 
 // static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
@@ -96,5 +99,9 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceForBrowserContext(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client),
-      SyncInvalidationsServiceFactory::GetForProfile(profile));
+      SyncInvalidationsServiceFactory::GetForProfile(profile),
+      /*pulse_task_runner=*/
+      base::FeatureList::IsEnabled(base::features::kReducePPMs)
+          ? content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+          : content::GetUIThreadTaskRunner());
 }

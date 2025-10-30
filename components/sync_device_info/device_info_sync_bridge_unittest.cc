@@ -13,9 +13,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/sequence_manager/task_queue.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
@@ -482,6 +486,46 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
 };  // namespace
 
+// A TaskEnvironment that multiplexes several task queues, similar to
+// content::BrowserThread, to test that using a BEST_EFFORT browser thread for
+// `pulse_timer` won't break sequencing guaranties in DeviceInfoSyncBridge.
+// TODO(crbug.com/441949788): Make a helper in base::test::TaskEnvironment for
+// this to hide the complexity from individual unit tests.
+class TaskEnvironmentWithBestEffortTaskQueue final
+    : public base::test::TaskEnvironment {
+ public:
+  TaskEnvironmentWithBestEffortTaskQueue()
+      : base::test::TaskEnvironment(
+            base::sequence_manager::SequenceManager::PrioritySettings(
+                TaskQueuePriority::kCount,
+                TaskQueuePriority::kDefault),
+            SubclassCreatesDefaultTaskRunner{}) {
+    default_task_queue_->SetQueuePriority(TaskQueuePriority::kDefault);
+    best_effort_task_queue_->SetQueuePriority(TaskQueuePriority::kBestEffort);
+    DeferredInitFromSubclass(default_task_queue_->task_runner());
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> best_effort_task_runner() {
+    return best_effort_task_queue_->task_runner();
+  }
+
+ private:
+  using QueueName = base::sequence_manager::QueueName;
+  using TaskQueue = base::sequence_manager::TaskQueue;
+
+  enum class TaskQueuePriority : TaskQueue::QueuePriority {
+    kDefault = 0,
+    kBestEffort = 1,
+    // Must be last.
+    kCount = 2,
+  };
+
+  TaskQueue::Handle default_task_queue_ = sequence_manager()->CreateTaskQueue(
+      TaskQueue::Spec(QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
+  TaskQueue::Handle best_effort_task_queue_ =
+      sequence_manager()->CreateTaskQueue(TaskQueue::Spec(QueueName::TEST_TQ));
+};
+
 class DeviceInfoSyncBridgeTest : public testing::Test,
                                  public DeviceInfoTracker::Observer {
  protected:
@@ -535,7 +579,8 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
         std::move(local_device_info_provider),
         DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         mock_processor_.CreateForwardingProcessor(),
-        std::make_unique<DeviceInfoPrefs>(&pref_service_, &clock_));
+        std::make_unique<DeviceInfoPrefs>(&pref_service_, &clock_),
+        task_environment_.best_effort_task_runner());
     bridge_->AddObserver(this);
   }
 
@@ -687,7 +732,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   int change_count_ = 0;
 
   // In memory data type store needs to be able to post tasks.
-  base::test::TaskEnvironment task_environment_;
+  TaskEnvironmentWithBestEffortTaskQueue task_environment_;
 
   NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
 
