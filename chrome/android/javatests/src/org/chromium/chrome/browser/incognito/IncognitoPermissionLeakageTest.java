@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -28,6 +30,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -47,6 +52,8 @@ import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.ActivityType
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils.TestParams;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
+import org.chromium.chrome.browser.ui.hats.SurveyClient;
+import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -72,6 +79,11 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_ALL_IPH})
 @Batch(Batch.PER_CLASS)
 public class IncognitoPermissionLeakageTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock SurveyClient mSurveyClient;
+    @Mock SurveyClientFactory mSurveyClientFactory;
+
     private static final String PERMISSION_HTML_PATH =
             "/content/test/data/android/geolocation.html";
 
@@ -88,6 +100,9 @@ public class IncognitoPermissionLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
+        SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
+        doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any(), any());
+
         mTestServer = mChromeActivityTestRule.getTestServer();
         mPermissionTestPage = mTestServer.getURL(PERMISSION_HTML_PATH);
 

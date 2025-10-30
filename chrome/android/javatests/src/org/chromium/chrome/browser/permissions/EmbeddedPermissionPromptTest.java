@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+
 import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
 
 import android.Manifest;
@@ -17,6 +20,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -34,6 +40,8 @@ import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.Runtim
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.hats.SurveyClient;
+import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSetting;
@@ -69,11 +77,18 @@ public class EmbeddedPermissionPromptTest {
     private static final int TEST_TIMEOUT = 10000;
     private static final int TEST_POLLING = 1000;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock SurveyClient mSurveyClient;
+    @Mock SurveyClientFactory mSurveyClientFactory;
+
     @Rule public PermissionTestRule mActivityTestRule = new PermissionTestRule();
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 
     @Before
     public void setUp() throws Exception {
+        SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
+        doReturn(mSurveyClient).when(mSurveyClientFactory).createClient(any(), any(), any(), any());
         mActivityTestRule.getEmbeddedTestServerRule().setServerPort(12345);
         mActivityTestRule.setUpActivity();
     }
