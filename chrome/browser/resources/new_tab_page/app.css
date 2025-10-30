@@ -18,6 +18,7 @@
   --cr-searchbox-icon-size-in-searchbox: 20px;
   --cr-searchbox-icon-top-position: 0;
   --cr-searchbox-min-width: var(--ntp-search-box-width);
+  --cr-searchbox-results-search-icon-size: 20px;
   --ntp-theme-text-shadow: none;
   --ntp-one-google-bar-height: 56px;
   --ntp-search-box-width: 337px;
