@@ -10,17 +10,18 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {toastDurationMs} from './common.js';
 import {getCss} from './language_toast.css.js';
 import {getHtml} from './language_toast.html.js';
-import {NotificationType} from './read_aloud/voice_language_conversions.js';
-import type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
+import {NotificationType} from './voice_language_conversions.js';
+import type {VoiceNotificationListener} from './voice_notification_manager.js';
 
 export interface LanguageToastElement {
   $: {
     toast: CrToastElement,
   };
 }
+
+const toastDurationMs = 10000;
 
 const LanguageToastElementBase =
     WebUiListenerMixinLit(I18nMixinLit(CrLitElement));

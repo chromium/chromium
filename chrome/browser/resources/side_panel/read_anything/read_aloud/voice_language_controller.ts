@@ -8,10 +8,9 @@ import {isGoogle} from './voice_language_conversions.js';
 // </if>
 // clang-format on
 
-import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
-import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
+import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
+import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, EXTENSION_RESPONSE_TIMEOUT_MS, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_conversions.js';
-
 import type {VoicePackStatus} from './voice_language_conversions.js';
 import {VoiceLanguageModel} from './voice_language_model.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';

@@ -7,7 +7,7 @@ import '/strings.m.js';
 import '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
-import './language_toast.js';
+import './read_aloud/language_toast.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -21,8 +21,8 @@ import type {SettingsPrefs} from './common.js';
 import {minOverflowLengthToScroll} from './common.js';
 import {ContentController, ContentType} from './content_controller.js';
 import type {ContentListener, ContentState} from './content_controller.js';
-import type {LanguageToastElement} from './language_toast.js';
 import {NodeStore} from './node_store.js';
+import type {LanguageToastElement} from './read_aloud/language_toast.js';
 import {SpeechController} from './read_aloud/speech_controller.js';
 import type {SpeechListener} from './read_aloud/speech_controller.js';
 import {TextSegmenter} from './read_aloud/text_segmenter.js';

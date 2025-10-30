@@ -9,7 +9,6 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import './language_toast.js';
-import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
@@ -19,13 +18,14 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from './common.js';
+import {ToolbarEvent} from '../common.js';
+
 import {getCss} from './language_menu.css.js';
 import {getHtml} from './language_menu.html.js';
 import type {LanguageToastElement} from './language_toast.js';
-import {AVAILABLE_GOOGLE_TTS_LOCALES, getVoicePackConvertedLangIfExists, NotificationType} from './read_aloud/voice_language_conversions.js';
-import type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
-import {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, getVoicePackConvertedLangIfExists, NotificationType} from './voice_language_conversions.js';
+import type {VoiceNotificationListener} from './voice_notification_manager.js';
+import {VoiceNotificationManager} from './voice_notification_manager.js';
 
 export interface LanguageMenuElement {
   $: {

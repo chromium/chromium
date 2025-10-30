@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import './voice_selection_menu.js';
+import './read_aloud/voice_selection_menu.js';
 import './menus/simple_action_menu.js';
 import './menus/color_menu.js';
 import './menus/line_spacing_menu.js';
@@ -36,10 +36,10 @@ import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 import type {RateMenuElement} from './menus/rate_menu.js';
 import {ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {getCurrentSpeechRate} from './read_aloud/speech_presentation_rules.js';
+import type {VoiceSelectionMenuElement} from './read_aloud/voice_selection_menu.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
 import {getCss} from './read_anything_toolbar.css.js';
 import {getHtml} from './read_anything_toolbar.html.js';
-import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export interface ReadAnythingToolbarElement {
   $: {

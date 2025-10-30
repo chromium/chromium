@@ -12,7 +12,6 @@ import {TextSegmenter} from './read_aloud/text_segmenter.js';
 export const minOverflowLengthToScroll = 75;
 export const spinnerDebounceTimeout = 150;
 export const playFromSelectionTimeout = spinnerDebounceTimeout + 25;
-export const toastDurationMs = 10000;
 
 // How long to delay before logging the empty state. If it's only shown briefly,
 // no need to log.

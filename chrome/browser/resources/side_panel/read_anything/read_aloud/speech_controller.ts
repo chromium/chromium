@@ -8,14 +8,14 @@ import {getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import {SelectionController} from '../selection_controller.js';
-import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
-import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 
 import {ReadAloudHighlighter} from './highlighter.js';
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
 import {ReadAloudNode} from './read_aloud_types.js';
 import type {Segment} from './read_aloud_types.js';
+import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
+import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
 import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
