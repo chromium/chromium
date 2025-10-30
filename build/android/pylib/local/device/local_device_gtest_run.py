@@ -29,6 +29,7 @@ from lib.proto import exception_recorder
 from lib.proto import measures
 from pylib import constants
 from pylib.base import base_test_result
+from pylib.base import output_manager
 from pylib.base import test_exception
 from pylib.gtest import gtest_test_instance
 from pylib.local.device import local_device_environment
@@ -790,8 +791,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     logcat_file = None
     logmon = None
     try:
-      with self._env.output_manager.ArchivedTempfile(stream_name,
-                                                     'logcat') as logcat_file:
+      with self._env.output_manager.ArchivedTempfile(
+          stream_name, 'logcat', output_manager.Datatype.TEXT,
+          self._test_instance.package) as logcat_file:
         symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
             device.product_cpu_abi)
         with symbolizer:

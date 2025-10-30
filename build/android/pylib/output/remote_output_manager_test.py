@@ -37,8 +37,9 @@ class RemoteOutputManagerTest(output_manager_test_case.OutputManagerTestCase):
   def testUsableTempFile(self, google_storage_helper_mock):
     del google_storage_helper_mock
     self.assertUsableTempFile(
-        self._output_manager._CreateArchivedFile(
-            'test_file', 'test_subdir', output_manager.Datatype.TEXT))
+        self._output_manager._CreateArchivedFile('test_file', 'test_subdir',
+                                                 output_manager.Datatype.TEXT,
+                                                 None))
 
 
 if __name__ == '__main__':

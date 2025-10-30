@@ -1534,8 +1534,9 @@ class LocalDeviceInstrumentationTestRun(
     logcat_file = None
     logmon = None
     try:
-      with self._env.output_manager.ArchivedTempfile(stream_name,
-                                                     'logcat') as logcat_file:
+      with self._env.output_manager.ArchivedTempfile(
+          stream_name, 'logcat', output_manager.Datatype.TEXT,
+          _GetTargetPackageName(self._test_instance.test_apk)) as logcat_file:
         symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
             device.product_cpu_abi)
         with symbolizer:

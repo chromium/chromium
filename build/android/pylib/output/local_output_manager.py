@@ -28,7 +28,8 @@ class LocalOutputManager(output_manager.OutputManager):
         output_dir, 'TEST_RESULTS_%s' % timestamp))
 
   #override
-  def _CreateArchivedFile(self, out_filename, out_subdir, datatype):
+  def _CreateArchivedFile(self, out_filename, out_subdir, datatype, package):
+    del package
     return LocalArchivedFile(
         out_filename, out_subdir, datatype, self._output_root)
 

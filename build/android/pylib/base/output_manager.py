@@ -30,14 +30,19 @@ class OutputManager:
     self._thread_group = None
 
   @contextlib.contextmanager
-  def ArchivedTempfile(
-      self, out_filename, out_subdir, datatype=Datatype.TEXT):
+  def ArchivedTempfile(self,
+                       out_filename,
+                       out_subdir,
+                       datatype=Datatype.TEXT,
+                       package=None):
     """Archive file contents asynchronously and then deletes file.
 
     Args:
       out_filename: Name for saved file.
       out_subdir: Directory to save |out_filename| to.
       datatype: Datatype of file.
+      package: If the file is a logcat, we want to filter the logcat so that
+        the remaining lines all belong to this package.
 
     Returns:
       An ArchivedFile file. This file will be uploaded async when the context
@@ -51,18 +56,21 @@ class OutputManager:
     if not self._allow_upload:
       raise Exception('Must run |SetUp| before attempting to upload!')
 
-    f = self.CreateArchivedFile(out_filename, out_subdir, datatype)
+    f = self.CreateArchivedFile(out_filename, out_subdir, datatype, package)
     try:
       yield f
     finally:
       self.ArchiveArchivedFile(f, delete=True)
 
-  def CreateArchivedFile(self, out_filename, out_subdir,
-                         datatype=Datatype.TEXT):
+  def CreateArchivedFile(self,
+                         out_filename,
+                         out_subdir,
+                         datatype=Datatype.TEXT,
+                         package=None):
     """Returns an instance of ArchivedFile."""
-    return self._CreateArchivedFile(out_filename, out_subdir, datatype)
+    return self._CreateArchivedFile(out_filename, out_subdir, datatype, package)
 
-  def _CreateArchivedFile(self, out_filename, out_subdir, datatype):
+  def _CreateArchivedFile(self, out_filename, out_subdir, datatype, package):
     raise NotImplementedError
 
   def ArchiveArchivedFile(self, archived_file, delete=False):

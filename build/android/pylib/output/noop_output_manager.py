@@ -14,8 +14,8 @@ from pylib.base import output_manager
 class NoopOutputManager(output_manager.OutputManager):
 
   #override
-  def _CreateArchivedFile(self, out_filename, out_subdir, datatype):
-    del out_filename, out_subdir, datatype
+  def _CreateArchivedFile(self, out_filename, out_subdir, datatype, package):
+    del out_filename, out_subdir, datatype, package
     return NoopArchivedFile()
 
 
