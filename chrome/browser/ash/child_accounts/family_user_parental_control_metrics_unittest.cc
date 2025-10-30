@@ -213,7 +213,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
 
 TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
   apps::AppServiceTest app_service_test_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 
   // During tests, AppService doesn't notify AppActivityRegistry that chrome
   // app is installed. Mark chrome as installed here.
@@ -222,15 +222,15 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
 
   // Install and set up Arc app.
   app_service_test_.SetUp(profile_.get());
-  arc_test_.SetUp(profile_.get());
-  arc_test_.app_instance()->set_icon_response_type(
+  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
   EXPECT_EQ(apps::AppType::kArc, kArcApp.app_type());
   std::string package_name = kArcApp.app_id();
-  arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
+  arc_app_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.emplace_back(CreateArcAppInfo(package_name, package_name));
-  arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+  arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
 
   // Add limit policy to the Chrome and the Arc app.
   {
@@ -266,7 +266,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
       /*expected_count=*/2);
 
-  arc_test_.TearDown();
+  arc_app_test_.TearDown();
 }
 
 }  // namespace ash

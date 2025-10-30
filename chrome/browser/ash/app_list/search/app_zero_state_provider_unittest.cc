@@ -95,7 +95,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   profile_->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
-  arc_test().SetUp(profile());
+  arc_app_test().SetUp(profile());
 
   // There are four default web apps. We use real app IDs here, as these are
   // used internally by the ranking logic. We can use arbitrary app names.
@@ -159,7 +159,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
                 ",OsSettings,Help,Play Store,Camera",
             RunZeroStateSearch());
 
-  arc_test().TearDown();
+  arc_app_test().TearDown();
 }
 
 TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {

@@ -81,7 +81,7 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void AddArcPackage(ArcAppTest& arc_test,
+void AddArcPackage(ArcAppTest& arc_app_test,
                    const std::vector<arc::mojom::AppInfoPtr>& fake_apps) {
   for (const auto& fake_app : fake_apps) {
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
@@ -98,8 +98,8 @@ void AddArcPackage(ArcAppTest& arc_test,
         /*last_backup_time=*/1, /*sync=*/true, /*system=*/false,
         /*vpn_provider=*/false, /*web_app_info=*/nullptr, std::nullopt,
         std::move(permissions));
-    arc_test.AddPackage(package->Clone());
-    arc_test.app_instance()->SendPackageAdded(package->Clone());
+    arc_app_test.AddPackage(package->Clone());
+    arc_app_test.app_instance()->SendPackageAdded(package->Clone());
   }
 }
 
@@ -415,12 +415,12 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PublisherTest, ArcAppsOnApps) {
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
   // Install fake apps.
-  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
-  AddArcPackage(arc_test, arc_test.fake_apps());
+  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
+  AddArcPackage(arc_app_test, arc_app_test.fake_apps());
 
   // Verify ARC apps are added to AppRegistryCache.
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
@@ -447,16 +447,16 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
   }
   VerifyAppTypeIsInitialized(AppType::kArc);
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 TEST_F(PublisherTest, ArcAppsRemoveApps) {
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
   // Install fake apps.
-  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
-  AddArcPackage(arc_test, arc_test.fake_apps());
+  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
+  AddArcPackage(arc_app_test, arc_app_test.fake_apps());
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
   ASSERT_TRUE(prefs);
@@ -471,16 +471,16 @@ TEST_F(PublisherTest, ArcAppsRemoveApps) {
     }
   }
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
   // Install fake apps.
-  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
-  AddArcPackage(arc_test, arc_test.fake_apps());
+  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
+  AddArcPackage(arc_app_test, arc_app_test.fake_apps());
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
   ASSERT_TRUE(prefs);
@@ -501,19 +501,19 @@ TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
     }
   }
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
-  const auto& fake_apps = arc_test.fake_apps();
+  const auto& fake_apps = arc_app_test.fake_apps();
   std::string package_name1 = fake_apps[0]->package_name;
   std::string package_name2 = fake_apps[1]->package_name;
 
   // Install fake apps.
-  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
 
   // Set accessing Camera for `package_name1`.
   {
@@ -592,7 +592,7 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
                            /*accessing_microphone=*/false);
   }
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

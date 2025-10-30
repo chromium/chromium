@@ -153,7 +153,7 @@ class AppTimeControllerTest : public testing::Test {
   NotificationDisplayServiceTester notification_tester_{&profile_};
   FakeIconLoader icon_loader_;
   apps::AppServiceTest app_service_test_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 
   std::unique_ptr<AppTimeController> controller_;
   std::unique_ptr<AppTimeController::TestApi> test_api_;
@@ -174,8 +174,8 @@ void AppTimeControllerTest::SetUp() {
   apps::AppServiceProxyFactory::GetForProfile(&profile_)
       ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 
-  arc_test_.SetUp(&profile_);
-  arc_test_.app_instance()->set_icon_response_type(
+  arc_app_test_.SetUp(&profile_);
+  arc_app_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
   task_environment_.RunUntilIdle();
 
@@ -187,7 +187,7 @@ void AppTimeControllerTest::SetUp() {
 void AppTimeControllerTest::TearDown() {
   test_api_.reset();
   controller_.reset();
-  arc_test_.TearDown();
+  arc_app_test_.TearDown();
   SystemClockClient::Shutdown();
   testing::Test::TearDown();
 }
@@ -214,10 +214,10 @@ void AppTimeControllerTest::CreateActivityForApp(const AppId& app_id,
 void AppTimeControllerTest::SimulateInstallArcApp(const AppId& app_id,
                                                   const std::string& app_name) {
   std::string package_name = app_id.app_id();
-  arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
+  arc_app_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.emplace_back(CreateArcAppInfo(package_name, app_name));
-  arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+  arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
   task_environment_.RunUntilIdle();
   return;
 }

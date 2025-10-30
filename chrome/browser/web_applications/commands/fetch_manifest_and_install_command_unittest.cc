@@ -105,10 +105,10 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     web_contents_manager().SetUrlLoaded(web_contents(), kWebAppUrl);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    arc_test_.SetUp(profile());
+    arc_app_test_.SetUp(profile());
 
     auto* arc_bridge_service =
-        arc_test_.arc_service_manager()->arc_bridge_service();
+        arc_app_test_.arc_service_manager()->arc_bridge_service();
     fake_intent_helper_host_ = std::make_unique<arc::FakeIntentHelperHost>(
         arc_bridge_service->intent_helper());
     fake_intent_helper_instance_ =
@@ -121,13 +121,13 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 
   void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS)
-    arc_test_.arc_service_manager()
+    arc_app_test_.arc_service_manager()
         ->arc_bridge_service()
         ->intent_helper()
         ->CloseInstance(fake_intent_helper_instance_.get());
     fake_intent_helper_instance_.reset();
     fake_intent_helper_host_.reset();
-    arc_test_.TearDown();
+    arc_app_test_.TearDown();
 #endif
     WebAppTest::TearDown();
   }
@@ -147,7 +147,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
 #endif
 
   WebAppInstallDialogCallback CreateDialogCallback(
@@ -236,7 +236,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   base::HistogramTester histogram_tester_;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
   std::unique_ptr<arc::FakeIntentHelperHost> fake_intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> fake_intent_helper_instance_;
 #endif
@@ -814,7 +814,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FetchManifestAndInstallCommandTest, IntentToPlayStore) {
-  arc_test().app_instance()->set_is_installable(true);
+  arc_app_test().app_instance()->set_is_installable(true);
 
   auto manifest = CreateValidManifest();
   blink::Manifest::RelatedApplication related_app;

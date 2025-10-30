@@ -24,7 +24,7 @@ class AppControlsTestBase : public ChromeViewsTestBase {
   AppControlsTestBase& operator=(const AppControlsTestBase&) = delete;
   ~AppControlsTestBase() override;
 
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
   Profile& profile() { return profile_; }
 
@@ -44,7 +44,7 @@ class AppControlsTestBase : public ChromeViewsTestBase {
 
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 };
 
 }  // namespace ash::on_device_controls

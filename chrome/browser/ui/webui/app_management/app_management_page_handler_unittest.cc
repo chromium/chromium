@@ -878,25 +878,25 @@ class AppManagementPageHandlerArcTest
     // We want to set up the real ArcIntentHelper KeyedService with a fake
     // ArcIntentHelperBridge, so that it's the same object that ArcApps
     // uses to launch apps.
-    arc_test_.set_initialize_real_intent_helper_bridge(true);
-    arc_test_.SetUp(profile());
+    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
+    arc_app_test_.SetUp(profile());
   }
 
   void TearDown() override {
-    arc_test_.StopArcInstance();
-    arc_test_.TearDown();
+    arc_app_test_.StopArcInstance();
+    arc_app_test_.TearDown();
     AppManagementPageHandlerTestBase::TearDown();
   }
 
  protected:
-  ArcAppTest* arc_test() { return &arc_test_; }
+  ArcAppTest* arc_app_test() { return &arc_app_test_; }
 
  private:
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 };
 
 TEST_P(AppManagementPageHandlerArcTest, OpenStorePageArcAppPlayStore) {
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[1]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[1]->package_name,
                                                  fake_apps[1]->activity);
@@ -905,11 +905,11 @@ TEST_P(AppManagementPageHandlerArcTest, OpenStorePageArcAppPlayStore) {
   apps.push_back(arc::mojom::AppInfo::New("Play Store", arc::kPlayStorePackage,
                                           arc::kPlayStoreActivity));
   apps.push_back(fake_apps[1]->Clone());
-  arc_test()->app_instance()->SendRefreshAppList(apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(apps);
 
   handler()->OpenStorePage(app_id);
 
-  auto* intent_helper = arc_test()->intent_helper_instance();
+  auto* intent_helper = arc_app_test()->intent_helper_instance();
   const std::vector<arc::FakeIntentHelperInstance::HandledIntent>& intents =
       intent_helper->handled_intents();
   EXPECT_EQ(intents.size(), 1U);
@@ -936,19 +936,19 @@ TEST_P(AppManagementPageHandlerArcTest, OpenStorePageWebAppPlayStore) {
   apps.push_back(arc::mojom::AppInfo::New("Play Store", arc::kPlayStorePackage,
                                           arc::kPlayStoreActivity));
 
-  arc_test()->app_instance()->SendRefreshAppList(apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(apps);
   ash::ApkWebAppService* service = ash::ApkWebAppService::Get(profile());
 
   base::test::TestFuture<const std::string&, const webapps::AppId&>
       installed_result;
 
   service->SetWebAppInstalledCallbackForTesting(installed_result.GetCallback());
-  arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
+  arc_app_test()->app_instance()->SendRefreshPackageList(std::move(packages));
 
   webapps::AppId app_id = installed_result.Get<1>();
   handler()->OpenStorePage(app_id);
 
-  auto* intent_helper = arc_test()->intent_helper_instance();
+  auto* intent_helper = arc_app_test()->intent_helper_instance();
   const std::vector<arc::FakeIntentHelperInstance::HandledIntent>& intents =
       intent_helper->handled_intents();
   EXPECT_EQ(intents.size(), 1U);
@@ -965,19 +965,19 @@ TEST_P(AppManagementPageHandlerArcTest, SetAppLocale) {
   ASSERT_NE(nullptr, prefs);
   // fake_packages[4] is the test package with localeInfo.
   const std::string& test_package_name =
-      arc_test()->fake_apps()[4]->package_name;
-  const std::string& app_id =
-      prefs->GetAppId(test_package_name, arc_test()->fake_apps()[4]->activity);
+      arc_app_test()->fake_apps()[4]->package_name;
+  const std::string& app_id = prefs->GetAppId(
+      test_package_name, arc_app_test()->fake_apps()[4]->activity);
 
   // Setup app.
   std::vector<arc::mojom::AppInfoPtr> test_app_info_list;
-  test_app_info_list.push_back(arc_test()->fake_apps()[4]->Clone());
-  arc_test()->app_instance()->SendRefreshAppList(test_app_info_list);
+  test_app_info_list.push_back(arc_app_test()->fake_apps()[4]->Clone());
+  arc_app_test()->app_instance()->SendRefreshAppList(test_app_info_list);
   // Setup package.
   // Initially pref will be set with "en" as selectedLocale.
   std::vector<arc::mojom::ArcPackageInfoPtr> test_packages;
-  test_packages.push_back(arc_test()->fake_packages()[4]->Clone());
-  arc_test()->app_instance()->SendRefreshPackageList(
+  test_packages.push_back(arc_app_test()->fake_packages()[4]->Clone());
+  arc_app_test()->app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(test_packages));
 
   // Run.
@@ -985,7 +985,7 @@ TEST_P(AppManagementPageHandlerArcTest, SetAppLocale) {
 
   // Assert.
   ASSERT_EQ("ja",
-            arc_test()->app_instance()->selected_locale(test_package_name));
+            arc_app_test()->app_instance()->selected_locale(test_package_name));
 }
 
 INSTANTIATE_TEST_SUITE_P(

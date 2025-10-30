@@ -128,7 +128,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
     BrowserWithTestWindowTest::SetUp();
 
-    arc_test_.SetUp(profile());
+    arc_app_test_.SetUp(profile());
     tracing_helper_.SetUp(profile());
 
     ArcAppPerformanceTracing::SetFocusAppForTesting(
@@ -141,7 +141,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     shell_root_surface_.reset();
 
     tracing_helper_.TearDown();
-    arc_test_.TearDown();
+    arc_app_test_.TearDown();
 
     BrowserWithTestWindowTest::TearDown();
   }
@@ -229,7 +229,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
-  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
+  ArcAppTest arc_app_test_{ArcAppTest::UserManagerMode::kDoNothing};
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {

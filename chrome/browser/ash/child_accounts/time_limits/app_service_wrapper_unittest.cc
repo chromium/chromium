@@ -121,7 +121,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
 
     app_service_test_.SetUp(&profile_);
-    arc_test_.SetUp(&profile_);
+    arc_app_test_.SetUp(&profile_);
     task_environment_.RunUntilIdle();
 
     tested_wrapper_.AddObserver(&test_listener_);
@@ -136,7 +136,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
   void TearDown() override {
     tested_wrapper_.RemoveObserver(&test_listener_);
-    arc_test_.TearDown();
+    arc_app_test_.TearDown();
 
     testing::Test::TearDown();
   }
@@ -148,10 +148,11 @@ class AppServiceWrapperTest : public ::testing::Test {
                             std::optional<std::string> url = std::nullopt) {
     if (app_id.app_type() == apps::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
-      arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
+      arc_app_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
       std::vector<arc::mojom::AppInfoPtr> apps;
       apps.emplace_back(CreateArcAppInfo(package_name, app_name));
-      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+      arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name,
+                                                                apps);
       task_environment_.RunUntilIdle();
       return;
     }
@@ -178,7 +179,7 @@ class AppServiceWrapperTest : public ::testing::Test {
   void SimulateAppUninstalled(const AppId& app_id) {
     if (app_id.app_type() == apps::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
-      arc_test_.app_instance()->UninstallPackage(package_name);
+      arc_app_test_.app_instance()->UninstallPackage(package_name);
       task_environment_.RunUntilIdle();
       return;
     }
@@ -217,7 +218,8 @@ class AppServiceWrapperTest : public ::testing::Test {
       std::vector<arc::mojom::AppInfoPtr> apps;
       apps.emplace_back(CreateArcAppInfo(package_name, app_name))->suspended =
           disabled;
-      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+      arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name,
+                                                                apps);
       task_environment_.RunUntilIdle();
       return;
     }
@@ -250,7 +252,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 
   AppServiceWrapper tested_wrapper_{&profile_};
   MockListener test_listener_;

@@ -43,13 +43,13 @@ class ArcAppShortcutsSearchProviderTest
   // AppListTestBase:
   void SetUp() override {
     AppListTestBase::SetUp();
-    arc_test_.SetUp(profile());
+    arc_app_test_.SetUp(profile());
     controller_ = std::make_unique<::test::TestAppListControllerDelegate>();
   }
 
   void TearDown() override {
     controller_.reset();
-    arc_test_.TearDown();
+    arc_app_test_.TearDown();
     AppListTestBase::TearDown();
   }
 
@@ -65,7 +65,7 @@ class ArcAppShortcutsSearchProviderTest
 
   std::string AddArcAppAndShortcut(const arc::mojom::AppInfo& app_info,
                                    bool launchable) {
-    ArcAppListPrefs* const prefs = arc_test_.arc_app_list_prefs();
+    ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
 
     std::optional<uint64_t> app_size_in_bytes;
     std::optional<uint64_t> data_size_in_bytes;
@@ -93,7 +93,7 @@ class ArcAppShortcutsSearchProviderTest
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 };
 
 TEST_P(ArcAppShortcutsSearchProviderTest, Basic) {

@@ -78,7 +78,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
   // Waits for base::Time::Now() is updated.
   void WaitTimeUpdated();
 
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
 
  private:
   // Whether the test is testing zero state, or queried apps search provider.
@@ -90,7 +90,7 @@ class AppSearchProviderTestBase : public AppListTestBase {
   std::unique_ptr<AppSearchDataSource> data_source_;
   raw_ptr<SearchProvider, DanglingUntriaged> app_search_ = nullptr;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 };
 
 }  // namespace app_list

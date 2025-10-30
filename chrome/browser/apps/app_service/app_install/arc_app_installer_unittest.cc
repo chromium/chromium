@@ -18,15 +18,15 @@ class ArcAppInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
-    arc_test_.SetUp(&profile_);
+    arc_app_test_.SetUp(&profile_);
   }
 
-  void TearDown() override { arc_test_.TearDown(); }
+  void TearDown() override { arc_app_test_.TearDown(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 };
 
 TEST_F(ArcAppInstallerTest, Install) {
@@ -37,8 +37,9 @@ TEST_F(ArcAppInstallerTest, Install) {
   base::test::TestFuture<bool> result;
   installer.InstallApp(AppInstallSurface::kAppPreloadServiceOem,
                        std::move(data), result.GetCallback());
-  EXPECT_EQ(1,
-            arc_test_.app_instance()->start_fast_app_reinstall_request_count());
+  EXPECT_EQ(
+      1,
+      arc_app_test_.app_instance()->start_fast_app_reinstall_request_count());
   EXPECT_TRUE(result.Get());
   histograms.ExpectBucketCount(
       "Apps.AppInstallService.ArcAppInstaller.InstallResult",

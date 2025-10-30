@@ -433,14 +433,14 @@ TEST_F(AppContextMenuTest, NonExistingExtensionApp) {
 
 TEST_F(AppContextMenuTest, ArcMenu) {
   app_service_test().SetUp(profile());
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
-  const auto& app_info = arc_test.fake_apps()[1];
+  const auto& app_info = arc_app_test.fake_apps()[1];
   const std::string app_id = ArcAppTest::GetAppId(*app_info);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
-  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
 
   std::unique_ptr<FakeAppServiceAppItem> item =
       GetAppListItem(profile(), app_id);
@@ -461,7 +461,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   ValidateItemState(menu.get(), index++, MenuState(ash::SHOW_APP_INFO));
 
   // Test activate request.
-  EXPECT_EQ(0u, arc_test.app_instance()->launch_requests().size());
+  EXPECT_EQ(0u, arc_app_test.app_instance()->launch_requests().size());
 
   menu->ActivatedAt(0);
 
@@ -469,12 +469,12 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   item->WaitForLaunch();
 
   const std::vector<std::unique_ptr<arc::FakeAppInstance::Request>>&
-      launch_requests = arc_test.app_instance()->launch_requests();
+      launch_requests = arc_app_test.app_instance()->launch_requests();
   ASSERT_EQ(1u, launch_requests.size());
   EXPECT_TRUE(launch_requests[0]->IsForApp(*app_info));
 
   controller()->SetAppOpen(app_id, true);
-  arc_test.app_instance()->SendTaskCreated(1, *app_info, std::string());
+  arc_app_test.app_instance()->SendTaskCreated(1, *app_info, std::string());
 
   // It is not expected that menu model is unchanged on GetContextMenuModel.
   // ARC app menu requires model to be recalculated.
@@ -501,15 +501,15 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   }
 
   // Test launching app shortcut item.
-  EXPECT_EQ(0, arc_test.app_instance()->launch_app_shortcut_item_count());
+  EXPECT_EQ(0, arc_app_test.app_instance()->launch_app_shortcut_item_count());
   menu->ActivatedAt(menu->GetItemCount() - 1);
-  EXPECT_EQ(1, arc_test.app_instance()->launch_app_shortcut_item_count());
+  EXPECT_EQ(1, arc_app_test.app_instance()->launch_app_shortcut_item_count());
 
   // This makes all apps non-ready.
   controller()->SetAppOpen(app_id, false);
-  arc_test.app_instance()->SendTaskDestroyed(1);
+  arc_app_test.app_instance()->SendTaskDestroyed(1);
   arc::ConnectionObserver<arc::mojom::AppInstance>* connection_observer =
-      arc_test.arc_app_list_prefs();
+      arc_app_test.arc_app_list_prefs();
   connection_observer->OnConnectionClosed();
 
   menu = GetContextMenuModel(item.get());
@@ -535,7 +535,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   }
 
   // Uninstall all apps.
-  arc_test.app_instance()->SendRefreshAppList(
+  arc_app_test.app_instance()->SendRefreshAppList(
       std::vector<arc::mojom::AppInfoPtr>());
   controller()->SetAppOpen(app_id, false);
 
@@ -543,19 +543,21 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   menu = GetContextMenuModel(item.get());
   EXPECT_EQ(nullptr, menu);
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   app_service_test().SetUp(profile());
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
-  const arc::mojom::ShortcutInfo& shortcut_info = arc_test.fake_shortcuts()[0];
+  const arc::mojom::ShortcutInfo& shortcut_info =
+      arc_app_test.fake_shortcuts()[0];
   const std::string app_id = ArcAppTest::GetAppId(shortcut_info);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
-  arc_test.app_instance()->SendInstallShortcuts(arc_test.fake_shortcuts());
+  arc_app_test.app_instance()->SendInstallShortcuts(
+      arc_app_test.fake_shortcuts());
 
   std::unique_ptr<AppServiceAppItem> item = GetAppListItem(profile(), app_id);
 
@@ -583,7 +585,7 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
 
   // This makes all apps non-ready. Shortcut is still uninstall-able.
   arc::ConnectionObserver<arc::mojom::AppInstance>* connection_observer =
-      arc_test.arc_app_list_prefs();
+      arc_app_test.arc_app_list_prefs();
   connection_observer->OnConnectionClosed();
 
   menu = GetContextMenuModel(item.get());
@@ -608,19 +610,19 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
   app_service_test().SetUp(profile());
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
-  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+  arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
 
   {
     // Verify menu of store
-    const auto& store_info = arc_test.fake_apps()[0];
+    const auto& store_info = arc_app_test.fake_apps()[0];
     const std::string store_id = ArcAppTest::GetAppId(*store_info);
     controller()->SetAppPinnable(store_id,
                                  AppListControllerDelegate::PIN_EDITABLE);
@@ -650,18 +652,18 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
     }
   }
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 // In suspended state app does not have launch item.
 TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   app_service_test().SetUp(profile());
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
   std::vector<arc::mojom::AppInfoPtr> apps;
-  apps.emplace_back(arc_test.fake_apps()[0]->Clone())->suspended = true;
-  arc_test.app_instance()->SendRefreshAppList(apps);
+  apps.emplace_back(arc_app_test.fake_apps()[0]->Clone())->suspended = true;
+  arc_app_test.app_instance()->SendRefreshAppList(apps);
 
   const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
@@ -688,7 +690,7 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(index));
   }
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 TEST_F(AppContextMenuTest, CommandIdsMatchEnumsForHistograms) {

@@ -141,7 +141,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     profile_->SetIsSupervisedProfile();
     // TODO(hidehiko): we should set up kChild account from the beginning,
     // but ArcAppTest does not support such a case. Fix the test helper.
-    arc_test_.SetUp(profile());
+    arc_app_test_.SetUp(profile());
 
     ChildStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
@@ -169,7 +169,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
   void TearDown() override {
     service_->Shutdown();
-    arc_test_.TearDown();
+    arc_app_test_.TearDown();
     profile_.reset();
     SystemClockClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
@@ -186,7 +186,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  arc::mojom::AppHost* app_host() { return arc_test_.arc_app_list_prefs(); }
+  arc::mojom::AppHost* app_host() { return arc_app_test_.arc_app_list_prefs(); }
   Profile* profile() { return profile_.get(); }
   chromeos::FakePowerManagerClient* power_manager_client() {
     return chromeos::FakePowerManagerClient::Get();
@@ -212,7 +212,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
-  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
+  ArcAppTest arc_app_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<TestingConsumerStatusReportingService, DanglingUntriaged>
       test_consumer_status_reporting_service_;

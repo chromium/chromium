@@ -31,12 +31,12 @@ void AppControlsTestBase::SetUp() {
       switches::kDisableDefaultApps);
 
   app_service_test_.SetUp(&profile_);
-  arc_test_.SetUp(&profile_);
+  arc_app_test_.SetUp(&profile_);
   task_environment()->RunUntilIdle();
 }
 
 void AppControlsTestBase::TearDown() {
-  arc_test_.TearDown();
+  arc_app_test_.TearDown();
 
   ChromeViewsTestBase::TearDown();
 }
@@ -44,10 +44,10 @@ void AppControlsTestBase::TearDown() {
 std::string AppControlsTestBase::InstallArcApp(const std::string& package_name,
                                                const std::string& app_name) {
   task_environment()->AdvanceClock(base::Seconds(1));
-  arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
+  arc_app_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.emplace_back(CreateArcAppInfo(package_name, app_name));
-  arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+  arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
   task_environment()->RunUntilIdle();
 
   return arc::ArcPackageNameToAppId(package_name, &profile_);
@@ -55,7 +55,7 @@ std::string AppControlsTestBase::InstallArcApp(const std::string& package_name,
 
 void AppControlsTestBase::UninstallArcApp(const std::string& package_name) {
   task_environment()->AdvanceClock(base::Seconds(1));
-  arc_test_.app_instance()->UninstallPackage(package_name);
+  arc_app_test_.app_instance()->UninstallPackage(package_name);
   task_environment()->RunUntilIdle();
 }
 

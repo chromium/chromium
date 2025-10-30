@@ -283,8 +283,8 @@ TEST_F(ChromeAppIconTest, IconRelease) {
 #if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ChromeAppIconTest, ChromeBadging) {
-  ArcAppTest arc_test;
-  arc_test.SetUp(profile());
+  ArcAppTest arc_app_test;
+  arc_app_test.SetUp(profile());
 
   TestAppIcon reference_icon(profile(), kTestAppId,
                              extension_misc::EXTENSION_ICON_MEDIUM);
@@ -298,11 +298,11 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
 
   // Badging should be applied once package is installed.
   std::vector<arc::mojom::AppInfoPtr> fake_apps =
-      ArcAppTest::CloneApps(arc_test.fake_apps());
-  fake_apps[0]->package_name = arc_test.fake_packages()[0]->package_name;
-  arc_test.app_instance()->SendRefreshAppList(fake_apps);
-  arc_test.app_instance()->SendRefreshPackageList(
-      ArcAppTest::ClonePackages(arc_test.fake_packages()));
+      ArcAppTest::CloneApps(arc_app_test.fake_apps());
+  fake_apps[0]->package_name = arc_app_test.fake_packages()[0]->package_name;
+  arc_app_test.app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test.app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(arc_app_test.fake_packages()));
 
   // Expect the package list refresh to generate two icon updates - one called
   // by ArcAppListPrefs, and one called by LaunchExtensionAppUpdate.
@@ -317,10 +317,10 @@ TEST_F(ChromeAppIconTest, ChromeBadging) {
   arc::SetArcPlayStoreEnabledForProfile(profile(), false);
   // Wait for the asynchronous ArcAppListPrefs::RemoveAllAppsAndPackages to be
   // called.
-  arc_test.WaitForRemoveAllApps();
+  arc_app_test.WaitForRemoveAllApps();
   EXPECT_TRUE(AreEqual(reference_icon.image_skia(), image_before_badging));
 
-  arc_test.TearDown();
+  arc_app_test.TearDown();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

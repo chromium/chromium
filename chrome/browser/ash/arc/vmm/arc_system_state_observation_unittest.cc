@@ -43,7 +43,7 @@ ArcAppListPrefs::AppInfo MakePlayStoreInfo(bool ready) {
 class ArcSystemStateObservationTest : public testing::Test {
  public:
   ArcSystemStateObservationTest() {
-    arc_test().SetUp(&profile_);
+    arc_app_test().SetUp(&profile_);
 
     observation_ = std::make_unique<ArcSystemStateObservation>(&profile_);
 
@@ -60,18 +60,18 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   ~ArcSystemStateObservationTest() override {
     observation_.reset();
-    arc_test().TearDown();
+    arc_app_test().TearDown();
   }
 
   ArcSystemStateObservation* observation() { return observation_.get(); }
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingProfile profile_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 
   std::unique_ptr<ArcSystemStateObservation> observation_;
 

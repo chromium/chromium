@@ -55,7 +55,7 @@ class PromiseAppServiceTest : public testing::Test,
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
-    arc_test_.SetUp(profile_.get());
+    arc_app_test_.SetUp(profile_.get());
     test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
@@ -63,8 +63,8 @@ class PromiseAppServiceTest : public testing::Test,
   }
 
   void TearDown() override {
-    arc_test_.StopArcInstance();
-    arc_test_.TearDown();
+    arc_app_test_.StopArcInstance();
+    arc_app_test_.TearDown();
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -148,7 +148,7 @@ class PromiseAppServiceTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> wait_run_loop_;
   std::unique_ptr<Profile> profile_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
   raw_ptr<apps::PromiseAppService> service_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   base::ScopedObservation<PromiseAppRegistryCache,
