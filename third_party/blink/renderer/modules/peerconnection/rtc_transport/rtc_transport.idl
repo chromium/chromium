@@ -9,16 +9,16 @@ dictionary RtcTransportConfig {
 
   // ICE configuration.
   sequence<RTCIceServer> iceServers;
-  boolean iceControlling;
+  required boolean iceControlling;
   RtcTransportWireProtocol wireProtocol = "dtls-srtp";
 };
 
 dictionary RtcTransportICECandidateInit {
-  DOMString address;
-  unsigned short port;
-  DOMString usernameFragment;
-  DOMString password;
-  RTCIceCandidateType type;
+  required DOMString address;
+  required unsigned short port;
+  required DOMString usernameFragment;
+  required DOMString password;
+  required RTCIceCandidateType type;
 };
 
 dictionary RtcSendPacketParameters {
@@ -27,7 +27,7 @@ dictionary RtcSendPacketParameters {
   long long id;
 
   // TODO(crbug.com/443019066): Change to support BYOB.
-  ArrayBuffer data;
+  required ArrayBuffer data;
 
   DOMHighResTimeStamp desiredSendTime;
 };
@@ -35,9 +35,9 @@ dictionary RtcSendPacketParameters {
 enum RtcTransportSslRole {"server", "client"};
 
 dictionary RtcDtlsParameters {
-  RtcTransportSslRole sslRole;
-  DOMString fingerprintDigestAlgorithm;
-  ArrayBuffer fingerprint;
+  required RtcTransportSslRole sslRole;
+  required DOMString fingerprintDigestAlgorithm;
+  required ArrayBuffer fingerprint;
 };
 
 [

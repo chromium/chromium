@@ -431,27 +431,6 @@ void RtcTransport::OnPacketReceivedOnMainThread(
 
 void RtcTransport::addRemoteCandidate(RtcTransportICECandidateInit* init,
                                       ExceptionState& exception_state) {
-  if (!init->hasType()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Missing type");
-    return;
-  }
-  if (!init->hasAddress()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Missing Address");
-    return;
-  }
-  if (!init->hasUsernameFragment()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Missing usernameFragment");
-    return;
-  }
-  if (!init->hasPassword()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Missing Password");
-    return;
-  }
-
   webrtc::Candidate candidate;
   // Only UDP candidates supported.
   candidate.set_protocol("udp");
