@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "crypto/keypair.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_source.h"
+
+namespace base {
+class FilePath;
+}
 
 namespace net {
 

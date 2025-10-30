@@ -8,15 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
 class GURL;
-
-namespace base {
-class FilePath;
-}
 
 #if BUILDFLAG(IS_WIN)
 // Detects which version of Firefox is installed from registry. Returns its

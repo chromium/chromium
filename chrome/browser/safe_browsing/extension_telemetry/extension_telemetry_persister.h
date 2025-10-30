@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 

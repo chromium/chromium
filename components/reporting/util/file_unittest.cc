@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/test_file_util.h"
 #include "components/reporting/util/status_macros.h"
