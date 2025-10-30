@@ -467,23 +467,15 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     }
   }
 
-  KickOffNextAction(MakeOkResult());
+  KickOffNextAction();
 }
 
-void ExecutionEngine::KickOffNextAction(
-    mojom::ActionResultPtr init_hooks_result) {
+void ExecutionEngine::KickOffNextAction() {
   TRACE_EVENT0("actor", "ExecutionEngine::KickOffNextAction");
   DCHECK(state_ == State::kInit || state_ == State::kUiPostInvoke ||
          state_ == State::kComplete)
       << "Current state is " << StateToString(state_);
   CHECK_LT(next_action_index_, action_sequence_.size());
-
-  // The init hooks errored out.
-  if (init_hooks_result && !IsOk(*init_hooks_result)) {
-    CompleteActions(std::move(init_hooks_result),
-                    /*action_index=*/std::nullopt);
-    return;
-  }
 
   SetState(State::kStartAction);
 
@@ -666,7 +658,7 @@ void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
     return;
   }
 
-  KickOffNextAction(/*init_hooks_result=*/nullptr);
+  KickOffNextAction();
 }
 
 void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,

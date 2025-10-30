@@ -173,7 +173,7 @@ class ExecutionEngine : public ToolDelegate {
 
   // Starts the next action by calling SafetyChecksForNextAction(). Must only be
   // called if there is a next action.
-  void KickOffNextAction(mojom::ActionResultPtr init_hooks_result);
+  void KickOffNextAction();
 
   // Performs safety checks for next action. This is asynchronous.
   void SafetyChecksForNextAction();
