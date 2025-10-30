@@ -22,7 +22,7 @@ public class TabGroupListProperties {
     public static final WritableBooleanPropertyKey EMPTY_STATE_VISIBLE =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey SYNC_ENABLED = new WritableBooleanPropertyKey();
-    public static final WritableBooleanPropertyKey SEARCH_BOX_PADDING =
+    public static final WritableBooleanPropertyKey IS_TABLET_OR_LANDSCAPE =
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
@@ -30,6 +30,6 @@ public class TabGroupListProperties {
         ENABLE_CONTAINMENT,
         EMPTY_STATE_VISIBLE,
         SYNC_ENABLED,
-        SEARCH_BOX_PADDING
+        IS_TABLET_OR_LANDSCAPE
     };
 }

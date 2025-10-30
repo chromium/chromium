@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.EMPTY_STATE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ENABLE_CONTAINMENT;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.IS_TABLET_OR_LANDSCAPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.ON_IS_SCROLLED_CHANGED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.SEARCH_BOX_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListProperties.SYNC_ENABLED;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,8 +27,8 @@ public class TabGroupListViewBinder {
             view.setEmptyStateVisible(model.get(EMPTY_STATE_VISIBLE));
         } else if (propertyKey == SYNC_ENABLED) {
             view.setSyncEnabled(model.get(SYNC_ENABLED));
-        } else if (propertyKey == SEARCH_BOX_PADDING) {
-            view.maybeMakeSpaceForSearchBar(model.get(SEARCH_BOX_PADDING));
+        } else if (propertyKey == IS_TABLET_OR_LANDSCAPE) {
+            view.maybeMakeSpaceForSearchBar(model.get(IS_TABLET_OR_LANDSCAPE));
         }
     }
 }

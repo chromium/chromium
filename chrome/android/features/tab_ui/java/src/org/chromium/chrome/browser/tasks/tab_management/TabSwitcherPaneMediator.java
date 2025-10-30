@@ -449,7 +449,7 @@ public class TabSwitcherPaneMediator
      *
      * @param isTabletOrLandscape Whether the device is a tablet or landscape.
      */
-    void setSearchBoxSpace(boolean isTabletOrLandscape) {
+    void setIsTabletOrLandscape(boolean isTabletOrLandscape) {
         mContainerViewModel.set(
                 TabListContainerProperties.IS_TABLET_OR_LANDSCAPE, isTabletOrLandscape);
     }
