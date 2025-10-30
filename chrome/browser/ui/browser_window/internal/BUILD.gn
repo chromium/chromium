@@ -137,7 +137,6 @@ source_set("unit_tests") {
       "//chrome/test:test_support",
       "//components/sessions:session_id",
       "//content/test:test_support",
-      "//ui/android",
       "//ui/base",
     ]
   }
@@ -272,7 +271,10 @@ if (is_android) {
   source_set("android_browsertests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "android/create_browser_window_android_browsertest.cc" ]
+    sources = [
+      "android/android_base_window_browsertest.cc",
+      "android/create_browser_window_android_browsertest.cc",
+    ]
     deps = [
       "//base",
       "//chrome/browser/profiles",
@@ -280,6 +282,7 @@ if (is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/test:test_support_ui_android",
       "//testing/gtest",
+      "//ui/android",
     ]
   }
 }
