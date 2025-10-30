@@ -84,9 +84,29 @@ void SecureChannelImpl::OnResponseReceived(
     base::expected<oak::session::v1::SessionResponse, Transport::TransportError>
         response) {
   if (!response.has_value()) {
-    // TODO: derive result code from state_ and print state.
-    DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error());
-    FailAllPendingRequests(ResultCode::kNetworkError);
+    DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error())
+                << " in state: " << static_cast<int>(state_);
+
+    ResultCode result_code;
+    switch (state_) {
+      case State::kPerformingAttestation:
+        result_code = ResultCode::kAttestationFailed;
+        break;
+      case State::kPerformingHandshake:
+        result_code = ResultCode::kHandshakeFailed;
+        break;
+      case State::kEstablished:
+        result_code = ResultCode::kNetworkError;
+        break;
+      case State::kUninitialized:
+      case State::kPermanentFailure:
+        // Transport error in these states is unexpected because no requests
+        // should be in flight.
+        NOTREACHED() << "Unexpected transport error in state: "
+                     << static_cast<int>(state_);
+    }
+
+    FailAllPendingRequests(result_code);
     state_ = State::kPermanentFailure;
     return;
   }
@@ -100,6 +120,11 @@ void SecureChannelImpl::OnResponseReceived(
     OnEncryptedResponse(session_response.encrypted_message());
   } else {
     LOG(ERROR) << "Response does not contain any messages";
+    if (state_ == State::kEstablished) {
+      request_in_flight_ = false;
+    }
+    FailAllPendingRequests(ResultCode::kNetworkError);
+    ResetState();
   }
 }
 

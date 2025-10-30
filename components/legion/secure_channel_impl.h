@@ -25,10 +25,9 @@ namespace legion {
 
 class SecureChannelImpl : public SecureChannel {
  public:
-  SecureChannelImpl(
-      std::unique_ptr<Transport> transport,
-      std::unique_ptr<SecureSession> secure_session,
-      std::unique_ptr<AttestationHandler> attestation_handler);
+  SecureChannelImpl(std::unique_ptr<Transport> transport,
+                    std::unique_ptr<SecureSession> secure_session,
+                    std::unique_ptr<AttestationHandler> attestation_handler);
   ~SecureChannelImpl() override;
 
   SecureChannelImpl(const SecureChannelImpl&) = delete;
@@ -38,7 +37,7 @@ class SecureChannelImpl : public SecureChannel {
   void Write(Request request, OnResponseReceivedCallback callback) override;
 
  private:
-  struct PendingRequest {
+ struct PendingRequest {
     PendingRequest(Request request, OnResponseReceivedCallback callback);
     ~PendingRequest();
 
@@ -49,7 +48,7 @@ class SecureChannelImpl : public SecureChannel {
     OnResponseReceivedCallback callback;
   };
 
-  // Stages of the secure channel establishment and write process.
+ // Stages of the secure channel establishment and write process.
   enum class State {
     kUninitialized,
     kPerformingAttestation,
