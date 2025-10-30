@@ -142,6 +142,9 @@ public class PinnedTabStripItemView extends FrameLayout {
             return;
         }
 
+        // Finish existing animations, before starting new.
+        mWidthAnimationHandler.forceFinishAnimation();
+
         ValueAnimator animator = ValueAnimator.ofInt(startWidth, targetWidth);
         animator.setDuration(WIDTH_ANIMATION_DURATION_MS);
         animator.setInterpolator(STANDARD_INTERPOLATOR);
