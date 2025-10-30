@@ -479,9 +479,7 @@ final class ChromeAndroidTaskImpl
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
             if (activityWindowAndroid == null) return false;
-            var activity = activityWindowAndroid.getActivity().get();
-            if (activity == null) return false;
-            return isVisibleInternalLocked(activity);
+            return isVisibleInternalLocked(activityWindowAndroid);
         }
     }
 
@@ -950,18 +948,13 @@ final class ChromeAndroidTaskImpl
     }
 
     @GuardedBy("mActivityScopedObjectsLock")
-    private boolean isVisibleInternalLocked(Activity activity) {
-        return ApplicationStatus.isTaskVisible(activity.getTaskId());
-    }
-
-    @GuardedBy("mActivityScopedObjectsLock")
     private void showInternalLocked() {
         var activityWindowAndroid = getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
         var activity =
                 activityWindowAndroid != null ? activityWindowAndroid.getActivity().get() : null;
         if (activity == null) return;
         // Activate the Task if it's already visible.
-        if (isVisibleInternalLocked(activity)) {
+        if (isVisibleInternalLocked(activityWindowAndroid)) {
             ActivityManager activityManager =
                     (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
             mPendingActionManager.requestAction(PendingAction.SHOW);
