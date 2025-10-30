@@ -25177,21 +25177,6 @@
             ]
         }
     ],
-    "TabStorageSqlitePrototype": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStorageSqlitePrototype"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabstripComboButton": [
         {
             "platforms": [

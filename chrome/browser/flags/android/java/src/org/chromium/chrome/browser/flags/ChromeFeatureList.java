@@ -1051,10 +1051,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStorageSqlitePrototype =
-            newCachedFlag(
-                    TAB_STORAGE_SQLITE_PROTOTYPE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+            newCachedFlag(TAB_STORAGE_SQLITE_PROTOTYPE, false);
     public static final CachedFlag sTabStripDensityChangeAndroid =
             newCachedFlag(TAB_STRIP_DENSITY_CHANGE_ANDROID, true);
     public static final CachedFlag sTabStripIncognitoMigration =
