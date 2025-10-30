@@ -330,7 +330,9 @@
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState addObserver:self];
 
-  [[TabGridSceneAgent agentFromScene:sceneState] addObserver:self];
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [[TabGridSceneAgent agentFromScene:sceneState] addObserver:self];
+  }
 
   // Configures incognito NTP if user is in incognito mode.
   if (self.isOffTheRecord) {
@@ -395,7 +397,9 @@
   SceneState* sceneState = self.browser->GetSceneState();
   [sceneState removeObserver:self];
 
-  [[TabGridSceneAgent agentFromScene:sceneState] removeObserver:self];
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    [[TabGridSceneAgent agentFromScene:sceneState] removeObserver:self];
+  }
 
   if (self.isOffTheRecord) {
     self.incognitoViewController = nil;
