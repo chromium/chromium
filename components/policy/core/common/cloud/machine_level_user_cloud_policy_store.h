@@ -43,6 +43,16 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const base::FilePath& policy_dir,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
+  // Creates a MachineLevelUserCloudPolicyStore instance for extension install
+  // policy. |external_policy_path| must be a secure location because no
+  // signature validations are made on it.
+  static std::unique_ptr<MachineLevelUserCloudPolicyStore>
+  CreateForExtensionInstall(
+      const DMToken& machine_dm_token,
+      const std::string& machine_client_id,
+      const base::FilePath& policy_dir,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+
   // override DesktopCloudPolicyStore
   void LoadImmediately() override;
   void Load() override;

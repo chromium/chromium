@@ -39,6 +39,10 @@ const base::FilePath::CharType kPolicyCacheFile[] =
 const base::FilePath::CharType kKeyCacheFile[] =
     FILE_PATH_LITERAL("Signing Key");
 
+// File in the above directory for storing extension install policy data.
+const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
+    FILE_PATH_LITERAL("User Extension Install Policy");
+
 // Maximum policy and key size that will be loaded, in bytes.
 const size_t kPolicySizeLimit = 1024 * 1024;
 const size_t kKeySizeLimit = 16 * 1024;
@@ -403,6 +407,19 @@ std::unique_ptr<UserCloudPolicyStore> UserCloudPolicyStore::Create(
 
 void UserCloudPolicyStore::SetSigninAccountId(const AccountId& account_id) {
   account_id_ = account_id;
+}
+
+// static
+std::unique_ptr<UserCloudPolicyStore>
+UserCloudPolicyStore::CreateForExtensionInstall(
+    const base::FilePath& profile_path,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
+  base::FilePath policy_path =
+      profile_path.Append(kPolicyDir).Append(kExtensionInstallPolicyCacheFile);
+  base::FilePath key_path =
+      profile_path.Append(kPolicyDir).Append(kKeyCacheFile);
+  return base::WrapUnique(
+      new UserCloudPolicyStore(policy_path, key_path, background_task_runner));
 }
 
 void UserCloudPolicyStore::Validate(

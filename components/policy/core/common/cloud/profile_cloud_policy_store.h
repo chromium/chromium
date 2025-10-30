@@ -46,6 +46,12 @@ class POLICY_EXPORT ProfileCloudPolicyStore : public DesktopCloudPolicyStore {
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       bool is_dasherless = false);
 
+  // Creates a ProfileCloudPolicyStore instance for extension install policy.
+  static std::unique_ptr<ProfileCloudPolicyStore> CreateForExtensionInstall(
+      const base::FilePath& profile_dir,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      bool is_dasherless = false);
+
   // override UserCloudPolicyStoreBase
   std::unique_ptr<UserCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,

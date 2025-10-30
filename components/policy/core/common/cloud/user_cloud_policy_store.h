@@ -188,6 +188,12 @@ class POLICY_EXPORT UserCloudPolicyStore : public DesktopCloudPolicyStore {
       const base::FilePath& profile_path,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
+  // Factory method for creating a UserCloudPolicyStore for extension install
+  // policy with path |profile_path|.
+  static std::unique_ptr<UserCloudPolicyStore> CreateForExtensionInstall(
+      const base::FilePath& profile_path,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+
   // The account id from signin for validation of the policy.
   const AccountId& signin_account_id() const { return account_id_; }
 
