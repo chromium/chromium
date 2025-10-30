@@ -675,6 +675,12 @@ bool IsABookmarkNodeSectionForIdentifier(
     [self disconnect];
     return;
   }
+  if (self.addingNewFolder) {
+    // Adding new folder will trigger a sync update and this callback. Avoid
+    // refreshing content which doesn't add much value and will stop the
+    // editting of the folder name.
+    return;
+  }
   // If user starts or stops syncing bookmarks, we may have to remove or add the
   // slashed cloud icon. Also, permanent nodes ("Bookmarks Bar", "Other
   // Bookmarks") at the root node might be added after syncing.  So we need to
