@@ -2,49 +2,50 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/container_query.h"
-#include "third_party/blink/renderer/core/css/media_query_exp.h"
+#include "third_party/blink/renderer/core/css/container_selector.h"
+
+#include "third_party/blink/renderer/core/css/conditional_exp_node.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
 
 ContainerSelector::ContainerSelector(AtomicString name,
-                                     const MediaQueryExpNode& query)
+                                     const ConditionalExpNode& query)
     : name_(std::move(name)) {
-  MediaQueryExpNode::FeatureFlags feature_flags = query.CollectFeatureFlags();
+  ConditionalExpNode::FeatureFlags feature_flags = query.CollectFeatureFlags();
 
-  if (feature_flags & MediaQueryExpNode::kFeatureInlineSize) {
+  if (feature_flags & ConditionalExpNode::kFeatureInlineSize) {
     logical_axes_ |= kLogicalAxesInline;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureBlockSize) {
+  if (feature_flags & ConditionalExpNode::kFeatureBlockSize) {
     logical_axes_ |= kLogicalAxesBlock;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureWidth) {
+  if (feature_flags & ConditionalExpNode::kFeatureWidth) {
     physical_axes_ |= kPhysicalAxesHorizontal;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureHeight) {
+  if (feature_flags & ConditionalExpNode::kFeatureHeight) {
     physical_axes_ |= kPhysicalAxesVertical;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureStyle) {
+  if (feature_flags & ConditionalExpNode::kFeatureStyle) {
     has_style_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureSticky) {
+  if (feature_flags & ConditionalExpNode::kFeatureSticky) {
     has_sticky_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureSnap) {
+  if (feature_flags & ConditionalExpNode::kFeatureSnap) {
     has_snap_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureScrollable) {
+  if (feature_flags & ConditionalExpNode::kFeatureScrollable) {
     has_scrollable_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureScrolled) {
+  if (feature_flags & ConditionalExpNode::kFeatureScrolled) {
     has_scrolled_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureAnchored) {
+  if (feature_flags & ConditionalExpNode::kFeatureAnchored) {
     has_anchored_query_ = true;
   }
-  if (feature_flags & MediaQueryExpNode::kFeatureUnknown) {
+  if (feature_flags & ConditionalExpNode::kFeatureUnknown) {
     has_unknown_feature_ = true;
   }
 }

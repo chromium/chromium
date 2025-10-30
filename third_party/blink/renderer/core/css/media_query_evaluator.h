@@ -42,7 +42,7 @@ class CSSValue;
 class Document;
 class LocalFrame;
 class MediaQuery;
-class MediaQueryExpNode;
+class ConditionalExpNode;
 class MediaQueryFeatureExpNode;
 enum class MediaQueryOperator;
 class MediaQuerySet;
@@ -99,8 +99,8 @@ class CORE_EXPORT MediaQueryEvaluator final
   bool Eval(const MediaQuery&, MediaQueryResultFlags*) const;
 
   // https://drafts.csswg.org/mediaqueries-4/#evaluating
-  KleeneValue Eval(const MediaQueryExpNode&) const;
-  KleeneValue Eval(const MediaQueryExpNode&, MediaQueryResultFlags*) const;
+  KleeneValue Eval(const ConditionalExpNode&) const;
+  KleeneValue Eval(const ConditionalExpNode&, MediaQueryResultFlags*) const;
 
   static KleeneValue EvalStyleRange(const CSSValue& reference_value,
                                     const CSSValue& query_value,

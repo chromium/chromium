@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 
+#include "base/functional/function_ref.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/common/css/scripting.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
-#include "third_party/blink/renderer/core/css/media_eval_utils.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/media_features.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -209,17 +209,36 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
   return result;
 }
 
-KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
+KleeneValue MediaQueryEvaluator::Eval(const ConditionalExpNode& node) const {
   return Eval(node, nullptr /* result_flags */);
 }
 
 KleeneValue MediaQueryEvaluator::Eval(
-    const MediaQueryExpNode& node,
+    const ConditionalExpNode& node,
     MediaQueryResultFlags* result_flags) const {
-  return MediaEval(
-      node, [this, result_flags](const MediaQueryFeatureExpNode& feature) {
-        return EvalFeature(feature, result_flags);
-      });
+  class Handler : public ConditionalLeafExpressionHandler {
+   public:
+    using EvaluateMediaFunc =
+        base::FunctionRef<KleeneValue(const MediaQueryFeatureExpNode&)>;
+
+    explicit Handler(EvaluateMediaFunc evaluate_media_func)
+        : evaluate_media_func_(evaluate_media_func) {}
+
+    KleeneValue EvaluateMediaQueryFeatureExpNode(
+        const MediaQueryFeatureExpNode& feature) override {
+      return evaluate_media_func_(feature);
+    }
+
+   private:
+    EvaluateMediaFunc evaluate_media_func_;
+  };
+
+  auto callback = [&](const MediaQueryFeatureExpNode& feature) {
+    return EvalFeature(feature, result_flags);
+  };
+
+  Handler evaluation_context(callback);
+  return node.Evaluate(evaluation_context);
 }
 
 bool MediaQueryEvaluator::DidResultsChange(

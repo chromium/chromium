@@ -1183,36 +1183,30 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(*width_lt_600));
   EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator->Eval(*width_lt_400));
 
-  EXPECT_EQ(KleeneValue::kTrue,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNestedExpNode>(width_lt_600)));
-  EXPECT_EQ(KleeneValue::kFalse,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNestedExpNode>(width_lt_400)));
-
-  EXPECT_EQ(KleeneValue::kFalse,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_600)));
-  EXPECT_EQ(KleeneValue::kTrue,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400)));
-
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(
-                                    *MakeGarbageCollected<MediaQueryAndExpNode>(
-                                        width_lt_600, width_lt_800)));
+                                    *ConditionalExpNode::Nested(width_lt_600)));
   EXPECT_EQ(
       KleeneValue::kFalse,
-      media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
-          width_lt_600, width_lt_400)));
+      media_query_evaluator->Eval(*ConditionalExpNode::Nested(width_lt_400)));
 
+  EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator->Eval(
+                                     *ConditionalExpNode::Not(width_lt_600)));
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(
-                                    *MakeGarbageCollected<MediaQueryOrExpNode>(
-                                        width_lt_600, width_lt_400)));
-  EXPECT_EQ(
-      KleeneValue::kFalse,
-      media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
-          width_lt_400,
-          MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_800))));
+                                    *ConditionalExpNode::Not(width_lt_400)));
+
+  EXPECT_EQ(KleeneValue::kTrue,
+            media_query_evaluator->Eval(
+                *ConditionalExpNode::And(width_lt_600, width_lt_800)));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator->Eval(
+                *ConditionalExpNode::And(width_lt_600, width_lt_400)));
+
+  EXPECT_EQ(KleeneValue::kTrue,
+            media_query_evaluator->Eval(
+                *ConditionalExpNode::Or(width_lt_600, width_lt_400)));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator->Eval(*ConditionalExpNode::Or(
+                width_lt_400, ConditionalExpNode::Not(width_lt_800))));
 }
 
 TEST(MediaQueryEvaluatorTest, DependentResults) {
@@ -1277,8 +1271,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     MediaQueryResultFlags result_flags;
 
     media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryNestedExpNode>(device_width_lt_600),
-        &result_flags);
+        *ConditionalExpNode::Nested(device_width_lt_600), &result_flags);
 
     EXPECT_FALSE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1288,9 +1281,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryNotExpNode>(device_width_lt_600),
-        &result_flags);
+    media_query_evaluator->Eval(*ConditionalExpNode::Not(device_width_lt_600),
+                                &result_flags);
 
     EXPECT_FALSE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1301,9 +1293,9 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
-                                    width_lt_400, device_width_lt_600),
-                                &result_flags);
+    media_query_evaluator->Eval(
+        *ConditionalExpNode::And(width_lt_400, device_width_lt_600),
+        &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1318,9 +1310,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     MediaQueryResultFlags result_flags;
 
     media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryAndExpNode>(
-            MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
-            device_width_lt_600),
+        *ConditionalExpNode::And(ConditionalExpNode::Not(width_lt_400),
+                                 device_width_lt_600),
         &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
@@ -1335,9 +1326,9 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
-                                    width_lt_400, device_width_lt_600),
-                                &result_flags);
+    media_query_evaluator->Eval(
+        *ConditionalExpNode::Or(width_lt_400, device_width_lt_600),
+        &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_FALSE(result_flags.is_device_dependent);
@@ -1349,9 +1340,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     MediaQueryResultFlags result_flags;
 
     media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryOrExpNode>(
-            MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
-            device_width_lt_600),
+        *ConditionalExpNode::Or(ConditionalExpNode::Not(width_lt_400),
+                                device_width_lt_600),
         &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);

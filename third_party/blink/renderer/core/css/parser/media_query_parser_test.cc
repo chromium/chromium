@@ -19,8 +19,6 @@ TEST(MediaQueryParserTest, CustomQueryOnly) {
   EXPECT_TRUE(stream.AtEnd());
   EXPECT_EQ(media_query_set->QueryVector().size(), 1);
   EXPECT_EQ(media_query_set->MediaText(), str);
-  EXPECT_FALSE(IsA<MediaQueryUnknownExpNode>(
-      media_query_set->QueryVector()[0]->ExpNode()));
 }
 
 TEST(MediaQueryParserTest, InvalidCustomQueryWithValue) {
@@ -30,8 +28,6 @@ TEST(MediaQueryParserTest, InvalidCustomQueryWithValue) {
       MediaQueryParser::ParseMediaQuerySet(stream, nullptr);
   EXPECT_TRUE(stream.AtEnd());
   EXPECT_EQ(media_query_set->QueryVector().size(), 1);
-  EXPECT_TRUE(IsA<MediaQueryUnknownExpNode>(
-      media_query_set->QueryVector()[0]->ExpNode()));
 }
 
 TEST(MediaQueryParserTest, InvalidCustomQueryWithRange) {
@@ -41,8 +37,6 @@ TEST(MediaQueryParserTest, InvalidCustomQueryWithRange) {
       MediaQueryParser::ParseMediaQuerySet(stream, nullptr);
   EXPECT_TRUE(stream.AtEnd());
   EXPECT_EQ(media_query_set->QueryVector().size(), 1);
-  EXPECT_TRUE(IsA<MediaQueryUnknownExpNode>(
-      media_query_set->QueryVector()[0]->ExpNode()));
 }
 
 TEST(MediaQueryParserTest, SimpleWithCustomQuery) {

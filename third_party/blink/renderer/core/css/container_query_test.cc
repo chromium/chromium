@@ -31,7 +31,8 @@ namespace blink {
 class ContainerQueryTest : public PageTestBase {
  public:
   bool HasUnknown(StyleRuleContainer* rule) {
-    return rule && rule->GetContainerQuery().Query().HasUnknown();
+    return rule && (rule->GetContainerQuery().Query().CollectFeatureFlags() &
+                    ConditionalExpNode::kFeatureUnknown);
   }
 
   enum class UnknownHandling {
@@ -63,7 +64,7 @@ class ContainerQueryTest : public PageTestBase {
     return &container->GetContainerQuery();
   }
 
-  std::optional<MediaQueryExpNode::FeatureFlags> FeatureFlagsFrom(
+  std::optional<ConditionalExpNode::FeatureFlags> FeatureFlagsFrom(
       String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
@@ -89,7 +90,7 @@ class ContainerQueryTest : public PageTestBase {
     return container->GetContainerQuery().ToString();
   }
 
-  const MediaQueryExpNode& GetInnerQuery(ContainerQuery& container_query) {
+  const ConditionalExpNode& GetInnerQuery(ContainerQuery& container_query) {
     return container_query.Query();
   }
 
@@ -210,34 +211,34 @@ TEST_F(ContainerQueryTest, ValidFeatures) {
 }
 
 TEST_F(ContainerQueryTest, FeatureFlags) {
-  EXPECT_EQ(MediaQueryExpNode::kFeatureUnknown,
+  EXPECT_EQ(ConditionalExpNode::kFeatureUnknown,
             FeatureFlagsFrom("(width: 100gil)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
             FeatureFlagsFrom("(width: 100px)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
             FeatureFlagsFrom("test_name (width: 100px)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureHeight,
+  EXPECT_EQ(ConditionalExpNode::kFeatureHeight,
             FeatureFlagsFrom("(height < 100px)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureInlineSize,
+  EXPECT_EQ(ConditionalExpNode::kFeatureInlineSize,
             FeatureFlagsFrom("(100px >= inline-size)"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureBlockSize,
+  EXPECT_EQ(ConditionalExpNode::kFeatureBlockSize,
             FeatureFlagsFrom("(100px = block-size)"));
-  EXPECT_EQ(static_cast<MediaQueryExpNode::FeatureFlags>(
-                MediaQueryExpNode::kFeatureWidth |
-                MediaQueryExpNode::kFeatureBlockSize),
+  EXPECT_EQ(static_cast<ConditionalExpNode::FeatureFlags>(
+                ConditionalExpNode::kFeatureWidth |
+                ConditionalExpNode::kFeatureBlockSize),
             FeatureFlagsFrom("((width) and (100px = block-size))"));
-  EXPECT_EQ(static_cast<MediaQueryExpNode::FeatureFlags>(
-                MediaQueryExpNode::kFeatureUnknown |
-                MediaQueryExpNode::kFeatureBlockSize),
+  EXPECT_EQ(static_cast<ConditionalExpNode::FeatureFlags>(
+                ConditionalExpNode::kFeatureUnknown |
+                ConditionalExpNode::kFeatureBlockSize),
             FeatureFlagsFrom("((unknown) and (100px = block-size))"));
-  EXPECT_EQ(
-      static_cast<MediaQueryExpNode::FeatureFlags>(
-          MediaQueryExpNode::kFeatureWidth | MediaQueryExpNode::kFeatureHeight |
-          MediaQueryExpNode::kFeatureInlineSize),
-      FeatureFlagsFrom("((width) or (height) or (inline-size))"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(static_cast<ConditionalExpNode::FeatureFlags>(
+                ConditionalExpNode::kFeatureWidth |
+                ConditionalExpNode::kFeatureHeight |
+                ConditionalExpNode::kFeatureInlineSize),
+            FeatureFlagsFrom("((width) or (height) or (inline-size))"));
+  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
             FeatureFlagsFrom("((width: 100px))"));
-  EXPECT_EQ(MediaQueryExpNode::kFeatureWidth,
+  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
             FeatureFlagsFrom("(not (width: 100px))"));
 }
 
@@ -363,7 +364,7 @@ TEST_F(ContainerQueryTest, RuleCopy) {
   // The ContainerQuery should be copied.
   EXPECT_NE(&container->GetContainerQuery(), &copy->GetContainerQuery());
 
-  // The inner MediaQueryExpNode is immutable, and does not need to be copied.
+  // The inner ConditionalExpNode is immutable, and does not need to be copied.
   EXPECT_EQ(&GetInnerQuery(container->GetContainerQuery()),
             &GetInnerQuery(copy->GetContainerQuery()));
 }

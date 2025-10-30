@@ -10,12 +10,12 @@
 
 namespace blink {
 
-class MediaQueryExpNode;
+class ConditionalExpNode;
 
 class CORE_EXPORT ContainerQuery final
     : public GarbageCollected<ContainerQuery> {
  public:
-  ContainerQuery(ContainerSelector, const MediaQueryExpNode* query);
+  ContainerQuery(ContainerSelector, const ConditionalExpNode* query);
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }
@@ -33,10 +33,10 @@ class CORE_EXPORT ContainerQuery final
   friend class CSSContainerRule;
   friend class StyleRuleContainer;
 
-  const MediaQueryExpNode& Query() const { return *query_; }
+  const ConditionalExpNode& Query() const { return *query_; }
 
   ContainerSelector selector_;
-  Member<const MediaQueryExpNode> query_;
+  Member<const ConditionalExpNode> query_;
   Member<const ContainerQuery> parent_;
 };
 

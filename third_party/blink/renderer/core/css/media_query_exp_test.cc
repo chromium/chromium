@@ -143,40 +143,40 @@ MediaQueryExp PairExp(String feature,
                                MediaQueryExpBounds(left, right));
 }
 
-const MediaQueryExpNode* FeatureNode(MediaQueryExp expr) {
+const ConditionalExpNode* FeatureNode(MediaQueryExp expr) {
   return MakeGarbageCollected<MediaQueryFeatureExpNode>(expr);
 }
 
-const MediaQueryExpNode* EnclosedFeatureNode(MediaQueryExp expr) {
-  return MediaQueryExpNode::Nested(
+const ConditionalExpNode* EnclosedFeatureNode(MediaQueryExp expr) {
+  return ConditionalExpNode::Nested(
       MakeGarbageCollected<MediaQueryFeatureExpNode>(expr));
 }
 
-const MediaQueryExpNode* NestedNode(const MediaQueryExpNode* child) {
-  return MediaQueryExpNode::Nested(child);
+const ConditionalExpNode* NestedNode(const ConditionalExpNode* child) {
+  return ConditionalExpNode::Nested(child);
 }
 
-const MediaQueryExpNode* FunctionNode(const MediaQueryExpNode* child,
-                                      const AtomicString& name) {
-  return MediaQueryExpNode::Function(child, name);
+const ConditionalExpNode* FunctionNode(const ConditionalExpNode* child,
+                                       const AtomicString& name) {
+  return ConditionalExpNode::Function(child, name);
 }
 
-const MediaQueryExpNode* NotNode(const MediaQueryExpNode* operand) {
-  return MediaQueryExpNode::Not(operand);
+const ConditionalExpNode* NotNode(const ConditionalExpNode* operand) {
+  return ConditionalExpNode::Not(operand);
 }
 
-const MediaQueryExpNode* AndNode(const MediaQueryExpNode* left,
-                                 const MediaQueryExpNode* right) {
-  return MediaQueryExpNode::And(left, right);
+const ConditionalExpNode* AndNode(const ConditionalExpNode* left,
+                                  const ConditionalExpNode* right) {
+  return ConditionalExpNode::And(left, right);
 }
 
-const MediaQueryExpNode* OrNode(const MediaQueryExpNode* left,
-                                const MediaQueryExpNode* right) {
-  return MediaQueryExpNode::Or(left, right);
+const ConditionalExpNode* OrNode(const ConditionalExpNode* left,
+                                 const ConditionalExpNode* right) {
+  return ConditionalExpNode::Or(left, right);
 }
 
-const MediaQueryExpNode* UnknownNode(String string) {
-  return MakeGarbageCollected<MediaQueryUnknownExpNode>(string);
+const ConditionalExpNode* UnknownNode(String string) {
+  return MakeGarbageCollected<ConditionalExpNodeUnknown>(string);
 }
 
 }  // namespace
@@ -467,15 +467,15 @@ TEST(MediaQueryExpTest, UtilsNullptrHandling) {
   test::TaskEnvironment task_environment;
   MediaQueryExp exp = RightExp("width", LtCmp(PxValue(10)));
 
-  EXPECT_FALSE(MediaQueryExpNode::Nested(nullptr));
-  EXPECT_FALSE(MediaQueryExpNode::Function(nullptr, AtomicString("test")));
-  EXPECT_FALSE(MediaQueryExpNode::Not(nullptr));
-  EXPECT_FALSE(MediaQueryExpNode::And(nullptr, FeatureNode(exp)));
-  EXPECT_FALSE(MediaQueryExpNode::And(FeatureNode(exp), nullptr));
-  EXPECT_FALSE(MediaQueryExpNode::And(nullptr, nullptr));
-  EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, FeatureNode(exp)));
-  EXPECT_FALSE(MediaQueryExpNode::Or(FeatureNode(exp), nullptr));
-  EXPECT_FALSE(MediaQueryExpNode::Or(nullptr, nullptr));
+  EXPECT_FALSE(ConditionalExpNode::Nested(nullptr));
+  EXPECT_FALSE(ConditionalExpNode::Function(nullptr, AtomicString("test")));
+  EXPECT_FALSE(ConditionalExpNode::Not(nullptr));
+  EXPECT_FALSE(ConditionalExpNode::And(nullptr, FeatureNode(exp)));
+  EXPECT_FALSE(ConditionalExpNode::And(FeatureNode(exp), nullptr));
+  EXPECT_FALSE(ConditionalExpNode::And(nullptr, nullptr));
+  EXPECT_FALSE(ConditionalExpNode::Or(nullptr, FeatureNode(exp)));
+  EXPECT_FALSE(ConditionalExpNode::Or(FeatureNode(exp), nullptr));
+  EXPECT_FALSE(ConditionalExpNode::Or(nullptr, nullptr));
 }
 
 TEST(MediaQueryExpTest, ResolutionChecks) {

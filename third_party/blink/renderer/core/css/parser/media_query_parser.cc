@@ -332,7 +332,7 @@ AtomicString MediaQueryParser::ConsumeRangeContextFeatureName(
 //
 // Where <unparsed> is a <declaration-value> that does not allow
 // any of the delimiters accepted by <mf-lt> or <mf-gt>.
-const MediaQueryExpNode* MediaQueryParser::ConsumeStyleFeatureRange(
+const ConditionalExpNode* MediaQueryParser::ConsumeStyleFeatureRange(
     CSSParserTokenStream& stream) {
   CSSParserTokenStream::State start = stream.Save();
   std::optional<MediaQueryExpValue> value1 =
@@ -382,7 +382,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeStyleFeatureRange(
       MediaQueryExp::Create(value2.value(), MediaQueryExpBounds(left, right)));
 }
 
-const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
+const ConditionalExpNode* MediaQueryParser::ConsumeFeature(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
   // There are several possible grammars for media queries, and we don't
@@ -556,96 +556,22 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
                           MediaQueryExpComparison(*value2, op2))));
 }
 
-const MediaQueryExpNode* MediaQueryParser::ConsumeCondition(
-    CSSParserTokenStream& stream,
-    ConditionMode mode) {
-  // <media-not>
-  if (ConsumeIfIdent(stream, "not")) {
-    return MediaQueryExpNode::Not(ConsumeInParens(stream));
-  }
-
-  // Otherwise:
-  // <media-in-parens> [ <media-and>* | <media-or>* ]
-
-  const MediaQueryExpNode* result = ConsumeInParens(stream);
-
-  if (AtIdent(stream.Peek(), "and")) {
-    while (result && ConsumeIfIdent(stream, "and")) {
-      result = MediaQueryExpNode::And(result, ConsumeInParens(stream));
-    }
-  } else if (result && AtIdent(stream.Peek(), "or") &&
-             mode == ConditionMode::kNormal) {
-    while (result && ConsumeIfIdent(stream, "or")) {
-      result = MediaQueryExpNode::Or(result, ConsumeInParens(stream));
-    }
-  }
-
-  return result;
-}
-
-const MediaQueryExpNode* MediaQueryParser::ConsumeInParens(
+const ConditionalExpNode* MediaQueryParser::ConsumeLeaf(
     CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() == kLeftParenthesisToken) {
-    {
-      CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      stream.ConsumeWhitespace();
-
-      // ( <media-condition> )
-      const MediaQueryExpNode* condition = ConsumeCondition(stream);
-      if (condition && guard.Release()) {
-        stream.ConsumeWhitespace();
-        return MediaQueryExpNode::Nested(condition);
-      }
-    }
-
-    {
-      CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      stream.ConsumeWhitespace();
-      // ( <media-feature> )
-      const MediaQueryExpNode* feature =
-          ConsumeFeature(stream, MediaQueryParser::MediaQueryFeatureSet());
-      if (feature && guard.Release()) {
-        stream.ConsumeWhitespace();
-        return MediaQueryExpNode::Nested(feature);
-      }
-    }
-  }
-
-  // <general-enclosed>
-  return ConsumeGeneralEnclosed(stream);
-}
-
-const MediaQueryExpNode* MediaQueryParser::ConsumeGeneralEnclosed(
-    CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() != kLeftParenthesisToken &&
-      stream.Peek().GetType() != kFunctionToken) {
-    return nullptr;
-  }
-
-  wtf_size_t start_offset = stream.Offset();
-  StringView general_enclosed;
-  {
-    CSSParserTokenStream::BlockGuard guard(stream);
-
-    stream.ConsumeWhitespace();
-
-    // Note that <any-value> is optional in <general-enclosed>, so having an
-    // empty block is fine.
-    ConsumeAnyValue(stream);
-    if (!stream.AtEnd()) {
-      return nullptr;
-    }
-  }
-
-  wtf_size_t end_offset = stream.Offset();
-
-  // TODO(crbug.com/962417): This is not well specified.
-  general_enclosed =
-      stream.StringRangeAt(start_offset, end_offset - start_offset);
-
   stream.ConsumeWhitespace();
-  return MakeGarbageCollected<MediaQueryUnknownExpNode>(
-      general_enclosed.ToString());
+  // ( <media-feature> )
+  if (const ConditionalExpNode* feature =
+          ConsumeFeature(stream, MediaQueryParser::MediaQueryFeatureSet())) {
+    stream.ConsumeWhitespace();
+    return feature;
+  }
+
+  return nullptr;
+}
+
+const ConditionalExpNode* MediaQueryParser::ConsumeFunction(
+    CSSParserTokenStream&) {
+  return nullptr;
 }
 
 MediaQuerySet* MediaQueryParser::ConsumeSingleCondition(
@@ -654,7 +580,7 @@ MediaQuerySet* MediaQueryParser::ConsumeSingleCondition(
   DCHECK(!stream.AtEnd());
 
   HeapVector<Member<const MediaQuery>> queries;
-  const MediaQueryExpNode* node = ConsumeCondition(stream);
+  const ConditionalExpNode* node = ConsumeCondition(stream);
   if (!node) {
     queries.push_back(MediaQuery::CreateNotAll());
   } else {
@@ -678,8 +604,8 @@ MediaQuery* MediaQueryParser::ConsumeQuery(CSSParserTokenStream& stream) {
     if (!ConsumeIfIdent(stream, "and")) {
       return MakeGarbageCollected<MediaQuery>(restrictor, type, nullptr);
     }
-    if (const MediaQueryExpNode* node =
-            ConsumeCondition(stream, ConditionMode::kWithoutOr)) {
+    if (const ConditionalExpNode* node =
+            ConsumeCondition(stream, ParseMode::kWithoutOr)) {
       return MakeGarbageCollected<MediaQuery>(restrictor, type, node);
     }
     return nullptr;
@@ -687,7 +613,7 @@ MediaQuery* MediaQueryParser::ConsumeQuery(CSSParserTokenStream& stream) {
   stream.Restore(savepoint);
 
   // Otherwise, <media-condition>
-  if (const MediaQueryExpNode* node = ConsumeCondition(stream)) {
+  if (const ConditionalExpNode* node = ConsumeCondition(stream)) {
     return MakeGarbageCollected<MediaQuery>(MediaQuery::RestrictorType::kNone,
                                             media_type_names::kAll, node);
   }

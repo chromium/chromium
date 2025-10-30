@@ -2181,7 +2181,7 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     }
   }
 
-  const MediaQueryExpNode* query = query_parser.ParseCondition(stream);
+  const ConditionalExpNode* query = query_parser.ParseCondition(stream);
   if (!query) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleContainer);
     return nullptr;

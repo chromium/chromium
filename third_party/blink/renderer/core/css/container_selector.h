@@ -16,7 +16,7 @@
 namespace blink {
 
 class Element;
-class MediaQueryExpNode;
+class ConditionalExpNode;
 
 // Not to be confused with regular selectors. This refers to container
 // selection by e.g. a given name, or by implicit container selection
@@ -48,7 +48,7 @@ class CORE_EXPORT ContainerSelector {
         has_scrollable_query_(scroll_state),
         has_scrolled_query_(scroll_state),
         has_anchored_query_(anchored_query) {}
-  ContainerSelector(AtomicString name, const MediaQueryExpNode&);
+  ContainerSelector(AtomicString name, const ConditionalExpNode&);
 
   bool IsHashTableDeletedValue() const {
     return HashTraits<AtomicString>::IsDeletedValue(name_);

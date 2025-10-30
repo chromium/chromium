@@ -578,12 +578,6 @@ class CORE_EXPORT StyleCascade {
                                   const CSSParserContext&,
                                   FunctionContext*);
 
-  KleeneValue EvalIfTest(const IfCondition& node,
-                         const TreeScope* tree_scope,
-                         CascadeResolver& resolver,
-                         const CSSParserContext& context,
-                         FunctionContext* function_context,
-                         bool& is_attr_tainted);
   bool EvalIfCondition(CSSParserTokenStream&,
                        const TreeScope*,
                        CascadeResolver&,

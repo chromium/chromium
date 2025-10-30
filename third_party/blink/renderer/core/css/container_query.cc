@@ -12,7 +12,7 @@
 namespace blink {
 
 ContainerQuery::ContainerQuery(ContainerSelector selector,
-                               const MediaQueryExpNode* query)
+                               const ConditionalExpNode* query)
     : selector_(std::move(selector)), query_(query) {}
 
 ContainerQuery::ContainerQuery(const ContainerQuery& other)

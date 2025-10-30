@@ -1019,7 +1019,7 @@ void StyleRuleContainer::SetConditionText(
   auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
   ContainerQueryParser parser(*context);
 
-  if (const MediaQueryExpNode* exp_node = parser.ParseCondition(value)) {
+  if (const ConditionalExpNode* exp_node = parser.ParseCondition(value)) {
     condition_text_ = exp_node->Serialize();
 
     ContainerSelector selector(container_query_->Selector().Name(), *exp_node);

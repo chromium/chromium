@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-class MediaQueryExpNode;
+class ConditionalExpNode;
 
 class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  public:
@@ -48,7 +48,7 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
 
   static MediaQuery* CreateNotAll();
 
-  MediaQuery(RestrictorType, String media_type, const MediaQueryExpNode*);
+  MediaQuery(RestrictorType, String media_type, const ConditionalExpNode*);
   MediaQuery(const MediaQuery&);
   MediaQuery& operator=(const MediaQuery&) = delete;
   ~MediaQuery();
@@ -56,7 +56,7 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
 
   bool HasUnknown() const { return has_unknown_; }
   RestrictorType Restrictor() const;
-  const MediaQueryExpNode* ExpNode() const;
+  const ConditionalExpNode* ExpNode() const;
   const String& MediaType() const;
   bool operator==(const MediaQuery& other) const;
   String CssText() const;
@@ -64,7 +64,7 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  private:
   String media_type_;
   String serialization_cache_;
-  Member<const MediaQueryExpNode> exp_node_;
+  Member<const ConditionalExpNode> exp_node_;
 
   RestrictorType restrictor_;
   // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.

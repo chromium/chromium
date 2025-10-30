@@ -51,7 +51,7 @@ String MediaQuery::Serialize() const {
       break;
   }
 
-  const MediaQueryExpNode* exp_node = ExpNode();
+  const ConditionalExpNode* exp_node = ExpNode();
 
   if (!exp_node) {
     result.Append(MediaType());
@@ -78,11 +78,12 @@ MediaQuery* MediaQuery::CreateNotAll() {
 
 MediaQuery::MediaQuery(RestrictorType restrictor,
                        String media_type,
-                       const MediaQueryExpNode* exp_node)
+                       const ConditionalExpNode* exp_node)
     : media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
       exp_node_(exp_node),
       restrictor_(restrictor),
-      has_unknown_(exp_node_ && exp_node_->HasUnknown()) {}
+      has_unknown_(exp_node_ && (exp_node_->CollectFeatureFlags() &
+                                 ConditionalExpNode::kFeatureUnknown)) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : media_type_(o.media_type_),
@@ -101,7 +102,7 @@ MediaQuery::RestrictorType MediaQuery::Restrictor() const {
   return restrictor_;
 }
 
-const MediaQueryExpNode* MediaQuery::ExpNode() const {
+const ConditionalExpNode* MediaQuery::ExpNode() const {
   return exp_node_.Get();
 }
 

@@ -7,21 +7,19 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
+#include "third_party/blink/renderer/core/css/parser/conditional_parser.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 enum class MediaQueryOperator;
-class CSSIfParser;
 class CSSParserContext;
 class CSSParserTokenStream;
-class ContainerQueryParser;
 class ExecutionContext;
-class MediaQueryExpNode;
 class MediaQuerySet;
 
-class CORE_EXPORT MediaQueryParser {
+class CORE_EXPORT MediaQueryParser : public ConditionalParser {
   STACK_ALLOCATED();
 
  public:
@@ -130,35 +128,20 @@ class CORE_EXPORT MediaQueryParser {
     kRight
   };
 
-  const MediaQueryExpNode* ConsumeStyleFeatureRange(
+  const ConditionalExpNode* ConsumeStyleFeatureRange(
       CSSParserTokenStream& stream);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
-  const MediaQueryExpNode* ConsumeFeature(CSSParserTokenStream&,
-                                          const FeatureSet&);
-
-  enum class ConditionMode {
-    // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
-    kNormal,
-    // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition-without-or
-    kWithoutOr,
-  };
-
-  // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
-  const MediaQueryExpNode* ConsumeCondition(
-      CSSParserTokenStream&,
-      ConditionMode = ConditionMode::kNormal);
-
-  // https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
-  const MediaQueryExpNode* ConsumeInParens(CSSParserTokenStream&);
-
-  // https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
-  const MediaQueryExpNode* ConsumeGeneralEnclosed(CSSParserTokenStream&);
+  const ConditionalExpNode* ConsumeFeature(CSSParserTokenStream&,
+                                           const FeatureSet&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
   MediaQuery* ConsumeQuery(CSSParserTokenStream&);
+
+  const ConditionalExpNode* ConsumeLeaf(CSSParserTokenStream&) override;
+  const ConditionalExpNode* ConsumeFunction(CSSParserTokenStream&) override;
 
   // Used for ParserType::kMediaConditionParser.
   //

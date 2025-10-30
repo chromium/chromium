@@ -771,54 +771,6 @@ unsigned MediaQueryExpValue::GetUnitFlags() const {
   return unit_flags;
 }
 
-String MediaQueryExpNode::Serialize() const {
-  StringBuilder builder;
-  SerializeTo(builder);
-  return builder.ReleaseString();
-}
-
-const MediaQueryExpNode* MediaQueryExpNode::Not(
-    const MediaQueryExpNode* operand) {
-  if (!operand) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<MediaQueryNotExpNode>(operand);
-}
-
-const MediaQueryExpNode* MediaQueryExpNode::Nested(
-    const MediaQueryExpNode* operand) {
-  if (!operand) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<MediaQueryNestedExpNode>(operand);
-}
-
-const MediaQueryExpNode* MediaQueryExpNode::Function(
-    const MediaQueryExpNode* operand,
-    const AtomicString& name) {
-  if (!operand) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<MediaQueryFunctionExpNode>(operand, name);
-}
-
-const MediaQueryExpNode* MediaQueryExpNode::And(
-    const MediaQueryExpNode* left,
-    const MediaQueryExpNode* right) {
-  if (!left || !right) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<MediaQueryAndExpNode>(left, right);
-}
-
-const MediaQueryExpNode* MediaQueryExpNode::Or(const MediaQueryExpNode* left,
-                                               const MediaQueryExpNode* right) {
-  if (!left || !right) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<MediaQueryOrExpNode>(left, right);
-}
-
 bool MediaQueryFeatureExpNode::IsViewportDependent() const {
   return exp_.IsViewportDependent();
 }
@@ -847,6 +799,11 @@ bool MediaQueryFeatureExpNode::IsBlockSizeDependent() const {
   return exp_.IsBlockSizeDependent();
 }
 
+KleeneValue MediaQueryFeatureExpNode::Evaluate(
+    ConditionalLeafExpressionHandler& leaf_handler) const {
+  return leaf_handler.EvaluateMediaQueryFeatureExpNode(*this);
+}
+
 void MediaQueryFeatureExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(exp_.Serialize());
 }
@@ -856,7 +813,7 @@ void MediaQueryFeatureExpNode::CollectExpressions(
   result.push_back(exp_);
 }
 
-MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
+ConditionalExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
     const {
   if (exp_.HasMediaFeature()) {
     if (exp_.MediaFeature() == media_feature_names::kStuckMediaFeature) {
@@ -891,90 +848,7 @@ MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
 
 void MediaQueryFeatureExpNode::Trace(Visitor* visitor) const {
   visitor->Trace(exp_);
-  MediaQueryExpNode::Trace(visitor);
-}
-
-void MediaQueryUnaryExpNode::Trace(Visitor* visitor) const {
-  visitor->Trace(operand_);
-  MediaQueryExpNode::Trace(visitor);
-}
-
-void MediaQueryUnaryExpNode::CollectExpressions(
-    HeapVector<MediaQueryExp>& result) const {
-  operand_->CollectExpressions(result);
-}
-
-MediaQueryExpNode::FeatureFlags MediaQueryUnaryExpNode::CollectFeatureFlags()
-    const {
-  return operand_->CollectFeatureFlags();
-}
-
-void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
-  builder.Append("(");
-  Operand().SerializeTo(builder);
-  builder.Append(")");
-}
-
-void MediaQueryFunctionExpNode::SerializeTo(StringBuilder& builder) const {
-  builder.Append(name_);
-  builder.Append("(");
-  Operand().SerializeTo(builder);
-  builder.Append(")");
-}
-
-MediaQueryExpNode::FeatureFlags MediaQueryFunctionExpNode::CollectFeatureFlags()
-    const {
-  FeatureFlags flags = MediaQueryUnaryExpNode::CollectFeatureFlags();
-  if (name_ == AtomicString("style")) {
-    flags |= kFeatureStyle;
-  }
-  return flags;
-}
-
-void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
-  builder.Append("not ");
-  Operand().SerializeTo(builder);
-}
-
-void MediaQueryCompoundExpNode::Trace(Visitor* visitor) const {
-  visitor->Trace(left_);
-  visitor->Trace(right_);
-  MediaQueryExpNode::Trace(visitor);
-}
-
-void MediaQueryCompoundExpNode::CollectExpressions(
-    HeapVector<MediaQueryExp>& result) const {
-  left_->CollectExpressions(result);
-  right_->CollectExpressions(result);
-}
-
-MediaQueryExpNode::FeatureFlags MediaQueryCompoundExpNode::CollectFeatureFlags()
-    const {
-  return left_->CollectFeatureFlags() | right_->CollectFeatureFlags();
-}
-
-void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {
-  Left().SerializeTo(builder);
-  builder.Append(" and ");
-  Right().SerializeTo(builder);
-}
-
-void MediaQueryOrExpNode::SerializeTo(StringBuilder& builder) const {
-  Left().SerializeTo(builder);
-  builder.Append(" or ");
-  Right().SerializeTo(builder);
-}
-
-void MediaQueryUnknownExpNode::SerializeTo(StringBuilder& builder) const {
-  builder.Append(string_);
-}
-
-void MediaQueryUnknownExpNode::CollectExpressions(
-    HeapVector<MediaQueryExp>&) const {}
-
-MediaQueryExpNode::FeatureFlags MediaQueryUnknownExpNode::CollectFeatureFlags()
-    const {
-  return kFeatureUnknown;
+  ConditionalExpNode::Trace(visitor);
 }
 
 }  // namespace blink
