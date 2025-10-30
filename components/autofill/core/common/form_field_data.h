@@ -299,8 +299,6 @@ class FormFieldData {
 
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
-  // It is not persistent between page loads and therefore not used in
-  // comparison in DeepEqual().
   const LocalFrameToken& host_frame() const { return host_frame_; }
   void set_host_frame(LocalFrameToken host_frame) {
     host_frame_ = std::move(host_frame);
