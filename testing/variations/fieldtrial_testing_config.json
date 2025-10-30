@@ -1441,7 +1441,7 @@
                 {
                     "name": "Enabled_horizontal_plain_v1",
                     "params": {
-                        "probability": "1",
+                        "probability": "1.0",
                         "prompt_arm": "1",
                         "prompt_disposition_reason_filter": "DefaultFallback",
                         "request_type_filter": "Geolocation",
