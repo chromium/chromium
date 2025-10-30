@@ -459,7 +459,7 @@ CreateInputDataFromAnnotatedPageContent(
 
     if (IsAimPrototypeTabPickerCachedAPCEnabled()) {
       [self attachWebStateContent:webState includeSnapshot:NO token:token];
-      return;
+      continue;
     }
 
     [_webStateDefferedExecutor webState:webState

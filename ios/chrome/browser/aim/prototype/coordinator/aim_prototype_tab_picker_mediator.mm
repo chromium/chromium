@@ -97,6 +97,7 @@
     (void (^)(NSArray<GridItemIdentifier*>*))completion {
   if (!IsAimPrototypeTabPickerCachedAPCEnabled()) {
     completion(CreateItems(self.webStateList));
+    return;
   }
 
   PersistTabContextBrowserAgent* persistTabContextBrowserAgent =
@@ -140,9 +141,8 @@
 
   for (int i = 0; i < self.webStateList->count(); ++i) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
-    if (validCachedwebStatesIDs.find(base::NumberToString(
-            webState->GetUniqueIdentifier().identifier())) !=
-        validCachedwebStatesIDs.end()) {
+    if (validCachedwebStatesIDs.contains(base::NumberToString(
+            webState->GetUniqueIdentifier().identifier()))) {
       [items addObject:[GridItemIdentifier tabIdentifier:webState]];
     }
   }
