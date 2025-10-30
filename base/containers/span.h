@@ -240,6 +240,8 @@
 //   http://wg21.link/p1085 for details.
 // - Similarly, provides `span::operator<=>()`, which performs lexicographic
 //   comparison between spans.
+// - Furthermore, provides support for Abseil hashing, consistent with the
+//   semantics of equality described above.
 //
 // Differences from [span.elem]:
 // - Because Chromium does not use exceptions, `span::at()` behaves identically
@@ -844,6 +846,11 @@ class GSL_POINTER span {
         const_lhs.begin(), const_lhs.end(), const_rhs.begin(), const_rhs.end());
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, span v) {
+    return H::combine_contiguous(std::move(h), v.data(), v.size());
+  }
+
   // [span.elem]: Element access
   // Reference to specific element.
   // When `idx` is outside the span, the underlying call will `CHECK()`.
@@ -1337,6 +1344,11 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     const auto const_rhs = span<const OtherElementType, OtherExtent>(rhs);
     return std::lexicographical_compare_three_way(
         const_lhs.begin(), const_lhs.end(), const_rhs.begin(), const_rhs.end());
+  }
+
+  template <typename H>
+  friend H AbslHashValue(H h, span v) {
+    return H::combine_contiguous(std::move(h), v.data(), v.size());
   }
 
   // [span.elem]: Element access

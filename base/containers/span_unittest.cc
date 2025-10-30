@@ -30,6 +30,7 @@
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -3104,6 +3105,57 @@ TEST(SpanTest, GTestMacroCompatibility) {
   EXPECT_NE(dynamic_span1, static_span3);
   EXPECT_NE(dynamic_span1, dynamic_span3);
   EXPECT_NE(dynamic_span1, vec3);
+}
+
+TEST(SpanTest, AbslHash) {
+  // Dynamic extent.
+  {
+    std::vector<int> empty_vec;
+    std::vector<int> vec1 = {1, 2, 3};
+    std::vector<int> vec2 = {1, 2, 3};
+    std::vector<int> vec3 = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<int>(empty_vec),
+        span<int>(vec1),
+        span<int>(vec2),
+        span<int>(vec3),
+    }));
+  }
+  // Fixed extent.
+  {
+    int arr1[] = {1, 2, 3};
+    int arr2[] = {1, 2, 3};
+    int arr3[] = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<int, 3>(arr1),
+        span<int, 3>(arr2),
+        span<int, 3>(arr3),
+    }));
+  }
+  // Const dynamic extent.
+  {
+    const std::vector<int> empty_vec;
+    const std::vector<int> vec1 = {1, 2, 3};
+    const std::vector<int> vec2 = {1, 2, 3};
+    const std::vector<int> vec3 = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<const int>(empty_vec),
+        span<const int>(vec1),
+        span<const int>(vec2),
+        span<const int>(vec3),
+    }));
+  }
+  // Const fixed extent.
+  {
+    const int arr1[] = {1, 2, 3};
+    const int arr2[] = {1, 2, 3};
+    const int arr3[] = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<const int, 3>(arr1),
+        span<const int, 3>(arr2),
+        span<const int, 3>(arr3),
+    }));
+  }
 }
 
 // These are all examples from //docs/unsafe_buffers.md, copied here to ensure
