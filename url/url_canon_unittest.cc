@@ -2171,7 +2171,7 @@ TEST_F(URLCanonTest, ReplacePathURL) {
   }
 }
 
-TEST_F(URLCanonTest, ReplaceMailtoURL) {
+TEST_F(URLCanonTest, ReplaceMailtoUrl) {
   ReplaceCase replace_cases[] = {
       // Replace everything
       {"mailto:jon@foo.com?body=sup", "mailto", nullptr, nullptr, nullptr,
@@ -2223,7 +2223,7 @@ TEST_F(URLCanonTest, ReplaceMailtoURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceMailtoURL(cur.base, parsed, r, &output, &out_parsed);
+    ReplaceMailtoUrl(cur.base, parsed, r, &output, &out_parsed);
     output.Complete();
 
     EXPECT_EQ(replace_case.expected, out_str);
@@ -2468,7 +2468,7 @@ TEST_F(URLCanonTest, CanonicalizePathURLPath) {
   }
 }
 
-TEST_F(URLCanonTest, CanonicalizeMailtoURL) {
+TEST_F(URLCanonTest, CanonicalizeMailtoUrl) {
   struct URLCase {
     const char* input;
     const char* expected;
@@ -2518,19 +2518,18 @@ TEST_F(URLCanonTest, CanonicalizeMailtoURL) {
   Parsed out_parsed;
 
   for (size_t i = 0; i < std::size(cases); i++) {
-    int url_len = static_cast<int>(strlen(cases[i].input));
+    size_t url_len = strlen(cases[i].input);
     if (i == 0) {
       // The first test case purposely has a '\0' in it -- don't count it
       // as the string terminator.
       url_len = 22;
     }
 
+    std::string_view input(cases[i].input, url_len);
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeMailtoURL(
-        cases[i].input, url_len,
-        ParseMailtoURL(std::string_view(cases[i].input, url_len)), &output,
-        &out_parsed);
+    bool success = CanonicalizeMailtoUrl(input, ParseMailtoURL(input), &output,
+                                         &out_parsed);
     output.Complete();
 
     EXPECT_EQ(cases[i].expected_success, success);
