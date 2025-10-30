@@ -31,7 +31,11 @@ void OtpFormEventLogger::OnDidShowSuggestions(
 
 void OtpFormEventLogger::OnDidFillOtpSuggestion(const FormStructure& form,
                                                 const AutofillField& field) {
-  has_logged_form_filling_suggestion_filled_ = true;
+  Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
+  if (!has_logged_form_filling_suggestion_filled_) {
+    has_logged_form_filling_suggestion_filled_ = true;
+    Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
+  }
   client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
       driver().GetPageUkmSourceId(), form, field, /*record_type=*/std::nullopt);
   ++form_interaction_counts_.autofill_fills;
