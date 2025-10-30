@@ -18,6 +18,8 @@ class ActiveTabTracker : public boca::BocaWindowObserver {
 
   // BocaWindowObserver:
   void OnActiveTabChanged(const std::u16string& tab_title) override;
+  void OnWindowActivated(const std::u16string& tab_title) override;
+  void OnWindowDeactivated() override;
 };
 
 }  // namespace ash::boca
