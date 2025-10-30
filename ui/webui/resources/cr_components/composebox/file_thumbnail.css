@@ -72,7 +72,7 @@
 
 .chip {
   align-items: center;
-  background-color: var(--color-new-tab-page-composebox-file-chip-background);
+  background-color: var(--color-composebox-file-chip-background);
   border-radius: 8px;
   display: flex;
   gap: 6px;
@@ -85,7 +85,7 @@
 
 .thumbnail {
   align-items: center;
-  background-color: var(--color-new-tab-page-composebox-file-chip-favicon-background);
+  background-color: var(--color-composebox-file-chip-favicon-background);
   border-radius: 4px;
   display: flex;
   flex-shrink: 0;
@@ -107,7 +107,7 @@
 }
 
 .chip:hover .pdf-icon,
-.chip:hover composebox-tab-favicon {
+.chip:hover cr-composebox-tab-favicon {
   display: none;
 }
 

@@ -28,7 +28,7 @@
   align-items: center;
   display: flex;
   gap: 4px;
-  padding-inline-start: 6px;
+  padding-inline-start: 4px;
 }
 
 #contextEntrypoint {
