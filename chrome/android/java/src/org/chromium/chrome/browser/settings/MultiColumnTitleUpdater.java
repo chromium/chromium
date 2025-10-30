@@ -71,6 +71,8 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     /** Delegates the title settings to the callback. */
     private final Callback<String> mMainTitleSetter;
 
+    private boolean mMainMenuShown;
+
     /**
      * Keeps tracking the current main page title supplier. Null if not tracking, e.g. in two pane
      * mode.
@@ -94,6 +96,17 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         updateDetailedPageTitle();
     }
 
+    @Override
+    public void onSlideStateUpdated(int newState) {
+        boolean prevMainMenuShown = mMainMenuShown;
+        mMainMenuShown =
+                newState == MultiColumnSettings.SlideState.CLOSING
+                        || newState == MultiColumnSettings.SlideState.CLOSED;
+        if (prevMainMenuShown != mMainMenuShown) {
+            updateMainTitle();
+        }
+    }
+
     private void updateMainTitle() {
         // Unset if needed, first.
         if (mCurrentPageTitle != null) {
@@ -101,7 +114,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
 
         var titles = mMultiColumnSettings.getTitles();
-        if (mMultiColumnSettings.isTwoPane() || titles.isEmpty()) {
+        if (mMultiColumnSettings.isTwoPane() || titles.isEmpty() || mMainMenuShown) {
             // In the two pane mode, the main title is always "Settings".
             mMainTitleSetter.onResult(mContext.getString(R.string.settings));
             mCurrentPageTitle = null;

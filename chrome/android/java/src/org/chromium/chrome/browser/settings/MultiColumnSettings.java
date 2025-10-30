@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -26,6 +27,8 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +45,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
          * the two pane mode. - In the two pane mode, size change of the header layout.
          */
         default void onHeaderLayoutUpdated() {}
+
+        /** Called when the sliding state is updated. */
+        default void onSlideStateUpdated(@SlideState int newState) {}
     }
 
     /**
@@ -49,6 +55,16 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      * wider than this, the wider header should be used.
      */
     private static final int WIDE_HEADER_SCREEN_WIDTH_DP = 1200;
+
+    /** Represents the current state of sliding pane. */
+    @IntDef({SlideState.CLOSING, SlideState.CLOSED, SlideState.OPENING, SlideState.OPENED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface SlideState {
+        int CLOSING = 0;
+        int CLOSED = 1;
+        int OPENING = 2;
+        int OPENED = 3;
+    }
 
     /** Caches the current header panel width in px. */
     private int mHeaderPanelWidthPx;
@@ -61,6 +77,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      * mode changes
      */
     private boolean mSlideable;
+
+    private SlideStateTracker mSlideStateTracker;
 
     private InnerOnBackPressedCallback mOnBackPressedCallback;
 
@@ -83,6 +101,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
         Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
         if (processed != null) {
+            if (!(processed.first instanceof MainSettings)) {
+                getSlidingPaneLayout().openPane();
+            }
             return processed.first;
         }
         return super.onCreateInitialDetailFragment();
@@ -244,11 +265,85 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return !getSlidingPaneLayout().isSlideable();
     }
 
+    private class SlideStateTracker
+            implements SlidingPaneLayout.PanelSlideListener, View.OnLayoutChangeListener {
+        @SlideState int mState;
+        private float mOffset;
+        private boolean mSlideable;
+
+        SlideStateTracker() {
+            mState = getSlidingPaneLayout().isOpen() ? SlideState.OPENED : SlideState.CLOSED;
+            mOffset = mState == SlideState.OPENED ? 0f : 1f;
+            mSlideable = getSlidingPaneLayout().isSlideable();
+        }
+
+        @Override
+        public void onLayoutChange(
+                View v,
+                int left,
+                int top,
+                int right,
+                int bottom,
+                int oldLeft,
+                int oldTop,
+                int oldRight,
+                int oldBottom) {
+            boolean prevSlideable = mSlideable;
+            mSlideable = getSlidingPaneLayout().isSlideable();
+            if (prevSlideable == mSlideable) {
+                return;
+            }
+
+            if (getSlidingPaneLayout().isOpen()) {
+                if (mState != SlideState.OPENED) {
+                    onPanelOpened(v);
+                }
+            } else {
+                if (mState != SlideState.CLOSED) {
+                    onPanelClosed(v);
+                }
+            }
+        }
+
+        @Override
+        public void onPanelSlide(View panel, float slideOffset) {
+            @SlideState int prevState = mState;
+            mState = mOffset > slideOffset ? SlideState.OPENING : SlideState.CLOSING;
+            mOffset = slideOffset;
+            maybeNotifyObserver(prevState, mState);
+        }
+
+        @Override
+        public void onPanelOpened(View panel) {
+            @SlideState int prevState = mState;
+            mState = SlideState.OPENED;
+            mOffset = 0f;
+            maybeNotifyObserver(prevState, mState);
+        }
+
+        @Override
+        public void onPanelClosed(View panel) {
+            @SlideState int prevState = mState;
+            mState = SlideState.CLOSED;
+            mOffset = 1f;
+            maybeNotifyObserver(prevState, mState);
+        }
+
+        private void maybeNotifyObserver(@SlideState int prevState, @SlideState int newState) {
+            if (prevState == newState) {
+                return;
+            }
+
+            for (Observer o : mObservers) {
+                o.onSlideStateUpdated(newState);
+            }
+        }
+    }
+
     private class InnerOnBackPressedCallback extends OnBackPressedCallback
             implements SlidingPaneLayout.PanelSlideListener {
         InnerOnBackPressedCallback() {
             super(true);
-            getSlidingPaneLayout().addPanelSlideListener(this);
         }
 
         @Override
@@ -376,6 +471,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         // main menu in two-pane mode. Revisit later if back button behavior in the library is
         // updated.
         mOnBackPressedCallback = new InnerOnBackPressedCallback();
+        getSlidingPaneLayout().addPanelSlideListener(mOnBackPressedCallback);
         getSlidingPaneLayout()
                 .addOnLayoutChangeListener(
                         (View v,
@@ -396,13 +492,33 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                         });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
+
+        mSlideStateTracker = new SlideStateTracker();
+        getSlidingPaneLayout().addPanelSlideListener(mSlideStateTracker);
+        getSlidingPaneLayout().addOnLayoutChangeListener(mSlideStateTracker);
+
+        @SlideState
+        int initState = getSlidingPaneLayout().isOpen() ? SlideState.OPENED : SlideState.CLOSED;
+        for (Observer o : mObservers) {
+            o.onSlideStateUpdated(initState);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (mSlideStateTracker != null) {
+            getSlidingPaneLayout().removeOnLayoutChangeListener(mSlideStateTracker);
+            getSlidingPaneLayout().removePanelSlideListener(mSlideStateTracker);
+        }
+        if (mOnBackPressedCallback != null) {
+            getSlidingPaneLayout().removePanelSlideListener(mOnBackPressedCallback);
+            mOnBackPressedCallback.remove();
+        }
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        if (mOnBackPressedCallback != null) {
-            mOnBackPressedCallback.remove();
-        }
         getChildFragmentManager().unregisterFragmentLifecycleCallbacks(mFragmentTracker);
         super.onDestroy();
     }
