@@ -60,17 +60,13 @@ bool BnplIssuerContext::IsEligible() const {
 BnplIssuerTosDetail::BnplIssuerTosDetail(
     int header_icon_id,
     int header_icon_id_dark,
-    std::u16string title,
-    std::u16string review_text,
-    std::u16string approve_text,
-    TextWithLink link_text,
+    bool is_linked_issuer,
+    std::u16string issuer_name,
     std::vector<LegalMessageLine> legal_message_lines)
     : header_icon_id(header_icon_id),
       header_icon_id_dark(header_icon_id_dark),
-      title(std::move(title)),
-      review_text(std::move(review_text)),
-      approve_text(std::move(approve_text)),
-      link_text(std::move(link_text)),
+      is_linked_issuer(is_linked_issuer),
+      issuer_name(std::move(issuer_name)),
       legal_message_lines(std::move(legal_message_lines)) {}
 
 BnplIssuerTosDetail::BnplIssuerTosDetail(const BnplIssuerTosDetail& other) =
@@ -85,6 +81,9 @@ BnplIssuerTosDetail& BnplIssuerTosDetail::operator=(BnplIssuerTosDetail&&) =
     default;
 
 BnplIssuerTosDetail::~BnplIssuerTosDetail() = default;
+
+bool BnplIssuerTosDetail::operator==(const BnplIssuerTosDetail&) const =
+    default;
 
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,

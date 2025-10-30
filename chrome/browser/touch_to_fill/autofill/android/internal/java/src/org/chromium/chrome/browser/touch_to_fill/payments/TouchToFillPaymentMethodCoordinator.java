@@ -90,7 +90,8 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 loyaltyCard.getProgramLogo(),
                                 ImageSize.LARGE,
                                 loyaltyCard.getMerchantName());
-        mMediator.initialize(delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+        mMediator.initialize(
+                context, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));

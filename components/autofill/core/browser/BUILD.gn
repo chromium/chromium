@@ -1659,7 +1659,6 @@ source_set("unit_tests") {
     "ui/country_combobox_model_unittest.cc",
     "ui/payments/autofill_error_dialog_controller_impl_unittest.cc",
     "ui/payments/autofill_progress_dialog_controller_impl_unittest.cc",
-    "ui/payments/bnpl_tos_controller_impl_unittest.cc",
     "ui/payments/bubble_show_options_unittest.cc",
     "ui/payments/card_unmask_otp_input_dialog_controller_impl_unittest.cc",
     "ui/payments/card_unmask_prompt_controller_impl_unittest.cc",
@@ -1728,7 +1727,10 @@ source_set("unit_tests") {
   }
 
   if (!is_android) {
-    sources += [ "ui/autofill_image_fetcher_unittest.cc" ]
+    sources += [
+      "ui/autofill_image_fetcher_unittest.cc",
+      "ui/payments/bnpl_tos_controller_impl_unittest.cc",
+    ]
   }
 
   if (is_win || is_mac || is_android) {

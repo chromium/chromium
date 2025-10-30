@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.text.InputType;
 import android.text.Spannable;
@@ -46,6 +47,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -792,6 +794,19 @@ public class AutofillUiUtils {
             return new BitmapDrawable(context.getResources(), icon);
         }
         return new BitmapDrawable(context.getResources(), customIconBitmap);
+    }
+
+    /**
+     * Open the url in a new custom tab.
+     *
+     * @param context Context required to get resources.
+     * @param url The URL link to be opened in the new tab.
+     */
+    public static void openLink(Context context, String url) {
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(context, Uri.parse(url));
     }
 
     /**

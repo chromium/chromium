@@ -8,8 +8,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.Mockito.mock;
-
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
@@ -18,7 +16,6 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirt
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
-import android.text.SpannableString;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -69,7 +66,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * These tests render screenshots of touch to fill for credit cards/IBANs sheet and compare them to
@@ -456,18 +452,14 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* selectionText= */ "Purchase must be under $10,000.00",
                     /* isLinked= */ false,
                     /* isEligible= */ false);
-    private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
                     /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
-                    /* title= */ "Title for affirm",
-                    /* reviewText= */ "Review text for affirm",
-                    /* approveText= */ "Approve text for affirm",
-                    /* linkText= */ new SpannableString("Link text for affirm"),
-                    /* legalMessages= */ new BnplIssuerTosDetail.LegalMessages(
-                            Arrays.asList(new LegalMessageLine("Affirm legal message line")),
-                            MOCK_LINK_OPENER));
+                    /* isLinkedIssuer= */ true,
+                    /* issuerName= */ "Affirm",
+                    /* legalMessageLines= */ Arrays.asList(
+                            new LegalMessageLine("Affirm legal message line")));
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;

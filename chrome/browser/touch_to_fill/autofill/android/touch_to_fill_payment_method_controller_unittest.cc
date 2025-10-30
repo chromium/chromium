@@ -39,35 +39,11 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
-using ::testing::AllOf;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
 using ::testing::Matcher;
 using ::testing::Ref;
 using ::testing::Return;
-
-Matcher<const payments::BnplIssuerTosDetail&> EqualBnplIssuerTosDetail(
-    const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) {
-  return AllOf(Field(&payments::BnplIssuerTosDetail::header_icon_id,
-                     bnpl_issuer_tos_detail.header_icon_id),
-               Field(&payments::BnplIssuerTosDetail::header_icon_id_dark,
-                     bnpl_issuer_tos_detail.header_icon_id_dark),
-               Field(&payments::BnplIssuerTosDetail::title,
-                     bnpl_issuer_tos_detail.title),
-               Field(&payments::BnplIssuerTosDetail::review_text,
-                     bnpl_issuer_tos_detail.review_text),
-               Field(&payments::BnplIssuerTosDetail::approve_text,
-                     bnpl_issuer_tos_detail.approve_text),
-               Field(&payments::BnplIssuerTosDetail::link_text,
-                     AllOf(Field(&payments::TextWithLink::text,
-                                 bnpl_issuer_tos_detail.link_text.text),
-                           Field(&payments::TextWithLink::offset,
-                                 bnpl_issuer_tos_detail.link_text.offset),
-                           Field(&payments::TextWithLink::url,
-                                 bnpl_issuer_tos_detail.link_text.url))),
-               Field(&payments::BnplIssuerTosDetail::legal_message_lines,
-                     bnpl_issuer_tos_detail.legal_message_lines));
-}
 
 Matcher<const payments::BnplIssuerContext&> EqualBnplIssuerContext(
     const payments::BnplIssuerContext& bnpl_issuer_context) {
@@ -537,25 +513,14 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
        ShowBnplIssuerTosPassesTextsAndIconsToTheView) {
-  const std::u16string title = u"test BNPL issuer ToS title";
-  const std::u16string review_text = u"test BNPL issuer ToS review text";
-  const std::u16string approve_text = u"test BNPL issuer ToS approve text";
-  payments::TextWithLink link_text;
-  link_text.text = u"test BNPL issuer ToS link text with link";
-  // Index of text with redirect link;
-  link_text.offset = gfx::Range(36, link_text.text.length());
-  link_text.url = GURL("https://wallet.google.com/");
-  const LegalMessageLines legal_message = {
-      TestLegalMessageLine("This is the entire message.")};
   const payments::BnplIssuerTosDetail bnpl_issuer_tos_detail(
-      /*header_icon_id=*/1, /*header_icon_id_dark=*/2, title, review_text,
-      approve_text, link_text, legal_message);
+      /*header_icon_id=*/1, /*header_icon_id_dark=*/2,
+      /*is_linked_issuer=*/false, /*issuer_name=*/u"Affirm",
+      {TestLegalMessageLine("This is the entire message.")});
 
   // Test that the BNPL issuer ToS info have propagated to the view.
-  EXPECT_CALL(
-      *mock_view_,
-      ShowBnplIssuerTos(Ref(payment_method_controller()),
-                        EqualBnplIssuerTosDetail(bnpl_issuer_tos_detail)));
+  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos(Ref(payment_method_controller()),
+                                             bnpl_issuer_tos_detail));
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(

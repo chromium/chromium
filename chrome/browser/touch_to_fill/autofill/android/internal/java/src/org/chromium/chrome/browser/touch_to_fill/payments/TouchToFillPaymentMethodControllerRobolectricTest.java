@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,11 +104,10 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE_LINES;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.app.Activity;
-import android.text.SpannableString;
 import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
@@ -164,7 +162,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -455,18 +452,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* isLinked= */ false,
                     /* isEligible= */ false);
     private static final String LEGAL_MESSAGE_LINE = "legal message line";
-    private static final Consumer<String> MOCK_LINK_OPENER = mock(Consumer.class);
     private static final BnplIssuerTosDetail BNPL_ISSUER_TOS_DETAIL =
             new BnplIssuerTosDetail(
                     /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
                     /* headerIconDarkDrawableId= */ R.drawable.bnpl_icon_generic,
-                    /* title= */ "title for affirm",
-                    /* reviewText= */ "Review text for affirm",
-                    /* approveText= */ "Approve text for affirm",
-                    /* linkText= */ new SpannableString("Link text for affirm"),
-                    /* legalMessages= */ new BnplIssuerTosDetail.LegalMessages(
-                            Arrays.asList(new LegalMessageLine(LEGAL_MESSAGE_LINE)),
-                            MOCK_LINK_OPENER));
+                    /* isLinkedIssuer= */ false,
+                    /* issuerName= */ "Affirm",
+                    /* legalMessageLines= */ Arrays.asList(
+                            new LegalMessageLine(LEGAL_MESSAGE_LINE)));
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1122,30 +1115,44 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
         List<PropertyModel> headerModel = getModelsOfType(itemList, HEADER);
         assertThat(headerModel.size(), is(1));
-        assertThat(headerModel.get(0).get(TITLE_STRING), is(BNPL_ISSUER_TOS_DETAIL.getTitle()));
+        assertThat(
+                headerModel.get(0).get(TITLE_STRING),
+                is(
+                        mActivity.getString(
+                                R.string.autofill_bnpl_tos_unlinked_title,
+                                BNPL_ISSUER_TOS_DETAIL.getIssuerName())));
         assertThat(headerModel.get(0).get(IMAGE_DRAWABLE_ID), is(R.drawable.bnpl_icon_generic));
 
         List<PropertyModel> bnplTosItemModel = getModelsOfType(itemList, BNPL_TOS_TEXT);
         assertThat(bnplTosItemModel.size(), is(3));
         assertThat(
                 bnplTosItemModel.get(0).get(DESCRIPTION_TEXT),
-                is(BNPL_ISSUER_TOS_DETAIL.getReviewText()));
+                is(
+                        mActivity.getString(
+                                R.string.autofill_bnpl_tos_review_text,
+                                BNPL_ISSUER_TOS_DETAIL.getIssuerName())));
         assertThat(bnplTosItemModel.get(0).get(BNPL_TOS_ICON_ID), is(R.drawable.checklist));
         assertThat(
                 bnplTosItemModel.get(1).get(DESCRIPTION_TEXT),
-                is(BNPL_ISSUER_TOS_DETAIL.getApproveText()));
+                is(
+                        mActivity.getString(
+                                R.string.autofill_bnpl_tos_approve_text,
+                                BNPL_ISSUER_TOS_DETAIL.getIssuerName())));
         assertThat(bnplTosItemModel.get(1).get(BNPL_TOS_ICON_ID), is(R.drawable.receipt_long));
         assertThat(
                 bnplTosItemModel.get(2).get(DESCRIPTION_TEXT).toString(),
-                is(BNPL_ISSUER_TOS_DETAIL.getLinkText().toString()));
+                is(
+                        mCoordinator
+                                .getMediatorForTesting()
+                                .getLinkTextForBnplTosScreen(BNPL_ISSUER_TOS_DETAIL.getIssuerName())
+                                .toString()));
         assertThat(bnplTosItemModel.get(2).get(BNPL_TOS_ICON_ID), is(R.drawable.add_link));
 
         List<PropertyModel> footerModel = getModelsOfType(itemList, TOS_FOOTER);
         assertThat(footerModel.size(), is(1));
-        BnplIssuerTosDetail.LegalMessages legalMessages = footerModel.get(0).get(LEGAL_MESSAGE);
-        assertThat(legalMessages.mLines.size(), is(1));
-        assertThat(legalMessages.mLines.get(0).text, is(LEGAL_MESSAGE_LINE));
-        assertThat(legalMessages.mLinkOpener, is(MOCK_LINK_OPENER));
+        List<LegalMessageLine> legalMessageLines = footerModel.get(0).get(LEGAL_MESSAGE_LINES);
+        assertThat(legalMessageLines.size(), is(1));
+        assertThat(legalMessageLines.get(0).text, is(LEGAL_MESSAGE_LINE));
     }
 
     @Test

@@ -26,8 +26,10 @@ using autofill_metrics::BnplTosDialogResult;
 using autofill_metrics::LogBnplTosDialogShown;
 
 namespace {
+// LINT.IfChange
 constexpr std::string_view kWalletLinkText = "wallet.google.com";
 constexpr std::string_view kWalletUrlString = "https://wallet.google.com/";
+// LINT.ThenChange(//chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillPaymentMethodMediator.java)
 }  // namespace
 
 BnplTosModel::BnplTosModel() = default;

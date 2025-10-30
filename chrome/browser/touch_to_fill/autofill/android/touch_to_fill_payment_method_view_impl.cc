@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/valuables/android/loyalty_card_android.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -39,33 +38,8 @@
 #include "components/autofill/android/payments_jni_headers/BnplIssuerTosDetail_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 
 namespace {
-
-static base::android::ScopedJavaLocalRef<jobject>
-ConvertTextWithLinkToJavaObject(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const autofill::payments::TextWithLink& link_text) {
-  return autofill::Java_TouchToFillPaymentMethodViewBridge_getSpannableString(
-      env, obj, ConvertUTF16ToJavaString(env, link_text.text),
-      static_cast<int>(link_text.offset.start()),
-      static_cast<int>(link_text.offset.end()),
-      ConvertUTF8ToJavaString(env, link_text.url.spec()));
-}
-
-static base::android::ScopedJavaLocalRef<jobject>
-ConvertLegalMessageLinesToJavaObject(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
-    const autofill::LegalMessageLines legal_message_lines) {
-  return autofill::
-      Java_TouchToFillPaymentMethodViewBridge_convertLegalMessageLinesForBnplTos(
-          env, obj,
-          autofill::LegalMessageLineAndroid::ConvertToJavaLinkedList(
-              legal_message_lines));
-}
 
 static base::android::ScopedJavaLocalRef<jobject>
 ConvertBnplIssuerTosDetailToJavaObject(
@@ -76,13 +50,10 @@ ConvertBnplIssuerTosDetailToJavaObject(
   return Java_BnplIssuerTosDetail_Constructor(
       env, controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id),
       controller.GetJavaResourceId(bnpl_issuer_tos_detail.header_icon_id_dark),
-      ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.title),
-      ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.review_text),
-      ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.approve_text),
-      ConvertTextWithLinkToJavaObject(env, obj,
-                                      bnpl_issuer_tos_detail.link_text),
-      ConvertLegalMessageLinesToJavaObject(
-          env, obj, bnpl_issuer_tos_detail.legal_message_lines));
+      bnpl_issuer_tos_detail.is_linked_issuer,
+      ConvertUTF16ToJavaString(env, bnpl_issuer_tos_detail.issuer_name),
+      autofill::LegalMessageLineAndroid::ConvertToJavaLinkedList(
+          bnpl_issuer_tos_detail.legal_message_lines));
 }
 
 // TODO(crbug.com/449764859): Refactor BnplIssuerContext to use JNI type

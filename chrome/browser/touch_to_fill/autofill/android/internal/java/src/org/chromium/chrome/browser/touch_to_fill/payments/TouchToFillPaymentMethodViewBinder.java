@@ -62,7 +62,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_HALF_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.TERMS_LABEL_TEXT_ID;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE_LINES;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LINK_OPENER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.text.SpannableString;
@@ -86,7 +87,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
-import org.chromium.components.autofill.payments.BnplIssuerTosDetail.LegalMessages;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -736,16 +736,15 @@ class TouchToFillPaymentMethodViewBinder {
      * @param key The {@link PropertyKey} which changed.
      */
     static void bindLegalMessageItemView(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (propertyKey == LEGAL_MESSAGE) {
+        if (propertyKey == LEGAL_MESSAGE_LINES || propertyKey == LINK_OPENER) {
             TextView textView = view.findViewById(R.id.legal_message);
-            LegalMessages legalMessages = model.get(LEGAL_MESSAGE);
             textView.setText(
                     AutofillUiUtils.getSpannableStringForLegalMessageLines(
                             textView.getContext(),
-                            legalMessages.mLines,
+                            model.get(LEGAL_MESSAGE_LINES),
                             /* underlineLinks= */ false,
                             (String url) -> {
-                                legalMessages.mLinkOpener.accept(url);
+                                model.get(LINK_OPENER).accept(url);
                             }));
             textView.setMovementMethod(LinkMovementMethod.getInstance());
         } else {

@@ -68,16 +68,15 @@ struct BnplIssuerTosDetail {
  public:
   BnplIssuerTosDetail(int header_icon_id,
                       int header_icon_id_dark,
-                      std::u16string title,
-                      std::u16string review_text,
-                      std::u16string approve_text,
-                      TextWithLink link_text,
+                      bool is_linked_issuer,
+                      std::u16string issuer_name,
                       std::vector<LegalMessageLine> legal_message_lines);
   BnplIssuerTosDetail(const BnplIssuerTosDetail& other);
   BnplIssuerTosDetail(BnplIssuerTosDetail&&);
   BnplIssuerTosDetail& operator=(const BnplIssuerTosDetail& other);
   BnplIssuerTosDetail& operator=(BnplIssuerTosDetail&&);
   ~BnplIssuerTosDetail();
+  bool operator==(const BnplIssuerTosDetail&) const;
 
   // Icon shown in the screen title.
   int header_icon_id;
@@ -85,17 +84,11 @@ struct BnplIssuerTosDetail {
   // Icon shown in the screen title in dark mode.
   int header_icon_id_dark;
 
-  // Text shown in the screen title.
-  std::u16string title;
+  // True if the selected issuer is a linked issuer.
+  bool is_linked_issuer;
 
   // Sign-in/create account message.
-  std::u16string review_text;
-
-  // Eligibility check message.
-  std::u16string approve_text;
-
-  // Account link/unlink message.
-  TextWithLink link_text;
+  std::u16string issuer_name;
 
   // Legal messages with links that are shown in screen footer.
   std::vector<LegalMessageLine> legal_message_lines;

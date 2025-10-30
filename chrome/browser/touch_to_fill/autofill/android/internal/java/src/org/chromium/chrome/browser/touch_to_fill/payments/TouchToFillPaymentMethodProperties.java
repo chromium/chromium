@@ -12,14 +12,16 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.components.autofill.LoyaltyCard;
-import org.chromium.components.autofill.payments.BnplIssuerTosDetail.LegalMessages;
+import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /** Properties defined here reflect the visible state of the TouchToFillPaymentMethod component. */
 class TouchToFillPaymentMethodProperties {
@@ -440,10 +442,13 @@ class TouchToFillPaymentMethodProperties {
 
     /** Properties defined here reflect the visible state of the footer showing legal messages. */
     static class TosFooterProperties {
-        static final PropertyModel.ReadableObjectPropertyKey<LegalMessages> LEGAL_MESSAGE =
-                new PropertyModel.ReadableObjectPropertyKey<>("legal_message");
+        static final PropertyModel.ReadableObjectPropertyKey<List<LegalMessageLine>>
+                LEGAL_MESSAGE_LINES =
+                        new PropertyModel.ReadableObjectPropertyKey<>("legal_message_lines");
+        static final PropertyModel.ReadableObjectPropertyKey<Consumer<String>> LINK_OPENER =
+                new PropertyModel.ReadableObjectPropertyKey<>("link_opener");
 
-        static final PropertyKey[] ALL_KEYS = {LEGAL_MESSAGE};
+        static final PropertyKey[] ALL_KEYS = {LEGAL_MESSAGE_LINES, LINK_OPENER};
 
         private TosFooterProperties() {}
     }
