@@ -2863,3 +2863,28 @@ TEST_F(HostContentSettingsMapTest, DevToolsFileAccess) {
                 ContentSettingsType::FILE_SYSTEM_WRITE_GUARD));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(HostContentSettingsMapTest, ExtensionContentSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  const std::string extension_id = "abcdefghijklmnopqrstuvwxyzabcdef";
+  const std::string extension_url_str = "chrome-extension://" + extension_id;
+  const GURL extension_url(extension_url_str + "/index.html");
+  map->SetContentSettingDefaultScope(
+      extension_url, GURL(), ContentSettingsType::SOUND, CONTENT_SETTING_BLOCK);
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(extension_url, extension_url,
+                                   ContentSettingsType::SOUND));
+
+  // Verify the setting is not applied to a web URL that has the same host as
+  // the extension ID.
+  const GURL domain_url("https://" + extension_id);
+  EXPECT_NE(CONTENT_SETTING_BLOCK,
+            map->GetContentSetting(domain_url, domain_url,
+                                   ContentSettingsType::SOUND));
+}
+#endif

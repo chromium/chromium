@@ -44,6 +44,7 @@ public class UrlConstants {
     public static final String CHROME_NATIVE_URL_SHORT_PREFIX = "chrome-native:";
     public static final String FILE_URL_SHORT_PREFIX = "file:";
 
+    public static final String CHROME_EXTENSION_URL_PREFIX = "chrome-extension://";
     public static final String CHROME_URL_PREFIX = "chrome://";
     public static final String CHROME_NATIVE_URL_PREFIX = "chrome-native://";
     public static final String CONTENT_URL_PREFIX = "content://";

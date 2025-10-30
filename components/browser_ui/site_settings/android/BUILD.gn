@@ -164,12 +164,15 @@ android_library("javatests") {
     "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteAddressTest.java",
     "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteGroupTest.java",
     "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteRowPreferenceTest.java",
+    "javatests/src/org/chromium/components/browser_ui/site_settings/WebsiteTest.java",
   ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/settings/android:test_support_java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_preference_preference_java",

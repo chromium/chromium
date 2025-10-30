@@ -23,13 +23,13 @@ public class ExtensionUrlUtilTest {
 
     @Test
     @SmallTest
-    public void testGetOriginValidUrl() {
+    public void testGetOrigin_ValidUrl() {
         Assert.assertEquals(VALID_ORIGIN, ExtensionUrlUtil.getOrigin(VALID_ORIGIN));
     }
 
     @Test
     @SmallTest
-    public void testGetOriginInvalidScheme() {
+    public void testGetOrigin_InvalidScheme() {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 () -> ExtensionUrlUtil.getOrigin("https://example.com"));
@@ -37,7 +37,7 @@ public class ExtensionUrlUtilTest {
 
     @Test
     @SmallTest
-    public void testGetOriginNoHost() {
+    public void testGetOrigin_NoHost() {
         Assert.assertThrows(
                 IllegalArgumentException.class,
                 () -> ExtensionUrlUtil.getOrigin(UrlConstants.CHROME_EXTENSION_SCHEME + ":///"));
@@ -45,14 +45,39 @@ public class ExtensionUrlUtilTest {
 
     @Test
     @SmallTest
-    public void testGetOriginNullUrl() {
+    public void testGetOrigin_NullUrl() {
         Assert.assertThrows(
                 IllegalArgumentException.class, () -> ExtensionUrlUtil.getOrigin((String) null));
     }
 
     @Test
     @SmallTest
-    public void testGetOriginEmptyUrl() {
+    public void testGetOrigin_EmptyUrl() {
         Assert.assertThrows(IllegalArgumentException.class, () -> ExtensionUrlUtil.getOrigin(""));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsExtensionUrl_NullString() {
+        Assert.assertFalse(ExtensionUrlUtil.isExtensionUrl(null));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsExtensionUrl_EmptyString() {
+        Assert.assertFalse(ExtensionUrlUtil.isExtensionUrl(""));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsExtensionUrl_ValidExtensionUrl() {
+        Assert.assertTrue(ExtensionUrlUtil.isExtensionUrl(VALID_ORIGIN));
+        Assert.assertTrue(ExtensionUrlUtil.isExtensionUrl(VALID_ORIGIN + "/"));
+    }
+
+    @Test
+    @SmallTest
+    public void testIsExtensionUrl_OtherUrl() {
+        Assert.assertFalse(ExtensionUrlUtil.isExtensionUrl("https://example.com"));
     }
 }

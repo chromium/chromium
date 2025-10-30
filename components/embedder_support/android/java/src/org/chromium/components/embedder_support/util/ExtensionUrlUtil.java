@@ -53,6 +53,14 @@ public final class ExtensionUrlUtil {
             throw new IllegalArgumentException(
                     "Extension URL must have a host (the extension ID).");
         }
-        return UrlConstants.CHROME_EXTENSION_SCHEME + "://" + host;
+        return UrlConstants.CHROME_EXTENSION_URL_PREFIX + host;
+    }
+
+    /** Returns true if the URL is a chrome extension URL; false otherwise. */
+    public static boolean isExtensionUrl(String url) {
+        if (url == null) {
+            return false;
+        }
+        return url.startsWith(UrlConstants.CHROME_EXTENSION_URL_PREFIX);
     }
 }

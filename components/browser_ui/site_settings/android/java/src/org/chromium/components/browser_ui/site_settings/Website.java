@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -17,6 +19,7 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.content_settings.SessionModel;
+import org.chromium.components.embedder_support.util.ExtensionUrlUtil;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -272,6 +275,43 @@ public final class Website implements WebsiteEntry {
         return null;
     }
 
+    @VisibleForTesting
+    @Nullable ContentSettingException createContentSettingException(
+            @ContentSettingsType.EnumType int type, @ContentSetting int value) {
+        if (type == ContentSettingsType.ADS) {
+            // It is possible to set the permission without having an existing exception,
+            // because we can show the BLOCK state even when this permission is set to the
+            // default. In that case, just set an exception now to BLOCK to enable changing the
+            // permission.
+            return new ContentSettingException(
+                    ContentSettingsType.ADS,
+                    getAddress().getOrigin(),
+                    ContentSetting.BLOCK,
+                    ProviderType.NONE,
+                    /* isEmbargoed= */ false);
+        } else if (type == ContentSettingsType.JAVASCRIPT) {
+            // It is possible to set the permission without having an existing exception,
+            // because we show the javascript permission in Site Settings if javascript
+            // is blocked by default.
+            return new ContentSettingException(
+                    ContentSettingsType.JAVASCRIPT,
+                    assumeNonNull(resolvePrimaryPatternForException(getAddress())),
+                    value,
+                    ProviderType.NONE,
+                    /* isEmbargoed= */ false);
+        } else if (type == ContentSettingsType.SOUND) {
+            // It is possible to set the permission without having an existing exception,
+            // because we always show the sound permission in Site Settings.
+            return new ContentSettingException(
+                    ContentSettingsType.SOUND,
+                    assumeNonNull(resolvePrimaryPatternForException(getAddress())),
+                    value,
+                    ProviderType.NONE,
+                    /* isEmbargoed= */ false);
+        }
+        return null;
+    }
+
     /** Sets the ContentSettingValue on the appropriate PermissionInfo or ContentSettingException */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle,
@@ -306,35 +346,14 @@ public final class Website implements WebsiteEntry {
         }
 
         ContentSettingException exception = getContentSettingException(type);
-        if (type == ContentSettingsType.ADS) {
-            // It is possible to set the permission without having an existing exception,
-            // because we can show the BLOCK state even when this permission is set to the
-            // default. In that case, just set an exception now to BLOCK to enable changing the
-            // permission.
-            if (exception == null) {
-                exception =
-                        new ContentSettingException(
-                                ContentSettingsType.ADS,
-                                getAddress().getOrigin(),
-                                ContentSetting.BLOCK,
-                                ProviderType.NONE,
-                                /* isEmbargoed= */ false);
+        if (exception == null) {
+            exception = createContentSettingException(type, value);
+            if (exception != null) {
                 setContentSettingException(type, exception);
             }
-        } else if (type == ContentSettingsType.JAVASCRIPT) {
-            // It is possible to set the permission without having an existing exception,
-            // because we show the javascript permission in Site Settings if javascript
-            // is blocked by default.
-            if (exception == null) {
-                exception =
-                        new ContentSettingException(
-                                ContentSettingsType.JAVASCRIPT,
-                                assumeNonNull(getAddress().getHost()),
-                                value,
-                                ProviderType.NONE,
-                                /* isEmbargoed= */ false);
-                setContentSettingException(type, exception);
-            }
+        }
+
+        if (type == ContentSettingsType.JAVASCRIPT) {
             // It's possible for either action to be emitted. This code path is hit
             // regardless of whether there was an existing permission or not.
             if (value == ContentSetting.BLOCK) {
@@ -343,18 +362,6 @@ public final class Website implements WebsiteEntry {
                 RecordUserAction.record("JavascriptContentSetting.DisableBy.SiteSettings");
             }
         } else if (type == ContentSettingsType.SOUND) {
-            // It is possible to set the permission without having an existing exception,
-            // because we always show the sound permission in Site Settings.
-            if (exception == null) {
-                exception =
-                        new ContentSettingException(
-                                ContentSettingsType.SOUND,
-                                assumeNonNull(getAddress().getHost()),
-                                value,
-                                ProviderType.NONE,
-                                /* isEmbargoed= */ false);
-                setContentSettingException(type, exception);
-            }
             if (value == ContentSetting.BLOCK) {
                 RecordUserAction.record("SoundContentSetting.MuteBy.SiteSettings");
             } else {
@@ -382,6 +389,19 @@ public final class Website implements WebsiteEntry {
         for (ContentSettingException exception : exceptions) {
             exception.setContentSetting(browserContextHandle, value);
         }
+    }
+
+    /**
+     * If the website address is with the chrome-extension scheme, we should use the full URL. For
+     * other hosts (mainly http and https), we follow the convention for Android here.
+     */
+    private static @Nullable String resolvePrimaryPatternForException(
+            WebsiteAddress websiteAddress) {
+        String origin = websiteAddress.getOrigin();
+        if (ExtensionUrlUtil.isExtensionUrl(origin)) {
+            return origin;
+        }
+        return websiteAddress.getHost();
     }
 
     /**
