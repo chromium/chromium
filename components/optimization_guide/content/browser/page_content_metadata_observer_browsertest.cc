@@ -133,7 +133,8 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
 }
 
 // TODO(https://crbug.com/455915204): Test is flaky on android-arm64-tests.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/455816130): Test is flaky on linux tests.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 #define MAYBE_NoMetaTags DISABLED_NoMetaTags
 #else
 #define MAYBE_NoMetaTags NoMetaTags
