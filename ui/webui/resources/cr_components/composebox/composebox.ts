@@ -229,7 +229,7 @@ export class ComposeboxElement extends I18nMixinLit
           this.showFileCarousel_ = this.contextFilesSize_ > 0;
           this.submitEnabled_ = this.computeSubmitEnabled_();
         });
-    this.$.input.focus();
+    this.focusInput();
     // For realbox next, the zps autocomplete query is triggered after
     // the state has been initialized.
     if (this.showZps && !this.ntpRealboxNextEnabled) {
@@ -428,7 +428,7 @@ export class ComposeboxElement extends I18nMixinLit
       } as CustomEvent<{inCreateImageMode: boolean, imagePresent: boolean}>);
     }
     this.searchboxHandler_.deleteContext(e.detail.uuid);
-    this.$.input.focus();
+    this.focusInput();
     this.queryAutocomplete(/* clearMatches= */ true);
   }
 
@@ -468,7 +468,7 @@ export class ComposeboxElement extends I18nMixinLit
       announcer.announce(this.i18n('composeboxFileUploadStartedText'));
     }
     e.detail.onContextAdded(composeboxFiles);
-    this.$.input.focus();
+    this.focusInput();
   }
 
   protected addFileContextFromBrowser_(
@@ -512,7 +512,7 @@ export class ComposeboxElement extends I18nMixinLit
       isDeletable: true,
     };
     e.detail.onContextAdded(attachment);
-    this.$.input.focus();
+    this.focusInput();
   }
 
   protected async refreshTabSuggestions_() {
@@ -537,7 +537,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.smartComposeInlineHint_ = '';
       this.submitEnabled_ = false;
       this.searchboxHandler_.clearFiles();
-      this.$.input.focus();
+      this.focusInput();
       this.queryAutocomplete(/* clearMatches= */ true);
     } else {
       this.closeComposebox_();
@@ -577,7 +577,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.updateInputPlaceholder_();
 
     await this.updateComplete;
-    this.$.input.focus();
+    this.focusInput();
   }
 
   protected async setCreateImageMode_(
@@ -589,7 +589,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.updateInputPlaceholder_();
 
     await this.updateComplete;
-    this.$.input.focus();
+    this.focusInput();
   }
 
   protected onErrorScrimVisibilityChanged_(
