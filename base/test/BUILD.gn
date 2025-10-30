@@ -96,8 +96,6 @@ static_library("test_support") {
     "launcher/unit_test_launcher.h",
     "manual_hang_watcher.cc",
     "manual_hang_watcher.h",
-    "metrics/action_suffix_reader.cc",
-    "metrics/action_suffix_reader.h",
     "metrics/action_variants_reader.cc",
     "metrics/action_variants_reader.h",
     "metrics/histogram_enum_reader.cc",
