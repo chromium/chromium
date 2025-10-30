@@ -39,6 +39,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .browser_prog_id_prefix = L"ChromiumHTM",  // Browser ProgID prefix.
         .browser_prog_id_description =
             L"Chromium HTML Document",         // Browser ProgID description.
+        .direct_launch_url_scheme = "chromium",
         .pdf_prog_id_prefix = L"ChromiumPDF",  // PDF ProgID prefix.
         .pdf_prog_id_description =
             L"Chromium PDF Document",  // PDF ProgID description.
