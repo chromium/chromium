@@ -4667,13 +4667,7 @@ TEST_F(SplitViewDraggingTest, WindowDraggingDisallowed) {
   resizer = CreateWindowResizer(window_arc.get(), HTCAPTION);
   EXPECT_FALSE(resizer.get());
   resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
-  EXPECT_FALSE(resizer.get());
-
-  // Also simulate dragging the sole tab (or sole tab group) of the browser.
-  window_browser->SetProperty(ash::kIsDraggingTabsKey, true);
-  resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
-  EXPECT_FALSE(resizer.get());
-  window_browser->ClearProperty(ash::kIsDraggingTabsKey);
+  EXPECT_TRUE(resizer.get());
 
   // Make the windows fullscreen.
   WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
@@ -4694,13 +4688,7 @@ TEST_F(SplitViewDraggingTest, WindowDraggingDisallowed) {
   resizer = CreateWindowResizer(window_arc.get(), HTCAPTION);
   EXPECT_FALSE(resizer.get());
   resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
-  EXPECT_FALSE(resizer.get());
-
-  // Also simulate dragging the sole tab (or sole tab group) of the browser.
-  window_browser->SetProperty(ash::kIsDraggingTabsKey, true);
-  resizer = CreateWindowResizer(window_browser.get(), HTCAPTION);
-  EXPECT_FALSE(resizer.get());
-  window_browser->ClearProperty(ash::kIsDraggingTabsKey);
+  EXPECT_TRUE(resizer.get());
 }
 
 TEST_F(SplitViewDraggingTest, TabDraggingFromMaximized) {

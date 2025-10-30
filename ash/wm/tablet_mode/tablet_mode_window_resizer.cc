@@ -59,7 +59,6 @@ TabletModeWindowResizer::~TabletModeWindowResizer() {
 
 void TabletModeWindowResizer::Drag(const gfx::PointF& location_in_parent,
                                    int event_flags) {
-  CHECK(window_util::IsDraggingTabs(GetTarget()));
   drag_delegate_->ContinueWindowDrag(
       ConvertAndSetPreviousLocationInScreen(location_in_parent),
       CalculateBoundsForDrag(location_in_parent));

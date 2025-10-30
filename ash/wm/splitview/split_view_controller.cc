@@ -2695,9 +2695,8 @@ void SplitViewController::EndWindowDragImpl(
 
   DCHECK_EQ(root_window_, window->GetRootWindow());
 
-  const bool was_splitview_active = InSplitViewMode();
   if (desired_snap_position == SnapPosition::kNone) {
-    if (was_splitview_active) {
+    if (InSplitViewMode()) {
       // Even though |snap_position| equals |SnapPosition::kNone|, the dragged
       // window still needs to be snapped if splitview mode is active at the
       // moment.
@@ -2735,6 +2734,12 @@ void SplitViewController::EndWindowDragImpl(
       TabletModeWindowState::UpdateWindowPosition(
           WindowState::Get(window),
           WindowState::BoundsChangeAnimationType::kAnimate);
+
+      if (InTabletMode()) {
+        // We get here if split view ended during the drag (we dragged the only
+        // window that was snapped). Unsnap the window now.
+        MaximizeIfSnapped(window);
+      }
     }
   } else {
     // Note SnapWindow() might put the previous window that was snapped at the

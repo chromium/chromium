@@ -319,20 +319,6 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
     return nullptr;
   }
 
-  if (!window_util::IsDraggingTabs(window)) {
-    CHECK(!window->GetProperty(kTabDraggingSourceWindowKey));
-    return nullptr;
-  }
-
-  if (!window->GetProperty(kTabDraggingSourceWindowKey)) {
-    return nullptr;
-  }
-
-  CHECK_EQ(WindowState::Get(window->GetProperty(kTabDraggingSourceWindowKey))
-               ->IsSnapped(),
-           SplitViewController::Get(Shell::GetPrimaryRootWindow())
-               ->InTabletSplitViewMode());
-
   window_state->CreateDragDetails(point_in_parent, window_component, source);
   auto resizer = std::make_unique<TabletModeWindowResizer>(
       window_state, std::make_unique<TabletModeWindowDragDelegate>());
