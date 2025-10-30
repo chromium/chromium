@@ -125,7 +125,7 @@ TEST_F(DialInternalMessageUtilTest, CreateReceiverActionCastMessage) {
           "friendlyName":"Lab Roku",
           "ipAddress":"172.17.32.151",
           "isActiveInput":null,
-          "label":"vgK6BDL84IzefOLUvy2OcgFPhoo",
+          "label":"0Y-QXIPsivL2EPhAp0YlSe2oHJYWau34NlD7c2ENeQk",
           "receiverType":"dial",
           "volume":null
         }
@@ -153,7 +153,7 @@ TEST_F(DialInternalMessageUtilTest, CreateReceiverActionStopMessage) {
           "friendlyName":"Lab Roku",
           "ipAddress":"172.17.32.151",
           "isActiveInput":null,
-          "label":"vgK6BDL84IzefOLUvy2OcgFPhoo",
+          "label":"0Y-QXIPsivL2EPhAp0YlSe2oHJYWau34NlD7c2ENeQk",
           "receiverType":"dial",
           "volume":null
         }
@@ -185,7 +185,7 @@ TEST_F(DialInternalMessageUtilTest, CreateNewSessionMessage) {
         "friendlyName":"Lab Roku",
         "ipAddress":"172.17.32.151",
         "isActiveInput":null,
-        "label":"vgK6BDL84IzefOLUvy2OcgFPhoo",
+        "label":"0Y-QXIPsivL2EPhAp0YlSe2oHJYWau34NlD7c2ENeQk",
         "receiverType":"dial",
         "volume":null
       },
@@ -218,7 +218,7 @@ TEST_F(DialInternalMessageUtilTest, CreateCustomDialLaunchMessage) {
         "friendlyName":"Lab Roku",
         "ipAddress":"172.17.32.151",
         "isActiveInput":null,
-        "label":"vgK6BDL84IzefOLUvy2OcgFPhoo",
+        "label":"0Y-QXIPsivL2EPhAp0YlSe2oHJYWau34NlD7c2ENeQk",
         "receiverType":"dial",
         "volume":null
       },

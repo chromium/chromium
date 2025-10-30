@@ -9,14 +9,15 @@
 #include <utility>
 
 #include "base/base64url.h"
-#include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_view_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
+#include "crypto/hash.h"
 
 using cast_channel::CastDeviceCapability;
 using cast_channel::CastDeviceCapabilitySet;
@@ -141,9 +142,10 @@ base::Value::List CapabilitiesToListValue(
 
 std::string GetReceiverLabel(const MediaSinkInternal& sink,
                              const std::string& hash_token) {
-  std::string label = base::SHA1HashString(sink.sink().id() + hash_token);
-  base::Base64UrlEncode(label, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &label);
+  std::string label;
+  base::Base64UrlEncode(
+      base::as_string_view(crypto::hash::Sha256(sink.sink().id() + hash_token)),
+      base::Base64UrlEncodePolicy::OMIT_PADDING, &label);
   return label;
 }
 

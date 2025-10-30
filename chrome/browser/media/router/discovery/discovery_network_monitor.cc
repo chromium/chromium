@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/check_op.h"
-#include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -20,6 +19,7 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/media/router/discovery/discovery_network_list.h"
 #include "content/public/browser/network_service_instance.h"
+#include "crypto/hash.h"
 #include "net/base/network_interfaces.h"
 
 namespace media_router {
@@ -40,8 +40,8 @@ std::string ComputeNetworkId(
     combined_ids = combined_ids + "!" + network_info.network_id;
   }
 
-  auto hash = base::SHA1Hash(base::as_byte_span(combined_ids));
-  return base::ToLowerASCII(base::HexEncode(hash));
+  return base::ToLowerASCII(
+      base::HexEncode(crypto::hash::Sha256(combined_ids)));
 }
 
 }  // namespace
