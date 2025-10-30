@@ -509,7 +509,7 @@ BASE_FEATURE(kProcessReuseOnPrerenderCOOPSwap,
 // Causes the browser to progressively enable accessibility for WebContents as
 // they are unhidden and, optionally, disable accessibility some time after they
 // become hidden.
-BASE_FEATURE(kProgressiveAccessibility, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProgressiveAccessibility, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

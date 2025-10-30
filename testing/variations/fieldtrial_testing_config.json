@@ -19810,35 +19810,6 @@
             ]
         }
     ],
-    "ProgressiveAccessibility": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ProgressiveAccessibility"
-                    ]
-                },
-                {
-                    "name": "EnabledWithHide",
-                    "params": {
-                        "progressive_accessibility_mode": "disable_on_hide"
-                    },
-                    "enable_features": [
-                        "ProgressiveAccessibility"
-                    ]
-                }
-            ]
-        }
-    ],
     "PropagateWebViewNetworkingSignals": [
         {
             "platforms": [
