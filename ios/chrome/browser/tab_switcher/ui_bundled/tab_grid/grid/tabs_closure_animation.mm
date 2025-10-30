@@ -340,7 +340,11 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
 
   __weak TabsClosureAnimation* weakSelf = self;
   [CATransaction setCompletionBlock:^{
-    [weakSelf onAnimationCompletedWithCompletionBlock:completion];
+    [weakSelf onAnimationCompleted];
+
+    if (completion) {
+      completion();
+    }
   }];
 
   CFTimeInterval mediaTime = CACurrentMediaTime();
@@ -390,7 +394,7 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
 
 // Cleans up the view hierarchy after the animation has run by removing
 // unnecessary layers.
-- (void)onAnimationCompletedWithCompletionBlock:(ProceduralBlock)completion {
+- (void)onAnimationCompleted {
   // Remove the main gradient layer after the animation has completed.
   [_gradientLayer removeFromSuperlayer];
   _gradientLayer = nil;
@@ -400,10 +404,6 @@ CAGradientLayer* GetAnimatedWipeEffect(CGRect frame,
   for (UIView* cell : _gridCells) {
     cell.hidden = (self.type == TabsClosureAnimationType::kHideGridCells);
     cell.layer.mask = nil;
-  }
-
-  if (completion) {
-    completion();
   }
 }
 

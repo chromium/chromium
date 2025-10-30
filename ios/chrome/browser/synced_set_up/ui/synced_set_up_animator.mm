@@ -18,6 +18,8 @@ const CGFloat kPresentAnimationDuration = 0.4;
 @implementation SyncedSetUpAnimator {
   // Indicates the direction of the transition.
   BOOL _isPresenting;
+  // The object responsible for animating the interstitial.
+  TabsClosureAnimation* _animation;
 }
 
 - (instancetype)initForPresenting:(BOOL)isPresenting {
@@ -100,18 +102,24 @@ const CGFloat kPresentAnimationDuration = 0.4;
       viewControllerForKey:UITransitionContextFromViewControllerKey];
   UIView* animatedView = fromVC.view;
 
-  TabsClosureAnimation* animation =
-      [[TabsClosureAnimation alloc] initWithWindow:window
-                                         gridCells:@[ animatedView ]];
-  animation.startPoint = CGPointMake(0.5, 0.0);
+  _animation = [[TabsClosureAnimation alloc] initWithWindow:window
+                                                  gridCells:@[ animatedView ]];
+  _animation.startPoint = CGPointMake(0.5, 0.0);
 
   window.userInteractionEnabled = NO;
 
-  [animation animateWithCompletion:^{
+  __weak __typeof(self) weakSelf = self;
+  [_animation animateWithCompletion:^{
     window.userInteractionEnabled = YES;
     [animatedView removeFromSuperview];
     [transitionContext completeTransition:YES];
+    [weakSelf onAnimationCompleted];
   }];
+}
+
+// Called when the animation has completed to properly clear any obsolete state.
+- (void)onAnimationCompleted {
+  _animation = nil;
 }
 
 @end
