@@ -53,6 +53,11 @@ static constexpr char kEligibilityResponseHistogramPrefix[] =
 // Histogram prefix for changes to the eligibility response.
 static constexpr char kEligibilityResponseChangeHistogramPrefix[] =
     "Omnibox.AimEligibility.EligibilityResponseChange";
+// Histograms for the number of retries for eligibility requests.
+static constexpr char kEligibilityRequestRetriesFailedHistogramName[] =
+    "Omnibox.AimEligibility.EligibilityRequestRetries.Failed";
+static constexpr char kEligibilityRequestRetriesSucceededHistogramName[] =
+    "Omnibox.AimEligibility.EligibilityRequestRetries.Succeeded";
 
 static constexpr char kRequestPath[] = "/async/folae";
 static constexpr char kRequestQuery[] = "async=_fmt:pb";
@@ -63,6 +68,9 @@ static constexpr char kRequestQuery[] = "async=_fmt:pb";
 // pref value (0) if neither policy is set. Do not change this value without
 // migrating the existing prefs and the policy's prefs mapping.
 constexpr int kAiModeAllowedDefault = 0;
+
+// The maximum number of retries for eligibility requests.
+constexpr int kMaxRetries = 3;
 
 // The pref name used for storing the eligibility response proto.
 constexpr char kResponsePrefName[] =
@@ -463,6 +471,15 @@ void AimEligibilityService::StartServerEligibilityRequest(
 
   LogEligibilityRequestStatus(EligibilityRequestStatus::kSent, request_source);
 
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimServerEligibilityCustomRetryPolicyEnabled)) {
+    // Other places in Chrome suggest that DNS and network change related
+    // failures are common on startup and use the retry policy below.
+    loader->SetRetryOptions(
+        kMaxRetries, network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED |
+                         network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+  }
+
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&AimEligibilityService::OnServerEligibilityResponse,
@@ -476,6 +493,9 @@ void AimEligibilityService::OnServerEligibilityResponse(
     std::unique_ptr<std::string> response_string) {
   CHECK(initialized_);
 
+  const bool custom_retry_policy_enabled = base::FeatureList::IsEnabled(
+      omnibox::kAimServerEligibilityCustomRetryPolicyEnabled);
+
   const int response_code =
       loader->ResponseInfo() && loader->ResponseInfo()->headers
           ? loader->ResponseInfo()->headers->response_code()
@@ -486,8 +506,20 @@ void AimEligibilityService::OnServerEligibilityResponse(
   if (response_code != 200 || !response_string) {
     LogEligibilityRequestStatus(EligibilityRequestStatus::kErrorResponse,
                                 request_source);
+    if (custom_retry_policy_enabled) {
+      base::UmaHistogramExactLinear(
+          kEligibilityRequestRetriesFailedHistogramName,
+          loader->GetNumRetries(), kMaxRetries + 1);
+    }
     return;
   }
+
+  if (custom_retry_policy_enabled) {
+    base::UmaHistogramExactLinear(
+        kEligibilityRequestRetriesSucceededHistogramName,
+        loader->GetNumRetries(), kMaxRetries + 1);
+  }
+
   omnibox::AimEligibilityResponse response_proto;
   if (!ParseResponseString(*response_string, &response_proto)) {
     LogEligibilityRequestStatus(EligibilityRequestStatus::kFailedToParse,
