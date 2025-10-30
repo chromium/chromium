@@ -417,6 +417,32 @@ chromium-metrics-reviews@google.com.
   <token key="Mode" variants="IndexedDBTransactionMode"/>
 </histogram>
 
+<histogram name="IndexedDB.FilePathLengthOverflow.{Engine}" units="characters"
+    expires_after="2026-04-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Windows only.
+
+    For the longest file name used by the given IndexedDB backing store engine,
+    logs the number of excess characters relative to Windows MAX_PATH,
+    regardless of whether the system in question is actually limited by MAX_PATH
+    (since Chromium does have that limitation).
+
+    In the vast majority of cases, there should be no overflow, which is logged
+    as 0.
+
+    This is logged for each engine each time a backing store is created/opened
+    but only when LevelDB is active. Collectively they are intended to measure
+    the impact of the file naming scheme when switching to SQLite.
+  </summary>
+  <token key="Engine">
+    <variant name="LevelDB"/>
+    <variant name="SQLite"/>
+  </token>
+</histogram>
+
 <histogram name="IndexedDB.GetUnacquirableLocksLongTimes" units="ms"
     expires_after="2026-07-01">
   <owner>estade@chromium.org</owner>

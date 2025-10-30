@@ -2507,4 +2507,95 @@ TEST_P(IndexedDBTest, DataLoss) {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_P(IndexedDBTest, FilePathLengthLogging) {
+  base::HistogramTester histograms;
+
+  // Open with a normal length origin; success.
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
+  BucketLocator bucket_locator = BucketLocator();
+  bucket_locator.storage_key = storage_key;
+
+  {
+    mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+        checker_remote;
+    BindFactory(std::move(checker_remote),
+                factory_remote.BindNewPipeAndPassReceiver(),
+                ToBucketInfo(bucket_locator));
+
+    {
+      const int64_t db_version = 1;
+      MockMojoFactoryClient client;
+      MockMojoDatabaseCallbacks database_callbacks;
+      base::RunLoop run_loop;
+      EXPECT_CALL(client, MockedUpgradeNeeded)
+          .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
+      mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+      factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                           database_callbacks.CreateInterfacePtrAndBind(),
+                           /*db_name=*/u"db", db_version,
+                           transaction_remote.BindNewEndpointAndPassReceiver(),
+                           /*transaction_id=*/1, /*priority=*/0);
+      run_loop.Run();
+    }
+  }
+
+  if (IsSqliteBackingStoreEnabled()) {
+    histograms.ExpectTotalCount("IndexedDB.FilePathLengthOverflow.LevelDB", 0);
+  } else {
+    // Normal origin: no path length issues; underflow buckets.
+    histograms.ExpectUniqueSample("IndexedDB.FilePathLengthOverflow.LevelDB", 0,
+                                  1);
+    histograms.ExpectUniqueSample("IndexedDB.FilePathLengthOverflow.SQLite", 0,
+                                  1);
+  }
+
+  // Open with a super long origin; error.
+  bucket_locator.storage_key = blink::StorageKey::CreateFromStringForTesting(
+      std::string("https://") + std::string(230, 'a') + ".com:81");
+  bucket_locator.id = storage::BucketId::FromUnsafeValue(2);
+  {
+    mojo::Remote<blink::mojom::IDBFactory> factory_remote;
+    mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+        checker_remote;
+    BindFactory(std::move(checker_remote),
+                factory_remote.BindNewPipeAndPassReceiver(),
+                ToBucketInfo(bucket_locator));
+
+    {
+      const int64_t db_version = 1;
+      MockMojoFactoryClient client;
+      MockMojoDatabaseCallbacks database_callbacks;
+      base::RunLoop run_loop;
+      EXPECT_CALL(client, Error)
+          .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
+      mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+      factory_remote->Open(client.CreateInterfacePtrAndBind(),
+                           database_callbacks.CreateInterfacePtrAndBind(),
+                           /*db_name=*/u"db", db_version,
+                           transaction_remote.BindNewEndpointAndPassReceiver(),
+                           /*transaction_id=*/1, /*priority=*/0);
+      run_loop.Run();
+    }
+  }
+
+  if (IsSqliteBackingStoreEnabled()) {
+    histograms.ExpectTotalCount("IndexedDB.FilePathLengthOverflow.LevelDB", 0);
+  } else {
+    // Expect additional logs to both of the histograms. Note that the exact
+    // bucket depends on the length of the temp dir.
+    histograms.ExpectTotalCount("IndexedDB.FilePathLengthOverflow.LevelDB", 2);
+    histograms.ExpectTotalCount("IndexedDB.FilePathLengthOverflow.SQLite", 2);
+
+    // The longest SQLite file name overflows by more than the LevelDB
+    // equivalent.
+    EXPECT_LT(
+        histograms.GetTotalSum("IndexedDB.FilePathLengthOverflow.LevelDB"),
+        histograms.GetTotalSum("IndexedDB.FilePathLengthOverflow.SQLite"));
+  }
+}
+#endif
+
 }  // namespace content::indexed_db
