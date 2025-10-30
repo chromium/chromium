@@ -84,8 +84,6 @@ impl TestType {
 
 #[gtest(MojomParserTestSuit, BoolTest)]
 fn test_bools() {
-    use anyhow::Error;
-
     #[derive(MojomParse, Debug, PartialEq, Copy, Clone)]
     struct TenBoolsAndAByte {
         e0: bool,

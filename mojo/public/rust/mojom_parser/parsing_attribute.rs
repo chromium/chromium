@@ -3,6 +3,14 @@
 // found in the LICENSE file.
 
 //! FOR_RELEASE: Docs
+//!
+//! FOR_RELEASE: Currently, the macro requires that you chomium::import! the
+//! mojom_parser crate, so ensure that all the type names (MojomParse, MojomValue,
+//! etc.) are in scope. To remove this restriction, we could instead qualify each
+//! of them with the absolute path (something like `mojom_parser::MojomValue`).
+//! Unfortunately, chromium mangles the names of the crates (hence the need for
+//! the chromium_import! macro), so the absolute path isn't easy to write, and
+//! we'd need to make sure we stay up to date if the mangling changes.
 
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
@@ -82,9 +90,9 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         }
 
         impl TryFrom<MojomValue> for #name {
-            type Error = anyhow::Error;
+            type Error = ::anyhow::Error;
 
-            fn try_from(value : MojomValue) -> Result<Self, Error> {
+            fn try_from(value : MojomValue) -> ::anyhow::Result<Self> {
                 // FOR_RELEASE: Don't clone here
                 if let MojomValue::Struct(fields) = value.clone() {
                     // Drop the strings, we don't care about them here
@@ -100,7 +108,7 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         #(#from_mojom_value_fields),*
                     })
                 } else {
-                    anyhow::bail!(
+                    ::anyhow::bail!(
                         "Cannot construct a value of type {} from non-struct MojomValue {:?}",
                         std::any::type_name::<#name>(),
                         value
