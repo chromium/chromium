@@ -228,7 +228,6 @@ class TestHistoryBackend : public HistoryBackend {
  public:
   using HistoryBackend::AddPageVisit;
   using HistoryBackend::DeleteAllHistory;
-  using HistoryBackend::DeleteFTSIndexDatabases;
   using HistoryBackend::GetDBForTesting;
   using HistoryBackend::HistoryBackend;
   using HistoryBackend::MarkVisitAsKnownToSync;
@@ -3446,36 +3445,6 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   EXPECT_TRUE(backend_->db()->GetKeywordSearchTermRow(url1_id, nullptr));
   EXPECT_FALSE(backend_->db()->GetKeywordSearchTermRow(url2_id, nullptr));
   EXPECT_FALSE(backend_->db()->GetKeywordSearchTermRow(url3_id, nullptr));
-}
-
-// Test DeleteFTSIndexDatabases deletes expected files.
-TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
-  ASSERT_TRUE(backend_.get());
-
-  base::FilePath history_path(test_dir());
-  base::FilePath db1(history_path.AppendASCII("History Index 2013-05"));
-  base::FilePath db1_journal(db1.InsertBeforeExtensionASCII("-journal"));
-  base::FilePath db1_wal(db1.InsertBeforeExtensionASCII("-wal"));
-  base::FilePath db2_symlink(history_path.AppendASCII("History Index 2013-06"));
-  base::FilePath db2_actual(history_path.AppendASCII("Underlying DB"));
-
-  // Setup dummy index database files.
-  const char* data = "Dummy";
-  ASSERT_TRUE(base::WriteFile(db1, data));
-  ASSERT_TRUE(base::WriteFile(db1_journal, data));
-  ASSERT_TRUE(base::WriteFile(db1_wal, data));
-  ASSERT_TRUE(base::WriteFile(db2_actual, data));
-#if BUILDFLAG(IS_POSIX)
-  EXPECT_TRUE(base::CreateSymbolicLink(db2_actual, db2_symlink));
-#endif
-
-  // Delete all DTS index databases.
-  backend_->DeleteFTSIndexDatabases();
-  EXPECT_FALSE(base::PathExists(db1));
-  EXPECT_FALSE(base::PathExists(db1_wal));
-  EXPECT_FALSE(base::PathExists(db1_journal));
-  EXPECT_FALSE(base::PathExists(db2_symlink));
-  EXPECT_TRUE(base::PathExists(db2_actual));  // Symlinks shouldn't be followed.
 }
 
 // Tests that calling DatabaseErrorCallback doesn't cause crash. (Regression

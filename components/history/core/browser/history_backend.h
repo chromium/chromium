@@ -1067,9 +1067,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // The IDs of the URLs may change.
   bool ClearAllMainHistory(const URLRows& kept_urls);
 
-  // Deletes the FTS index database files, which are no longer used.
-  void DeleteFTSIndexDatabases();
-
   // favicon::FaviconBackendDelegate
   std::vector<GURL> GetCachedRecentRedirectsForPage(
       const GURL& page_url) override;

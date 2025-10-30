@@ -1267,9 +1267,6 @@ void HistoryBackend::InitImpl(
   base::FilePath history_name = history_dir_.Append(kHistoryFilename);
   base::FilePath favicon_name = GetFaviconsFileName();
 
-  // Delete the old index database files which are no longer used.
-  DeleteFTSIndexDatabases();
-
   // History database.
   db_ = std::make_unique<HistoryDatabase>(
       history_database_params.download_interrupt_reason_none,
@@ -2979,18 +2976,6 @@ void HistoryBackend::GetRedirectsToSpecificVisit(VisitID cur_visit,
     }
     visit_set.insert(cur_visit);
     redirects->push_back(cur_url);
-  }
-}
-
-void HistoryBackend::DeleteFTSIndexDatabases() {
-  // Find files on disk matching the text databases file pattern so we can
-  // quickly test for and delete them.
-  base::FilePath::StringType filepattern = FILE_PATH_LITERAL("History Index *");
-  base::FileEnumerator enumerator(history_dir_, false,
-                                  base::FileEnumerator::FILES, filepattern);
-  base::FilePath current_file;
-  while (!(current_file = enumerator.Next()).empty()) {
-    sql::Database::Delete(current_file);
   }
 }
 
