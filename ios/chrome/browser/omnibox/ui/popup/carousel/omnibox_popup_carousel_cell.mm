@@ -155,16 +155,24 @@ UIStackView* CarouselStackView() {
     [self addContentSubviews];
   }
 
-  // Remove all previous items from carousel.
-  while (self.suggestionsStackView.arrangedSubviews.count != 0) {
-    [self.suggestionsStackView.arrangedSubviews
-            .firstObject removeFromSuperview];
-  }
+  void (^updateItemsBlock)(void) = ^{
+    // Remove all previous items from carousel.
+    while (self.suggestionsStackView.arrangedSubviews.count != 0) {
+      [self.suggestionsStackView.arrangedSubviews
+              .firstObject removeFromSuperview];
+    }
 
-  for (CarouselItem* item in carouselItems) {
-    OmniboxPopupCarouselControl* control = [self newCarouselControl];
-    [self.suggestionsStackView addArrangedSubview:control];
-    [control setCarouselItem:item];
+    for (CarouselItem* item in carouselItems) {
+      OmniboxPopupCarouselControl* control = [self newCarouselControl];
+      [self.suggestionsStackView addArrangedSubview:control];
+      [control setCarouselItem:item];
+    }
+  };
+
+  if (IsMultilineBrowserOmniboxEnabled()) {
+    [UIView performWithoutAnimation:updateItemsBlock];
+  } else {
+    updateItemsBlock();
   }
 
   if (static_cast<NSInteger>(carouselItems.count) > self.visibleTilesCapacity) {
