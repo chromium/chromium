@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/find_in_page/find_notification_details.h"
@@ -95,10 +96,10 @@ class TabRestoreTest : public InProcessBrowserTest {
       : active_browser_list_(nullptr),
         animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {
-    url1_ = ui_test_utils::GetTestUrl(
+    url1_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot1.html"));
-    url2_ = ui_test_utils::GetTestUrl(
+    url2_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot2.html"));
   }

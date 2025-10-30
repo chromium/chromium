@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -208,7 +209,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
       Browser* browser,
       const gfx::Size& window_size = gfx::Size(500, 500),
       bool prefer_initial_window_placement = false) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kPictureInPictureDocumentPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        ClosePictureInPictureWhenOpenerNavigates) {
   LoadTabAndEnterPictureInPicture(browser());
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
@@ -531,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* opener_web_contents = window_controller()->GetWebContents();
 
   // Open a new tab.
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -877,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* opener_web_contents = window_controller()->GetWebContents();
 
   // Open a new foreground tab.
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(

@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -86,7 +87,7 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   void LoadTabAndEnterPictureInPicture(
       Browser* browser,
       const gfx::Size& window_size = gfx::Size(300, 300)) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kPictureInPictureDocumentPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));

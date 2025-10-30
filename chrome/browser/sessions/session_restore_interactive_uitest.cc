@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -44,7 +45,7 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
   }
 
   bool SetUpUserDataDirectory() override {
-    url1_ = ui_test_utils::GetTestUrl(
+    url1_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot1.html"));
 

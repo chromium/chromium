@@ -80,6 +80,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -533,7 +534,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
   std::unique_ptr<TestRenderViewContextMenu> SetupAndCreateMenuWithPdfInfo(
       const PdfInfo& info) {
     // Load a pdf page.
-    GURL page_url = ui_test_utils::GetTestUrl(
+    GURL page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("test.pdf")));
     EXPECT_TRUE(LoadPdf(page_url));
@@ -601,7 +602,7 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
   void TestContextMenuOfPdfInsideWebPage(
       const base::FilePath::CharType* file_name) {
     // Load a page with pdf file inside.
-    GURL page_url = ui_test_utils::GetTestUrl(
+    GURL page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("pdf")), base::FilePath(file_name));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
 
@@ -2865,9 +2866,9 @@ class OopifPdfExtensionContextMenuBrowserTest : public PDFExtensionTestBase {
 
 IN_PROC_BROWSER_TEST_F(OopifPdfExtensionContextMenuBrowserTest,
                        DeveloperItems) {
-  GURL page_url =
-      ui_test_utils::GetTestUrl(base::FilePath(FILE_PATH_LITERAL("pdf")),
-                                base::FilePath(FILE_PATH_LITERAL("test.pdf")));
+  GURL page_url = chrome_test_utils::GetTestUrl(
+      base::FilePath(FILE_PATH_LITERAL("pdf")),
+      base::FilePath(FILE_PATH_LITERAL("test.pdf")));
   content::RenderFrameHost* pdf_extension = LoadPdfGetExtensionHost(page_url);
   ASSERT_TRUE(pdf_extension);
 

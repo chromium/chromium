@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -57,19 +58,19 @@ void ClickButton(views::BubbleDialogDelegate* crash_bubble_delegate,
 
 // Urls used for testing.
 GURL GetUrl1() {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
       base::FilePath().AppendASCII("bot1.html"));
 }
 
 GURL GetUrl2() {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
       base::FilePath().AppendASCII("bot2.html"));
 }
 
 GURL GetUrl3() {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
       base::FilePath().AppendASCII("bot3.html"));
 }

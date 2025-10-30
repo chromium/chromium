@@ -12,6 +12,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_view_host.h"
@@ -74,11 +75,11 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
  public:
   ChromeRenderWidgetHostViewMacHistorySwiperTest() {
     const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
-    url1_ = ui_test_utils::GetTestUrl(
+    url1_ = chrome_test_utils::GetTestUrl(
         base_path, base::FilePath(FILE_PATH_LITERAL("text.html")));
-    url2_ = ui_test_utils::GetTestUrl(
+    url2_ = chrome_test_utils::GetTestUrl(
         base_path, base::FilePath(FILE_PATH_LITERAL("blank.html")));
-    url_iframe_ = ui_test_utils::GetTestUrl(
+    url_iframe_ = chrome_test_utils::GetTestUrl(
         base_path, base::FilePath(FILE_PATH_LITERAL("iframe.html")));
   }
 
@@ -623,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
 IN_PROC_BROWSER_TEST_F(ChromeRenderWidgetHostViewMacHistorySwiperTest,
                        InnerScrollersOverscrollBehaviorPreventsNavigation) {
   const base::FilePath base_path(FILE_PATH_LITERAL("scroll"));
-  GURL url_overscroll_behavior = ui_test_utils::GetTestUrl(
+  GURL url_overscroll_behavior = chrome_test_utils::GetTestUrl(
       base_path, base::FilePath(FILE_PATH_LITERAL("overscroll_behavior.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_overscroll_behavior));
   ASSERT_EQ(url_overscroll_behavior, GetWebContents()->GetURL());

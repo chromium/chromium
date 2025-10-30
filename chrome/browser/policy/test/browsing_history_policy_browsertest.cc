@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SavingBrowserHistoryDisabled) {
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
                nullptr);
   UpdateProviderPolicy(policies);
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("empty.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

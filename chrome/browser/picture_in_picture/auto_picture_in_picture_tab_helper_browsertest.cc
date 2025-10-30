@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -410,7 +411,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
   }
 
   void LoadAutoVideoPipPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kAutoVideoPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
@@ -420,7 +421,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
                                std::string_view hostname = {}) {
     GURL test_page_url;
     if (hostname.empty()) {
-      test_page_url = ui_test_utils::GetTestUrl(
+      test_page_url = chrome_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(kAutoDocumentPipPage));
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
@@ -446,7 +447,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
                                 std::string_view hostname = {}) {
     GURL test_page_url;
     if (hostname.empty()) {
-      test_page_url = ui_test_utils::GetTestUrl(
+      test_page_url = chrome_test_utils::GetTestUrl(
           base::FilePath(base::FilePath::kCurrentDirectory),
           base::FilePath(kCameraPage));
       ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
@@ -462,28 +463,28 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
   }
 
   void LoadNotRegisteredPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kNotRegisteredPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
   void LoadAutopipDelayPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kAutopipDelayPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
   void LoadAutopipToggleRegistrationPage(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kAutopipToggleRegistrationPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
   void OpenNewTab(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kBlankPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -492,7 +493,7 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
   }
 
   void OpenPopUp(Browser* browser) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kBlankPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(

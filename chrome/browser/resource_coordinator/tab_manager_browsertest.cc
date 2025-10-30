@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/memory_pressure/fake_memory_pressure_monitor.h"
@@ -598,7 +599,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectVideoTabs) {
 IN_PROC_BROWSER_TEST_P(TabManagerTest,
                        MAYBE_ProtectDevToolsTabsFromDiscarding) {
   // Get two tabs open, the second one being the foreground tab.
-  GURL test_page(ui_test_utils::GetTestUrl(
+  GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   // Open a DevTools window for the first.
@@ -744,7 +745,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest,
 IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs, TabUrgentDiscardAndNavigate) {
   const char kDiscardedStateJS[] = "window.document.wasDiscarded;";
 
-  GURL test_page(ui_test_utils::GetTestUrl(
+  GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
@@ -772,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs,
                        EmitsLatencyMetrics_NoFastShutdown) {
   base::HistogramTester histogram_tester;
 
-  const GURL test_page(ui_test_utils::GetTestUrl(
+  const GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
@@ -803,7 +804,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs,
                        EmitsLatencyMetrics_FastShutdown) {
   base::HistogramTester histogram_tester;
 
-  const GURL test_page(ui_test_utils::GetTestUrl(
+  const GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
 
@@ -835,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs,
 }
 
 IN_PROC_BROWSER_TEST_P(TabManagerTest, DiscardedTabHasNoProcess) {
-  GURL test_page(ui_test_utils::GetTestUrl(
+  GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
   content::WebContents* web_contents = tsm()->GetActiveWebContents();

@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -216,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
       guest_browser->profile(), ServiceAccessType::EXPLICIT_ACCESS));
 
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
 

@@ -90,6 +90,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -162,19 +163,19 @@ using sessions::SerializedNavigationEntryTestHelper;
 namespace {
 
 GURL GetUrl1() {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
       base::FilePath().AppendASCII("bot1.html"));
 }
 
 GURL GetUrl2() {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
       base::FilePath().AppendASCII("bot2.html"));
 }
 
 GURL GetUrl3() {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath().AppendASCII("session_history"),
       base::FilePath().AppendASCII("bot3.html"));
 }
@@ -493,7 +494,7 @@ class SessionRestoreWithURLInCommandLineTest : public SessionRestoreTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SessionRestoreTest::SetUpCommandLine(command_line);
-    command_line_url_ = ui_test_utils::GetTestUrl(
+    command_line_url_ = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(FILE_PATH_LITERAL("title1.html")));
     command_line->AppendArg(command_line_url_.spec());
@@ -539,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoredTabsShouldHaveWindow) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                        RestoredTabsHaveCorrectVisibilityState) {
   // Create tabs.
-  GURL test_page(ui_test_utils::GetTestUrl(
+  GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("tab-restore-visibility.html"))));
   ui_test_utils::NavigateToURLWithDisposition(
@@ -574,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoredTabsHaveCorrectInitialSize) {
   // Create tabs.
-  GURL test_page(ui_test_utils::GetTestUrl(
+  GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("tab-restore-visibility.html"))));
   ui_test_utils::NavigateToURLWithDisposition(
@@ -621,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
   SessionStartupPref pref(SessionStartupPref::DEFAULT);
   SessionStartupPref::SetStartupPref(profile, pref);
 
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
 
@@ -704,12 +705,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NormalAndPopup) {
 #endif
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
                        MAYBE_RestoreIndividualTabFromWindow) {
-  GURL url1(ui_test_utils::GetTestUrl(
+  GURL url1(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
   // Any page that will yield a 200 status code will work here.
   GURL url2(chrome::kChromeUIVersionURL);
-  GURL url3(ui_test_utils::GetTestUrl(
+  GURL url3(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title3.html"))));
 
@@ -792,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 // Verifies we remember the last browser window when closing the last
 // non-incognito window while an incognito window is open.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, IncognitotoNonIncognito) {
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
 
@@ -1800,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
   helper.SetForceBrowserNotAliveWithNoWindows(true);
 
   // Create a new browser by navigating to the test page.
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html")));
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);

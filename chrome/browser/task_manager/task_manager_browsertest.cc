@@ -40,6 +40,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -135,7 +136,7 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   GURL GetTestURL() {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kTitle1File));
   }

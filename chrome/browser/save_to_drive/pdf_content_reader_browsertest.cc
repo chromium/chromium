@@ -16,7 +16,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -56,7 +56,7 @@ class PDFContentReaderBrowserTest : public base::test::WithFeatureOverride,
 };
 
 IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadFullPDF) {
-  GURL page_url = ui_test_utils::GetTestUrl(
+  GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("pdf/accessibility")),
       base::FilePath(FILE_PATH_LITERAL("hello-world-in-image.pdf")));
   auto* extension_frame = LoadPdfGetExtensionHost(page_url);
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadFullPDF) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFContentReaderBrowserTest, ReadInChunks) {
-  GURL page_url = ui_test_utils::GetTestUrl(
+  GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("pdf/accessibility")),
       base::FilePath(FILE_PATH_LITERAL("hello-world-in-image.pdf")));
   auto* extension_frame = LoadPdfGetExtensionHost(page_url);
