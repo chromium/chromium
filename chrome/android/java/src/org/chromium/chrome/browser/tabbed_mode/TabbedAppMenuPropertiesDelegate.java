@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -78,6 +79,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -296,7 +298,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         if (shouldShowRecentTabsItem()) modelList.add(buildRecentTabsItem());
 
         // Extensions
-        if (shouldShowExtensionsItem()) modelList.add(buildExtensionsItem());
+        if (shouldShowExtensionsItem()) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+                modelList.add(buildExtensionsParentItem());
+            } else {
+                modelList.add(buildExtensionsItem());
+            }
+        }
 
         // Divider
         modelList.add(
@@ -681,12 +689,64 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private MVCListAdapter.ListItem buildExtensionsItem() {
         assert shouldShowExtensionsItem();
+
+        // The id {@code R.id.extensions_menu_id} is used for both when this flag is enabled and
+        // disabled but in different context.
+        assert !ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
+
         return new MVCListAdapter.ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.extensions_menu_id,
                         R.string.menu_extensions,
                         shouldShowIconBeforeItem() ? R.drawable.ic_extension_24dp : 0));
+    }
+
+    private MVCListAdapter.ListItem buildExtensionsParentItem() {
+        assert shouldShowExtensionsItem();
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(buildManageExtensionsItem());
+        submenuItems.add(buildChromeWebstoreItem());
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.extensions_parent_menu_id,
+                        R.string.menu_extensions,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_extension_24dp
+                                : Resources.ID_NULL,
+                        submenuItems));
+    }
+
+    private MVCListAdapter.ListItem buildManageExtensionsItem() {
+        assert shouldShowExtensionsItem();
+
+        // The id {@code R.id.extensions_menu_id} is used for both when this flag is enabled and
+        // disabled but in different context.
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
+
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.extensions_menu_id,
+                        R.string.menu_manage_extensions,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_extension_24dp
+                                : Resources.ID_NULL));
+    }
+
+    private MVCListAdapter.ListItem buildChromeWebstoreItem() {
+        assert shouldShowExtensionsItem();
+        return new MVCListAdapter.ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.extensions_webstore_menu_id,
+                        R.string.menu_chrome_webstore,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_webstore_menu
+                                : Resources.ID_NULL));
     }
 
     private boolean shouldShowPageZoomItem(Tab currentTab) {
