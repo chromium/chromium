@@ -186,7 +186,8 @@ def update_about_flags_mm(content, feature_name):
      FEATURE_VALUE_TYPE({feature_flag_name})
     }},
 """
-    array_start_str = "const flags_ui::FeatureEntry kFeatureEntries[] = {"
+    array_start_str = ("constexpr auto kFeatureEntries = "
+                       "std::to_array<flags_ui::FeatureEntry>({")
     array_start_index = content.find(array_start_str)
     if array_start_index == -1:
         print("Error: Could not find the start of the kFeatureEntries array.")
@@ -198,7 +199,7 @@ def update_about_flags_mm(content, feature_name):
         print("Error: Could not find '{' for kFeatureEntries array.")
         sys.exit(1)
 
-    end_of_array_marker = "};"
+    end_of_array_marker = "});"
     insertion_index = content.find(end_of_array_marker, array_start_index)
     if insertion_index == -1:
         print("Error: Could not find the end of the kFeatureEntries array.")
