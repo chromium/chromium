@@ -32,7 +32,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   // Checks the complexity of the given password according to the policy and
   // returns true if the password passes the complexity check and false
   // otherwise.
-  static bool CheckPasswordComplexity(std::string_view password);
+  static bool CheckPasswordComplexity(std::string_view password,
+                                      LocalAuthFactorsComplexity complexity);
 
   // Checks the complexity of the given pin according to the policy and returns
   // true if the pin passes the complexity check and false otherwise.

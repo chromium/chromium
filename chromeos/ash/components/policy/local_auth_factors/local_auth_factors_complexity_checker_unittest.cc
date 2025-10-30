@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity_checker.h"
 
 #include <string>
+#include <string_view>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -12,16 +13,73 @@ namespace policy {
 
 using Complexity = LocalAuthFactorsComplexity;
 
-TEST(LocalAuthFactorsComplexityCheckerTest, Password) {
-  EXPECT_TRUE(
-      LocalAuthFactorsComplexityChecker::CheckPasswordComplexity("password"));
+TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
+  const struct TestData {
+    std::string test_name;
+    std::string_view password;
+    Complexity complexity;
+    bool expected_result;
+  } kTestData[] = {
+      // kNone tests (Length >= 1).
+      {"NoneEmpty", "", Complexity::kNone, false},
+      {"NoneShort", "z", Complexity::kNone, true},
+      {"NoneLong", "a9B!qPz~wO", Complexity::kNone, true},
+      {"NoneAnyChar", "@", Complexity::kNone, true},
+
+      // kLow tests (Length >= 6, must not be all digits).
+      {"LowTooShort", "aB1!", Complexity::kLow, false},
+      {"LowJustEnoughAllDigit", "987654", Complexity::kLow, false},
+      {"LowJustEnoughWithLower", "pqrstu", Complexity::kLow, true},
+      {"LowJustEnoughWithUpper", "ZYXWVU", Complexity::kLow, true},
+      {"LowJustEnoughWithSymbol", "$%^&*()", Complexity::kLow, true},
+      {"LowJustEnoughMixedAlpha", "KzFwXm", Complexity::kLow, true},
+      {"LowJustEnoughMixedAll", "jHkS;2", Complexity::kLow, true},
+      {"LowLong", "QuErTyUiOp", Complexity::kLow, true},
+      {"LowMixedChars", "P@sswOrd", Complexity::kLow, true},
+
+      // kMedium tests (Length >= 8, >= 2 character classes).
+      {"MediumTooShort", "aB1!dEf", Complexity::kMedium, false},
+      {"MediumJustEnough1ClassLower", "qwertyui", Complexity::kMedium, false},
+      {"MediumJustEnough1ClassUpper", "ASDFGHJK", Complexity::kMedium, false},
+      {"MediumJustEnough1ClassDigit", "19283746", Complexity::kMedium, false},
+      {"MediumJustEnough1ClassSymbol", "~!@#$%^&", Complexity::kMedium, false},
+      {"MediumJustEnough2ClassLU", "PqRstUvW", Complexity::kMedium, true},
+      {"MediumJustEnough2ClassLD", "mnbvcxz1", Complexity::kMedium, true},
+      {"MediumJustEnough2ClassLS", "lkjhgfd?", Complexity::kMedium, true},
+      {"MediumJustEnough2ClassUD", "ZXCVBNM8", Complexity::kMedium, true},
+      {"MediumJustEnough2ClassUS", "QAZWSXED:", Complexity::kMedium, true},
+      {"MediumJustEnough2ClassDS", "74185296+", Complexity::kMedium, true},
+      {"MediumJustEnough3ClassLUD", "xYxYzZa1", Complexity::kMedium, true},
+      {"MediumJustEnough3ClassLUS", "aBcDeFg@", Complexity::kMedium, true},
+      {"MediumJustEnough4ClassLUNDS", "JkLmnop7$", Complexity::kMedium, true},
+      {"MediumLong2Class", "zxcvbnm,./1", Complexity::kMedium, true},
+
+      // kHigh tests (Length >= 12, all 4 character classes).
+      {"HighTooShort", "aB1!dEfGhIj", Complexity::kHigh, false},
+      {"HighJustEnoughNoDigit", "PqRsTuVwXyZ!", Complexity::kHigh, false},
+      {"HighJustEnoughNoLower", "ASDFGHJK123$", Complexity::kHigh, false},
+      {"HighJustEnoughNoUpper", "zxcvbnm123?/", Complexity::kHigh, false},
+      {"HighJustEnoughNoSymbol", "QwErTyUiOp12", Complexity::kHigh, false},
+      {"HighJustEnoughAll4", "aB1!dEfGhIjK", Complexity::kHigh, true},
+      {"HighLongAll4", "mYpA55wOrd!sVeRy5eCuRe", Complexity::kHigh, true},
+      {"HighVar1", "G00gL3%P@$$wOrd", Complexity::kHigh, true},
+      {"HighVar2", "1s~Th1s_L0ng_En0ugH", Complexity::kHigh, true},
+      {"HighVar3", "cOmPlExItY-Rul3z!23", Complexity::kHigh, true},
+  };
+
+  for (const auto& t : kTestData) {
+    EXPECT_EQ(t.expected_result,
+              LocalAuthFactorsComplexityChecker::CheckPasswordComplexity(
+                  t.password, t.complexity))
+        << "Test case: " << t.test_name;
+  }
 }
 
 TEST(LocalAuthFactorsComplexityCheckerTest, PinComplexity) {
   const struct TestData {
     std::string test_name;
     std::string_view pin;
-    LocalAuthFactorsComplexity complexity;
+    Complexity complexity;
     bool expected_result;
   } kTestData[] = {
       // Non-digit tests.
