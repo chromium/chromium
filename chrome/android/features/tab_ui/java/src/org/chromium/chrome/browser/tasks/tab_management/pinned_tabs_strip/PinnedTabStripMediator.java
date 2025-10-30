@@ -27,6 +27,7 @@ import androidx.annotation.Px;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -162,8 +163,17 @@ public class PinnedTabStripMediator {
                     }
 
                     @Override
-                    public void tabClosureUndone(Tab tab) {
+                    public void onTabClosePending(
+                            List<Tab> tabs, boolean isAllTabs, int closingSource) {
                         updatePinnedTabsBar();
+                    }
+
+                    @Override
+                    public void tabClosureUndone(Tab tab) {
+                        // We rely on tab list model for updating the pinned tabs, which could be
+                        // updated async when the observers are fired during undone. Hence we post
+                        // the task to queue to trigger the UI update correctly.
+                        ThreadUtils.postOnUiThread(() -> updatePinnedTabsBar());
                     }
 
                     @Override
