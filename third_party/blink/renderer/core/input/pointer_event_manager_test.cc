@@ -729,6 +729,37 @@ TEST_F(PanActionPointerEventTest, PanActionMoveCursor) {
   ASSERT_EQ(widget->LastPanAction(), PanAction::kMoveCursorOrScroll);
 }
 
+TEST_F(PanActionPointerEventTest, PanActionAdjustedForStylus) {
+  ScopedStylusHandwritingForTest stylus_handwriting(true);
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <input type=text style='width: 100px; height: 100px;'>
+  )HTML");
+
+  const gfx::PointF point(120, 120);
+  PanActionTrackingWebFrameWidget* widget = GetWidget();
+
+  // Expect pan action to result in a scroll.
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kNone);
+  GetEventHandler().GetPointerEventManagerForTesting()->SetHandwritingRadius(
+      20);
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen, point),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  test::RunPendingTasks();
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kScroll);
+
+  // Expect pan action to be considered as writable due to a positive proximity
+  // hit test.
+  GetEventHandler().GetPointerEventManagerForTesting()->SetHandwritingRadius(
+      30);
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen, point),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  test::RunPendingTasks();
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);
+}
+
 TEST_F(PanActionPointerEventTest, PanActionNoneAndScroll) {
   ScopedStylusHandwritingForTest stylus_handwriting(true);
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));

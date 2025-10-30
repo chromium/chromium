@@ -16,6 +16,10 @@
 #include "base/no_destructor.h"
 #include "content/common/content_export.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace base {
 class ScopedClosureRunner;
 }
@@ -83,6 +87,10 @@ class CONTENT_EXPORT StylusHandwritingControllerWin {
   // ThreadManager.
   static bool BindInterfacesCalledForTesting();
 
+  // The maximum distance in DIPs outside an element's bounding box which a
+  // stylus input may be considered for the purposes of starting handwriting.
+  int GetStylusHandwritingToleranceInDips(aura::Window& window) const;
+
   // Notify the Shell Handwriting API about the intent to write. At this point,
   // we delegate the input processing to the API which starts inking. After
   // intent is confirmed, the API will request that focus is updated by calling
@@ -110,8 +118,13 @@ class CONTENT_EXPORT StylusHandwritingControllerWin {
   // Binds required API interfaces if available.
   void BindInterfaces();
 
+  // API reference:
+  // https://learn.microsoft.com/en-us/windows/win32/api/shellhandwriting/nn-shellhandwriting-itfhandwritingsink
   Microsoft::WRL::ComPtr<StylusHandwritingCallbackSinkWin>
       handwriting_callback_sink_;
+
+  // API reference:
+  // https://learn.microsoft.com/en-us/windows/win32/api/shellhandwriting/nn-shellhandwriting-itfhandwriting
   Microsoft::WRL::ComPtr<::ITfHandwriting> handwriting_;
 };
 

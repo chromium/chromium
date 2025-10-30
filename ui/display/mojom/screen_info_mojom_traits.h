@@ -26,6 +26,10 @@ struct COMPONENT_EXPORT(DISPLAY_SHARED_MOJOM_TRAITS)
 
   static int depth(const display::ScreenInfo& r) { return r.depth; }
 
+  static int handwriting_radius(const display::ScreenInfo& r) {
+    return r.handwriting_radius;
+  }
+
   static int depth_per_component(const display::ScreenInfo& r) {
     return r.depth_per_component;
   }

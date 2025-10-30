@@ -92,6 +92,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
     pointer_event_manager_->NodeWillBeRemoved(node);
   }
 
+  PointerEventManager* GetPointerEventManagerForTesting() {
+    return pointer_event_manager_;
+  }
+
   void UpdateSelectionForMouseDrag();
   void StartMiddleClickAutoscroll(LayoutObject*);
 

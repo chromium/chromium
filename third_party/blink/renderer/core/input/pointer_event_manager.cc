@@ -406,6 +406,16 @@ bool PointerEventManager::ShouldAdjustStylusPointerEvent(
              WebPointerProperties::PointerType::kEraser;
 }
 
+void PointerEventManager::SetHandwritingRadius(int handwriting_radius) {
+  if ((handwriting_radius_.value_or(0) != handwriting_radius) &&
+      handwriting_radius > 0) {
+    // TODO(crbug.com/455656777): On the cc side, we calculate the TouchAction
+    // based on kStylusWritingHitTestRadius. It needs to use
+    // handwriting_radius_. This is currently WIP.
+    handwriting_radius_ = handwriting_radius;
+  }
+}
+
 void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
   DCHECK(
       pointer_event.pointer_type == WebPointerProperties::PointerType::kTouch ||
@@ -426,12 +436,17 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
   } else {
     // Calculate adjustment size for stylus tool types.
     ChromeClient& chrome_client = frame_->GetChromeClient();
-    float device_scale_factor =
-        chrome_client.GetScreenInfo(*frame_).device_scale_factor;
+    auto& screen_info = chrome_client.GetScreenInfo(*frame_);
+    float device_scale_factor = screen_info.device_scale_factor;
+    SetHandwritingRadius(screen_info.handwriting_radius);
 
+    DCHECK(pointer_event.pointer_type ==
+               WebPointerProperties::PointerType::kPen ||
+           pointer_event.pointer_type ==
+               WebPointerProperties::PointerType::kEraser);
     float page_scale_factor = frame_->GetPage()->PageScaleFactor();
     adjustment_width = adjustment_height =
-        kStylusWritableAdjustmentSizeDip *
+        handwriting_radius_.value_or(kStylusWritableAdjustmentSizeDip) *
         (device_scale_factor / page_scale_factor);
   }
 

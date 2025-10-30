@@ -78,6 +78,7 @@ class CORE_EXPORT PointerEventManager final
   void ElementRemoved(Element*);
 
   void NodeWillBeRemoved(Node& node_to_be_removed);
+  void SetHandwritingRadius(int handwriting_radius);
 
   // Starts capturing of all events with the given |PointerId| to the given
   // |Element|.
@@ -293,6 +294,10 @@ class CORE_EXPORT PointerEventManager final
   Member<PointerEventFactory> pointer_event_factory_;
   Member<TouchEventManager> touch_event_manager_;
   Member<MouseEventManager> mouse_event_manager_;
+
+  // The area around an editable region where handwriting should still be
+  // possible.
+  std::optional<int> handwriting_radius_;
 
   // These flags are set for the SkipTouchEventFilter experiment. The
   // experiment either skips filtering discrete (touch start/end) events to the

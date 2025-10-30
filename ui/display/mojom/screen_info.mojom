@@ -25,6 +25,10 @@ struct ScreenInfo {
   // The screen depth in bits per pixel.
   uint32 depth;
 
+  // The area around an editable region where handwriting should still be
+  // possible. This value is in DIPS.
+  int32 handwriting_radius;
+
   // The bits per colour component. This assumes that the colours are balanced
   // equally.
   uint32 depth_per_component;

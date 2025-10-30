@@ -622,6 +622,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   float scale_override_for_capture_ = 1.0f;
 
+  // The area around an editable region where handwriting should still be
+  // possible.
+  int handwriting_radius_ = 0;
+
   // Indicates whether keyboard lock is active for this view.
   bool keyboard_locked_ = false;
 

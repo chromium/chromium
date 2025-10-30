@@ -457,6 +457,7 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
   }
 
   auto new_screen_infos = GetNewScreenInfosForUpdate();
+  new_screen_infos.mutable_current().handwriting_radius = handwriting_radius_;
 
   if (scale_override_for_capture_ != 1.0f) {
     // If HiDPI capture mode is active, adjust the device scale factor to

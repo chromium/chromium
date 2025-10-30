@@ -11,7 +11,10 @@
 #include "components/stylus_handwriting/win/features.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/win/tsf_bridge.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/events/win/stylus_handwriting_properties_win.h"
 
 namespace content {
@@ -133,11 +136,27 @@ StylusHandwritingControllerWin::GetCallbackSinkForTesting() const {
   return handwriting_callback_sink_;
 }
 
+int StylusHandwritingControllerWin::GetStylusHandwritingToleranceInDips(
+    aura::Window& window) const {
+  SIZE screen_size;
+
+  // https://learn.microsoft.com/en-us/windows/win32/api/shellhandwriting/nf-shellhandwriting-itfhandwriting-gethandwritingdistancethreshold
+  // TODO(crbug.com/355578906): Check with the Windows OS team if this value can
+  // be 0.
+  handwriting_->GetHandwritingDistanceThreshold(&screen_size);
+  gfx::Size dip_size(display::win::GetScreenWin()->ScreenToDIPSize(
+      window.GetHost()->GetAcceleratedWidget(),
+      gfx::Size(screen_size.cx, screen_size.cy)));
+  return std::max(dip_size.width(), dip_size.height());
+}
+
 void StylusHandwritingControllerWin::OnStartStylusWriting(
     OnFocusHandwritingTargetCallback callback,
     const ui::StylusHandwritingPropertiesWin& properties) {
   BOOL accepted;
   Microsoft::WRL::ComPtr<ITfHandwritingRequest> handwriting_request = nullptr;
+
+  // https://learn.microsoft.com/en-us/windows/win32/api/shellhandwriting/nf-shellhandwriting-itfhandwriting-requesthandwritingforpointer
   HRESULT hr = handwriting_->RequestHandwritingForPointer(
       properties.handwriting_pointer_id, properties.handwriting_stroke_id,
       &accepted, &handwriting_request);
@@ -172,6 +191,7 @@ void StylusHandwritingControllerWin::BindInterfaces() {
   CHECK(!g_instance);
   g_bind_interfaces_called_for_testing = true;
   if (const auto thread_manager = GetThreadManager()) {
+    // https://learn.microsoft.com/en-us/windows/win32/api/shellhandwriting/nf-shellhandwriting-itfhandwriting-sethandwritingstate
     const bool initialized_successfully =
         SUCCEEDED(thread_manager.As(&handwriting_)) &&
         SUCCEEDED(handwriting_->SetHandwritingState(
