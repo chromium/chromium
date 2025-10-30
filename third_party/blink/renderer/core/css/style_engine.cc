@@ -2855,6 +2855,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
   DCHECK(global_rule_set_);
   HeapHashSet<Member<RuleSet>> changed_rule_sets;
 
+  bool invalidated_fonts = false;
+
   ActiveSheetsChange change = CompareActiveStyleSheets(
       old_style_sheets, new_style_sheets, /*diffs=*/{}, changed_rule_sets);
 
@@ -2900,8 +2902,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
       bool has_rebuilt_font_face_cache =
           ClearFontFaceCacheAndAddUserFonts(new_style_sheets);
       if (has_rebuilt_font_face_cache) {
-        GetFontSelector()->FontFaceInvalidated(
-            FontInvalidationReason::kGeneralInvalidation);
+        invalidated_fonts = true;
       }
     }
   }
@@ -2987,6 +2988,13 @@ void StyleEngine::ApplyUserRuleSetChanges(
 
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
+
+  // We're deferring the font face invalidation because when it reaches the
+  // inspector, it may cause another style update which re-enters this method.
+  if (invalidated_fonts) {
+    GetFontSelector()->FontFaceInvalidated(
+        FontInvalidationReason::kGeneralInvalidation);
+  }
 }
 
 void StyleEngine::ApplyRuleSetChanges(
@@ -3002,6 +3010,7 @@ void StyleEngine::ApplyRuleSetChanges(
 
   unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
 
+  bool invalidated_fonts = false;
   bool rebuild_font_face_cache = change == kActiveSheetsChanged &&
                                  (changed_rule_flags & kFontFaceRules) &&
                                  tree_scope.RootNode().IsDocumentNode();
@@ -3108,8 +3117,7 @@ void StyleEngine::ApplyRuleSetChanges(
         (changed_rule_flags & kFontPaletteValuesRules) ||
         (changed_rule_flags & kFontFeatureValuesRules) ||
         has_rebuilt_font_face_cache) {
-      GetFontSelector()->FontFaceInvalidated(
-          FontInvalidationReason::kGeneralInvalidation);
+      invalidated_fonts = true;
     }
   }
 
@@ -3140,6 +3148,10 @@ void StyleEngine::ApplyRuleSetChanges(
 
   InvalidateForRuleSetChanges(tree_scope, changed_rule_sets, changed_rule_flags,
                               kInvalidateCurrentScope);
+  if (invalidated_fonts) {
+    GetFontSelector()->FontFaceInvalidated(
+        FontInvalidationReason::kGeneralInvalidation);
+  }
 }
 
 void StyleEngine::LoadVisionDeficiencyFilter() {
