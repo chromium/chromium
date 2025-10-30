@@ -108,6 +108,11 @@ class NavigationWaiter : content::WebContentsObserver {
   }
 
   void RunCallback() {
+    // The callback should be called only once.
+    if (callback_.is_null()) {
+      return;
+    }
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));
   }
