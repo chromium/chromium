@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/input/utils.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
@@ -528,8 +529,7 @@ void HostFrameSinkManager::OnScreenshotCaptured(
   }
   auto callback = std::move(it->second);
   screenshot_destinations_.erase(it);
-  std::move(callback).Run(
-      copy_output_result->ScopedAccessSkBitmap().GetOutScopedBitmap());
+  std::move(callback).Run(std::move(copy_output_result));
 }
 
 #if BUILDFLAG(IS_ANDROID)

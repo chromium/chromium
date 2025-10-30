@@ -24,6 +24,8 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBcivBottomControls);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidBrowserControlsInViz);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDumpForBadCompositedUiState);
 #endif  // BUILDFLAG(IS_ANDROID)
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBackForwardTransitionsSameDocSharedImage);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackdropFilterMirrorEdgeMode);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelegatedCompositing);
 
@@ -154,6 +156,7 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisplaySchedulerAsClient);
 
 VIZ_COMMON_EXPORT int DrawQuadSplitLimit();
+VIZ_COMMON_EXPORT bool IsBackForwardTransitionsSameDocSharedImageEnabled();
 VIZ_COMMON_EXPORT bool IsBackdropFiltersCullingOptimizationEnabled();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsVizDirectCompositorThreadIpcNonRootEnabled();

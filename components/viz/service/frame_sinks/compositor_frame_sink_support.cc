@@ -890,9 +890,13 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     // If that happens, we will rely on the GC of the current surface to remove
     // the reference.
     if (has_copy_request_against_prev_surface) {
+      using ResultDestination = CopyOutputRequest::ResultDestination;
+      auto destination =
+          features::IsBackForwardTransitionsSameDocSharedImageEnabled()
+              ? ResultDestination::kSharedImage
+              : ResultDestination::kSystemMemory;
       auto copy_request = std::make_unique<CopyOutputRequest>(
-          CopyOutputRequest::ResultFormat::RGBA,
-          CopyOutputRequest::ResultDestination::kSystemMemory,
+          CopyOutputRequest::ResultFormat::RGBA, destination,
           base::BindOnce(
               &RemoveSurfaceReferenceAndDispatchCopyOutputRequestCallback,
               frame_sink_manager_->GetWeakPtr(), surface_info.id(),

@@ -60,6 +60,11 @@ BASE_FEATURE(kAndroidDumpForBadCompositedUiState,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// When there is a screenshot request against a surface, issue the copy request
+// into a shared image.
+BASE_FEATURE(kBackForwardTransitionsSameDocSharedImage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBackdropFilterMirrorEdgeMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseDrmBlackFullscreenOptimization,
@@ -395,6 +400,11 @@ int DrawQuadSplitLimit() {
       kDrawQuadSplitLimit, kDrawQuadSplit, kDefaultDrawQuadSplitLimit);
   return std::clamp(split_limit, kMinDrawQuadSplitLimit,
                     kMaxDrawQuadSplitLimit);
+}
+
+bool IsBackForwardTransitionsSameDocSharedImageEnabled() {
+  return base::FeatureList::IsEnabled(
+      kBackForwardTransitionsSameDocSharedImage);
 }
 
 bool IsBackdropFiltersCullingOptimizationEnabled() {
