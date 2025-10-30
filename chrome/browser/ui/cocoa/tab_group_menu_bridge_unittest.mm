@@ -180,7 +180,6 @@ TEST_F(TabGroupMenuBridgeTest, SubmenuHasCorrectItems) {
 
 TEST_F(TabGroupMenuBridgeTest, ClickingTabOpensUrl) {
   TabGroupMenuBridge bridge(profile(), service());
-  bridge.SetActiveBrowser(browser());
 
   AddGroup(u"Group 1", tab_groups::TabGroupColorId::kGrey,
            {GURL("https://a.com")});

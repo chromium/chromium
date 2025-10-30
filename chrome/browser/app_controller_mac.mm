@@ -1068,10 +1068,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   [self setLastProfile:profile];
   _lastActiveColorProvider = browser->window()->GetColorProvider();
-
-  if (_tabGroupMenuBridge) {
-    _tabGroupMenuBridge->SetActiveBrowser(browser);
-  }
 }
 
 // Called when shutting down or logging out.

@@ -18,7 +18,6 @@
 using TabGroupMenuAction = tab_groups::TabGroupMenuAction;
 
 @class MenuItemListener;
-class Browser;
 class Profile;
 
 namespace favicon {
@@ -54,8 +53,6 @@ class TabGroupMenuBridge : public MainMenuItem,
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
 
-  void SetActiveBrowser(Browser* browser);
-
  protected:
   virtual NSMenu* TabGroupsMenu();
 
@@ -75,9 +72,6 @@ class TabGroupMenuBridge : public MainMenuItem,
   const raw_ptr<Profile> profile_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_service_;
   const raw_ptr<favicon::FaviconService> favicon_service_;
-
-  // Active browser. Used to open/delete tab groups.
-  raw_ptr<Browser> browser_;
 
   // Make sure favicon requests are cancelled when the menu is recreated or the
   // class is destroyed.
