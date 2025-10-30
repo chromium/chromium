@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -27,6 +29,15 @@ namespace {
 // The address of this variable is used as the user data key.
 static const int kAutofillValuableMetadataSyncBridgeUserDataKey = 0;
 
+// Returns whether the orphan metadata entry is old enough to be deleted.
+bool IsOrphanValuableMetadataEntryDeletable(
+    const EntityInstance::EntityMetadata& metadata) {
+  static constexpr base::TimeDelta kDisusedEntityMetadataDeletionTimeDelta =
+      base::Days(365);
+  return metadata.use_date <
+         base::Time::Now() - kDisusedEntityMetadataDeletionTimeDelta;
+}
+
 }  // namespace
 
 ValuableMetadataSyncBridge::ValuableMetadataSyncBridge(
@@ -43,6 +54,7 @@ ValuableMetadataSyncBridge::ValuableMetadataSyncBridge(
 
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata));
   LoadMetadata();
+  DeleteOrphanMetadata();
   scoped_observation_.Observe(web_data_backend_.get());
 }
 
@@ -108,6 +120,57 @@ void ValuableMetadataSyncBridge::UploadInitialLocalData(
         CreateEntityDataFromEntityMetadata(stored_metadata[storage_key]),
         metadata_change_list);
   }
+}
+
+void ValuableMetadataSyncBridge::DeleteOrphanMetadata() {
+  if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
+      !GetEntityTable()) {
+    // We have a problem with the database, not an issue, we clean up next time.
+    return;
+  }
+
+  // Load up (metadata) ids for which data exists; we do not delete those.
+  std::vector<EntityInstance> server_entities =
+      GetEntityTable()->GetEntityInstances(
+          EntityInstance::RecordType::kServerWallet);
+  auto non_orphan_ids = base::MakeFlatSet<EntityInstance::EntityId>(
+      server_entities, {}, &EntityInstance::guid);
+
+  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
+  std::unique_ptr<sql::Transaction> transaction;
+  int removed_count = 0;
+  for (const auto& [storage_key, metadata] :
+       GetEntityTable()->GetSyncedMetadata()) {
+    // Identify storage keys of old orphans, remove them from the local storage
+    // and the server.
+    if (!non_orphan_ids.contains(storage_key) &&
+        IsOrphanValuableMetadataEntryDeletable(metadata)) {
+      if (!transaction) {
+        transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+      }
+      if (GetEntityTable()->RemoveEntityMetadata(storage_key)) {
+        change_processor()->Delete(
+            *storage_key, syncer::DeletionOrigin::FromLocation(FROM_HERE),
+            metadata_change_list.get());
+        removed_count++;
+      }
+    }
+  }
+
+  base::UmaHistogramCounts100(
+      "Autofill.ValuableMetadata.OrphanEntriesRemovedCount", removed_count);
+
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
+  web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+  // We do not need to NotifyOnAutofillChangedBySync() because this change is
+  // invisible for the EntityDataManager - it does not change metadata for any
+  // existing data.
 }
 
 std::optional<syncer::ModelError> ValuableMetadataSyncBridge::MergeFullSyncData(
