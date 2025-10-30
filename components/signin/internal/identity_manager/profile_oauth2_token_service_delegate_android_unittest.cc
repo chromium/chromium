@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,6 +74,11 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     // verify them.
     EXPECT_CALL(*observer_, OnEndBatchChanges).Times(testing::AnyNumber());
     CreateAndSeedAccounts();
+
+    // `LoadCredentials` should happen before
+    // `SeedAccountsThenReloadAllAccountsWithPrimaryAccount` is invoked.
+    EXPECT_CALL(*observer_, OnRefreshTokensLoaded());
+    delegate_->LoadCredentials(CoreAccountId());
   }
 
   AccountTrackerService CreateAccountTrackerService() {

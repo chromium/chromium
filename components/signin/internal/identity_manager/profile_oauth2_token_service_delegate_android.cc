@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -318,6 +319,18 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
     fire_refresh_token_loaded_ = RT_LOADED;
     FireRefreshTokensLoaded();
   } else if (fire_refresh_token_loaded_ == RT_LOAD_NOT_START) {
+    // `LoadCredentials` should be invoked before SigninManagerImpl is created.
+    // Otherwise, it might create a weird situation when a sign-out needs to be
+    // triggered before `LoadCredentials` is invoked. In reality, this invariant
+    // should always be true, as `SigninManagerImpl depends on IdentityManager,
+    // which in turn triggers loading tokens in its creation process. This check
+    // ensures that this invariant doesn't change in the future.
+    //
+    // TODO(crbug.com/455610913): Remove `RT_HAS_BEEN_VALIDATED` after M147.
+    if (base::FeatureList::IsEnabled(
+            switches::kMakeAccountsAvailableInIdentityManager)) {
+      NOTREACHED(base::NotFatalUntil::M147);
+    }
     fire_refresh_token_loaded_ = RT_HAS_BEEN_VALIDATED;
   }
 }
@@ -427,7 +440,9 @@ void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(
             load_credentials_state());
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
-  if (primary_account_id.empty()) {
+  if (primary_account_id.empty() &&
+      !base::FeatureList::IsEnabled(
+          switches::kMakeAccountsAvailableInIdentityManager)) {
     FireRefreshTokensLoaded();
     return;
   }
