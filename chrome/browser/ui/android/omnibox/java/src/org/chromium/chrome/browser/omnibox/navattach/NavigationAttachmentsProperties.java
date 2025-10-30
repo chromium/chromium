@@ -73,6 +73,10 @@ class NavigationAttachmentsProperties {
     public static final WritableBooleanPropertyKey RECENT_TABS_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Whether to show the dedicated AIMode button directly in the Fusebox. */
+    public static final WritableBooleanPropertyKey SHOW_DEDICATED_MODE_BUTTON =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         ADAPTER,
         ADD_BUTTON_VISIBLE,
@@ -88,6 +92,7 @@ class NavigationAttachmentsProperties {
         POPUP_CLIPBOARD_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,
-        RECENT_TABS_HEADER_VISIBLE
+        RECENT_TABS_HEADER_VISIBLE,
+        SHOW_DEDICATED_MODE_BUTTON
     };
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
+import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.StringRes;
@@ -41,7 +42,7 @@ class NavigationAttachmentsViewBinder {
                                         R.string.accessibility_omnibox_reset_mode,
                                         view.requestType.getResources().getString(res)));
             }
-            view.requestType.setVisibility(res == 0 ? View.GONE : View.VISIBLE);
+            updateModeSelectorVisibility(model, view);
         } else if (propertyKey
                 == NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
             view.requestType.setOnClickListener(
@@ -93,6 +94,35 @@ class NavigationAttachmentsViewBinder {
                     model.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON) {
+            updateModeSelectorVisibility(model, view);
         }
+    }
+
+    static void updateModeSelectorVisibility(
+            PropertyModel model, NavigationAttachmentsViewHolder views) {
+        boolean showDedicatedModeButton =
+                model.get(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON);
+        boolean isAiModeEnabled =
+                model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
+                        == AutocompleteRequestType.AI_MODE;
+        Resources res = views.requestType.getResources();
+
+        views.requestType.setVisibility(
+                isAiModeEnabled || showDedicatedModeButton ? View.VISIBLE : View.GONE);
+
+        views.requestType.setButtonColor(
+                isAiModeEnabled
+                        ? res.getColorStateList(R.color.gm3_baseline_surface_container)
+                        : res.getColorStateList(android.R.color.transparent));
+
+        views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                res.getDrawable(R.drawable.search_spark_black_24dp),
+                null,
+                isAiModeEnabled ? res.getDrawable(R.drawable.btn_close) : null,
+                null);
+
+        views.popup.mAutocompleteRequestTypeGroup.setVisibility(
+                showDedicatedModeButton ? View.GONE : View.VISIBLE);
     }
 }

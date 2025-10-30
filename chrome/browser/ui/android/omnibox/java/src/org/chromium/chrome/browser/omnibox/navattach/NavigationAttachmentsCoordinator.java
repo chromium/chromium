@@ -43,7 +43,6 @@ public class NavigationAttachmentsCoordinator
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier =
                     new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
-    private final boolean mAimToggleOnly;
     private final PropertyModel mModel;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
@@ -71,12 +70,10 @@ public class NavigationAttachmentsCoordinator
                 || parent.findViewById(R.id.location_bar_attachments_toolbar) == null) {
             mViewHolder = null;
             mLocationBarDataProvider = null;
-            mAimToggleOnly = false;
             mModel = new PropertyModel();
             return;
         }
 
-        mAimToggleOnly = OmniboxFeatures.sAimToggleOnly.getValue();
         mLocationBarDataProvider = locationBarDataProvider;
         templateUrlServiceSupplier.onAvailable(this::onTemplateUrlServiceAvailable);
 
@@ -95,9 +92,15 @@ public class NavigationAttachmentsCoordinator
                         .with(NavigationAttachmentsProperties.ADAPTER, adapter)
                         .with(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false)
                         .with(
+                                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                                AutocompleteRequestType.SEARCH)
+                        .with(
                                 NavigationAttachmentsProperties
                                         .AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
                                 false)
+                        .with(
+                                NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON,
+                                OmniboxFeatures.sShowDedicatedModeButton.getValue())
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
@@ -159,8 +162,7 @@ public class NavigationAttachmentsCoordinator
 
         boolean isChangeable = hasFocus && isSupportedPageClass;
         mMediator.setAutocompleteRequestTypeChangeable(isChangeable);
-        boolean shouldShowToolbar = isChangeable && !mAimToggleOnly;
-        mMediator.setToolbarVisible(shouldShowToolbar);
+        mMediator.setToolbarVisible(isChangeable);
     }
 
     // TemplateUrlServiceObserver

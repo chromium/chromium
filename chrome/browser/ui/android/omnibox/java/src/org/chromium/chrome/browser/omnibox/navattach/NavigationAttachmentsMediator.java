@@ -113,8 +113,20 @@ class NavigationAttachmentsMediator {
                 NavigationAttachmentsProperties.POPUP_CLIPBOARD_CLICKED, this::onClipboardClicked);
         mModel.set(
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
-                this::activateSearchMode);
+                this::onRequestTypeButtonClicked);
         mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
+    }
+
+    private void onRequestTypeButtonClicked() {
+        switch (mAutocompleteRequestTypeSupplier.get()) {
+            case AutocompleteRequestType.AI_MODE:
+                activateSearchMode();
+                break;
+
+            default:
+                activateAiMode();
+                break;
+        }
     }
 
     /** Activate Search as the Next Request fulfillment type. */

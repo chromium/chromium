@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.navattach;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -48,7 +47,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -219,16 +217,6 @@ public class NavigationAttachmentsCoordinatorUnitTest {
                 Mockito.verify(mMediator).setToolbarVisible(false);
             }
         }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    public void testAimToggleOnly() {
-        OmniboxFeatures.sAimToggleOnly.setForTesting(true);
-        assertFalse(
-                mCoordinator
-                        .getModelForTesting()
-                        .get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
     }
 
     @Test

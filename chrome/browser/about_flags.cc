@@ -2002,12 +2002,12 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRemoveSearchReadyOmniboxNoMatchParam), nullptr}};
 #endif
 
-const FeatureEntry::FeatureParam kOmniboxAimToggleOnlyParam[] = {
-    {"aim_toggle_only", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimDedicatedModeButton[] = {
+    {"show_dedicated_mode_button", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
-    {"AIM Toggle Only", kOmniboxAimToggleOnlyParam,
-     std::size(kOmniboxAimToggleOnlyParam), nullptr}};
+    {"Dedicated Button", kOmniboxAimDedicatedModeButton,
+     std::size(kOmniboxAimDedicatedModeButton), nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
     {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name, "true"},

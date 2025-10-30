@@ -29,7 +29,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:constraint_referenced_ids="location_bar_attachments_add"/>
+        app:constraint_referenced_ids="location_bar_attachments_add,navigation_attachments_request_type"/>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/location_bar_attachments_add"
@@ -76,6 +76,7 @@ found in the LICENSE file.
         android:drawablePadding="8dp"
         android:visibility="gone"
         android:singleLine="true"
+        android:text="@string/ai_mode_entrypoint_label"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextSmall"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_settings"
