@@ -32,6 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
 }
@@ -172,6 +173,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/first_run/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/safari_data_import/test:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/button_stack:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
