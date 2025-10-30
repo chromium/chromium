@@ -11,14 +11,17 @@
 
 #include "base/check_is_test.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -273,6 +276,37 @@ void ReadAnythingSidePanelController::DidStopLoading() {
   // The page finished loading.
   loading_ = false;
   UpdateIphVisibility();
+
+  if (!features::IsReadAnythingOmniboxChipEnabled()) {
+    return;
+  }
+
+  // Readability will callback with whether or not the current contents are a
+  // good candidate for distillation.
+  // TODO(crbug.com/c/455640523): Show this entrypoint max 3 times in 3 days if
+  // it's not clicked.
+  RunReadabilityHeuristicsOnWebContents(
+      tab_->GetContents(),
+      base::BindOnce(
+          &ReadAnythingSidePanelController::UpdatePageActionVisibility,
+          weak_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingSidePanelController::UpdatePageActionVisibility(
+    bool should_show) {
+  if (!features::IsReadAnythingOmniboxChipEnabled()) {
+    return;
+  }
+
+  page_actions::PageActionController* page_action_controller =
+      tab_->GetTabFeatures()->page_action_controller();
+  if (should_show) {
+    page_action_controller->Show(kActionSidePanelShowReadAnything);
+    page_action_controller->ShowSuggestionChip(
+        kActionSidePanelShowReadAnything);
+  } else {
+    page_action_controller->Hide(kActionSidePanelShowReadAnything);
+  }
 }
 
 void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {

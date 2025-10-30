@@ -44,10 +44,12 @@ source_set("read_anything") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/dom_distiller",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/interaction",
+    "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/side_panel",
     "//components/accessibility:reading",
     "//components/language/core/browser",

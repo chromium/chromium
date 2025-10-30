@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 // Manages the core logic for the Reading Mode feature.
@@ -33,6 +34,10 @@ class ReadAnythingController {
   // tab.
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
   void ShowUI(SidePanelOpenTrigger trigger);
+
+  // Triggered when the omnibox chip or pinned side panel entrypoint is clicked.
+  void InvokePageAction(BrowserWindowInterface* bwi,
+                        const actions::ActionInvocationContext& context);
 
  private:
   raw_ptr<tabs::TabInterface> tab_ = nullptr;

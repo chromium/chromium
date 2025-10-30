@@ -301,6 +301,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
+      case PageActionIconType::kReadingMode:
+        // Do nothing as this action was added after the migration.
+        break;
     }
   }
 

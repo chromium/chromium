@@ -6,6 +6,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -15,6 +17,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/accessibility/accessibility_features.h"
 
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
@@ -162,4 +165,75 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingCUJTest, ShowAndHideIphAfterNavigation) {
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+class ReadAnythingOmniboxTest
+    : public PageActionInteractiveTestMixin<InteractiveBrowserTest> {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    features_.InitWithFeatures(
+        {features::kReadAnythingOmniboxChip, features::kPageActionsMigration},
+        {});
+    distillable_url_ = embedded_test_server()->GetURL("/long_text_page.html");
+    non_distillable_url_ = GURL("chrome://blank");
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  using PageActionInteractiveTestMixin::WaitForPageActionChipNotVisible;
+  using PageActionInteractiveTestMixin::WaitForPageActionChipVisible;
+
+  auto WaitForPageActionChipVisible() {
+    MultiStep steps;
+    steps += WaitForPageActionChipVisible(kActionSidePanelShowReadAnything);
+    return steps;
+  }
+
+  auto WaitForPageActionChipNotVisible() {
+    MultiStep steps;
+    steps += WaitForPageActionChipNotVisible(kActionSidePanelShowReadAnything);
+    return steps;
+  }
+
+  GURL distillable_url_;
+  GURL non_distillable_url_;
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
+                       ShowAndHideOmniboxAfterTabSwitch) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  RunTestSequence(
+      // First tab is non-distillable, second tab is distillable.
+      InstrumentTab(kFirstTab),
+      NavigateWebContents(kFirstTab, non_distillable_url_),
+      AddInstrumentedTab(kSecondTab, distillable_url_),
+
+      // Select the second tab, wait for chip to show.
+      SelectTab(kTabStripElementId, 1), WaitForPageActionChipVisible(),
+
+      // Select the first tab, wait for chip to hide.
+      SelectTab(kTabStripElementId, 0), WaitForPageActionChipNotVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
+                       ShowAndHideOmniboxAfterNavigation) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, distillable_url_),
+      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
+      NavigateWebContents(kActiveTab, non_distillable_url_),
+      WaitForWebContentsReady(kActiveTab), WaitForPageActionChipNotVisible());
 }

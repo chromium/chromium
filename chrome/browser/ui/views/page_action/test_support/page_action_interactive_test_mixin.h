@@ -60,6 +60,24 @@ class PageActionInteractiveTestMixin : public T {
     T::AddDescriptionPrefix(steps, "WaitForPageActionChipVisible()");
     return steps;
   }
+
+  // Utility to reliably wait for the page action view to not be visible in chip
+  // state.
+  auto WaitForPageActionChipNotVisible(actions::ActionId action_id) {
+    auto steps = T::Steps(
+        T::PollState(kPageActionButtonVisible,
+                     [this, action_id]() {
+                       auto* view =
+                           BrowserView::GetBrowserViewForBrowser(T::browser())
+                               ->toolbar_button_provider()
+                               ->GetPageActionView(action_id);
+                       return view->GetVisible() && !view->is_animating_label();
+                     }),
+        T::WaitForState(kPageActionButtonVisible, false),
+        T::StopObservingState(kPageActionButtonVisible));
+    T::AddDescriptionPrefix(steps, "WaitForPageActionChipNotVisible()");
+    return steps;
+  }
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_INTERACTIVE_TEST_MIXIN_H_
