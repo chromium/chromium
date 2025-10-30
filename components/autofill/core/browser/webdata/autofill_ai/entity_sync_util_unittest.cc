@@ -49,6 +49,9 @@ sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics(
         ->set_departure_date_unix_epoch_micros(
             options.departure_time->InMillisecondsSinceUnixEpoch() * 1000);
   }
+  specifics.mutable_flight_reservation()
+      ->set_departure_airport_utc_offset_seconds(
+          options.departure_time_zone_offset.InSeconds());
 
   ChromeValuablesMetadata metadata;
   ChromeValuablesMetadataEntry& entry = *metadata.add_metadata_entries();
@@ -171,6 +174,76 @@ TEST(EntitySyncUtilTest,
 
   EXPECT_FALSE(
       specifics.flight_reservation().has_departure_date_unix_epoch_micros());
+}
+
+// Tests that the `CreateEntityInstanceFromSpecifics` function correctly
+// aligns the departure date with the departure airport's time zone offset when
+// the offset is positive.
+TEST(
+    EntitySyncUtilTest,
+    CreateSpecificsFromEntityInstance_FlightReservation_AlignsDateWithPositiveTimeZoneOffset) {
+  base::Time departure_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-01-01T23:00:00", &departure_time));
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestFlightReservationSpecifics({
+          .departure_time = departure_time,
+          .departure_time_zone_offset = base::Hours(1),
+      });
+
+  EXPECT_EQ(GetStringValue(*CreateEntityInstanceFromSpecifics(specifics),
+                           AttributeTypeName::kFlightReservationDepartureDate),
+            "2025-01-02");
+}
+
+// Tests that the `CreateEntityInstanceFromSpecifics` function correctly
+// aligns the departure date with the departure airport's time zone offset when
+// the offset is negative.
+TEST(
+    EntitySyncUtilTest,
+    CreateSpecificsFromEntityInstance_FlightReservation_AlignsDateWithNegativeTimeZoneOffset) {
+  base::Time departure_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-01-01T00:00:00", &departure_time));
+  sync_pb::AutofillValuableSpecifics specifics =
+      TestFlightReservationSpecifics({
+          .departure_time = departure_time,
+          .departure_time_zone_offset = base::Hours(-1),
+      });
+
+  EXPECT_EQ(GetStringValue(*CreateEntityInstanceFromSpecifics(specifics),
+                           AttributeTypeName::kFlightReservationDepartureDate),
+            "2024-12-31");
+}
+
+// Tests that the `CreateEntityInstanceFromSpecifics` function
+// does not align the datetime stored in the frecency override with the
+// departure airport's time zone offset.
+TEST(
+    EntitySyncUtilTest,
+    CreateSpecificsFromEntityInstance_FlightReservation_FrecencyOverrideAlignedToUTC) {
+  base::Time departure_time1;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-01-01T10:00:00", &departure_time1));
+  base::Time departure_time2;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2025-01-01T11:00:00", &departure_time2));
+  sync_pb::AutofillValuableSpecifics specifics1 =
+      TestFlightReservationSpecifics(
+          {.departure_time = departure_time1,
+           .departure_time_zone_offset = base::Hours(2)});
+  sync_pb::AutofillValuableSpecifics specifics2 =
+      TestFlightReservationSpecifics(
+          {.departure_time = departure_time2,
+           .departure_time_zone_offset = base::Hours(-1)});
+  EntityInstance entity1 = *CreateEntityInstanceFromSpecifics(specifics1);
+  EntityInstance entity2 = *CreateEntityInstanceFromSpecifics(specifics2);
+
+  // If time zone offsets were subtracted from the timestamps,
+  // `entity2` would have a frecency override that is smaller than `entity1`.
+  // We want to test this is **not** the case.
+  EXPECT_LT(test_api(entity1).frecency_override(),
+            test_api(entity2).frecency_override());
 }
 
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly sets

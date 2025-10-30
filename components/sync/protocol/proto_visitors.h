@@ -2070,6 +2070,8 @@ VISIT_PROTO_FIELDS(const sync_pb::FlightReservation& proto) {
   VISIT(arrival_date_unix_epoch_micros);
   VISIT(airline_logo);
   VISIT(carrier_code);
+  VISIT(departure_airport_utc_offset_seconds);
+  VISIT(arrival_airport_utc_offset_seconds);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {

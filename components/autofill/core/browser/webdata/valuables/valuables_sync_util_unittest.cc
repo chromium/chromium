@@ -111,6 +111,10 @@ TEST(FlightReservationSyncUtilTest,
       987654321);
   specifics.mutable_flight_reservation()->set_airline_logo("logo_url");
   specifics.mutable_flight_reservation()->set_carrier_code("BA");
+  specifics.mutable_flight_reservation()
+      ->set_departure_airport_utc_offset_seconds(123456789);
+  specifics.mutable_flight_reservation()
+      ->set_arrival_airport_utc_offset_seconds(987654321);
 
   EXPECT_EQ(
       TrimAutofillValuableSpecificsDataForCaching(specifics).ByteSizeLong(),

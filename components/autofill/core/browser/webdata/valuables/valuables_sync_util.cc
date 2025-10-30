@@ -125,6 +125,10 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
           ->clear_arrival_date_unix_epoch_micros();
       trimmed_specifics.mutable_flight_reservation()->clear_airline_logo();
       trimmed_specifics.mutable_flight_reservation()->clear_carrier_code();
+      trimmed_specifics.mutable_flight_reservation()
+          ->clear_departure_airport_utc_offset_seconds();
+      trimmed_specifics.mutable_flight_reservation()
+          ->clear_arrival_airport_utc_offset_seconds();
       if (trimmed_specifics.mutable_flight_reservation()->ByteSizeLong() == 0) {
         trimmed_specifics.clear_flight_reservation();
       }
