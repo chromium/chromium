@@ -449,32 +449,6 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffers(
       /*array_slice=*/0u));
   backing->swap_chain_ = std::move(swap_chain);
   backing->swap_chain_front_buffer_texture_ = std::move(front_buffer_texture);
-  backing->is_back_buffer_ = true;
-  return backing;
-}
-
-// static
-std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    const GLFormatCaps& gl_format_caps,
-    bool is_back_buffer) {
-  DCHECK(format.is_single_plane());
-  auto backing = base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "SwapChainBuffer", std::move(d3d11_texture),
-      /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
-      /*array_slice=*/0u));
-  backing->swap_chain_ = std::move(swap_chain);
-  backing->is_back_buffer_ = is_back_buffer;
-
   return backing;
 }
 
@@ -1774,8 +1748,8 @@ void* D3DImageBacking::GetEGLImage() const {
 
 bool D3DImageBacking::PresentSwapChain() {
   AutoLock auto_lock(this);
-  if (!swap_chain_ || !is_back_buffer_) {
-    LOG(ERROR) << "Backing does not correspond to back buffer of swap chain";
+  if (!swap_chain_) {
+    LOG(ERROR) << "Backing is not holding swap chain";
     return false;
   }
 

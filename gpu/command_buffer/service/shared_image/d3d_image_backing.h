@@ -94,19 +94,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
       const GLFormatCaps& gl_format_caps);
 
-  static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      const GLFormatCaps& gl_format_caps,
-      bool is_back_buffer);
-
   D3DImageBacking(const D3DImageBacking&) = delete;
   D3DImageBacking& operator=(const D3DImageBacking&) = delete;
 
@@ -412,9 +399,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Swap chain corresponding to this backing.
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
-
-  // Set if this backing corresponds to the back buffer of |swap_chain_|.
-  bool is_back_buffer_ = false;
 
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;
