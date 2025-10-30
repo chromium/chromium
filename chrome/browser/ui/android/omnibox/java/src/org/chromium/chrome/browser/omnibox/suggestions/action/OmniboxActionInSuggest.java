@@ -17,6 +17,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.net.URISyntaxException;
 
@@ -138,7 +139,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 break;
 
             case SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE:
-                if (!delegate.switchToTab(tabId)) {
+                if (!delegate.switchToTab(tabId, new GURL(mActionUri))) {
                     delegate.loadPageInCurrentTab(assumeNonNull(intent.getDataString()));
                 }
                 actionStarted = true;

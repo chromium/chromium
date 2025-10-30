@@ -8,22 +8,18 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -31,6 +27,18 @@ import java.util.function.Supplier;
 /** Handle the events related to {@link OmniboxAction}. */
 @NullMarked
 public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
+    /** Callback to bring the tab window to foreground and switch to the tab. */
+    @NullMarked
+    public interface BringTabToFrontCallback {
+        /**
+         * Invoked to bring the tab window to foreground and switch to the tab.
+         *
+         * @param tabWindowInfo The info of the {@link Tab}.
+         * @param url The page url of the {@link Tab}.
+         */
+        void onResult(TabWindowInfo tabWindowInfo, GURL url);
+    }
+
     private final Context mContext;
     private final Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
     private final Runnable mOpenIncognitoTabCb;
@@ -38,7 +46,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final Supplier<@Nullable Tab> mTabSupplier;
     private final @Nullable Runnable mOpenQuickDeleteCb;
     private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
-    private final Callback<Tab> mBringTabToFrontCallback;
+    private final BringTabToFrontCallback mBringTabToFrontCallback;
 
     public OmniboxActionDelegateImpl(
             Context context,
@@ -48,7 +56,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
             Runnable openPasswordSettingsCb,
             @Nullable Runnable openQuickDeleteCb,
             Supplier<TabWindowManager> tabWindowManagerSupplier,
-            Callback<Tab> bringTabToFrontCallback) {
+            BringTabToFrontCallback bringTabToFrontCallback) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mOpenUrlInExistingTabElseNewTabCb = openUrlInExistingTabElseNewTabCb;
@@ -113,32 +121,16 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     }
 
     @Override
-    public boolean switchToTab(int tabId) {
+    public boolean switchToTab(int tabId, GURL url) {
         TabWindowManager tabWindowManager = mTabWindowManagerSupplier.get();
         if (tabWindowManager == null) return false;
 
-        Tab tab = tabWindowManager.getTabById(tabId);
-        if (tab == null) return false;
-
-        // When invoked directly from a browser, we want to trigger switch to tab animation.
-        // If invoked from other activities, ex. searchActivity, we do not need to trigger the
-        // animation since Android will show the animation for switching apps.
-        WindowAndroid windowAndroid = tab.getWindowAndroid();
-        if (windowAndroid == null) return false;
-        if (windowAndroid.getActivityState() == ActivityState.STOPPED
-                || windowAndroid.getActivityState() == ActivityState.DESTROYED) {
-            mBringTabToFrontCallback.onResult(tab);
-            return true;
+        TabWindowInfo tabWindowInfo = tabWindowManager.getTabWindowInfoById(tabId);
+        if (tabWindowInfo == null || tabWindowInfo.windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return false;
         }
 
-        TabModel tabModel = tabWindowManager.getTabModelForTab(tab);
-        if (tabModel == null) return false;
-
-        int tabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
-        // In the event the user deleted the tab as part during the interaction with the
-        // Omnibox, reject the switch to tab action.
-        if (tabIndex == TabModel.INVALID_TAB_INDEX) return false;
-        tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
+        mBringTabToFrontCallback.onResult(tabWindowInfo, url);
         return true;
     }
 }

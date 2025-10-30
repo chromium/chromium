@@ -31,8 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -40,22 +38,25 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /** Tests for {@link OmniboxActionDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxActionDelegateImplUnitTest {
+    private static final int TEST_TAB_ID = 1;
+    private static final int TEST_WINDOW_ID = 2;
+    private static final GURL TEST_URL = new GURL("https://www.example.com/");
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Consumer<String> mMockOpenUrl;
     private @Mock Runnable mMockOpenIncognitoPage;
@@ -68,9 +69,9 @@ public class OmniboxActionDelegateImplUnitTest {
     private OmniboxActionDelegateImpl mDelegate;
 
     private @Mock TabWindowManager mTabManager;
-    private @Mock Callback<Tab> mBringTabToFrontCallback;
-    private @Mock WindowAndroid mMockWindowAndroid;
+    private @Mock OmniboxActionDelegateImpl.BringTabToFrontCallback mBringTabToFrontCallback;
     private @Mock TabModel mTabModel;
+    private @Mock TabModelSelector mTabModelSelector;
     private ObservableSupplierImpl<TabWindowManager> mTabManagerSupplier;
 
     @Before
@@ -201,77 +202,33 @@ public class OmniboxActionDelegateImplUnitTest {
 
     @Test
     public void switchToTab_noTabManager() {
-        assertFalse(mDelegate.switchToTab(1));
+        assertFalse(mDelegate.switchToTab(TEST_TAB_ID, TEST_URL));
     }
 
     @Test
     public void switchToTab_noTargetTab() {
         mTabManagerSupplier.set(mTabManager);
-        doReturn(null).when(mTabManager).getTabById(1);
-        assertFalse(mDelegate.switchToTab(1));
+        doReturn(null).when(mTabManager).getTabWindowInfoById(TEST_TAB_ID);
+        assertFalse(mDelegate.switchToTab(TEST_TAB_ID, TEST_URL));
     }
 
     @Test
-    public void switchToTab_noWindowAndroid() {
+    public void switchToTab_invalidWindowId() {
         mTabManagerSupplier.set(mTabManager);
-        doReturn(mTab).when(mTabManager).getTabById(1);
-        doReturn(null).when(mTab).getWindowAndroid();
-        assertFalse(mDelegate.switchToTab(1));
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(
+                        TabWindowManager.INVALID_WINDOW_ID, mTabModelSelector, mTabModel, mTab);
+        doReturn(tabWindowInfo).when(mTabManager).getTabWindowInfoById(TEST_TAB_ID);
+        assertFalse(mDelegate.switchToTab(TEST_TAB_ID, TEST_URL));
     }
 
     @Test
-    public void switchToTab_tabAttachedToStoppedActivity() {
-        // We have a tab, and tab manager. The tab is part of the stopped activity.
+    public void switchToTab_success() {
         mTabManagerSupplier.set(mTabManager);
-        doReturn(mTab).when(mTabManager).getTabById(1);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
-        doReturn(ActivityState.STOPPED).when(mMockWindowAndroid).getActivityState();
-        assertTrue(mDelegate.switchToTab(1));
-    }
-
-    @Test
-    public void switchToTab_noTabModelForTab() {
-        // We have a tab, and tab manager. The tab is part of the running activity.
-        // The tab is not a part of the model though (eg. it has just been closed).
-        // https://crbug.com/1300447
-        mTabManagerSupplier.set(mTabManager);
-        doReturn(mTab).when(mTabManager).getTabById(1);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
-        doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
-        doReturn(null).when(mTabManager).getTabModelForTab(any());
-        assertFalse(mDelegate.switchToTab(1));
-    }
-
-    @Test
-    @SuppressWarnings("DirectInvocationOnMock")
-    public void switchToTab_invalidTabModelAssociation() {
-        // We have a tab, and tab manager. The tab is part of the running activity.
-        // The tab reports association with an existing model, but the model thinks otherwise.
-        // https://crbug.com/1300447
-        mTabManagerSupplier.set(mTabManager);
-        doReturn(mTab).when(mTabManager).getTabById(1);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
-        doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
-        doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
-
-        // Make sure that this indeed returns no association.
-        assertEquals(
-                TabModel.INVALID_TAB_INDEX, TabModelUtils.getTabIndexById(mTabModel, mTab.getId()));
-        assertFalse(mDelegate.switchToTab(1));
-    }
-
-    @Test
-    public void switchToTab_validTabModelAssociation() {
-        // We have a tab, and tab manager. The tab is part of the running activity.
-        // The tab reports association with an existing model; the model confirms this.
-        mTabManagerSupplier.set(mTabManager);
-        doReturn(mTab).when(mTabManager).getTabById(1);
-        doReturn(mMockWindowAndroid).when(mTab).getWindowAndroid();
-        doReturn(ActivityState.RESUMED).when(mMockWindowAndroid).getActivityState();
-        doReturn(mTabModel).when(mTabManager).getTabModelForTab(any());
-        doReturn(1).when(mTabModel).getCount();
-        doAnswer(inv -> List.of(mTab).iterator()).when(mTabModel).iterator();
-        doReturn(1).when(mTab).getId();
-        assertTrue(mDelegate.switchToTab(1));
+        TabWindowInfo tabWindowInfo =
+                new TabWindowInfo(TEST_WINDOW_ID, mTabModelSelector, mTabModel, mTab);
+        doReturn(tabWindowInfo).when(mTabManager).getTabWindowInfoById(TEST_TAB_ID);
+        assertTrue(mDelegate.switchToTab(TEST_TAB_ID, TEST_URL));
+        verify(mBringTabToFrontCallback).onResult(any(), any());
     }
 }
