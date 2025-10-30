@@ -233,6 +233,9 @@ public final class ProductionSupportedFlagList {
                 "Enables retrieval of the emoji font through GMS Core "
                         + "improving emoji glyph coverage."),
         Flag.baseFeature(
+                BlinkFeatures.HIT_TEST_BORDER_RADIUS_FOR_STACKING_CONTEXT,
+                "Hit testing should respect border-radius clips when creating a stacking context."),
+        Flag.baseFeature(
                 BlinkFeatures.WIDTH_AND_HEIGHT_AS_PRESENTATION_ATTRIBUTES_ON_NESTED_SVG,
                 "Enables width and height as presentation attributes on nested svg."),
         Flag.baseFeature(
