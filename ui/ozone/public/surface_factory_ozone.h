@@ -152,6 +152,18 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       gfx::BufferUsage usage,
       std::optional<gfx::Size> framebuffer_size = std::nullopt);
 
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::AcceleratedWidget widget,
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage,
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) {
+    return CreateNativePixmap(widget, device_queue, size,
+                              viz::SharedImageFormatToBufferFormat(format),
+                              usage, framebuffer_size);
+  }
+
   virtual bool CanCreateNativePixmapForFormat(viz::SharedImageFormat format);
 
   // Create a single native buffer from an existing handle. Takes ownership of
