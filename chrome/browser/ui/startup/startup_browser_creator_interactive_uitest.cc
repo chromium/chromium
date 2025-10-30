@@ -21,8 +21,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
                            FILE_PATH_LITERAL("New Profile 4")));
 
   SessionStartupPref pref_urls(SessionStartupPref::URLS);
-  pref_urls.urls.push_back(ui_test_utils::GetTestUrl(
+  pref_urls.urls.push_back(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html"))));
   SessionStartupPref::SetStartupPref(&profile_1, pref_urls);
@@ -144,7 +144,7 @@ class StartupPageTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
-    const std::vector<GURL> urls = {ui_test_utils::GetTestUrl(
+    const std::vector<GURL> urls = {chrome_test_utils::GetTestUrl(
         base::FilePath(FILE_PATH_LITERAL("focus")),
         base::FilePath(FILE_PATH_LITERAL("page_with_focus.html")))};
 

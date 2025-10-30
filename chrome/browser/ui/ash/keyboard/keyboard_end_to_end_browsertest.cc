@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -86,7 +87,7 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    GURL test_url = ui_test_utils::GetTestUrl(
+    GURL test_url = chrome_test_utils::GetTestUrl(
         base::FilePath("chromeos/virtual_keyboard"), test_file_);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();

@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -60,7 +60,7 @@ void PermissionBubbleKioskBrowserTest::SetUpCommandLine(
   PermissionBubbleBrowserTest::SetUpCommandLine(command_line);
   command_line->AppendSwitch(switches::kKioskMode);
   // Navigate to a test file URL.
-  GURL test_file_url(ui_test_utils::GetTestUrl(
+  GURL test_file_url(chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
   command_line->AppendArg(test_file_url.spec());
 }

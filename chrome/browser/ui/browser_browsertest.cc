@@ -98,6 +98,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -422,7 +423,7 @@ class BrowserTest : public extensions::ExtensionBrowserTest,
 // correctly.
 IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle1File))));
   EXPECT_EQ(
@@ -461,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitleFileUrl) {
       {"#https://foo5.com#https://foo5.com",
        "file:/// URL with slashes in multiple refs"}};
 
-  GURL prefix_url = ui_test_utils::GetTestUrl(
+  GURL prefix_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File));
   std::u16string tab_title;
@@ -481,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitleFileUrl) {
 // was set correctly.
 IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle2File))));
   const std::u16string test_title(u"Title Of Awesomeness");
@@ -497,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
 // Check that the title is different when a page is opened in a captive portal
 // window.
 IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
-  const GURL url = ui_test_utils::GetTestUrl(
+  const GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle2File));
   NavigateParams captive_portal_params(browser(), url,
@@ -524,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
   // Set up two tabs, with the tab at index 0 active.
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -588,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
 #define MAYBE_ThirtyFourTabs ThirtyFourTabs
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_ThirtyFourTabs) {
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle2File)));
 
@@ -1553,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ForwardDisabledOnForward) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blank_url));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle1File))));
 
@@ -2062,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, DisallowFileUrlUniversalAccessTest) {
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath().AppendASCII("fileurl_universalaccess.html"));
 
@@ -2303,7 +2304,7 @@ class AppModeTest : public BrowserTest {
   AppModeTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    GURL url = ui_test_utils::GetTestUrl(
+    GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(), base::FilePath().AppendASCII("title1.html"));
     command_line->AppendSwitchASCII(switches::kApp, url.spec());
   }
@@ -2344,7 +2345,7 @@ class ClickModifierTest : public InProcessBrowserTest {
 
   // Returns a url that opens a new window or tab when clicked, via javascript.
   GURL GetWindowOpenURL() const {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(kTestDir),
         base::FilePath(FILE_PATH_LITERAL("window_open.html")));
   }
@@ -2352,7 +2353,7 @@ class ClickModifierTest : public InProcessBrowserTest {
   // Returns a url that follows a simple link when clicked, unless affected by
   // modifiers.
   GURL GetHrefURL() const {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(kTestDir),
         base::FilePath(FILE_PATH_LITERAL("href.html")));
   }
@@ -2653,7 +2654,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

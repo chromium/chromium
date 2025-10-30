@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -22,8 +23,9 @@
 const char kSimple[] = "simple.html";
 
 GURL GetURL(const std::string& filename) {
-  return ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("find_in_page"),
-                                   base::FilePath().AppendASCII(filename));
+  return chrome_test_utils::GetTestUrl(
+      base::FilePath().AppendASCII("find_in_page"),
+      base::FilePath().AppendASCII(filename));
 }
 
 int WaitForFind(content::WebContents* web_contents, int* ordinal) {

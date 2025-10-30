@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url.h"
@@ -115,7 +116,7 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
   // Starts a test server that serves a page pointing to a opensearch descriptor
   // from a file:// url.
   bool StartTestServer() {
-    GURL file_url = ui_test_utils::GetTestUrl(
+    GURL file_url = chrome_test_utils::GetTestUrl(
         base::FilePath(),
         base::FilePath().AppendASCII("simple_open_search.xml"));
     embedded_test_server()->RegisterRequestHandler(

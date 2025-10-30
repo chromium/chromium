@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -26,7 +27,7 @@ IN_PROC_BROWSER_TEST_F(EventLatencyMetricsTest,
                        DISABLED_NoReportForWebContents) {
   base::HistogramTester histogram_tester;
 
-  const GURL url = ui_test_utils::GetTestUrl(
+  const GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("textinput")),
       base::FilePath(FILE_PATH_LITERAL("simple_textarea.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

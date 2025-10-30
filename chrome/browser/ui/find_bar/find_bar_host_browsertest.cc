@@ -223,7 +223,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   }
 
   GURL GetURL(const std::string& filename) {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("find_in_page"),
         base::FilePath().AppendASCII(filename));
   }
