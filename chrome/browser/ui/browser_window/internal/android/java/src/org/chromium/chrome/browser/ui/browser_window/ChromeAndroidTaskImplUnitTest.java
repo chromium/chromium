@@ -154,6 +154,20 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void constructor_withActivityScopedObjects_associateTabModelWithNativeBrowserWindow() {
+        // Arrange & Act.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockTabModel = chromeAndroidTask.getActivityScopedObjectsForTesting().mTabModel;
+
+        // Assert.
+        verify(mockTabModel, times(1))
+                .associateWithBrowserWindow(
+                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
     public void constructor_withCreateParams_pendingState() {
         // Arrange.
         var mockParams =
@@ -234,20 +248,21 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void setActivityScopedObjects_fromPendingState_setsIdAndState() {
-        // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
         int taskId = 2;
-        var activityScopedObjects = createActivityScopedObjects(taskId);
+
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
+        var pendingTask = (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
 
         // Act.
-        task.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.setActivityScopedObjects(activityScopedObjects);
 
         // Assert.
-        assertEquals(taskId, (int) task.getId());
-        assertNull(task.getPendingId());
-        assertEquals(activityScopedObjects, task.getActivityScopedObjectsForTesting());
+        assertEquals(taskId, (int) pendingTask.getId());
+        assertNull(pendingTask.getPendingId());
+        assertEquals(activityScopedObjects, pendingTask.getActivityScopedObjectsForTesting());
     }
 
     @Test
@@ -317,6 +332,29 @@ public class ChromeAndroidTaskImplUnitTest {
                 newMockTabModel,
                 assumeNonNull(chromeAndroidTask.getActivityScopedObjectsForTesting()).mTabModel);
         verify(newMockTabModel, times(1)).addObserver(chromeAndroidTask);
+    }
+
+    @Test
+    public void
+            setActivityScopedObjects_previousRefCleared_associatesTabModelWithNativeBrowserWindow() {
+        // Arrange.
+        int taskId = 1;
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(taskId);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var oldMockTabModel = chromeAndroidTask.getActivityScopedObjectsForTesting().mTabModel;
+
+        var newActivityScopedObjects = createActivityScopedObjects(taskId);
+        var newMockTabModel = newActivityScopedObjects.mTabModel;
+
+        // Act.
+        chromeAndroidTask.clearActivityScopedObjects();
+        chromeAndroidTask.setActivityScopedObjects(newActivityScopedObjects);
+
+        // Assert.
+        verify(newMockTabModel, times(1))
+                .associateWithBrowserWindow(
+                        ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 
     @Test
@@ -1511,21 +1549,24 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingShow() {
-        // Arrange: Create pending task.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
-        // Arrange: Request SHOW on a pending task.
-        task.show();
         int taskId = 2;
-        // Arrange: Setup ActivityScopedObjects.
-        var activityScopedObjects = createActivityScopedObjects(taskId);
+
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
+        var pendingTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Arrange: Request SHOW on a pending task.
+        pendingTask.show();
+
+        // Arrange: Set up ActivityScopedObjects.
+        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
         var mockActivity = activityScopedObjects.mActivityWindowAndroid.getActivity().get();
         var mockActivityManager =
                 (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
 
         // Act.
-        task.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.setActivityScopedObjects(activityScopedObjects);
 
         // Assert.
         verify(mockActivityManager).moveTaskToFront(taskId, 0);
@@ -1533,19 +1574,22 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingClose() {
-        // Arrange: Create pending task.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
-        // Arrange: Request CLOSE on a pending task.
-        task.close();
         int taskId = 2;
-        // Arrange: Setup ActivityScopedObjects.
-        var activityScopedObjects = createActivityScopedObjects(taskId);
+
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
+        var pendingTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Arrange: Request CLOSE on a pending task.
+        pendingTask.close();
+
+        // Arrange: Set up ActivityScopedObjects.
+        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
         var mockActivity = activityScopedObjects.mActivityWindowAndroid.getActivity().get();
 
         // Act.
-        task.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.setActivityScopedObjects(activityScopedObjects);
 
         // Assert.
         verify(mockActivity).finishAndRemoveTask();
@@ -1553,21 +1597,24 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void setActivityScopedObjects_fromPendingState_dispatchesPendingActivate() {
-        // Arrange: Create pending task.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
-        // Arrange: Request ACTIVATE on a pending task.
-        task.activate();
-        // Arrange: Setup ActivityScopedObjects.
         int taskId = 2;
-        var activityScopedObjects = createActivityScopedObjects(taskId);
+
+        // Arrange: Create pending task.
+        var chromeAndroidTaskWithMockDeps =
+                createChromeAndroidTaskWithMockDeps(taskId, /* isPendingTask= */ true);
+        var pendingTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Arrange: Request ACTIVATE on a pending task.
+        pendingTask.activate();
+
+        // Arrange: Set up ActivityScopedObjects.
+        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
         var mockActivity = activityScopedObjects.mActivityWindowAndroid.getActivity().get();
         var mockActivityManager =
                 (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
 
         // Act.
-        task.setActivityScopedObjects(activityScopedObjects);
+        pendingTask.setActivityScopedObjects(activityScopedObjects);
 
         // Assert.
         verify(mockActivityManager).moveTaskToFront(taskId, 0);

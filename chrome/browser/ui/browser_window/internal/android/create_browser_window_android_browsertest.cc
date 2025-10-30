@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,4 +87,20 @@ IN_PROC_BROWSER_TEST_F(
   BrowserWindowInterface* new_browser_window = future.Get();
 
   EXPECT_EQ(new_browser_window, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CreateBrowserWindowAndroidBrowserTest,
+    CreateBrowserWindowAsyncAssociatesTabModelWithBrowserWindow) {
+  Profile* profile = GetProfile();
+  BrowserWindowCreateParams create_params =
+      BrowserWindowCreateParams(BrowserWindowInterface::Type::TYPE_NORMAL,
+                                *profile, /*from_user_gesture=*/false);
+
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  BrowserWindowInterface* new_browser_window = future.Get();
+
+  auto* tab_list_interface = TabListInterface::From(new_browser_window);
+  ASSERT_NE(tab_list_interface, nullptr);
 }

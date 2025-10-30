@@ -1055,19 +1055,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                     activityWindowAndroid, currentTabModel, multiInstanceManager),
                             pendingId);
 
-            // 2. Associate the current TabModel with ChromeAndroidTask's underlying native
-            // AndroidBrowserWindow object.
-            currentTabModel.associateWithBrowserWindow(
-                    chromeAndroidTask.getOrCreateNativeBrowserWindowPtr());
-
-            // 3. Add windowing features.
+            // 2. Add windowing features.
             ChromeAndroidTaskFeature extensionWindowControllerBridge =
                     ExtensionWindowControllerBridgeFactory.create(chromeAndroidTask);
             if (extensionWindowControllerBridge != null) {
                 chromeAndroidTask.addFeature(extensionWindowControllerBridge);
             }
 
-            // 4. Make the ChromeAndroidTask available via OneshotSupplier.
+            // 3. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);
         }
     }

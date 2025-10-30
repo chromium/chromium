@@ -723,6 +723,8 @@ final class ChromeAndroidTaskImpl
 
             // Register TabModel observer.
             activityScopedObjects.mTabModel.addObserver(this);
+            activityScopedObjects.mTabModel.associateWithBrowserWindow(
+                    mAndroidBrowserWindow.getOrCreateNativePtr());
 
             // Transition from PENDING to ALIVE.
             if (mState.get() == State.PENDING_CREATE) {
@@ -731,7 +733,8 @@ final class ChromeAndroidTaskImpl
                 mState.set(State.IDLE);
                 dispatchPendingActionsLocked(activityWindowAndroid);
                 if (mCreationCallbackForNative != null) {
-                    mCreationCallbackForNative.onResult(getOrCreateNativeBrowserWindowPtr());
+                    mCreationCallbackForNative.onResult(
+                            mAndroidBrowserWindow.getOrCreateNativePtr());
                     mCreationCallbackForNative = null;
                 }
             }

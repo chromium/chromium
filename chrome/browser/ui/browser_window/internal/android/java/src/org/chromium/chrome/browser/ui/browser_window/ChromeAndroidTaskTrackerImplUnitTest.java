@@ -69,6 +69,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         MockitoAnnotations.openMocks(this);
         mContext = spy(ApplicationProvider.getApplicationContext());
         ContextUtils.initApplicationContextForTests(mContext);
+
+        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
     }
 
     @After
@@ -79,7 +81,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @Test
     public void createPendingTask_createsAndStoresPendingTask() {
         // Arrange.
-        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
 
@@ -219,8 +220,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @Test
     public void obtainTask_withPendingId_adoptsPendingTask() {
         // Arrange.
-        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
-
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
         var pendingTask =
@@ -248,8 +247,6 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     @Test
     public void obtainTask_withPendingIdAndCallback_adoptsAndInvokesCallback() {
         // Arrange.
-        ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
-
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
         JniOnceCallback<Long> mockCallback = mock();

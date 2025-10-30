@@ -280,6 +280,7 @@ if (is_android) {
       "//chrome/browser/profiles",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/tabs:tab_list_interface",
       "//chrome/test:test_support_ui_android",
       "//testing/gtest",
       "//ui/android",
