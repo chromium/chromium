@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityScopedObjects;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
@@ -29,13 +28,13 @@ public interface ChromeAndroidTaskTracker {
 
     /**
      * Returns a {@link ChromeAndroidTask} with the same Task ID as that of the given {@link
-     * ActivityWindowAndroid}'s {@code Activity}.
+     * ActivityScopedObjects}' {@code Activity}.
      *
      * <p>This method is usually called when a {@code ChromeActivity} is created, which is also when
      * we start caring about Tasks (windows).
      *
-     * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but an {@link
-     * ActivityWindowAndroid} is associated with a {@code ChromeActivity}, it's possible that when
+     * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but {@link
+     * ActivityScopedObjects} is associated with a {@code ChromeActivity}, it's possible that when
      * this method is called, a {@link ChromeAndroidTask} already exists, in which case the {@code
      * browserWindowType} must be the same as that of the existing {@link ChromeAndroidTask}, and
      * the existing {@link ChromeAndroidTask} will be returned.
@@ -45,12 +44,8 @@ public interface ChromeAndroidTaskTracker {
      *
      * @param browserWindowType The browser window type of the returned {@link ChromeAndroidTask}.
      *     The types are defined in the native {@code BrowserWindowInterface::Type} enum.
-     * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with the
+     * @param activityScopedObjects The {@link ActivityScopedObjects} to be associated with the
      *     returned {@link ChromeAndroidTask}.
-     * @param tabModel The tab model associated with the returned {@link ChromeAndroidTask}.
-     * @param multiInstanceManager The {@link MultiInstanceManager} associated with the given {@link
-     *     ActivityWindowAndroid}'s {@code Activity}. If the {@code Activity} doesn't have a {@link
-     *     MultiInstanceManager}, pass {@code null}.
      * @param pendingId The unique ID of a pending {@link ChromeAndroidTask} that was created before
      *     its {@code ChromeActivity}. In this case, {@code ChromeActivity}'s {@code Intent} will
      *     contain {@link #EXTRA_PENDING_BROWSER_WINDOW_TASK_ID}, and {@code ChromeActivity} should
@@ -60,9 +55,7 @@ public interface ChromeAndroidTaskTracker {
      */
     ChromeAndroidTask obtainTask(
             @BrowserWindowType int browserWindowType,
-            ActivityWindowAndroid activityWindowAndroid,
-            TabModel tabModel,
-            @Nullable MultiInstanceManager multiInstanceManager,
+            ActivityScopedObjects activityScopedObjects,
             @Nullable Integer pendingId);
 
     /**

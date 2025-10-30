@@ -49,6 +49,27 @@ import java.util.List;
 @NullMarked
 public interface ChromeAndroidTask {
 
+    /** Contains objects whose lifecycle is in sync with an {@code Activity}. */
+    final class ActivityScopedObjects {
+        final ActivityWindowAndroid mActivityWindowAndroid;
+        final TabModel mTabModel;
+        final @Nullable MultiInstanceManager mMultiInstanceManager;
+
+        public ActivityScopedObjects(
+                ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
+            this(activityWindowAndroid, tabModel, /* multiInstanceManager= */ null);
+        }
+
+        public ActivityScopedObjects(
+                ActivityWindowAndroid activityWindowAndroid,
+                TabModel tabModel,
+                @Nullable MultiInstanceManager multiInstanceManager) {
+            mActivityWindowAndroid = activityWindowAndroid;
+            mTabModel = tabModel;
+            mMultiInstanceManager = multiInstanceManager;
+        }
+    }
+
     /**
      * Returns an {@link Integer} holding the the ID of this {@link ChromeAndroidTask}, which is the
      * same as defined by {@link android.app.TaskInfo#taskId}, if the {@link Integer} is non-null.
@@ -73,45 +94,37 @@ public interface ChromeAndroidTask {
     int getBrowserWindowType();
 
     /**
-     * Sets the current {@link ActivityWindowAndroid} and other objects associated with {@link
-     * ActivityWindowAndroid}'s {@code Activity}.
+     * Sets the current {@link ActivityScopedObjects}.
      *
-     * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but an {@link
-     * ActivityWindowAndroid} is associated with a {@code ChromeActivity}, this method is needed to
+     * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but {@link
+     * ActivityScopedObjects} is associated with a {@code ChromeActivity}, this method is needed to
      * support the difference in their lifecycles.
      *
-     * <p>We assume there is at most one {@link ActivityWindowAndroid} associated with a {@link
+     * <p>We assume there is at most one {@link ActivityScopedObjects} associated with a {@link
      * ChromeAndroidTask} at any time. If this method is called when this {@link ChromeAndroidTask}
-     * already has an {@link ActivityWindowAndroid}, an {@link AssertionError} will occur.
+     * already has an {@link ActivityScopedObjects}, an {@link AssertionError} will occur.
      *
-     * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with this
+     * @param activityScopedObjects The {@link ActivityScopedObjects} to be associated with this
      *     {@link ChromeAndroidTask}.
-     * @param tabModel The {@link TabModel} associated with {@link ActivityWindowAndroid}'s {@code
-     *     Activity}.
-     * @param multiInstanceManager The {@link MultiInstanceManager} associated with {@link
-     *     ActivityWindowAndroid}'s {@code Activity}.
-     * @see #clearActivityWindowAndroid()
+     * @see #clearActivityScopedObjects()
      */
-    void setActivityWindowAndroid(
-            ActivityWindowAndroid activityWindowAndroid,
-            TabModel tabModel,
-            @Nullable MultiInstanceManager multiInstanceManager);
+    void setActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
 
     /**
-     * Returns the current {@link ActivityWindowAndroid} in this Task, or {@code null} if there is
-     * none.
+     * Convenience API to return the {@link ActivityWindowAndroid} in {@link ActivityScopedObjects},
+     * or {@code null} if there is none.
      */
     @Nullable ActivityWindowAndroid getActivityWindowAndroid();
 
     /**
-     * Clears the current {@link ActivityWindowAndroid} and all other objects associated with it..
+     * Clears the current {@link ActivityScopedObjects}.
      *
-     * <p>This method should be called when the current {@link ActivityWindowAndroid} is about to be
-     * destroyed.
+     * <p>This method should be called when the {@code Activity} for the current {@link
+     * ActivityScopedObjects} is about to be destroyed.
      *
-     * @see #setActivityWindowAndroid
+     * @see #setActivityScopedObjects
      */
-    void clearActivityWindowAndroid();
+    void clearActivityScopedObjects();
 
     /**
      * Adds a {@link ChromeAndroidTaskFeature} to this {@link ChromeAndroidTask}.

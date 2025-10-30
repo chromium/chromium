@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
@@ -21,8 +20,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /** Unit tests for {@link BrowserWindowCreatorBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -77,18 +74,15 @@ public class BrowserWindowCreatorBridgeUnitTest {
 
         // Act: simulate activity attachment.
         int taskId = 123;
-        var activityWindowAndroid =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
-        var tabModel = mock(TabModel.class);
-        when(tabModel.getProfile()).thenReturn(mock(Profile.class));
-        pendingTask.setActivityWindowAndroid(
-                activityWindowAndroid, tabModel, /* multiInstanceManager= */ null);
+        var activityScopedObjects =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(taskId);
+        pendingTask.setActivityScopedObjects(activityScopedObjects);
 
         // Assert final state.
         assertEquals(ChromeAndroidTaskImpl.State.IDLE, pendingTask.getState());
         assertEquals(taskId, pendingTask.getId().intValue());
         assertNull(pendingTask.getPendingId());
-        verify(tabModel).addObserver(pendingTask);
+        verify(activityScopedObjects.mTabModel).addObserver(pendingTask);
         verify(mockCallback)
                 .onResult(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }

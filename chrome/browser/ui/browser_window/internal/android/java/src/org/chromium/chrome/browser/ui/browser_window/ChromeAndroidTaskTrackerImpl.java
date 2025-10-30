@@ -21,7 +21,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.mojom.WindowShowState;
 
@@ -71,37 +70,28 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     @Override
     public ChromeAndroidTask obtainTask(
             @BrowserWindowType int browserWindowType,
-            ActivityWindowAndroid activityWindowAndroid,
-            TabModel tabModel,
-            @Nullable MultiInstanceManager multiInstanceManager,
+            ChromeAndroidTask.ActivityScopedObjects activityScopedObjects,
             @Nullable Integer pendingId) {
-        int taskId = getTaskId(activityWindowAndroid);
+        int taskId = getTaskId(activityScopedObjects.mActivityWindowAndroid);
 
         synchronized (mTasksLock) {
             var existingTask = mTasks.get(taskId);
             if (existingTask != null) {
                 assert existingTask.getBrowserWindowType() == browserWindowType
                         : "The browser window type of an existing task can't be changed.";
-                existingTask.setActivityWindowAndroid(
-                        activityWindowAndroid, tabModel, multiInstanceManager);
+                existingTask.setActivityScopedObjects(activityScopedObjects);
                 return existingTask;
             }
 
             if (pendingId != null) {
                 ChromeAndroidTask pendingTask = mPendingTasks.remove(pendingId);
                 assert pendingTask != null : "Invalid pendingId provided.";
-                pendingTask.setActivityWindowAndroid(
-                        activityWindowAndroid, tabModel, multiInstanceManager);
+                pendingTask.setActivityScopedObjects(activityScopedObjects);
                 mTasks.put(taskId, pendingTask);
                 return pendingTask;
             }
 
-            var newTask =
-                    new ChromeAndroidTaskImpl(
-                            browserWindowType,
-                            activityWindowAndroid,
-                            tabModel,
-                            multiInstanceManager);
+            var newTask = new ChromeAndroidTaskImpl(browserWindowType, activityScopedObjects);
             mTasks.put(taskId, newTask);
             mObservers.forEach((observer) -> observer.onTaskAdded(newTask));
             return newTask;
@@ -185,7 +175,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 return;
             }
 
-            task.clearActivityWindowAndroid();
+            task.clearActivityScopedObjects();
 
             // It's not 100% correct to destroy the ChromeAndroidTask here as a ChromeAndroidTask
             // is meant to track an Android Task, but an ActivityWindowAndroid is associated with a

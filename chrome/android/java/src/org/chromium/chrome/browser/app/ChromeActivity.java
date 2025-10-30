@@ -1051,9 +1051,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             var chromeAndroidTask =
                     chromeAndroidTaskTracker.obtainTask(
                             browserWindowType,
-                            activityWindowAndroid,
-                            currentTabModel,
-                            multiInstanceManager,
+                            new ChromeAndroidTask.ActivityScopedObjects(
+                                    activityWindowAndroid, currentTabModel, multiInstanceManager),
                             pendingId);
 
             // 2. Associate the current TabModel with ChromeAndroidTask's underlying native
