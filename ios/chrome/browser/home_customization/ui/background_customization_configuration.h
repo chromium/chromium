@@ -33,10 +33,13 @@ class GURL;
 @property(readonly, nonatomic) const GURL& thumbnailURL;
 
 // A pointer to a UIColor representing the background's base color.
-@property(readonly, nonatomic, strong) UIColor* backgroundColor;
+@property(nonatomic, strong) UIColor* backgroundColor;
 
 // The color variant for the background
 @property(readonly, nonatomic) ui::ColorProviderKey::SchemeVariant colorVariant;
+
+// Whether the background color was manually chosen by the user.
+@property(nonatomic, assign) BOOL isCustomColor;
 
 // The color palette for this background.
 @property(readonly, nonatomic) NewTabPageColorPalette* colorPalette;

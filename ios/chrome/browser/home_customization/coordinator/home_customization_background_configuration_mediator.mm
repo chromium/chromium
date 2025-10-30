@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -236,14 +237,39 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     }
   }
 
-  // If no color is currently selected, set selectedColorIndex to nil
-  // when a background image is active, or to the no background configuration's
-  // ID when there is no background.
-  if (!selectedColorID) {
-    selectedColorID =
-        _backgroundCustomizationService->GetCurrentCustomBackground()
-            ? nil
-            : noBackgroundConfiguration.configurationID;
+  BOOL isCustomColor = IsNTPBackgroundColorSliderEnabled() &&
+                       !selectedColorID && colorTheme && colorTheme->color();
+  BOOL isDefaultBackground =
+      !selectedColorID &&
+      !_backgroundCustomizationService->GetCurrentCustomBackground();
+
+  if (IsNTPBackgroundColorSliderEnabled()) {
+    // The hue slider displays either the custom color or the default red, since
+    // hue = 0% represents red on the color wheel.
+    UIColor* hueSliderColor =
+        isCustomColor ? skia::UIColorFromSkColor(colorTheme->color())
+                      : UIColor.redColor;
+
+    BackgroundCustomizationConfigurationItem* customHueConfiguration =
+        [[BackgroundCustomizationConfigurationItem alloc]
+            initWithBackgroundColor:hueSliderColor
+                       colorVariant:ui::ColorProviderKey::SchemeVariant::
+                                        kTonalSpot
+                  accessibilityName:@""];
+    customHueConfiguration.isCustomColor = isCustomColor;
+    collectionConfiguration
+        .configurations[customHueConfiguration.configurationID] =
+        customHueConfiguration;
+    [collectionConfiguration.configurationOrder
+        addObject:customHueConfiguration.configurationID];
+
+    if (isCustomColor) {
+      selectedColorID = customHueConfiguration.configurationID;
+    }
+  }
+
+  if (!isCustomColor && isDefaultBackground) {
+    selectedColorID = noBackgroundConfiguration.configurationID;
   }
 
   [self.consumer

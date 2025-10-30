@@ -32,6 +32,8 @@
 
 @synthesize accessibilityName = _accessibilityName;
 @synthesize accessibilityValue = _accessibilityValue;
+@synthesize backgroundColor = _backgroundColor;
+@synthesize isCustomColor = _isCustomColor;
 
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath
                            framingCoordinates:
