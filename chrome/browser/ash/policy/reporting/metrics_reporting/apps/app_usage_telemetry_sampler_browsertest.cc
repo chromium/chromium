@@ -322,8 +322,9 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
   // PRE-condition.
 }
 
+// TODO(crbug.com/453903951): Re-enable the test after it is de-flaked.
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
-                       ReportUsageDataWhenSyncDisabled) {
+                       DISABLED_ReportUsageDataWhenSyncDisabled) {
   sync_service()->SetAllowedByEnterprisePolicy(false);
 
   // Install web app and simulate its usage.
