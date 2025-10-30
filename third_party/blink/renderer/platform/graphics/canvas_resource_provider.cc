@@ -1854,17 +1854,4 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
       color_params.GetGfxColorSpace(), shared_image_usage_flags, delegate);
 }
 
-std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateSwapChainProvider(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params,
-    ShouldInitialize initialize_provider,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    Delegate* delegate) {
-  return CreateSwapChainProvider(
-      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), initialize_provider,
-      std::move(context_provider_wrapper), delegate);
-}
-
 }  // namespace blink
