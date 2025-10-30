@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
+#include <cstdint>
 #include <variant>
 
 #include "base/containers/span.h"
@@ -30,6 +31,8 @@
 #include "net/disk_cache/sql/sql_backend_constants.h"
 #include "net/disk_cache/sql/sql_entry_impl.h"
 #include "net/test/gtest_util.h"
+#include "sql/database.h"
+#include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -153,6 +156,29 @@ class SqlBackendImplTest : public testing::Test {
   // Gets the total size of all entries.
   int64_t GetSizeOfAllEntries(SqlBackendImpl& backend) {
     return backend.GetSqlStoreForTest()->GetSizeOfAllEntries();
+  }
+
+  // Opens the database for a specific shard and returns the count of blobs
+  // associated with a given resource ID.
+  int64_t OpenDatabaseAndGetBlobsCount(SqlPersistentStore::ShardId shard_id,
+                                       SqlPersistentStore::ResId res_id) {
+    auto db = std::make_unique<sql::Database>(
+        sql::DatabaseOptions()
+            .set_exclusive_locking(true)
+#if BUILDFLAG(IS_WIN)
+            .set_exclusive_database_file_lock(true)
+#endif  // IS_WIN
+            .set_preload(true)
+            .set_wal_mode(true),
+        sql::Database::Tag("HttpCacheDiskCache"));
+    CHECK(db->Open(temp_dir_.GetPath().AppendASCII(
+        base::StrCat({kSqlBackendDatabaseFileNamePrefix,
+                      base::NumberToString(shard_id.value())}))));
+    sql::Statement s(
+        db->GetUniqueStatement("SELECT COUNT(*) FROM blobs where res_id = ?"));
+    s.BindInt64(0, res_id.value());
+    CHECK(s.Step());
+    return s.ColumnInt64(0);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -1960,6 +1986,97 @@ TEST_F(SqlBackendImplTest, IdleTimeEviction) {
   const int64_t kLowWatermark =
       kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
   EXPECT_LE(GetSizeOfAllEntries(*backend), kLowWatermark);
+}
+
+TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
+  auto backend = CreateBackendAndInit();
+  auto* sql_store = backend->GetSqlStoreForTest();
+  auto task_runners = backend->GetBackgroundTaskRunnersForTest();
+
+  const auto kKey1 = CacheEntryKey("key1");
+  const auto kKey2 = CacheEntryKey("key2");
+  const std::string kData = "some data";
+  const auto shard_id1 = sql_store->GetShardIdForHash(kKey1.hash());
+  const auto shard_id2 = sql_store->GetShardIdForHash(kKey2.hash());
+
+  // Create two entries and write some data to them.
+  auto* entry1 = CreateEntryAndWriteData(backend.get(), kKey1.string(), kData);
+  auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2.string(), kData);
+  WaitUntilInitialized(*backend,
+                       static_cast<SqlEntryImpl*>(entry1)->res_id_or_error());
+  WaitUntilInitialized(*backend,
+                       static_cast<SqlEntryImpl*>(entry2)->res_id_or_error());
+  auto res_id1 = std::get<SqlPersistentStore::ResId>(
+      static_cast<SqlEntryImpl*>(entry1)->res_id_or_error()->data.value());
+  auto res_id2 = std::get<SqlPersistentStore::ResId>(
+      static_cast<SqlEntryImpl*>(entry2)->res_id_or_error()->data.value());
+  entry1->Close();
+  entry2->Close();
+
+  // Close the backend to ensure everything is written to disk.
+  backend.reset();
+
+  FlushQueueInTaskRunners(task_runners);
+
+  // This block simulates a previous session where an entry was doomed but not
+  // fully cleaned up.
+  {
+    auto store = std::make_unique<SqlPersistentStore>(
+        temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
+        task_runners);
+
+    base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future_init;
+    store->Initialize(future_init.GetCallback());
+    ASSERT_EQ(future_init.Get(), disk_cache::SqlPersistentStore::Error::kOk);
+
+    // Doom one of the entries.
+    base::test::TestFuture<SqlPersistentStore::Error> future_doom;
+    store->DoomEntry(kKey1, res_id1, future_doom.GetCallback());
+    EXPECT_EQ(future_doom.Get(), SqlPersistentStore::Error::kOk);
+
+    store.reset();
+
+    FlushQueueInTaskRunners(task_runners);
+  }
+
+  // Verify directly in the database that the blobs for the entries still exist.
+  EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id1, res_id1), 1);
+  EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id2, res_id2), 1);
+
+  // Create and initialize a new backend.
+  backend = CreateBackend();
+  sql_store = backend->GetSqlStoreForTest();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::OK);
+
+  // At this point, the in-memory index should not be loaded yet.
+  EXPECT_EQ(sql_store->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  EXPECT_EQ(sql_store->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+
+  // Fast forward time to trigger the delayed post-initialization tasks.
+  task_environment_.FastForwardBy(kSqlBackendPostInitializationTasksDelay);
+
+  FlushQueue(*backend);
+
+  // Now, the index should be loaded. The doomed entry should be gone, and the
+  // other entry should be present.
+  EXPECT_EQ(sql_store->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(sql_store->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  task_runners = backend->GetBackgroundTaskRunnersForTest();
+  backend.reset();
+
+  FlushQueueInTaskRunners(task_runners);
+
+  // Verify directly in the database that the blob for the doomed entry has been
+  // deleted, while the other one still exists.
+  EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id1, res_id1), 0);
+  EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id2, res_id2), 1);
 }
 
 }  // namespace

@@ -108,14 +108,12 @@ inline constexpr int kSqlBackendIdleTimeEvictionHighWaterMarkPermille = 925;
 // Eviction continues until the cache size is below this.
 inline constexpr int kSqlBackendEvictionLowWaterMarkPermille = 900;
 
-// The delay after backend initialization before running a one-time cleanup task
-// to delete doomed entries. This task removes entries that were doomed in a
-// previous session but not fully deleted (e.g., due to a crash), ensuring
-// that their disk space is reclaimed.
-// Note: This value is set assuming use with HTTP Cache, but if the SQL backend
-// is used with Cache Storage, it should be a shorter value.
-inline constexpr base::TimeDelta kSqlBackendDeleteDoomedEntriesDelay =
-    base::Minutes(10);
+// The delay after backend initialization before running post-initialization
+// tasks. These tasks, such as cleaning up doomed entries from previous
+// sessions and loading the in-memory index, are deferred to avoid impacting
+// startup performance.
+inline constexpr base::TimeDelta kSqlBackendPostInitializationTasksDelay =
+    base::Minutes(1);
 
 // The prefix for histograms related to the SQL disk cache backend.
 inline constexpr std::string_view kSqlDiskCacheBackendHistogramPrefix =

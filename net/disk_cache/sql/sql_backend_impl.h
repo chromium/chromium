@@ -257,6 +257,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   void OnInitialized(CompletionOnceCallback callback,
                      const std::vector<bool>& results);
+  void RunDelayedPostInitializationTasks();
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
 
