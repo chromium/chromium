@@ -5998,6 +5998,12 @@
       status: "stable",
     },
     {
+      // Moving to the Rust parser requires deprecation of the niche feature
+      // of synchronously including external entities.
+      // https://crbug.com/455813733
+      name: "XMLNoExternalEntities",
+    },
+    {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",
       status: "test",
     },
