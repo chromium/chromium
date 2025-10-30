@@ -165,10 +165,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuSubmenuHeaderItemProperties;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -224,11 +221,8 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
@@ -1862,22 +1856,6 @@ public class RootUiCoordinator
         // TODO(crbug.com/40613711): Revisit this as part of the broader
         // discussion around activity-specific UI customizations.
         if (mSupportsAppMenuSupplier.getAsBoolean()) {
-            SubmenuHeaderFactory submenuHeaderFactory =
-                    (clickedItem, backRunnable) -> {
-                        PropertyModel.Builder builder =
-                                new PropertyModel.Builder(
-                                        AppMenuSubmenuHeaderItemProperties.ALL_KEYS);
-                        HierarchicalMenuController.populateDefaultHeaderProperties(
-                                builder,
-                                new AppMenuUtil.AppMenuKeyProvider(),
-                                clickedItem.model.get(AppMenuItemProperties.TITLE),
-                                backRunnable);
-                        builder.with(
-                                AppMenuItemProperties.MENU_ITEM_ID, R.id.submenu_header_menu_id);
-                        return new ListItem(
-                                AppMenuHandler.AppMenuItemType.SUBMENU_HEADER, builder.build());
-                    };
-
             mAppMenuCoordinator =
                     AppMenuCoordinatorFactory.createAppMenuCoordinator(
                             mActivity,
@@ -1891,8 +1869,7 @@ public class RootUiCoordinator
                                     .findViewById(R.id.menu_anchor_stub),
                             this::getAppRectOnScreen,
                             mWindowAndroid,
-                            mBrowserControlsManager,
-                            submenuHeaderFactory);
+                            mBrowserControlsManager);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     ChromePureJavaExceptionReporter::reportJavaException);
 

@@ -4216,12 +4216,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_EXTENSIONS" desc="Menu item for opening the 'Extensions' page that allows the user to manage installed extensions. [CHAR_LIMIT=27]">
         Extensions
       </message>
-      <message name="IDS_MENU_MANAGE_EXTENSIONS" desc="Menu item for opening the 'Extensions' page that allows the user to manage installed extensions. [CHAR_LIMIT=27]">
-        Manage Extensions
-      </message>
-      <message name="IDS_MENU_CHROME_WEBSTORE" desc="Menu item for opening the chrome webstore that allows the user to install extensions. [CHAR_LIMIT=27]">
-        Visit Chrome Web Store
-      </message>
       <message name="IDS_MENU_TINKER_TANK" desc="Menu item for opening the tinker tank bottom sheet. [CHAR_LIMIT=27]" translateable="false">
         Tinker tank
       </message>

@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.POSITION;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.TITLE;
+import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.TITLE_CONDENSED;
 
 import android.view.View;
 
@@ -44,6 +45,7 @@ public class AppMenuItemWithSubmenuProperties {
             new PropertyKey[] {
                 MENU_ITEM_ID,
                 TITLE,
+                TITLE_CONDENSED,
                 ENABLED,
                 HIGHLIGHTED,
                 MANAGED,

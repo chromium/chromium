@@ -33,7 +33,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -43,8 +42,6 @@ import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -109,8 +106,6 @@ class AppMenuHandlerImpl
     private final WindowAndroid mWindowAndroid;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private @Nullable ModelList mModelList;
-    private @Nullable HierarchicalMenuController mHierarchicalMenuController;
-    private final SubmenuHeaderFactory mSubmenuHeaderFactory;
     private final ListObserver<Void> mListObserver;
     private @Nullable Callback<Integer> mTestOptionsItemSelectedListener;
     private @MonotonicNonNull KeyboardVisibilityDelegate.KeyboardVisibilityListener
@@ -139,8 +134,6 @@ class AppMenuHandlerImpl
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch {@link KeyboardVisibilityDelegate}
      * @param browserControlsStateProvider a provider that can provide the state of the toolbar
-     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use for the {@link
-     *     HierarchicalMenuController}.
      */
     public AppMenuHandlerImpl(
             Context context,
@@ -151,8 +144,7 @@ class AppMenuHandlerImpl
             View hardwareButtonAnchorView,
             Supplier<Rect> appRect,
             WindowAndroid windowAndroid,
-            BrowserControlsStateProvider browserControlsStateProvider,
-            SubmenuHeaderFactory submenuHeaderFactory) {
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -163,7 +155,6 @@ class AppMenuHandlerImpl
         mAppRect = appRect;
         mWindowAndroid = windowAndroid;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mSubmenuHeaderFactory = submenuHeaderFactory;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -298,17 +289,6 @@ class AppMenuHandlerImpl
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
         setupModelForHighlightAndClick(mModelList, mHighlightMenuId, this);
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
-            mHierarchicalMenuController =
-                    new HierarchicalMenuController(
-                            mContext,
-                            new AppMenuUtil.AppMenuKeyProvider(),
-                            mSubmenuHeaderFactory,
-                            /* flyoutHandler= */ null,
-                            /* drillDownOverrideValue= */ true);
-            mHierarchicalMenuController.setupCallbacksRecursively(null, mModelList, () -> {});
-        }
 
         AppMenuAdapter adapter = new AppMenuAdapter(mModelList);
         SparseArray<Function<Context, Integer>> customSizingProviders = new SparseArray<>();

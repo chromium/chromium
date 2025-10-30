@@ -3846,22 +3846,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             UrlConstants.CHROME_EXTENSIONS_URL, PageTransition.AUTO_TOPLEVEL);
             if (currentTab == null) {
                 getTabCreator(getCurrentTabModel().isIncognito())
-                        .createNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
+                        .createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
             } else {
                 currentTab.loadUrl(params);
             }
             RecordUserAction.record("MobileMenuExtensions");
-        } else if (id == R.id.extensions_webstore_menu_id) {
-            LoadUrlParams params =
-                    new LoadUrlParams(
-                            UrlConstants.CHROME_WEBSTORE_URL, PageTransition.AUTO_TOPLEVEL);
-            if (currentTab == null) {
-                getTabCreator(getCurrentTabModel().isIncognito())
-                        .createNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
-            } else {
-                currentTab.loadUrl(params);
-            }
-            RecordUserAction.record("MobileMenuChromeWebstore");
         } else if (id == R.id.close_tab) {
             // TODO(crbug.com/375468032): use triggeringMotion to decide
             // TabClosureParams.allowUndo.
