@@ -84,18 +84,6 @@ public class UserDataHostTest {
         removeUserDataException(TestObjectA.class, IllegalStateException.class);
     }
 
-    /** Verifies nulled key or data are not allowed. */
-    @Test
-    @SmallTest
-    public void testNullKeyOrDataAreDisallowed() {
-        TestObjectA obj = new TestObjectA();
-        setUserDataException(null, null, IllegalArgumentException.class);
-        setUserDataException(TestObjectA.class, null, IllegalArgumentException.class);
-        setUserDataException(null, obj, IllegalArgumentException.class);
-        getUserDataException(null, IllegalArgumentException.class);
-        removeUserDataException(null, IllegalArgumentException.class);
-    }
-
     /** Verifies {@link #setUserData()} overwrites current data. */
     @Test
     @SmallTest

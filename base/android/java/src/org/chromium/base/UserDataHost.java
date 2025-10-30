@@ -4,14 +4,14 @@
 
 package org.chromium.base;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A class that implements type-safe heterogeneous container. It can associate an object of type T
@@ -57,7 +57,7 @@ import java.util.HashMap;
 public final class UserDataHost {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    private @Nullable HashMap<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>();
+    private @Nullable Map<Class<? extends UserData>, UserData> mUserDataMap = new HashMap<>();
 
     @EnsuresNonNull("mUserDataMap")
     private void checkThreadAndState() {
@@ -69,53 +69,44 @@ public final class UserDataHost {
 
     /**
      * Associates the specified object with the specified key.
+     *
      * @param key Type token with which the specified object is to be associated.
      * @param object Object to be associated with the specified key.
      * @return the object just stored.
      */
     public <T extends UserData> T setUserData(Class<T> key, T object) {
+        Objects.requireNonNull(object);
         checkThreadAndState();
-        if (key == null || object == null) {
-            throw new IllegalArgumentException();
-        }
-
         mUserDataMap.put(key, object);
-
-        // Since we just .put the object in the HashMap, a subsequent .get will always succeed.
-        return assumeNonNull(getUserData(key));
+        return object;
     }
 
     /**
-     * Returns the value to which the specified key is mapped, or null if this map
-     * contains no mapping for the key.
+     * Returns the value to which the specified key is mapped, or null if this map contains no
+     * mapping for the key.
+     *
      * @param key Type token for which the specified object is to be returned.
-     * @return the value to which the specified key is mapped, or null if this map
-     *         contains no mapping for {@code key}.
+     * @return the value to which the specified key is mapped, or null if this map contains no
+     *     mapping for {@code key}.
      */
     public <T extends UserData> @Nullable T getUserData(Class<T> key) {
         checkThreadAndState();
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
-
         return key.cast(mUserDataMap.get(key));
     }
 
     /**
-     * Removes the mapping for a key from this map. Exception will be thrown if
-     * the given key has no mapping.
+     * Removes the mapping for a key from this map. Exception will be thrown if the given key has no
+     * mapping.
+     *
      * @param key Type token for which the specified object is to be removed.
      * @return The previous value associated with {@code key}.
      */
     public <T extends UserData> T removeUserData(Class<T> key) {
         checkThreadAndState();
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
 
         UserData ret = mUserDataMap.remove(key);
         if (ret == null) {
-            throw new IllegalStateException("UserData for the key is not present.");
+            throw new IllegalStateException();
         }
         return key.cast(ret);
     }
@@ -130,7 +121,7 @@ public final class UserDataHost {
 
         // Nulls out |mUserDataMap| first in order to prevent concurrent modification that
         // might happen in the for loop below.
-        HashMap<Class<? extends UserData>, UserData> map = mUserDataMap;
+        var map = mUserDataMap;
         mUserDataMap = null;
         for (UserData userData : map.values()) userData.destroy();
     }
