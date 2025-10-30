@@ -40,8 +40,7 @@ void FormatVisibilityRow(ash::HoverHighlightView* visibility_row,
                          const gfx::VectorIcon& vector_icon,
                          const std::u16string& label,
                          const std::u16string& sublabel,
-                         const ui::ColorId color_id,
-                         const bool is_row_enabled) {
+                         const ui::ColorId color_id) {
   DCHECK(visibility_row);
   visibility_row->Reset();
   visibility_row->AddIconAndLabel(
@@ -55,9 +54,6 @@ void FormatVisibilityRow(ash::HoverHighlightView* visibility_row,
                                    /*color_id=*/cros_tokens::kCrosSysOnSurface),
                                20);
   visibility_row->SetRightViewVisible(false);
-  visibility_row->SetAccessibilityState(
-      ash::HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
-  visibility_row->SetEnabled(is_row_enabled);
 }
 
 std::u16string GetUserEmail() {
@@ -232,6 +228,9 @@ void NearbyShareDetailedViewImpl::CreateVisibilitySelectionContainer() {
   visibility_selection_container_->SetProperty(
       views::kMarginsKey, kVisibilitySelectionContainerMargins);
 
+  visibility_selection_container_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kRadioGroup);
+
   CreateYourDevicesRow();
   CreateContactsRow();
   CreateHiddenRow();
@@ -290,6 +289,7 @@ void NearbyShareDetailedViewImpl::CreateVisibilityRow(
   visibility_row->AddRightIcon(ui::ImageModel::FromVectorIcon(kCheckCircleIcon),
                                20);
   visibility_row->SetRightViewVisible(false);
+  visibility_row->GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 }
 
 void NearbyShareDetailedViewImpl::CreateEveryoneRow() {
@@ -346,18 +346,15 @@ void NearbyShareDetailedViewImpl::FormatVisibilitySelectionContainer(
                       kQuickSettingsQuickShareYourDevicesIcon,
                       /*label=*/GetYourDevicesLabel(),
                       /*sublabel=*/GetYourDevicesSublabel(user_email_),
-                      /*color_id=*/background_visibility_row_color,
-                      /*is_row_enabled=*/is_background_visibility_enabled);
+                      /*color_id=*/background_visibility_row_color);
   FormatVisibilityRow(contacts_row_, kQuickSettingsQuickShareContactsIcon,
                       /*label=*/GetContactsLabel(),
                       /*sublabel=*/GetContactsSublabel(),
-                      /*color_id=*/background_visibility_row_color,
-                      /*is_row_enabled=*/is_background_visibility_enabled);
+                      /*color_id=*/background_visibility_row_color);
   FormatVisibilityRow(hidden_row_, kQuickSettingsQuickShareHiddenIcon,
                       /*label=*/GetHiddenLabel(),
                       /*sublabel=*/GetHiddenSublabel(),
-                      /*color_id=*/background_visibility_row_color,
-                      /*is_row_enabled=*/is_background_visibility_enabled);
+                      /*color_id=*/background_visibility_row_color);
   FormatEveryoneRow(/*color_id=*/everyone_row_color, in_high_visibility,
                     /*is_row_enabled=*/is_quick_share_enabled);
   SetCheckCircle(in_high_visibility);
@@ -430,10 +427,19 @@ void NearbyShareDetailedViewImpl::SetCheckCircle(
     const bool in_high_visibility) {
   CHECK(nearby_share_delegate_);
 
-  if (!nearby_share_delegate_->IsEnabled() || in_high_visibility) {
-    your_devices_row_->SetRightViewVisible(false);
-    contacts_row_->SetRightViewVisible(false);
-    hidden_row_->SetRightViewVisible(false);
+  your_devices_row_->SetRightViewVisible(false);
+  your_devices_row_->SetAccessibilityState(
+      HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+  contacts_row_->SetRightViewVisible(false);
+  contacts_row_->SetAccessibilityState(
+      HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+  hidden_row_->SetRightViewVisible(false);
+  hidden_row_->SetAccessibilityState(
+      HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+
+  const bool is_enabled =
+      nearby_share_delegate_->IsEnabled() && !in_high_visibility;
+  if (!is_enabled) {
     return;
   }
 
