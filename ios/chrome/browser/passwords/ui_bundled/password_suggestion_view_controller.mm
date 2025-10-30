@@ -41,7 +41,20 @@ constexpr CGFloat customSpacingAfterImage = 1;
 - (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
                                  userEmail:(NSString*)userEmail
                                  proactive:(BOOL)proactivePasswordGeneration {
-  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
+  if (proactivePasswordGeneration) {
+    configuration.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
+    configuration.secondaryActionImage =
+        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+  } else {
+    configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  }
+
+  self = [super initWithConfiguration:configuration];
   if (self) {
     _userEmail = userEmail;
     _passwordSuggestion = passwordSuggestion;
@@ -70,16 +83,6 @@ constexpr CGFloat customSpacingAfterImage = 1;
   self.subtitleString = l10n_util::GetNSStringF(
       IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
       base::SysNSStringToUTF16(self.userEmail));
-  self.primaryActionString =
-      l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
-  if (_proactive) {
-    self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
-    self.secondaryActionImage =
-        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
-  } else {
-    self.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
-  }
 
   [super viewDidLoad];
 

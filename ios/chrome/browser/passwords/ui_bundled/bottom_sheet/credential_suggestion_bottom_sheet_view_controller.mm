@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
@@ -109,7 +110,13 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 - (instancetype)initWithHandler:
                     (id<CredentialSuggestionBottomSheetHandler>)handler
                             URL:(const GURL&)URL {
-  self = [super init];
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
+  configuration.secondaryActionImage =
+      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+  self = [super initWithConfiguration:configuration];
   if (self) {
     self.handler = handler;
     _URL = URL;
@@ -139,11 +146,6 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
   self.titleString = _title;
   self.titleTextStyle = UIFontTextStyleTitle2;
-
-  self.secondaryActionString =
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
-  self.secondaryActionImage =
-      DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   if (_subtitle) {
     self.subtitleString = _subtitle;
@@ -197,6 +199,11 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 - (void)setAvatarImage:(UIImage*)avatarImage {
   self.image = avatarImage;
+}
+
+- (void)setPrimaryActionString:(NSString*)primaryActionString {
+  self.configuration.primaryActionString = primaryActionString;
+  [self reloadConfiguration];
 }
 
 #pragma mark - UITableViewDelegate
