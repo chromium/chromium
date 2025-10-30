@@ -15800,6 +15800,23 @@
             ]
         }
     ],
+    "MemoryConsumerForNGShapeCache": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MemoryConsumerForNGShapeCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "MemoryCoordinatorLastResortGC": [
         {
             "platforms": [

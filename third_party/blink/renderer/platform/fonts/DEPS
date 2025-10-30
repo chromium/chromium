@@ -38,4 +38,7 @@ specific_include_rules = {
         "+third_party/blink/renderer/platform/json/json_parser.h",
         "+third_party/blink/renderer/platform/json/json_values.h"
     ],
+    "ng_shape_cache.h" : [
+        "+base/memory_coordinator"
+    ],
 }

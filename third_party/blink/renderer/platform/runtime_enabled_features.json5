@@ -3304,6 +3304,12 @@
       },
     },
     {
+      // This feature helps to add memory consumer to NGShapeCache, so that
+      // the cached shape results would be cleared once exceeding the memory limit.
+      name: "MemoryConsumerForNGShapeCache",
+      status: "test",
+    },
+    {
       name: "MenuElements",
       status: "experimental",
     },
