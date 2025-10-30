@@ -212,6 +212,10 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
      * @param animate Whether animate the browser controls size change.
      */
     public void requestLayerUpdate(boolean animate) {
+        updateLayersInternally(animate, mBrowserControlsSizer.offsetOverridden());
+    }
+
+    private void updateLayersInternally(boolean animate, boolean shouldUpdateOffsets) {
         if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()) return;
 
         recalculateHeights();
@@ -220,7 +224,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
 
         // When reposition happening when browser controls is overriding offsets, we need to
         // reposition immediately.
-        if (mBrowserControlsSizer.offsetOverridden()) {
+        if (shouldUpdateOffsets) {
             repositionLayers(
                     mBrowserControlsSizer.getTopControlOffset(),
                     mBrowserControlsSizer.getTopControlsMinHeightOffset(),
@@ -330,33 +334,9 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                             + offsetsAppliedByBrowser);
         }
 
-        // 1. Calculate the offset based on the current layer position. In this step, the controls
-        // are classified into scrollable and non-scrollable layer, and all the layers are display
-        // at its full height.
-        SparseIntArray yOffsetOfLayers = new SparseIntArray();
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !offsetsAppliedByBrowser) {
-            // If offset can be handled by render, put layers at their resting positions.
-            for (@TopControlType int type : STACK_ORDER) {
-                TopControlLayer layer = mControls.get(type);
-                if (isLayerHidden(layer)) {
-                    continue;
-                }
-
-                yOffsetOfLayers.put(type, mLayerRestingOffsets.get(type));
-            }
-        } else {
-            calculateStackLayersOffsets(
-                    yOffsetOfLayers, initialTopOffset, initialTopControlsMinHeightOffset);
-        }
-
-        // 2. Adjustments. The previous step assumes all the layers are display in full height at
-        // resting state. When animating size changes, one or more layer(s) could be in its
-        // showing / hiding phase, and the other layers needs to shift accordingly.
-        //
-        // Compare and fix the yOffset with the previous mLayerOffsets if reposition
-        // is caused by an animated browser controls height adjustment. This needs to run in a
-        // different loop to cooperate browser controls height reduction, as we need to still push
-        // updates to layer that's changed from visible -> hidden.
+        // 0. Checking if we are in animation. Render driven offsets currently cannot handle layer
+        // animation at different speed. So if any of the layer attempts to animation, we'll have to
+        // let browser take over the offset calculation.
         boolean hasAnimatingLayer = false;
         for (@TopControlType int type : STACK_ORDER) {
             TopControlLayer layer = mControls.get(type);
@@ -368,6 +348,23 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 break;
             }
         }
+        offsetsAppliedByBrowser |= hasAnimatingLayer;
+
+        // 1. Calculate the offset based on the current layer position. In this step, the controls
+        // are classified into scrollable and non-scrollable layer, and all the layers are display
+        // at its full height.
+        SparseIntArray yOffsetOfLayers = new SparseIntArray();
+        calculateStackLayersOffsets(
+                yOffsetOfLayers, initialTopOffset, initialTopControlsMinHeightOffset);
+
+        // 2. Adjustments. The previous step assumes all the layers are display in full height at
+        // resting state. When animating size changes, one or more layer(s) could be in its
+        // showing / hiding phase, and the other layers needs to shift accordingly.
+        //
+        // Compare and fix the yOffset with the previous mLayerOffsets if reposition
+        // is caused by an animated browser controls height adjustment. This needs to run in a
+        // different loop to cooperate browser controls height reduction, as we need to still push
+        // updates to layer that's changed from visible -> hidden.
 
         // The algorithm adjust layer's offset based on whether the control is showing or hiding.
         if (requestNewFrame && initialTopOffset != 0 && hasAnimatingLayer) {
@@ -467,8 +464,15 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 mLayerYOffset.delete(type);
             } else {
                 mLayerYOffset.put(type, yOffset);
-            }
 
+                // When BCIV is enabled, we override the yOffset at the final step, so we can ensure
+                // mLayerYOffsets has the visually accurate offsets. This is needed so we can handle
+                // offset updates due to constraint changes.
+                if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                        && !offsetsAppliedByBrowser) {
+                    yOffset = mLayerRestingOffsets.get(type);
+                }
+            }
             layer.onBrowserControlsOffsetUpdate(yOffset, controlsAtResting);
 
             if (sDumpStatusForTesting) {
@@ -632,7 +636,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         }
         mTopControlsOffsetTagInfo = offsetTagsInfo;
         mBrowserControlsState = constraints;
-        requestLayerUpdate(false);
+        updateLayersInternally(false, shouldUpdateOffsets);
     }
 
     @Override
