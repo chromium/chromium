@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_data.h"
@@ -33,9 +34,11 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -44,8 +47,14 @@
 namespace permissions {
 
 namespace {
+
 using QuietUiReason = PermissionUiSelector::QuietUiReason;
-}
+
+using testing::SizeIs;
+
+constexpr int kPermissionTypeGeolocationWithOptions = 139;
+
+}  // namespace
 
 class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
  public:
@@ -2236,11 +2245,20 @@ TEST_F(PermissionRequestManagerTest, PEPCRequestNeverQuiet) {
 
 class PermissionRequestManagerApproximateGeolocationTest
     : public PermissionRequestManagerTest,
-      public testing::WithParamInterface<GeolocationAccuracy> {};
+      public testing::WithParamInterface<GeolocationAccuracy> {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      content_settings::features::kApproximateGeolocationPermission};
+};
+
+// Match UkmPromptOptions in permission_uma_util.cc.
+constexpr int64_t kPromptOptionsApproximate = 1;
+constexpr int64_t kPromptOptionsPrecise = 2;
 
 TEST_P(PermissionRequestManagerApproximateGeolocationTest,
        ReportAccuracyInUmaAOnAccept) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
                                                  /*should_be_seen=*/true, 1);
 
@@ -2253,11 +2271,25 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.Accepted.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
+
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+      entries = test_ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_THAT(entries, SizeIs(1));
+  EXPECT_EQ(
+      *test_ukm_recorder.GetEntryMetric(entries.front(), "PermissionType"),
+      kPermissionTypeGeolocationWithOptions);
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "Action"),
+            static_cast<int64_t>(PermissionAction::GRANTED));
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "PromptOptions"),
+            accuracy == GeolocationAccuracy::kPrecise
+                ? kPromptOptionsPrecise
+                : kPromptOptionsApproximate);
 }
 
 TEST_P(PermissionRequestManagerApproximateGeolocationTest,
        ReportAccuracyInUmaOnAcceptThisTime) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
                                                  /*should_be_seen=*/true, 1);
 
@@ -2271,11 +2303,25 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.AcceptedOnce.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
+
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+      entries = test_ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_THAT(entries, SizeIs(1));
+  EXPECT_EQ(
+      *test_ukm_recorder.GetEntryMetric(entries.front(), "PermissionType"),
+      kPermissionTypeGeolocationWithOptions);
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "Action"),
+            static_cast<int64_t>(PermissionAction::GRANTED_ONCE));
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "PromptOptions"),
+            accuracy == GeolocationAccuracy::kPrecise
+                ? kPromptOptionsPrecise
+                : kPromptOptionsApproximate);
 }
 
 TEST_P(PermissionRequestManagerApproximateGeolocationTest,
        ReportAccuracyInUmaOnDeny) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
                                                  /*should_be_seen=*/true, 1);
 
@@ -2289,11 +2335,24 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.Denied.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+      entries = test_ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_THAT(entries, SizeIs(1));
+  EXPECT_EQ(
+      *test_ukm_recorder.GetEntryMetric(entries.front(), "PermissionType"),
+      kPermissionTypeGeolocationWithOptions);
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "Action"),
+            static_cast<int64_t>(PermissionAction::DENIED));
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "PromptOptions"),
+            accuracy == GeolocationAccuracy::kPrecise
+                ? kPromptOptionsPrecise
+                : kPromptOptionsApproximate);
 }
 
 TEST_P(PermissionRequestManagerApproximateGeolocationTest,
        ReportAccuracyInUmaOnDismiss) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
                                                  /*should_be_seen=*/true, 1);
 
@@ -2307,11 +2366,24 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.Dismissed.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+      entries = test_ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_THAT(entries, SizeIs(1));
+  EXPECT_EQ(
+      *test_ukm_recorder.GetEntryMetric(entries.front(), "PermissionType"),
+      kPermissionTypeGeolocationWithOptions);
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "Action"),
+            static_cast<int64_t>(PermissionAction::DISMISSED));
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "PromptOptions"),
+            accuracy == GeolocationAccuracy::kPrecise
+                ? kPromptOptionsPrecise
+                : kPromptOptionsApproximate);
 }
 
 TEST_P(PermissionRequestManagerApproximateGeolocationTest,
        ReportAccuracyInUmaOnIgnore) {
   base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   auto request_geolocation = CreateAndAddRequest(RequestType::kGeolocation,
                                                  /*should_be_seen=*/true, 1);
 
@@ -2325,6 +2397,19 @@ TEST_P(PermissionRequestManagerApproximateGeolocationTest,
       "Permissions.Prompt.Geolocation.Ignored.Accuracy",
       /*sample=*/static_cast<int>(accuracy),
       /*expected_bucket_count=*/1);
+
+  const std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>&
+      entries = test_ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_THAT(entries, SizeIs(1));
+  EXPECT_EQ(
+      *test_ukm_recorder.GetEntryMetric(entries.front(), "PermissionType"),
+      kPermissionTypeGeolocationWithOptions);
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "Action"),
+            static_cast<int64_t>(PermissionAction::IGNORED));
+  EXPECT_EQ(*test_ukm_recorder.GetEntryMetric(entries.front(), "PromptOptions"),
+            accuracy == GeolocationAccuracy::kPrecise
+                ? kPromptOptionsPrecise
+                : kPromptOptionsApproximate);
 }
 
 INSTANTIATE_TEST_SUITE_P(Accuracies,

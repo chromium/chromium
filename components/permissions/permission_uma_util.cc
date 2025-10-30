@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -33,6 +34,7 @@
 #include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/prefs/pref_service.h"
 #include "components/safety_check/safety_check.h"
 #include "components/unified_consent/pref_names.h"
@@ -300,6 +302,13 @@ void RecordPermissionUsageNotificationShownUkm(
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+// This enum backs the UKM Permission.PromptOptions, so it must be treated as
+// append-only.
+enum class UkmPromptOptions {
+  APPROXIMATE_LOCATION = 1,
+  PRECISE_LOCATION = 2,
+};
+
 void RecordPermissionActionUkm(
     PermissionAction action,
     PermissionRequestGestureType gesture_type,
@@ -324,6 +333,7 @@ void RecordPermissionActionUkm(
     PredictionRequestFeatures::ActionCounts actions_counts_for_request_type,
     PredictionRequestFeatures::ActionCounts actions_counts,
     std::optional<bool> prediction_decision_held_back,
+    std::optional<UkmPromptOptions> prompt_options,
     std::optional<ukm::SourceId> source_id) {
   if (action == PermissionAction::REVOKED) {
     RecordUmaForWhetherRevocationUkmWasRecorded(permission,
@@ -351,6 +361,10 @@ void RecordPermissionActionUkm(
       .SetPriorIgnores(std::min(kPriorCountCap, ignore_count))
       .SetSource(static_cast<int64_t>(source_ui))
       .SetPromptDisposition(static_cast<int64_t>(ui_disposition));
+
+  if (prompt_options) {
+    builder.SetPromptOptions(static_cast<int64_t>(prompt_options.value()));
+  }
 
   builder
       .SetStats_LoudPromptsOfType_DenyRate(
@@ -915,18 +929,18 @@ void PermissionUmaUtil::PermissionRevoked(
   DCHECK(PermissionUtil::IsPermission(permission));
   // An unknown gesture type is passed in since gesture type is only
   // applicable in prompt UIs where revocations are not possible.
-  RecordPermissionAction(permission, PermissionAction::REVOKED, source_ui,
-                         PermissionRequestGestureType::UNKNOWN,
-                         /*time_to_action=*/base::TimeDelta(),
-                         PermissionPromptDisposition::NOT_APPLICABLE,
-                         /*ui_reason=*/std::nullopt, /*variants=*/std::nullopt,
-                         revoked_origin,
-                         /*web_contents=*/nullptr, browser_context,
-                         /*render_frame_host*/ nullptr,
-                         /*predicted_grant_likelihood=*/std::nullopt,
-                         /*permission_request_relevance=*/std::nullopt,
-                         /*permission_ai_relevance_model=*/std::nullopt,
-                         /*prediction_decision_held_back=*/std::nullopt);
+  RecordPermissionAction(
+      permission, PermissionAction::REVOKED, source_ui,
+      PermissionRequestGestureType::UNKNOWN,
+      /*time_to_action=*/base::TimeDelta(),
+      PermissionPromptDisposition::NOT_APPLICABLE,
+      /*ui_reason=*/std::nullopt, /*variants=*/std::nullopt, revoked_origin,
+      /*web_contents=*/nullptr, browser_context,
+      /*render_frame_host*/ nullptr,
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance=*/std::nullopt,
+      /*permission_ai_relevance_model=*/std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt, std::monostate());
 }
 
 void PermissionUmaUtil::RecordEmbargoPromptSuppression(
@@ -1107,7 +1121,8 @@ void PermissionUmaUtil::PermissionPromptResolved(
         web_contents, web_contents->GetBrowserContext(),
         content::RenderFrameHost::FromID(request->get_requesting_frame_id()),
         predicted_grant_likelihood, permission_request_relevance,
-        permission_ai_relevance_model, prediction_decision_held_back);
+        permission_ai_relevance_model, prediction_decision_held_back,
+        request->prompt_options());
 
     std::string priorDismissPrefix = base::StrCat(
         {"Permissions.Prompt.", action_string, ".PriorDismissCount2."});
@@ -1448,7 +1463,8 @@ void PermissionUmaUtil::RecordPermissionAction(
     std::optional<PermissionRequestRelevance> permission_request_relevance,
     std::optional<permissions::PermissionAiRelevanceModel>
         permission_ai_relevance_model,
-    std::optional<bool> prediction_decision_held_back) {
+    std::optional<bool> prediction_decision_held_back,
+    const PromptOptions& prompt_options) {
   DCHECK(PermissionUtil::IsPermission(permission));
   PermissionDecisionAutoBlocker* autoblocker =
       PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
@@ -1497,6 +1513,16 @@ void PermissionUmaUtil::RecordPermissionAction(
     RecordUmaForRevocationSourceUI(permission, source_ui);
   }
 
+  std::optional<UkmPromptOptions> ukm_prompt_options;
+  if (permission == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+    if (const auto* geolocation_options =
+            std::get_if<GeolocationPromptOptions>(&prompt_options)) {
+      ukm_prompt_options = geolocation_options->selected_precise
+                               ? UkmPromptOptions::PRECISE_LOCATION
+                               : UkmPromptOptions::APPROXIMATE_LOCATION;
+    }
+  }
+
   PermissionsClient::Get()->GetUkmSourceId(
       permission, browser_context, web_contents, requesting_origin,
       base::BindOnce(
@@ -1514,7 +1540,7 @@ void PermissionUmaUtil::RecordPermissionAction(
           permission_ai_relevance_model,
           loud_ui_actions_counts_per_request_type, loud_ui_actions_counts,
           actions_counts_per_request_type, actions_counts,
-          prediction_decision_held_back));
+          prediction_decision_held_back, ukm_prompt_options));
 
   if (render_frame_host && IsCrossOriginSubframe(render_frame_host)) {
     RecordCrossOriginFrameActionAndPolicyConfiguration(permission, action,
