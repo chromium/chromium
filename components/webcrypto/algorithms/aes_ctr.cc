@@ -4,13 +4,12 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -64,9 +63,10 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
     return Status::OperationError();
   }
   int final_output_chunk_len = 0;
-  if (!EVP_CipherFinal_ex(context.get(),
-                          UNSAFE_TODO(output.data() + output_len),
-                          &final_output_chunk_len)) {
+  if (!EVP_CipherFinal_ex(
+          context.get(),
+          output.subspan(base::checked_cast<size_t>(output_len)).data(),
+          &final_output_chunk_len)) {
     return Status::OperationError();
   }
 
@@ -108,19 +108,18 @@ absl::uint128 GetCounter(
 std::array<uint8_t, AES_BLOCK_SIZE> BlockWithZeroedCounter(
     base::span<const uint8_t, AES_BLOCK_SIZE> counter_block,
     unsigned int counter_length_bits) {
-  unsigned int counter_length_bytes = counter_length_bits / 8;
-  unsigned int counter_length_bits_remainder = counter_length_bits % 8;
-
   std::array<uint8_t, AES_BLOCK_SIZE> new_counter_block;
-  UNSAFE_TODO(
-      memcpy(new_counter_block.data(), counter_block.data(), AES_BLOCK_SIZE));
+  auto out = base::span(new_counter_block);
 
-  size_t index = new_counter_block.size() - counter_length_bytes;
-  UNSAFE_TODO(
-      memset(&new_counter_block.front() + index, 0, counter_length_bytes));
+  const unsigned int counter_length_bytes = counter_length_bits / 8;
+  const unsigned int counter_length_bits_remainder = counter_length_bits % 8;
 
+  out.copy_from(counter_block);
+
+  std::ranges::fill(out.last(counter_length_bytes), 0);
   if (counter_length_bits_remainder) {
-    new_counter_block[index - 1] &= 0xFF << counter_length_bits_remainder;
+    const size_t index = new_counter_block.size() - counter_length_bytes - 1;
+    out[index] &= 0xFF << counter_length_bits_remainder;
   }
 
   return new_counter_block;
