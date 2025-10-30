@@ -9,7 +9,9 @@
 
 namespace bookmarks {
 class BookmarkNode;
-}
+}  // namespace bookmarks
+
+@class FaviconAttributes;
 
 // BookmarksHomeNodeItem provides data for a table view row that displays a
 // single bookmark.
@@ -21,6 +23,9 @@ class BookmarkNode;
 
 // Whether a slashed cloud should be displayed.
 @property(nonatomic, assign) BOOL shouldDisplayCloudSlashIcon;
+
+// Attributes for the favicon.
+@property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 
 - (instancetype)initWithType:(NSInteger)type
                 bookmarkNode:(const bookmarks::BookmarkNode*)node

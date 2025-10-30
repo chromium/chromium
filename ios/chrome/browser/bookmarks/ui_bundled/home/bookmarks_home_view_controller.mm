@@ -630,23 +630,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
         fallbackToGoogleServer:(BOOL)fallbackToGoogleServer {
-  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-  [self loadFaviconAtIndexPath:indexPath
-                       forCell:cell
-        fallbackToGoogleServer:fallbackToGoogleServer];
-}
-
-// Asynchronously loads favicon for given index path. The loads are cancelled
-// upon cell reuse automatically.  When the favicon is not found in cache, try
-// loading it from a Google server if `fallbackToGoogleServer` is YES,
-// otherwise, use the fall back icon style.
-- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-                       forCell:(UITableViewCell*)cell
-        fallbackToGoogleServer:(BOOL)fallbackToGoogleServer {
   const BookmarkNode* node = [self nodeAtIndexPath:indexPath];
   if (node->is_folder()) {
     return;
   }
+
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  BookmarksHomeNodeItem* URLItem =
+      base::apple::ObjCCastStrict<BookmarksHomeNodeItem>(item);
 
   // Start loading a favicon.
   __weak BookmarksHomeViewController* weakSelf = self;
@@ -662,9 +653,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
         [strongSelf nodeAtIndexPath:indexPath] != node) {
       return;
     }
-    TableViewURLCell* URLCell =
-        base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-    [URLCell.faviconView configureWithAttributes:attributes];
+    URLItem.faviconAttributes = attributes;
+    if (!cached && attributes.faviconImage) {
+      [strongSelf.tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+    }
   };
 
   self.faviconLoader->FaviconForPageUrl(
@@ -2606,13 +2598,20 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+
+  if (item.type == BookmarksHomeItemTypeBookmark) {
+    // Load the favicon from cache. If not found, try fetching it from a
+    // Google Server.
+    [self loadFaviconAtIndexPath:indexPath fallbackToGoogleServer:YES];
+  }
+
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
   UIView* selectedBackgroundView = [[UIView alloc] init];
   selectedBackgroundView.backgroundColor =
       [UIColor colorNamed:kTertiaryBackgroundColor];
   cell.selectedBackgroundView = selectedBackgroundView;
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
 
   cell.userInteractionEnabled =
       (item.type != BookmarksHomeItemTypeMessage &&
@@ -2644,12 +2643,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
         tableCell.textDelegate = strongSelf;
       });
     }
-
-    // Load the favicon from cache. If not found, try fetching it from a
-    // Google Server.
-    [self loadFaviconAtIndexPath:indexPath
-                         forCell:cell
-          fallbackToGoogleServer:YES];
   }
 
   return cell;
