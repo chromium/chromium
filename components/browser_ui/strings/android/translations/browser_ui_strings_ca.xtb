@@ -202,6 +202,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3123473560110926937">Bloquejat en alguns llocs web</translation>
 <translation id="3132996321662585180">Actualitza diàriament</translation>
 <translation id="3143754809889689516">Reprodueix des del principi</translation>
+<translation id="3164169438034704658">Pots activar la ubicació precisa a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permet que un lloc web utilitzi galetes de tercers</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
@@ -540,6 +541,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6980861169612950611">Vols suprimir les dades del lloc web? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
+<translation id="6991142177939282156">Permès • S'utilitza una aproximació</translation>
 <translation id="6992289844737586249">Pregunta abans de permetre que els llocs web utilitzin el micròfon (opció recomanada)</translation>
 <translation id="7000754031042624318">Desactivat a la configuració d'Android</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
@@ -650,6 +652,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="8300705686683892304">Gestionats per aplicacions</translation>
+<translation id="8301363963630676147">Permès aquesta vegada • S'utilitza una aproximació</translation>
 <translation id="8315509175050791576">S'està compartint una pestanya</translation>
 <translation id="8324158725704657629">No m'ho tornis a preguntar</translation>
 <translation id="8362795839483915693">Pots ampliar o reduir el zoom als llocs web que visites</translation>

@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Xem mật khẩu</translation>
 <translation id="1996318269856535896">Bạn vẫn có thể sử dụng dữ liệu duyệt web hiện có trên thiết bị này. Để sử dụng dữ liệu đó, hãy đăng xuất khỏi tài khoản được quản lý.</translation>
 <translation id="2010008505735295285">Tải lại</translation>
+<translation id="2012723204723845092">Chào mừng bạn quay lại!</translation>
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="201759455285471444">Mở rộng nhóm thẻ.</translation>
 <translation id="202070562065520783">Giải thích nội dung này cho tôi</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Bạn chưa lưu mật khẩu hoặc khoá truy cập nào, nhưng bạn có thể xoá danh sách trang web và ứng dụng mà bạn chọn không bao giờ lưu thông tin đăng nhập. Mọi tài khoản bạn tạo cho các trang web hoặc ứng dụng sẽ không bị xoá.</translation>
 <translation id="3530206579861815432">Tìm nhanh các thẻ đang mở và mới đóng trên các thiết bị đã đồng bộ hoá.</translation>
 <translation id="3530767473765895035">Quản lý các tài khoản trên thiết bị này…</translation>
+<translation id="353340646084395154">Đã xoá các lựa chọn ưu tiên về trang thẻ mới</translation>
 <translation id="3533436815740441613">Thẻ mới</translation>
 <translation id="3540141921715814660">Thêm vào Dấu trang</translation>
 <translation id="3546122170015471515">Tính năng Xem trước bản đồ trên Google.com</translation>
@@ -780,7 +782,6 @@
 <translation id="4049507953662678203">Hãy đảm bảo rằng bạn có kết nối mạng và thử lại.</translation>
 <translation id="4070132839822635162">Không đăng nhập</translation>
 <translation id="4092655288299341041">Hiện thông tin trợ giúp</translation>
-<translation id="4095483462103784441">Tạo nhóm thẻ mới</translation>
 <translation id="4099756562043439968">Đặt lời nhắc</translation>
 <translation id="4108998448622696017">Phát hiện và cảnh báo bạn các sự kiện nguy hiểm khi các sự kiện đó diễn ra.</translation>
 <translation id="4111985840824673503">Đánh dấu tất cả là đã đọc</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4894963374040315706">Quyền này cho phép bạn tìm kiếm bằng giọng nói</translation>
 <translation id="4895540042460820904">Lần mở gần nhất</translation>
 <translation id="4896467949657706481">Hệ thống đã đóng các thẻ và đăng xuất bạn</translation>
+<translation id="4911042367886397055">Chào mừng bạn quay trở lại, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Bạn có thể chia sẻ bản sao mật khẩu của mình một cách an toàn với thành viên trong nhóm gia đình. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Bạn có thể sử dụng dữ liệu duyệt web hiện có khi đăng nhập bằng <ph name="USER_EMAIL" />. Tổ chức của bạn có thể xem được dữ liệu này.</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
@@ -1052,6 +1054,7 @@
 <translation id="508645147179720015">Ghi chú dài hơn 1000 ký tự</translation>
 <translation id="5087098519049306025">Theo dõi giá</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Đang tải dữ liệu của bạn…</translation>
 <translation id="5118462200606189584">Thêm tài khoản…</translation>
 <translation id="5118764316110575523">Đang tắt</translation>
 <translation id="5119329531859909472">Để theo dõi sản phẩm, hãy nhấn vào Theo dõi</translation>
@@ -1122,6 +1125,7 @@
 <translation id="537853552771686272">Quản lý các chủ đề và trang web mà bạn quan tâm</translation>
 <translation id="5390458669633674385">{count,plural, =1{Đã đóng {count} thẻ}other{Đã đóng {count} thẻ}}</translation>
 <translation id="5394975111793637642">Ẩn thẻ bài đánh giá sản phẩm dành cho bạn</translation>
+<translation id="5407806496954700135">Bạn có muốn áp dụng các chế độ tuỳ chỉnh trang thẻ mới từ một thiết bị khác không?</translation>
 <translation id="5414763847370083940">Bạn sẽ nhận được thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
 <translation id="5415289094036440596">Không thể chia sẻ khoá truy cập</translation>
 <translation id="5416455648658732408">Chuyển đến nhóm thẻ</translation>
@@ -1757,6 +1761,7 @@
 <translation id="7696316012653762532">Các lựa chọn dịch trang</translation>
 <translation id="7700527812567437847">Tìm trên màn hình bằng Google Ống kính</translation>
 <translation id="7701040980221191251">Không có</translation>
+<translation id="7708668404222666001">Đã áp dụng các lựa chọn ưu tiên của bạn cho trang thẻ mới</translation>
 <translation id="7708994397325774423">Truy cập tất cả mật khẩu của bạn</translation>
 <translation id="7711440461521638739">Bạn không sử dụng lại bất kỳ mật khẩu nào</translation>
 <translation id="7712361583414030698">Đang xem phiên bản ngoại tuyến</translation>

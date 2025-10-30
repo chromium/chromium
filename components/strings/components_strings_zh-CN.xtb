@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">青色 3</translation>
 <translation id="1035709686865413354">滤水器和净水器</translation>
 <translation id="1036348656032585052">关闭</translation>
+<translation id="1036436692654972538">保存到设备</translation>
 <translation id="1036881361735705143">C4 信封</translation>
 <translation id="1038842779957582377">未知名称</translation>
 <translation id="1041998700806130099">工作表消息</translation>
@@ -178,6 +179,7 @@
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1292571435393770077">纸匣 16</translation>
 <translation id="1292701964462482250">“您计算机上的软件导致 Chrome 无法安全地连接到网络”（仅限 Windows 计算机）</translation>
+<translation id="1293556467332435079">文件</translation>
 <translation id="1293797321964802402">9 x 11 英寸信封</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1296930489679394997">销售</translation>
@@ -838,7 +840,7 @@
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的账号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多种货币</translation>
 <translation id="2359808026110333948">继续</translation>
-<translation id="236000571258713023">车辆</translation>
+<translation id="236000571258713023">交通工具</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">“调整大小”切换菜单</translation>
 <translation id="2365355378251437925">请输入<ph name="FIELD" /></translation>
@@ -2826,6 +2828,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> 将您重定向的次数过多。</translation>
 <translation id="5619721953841297650">预设</translation>
 <translation id="5624120631404540903">管理密码</translation>
+<translation id="5628060911499153873">保存您的信息，即可在各项 Google 产品中更快地完成操作。您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。</translation>
 <translation id="5629630648637658800">无法加载策略设置</translation>
 <translation id="5630981295558454585">“向 Google 询问此页面”按钮，启用即可向 Google 询问此页面</translation>
 <translation id="5631439013527180824">设备管理令牌无效</translation>
@@ -3151,7 +3154,6 @@
 <translation id="6189351761800074311">您的文本和网页内容会发送给 Google，但不会用于改进 AI。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">替换键盘上的某些键（例如 Esc 键）</translation>
-<translation id="6192524964213419211">保存您的信息，即可在各项 Google 产品中更快地完成操作。您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="6194209731893739467">您跟踪的所有商品都会显示在此处</translation>
 <translation id="6195371403461054755">地质学</translation>
 <translation id="6195418151868446719">消费类电子产品</translation>
@@ -3487,7 +3489,6 @@
 <translation id="6716039223770814796">比较“<ph name="COMPARE_SET_NAME" />” · <ph name="ITEMS" /> 项内容</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="6717692133381953670">从“<ph name="DEVICE_NAME" />”发送的标签页</translation>
-<translation id="6718524733720986924">保存信息后，自动填充功能下次将为您填写更多字段</translation>
 <translation id="6718612893943028815">使用摄像头？</translation>
 <translation id="6721164594124191969">标签（平滑）</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

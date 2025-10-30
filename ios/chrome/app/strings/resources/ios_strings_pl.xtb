@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Wyświetl hasło</translation>
 <translation id="1996318269856535896">Nadal masz dostęp do dotychczasowych danych przeglądania na tym urządzeniu. Aby ich użyć, wyloguj się z konta zarządzanego.</translation>
 <translation id="2010008505735295285">Załaduj ponownie</translation>
+<translation id="2012723204723845092">Witamy ponownie!</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
 <translation id="202070562065520783">Wyjaśnij mi to</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Nie masz zapisanych haseł ani kluczy dostępu, ale możesz usunąć listę witryn i aplikacji, w przypadku których nie chcesz zapisywać danych logowania. Żadne konto utworzone przez Ciebie w witrynach i aplikacjach nie zostanie usunięte.</translation>
 <translation id="3530206579861815432">Szybko znajduj otwarte i ostatnio zamknięte karty na zsynchronizowanych urządzeniach.</translation>
 <translation id="3530767473765895035">Zarządzaj kontami na tym urządzeniu…</translation>
+<translation id="353340646084395154">Ustawienia strony nowej karty zostały usunięte</translation>
 <translation id="3533436815740441613">Nowa karta</translation>
 <translation id="3540141921715814660">Dodaj do zakładek</translation>
 <translation id="3546122170015471515">Podgląd Map na Google.com</translation>
@@ -780,7 +782,6 @@
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4070132839822635162">Nie loguj się</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
-<translation id="4095483462103784441">Utwórz nową grupę kart</translation>
 <translation id="4099756562043439968">Ustaw przypomnienie</translation>
 <translation id="4108998448622696017">Wykrywa niebezpieczne zdarzenia i natychmiast Cię o nich ostrzega.</translation>
 <translation id="4111985840824673503">Oznacz wszystkie jako przeczytane</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4894963374040315706">Umożliwia wyszukiwanie głosowe</translation>
 <translation id="4895540042460820904">Ostatnio otwarty</translation>
 <translation id="4896467949657706481">Karty zostały zamknięte i nastąpiło wylogowanie</translation>
+<translation id="4911042367886397055">Witaj ponownie, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Możesz bezpiecznie udostępnić kopię hasła innej osobie w grupie rodzinnej. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Możesz używać dotychczasowych danych przeglądania, gdy się zalogujesz na konto <ph name="USER_EMAIL" />. Dostęp do tych danych może mieć Twoja organizacja.</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
@@ -1052,6 +1054,7 @@
 <translation id="508645147179720015">Notatka ma ponad 1000 znaków</translation>
 <translation id="5087098519049306025">Śledzenie cen</translation>
 <translation id="5090832849094901128">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Pobieram Twoje rzeczy…</translation>
 <translation id="5118462200606189584">Dodaj konto…</translation>
 <translation id="5118764316110575523">Wyłączono</translation>
 <translation id="5119329531859909472">Aby śledzić produkt, kliknij Śledź</translation>
@@ -1122,6 +1125,7 @@
 <translation id="537853552771686272">Zarządzaj tematami i witrynami, które Cię interesują</translation>
 <translation id="5390458669633674385">{count,plural, =1{Zamknięto {count}}few{Zamknięto {count}}many{Zamknięto {count}}other{Zamknięto {count}}}</translation>
 <translation id="5394975111793637642">Ukryj opinie o produktach na swojej karcie</translation>
+<translation id="5407806496954700135">Czy chcesz użyć dostosowań strony nowej karty z innego urządzenia?</translation>
 <translation id="5414763847370083940">Otrzymasz alert, jeśli cena w którejkolwiek witrynie spadnie.</translation>
 <translation id="5415289094036440596">Nie można udostępniać kluczy dostępu</translation>
 <translation id="5416455648658732408">Przenieś do grupy kart</translation>
@@ -1757,6 +1761,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7696316012653762532">Opcje tłumaczenia strony</translation>
 <translation id="7700527812567437847">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="7701040980221191251">Brak</translation>
+<translation id="7708668404222666001">Zastosowano ustawienia strony nowej karty</translation>
 <translation id="7708994397325774423">Pobierz wszystkie swoje hasła</translation>
 <translation id="7711440461521638739">Nie używasz ponownie żadnych haseł</translation>
 <translation id="7712361583414030698">Wyświetlam wersję offline</translation>

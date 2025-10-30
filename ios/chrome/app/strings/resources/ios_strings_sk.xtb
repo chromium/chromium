@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Toto používateľské meno ste pre tento web už uložili</translation>
 <translation id="1497590942294823549">Ponuka → Správca hesiel</translation>
 <translation id="1498283581832036924">Účet na webe <ph name="WEBSITE" /> odstránený nebude.</translation>
+<translation id="1503814213414825943">Vyberte účty, ktoré chcete exportovať do inej aplikácie.</translation>
 <translation id="1506061864768559482">Vyhľadávač</translation>
 <translation id="1506063256525392513">Umožňuje vytvárať a nahrávať fotky, ako aj skenovať QR kódy</translation>
 <translation id="1508263560970797965">Pokračovať v režime inkognito</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Uistite sa, že máte pripojenie k sieti, a skúste to znova.</translation>
 <translation id="4070132839822635162">Neprihlasovať sa</translation>
 <translation id="4092655288299341041">Zobraziť pomocníka</translation>
-<translation id="4095483462103784441">Vytvoriť novú skupinu kariet</translation>
 <translation id="4099756562043439968">Nastaviť pripomenutie</translation>
 <translation id="4108998448622696017">Zisťuje škodlivé udalosti a upozorní vás, keď k nim dôjde.</translation>
 <translation id="4111985840824673503">Označiť všetko ako prečítané</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Zmeniť heslo na webe</translation>
 <translation id="5248640482715684545">Tento web sa pokúša otvoriť inú aplikáciu.</translation>
 <translation id="5250371859659394278">Z neznámeho zdroja</translation>
+<translation id="5269913829202614649">Prispôsobenie domovskej stránky</translation>
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) chce, aby ste sa pripojili ku skupine kariet. Ktokoľvek s odkazom môže upravovať všetky karty, preto pri pripájaní postupujte opatrne. Odkaz vyprší o 48 h.</translation>

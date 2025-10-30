@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Angalia Nenosiri</translation>
 <translation id="1996318269856535896">Bado unaweza kutumia data yako iliyopo ya kuvinjari kwenye kifaa hiki. Ili uitumie, ondoka kwenye akaunti yako inayosimamiwa.</translation>
 <translation id="2010008505735295285">Pakia upya</translation>
+<translation id="2012723204723845092">Karibu tena!</translation>
 <translation id="2015722694326466240">Ili uone manenosiri, ni lazima kwanza uweke namba ya siri kwenye kifaa chako.</translation>
 <translation id="201759455285471444">Panua kikundi cha vichupo.</translation>
 <translation id="202070562065520783">Nifafanulie hili</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Hujahifadhi manenosiri au funguo zozote za siri, lakini unaweza kufuta orodha ya tovuti na programu ulizochagua kutohifadhi kamwe maelezo ya kuingia katika akaunti. Akaunti yoyote uliyofungua kwenye tovuti au programu haitafutwa.</translation>
 <translation id="3530206579861815432">Pata kwa haraka vichupo ulivyofungua na ulivyofunga hivi karibuni kwenye vifaa vyako vilivyosawazishwa.</translation>
 <translation id="3530767473765895035">Dhibiti akaunti kwenye kifaa hiki…</translation>
+<translation id="353340646084395154">Umeondoa mapendeleo ya ukurasa mpya wa kichupo</translation>
 <translation id="3533436815740441613">Kichupo Kipya</translation>
 <translation id="3540141921715814660">Ongeza kwenye Alamisho</translation>
 <translation id="3546122170015471515">Matoleo ya Kuhakiki Ramani kwenye Google.com</translation>
@@ -780,7 +782,6 @@
 <translation id="4049507953662678203">Hakikisha una muunganisho wa mtandao, kisha ujaribu tena.</translation>
 <translation id="4070132839822635162">Usiingie katika akaunti</translation>
 <translation id="4092655288299341041">Onyesha Usaidizi</translation>
-<translation id="4095483462103784441">Unda kikundi kipya cha vichupo</translation>
 <translation id="4099756562043439968">Weka Kikumbusho</translation>
 <translation id="4108998448622696017">Hutambua na kukuonya kuhusu matukio hatari yanapotendeka.</translation>
 <translation id="4111985840824673503">Weka alama kuwa umesoma zote</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4894963374040315706">Hali hii hukuwezesha kutafuta kwa kutumia sauti yako</translation>
 <translation id="4895540042460820904">Ilifunguliwa Mara ya Mwisho</translation>
 <translation id="4896467949657706481">Vichupo vilifungwa; uliondolewa kwenye akaunti</translation>
+<translation id="4911042367886397055">Karibu tena, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Unaweza kushiriki nakala ya nenosiri lako kwa usalama na mtu aliye katika kikundi cha familia yako. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Unaweza kutumia data iliyopo ya kuvinjari wakati umeingia katika akaunti ukitumia <ph name="USER_EMAIL" />. Shirika lako linaweza kuona data hii.</translation>
 <translation id="4918086044614829423">Kubali</translation>
@@ -1052,6 +1054,7 @@
 <translation id="508645147179720015">Kidokezo kimezidi herufi 1000</translation>
 <translation id="5087098519049306025">Ufuatiliaji wa Bei</translation>
 <translation id="5090832849094901128">Hatua ya kufuta nenosiri hili haitafuta akaunti yako kwenye <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Inapakua faili zako…</translation>
 <translation id="5118462200606189584">Weka akaunti…</translation>
 <translation id="5118764316110575523">Imezimwa</translation>
 <translation id="5119329531859909472">Ili ufuatilie bidhaa, gusa Fuatilia</translation>
@@ -1122,6 +1125,7 @@
 <translation id="537853552771686272">Dhibiti mada na tovuti zinazokuvutia</translation>
 <translation id="5390458669633674385">{count,plural, =1{Umefunga kichupo {count}}other{Umefunga vichupo {count}}}</translation>
 <translation id="5394975111793637642">Ficha maoni ya bidhaa kwenye kadi yako</translation>
+<translation id="5407806496954700135">Ungependa kutumia mipangilio uliyoweka upendavyo kwenye ukurasa wako mpya wa kichupo kutoka kwenye kifaa kingine?</translation>
 <translation id="5414763847370083940">Utapata arifa iwapo bei itapungua kwenye tovuti yoyote.</translation>
 <translation id="5415289094036440596">Funguo za siri haziwezi kufikiwa</translation>
 <translation id="5416455648658732408">Hamishia kwenye Kikundi cha Vichupo</translation>
@@ -1757,6 +1761,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7696316012653762532">Chaguo za kutafsiri ukurasa</translation>
 <translation id="7700527812567437847">Tafuta kwenye skrini ukitumia Lenzi ya Google</translation>
 <translation id="7701040980221191251">Hamna</translation>
+<translation id="7708668404222666001">Imeweka mapendeleo kwenye ukurasa wako mpya wa kichupo</translation>
 <translation id="7708994397325774423">Pata manenosiri yako yote</translation>
 <translation id="7711440461521638739">Manenosiri yako hayatumiki kwingine</translation>
 <translation id="7712361583414030698">Kutazama toleo la nje ya mtandao</translation>

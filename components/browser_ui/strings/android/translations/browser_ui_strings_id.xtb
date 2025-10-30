@@ -202,6 +202,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3123473560110926937">Diblokir di beberapa situs</translation>
 <translation id="3132996321662585180">Perbarui tiap hari</translation>
 <translation id="3143754809889689516">Putar dari awal</translation>
+<translation id="3164169438034704658">Anda dapat mengaktifkan lokasi presisi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Izinkan situs menggunakan cookie pihak ketiga</translation>
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data tersimpan</translation>
@@ -540,6 +541,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6980861169612950611">Hapus data situs? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
+<translation id="6991142177939282156">Diizinkan • Menggunakan perkiraan</translation>
 <translation id="6992289844737586249">Tanya terlebih dahulu sebelum mengizinkan situs menggunakan mikrofon Anda (disarankan)</translation>
 <translation id="7000754031042624318">Dinonaktifkan di setelan Android</translation>
 <translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
@@ -650,6 +652,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8284326494547611709">Teks</translation>
 <translation id="8300705686683892304">Dikelola oleh aplikasi</translation>
+<translation id="8301363963630676147">Diizinkan kali ini • Menggunakan perkiraan</translation>
 <translation id="8315509175050791576">Membagikan tab</translation>
 <translation id="8324158725704657629">Jangan tanya lagi</translation>
 <translation id="8362795839483915693">Anda dapat memperbesar atau memperkecil situs yang Anda buka</translation>

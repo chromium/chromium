@@ -202,6 +202,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
 <translation id="3132996321662585180">Každý den obnovit</translation>
 <translation id="3143754809889689516">Přehrát od začátku</translation>
+<translation id="3164169438034704658">Přesnou polohu můžete zapnout v <ph name="BEGIN_LINK" />nastavení Androidu<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Povolení, aby web používal soubory cookie třetích stran</translation>
 <translation id="3167868116600277716">Feed Objevit</translation>
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
@@ -540,6 +541,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Vymazat data webu? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Usnadnění</translation>
+<translation id="6991142177939282156">Povoleno • Používá se přibližná</translation>
 <translation id="6992289844737586249">Pokud web bude chtít použít váš mikrofon, zobrazit dotaz (doporučeno)</translation>
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
@@ -650,6 +652,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8300705686683892304">Spravováno aplikací</translation>
+<translation id="8301363963630676147">Pro tentokrát povoleno • Používá se přibližná</translation>
 <translation id="8315509175050791576">Sdílení karty</translation>
 <translation id="8324158725704657629">Příště se neptat</translation>
 <translation id="8362795839483915693">Navštívené weby můžete přiblížit nebo oddálit</translation>

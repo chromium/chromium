@@ -202,6 +202,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3123473560110926937">Bloqueados en algunos sitios</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
+<translation id="3164169438034704658">Puedes activar la ubicación precisa en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permitir que un sitio utilice cookies de terceros</translation>
 <translation id="3167868116600277716">Feed de Descubre</translation>
 <translation id="3198916472715691905">Datos almacenados: <ph name="STORAGE_AMOUNT" /></translation>
@@ -540,6 +541,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6980861169612950611">¿Quieres borrar los datos del sitio? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
+<translation id="6991142177939282156">Permitida • Se usa la ubicación aproximada</translation>
 <translation id="6992289844737586249">Preguntar primero antes de permitir que los sitios usen tu micrófono (recomendado)</translation>
 <translation id="7000754031042624318">Desactivado en la configuración de Android</translation>
 <translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
@@ -650,6 +652,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8300705686683892304">Administrados por una app</translation>
+<translation id="8301363963630676147">Permitida esta vez • Se usa la ubicación aproximada</translation>
 <translation id="8315509175050791576">Se está compartiendo una pestaña</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8362795839483915693">Puedes acercar o alejar los sitios que visitas</translation>

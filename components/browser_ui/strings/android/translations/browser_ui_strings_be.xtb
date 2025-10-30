@@ -202,6 +202,7 @@
 <translation id="3123473560110926937">Заблакіравана на некаторых сайтах</translation>
 <translation id="3132996321662585180">Абнаўляць штодзень</translation>
 <translation id="3143754809889689516">Прайграць з пачатку</translation>
+<translation id="3164169438034704658">Дакладнае месцазнаходжанне можна ўключыць у <ph name="BEGIN_LINK" />наладах Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Дазвольце сайту выкарыстоўваць староннія файлы cookie</translation>
 <translation id="3167868116600277716">Стужка рэкамендацый</translation>
 <translation id="3198916472715691905">Аб’ём захаваных даных: <ph name="STORAGE_AMOUNT" /></translation>
@@ -540,6 +541,7 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6980861169612950611">Выдаліць даныя сайтаў? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
+<translation id="6991142177939282156">Дазволена • Выкарыстоўваецца прыблізнае месцазнаходжанне</translation>
 <translation id="6992289844737586249">Пытацца, перш чым дазволіць сайтам выкарыстоўваць мікрафон (рэкамендуецца)</translation>
 <translation id="7000754031042624318">Выключана ў наладах Android</translation>
 <translation id="702275896380648118">Гэты сайт вызначае, што вам падабаецца, а затым на падставе гэтых звестак прапануе рэкламу іншым сайтам. Акрамя таго, ён выкарыстоўвае тэмы рэкламы з Chrome, каб паказваць вам больш рэлевантныя аб’явы.</translation>
@@ -650,6 +652,7 @@
 <translation id="8261506727792406068">Выдаліць</translation>
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="8300705686683892304">Пад кіраваннем праграмы</translation>
+<translation id="8301363963630676147">Гэтым разам дазволена • Выкарыстоўваецца прыблізнае месцазнаходжанне</translation>
 <translation id="8315509175050791576">Ідзе абагульванне ўкладкі</translation>
 <translation id="8324158725704657629">Больш не пытацца</translation>
 <translation id="8362795839483915693">Вы можаце павялічваць або памяншаць маштаб на сайтах, якія наведваеце</translation>

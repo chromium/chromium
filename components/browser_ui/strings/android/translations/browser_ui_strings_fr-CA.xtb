@@ -202,6 +202,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3123473560110926937">Annonces bloquées sur certains sites</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3143754809889689516">Faire jouer depuis le début</translation>
+<translation id="3164169438034704658">Vous pouvez activer la position exacte dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Autoriser un site à utiliser des témoins tiers</translation>
 <translation id="3167868116600277716">Flux Découvertes</translation>
 <translation id="3198916472715691905">Stockage de données : <ph name="STORAGE_AMOUNT" /></translation>
@@ -540,6 +541,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Supprimer les données relatives aux sites? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibilité</translation>
+<translation id="6991142177939282156">Autorisée • Utilisation de la position approximative</translation>
 <translation id="6992289844737586249">Demander avant d'autoriser des sites à utiliser votre microphone (recommandé)</translation>
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
@@ -650,6 +652,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="8300705686683892304">Gérés par une application</translation>
+<translation id="8301363963630676147">Autorisée cette fois • Utilisation de la position approximative</translation>
 <translation id="8315509175050791576">Partage d'un onglet en cours…</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8362795839483915693">Vous pouvez zoomer ou dézoomer sur les sites que vous visitez</translation>

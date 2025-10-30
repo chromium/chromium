@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Ja has desat aquest nom d'usuari per a aquest lloc web</translation>
 <translation id="1497590942294823549">Menú → Gestor de contrasenyes</translation>
 <translation id="1498283581832036924">El teu compte de <ph name="WEBSITE" /> no se suprimirà.</translation>
+<translation id="1503814213414825943">Selecciona els comptes que vols exportar a una altra aplicació.</translation>
 <translation id="1506061864768559482">Motor de cerca</translation>
 <translation id="1506063256525392513">Això et permet fer i penjar fotos, així com escanejar codis QR</translation>
 <translation id="1508263560970797965">Continua en mode d'incògnit</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Mostra la contrasenya</translation>
 <translation id="1996318269856535896">Pots continuar utilitzant les dades de navegació existents en aquest dispositiu. Per utilitzar-les, tanca la sessió del compte gestionat.</translation>
 <translation id="2010008505735295285">Torna a carregar</translation>
+<translation id="2012723204723845092">Et donem la benvinguda de nou!</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="201759455285471444">Desplega el grup de pestanyes.</translation>
 <translation id="202070562065520783">Explica-m'ho</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">No tens cap contrasenya ni clau d'accés desada, però pots suprimir la llista de llocs web i aplicacions per als quals has triat no desar mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="3530206579861815432">Troba ràpidament les pestanyes obertes i les tancades recentment en tots els teus dispositius sincronitzats.</translation>
 <translation id="3530767473765895035">Gestiona els comptes en aquest dispositiu…</translation>
+<translation id="353340646084395154">S'han suprimit les preferències de la pàgina Pestanya nova</translation>
 <translation id="3533436815740441613">Pestanya nova</translation>
 <translation id="3540141921715814660">Afegeix a Adreces d'interès</translation>
 <translation id="3546122170015471515">Previsualització de Maps a Google.com</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Assegureu-vos que teniu una connexió de xarxa i torneu-ho a provar.</translation>
 <translation id="4070132839822635162">No iniciïs la sessió</translation>
 <translation id="4092655288299341041">Mostra l'ajuda</translation>
-<translation id="4095483462103784441">Crea un grup de pestanyes nou</translation>
 <translation id="4099756562043439968">Configura un recordatori</translation>
 <translation id="4108998448622696017">Detecta esdeveniments perillosos quan es produeixen i t'hi avisa.</translation>
 <translation id="4111985840824673503">Marca-ho tot com a llegit</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Això et permet fer cerques amb la veu</translation>
 <translation id="4895540042460820904">Darrera obertura</translation>
 <translation id="4896467949657706481">Les pestanyes s'han tancat; se t'ha tancat la sessió</translation>
+<translation id="4911042367886397055">Benvingut de nou, <ph name="USER_NAME" />,</translation>
 <translation id="4913626501929406101">Pots compartir de manera segura una còpia de la teva contrasenya amb algú del teu grup familiar. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Podràs utilitzar les dades de navegació existents quan tinguis la sessió iniciada com a <ph name="USER_EMAIL" />. És possible que la teva organització pugui veure aquestes dades.</translation>
 <translation id="4918086044614829423">Accepta</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">La nota té més de 1.000 caràcters</translation>
 <translation id="5087098519049306025">Seguiment de preus</translation>
 <translation id="5090832849094901128">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">S'estan obtenint les teves coses…</translation>
 <translation id="5118462200606189584">Afegeix un compte…</translation>
 <translation id="5118764316110575523">Desactivat</translation>
 <translation id="5119329531859909472">Per fer un seguiment del producte, toca Fes un seguiment</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Canvia la contrasenya al lloc web</translation>
 <translation id="5248640482715684545">Aquest lloc web està provant d'obrir una altra aplicació.</translation>
 <translation id="5250371859659394278">Des d'una font desconeguda</translation>
+<translation id="5269913829202614649">Personalitza la pàgina d'inici</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un camp obligatori és buit. Emplena'l abans de desar.}other{Alguns camps obligatoris són buits. Emplena'ls abans de desar.}}</translation>
 <translation id="5271549068863921519">Desa la contrasenya</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vol que t'uneixis a un grup de pestanyes. Tothom que tingui l'enllaç podrà editar totes les pestanyes, així que ves amb compte en unir-t'hi. L'enllaç caducarà d'aquí a 48 hores.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} de tancada}other{{count} de tancades}}</translation>
 <translation id="5394975111793637642">Amaga la targeta de Ressenyes de productes per a tu</translation>
+<translation id="5407806496954700135">Vols aplicar les personalitzacions de la pàgina Pestanya nova d'un altre dispositiu?</translation>
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
 <translation id="5415289094036440596">Les claus d'accés no es poden compartir</translation>
 <translation id="5416455648658732408">Mou a un grup de pestanyes</translation>
@@ -1755,6 +1761,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7696316012653762532">Opcions per traduir la pàgina</translation>
 <translation id="7700527812567437847">Cerca a la pantalla amb Google Lens</translation>
 <translation id="7701040980221191251">Cap</translation>
+<translation id="7708668404222666001">S'han aplicat les preferències de la pàgina Pestanya nova</translation>
 <translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
 <translation id="7711440461521638739">No estàs reutilitzant cap contrasenya</translation>
 <translation id="7712361583414030698">S'està mostrant la versió sense connexió</translation>

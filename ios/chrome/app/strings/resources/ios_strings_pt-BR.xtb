@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1497590942294823549">Menu → Gerenciador de senhas</translation>
 <translation id="1498283581832036924">Sua conta de <ph name="WEBSITE" /> não será excluída.</translation>
+<translation id="1503814213414825943">Selecione as contas que você quer exportar para outro app.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia QR codes</translation>
 <translation id="1508263560970797965">Continuar na navegação anônima</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Ver senha</translation>
 <translation id="1996318269856535896">Você ainda pode usar os dados de navegação neste dispositivo. Para isso, saia da conta gerenciada.</translation>
 <translation id="2010008505735295285">Atualizar</translation>
+<translation id="2012723204723845092">Que bom ver você de novo!</translation>
 <translation id="2015722694326466240">Para acessar as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="201759455285471444">Abrir grupo de guias.</translation>
 <translation id="202070562065520783">Explique isso</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">Não há senhas ou chaves de acesso salvas, mas você pode excluir a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="3530206579861815432">Encontre com rapidez as guias abertas e fechadas recentemente nos seus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Gerenciar contas neste dispositivo…</translation>
+<translation id="353340646084395154">As preferências da página "Nova guia" foram removidas</translation>
 <translation id="3533436815740441613">Nova guia</translation>
 <translation id="3540141921715814660">Adicionar aos favoritos</translation>
 <translation id="3546122170015471515">Maps Previews no Google.com</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Verifique se você tem uma conexão de rede e tente novamente.</translation>
 <translation id="4070132839822635162">Não fazer login</translation>
 <translation id="4092655288299341041">Mostrar "Ajuda"</translation>
-<translation id="4095483462103784441">Criar novo grupo de guias</translation>
 <translation id="4099756562043439968">Definir um lembrete</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
 <translation id="4111985840824673503">Marcar tudo como lido</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Isso permite que você pesquise usando a voz</translation>
 <translation id="4895540042460820904">Aberto pela última vez</translation>
 <translation id="4896467949657706481">As guias foram fechadas e sua conta foi desconectada</translation>
+<translation id="4911042367886397055">Que bom ver você de novo, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Você pode compartilhar uma cópia da sua senha de forma segura com alguém do grupo familiar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Você pode usar os dados de navegação atuais quando fizer login como <ph name="USER_EMAIL" />. Sua organização pode visualizar esses dados.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">A observação tem mais de 1.000 caracteres</translation>
 <translation id="5087098519049306025">Monitoramento de preços</translation>
 <translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Buscando seus dados…</translation>
 <translation id="5118462200606189584">Adicionar conta…</translation>
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5119329531859909472">Para monitorar o produto, toque em "Monitorar"</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Mudar a senha no site</translation>
 <translation id="5248640482715684545">O site está tentando abrir outro aplicativo.</translation>
 <translation id="5250371859659394278">De uma fonte desconhecida</translation>
+<translation id="5269913829202614649">Personalizar página inicial</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) quer que você participe de um grupo de guias. Compartilhe com cautela. Qualquer pessoa com o link pode editar todas as guias. O link expira em 48 horas.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">Gerencie os temas e os sites do seu interesse</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} guia fechada}one{{count} guia fechada}other{{count} guias fechadas}}</translation>
 <translation id="5394975111793637642">Ocultar o card "Avaliações de produtos para você"</translation>
+<translation id="5407806496954700135">Quer aplicar as suas personalizações da página "Nova guia" de outro dispositivo?</translation>
 <translation id="5414763847370083940">Você vai receber um alerta se houver uma redução no preço em algum site.</translation>
 <translation id="5415289094036440596">Chaves de acesso não podem ser compartilhadas</translation>
 <translation id="5416455648658732408">Mover para grupo de guias</translation>
@@ -1755,6 +1761,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7696316012653762532">Opções para traduzir a página</translation>
 <translation id="7700527812567437847">Pesquisar na tela com o Google Lens</translation>
 <translation id="7701040980221191251">Nenhum</translation>
+<translation id="7708668404222666001">As preferências da página "Nova guia" foram aplicadas</translation>
 <translation id="7708994397325774423">Acesse todas as suas senhas</translation>
 <translation id="7711440461521638739">Você não está reutilizando senhas</translation>
 <translation id="7712361583414030698">Mostrando a versão off-line</translation>

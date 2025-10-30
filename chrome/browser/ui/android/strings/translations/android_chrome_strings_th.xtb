@@ -19,6 +19,7 @@
 <translation id="1066338698580889414">การโปรโมตการแจ้งเตือนเคล็ดลับเปิดอยู่แบบเต็มความสูง</translation>
 <translation id="1070689840697074178">คุณดาวน์โหลด PDF ได้ที่นี่</translation>
 <translation id="107147699690128016">หากคุณเปลี่ยนนามสกุลไฟล์ ไฟล์นั้นอาจเปิดในแอปพลิเคชันอื่นและเป็นอันตรายต่ออุปกรณ์ของคุณ</translation>
+<translation id="1073328695547557412">แตะไอคอน Google Lens</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
 <translation id="1087799850623149508">คุณแตะแถบที่อยู่ค้างไว้เพื่อย้ายไปด้านล่างได้</translation>
 <translation id="1089606299949659462">ตรวจสอบเรียบร้อยแล้ว</translation>
@@ -39,6 +40,7 @@
 <translation id="1150263420752757504"><ph name="APP_NAME" /> จะเปิดใน Chrome การดำเนินการต่อหมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
 <translation id="1154555449933432029">คุณไม่มีรหัสผ่านที่บันทึกไว้ในเครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="115483310321669804">ใช้รหัสผ่าน <ph name="PASSWORD" /></translation>
+<translation id="1165109137568919258">ถ่ายรูปหรือเพิ่มรูปภาพจากแกลเลอรีรูปภาพเพื่อค้นหา</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1174479719160874822">Chrome จะขอเว็บไซต์เวอร์ชันมือถือเมื่อหน้าจอแคบ</translation>
 <translation id="1175241315203286684">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย</translation>
@@ -91,6 +93,7 @@
 <translation id="1366525380420346469">เมื่อเปิด</translation>
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{คุณป้องกันไม่ให้เว็บไซต์นี้ส่งการแจ้งเตือนในอนาคตได้}other{คุณป้องกันไม่ให้เว็บไซต์เหล่านี้ส่งการแจ้งเตือนในอนาคตได้}}</translation>
 <translation id="1373696734384179344">หน่วยความจำไม่เพียงพอที่จะดาวน์โหลดเนื้อหาที่เลือก</translation>
+<translation id="137496472437646183">เลือก "การปกป้องที่ดียิ่งขึ้น"</translation>
 <translation id="1376578503827013741">กำลังประมวลผล…</translation>
 <translation id="1381838868249179644">ระบบได้นำสิทธิ์ออกจากบางเว็บไซต์เพื่อช่วยให้คุณปลอดภัย</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -183,6 +186,7 @@
 <translation id="1812027881030482584">ดำเนินการต่อโดยใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ใน <ph name="SITE_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="1820408774134375111">Bottom Sheet การลงชื่อเข้าใช้</translation>
 <translation id="1823492026305965829">ลงชื่อเข้าใช้ด้วย <ph name="USER_FULL_NAME" /></translation>
+<translation id="1824902652744048041">แตะลบข้อมูลการท่องเว็บ</translation>
 <translation id="1825772852827001597">ที่อยู่และวิธีการชำระเงินจาก Google Pay จะไม่มีการเข้ารหัส ประวัติการท่องเว็บจาก Chrome จะไม่ซิงค์
 เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="1829244130665387512">ค้นหาในหน้าเว็บ</translation>
@@ -267,6 +271,7 @@
 <translation id="2227444325776770048">ดำเนินการต่อในชื่อ <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">หน้าต่างว่าง</translation>
 <translation id="223356358902285214">กิจกรรมบนเว็บและแอป</translation>
+<translation id="2233735624724508540">เลือกกรอบเวลา แล้วแตะลบข้อมูล</translation>
 <translation id="2234827758954819389">คู่มือความเป็นส่วนตัว</translation>
 <translation id="2238038374973843156">ย้ายกลุ่มไปยังหน้าต่างอื่น</translation>
 <translation id="2239812875700136898">ควบคุมเรื่องราวของคุณจากปุ่ม "ตัวเลือกสำหรับฟีดสำรวจ"</translation>
@@ -595,6 +600,7 @@
 <translation id="3739899004075612870">บุ๊กมาร์กไว้ใน <ph name="PRODUCT_NAME" /> แล้ว</translation>
 <translation id="3740525748616366977">การค้นหาด้วยเสียงไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
 <translation id="376561056759077985">ยังไม่ได้บันทึกข้อมูลบางอย่าง</translation>
+<translation id="3770620323585347665">ตั้งชื่อหน้าต่าง</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="3771290962915251154">การตั้งค่านี้ปิดใช้อยู่เนื่องจากการควบคุมโดยผู้ปกครองเปิดอยู่</translation>
 <translation id="3771694256347217732">ข้อกำหนดในการให้บริการของ Google</translation>
@@ -722,6 +728,7 @@
 <translation id="4355272626458588338">คุณกลับไปยังหน้าที่สำคัญสำหรับคุณได้ด้วยการเพิ่มบุ๊กมาร์ก</translation>
 <translation id="4356503491090073318">หมายเลขบัตร*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">เปิด Google Lens</translation>
 <translation id="4359809482106103048">ข้อมูลโดยย่อด้านความปลอดภัย</translation>
 <translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4380055775103003110">หากปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
@@ -771,6 +778,7 @@
 <translation id="4583164079174244168">{MINUTES,plural, =1{# นาทีที่ผ่านมา}other{# นาทีที่ผ่านมา}}</translation>
 <translation id="4587589328781138893">เว็บไซต์</translation>
 <translation id="4594952190837476234">หน้าเว็บออฟไลน์นี้สร้างเมื่อวันที่ <ph name="CREATION_TIME" /> และอาจแตกต่างไปจากเวอร์ชันออนไลน์</translation>
+<translation id="4595237294768457124">เปิดหน้าแท็บใหม่</translation>
 <translation id="4595805675102978678">ข้อผิดพลาดของบัญชี Google</translation>
 <translation id="4601095002996233687">การสแกนเชิงลึกสำหรับการดาวน์โหลดที่น่าสงสัย</translation>
 <translation id="4606559747793337066">เมื่อเว็บไซต์หรือแอปขอโหลดลิงก์ล่วงหน้าแบบส่วนตัว Chrome จะเข้ารหัสและโหลดหน้าเว็บล่วงหน้าผ่านเซิร์ฟเวอร์ของ Google โดยไม่มีคุกกี้ การดำเนินการนี้จะซ่อนตัวตนของคุณจากเว็บไซต์ที่โหลดล่วงหน้า</translation>
@@ -785,9 +793,11 @@
 <translation id="465657074423018424">Google Safe Browsing ปกป้องคุณจากเว็บไซต์ที่หลอกลวง หากคุณปิดใช้ ให้ระวังเป็นพิเศษขณะท่องเว็บ โดยเฉพาะก่อนที่จะป้อนรหัสผ่าน</translation>
 <translation id="4662373422909645029">ชื่อเล่นต้องไม่มีตัวเลข</translation>
 <translation id="4663756553811254707">ลบบุ๊กมาร์ก <ph name="NUMBER_OF_BOOKMARKS" /> รายการแล้ว</translation>
+<translation id="4665799914191099447">แตะความเป็นส่วนตัวและความปลอดภัย &gt; Google Safe Browsing</translation>
 <translation id="4668279686271488041">ระบบจะลบข้อมูลการวัดผลโฆษณาออกจากอุปกรณ์ของคุณเป็นประจำ</translation>
 <translation id="4668347365065281350">ข้อมูลทั้งหมดที่เว็บไซต์จัดเก็บไว้ ซึ่งรวมถึงคุกกี้และข้อมูลอื่นๆ ที่จัดเก็บไว้ในเครื่อง</translation>
 <translation id="4673702426794876519">หน้าต่างที่ไม่ระบุตัวตน</translation>
+<translation id="4675298276894277358">เว็บไซต์นี้จะไม่แสดงอีก</translation>
 <translation id="4678082183394354975">ธีมมืดสำหรับเว็บไซต์เปิดอยู่ใน Chrome</translation>
 <translation id="4682306524980568490">แสดงได้เพียง <ph name="MAX_INSTANCE_COUNT" /> หน้าต่างเท่านั้น</translation>
 <translation id="4684427112815847243">ซิงค์ทุกอย่าง</translation>
@@ -989,6 +999,7 @@
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="555671485580955310">ซิงค์ประวัติการเข้าชมและแท็บ</translation>
 <translation id="555816257274242153">หยุดติดตามราคาแล้ว</translation>
+<translation id="5559778750856177186">เลิกปักหมุดทางลัดแล้ว</translation>
 <translation id="5561445479436807659">ไปที่เกมไดโนเสาร์แสนสนุก</translation>
 <translation id="5561549206367097665">กำลังรอเครือข่าย…</translation>
 <translation id="5568069709869097550">ไม่สามารถลงชื่อเข้าใช้</translation>
@@ -1369,6 +1380,7 @@
 <translation id="707155805709242880">เลือกข้อมูลที่จะซิงค์ด้านล่าง</translation>
 <translation id="7077143737582773186">การ์ด SD</translation>
 <translation id="7078916049958741685">ลบข้อมูล Chrome ของคุณออกจากอุปกรณ์นี้ด้วย</translation>
+<translation id="7084115944294706056">เลือกตำแหน่งของแถบที่อยู่</translation>
 <translation id="7085332316435785646">เลือกว่าจะรวมประวัติการเข้าชมใน Chrome เพื่อรับประสบการณ์ที่ปรับเปลี่ยนในแบบของคุณมากขึ้นในบริการของ Google หรือไม่</translation>
 <translation id="7088681679121566888">Chrome เป็นเวอร์ชันล่าสุดแล้ว</translation>
 <translation id="7106762743910369165">เบราว์เซอร์ได้รับการจัดการโดยองค์กรของคุณ</translation>
@@ -1417,6 +1429,7 @@
 <translation id="727288900855680735">ส่ง <ph name="ONE_TIME_CODE" /> ไปยัง <ph name="ORIGIN" /> ไหม</translation>
 <translation id="7274013316676448362">บล็อกเว็บไซต์แล้ว</translation>
 <translation id="7276868533747677875">หากเคยส่งออกรหัสผ่านแล้ว ให้ค้นหาไฟล์ CSV ในอุปกรณ์แล้วนำเข้าไปยังเครื่องมือจัดการรหัสผ่านที่ต้องการ</translation>
+<translation id="728377807486816582">แตะแถบที่อยู่</translation>
 <translation id="7289049772085228972">คุณได้รับการรักษาความปลอดภัยที่เข้มงวดที่สุดจาก Chrome แล้ว</translation>
 <translation id="7289303553784750393">หากคุณออนไลน์แล้วแต่ปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
 <translation id="7290209999329137901">เปลี่ยนชื่อไม่ได้</translation>
@@ -1499,6 +1512,7 @@
 <translation id="7612619742409846846">ลงชื่อเข้าใช้ Google ด้วย</translation>
 <translation id="7612989789287281429">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="7619072057915878432">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเครือข่ายขัดข้อง</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ 1 แห่ง}other{ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ # แห่ง}}</translation>
 <translation id="7626032353295482388">ยินดีต้อนรับสู่ Chrome</translation>
 <translation id="7628417132421583481">ไปที่เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="7630202231528827509">URL ผู้ให้บริการ</translation>
@@ -1662,6 +1676,7 @@
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282297628636750033">ใช้ธีมมืดกับเว็บไซต์เมื่อทำได้</translation>
 <translation id="8282950411412455249">ไปที่การตั้งค่าความปลอดภัย</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{ปิดหน้าต่างที่ไม่ระบุตัวตน 1 หน้าต่าง}other{ปิดหน้าต่างที่ไม่ระบุตัวตน # หน้าต่าง}}</translation>
 <translation id="831192587911042850">เพิ่มเว็บไซต์ปัจจุบันลงในรายการเว็บไซต์ที่คุณกำลังติดตาม</translation>
 <translation id="8317318757008452355">เปิดตัวเลือกในการพิมพ์</translation>
 <translation id="8320212361750431956">กิจกรรมล่าสุด</translation>
@@ -1736,6 +1751,7 @@
 <translation id="8611922158252451755">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดแชร์อย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชั่วโมง</translation>
 <translation id="8616006591992756292">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="8617240290563765734">ต้องการเปิด URL แนะนำซึ่งระบุอยู่ในเนื้อหาที่ดาวน์โหลดไหม</translation>
+<translation id="8629093325209491835">เปิดเมนู Chrome &gt; การตั้งค่า</translation>
 <translation id="8634050254805484913">ซ่อนในหน้าจอแคบ</translation>
 <translation id="8635399646025169806">เก็บกลุ่มแท็บไว้ใช่ไหม</translation>
 <translation id="8636825310635137004">เปิดการซิงค์เพื่อรับแท็บจากอุปกรณ์เครื่องอื่นๆ ของคุณ</translation>
@@ -1849,6 +1865,7 @@
 <translation id="9143389653531441385">ลงชื่อสมัครใช้ด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="9148564897242852377">สลับการเลือกแท็บ</translation>
+<translation id="9153056436992761257">เลือกตำแหน่งที่ต้องการ</translation>
 <translation id="9157212632995922070">เลือกบัญชีเพื่อดำเนินการต่อไปยัง <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">แชร์เนื้อหาเท่านั้น</translation>
 <translation id="9161172953291434881">คุณไว้ใจให้เว็บไซต์นี้เข้าถึงข้อมูลของคุณไหม</translation>

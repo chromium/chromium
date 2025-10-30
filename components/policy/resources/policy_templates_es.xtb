@@ -1912,6 +1912,7 @@ Si no se define la política, los usuarios podrán cambiar la lista de aplicacio
 <translation id="2306505001667207184">Pedirle al usuario que seleccione el certificado de cliente cuando la política de selección automática coincida con varios certificados.</translation>
 <translation id="230713790688681130">Habilitar diseño InScript para hindi</translation>
 <translation id="2307496301287881990">Informar del estado de la pantalla y los gráficos</translation>
+<translation id="2308084581803907194">Complejidad alta</translation>
 <translation id="2308899582897965249">Inhabilitar la impresión silenciosa</translation>
 <translation id="2309284543927494965">Bloquear las actualizaciones</translation>
 <translation id="2309341709647905294">No proporcionar información sobre los periféricos conectados al dispositivo</translation>
@@ -2725,6 +2726,19 @@ Si se habilita esta política, el menú de aplicaciones/la tecla de búsqueda po
       Si no se establece, esta política estará inhabilitada en dispositivos gestionados y habilitada en dispositivos propiedad de consumidores.
       Ten en cuenta que, si se inhabilita esta política, solo se inhabilitará la recogida de trazas del sistema. Esta política no afectará a la recogida de trazas del navegador.</translation>
 <translation id="2922511125678964398">Permitir que la autenticación de portales cautivos ignore la configuración de proxy</translation>
+<translation id="2923126158151236068">Esta política configura los requisitos de complejidad mínimos para los factores de autenticación local (PINs y contraseñas locales) que los usuarios definan en <ph name="PRODUCT_OS_NAME" />.
+
+Si no se define esta política, se usará el nivel de complejidad Ninguno de forma predeterminada.
+
+Los requisitos de esta política se aplican cuando un usuario configura un nuevo PIN o contraseña local, o cuando cambia uno que ya tiene.
+
+Los niveles de complejidad se basan en las métricas de calidad de las contraseñas de Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), adaptadas para <ph name="PRODUCT_OS_NAME" />:
+- 1 = Ninguno: se requiere un PIN o una contraseña, pero no hay restricciones en cuanto a su contenido o longitud.
+- 2 = Bajo: requisitos de complejidad básicos.
+- 3 = Medio: requisitos más estrictos de longitud y tipo de caracteres.
+- 4 = Alto: requisitos de complejidad más estrictos que exigen varios tipos de caracteres.
+
+Consulta el artículo del Centro de Ayuda para ver explicaciones detalladas de lo que implica cada nivel tanto para los PINs como para las contraseñas.</translation>
 <translation id="2926813071464307947">Inhabilitar el entorno aislado del contenedor de aplicaciones del renderizador</translation>
 <translation id="2931888116345994552">Si se habilita o no se establece, se habilitarán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
 
@@ -3498,6 +3512,15 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
 
       Si se inhabilita la política o no se establece, se desactiva el DTC y no puede recoger, procesar ni enviar datos de diagnóstico y telemetría desde el dispositivo.</translation>
 <translation id="3442589735857147823">Permitir que los usuarios usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
+<translation id="34476328503285475">Si se establece esta política, se preconfigurarán hasta 10 accesos directos personalizados en la página Nueva pestaña de <ph name="PRODUCT_NAME" />.
+
+Si se define esta política, los usuarios verán estos accesos directos de forma predeterminada, además de sus accesos directos personales. Los usuarios pueden controlar la visibilidad de los accesos directos de su organización en el panel Personalizar Chrome.
+
+Las URLs de acceso directo deben ser únicas.
+
+Si se asigna el valor true a <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />, los usuarios podrán cambiar el nombre del acceso directo. Si se asigna el valor false o no se establece, los usuarios no podrán cambiar el nombre.
+
+Si se asigna el valor true a <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />, los usuarios podrán quitar el acceso directo. Si se asigna el valor false o no se establece, los usuarios no podrán quitar el acceso directo.</translation>
 <translation id="3450649825886735618">No utilizar ningún servicio web de Google para ayudar a corregir errores ortográficos</translation>
 <translation id="3451422488938880786"> Permite habilitar o inhabilitar las reasignaciones de combinaciones de teclas internacionales</translation>
 <translation id="3451901387456196887">El usuario tendrá la opción de seleccionar dispositivos de emisión en el menú de <ph name="PRODUCT_NAME" /> mediante un código de acceso o un código QR.</translation>
@@ -5980,6 +6003,7 @@ Los dominios con un formato incorrecto se ignorarán.</translation>
 <translation id="5163889437570441600">Permite que se envíe contenido al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Si se le asigna el valor False a la política, los usuarios no podrán enviar contenido a su dispositivo. Si se le asigna el valor True, los usuarios podrán enviar contenido. Si no se establece la política, los usuarios no podrán enviar contenido a dispositivos ChromeOS registrados, pero sí podrán enviar contenido a dispositivos no registrados.</translation>
+<translation id="5166766992668636906">Complejidad media</translation>
 <translation id="5168529971295111207">Esta política está obsoleta. Te recomendamos que utilices ProxyMode en su lugar.
 
           Permite especificar el servidor proxy que utiliza <ph name="PRODUCT_NAME" /> e impide que los usuarios cambien la configuración del proxy.
@@ -7568,6 +7592,7 @@ Ten en cuenta que se seguirán respetando otras restricciones, como las impuesta
 <translation id="6144046700495610112">Si se asigna el valor "Habilitada" a esta política, se importarán los datos de formularios para la función Autocompletar del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importarán estos datos al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de datos de formularios para la función Autocompletar aparecerá marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="6144246313478615705">Definir la complejidad mínima de los PINs y contraseñas locales</translation>
 <translation id="614551633868957694">Aplicaciones y extensiones de Chrome</translation>
 <translation id="614616930188030377">Los patrones de esta lista se compararán con el origen de seguridad de la URL solicitante.
       Si se encuentra alguna coincidencia o chrome://flags/#enable-webrtc-hide-local-ips-with-mdns está inhabilitado, las direcciones IP locales se mostrarán en candidatos ICE WebRTC.
@@ -8245,6 +8270,13 @@ Esta política no afecta al análisis del contenido de las descargas configurado
 <translation id="6520802717075138474">Importa los motores de búsqueda desde el navegador predeterminado en la primera ejecución.</translation>
 <translation id="6521971538031711337">Impedir que el usuario administrado configure el nombre de host del dispositivo</translation>
 <translation id="6523079496775454310">Habilitar el consentimiento de señales de dispositivo para usuarios gestionados en dispositivos no gestionados</translation>
+<translation id="6523608518493993483">Esta política permite a los administradores cifrar la caché HTTP del navegador en el disco.
+
+Si se habilita esta política, se cifrará la caché del navegador.
+
+Si se inhabilita esta política o no se define, no se cifrará la memoria caché del navegador.
+
+El cifrado de la memoria caché del navegador puede afectar al rendimiento.</translation>
 <translation id="6527674993612811419">Mostrar advertencias e inhabilitar Autocompletar en formularios no seguros</translation>
 <translation id="6532769014584932288">Permitir wake locks</translation>
 <translation id="6533881418188970751">Preguntar al usuario dónde se guardará el archivo antes de descargarlo</translation>
@@ -9049,6 +9081,17 @@ Solo se permiten orígenes HTTPS válidos. No se admiten comodines.
 Las entradas no válidas se ignoran.</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
 <translation id="7045221780834308118">Si se habilita esta política, las aplicaciones web de terceros podrán usar la API Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si esta política no se define o se inhabilita, <ph name="DESK_API_NAME" /> no estará disponible. La política solo se aplicará a los dispositivos registrados.</translation>
+<translation id="704591686761455167">Esta política controla si las URLs blob se particionan durante la obtención y la navegación.
+Si se habilita esta política o no se define, las URLs blob se particionarán.
+Si se inhabilita esta política, las URLs blob no se particionarán.
+
+Si Partición del almacenamiento se inhabilita en un origen de nivel superior concreto mediante <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, las URLs blob tampoco se particionarán.
+
+Si tienes que usar esta política, registra un error en <ph name="BUG_URL" /> y explica cómo la quieres usar. Se prevé que esta política esté disponible en la versión 146 de <ph name="PRODUCT_NAME" />. Después, la antigua implementación se eliminará.
+
+NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.
+
+Para obtener información detallada sobre la partición del almacenamiento de terceros, consulta https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
 <translation id="7046997898355294677">Mostrar las notificaciones de privacidad hasta que las cierre el usuario</translation>
 <translation id="7047495632846973438">Especifica si se comprobará o se saltará la política de permisos mostrar-capturar.</translation>
@@ -9651,6 +9694,17 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
       Si se habilita esta política o no se establece, los sitios solo podrán hacer llamadas a getDisplayMedia() desde contextos incluidos en la lista de permitidos de la política de permisos mostrar-capturar.
 
       Si se inhabilita esta política, los sitios podrán hacer llamadas a getDisplayMedia() incluso desde contextos no incluidos en la lista de permitidos de la política de permisos mostrar-capturar. Ten en cuenta que es posible que se apliquen otras restricciones.</translation>
+<translation id="750408442628578356">Controla si la aplicación Gemini puede realizar acciones en las páginas web en nombre del usuario.
+
+0/sin definir = la aplicación Gemini puede realizar acciones en las páginas web.
+
+1 = la app Gemini no puede realizar acciones en las páginas web.
+
+Esta política no tiene efecto cuando la app Gemini está inhabilitada. Por ejemplo, la app Gemini se puede inhabilitar mediante la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre Gemini en Chrome, accede a https://support.google.com/chrome/a/answer/16291696.
+
+La activación de Gemini no está disponible en todos los países ni en todos los idiomas. Aunque se defina esta política, no se garantiza que la función se habilite, ya que sigue sujeta a disponibilidad. Para obtener más información sobre su lanzamiento, consulta las notas de la versión de Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=es</translation>
 <translation id="7506745375479451616">Esta política controla el comando que se utilizará para abrir las URL al cambiar de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" />. A esta política se le puede asignar la ruta de un archivo ejecutable o el valor <ph name="PRODUCT_NAME_PLACEHOLDER" /> para detectar automáticamente la ubicación de <ph name="PRODUCT_NAME" />.
 
       Si no se asigna ningún valor a esta política, <ph name="IE_PRODUCT_NAME" /> detectará automáticamente la ruta ejecutable de <ph name="PRODUCT_NAME" /> al iniciar <ph name="PRODUCT_NAME" /> desde Internet Explorer.
@@ -9734,6 +9788,7 @@ Si no se define esta política, no se permitirán excepciones de <ph name="FLOAT
 
       Si el dispositivo del usuario no está administrado, la disponibilidad de esta función dependerá también de si el usuario es el propietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
+<translation id="7572641760104970905">Sin complejidad</translation>
 <translation id="757395965347379751">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> permitirá los certificados SHA-1 firmados siempre que se validen correctamente y se vinculen a certificados AC instalados localmente.
 
       Ten en cuenta que esta política depende de la pila de verificación de certificados del sistema operativo que permite las firmas SHA-1. Si una actualización del sistema operativo cambia la forma en que este gestiona los certificados SHA-1, es posible que la política deje de estar efectiva. Además, el objetivo de esta política es proporcionar a las empresas una solución temporal para que tengan más tiempo para abandonar los certificados SHA-1. Esta política se retirará sobre el 1 de enero de 2019.
@@ -9832,6 +9887,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="7648907905084499629">Usar el comportamiento de cookies de <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> en todos los sitios web</translation>
 <translation id="7657261947024629645">Optimizar para un mejor rendimiento.</translation>
 <translation id="76580522298425324">Permitir captura de pantalla sin gesto previo del usuario</translation>
+<translation id="7661379728107156839">Complejidad baja</translation>
 <translation id="7666228839913571182">Permitir cookies de terceros</translation>
 <translation id="7666782560345386904">Ajustes de la función Autocompletar mejorada</translation>
 <translation id="7669630878711068277">Si se habilita esta política o no se le asigna ningún valor, los usuarios podrán imprimir en <ph name="PRODUCT_NAME" /> y no podrán cambiar este ajuste.

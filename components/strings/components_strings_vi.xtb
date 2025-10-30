@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Xanh lơ 3</translation>
 <translation id="1035709686865413354">Thiết bị lọc và máy lọc nước</translation>
 <translation id="1036348656032585052">Tắt</translation>
+<translation id="1036436692654972538">Lưu vào thiết bị của bạn</translation>
 <translation id="1036881361735705143">Phong bì C4</translation>
 <translation id="1038842779957582377">tên không biết</translation>
 <translation id="1041998700806130099">Thông báo tờ công việc</translation>
@@ -178,6 +179,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
 <translation id="1292571435393770077">Khay 16</translation>
 <translation id="1292701964462482250">"Phần mềm trên máy tính của bạn đang ngăn không cho Chrome kết nối an toàn với web" (chỉ trên máy tính Windows)</translation>
+<translation id="1293556467332435079">Tệp</translation>
 <translation id="1293797321964802402">Phong bì 9 x 11 inch</translation>
 <translation id="129553762522093515">Các thẻ đã đóng gần đây</translation>
 <translation id="1296930489679394997">Bán hàng</translation>
@@ -2830,6 +2832,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> đã chuyển hướng bạn quá nhiều lần.</translation>
 <translation id="5619721953841297650">Giá trị đặt trước</translation>
 <translation id="5624120631404540903">Quản lý mật khẩu</translation>
+<translation id="5628060911499153873">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn trên các sản phẩm của Google. Thông tin của bạn được lưu vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> của tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Không thể tải cài đặt chính sách</translation>
 <translation id="5630981295558454585">Nút Hỏi Google về trang này, hãy nhấn nút này để hỏi Google về trang này</translation>
 <translation id="5631439013527180824">Mã thông báo quản lý thiết bị không hợp lệ</translation>
@@ -3156,7 +3159,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6189351761800074311">Nội dung trang và văn bản mà bạn viết được gửi cho Google, nhưng sẽ không được dùng để cải thiện AI.
     <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Ghi đè một số phím trên bàn phím, chẳng hạn như phím Esc</translation>
-<translation id="6192524964213419211">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn trên các sản phẩm của Google. Thông tin của bạn được lưu vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> của tài khoản <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Xem tất cả sản phẩm bạn theo dõi tại đây</translation>
 <translation id="6195371403461054755">Địa chất học</translation>
 <translation id="6195418151868446719">Điện tử dân dụng</translation>
@@ -3492,7 +3494,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6716039223770814796">So sánh <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> mặt hàng</translation>
 <translation id="6716672519412350405"><ph name="URL" /> muốn tạo bản đồ 3D khu vực xung quanh bạn và theo dõi thông tin vị trí của camera</translation>
 <translation id="6717692133381953670">Thẻ được gửi từ <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Lưu thông tin của bạn để tính năng tự động điền có thể điền vào những trường khác trong lần tới</translation>
 <translation id="6718612893943028815">Sử dụng camera?</translation>
 <translation id="6721164594124191969">Nhãn (Bóng)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

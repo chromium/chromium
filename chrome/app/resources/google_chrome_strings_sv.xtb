@@ -93,6 +93,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2018528049276128029">I alla profiler sparas egen Chrome-information som bokmärken, historik, lösenord och annat</translation>
 <translation id="2018879682492276940">Installationen misslyckades. Försök igen.</translation>
 <translation id="2024959665595762054">Verifiera din identitet om du vill använda och spara Chrome-data i Google-kontot</translation>
+<translation id="2026377840141807639">Med Chrome-profiler slipper du blanda ditt privata surfande med jobbet. Lägg till en ny profil nu.</translation>
 <translation id="2034233344106846793">Chrome uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
 <translation id="2039417478970545937">Inställningar.</translation>
 <translation id="2091012649849228750">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.</translation>
@@ -367,6 +368,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om du vill använda en nyare version av Chrome.</translation>
 <translation id="5174969993834422967">Du brukar blockera aviseringar. Klicka på aviseringsikonen uppe till höger om platsfältet om du vill tillåta aviseringar från webbplatsen.</translation>
 <translation id="5174983315706567306">Det finns inte tillräckligt med diskutrymme.</translation>
+<translation id="5190467473654176081">Anpassa Chrome med ett nytt utseende</translation>
 <translation id="5201744974236816379">Chrome-uppdatering</translation>
 <translation id="521447420733633466">Om du delar en enhet med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -390,6 +392,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5510398294750420479">Ladda ned Chrome på telefonen för att få ett extra skyddslager var du än är</translation>
 <translation id="5524890928877629608">övre vänstra hörnet av sökområdet: <ph name="LEFT" /> % åt vänster, <ph name="TOP" /> % uppåt</translation>
 <translation id="5530733413481476019">Gör Chrome snabbare</translation>
+<translation id="5550137307985173298">Klicka på knappen Anpassa Chrome på sidan Ny flik för att ge Chrome ett nytt utseende</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Startfel: Kör installationsprogrammet som vanlig användare, inte som administratör.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
@@ -418,6 +421,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5736850870166430177">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="5756509061973259733">Det finns redan en Chrome-profil med detta konto på enheten</translation>
 <translation id="5759947850379142561">Välj text eller bild att söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
+<translation id="5762867845020858790">Lägg till en ny Chrome-profil för att hålla isär bokmärken, lösenord och inställningar.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Det gick inte att starta Chrome. Försök igen.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
@@ -518,6 +522,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6800285125190089494">Logga in snabbare på webbplatser med sparade lösenord för Chrome på iOS</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="683440813066116847">Regel som tillåter inkommande mDNS-trafik för Google Chrome Canary.</translation>
+<translation id="6841242485723266823">Med Chrome-profiler slipper du blanda olika delar av ditt liv. Lägg till en ny profil nu.</translation>
 <translation id="684888714667046800">Det går inte att ansluta till internet. Om du använder en brandvägg kontrollerar du att <ph name="PRODUCT_EXE_NAME" /> finns med i godkännandelistan.</translation>
 <translation id="6877155553248388166">nedre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="6881299373831449287">Chrome uppdateras</translation>
@@ -682,6 +687,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Om en minut startas Chrome om}other{Om # minuter startas Chrome om}}</translation>
 <translation id="8637932705841171563">För att dela fönstret tillåter du skärminspelning för Chrome i systeminställningarna</translation>
 <translation id="8641606876632989680">Chrome aviserar dig om du loggar in med ett utsatt lösenord</translation>
+<translation id="8647930742055103497">Ha allt i Chrome</translation>
 <translation id="8656634243791296665">Öppna Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8677922833187616101">Visa alltid genvägen till Google AI-läget</translation>

@@ -202,6 +202,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3123473560110926937">Blokeeritud teatud saitidel</translation>
 <translation id="3132996321662585180">Värskendatakse iga päev</translation>
 <translation id="3143754809889689516">Esita algusest</translation>
+<translation id="3164169438034704658">Täpse asukoha saate sisse lülitada <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Saidil lubatakse kasutada kolmanda osapoole küpsisefaile</translation>
 <translation id="3167868116600277716">Discoveri voog</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> salvestatud andmeid</translation>
@@ -540,6 +541,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Kas kustutada saidi andmed? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
+<translation id="6991142177939282156">Lubatud • Kasutab ligikaudset asukohta</translation>
 <translation id="6992289844737586249">Küsi enne saitidele minu mikrofoni kasutamiseks juurdepääsu lubamist (soovitatav)</translation>
 <translation id="7000754031042624318">Androidi seadetes välja lülitatud</translation>
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
@@ -650,6 +652,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8261506727792406068">Kustuta</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="8300705686683892304">Neid haldab rakendus</translation>
+<translation id="8301363963630676147">Lubatud sel korral • Kasutab ligikaudset asukohta</translation>
 <translation id="8315509175050791576">Vahelehe jagamine</translation>
 <translation id="8324158725704657629">Ära enam küsi</translation>
 <translation id="8362795839483915693">Saate külastatavatel saitidel sisse ja välja suumida</translation>

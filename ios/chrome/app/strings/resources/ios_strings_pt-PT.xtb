@@ -676,6 +676,7 @@
 <translation id="3642060527569456384">Os grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, {email}.}other{{count} palavras-passe estão guardadas apenas neste dispositivo. Para usá-las nos seus outros dispositivos, guarde-as na sua Conta Google, {email}.}}</translation>
 <translation id="3659297405161482746">Não foram encontrados métodos de pagamento</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 selecionado}other{# selecionados}}</translation>
 <translation id="3668816008081204991">A Lista de leitura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3679163990085797665">Eliminar lidas</translation>
@@ -780,7 +781,6 @@
 <translation id="4049507953662678203">Certifique-se de que tem uma ligação de rede e tente novamente.</translation>
 <translation id="4070132839822635162">Não iniciar sessão</translation>
 <translation id="4092655288299341041">Mostrar ajuda</translation>
-<translation id="4095483462103784441">Criar novo grupo de separadores</translation>
 <translation id="4099756562043439968">Definir lembrete</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar tudo como lido</translation>

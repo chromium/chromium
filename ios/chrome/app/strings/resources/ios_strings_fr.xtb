@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1497590942294823549">Menu → Gestionnaire de mots depasse</translation>
 <translation id="1498283581832036924">Votre compte <ph name="WEBSITE" /> ne sera pas supprimé.</translation>
+<translation id="1503814213414825943">Sélectionnez les comptes que vous souhaitez exporter vers une autre appli.</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1506063256525392513">Cela vous permet de prendre et d'importer des photos, et de scanner des codes QR</translation>
 <translation id="1508263560970797965">Continuer en navigation privée</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Vérifiez si vous disposez bien d'une connexion réseau, puis réessayez.</translation>
 <translation id="4070132839822635162">Ne pas se connecter</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
-<translation id="4095483462103784441">Créer un groupe d'onglets</translation>
 <translation id="4099756562043439968">Définir un rappel</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4111985840824673503">Tout marquer comme lu</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Changer de mot de passe sur le site Web</translation>
 <translation id="5248640482715684545">Ce site essaie d'ouvrir une autre appli.</translation>
 <translation id="5250371859659394278">Depuis une source inconnue</translation>
+<translation id="5269913829202614649">Personnaliser la page d'accueil</translation>
 <translation id="5271265092610673171">{count,plural, =1{Renseignez le champ obligatoire avant d'enregistrer.}one{Renseignez le champ obligatoire avant d'enregistrer.}other{Renseignez les champs obligatoires avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vous invite à rejoindre un groupe d'onglets. Toutes les personnes disposant du lien peuvent modifier tous les onglets. Faites donc preuve de prudence en rejoignant le groupe. Le lien expire dans 48 heures.</translation>

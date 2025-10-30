@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">เขียวแกมน้ำเงิน 3</translation>
 <translation id="1035709686865413354">เครื่องกรองน้ำ</translation>
 <translation id="1036348656032585052">ปิด</translation>
+<translation id="1036436692654972538">บันทึกลงในอุปกรณ์</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
@@ -178,6 +179,7 @@
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1292571435393770077">ถาด 16</translation>
 <translation id="1292701964462482250">"ซอฟต์แวร์ในคอมพิวเตอร์ของคุณทำให้ Chrome เชื่อมต่อกับเว็บอย่างปลอดภัยไม่ได้" (คอมพิวเตอร์ที่ใช้ระบบปฏิบัติการ Windows เท่านั้น)</translation>
+<translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 นิ้ว</translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
 <translation id="1296930489679394997">การขาย</translation>
@@ -2829,6 +2831,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> เปลี่ยนเส้นทางของคุณบ่อยเกินไป</translation>
 <translation id="5619721953841297650">ค่าที่กำหนดล่วงหน้า</translation>
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
+<translation id="5628060911499153873">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้นในผลิตภัณฑ์ต่างๆ ของ Google ระบบจะบันทึกข้อมูลของคุณลงใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="5629630648637658800">ไม่สามารถโหลดการตั้งค่านโยบาย</translation>
 <translation id="5630981295558454585">เปิดใช้งานปุ่ม "ถาม Google เกี่ยวกับหน้านี้" เพื่อถาม Google เกี่ยวกับหน้านี้</translation>
 <translation id="5631439013527180824">โทเค็นการจัดการอุปกรณ์ไม่ถูกต้อง</translation>
@@ -3155,7 +3158,6 @@
 <translation id="6189351761800074311">ระบบจะส่งข้อความและเนื้อหาหน้าเว็บของคุณไปยัง Google แต่จะไม่นำไปใช้เพื่อปรับปรุง AI
     <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">ลบล้างแป้นพิมพ์บางแป้นบนแป้นพิมพ์ของคุณ เช่น Esc</translation>
-<translation id="6192524964213419211">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้นในผลิตภัณฑ์ต่างๆ ของ Google ระบบจะบันทึกข้อมูลของคุณลงใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">ดูผลิตภัณฑ์ที่ติดตามทั้งหมดที่นี่</translation>
 <translation id="6195371403461054755">ธรณีวิทยา</translation>
 <translation id="6195418151868446719">เครื่องใช้ไฟฟ้าทั่วไป</translation>
@@ -3491,7 +3493,6 @@
 <translation id="6716039223770814796">เปรียบเทียบ<ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> รายการ</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
 <translation id="6717692133381953670">แท็บที่ส่งจาก <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">บันทึกข้อมูลเพื่อให้การป้อนข้อความอัตโนมัติสามารถกรอกข้อมูลในช่องอื่นๆ ให้คุณได้มากขึ้นในครั้งถัดไป</translation>
 <translation id="6718612893943028815">ใช้กล้องถ่ายรูปไหม</translation>
 <translation id="6721164594124191969">ป้าย (เงา)</translation>
 <translation id="6726832600570791992">(จำลอง 32 บิต)</translation>

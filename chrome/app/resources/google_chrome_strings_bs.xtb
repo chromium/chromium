@@ -93,6 +93,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2018528049276128029">Svaki profil sadrži svoje Chrome informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
 <translation id="2018879682492276940">Instalacija nije uspjela. Pokušajte ponovo.</translation>
 <translation id="2024959665595762054">Da koristite i sačuvate podatke Chromea na Google računu, potvrdite identitet</translation>
+<translation id="2026377840141807639">Chrome profili vam omogućavaju da odvojite lično pregledanje od poslovnog. Dodajte novi profil sada.</translation>
 <translation id="2034233344106846793">Chrome automatski nadograđuje nesigurne veze na HTTPS kada je moguće</translation>
 <translation id="2039417478970545937">Postavke.</translation>
 <translation id="2091012649849228750">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.</translation>
@@ -367,6 +368,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profila ili koristite noviju verziju Chromea.</translation>
 <translation id="5174969993834422967">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite na ikonu obavještenja u desnom uglu lokacijske trake.</translation>
 <translation id="5174983315706567306">Nema dovoljno prostora na disku.</translation>
+<translation id="5190467473654176081">Prilagodite Chrome da mu dodijelite novi izgled</translation>
 <translation id="5201744974236816379">Ažuriranje Chromea</translation>
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chrome na način koji njima odgovara</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -390,6 +392,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5510398294750420479">Preuzmite Chrome na telefon da dodatno poboljšate zaštitu kada ste u pokretu</translation>
 <translation id="5524890928877629608">gornji lijevi ugao područja za pretraživanje: lijevo <ph name="LEFT" />%, gore <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Ubrzajte Chrome</translation>
+<translation id="5550137307985173298">Kliknite na dugme Prilagodite Chrome na stranici Nova kartica da biste Chromeu dodijelili novi izgled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao obični korisnik, a ne kao administrator.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -418,6 +421,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
 <translation id="5756509061973259733">Chrome profil s ovim računom već postoji na ovom uređaju</translation>
 <translation id="5759947850379142561">Pretraživanje putem Google Objektiva odabirom bilo kojeg teksta ili slike ili napuštanje Google Objektiva pritiskom na Esc</translation>
+<translation id="5762867845020858790">Dodajte novi Chrome profil da odvojite oznake, lozinke i postavke.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Pokretanje Chromea nije uspjelo. Ponovite.</translation>
 <translation id="5809516625706423866">Nije moguće povezati se s internetom. HTTP 401 nije ovlašten. Provjerite konfiguraciju proksi servera.</translation>
@@ -518,6 +522,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6800285125190089494">Brže se prijavite na web lokacije koristeći sačuvane lozinke za Chrome u iOS-u</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>
+<translation id="6841242485723266823">Chrome profili vam pomažu da odvojite različite dijelove svog života. Dodajte novi profil sada.</translation>
 <translation id="684888714667046800">Nije moguće povezati se s internetom. Ako koristite zaštitni zid, vodite računa da <ph name="PRODUCT_EXE_NAME" /> bude na listi dozvoljenih.</translation>
 <translation id="6877155553248388166">donji desni ugao područja za pretraživanje: desno <ph name="RIGHT" />%, dolje <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
@@ -682,6 +687,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome će se ponovo pokrenuti za 1 minutu}one{Chrome će se ponovo pokrenuti za # minutu}few{Chrome će se ponovo pokrenuti za # minute}other{Chrome će se ponovo pokrenuti za # minuta}}</translation>
 <translation id="8637932705841171563">Da podijelite prozor, dozvolite snimanje ekrana za Chrome u Postavkama sistema</translation>
 <translation id="8641606876632989680">Chrome će vas obavijestiti kada se prijavite s ugroženom lozinkom</translation>
+<translation id="8647930742055103497">Zadržite sve u Chromeu</translation>
 <translation id="8656634243791296665">Otvorite Gemini u Chrome Devu</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8677922833187616101">Uvijek prikazuj prečicu Google AI načina rada</translation>

@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">فیروزه‌ای ۳</translation>
 <translation id="1035709686865413354">فیلتر آب و تصفیه‌کننده</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
+<translation id="1036436692654972538">در دستگاهتان ذخیره می‌شود</translation>
 <translation id="1036881361735705143">پاکت سی۴</translation>
 <translation id="1038842779957582377">نام ناشناس</translation>
 <translation id="1041998700806130099">پیام برگ کار</translation>
@@ -178,6 +179,7 @@
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
 <translation id="1292571435393770077">سینی ۱۶</translation>
 <translation id="1292701964462482250">‏«نرم‌افزاری در رایانه شما مانع از اتصال ایمن Chrome به وب می‌شود» (فقط رایانه‌های Windows)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1293797321964802402">پاکت ۱۱×۹ اینچی</translation>
 <translation id="129553762522093515">اخیراً بسته‌شده</translation>
 <translation id="1296930489679394997">فروش</translation>
@@ -2830,6 +2832,7 @@
 <translation id="5617949217645503996">تعداد دفعاتی که <ph name="HOST_NAME" /> شما را به نشانی‌های دیگر هدایت کرده بیش از حد است.</translation>
 <translation id="5619721953841297650">پیش‌تنظیم</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
+<translation id="5628060911499153873">‏اطلاعاتتان را ذخیره کنید تا کارها را در محصولات Google سریع‌تر انجام دهید. اطلاعاتتان در «<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />» حساب <ph name="ACCOUNT" /> ذخیره می‌شود.</translation>
 <translation id="5629630648637658800">تنظیمات خط‌مشی بارگیری نشد</translation>
 <translation id="5630981295558454585">‏دکمه پرسیدن از Google درباره این صفحه، برای پرسیدن از Google درباره این صفحه، فعال کنید</translation>
 <translation id="5631439013527180824">نشانه مدیریت دستگاه نامعتبر است</translation>
@@ -3156,7 +3159,6 @@
 <translation id="6189351761800074311">‏نوشتار و محتوای صفحه به Google ارسال می‌شوند اما از آن‌ها برای بهبود هوش مصنوعی استفاده نخواهد شد.
     <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">برخی‌از کلیدهای روی صفحه‌کلید ملغی می‌شود، مثلاً «کلید گریز»</translation>
-<translation id="6192524964213419211">‏اطلاعاتتان را ذخیره کنید تا کارها را در محصولات Google سریع‌تر انجام دهید. اطلاعات شما در «<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />» حساب <ph name="ACCOUNT" /> ذخیره می‌شود</translation>
 <translation id="6194209731893739467">همه محصولات پیگیری‌شده‌تان را در اینجا ببینید</translation>
 <translation id="6195371403461054755">زمین‌شناسی</translation>
 <translation id="6195418151868446719">تجهیزات الکترونیکی مصرفی</translation>
@@ -3492,7 +3494,6 @@
 <translation id="6716039223770814796">مقایسه <ph name="COMPARE_SET_NAME" /> · ‏<ph name="ITEMS" /> مورد</translation>
 <translation id="6716672519412350405"><ph name="URL" /> می‌خواهد نقشه‌ای سه‌بعدی از محیط ایجاد کند و موقعیت دوربین را ردیابی کند</translation>
 <translation id="6717692133381953670">زبانه از <ph name="DEVICE_NAME" /> ارسال شده است</translation>
-<translation id="6718524733720986924">اطلاعاتتان را ذخیره کنید تا تکمیل خودکار بتواند دفعه بعد فیلدهای بیشتری را برای شما پر کند</translation>
 <translation id="6718612893943028815">از دوربین استفاده شود؟</translation>
 <translation id="6721164594124191969">برچسب (براق)</translation>
 <translation id="6726832600570791992">(۳۲ بیتی شبیه‌سازی‌شده)</translation>

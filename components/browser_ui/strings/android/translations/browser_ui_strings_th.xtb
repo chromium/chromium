@@ -42,7 +42,7 @@
 <translation id="1508931164824684991">เว็บไซต์ใช้ JavaScript ได้</translation>
 <translation id="1510341833810331442">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
 <translation id="1532175480576580256">Bottom Sheet ในแป้นพิมพ์ลัดของฉันเปิดอยู่แบบเต็มความสูง</translation>
-<translation id="1538031354170655462">โดยปกติแล้วเว็บไซต์จะใช้ Near Field Communication (NFC) เพื่อทำงานร่วมกับแท็กหรืออุปกรณ์ที่อยู่ใกล้เคียง เช่น การสแกนป้ายหรือการแตะเพื่อจ่าย</translation>
+<translation id="1538031354170655462">โดยปกติแล้วเว็บไซต์จะใช้ Near Field Communication (NFC) เพื่อทำงานร่วมกับแท็กหรืออุปกรณ์ที่อยู่ใกล้เคียง เช่น ใช้ในการสแกนป้ายหรือการแตะเพื่อจ่าย</translation>
 <translation id="1547123415014299762">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="1569054338208717605">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
 <translation id="1593426485665524382">การดำเนินการใหม่ที่พร้อมใช้งานบริเวณด้านบนของหน้าจอ</translation>
@@ -202,6 +202,7 @@
 <translation id="3123473560110926937">บล็อกในบางเว็บไซต์</translation>
 <translation id="3132996321662585180">รีเฟรชทุกวัน</translation>
 <translation id="3143754809889689516">เริ่มเล่นตั้งแต่ต้น</translation>
+<translation id="3164169438034704658">คุณเปิดใช้ตำแหน่งที่แน่นอนได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="3165022941318558018">อนุญาตให้เว็บไซต์ใช้คุกกี้ของบุคคลที่สาม</translation>
 <translation id="3167868116600277716">ฟีดสำรวจ</translation>
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บ <ph name="STORAGE_AMOUNT" /></translation>
@@ -540,6 +541,7 @@
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6980861169612950611">ลบข้อมูลเว็บไซต์ใช่ไหม <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
+<translation id="6991142177939282156">อนุญาต • ใช้ตำแหน่งโดยประมาณ</translation>
 <translation id="6992289844737586249">ถามก่อน ก่อนที่จะอนุญาตให้เว็บไซต์ใช้ไมโครโฟน (แนะนำ)</translation>
 <translation id="7000754031042624318">ปิดในการตั้งค่า Android</translation>
 <translation id="702275896380648118">เว็บไซต์นี้จะระบุสิ่งที่คุณชื่นชอบแล้วแนะนําโฆษณาในเว็บไซต์อื่น เว็บไซต์นี้ยังรับหัวข้อโฆษณาของคุณจาก Chrome เพื่อแสดงโฆษณาที่เกี่ยวข้องมากขึ้นด้วย</translation>
@@ -650,6 +652,7 @@
 <translation id="8261506727792406068">ลบ</translation>
 <translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
 <translation id="8300705686683892304">จัดการโดยแอป</translation>
+<translation id="8301363963630676147">อนุญาตในครั้งนี้ • ใช้ตำแหน่งโดยประมาณ</translation>
 <translation id="8315509175050791576">กำลังแชร์แท็บ</translation>
 <translation id="8324158725704657629">ไม่ต้องถามอีก</translation>
 <translation id="8362795839483915693">คุณซูมเข้าหรือออกในเว็บไซต์ที่เข้าชมได้</translation>

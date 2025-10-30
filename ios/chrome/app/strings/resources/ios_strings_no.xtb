@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Vis passordet</translation>
 <translation id="1996318269856535896">Du kan fortsatt bruke de eksisterende nettlesingsdataene dine på denne enheten. Logg av den administrerte kontoen din for å bruke dem.</translation>
 <translation id="2010008505735295285">Last inn på nytt</translation>
+<translation id="2012723204723845092">Velkommen tilbake!</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="201759455285471444">Vis fanegruppen.</translation>
 <translation id="202070562065520783">Forklar dette for meg</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Du har ingen lagrede passord eller passnøkler, men du kan slette listen over nettsteder og apper du har valgt å aldri lagre påloggingsinformasjon for. Eventuelle kontoer du har opprettet for nettsteder og apper, blir ikke slettet.</translation>
 <translation id="3530206579861815432">Du kan raskt finne åpne og nylig lukkede faner på alle de synkroniserte enhetene dine.</translation>
 <translation id="3530767473765895035">Administrer kontoer på denne enheten…</translation>
+<translation id="353340646084395154">Fjernet preferanser for Ny fane-side</translation>
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3540141921715814660">Legg til i bokmerker</translation>
 <translation id="3546122170015471515">Forhåndsvisninger i Maps på Google.com</translation>
@@ -780,7 +782,6 @@
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="4070132839822635162">Ikke logg på</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
-<translation id="4095483462103784441">Opprett en ny fanegruppe</translation>
 <translation id="4099756562043439968">Angi en påminnelse</translation>
 <translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
 <translation id="4111985840824673503">Merk alle som lest</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4894963374040315706">Dette gjør at du kan søke ved bruk av stemmen</translation>
 <translation id="4895540042460820904">Sist åpnet</translation>
 <translation id="4896467949657706481">Faner ble lukket, og du ble logget av</translation>
+<translation id="4911042367886397055">Velkommen tilbake, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Du kan dele en kopi av passordet ditt med andre i familiegruppen din på en sikker måte. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Du kan bruke eksisterende nettlesingsdata når du er logget på som <ph name="USER_EMAIL" />. Organisasjonen din kan se disse dataene.</translation>
 <translation id="4918086044614829423">Godta</translation>
@@ -1052,6 +1054,7 @@
 <translation id="508645147179720015">Merknaden inneholder over 1000 tegn</translation>
 <translation id="5087098519049306025">Prissporing</translation>
 <translation id="5090832849094901128">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Henter tingene dine …</translation>
 <translation id="5118462200606189584">Legg til konto…</translation>
 <translation id="5118764316110575523">Av</translation>
 <translation id="5119329531859909472">For å spore produktet, trykk på Spor</translation>
@@ -1122,6 +1125,7 @@
 <translation id="537853552771686272">Administrer emnene og nettstedene du er interessert i</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} er lukket}other{{count} er lukket}}</translation>
 <translation id="5394975111793637642">Skjul «Produktanmeldelser for deg»-kortet</translation>
+<translation id="5407806496954700135">Vil du bruke tilpasningene du har gjort på Ny fane-siden på en annen enhet?</translation>
 <translation id="5414763847370083940">Du får varsler hvis prisen settes ned på noe nettsted.</translation>
 <translation id="5415289094036440596">Passnøkler kan ikke deles</translation>
 <translation id="5416455648658732408">Flytt til fanegruppe</translation>
@@ -1757,6 +1761,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7696316012653762532">Alternativer for oversetting av siden</translation>
 <translation id="7700527812567437847">Søk på skjermen med Google Lens</translation>
 <translation id="7701040980221191251">Ingen</translation>
+<translation id="7708668404222666001">Ny fane-sideinnstillingene dine er tatt i bruk</translation>
 <translation id="7708994397325774423">Hent alle passordene dine</translation>
 <translation id="7711440461521638739">Du gjenbruker ingen passord</translation>
 <translation id="7712361583414030698">Du ser på en versjon uten nett</translation>

@@ -89,6 +89,7 @@
 <translation id="2039417478970545937">Beállítások.</translation>
 <translation id="2049376729098081731">Válassza ki, hogy szeretné-e használni a Chromium-előzményeket személyre szabott élmények biztosításához a Google-szolgáltatásokban.</translation>
 <translation id="2054039611381840095">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a macOS 12-es vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 11 fut.</translation>
+<translation id="2064856577282482477">Az Új lap oldalon található A Chromium személyre szabása gombra kattintva új megjelenést adhat a Chromiumnak</translation>
 <translation id="2086476982681781442">A Chromium letiltotta ezt a letöltést, mert a fájl megtévesztő, és váratlan módosításokat végezhet az eszközön</translation>
 <translation id="208726765006323911">A Chromium iOS következő megnyitásakor megjelenik egy üzenet, amely a(z) <ph name="FEATURE_NAME" /> funkció kipróbálását javasolja.</translation>
 <translation id="2099452623287920103">A Google-fiókjába mentett jelszavai és egyéb Chromium-adatai el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chromiumban, jelentkezzen be újra.</translation>
@@ -171,6 +172,7 @@
 <translation id="2933336679234709858">Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókjában Chromium-adatokat szeretne használni és menteni.</translation>
 <translation id="2945997411976714835">Telepítési hiba: Nem sikerült elindítani a telepítést.</translation>
 <translation id="2948852018303413228">Gyorsabban bejelentkezhet a webhelyekre az iOS rendszeren működő Chromiumhoz mentett jelszavak használatával.</translation>
+<translation id="2966959524256557996">Új Chromium-profil hozzáadásával elkülönítheti a könyvjelzőket, a jelszavakat és a beállításokat.</translation>
 <translation id="2970426615109535079">Az Ön szervezete kezeli a Chromiumot</translation>
 <translation id="2977470724722393594">A Chromium naprakész</translation>
 <translation id="2977506796191543575">Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chromium elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
@@ -237,6 +239,7 @@
 <translation id="3788675262216168505">Chromium-profilok kezelése</translation>
 <translation id="3790262771324122253">További információ arról, hogy miért tilt le bizonyos letöltéseket a Chromium</translation>
 <translation id="379589255253486813">A Chromium értesíti Önt, ha bármit érdemes áttekintenie</translation>
+<translation id="3798048725356732506">A Chromium-profilok segítenek az élet különböző területeinek elkülönítésében. Új profil hozzáadása most.</translation>
 <translation id="3802055581630249637">A Chromium előtölt olyan oldalakat, amelyeket Ön valószínűsíthetően fel fog keresni, így amikor valóban felkeresi őket, gyorsabban töltődnek be</translation>
 <translation id="3810973564298564668">Kezelés</translation>
 <translation id="3846683726093018685">**Összefoglalás:** Egyetlen, 30 szónál rövidebb mondatban írd le a képernyőképen látható tartalom elsődleges tárgyát és célját.
@@ -385,6 +388,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
+<translation id="5713518899297503106">A Chromium-profilokkal különválaszthatja a személyes és a munkahelyi böngészést. Új profil hozzáadása most.</translation>
 <translation id="5768371961535086509">A Chromium memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, és a Chromium gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ a Memóriatakarékos funkcióról<ph name="END_LINK" />.</translation>
 <translation id="5775198138441669627">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="SETTINGS_LINK" /> törölje a fiókjában lévő Chromium-adatokat.</translation>
 <translation id="5800158606660203929">Személyre szabhatja a Chromium működését. Beállíthatja a Chromiumot alapértelmezettként.</translation>
@@ -570,6 +574,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7810005234485217901">Az egyszerű hozzáférés érdekében kitűzheti a Képkeresőt</translation>
 <translation id="7828947555739565424">Már létezik Chromium-profil ezzel a fiókkal ezen az eszközön.</translation>
 <translation id="7845233973568007926">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a számítógépet.</translation>
+<translation id="7853661403199074278">A Chromium személyre szabásával új megjelenést adhat neki</translation>
 <translation id="7859018312476869945">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chromium a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="7867198900892795913">Nem sikerült a Chromium frissítése a legújabb verzióra, így Ön lemarad az új funkciókról és biztonsági javításokról.</translation>
 <translation id="7872446069773932638">Letöltés… <ph name="SECONDS" /> másodperc van hátra</translation>
@@ -642,6 +647,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8704119203788522458">Ez az Ön Chromiumja</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8719993436687031146">Bejelentkezik a Chromiumba?</translation>
+<translation id="8745263398357414606">Minden a Chromiumban</translation>
 <translation id="8747073452963259673">keresési terület bal alsó sarka: bal <ph name="LEFT" />%, lent <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Telepítési hiba: A hálózati rendszergazda olyan csoportházirendet alkalmazott, amely megakadályozza a telepítést: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796602469536043152">A Chromiumnak engedélyre van szüksége ahhoz, hogy hozzáférjen a kamerához és a mikrofonhoz ennél a webhelynél</translation>

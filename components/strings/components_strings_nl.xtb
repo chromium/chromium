@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cyaan 3</translation>
 <translation id="1035709686865413354">Waterfilters en -zuiveraars</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
+<translation id="1036436692654972538">Wordt opgeslagen op je apparaat</translation>
 <translation id="1036881361735705143">Envelop C4</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
 <translation id="1041998700806130099">Bericht voor taakblad</translation>
@@ -178,6 +179,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1285320974508926690">Deze site nooit vertalen</translation>
 <translation id="1292571435393770077">Lade 16</translation>
 <translation id="1292701964462482250">'Software op je computer voorkomt dat Chrome veilig verbinding kan maken met internet' (alleen Windows-computers)</translation>
+<translation id="1293556467332435079">Bestanden</translation>
 <translation id="1293797321964802402">Envelop 9 x 11 inch</translation>
 <translation id="129553762522093515">Recent gesloten</translation>
 <translation id="1296930489679394997">Sales</translation>
@@ -2824,6 +2826,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> heeft je te vaak omgeleid.</translation>
 <translation id="5619721953841297650">Voorinstelling</translation>
 <translation id="5624120631404540903">Wachtwoorden beheren</translation>
+<translation id="5628060911499153873">Sla je informatie op om sneller dingen te doen in Google-producten. Je informatie wordt opgeslagen in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> voor <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Laden van beleidsinstellingen is mislukt</translation>
 <translation id="5630981295558454585">Knop Google vragen over deze pagina, activeer deze om Google vragen te stellen over deze pagina</translation>
 <translation id="5631439013527180824">Ongeldige token voor apparaatbeheer</translation>
@@ -3149,7 +3152,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6189351761800074311">Je tekst en paginacontent worden naar Google gestuurd, maar worden niet gebruikt om AI te verbeteren.
     <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Sommige toetsen op je toetsenbord overschrijven, zoals Esc</translation>
-<translation id="6192524964213419211">Sla je informatie op om sneller dingen te doen in Google-producten. Je informatie wordt opgeslagen in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> voor <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Bekijk hier al je gevolgde producten</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6195418151868446719">Consumentenelektronica</translation>
@@ -3485,7 +3487,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6716039223770814796">Vergelijk <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> items</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wil een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
 <translation id="6717692133381953670">Tabblad gestuurd vanaf <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Sla je informatie op zodat automatisch invullen de volgende keer meer velden voor je kan invullen</translation>
 <translation id="6718612893943028815">Camera gebruiken?</translation>
 <translation id="6721164594124191969">Labels (glanzend)</translation>
 <translation id="6726832600570791992">(32-bits emulatie)</translation>

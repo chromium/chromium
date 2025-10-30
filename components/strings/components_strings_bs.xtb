@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">3. cijan</translation>
 <translation id="1035709686865413354">Filteri i pročišćivači vode</translation>
 <translation id="1036348656032585052">Isključi</translation>
+<translation id="1036436692654972538">Pohranjuje se na uređaju</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka u tabeli za posao</translation>
@@ -178,6 +179,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1285320974508926690">Nikada ne prevodi ovu web lokaciju</translation>
 <translation id="1292571435393770077">Ladica 16</translation>
 <translation id="1292701964462482250">"Softver na računaru sprečava Chrome da se sigurno poveže na web lokaciju" (samo na Windows računarima)</translation>
+<translation id="1293556467332435079">Fajlovi</translation>
 <translation id="1293797321964802402">Koverta 9 x 11 in</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296930489679394997">Rasprodaje</translation>
@@ -2830,6 +2832,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5617949217645503996">Host računar <ph name="HOST_NAME" /> vas je preusmjerio previše puta</translation>
 <translation id="5619721953841297650">Zadana postavka</translation>
 <translation id="5624120631404540903">Upravljajte lozinkama</translation>
+<translation id="5628060911499153873">Sačuvajte informacije da brže izvršavate radnje na Googleovim proizvodima. Informacije se pohranjuju u aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Učitavanje postavki pravila nije uspjelo</translation>
 <translation id="5630981295558454585">Dugme za postavljanje pitanja Googleu o ovoj stranici, postavljanje pitanja Googleu o ovoj stranici aktiviranjem</translation>
 <translation id="5631439013527180824">Nevažeći token za upravljanje uređajem</translation>
@@ -2962,7 +2965,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5879272455334365707">Planiranje i upravljanje finansijama</translation>
 <translation id="5879989559903563723">Nije dozvoljeno u Načinu rada za gosta</translation>
 <translation id="5880050725127890683">Idite u sigurnosnu provjeru Chromea</translation>
-<translation id="5880385758720707152">Automatski popunjavanje kućne i poslovne adrese s Google računa</translation>
+<translation id="5880385758720707152">Automatsko popunjavanje kućne i poslovne adrese s Google računa</translation>
 <translation id="5884465125445718607">Koverta Chinese #6</translation>
 <translation id="5886961930368713749">Pošaljite povratne informacije o poređenju</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
@@ -3156,7 +3159,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6189351761800074311">Vaš tekst i sadržaj stranice se šalju Googleu, ali se neće koristiti za poboljšanje AI-ja.
     <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">nadjačati određene tipke na tastaturi, kao što je Esc</translation>
-<translation id="6192524964213419211">Sačuvajte informacije da brže izvršavate radnje na Googleovim proizvodima. Informacije su sačuvane u aplikaciju <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Ovdje pregledajte sve proizvode koje pratite</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Potrošačka elektronika</translation>
@@ -3492,7 +3494,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6716039223770814796">Uporedi proizvode "<ph name="COMPARE_SET_NAME" />" · Više stavki: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi kreirati 3D mapu vašeg okruženja i pratiti položaj kamere</translation>
 <translation id="6717692133381953670">Kartica je poslana s uređaja <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Sačuvajte informacije da automatsko popunjavanje može popuniti više polja sljedeći put</translation>
 <translation id="6718612893943028815">Koristiti kameru?</translation>
 <translation id="6721164594124191969">Naljepnice (sjajne)</translation>
 <translation id="6726832600570791992">(32-bitno emulirano)</translation>

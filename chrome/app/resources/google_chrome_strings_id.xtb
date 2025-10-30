@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">Setiap profil memiliki info Chrome tersendiri, seperti bookmark, histori, sandi, dan lainnya</translation>
 <translation id="2018879682492276940">Gagal menginstal. Coba lagi.</translation>
 <translation id="2024959665595762054">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, verifikasi diri Anda</translation>
+<translation id="2026377840141807639">Profil Chrome memungkinkan Anda memisahkan penjelajahan pribadi dan kerja. Tambahkan profil baru sekarang.</translation>
 <translation id="2034233344106846793">Chrome mengupgrade koneksi tidak aman ke HTTPS secara otomatis jika memungkinkan</translation>
 <translation id="2039417478970545937">Setelan.</translation>
 <translation id="2091012649849228750">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.</translation>
@@ -361,6 +362,7 @@
 <translation id="5170938038195470297">Profil Anda tidak dapat digunakan karena berasal dari versi terbaru Google Chrome. Beberapa fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda atau gunakan versi Chrome yang lebih anyar.</translation>
 <translation id="5174969993834422967">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik ikon notifikasi di sudut kanan kolom lokasi.</translation>
 <translation id="5174983315706567306">Kapasitas disk tidak cukup.</translation>
+<translation id="5190467473654176081">Sesuaikan Chrome untuk memberikan tampilan baru</translation>
 <translation id="5201744974236816379">Update Chrome</translation>
 <translation id="521447420733633466">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -382,6 +384,7 @@
 <translation id="5510398294750420479">Download Chrome di ponsel Anda untuk menambahkan lapisan perlindungan ekstra kapan saja di mana saja</translation>
 <translation id="5524890928877629608">pojok kiri atas area penelusuran: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Buat Chrome Lebih Cepat</translation>
+<translation id="5550137307985173298">Klik tombol Sesuaikan Chrome di Halaman Tab Baru untuk memberikan tampilan baru pada Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
@@ -410,6 +413,7 @@
 <translation id="5736850870166430177">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="5756509061973259733">Profil Chrome dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="5759947850379142561">Pilih teks atau gambar untuk ditelusuri dengan Google Lens atau tekan escape untuk keluar dari Google Lens</translation>
+<translation id="5762867845020858790">Tambahkan profil Chrome baru untuk memisahkan bookmark, sandi, dan setelan.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat meluncurkan Chrome. Harap coba lagi.</translation>
 <translation id="5809516625706423866">Tidak dapat terhubung ke internet. HTTP 401 Tidak Sah. Periksa konfigurasi proxy Anda.</translation>
@@ -510,6 +514,7 @@
 <translation id="6800285125190089494">Login lebih cepat ke situs menggunakan sandi tersimpan untuk Chrome di iOS</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="683440813066116847">Inbound rule untuk Google Chrome Canary guna mengizinkan lalu lintas mDNS.</translation>
+<translation id="6841242485723266823">Profil Chrome membantu Anda memisahkan berbagai bagian dalam hidup Anda. Tambahkan profil baru sekarang.</translation>
 <translation id="684888714667046800">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, pastikan <ph name="PRODUCT_EXE_NAME" /> tercantum dalam daftar yang diizinkan.</translation>
 <translation id="6877155553248388166">pojok kanan bawah area penelusuran: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Mengupdate Chrome</translation>
@@ -575,7 +580,7 @@
 <translation id="756809126120519699">Data Chrome telah dihapus</translation>
 <translation id="7572537927358445944">Nonaktif • Chrome tidak dapat memverifikasi asal ekstensi ini</translation>
 <translation id="7583399374488819119">Penginstal <ph name="COMPANY_NAME" /></translation>
-<translation id="7602868996817972616">Tanyakan Google info tentang halaman ini</translation>
+<translation id="7602868996817972616">Tanya Google tentang halaman ini</translation>
 <translation id="760353356052806707">Program lain di komputer Anda menambahkan aplikasi yang dapat mengubah cara kerja Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -674,6 +679,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>
 <translation id="8637932705841171563">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem</translation>
 <translation id="8641606876632989680">Chrome akan memberi tahu Anda saat Anda login dengan sandi yang telah dibobol</translation>
+<translation id="8647930742055103497">Simpan semuanya di Chrome</translation>
 <translation id="8656634243791296665">Buka Gemini di Chrome Dev</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
 <translation id="8677922833187616101">Selalu Tampilkan Pintasan Mode AI Google</translation>

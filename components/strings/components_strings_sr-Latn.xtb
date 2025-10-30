@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">3. tirkizna</translation>
 <translation id="1035709686865413354">Filteri i prečišćivači za vodu</translation>
 <translation id="1036348656032585052">Isključi</translation>
+<translation id="1036436692654972538">Podaci se čuvaju na uređaju</translation>
 <translation id="1036881361735705143">Koverta C4</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
@@ -178,6 +179,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
 <translation id="1292571435393770077">16. fioka</translation>
 <translation id="1292701964462482250">„Softver na vašem računaru onemogućava Chrome-u da se bezbedno poveže na veb“ (samo na Windows računarima)</translation>
+<translation id="1293556467332435079">Fajlovi</translation>
 <translation id="1293797321964802402">Koverta 23×28 cm</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296930489679394997">Rasprodaja</translation>
@@ -2830,6 +2832,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5617949217645503996">Host <ph name="HOST_NAME" /> vas je preusmerio preveliki broj puta.</translation>
 <translation id="5619721953841297650">Zadata podešavanja</translation>
 <translation id="5624120631404540903">Upravljaj lozinkama</translation>
+<translation id="5628060911499153873">Sačuvajte informacije da biste brže obavljali stvari u Google proizvodima. Informacije se čuvaju u <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-u za <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Učitavanje podešavanja smernica nije uspelo</translation>
 <translation id="5630981295558454585">Dugme Upitajte Google o ovoj stranici, aktivirajte ga da biste upitali Google o ovoj stranici</translation>
 <translation id="5631439013527180824">Nevažeći token za upravljanje uređajima</translation>
@@ -3155,7 +3158,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6189351761800074311">Tekst i sadržaj stranice se šalju Google-u, ali se neće koristiti za poboljšanje veštačke inteligencije.
     <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Zamena unosa nekih tastera na tastaturi, kao što je Esc</translation>
-<translation id="6192524964213419211">Sačuvajte informacije da biste brže obavljali stvari u Google proizvodima. Informacije se čuvaju u <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-u za <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Pogledajte sve proizvode koje pratite ovde</translation>
 <translation id="6195371403461054755">Geologija</translation>
 <translation id="6195418151868446719">Aparati za domaćinstvo</translation>
@@ -3491,7 +3493,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6716039223770814796">Uporedite kategoriji <ph name="COMPARE_SET_NAME" /> · Stavki: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi da pravi 3D mapu okruženja i da prati položaj kamere</translation>
 <translation id="6717692133381953670">Kartica je poslata sa uređaja <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Sačuvajte informacije da bi automatsko popunjavanje sledeći put moglo da popuni više polja</translation>
 <translation id="6718612893943028815">Dozvolićete korišćenje kamere?</translation>
 <translation id="6721164594124191969">Nalepnice (sjajne)</translation>
 <translation id="6726832600570791992">(emulacija 32-bitne verzije)</translation>

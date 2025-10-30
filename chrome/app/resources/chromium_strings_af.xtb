@@ -91,6 +91,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2039417478970545937">Instellings.</translation>
 <translation id="2049376729098081731">Kies of jy Chromium-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="2054039611381840095">Jy het macOS 12 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 11.</translation>
+<translation id="2064856577282482477">Klik die Pasmaak Chromium-knoppie op die Nuwe Oortjie-bladsy om vir Chromium ’n nuwe voorkoms te gee</translation>
 <translation id="2086476982681781442">Chromium het hierdie aflaai geblokkeer omdat die lêer misleidend is en onverwagte veranderinge aan jou toestel kan maak</translation>
 <translation id="208726765006323911">Jy sal ’n porboodskap sien om <ph name="FEATURE_NAME" /> te probeer wanneer jy volgende keer Chromium iOS oopmaak.</translation>
 <translation id="2099452623287920103">Jou wagwoorde en ander Chromium-data wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chromium wil gebruik.</translation>
@@ -173,6 +174,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2933336679234709858">Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou Google-rekening te gebruik en te stoor.</translation>
 <translation id="2945997411976714835">Installeerfout: Die installeerderproses kon nie begin nie.</translation>
 <translation id="2948852018303413228">Meld vinniger by werwe aan deur gestoorde wagwoorde vir Chromium op iOS te gebruik</translation>
+<translation id="2966959524256557996">Voeg ’n nuwe Chromium-profiel by om boekmerke, wagwoorde en instellings apart te hou.</translation>
 <translation id="2970426615109535079">Jou organisasie bestuur Chromium</translation>
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="2977506796191543575">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
@@ -239,6 +241,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3788675262216168505">Bestuur Chromium-profiele</translation>
 <translation id="3790262771324122253">Vind uit hoekom Chromium sommige aflaaie blokkeer</translation>
 <translation id="379589255253486813">Chromium sal jou laat weet as jy enigiets moet hersien</translation>
+<translation id="3798048725356732506">Chromium-profiele help jou om verskillende dele van jou lewe te skei. Voeg nou ’n nuwe profiel by.</translation>
 <translation id="3802055581630249637">Chromium laai bladsye wat jy moontlik sal besoek vooraf, sodat hulle vinniger laai wanneer jy hulle wel besoek</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="3846683726093018685">**Som op:** Beskryf die primêre onderwerp en doel van die inhoud in die skermskoot in ’n enkele sin van onder 30 woorde.
@@ -387,6 +390,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wys Chromium in hierdie taal</translation>
 <translation id="569897634095159764">Kon nie aan die internet koppel nie. Instaanbediener vereis stawing.</translation>
+<translation id="5713518899297503106">Met Chromium-profiele kan jy persoonlike blaai-aktiwiteit en werk apart hou. Voeg nou ’n nuwe profiel by.</translation>
 <translation id="5768371961535086509">Chromium maak geheue uit onaktiewe oortjies beskikbaar. Dit gee aktiewe oortjies en ander apps meer rekenaarhulpbronne en hou Chromium vinnig. Jou onaktiewe oortjies word outomaties weer aktief wanneer jy na hulle toe teruggaan. <ph name="BEGIN_LINK" />Kry meer inligting oor Geheuebespaarder<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627"><ph name="SETTINGS_LINK" /> die Chromium-data in jou rekening indien jy jou wagfrase vergeet het of hierdie instelling wil verander</translation>
 <translation id="5800158606660203929">Pasmaak en beheer Chromium. Stel Chromium as jou verstek.</translation>
@@ -574,6 +578,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7810005234485217901">Jy kan Prentsoektog vir vinnige toegang vasspeld</translation>
 <translation id="7828947555739565424">'n Chromium-profiel met hierdie rekening bestaan reeds op hierdie toestel</translation>
 <translation id="7845233973568007926">Dankie dat jy geïnstalleer het. Jy moet jou rekenaar herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
+<translation id="7853661403199074278">Pasmaak Chromium om dit ’n nuwe voorkoms te gee</translation>
 <translation id="7859018312476869945">Wanneer jy iets in die adresbalk of soekkassie tik, stuur Chromium wat jy tik na jou versteksoekenjin toe om beter voorstelle te kry. Dit is af in Incognito.</translation>
 <translation id="7867198900892795913">Chromium kon nie na die nuutste weergawe opdateer nie en daarom het jy nie nuwe kenmerke en sekuriteitregstellings nie.</translation>
 <translation id="7872446069773932638">Laai tans af … <ph name="SECONDS" /> sekonde(s) oor.</translation>
@@ -646,6 +651,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8704119203788522458">Dit is jou Chromium</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8719993436687031146">Meld by Chromium aan?</translation>
+<translation id="8745263398357414606">Hou alles in Chromium</translation>
 <translation id="8747073452963259673">onderste linkerhoek van soekgebied: links <ph name="LEFT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Installeerfout: Jou netwerkadmin het ’n groepbeleid toegepas wat installasie verhinder: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium het toestemming nodig om toegang te kry tot jou kamera en mikrofoon vir hierdie werf</translation>

@@ -89,6 +89,7 @@
 <translation id="2039417478970545937">Cài đặt.</translation>
 <translation id="2049376729098081731">Chọn xem có bao gồm nhật ký duyệt web trên Chromium hay không để mang lại trải nghiệm phù hợp hơn trong các dịch vụ của Google</translation>
 <translation id="2054039611381840095">Để nhận các bản cập nhật Chromium sau này, bạn cần có macOS 12 trở lên. Máy tính này đang sử dụng macOS 11.</translation>
+<translation id="2064856577282482477">Nhấp vào nút Tuỳ chỉnh Chromium trên Trang thẻ mới để mang lại giao diện mới cho Chromium</translation>
 <translation id="2086476982681781442">Chromium đã chặn tệp tải xuống này vì tệp này chứa nội dung lừa đảo và có thể thực hiện các thay đổi không mong muốn đối với thiết bị của bạn</translation>
 <translation id="208726765006323911">Lần tới, khi mở Chromium iOS, bạn sẽ thấy lời nhắc dùng thử <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Mật khẩu và các dữ liệu khác trên Chromium mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
@@ -171,6 +172,7 @@
 <translation id="2933336679234709858">Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chromium vào Tài khoản Google của bạn.</translation>
 <translation id="2945997411976714835">Lỗi cài đặt: Trình cài đặt không thể bắt đầu quá trình.</translation>
 <translation id="2948852018303413228">Đăng nhập vào các trang web nhanh hơn bằng mật khẩu đã lưu cho Chromium trên iOS</translation>
+<translation id="2966959524256557996">Thêm một hồ sơ Chromium mới để tách biệt dấu trang, mật khẩu và chế độ cài đặt.</translation>
 <translation id="2970426615109535079">Tổ chức bạn quản lý Chromium</translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
 <translation id="2977506796191543575">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chromium cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
@@ -237,6 +239,7 @@
 <translation id="3788675262216168505">Quản lý hồ sơ trên Chromium</translation>
 <translation id="3790262771324122253">Tìm hiểu lý do Chromium chặn một số nội dung tải xuống</translation>
 <translation id="379589255253486813">Chromium sẽ thông báo cho bạn nếu có vấn đề cần bạn xem xét</translation>
+<translation id="3798048725356732506">Các hồ sơ trên Chromium giúp bạn tách biệt các khía cạnh khác nhau trong cuộc sống. Thêm hồ sơ mới ngay.</translation>
 <translation id="3802055581630249637">Chromium tải trước các trang mà bạn có thể sẽ truy cập để các trang đó tải nhanh hơn khi bạn truy cập</translation>
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="3846683726093018685">**Tóm tắt:** Hãy mô tả chủ đề và mục đích chính của nội dung trong ảnh chụp màn hình này bằng một câu dưới 30 từ.
@@ -385,6 +388,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Hiển thị Chromium bằng ngôn ngữ này</translation>
 <translation id="569897634095159764">Không thể kết nối với Internet. Máy chủ proxy yêu cầu xác thực.</translation>
+<translation id="5713518899297503106">Hồ sơ trên Chromium giúp bạn tách biệt hoạt động duyệt web cá nhân và công việc. Thêm hồ sơ mới ngay.</translation>
 <translation id="5768371961535086509">Chromium giải phóng bộ nhớ khỏi các thẻ không hoạt động. Nhờ đó, các thẻ đang hoạt động và ứng dụng khác sẽ được sử dụng nhiều tài nguyên máy tính hơn, còn Chromium thì hoạt động nhanh chóng. Các thẻ không hoạt động sẽ tự động hoạt động trở lại khi bạn quay lại các thẻ đó. <ph name="BEGIN_LINK" />Tìm hiểu thêm về Trình tiết kiệm bộ nhớ<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="SETTINGS_LINK" /> dữ liệu Chromium trong tài khoản của bạn</translation>
 <translation id="5800158606660203929">Tuỳ chỉnh và kiểm soát Chromium. Đặt Chromium làm trình duyệt mặc định.</translation>
@@ -572,6 +576,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7810005234485217901">Bạn có thể ghim tính năng Tìm kiếm hình ảnh để thuận tiện sử dụng</translation>
 <translation id="7828947555739565424">Thiết bị này đã có một hồ sơ trên Chromium sử dụng tài khoản này</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">Tuỳ chỉnh Chromium để mang lại giao diện mới</translation>
 <translation id="7859018312476869945">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chromium sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm mặc định để đề xuất cho bạn cụm từ phù hợp hơn. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
 <translation id="7867198900892795913">Chromium không thể cập nhật lên phiên bản mới nhất nên bạn đang bỏ lỡ các tính năng và bản vá bảo mật mới.</translation>
 <translation id="7872446069773932638">Đang tải xuống... Còn <ph name="SECONDS" /> giây</translation>
@@ -644,6 +649,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8704119203788522458">Đây là Chromium của bạn</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8719993436687031146">Bạn muốn đăng nhập vào Chromium?</translation>
+<translation id="8745263398357414606">Lưu giữ mọi thứ trong Chromium</translation>
 <translation id="8747073452963259673">góc dưới cùng bên trái của khu vực tìm kiếm: <ph name="LEFT" />% từ bên trái sang, <ph name="BOTTOM" />% từ dưới cùng lên</translation>
 <translation id="878572486461146056">Lỗi cài đặt: Quản trị viên mạng của bạn đã áp dụng Chính sách nhóm ngăn chặn hoạt động cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium cần có quyền truy cập vào máy ảnh và micrô của bạn cho trang web này</translation>

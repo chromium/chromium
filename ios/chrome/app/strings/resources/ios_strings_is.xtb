@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
 <translation id="1497590942294823549">Valmynd → Aðgangsorðastjórnun</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-reikningnum þínum verður ekki eytt.</translation>
+<translation id="1503814213414825943">Veldu reikningana sem þú vilt flytja yfir í annað forrit.</translation>
 <translation id="1506061864768559482">Leitarvél</translation>
 <translation id="1506063256525392513">Með þessu móti geturðu tekið myndir og hlaðið þeim upp og skannað QR-kóða.</translation>
 <translation id="1508263560970797965">Halda áfram í huliðsstillingu</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
 <translation id="4070132839822635162">Ekki skrá inn</translation>
 <translation id="4092655288299341041">Sýna hjálp</translation>
-<translation id="4095483462103784441">Búa til nýjan flipahóp</translation>
 <translation id="4099756562043439968">Stilla áminningu</translation>
 <translation id="4108998448622696017">Greinir hættuleg atvik og varar þig við þeim þegar þau eiga sér stað.</translation>
 <translation id="4111985840824673503">Merkja allt sem lesið</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Breyta aðgangsorði að vefsvæði</translation>
 <translation id="5248640482715684545">Þetta vefsvæði er að reyna að opna annað forrit.</translation>
 <translation id="5250371859659394278">Frá óþekktum uppruna</translation>
+<translation id="5269913829202614649">Sérsníddu upphafssíðuna</translation>
 <translation id="5271265092610673171">{count,plural, =1{Áskilinn reitur er auður. Fylltu út í hann áður en þú vistar.}one{Einhverjir áskildir reitir eru auðir. Fylltu út í þá áður en þú vistar.}other{Einhverjir áskildir reitir eru auðir. Fylltu út í þá áður en þú vistar.}}</translation>
 <translation id="5271549068863921519">Vista aðgangsorð</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vill að þú takir þátt í flipahópi. Sýndu aðgát þegar þú tekur þátt þar sem allir með tengilinn geta breytt öllum flipum. Tengillinn rennur út eftir tvo sólarhringa.</translation>

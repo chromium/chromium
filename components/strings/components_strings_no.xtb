@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Turkis 3</translation>
 <translation id="1035709686865413354">Vannfiltre og vannrensere</translation>
 <translation id="1036348656032585052">Slå av</translation>
+<translation id="1036436692654972538">Lagres på enheten din</translation>
 <translation id="1036881361735705143">C4-konvolutt</translation>
 <translation id="1038842779957582377">ukjent navn</translation>
 <translation id="1041998700806130099">Jobbarkmelding</translation>
@@ -178,6 +179,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
 <translation id="1292571435393770077">Skuff 16</translation>
 <translation id="1292701964462482250">«Det er programvare på datamaskinen din som hindrer Chrome i å koble trygt til Internett» (bare på Windows-datamaskiner)</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="1293797321964802402">Konvolutt 9 x 11 tommer</translation>
 <translation id="129553762522093515">Nylig lukket</translation>
 <translation id="1296930489679394997">Salg</translation>
@@ -2830,6 +2832,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> viderekoblet deg for mange ganger.</translation>
 <translation id="5619721953841297650">Forhåndsinnstilling</translation>
 <translation id="5624120631404540903">Administrer passord</translation>
+<translation id="5628060911499153873">Lagre informasjonen din for å få ting gjort raskere i alle Google-produkter. Informasjonen din er lagret i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Kunne ikke laste in angivelsen for enhetsinnstillinger</translation>
 <translation id="5630981295558454585">Knappen «Spør Google om denne siden» – aktiver for å spørre Google om denne siden</translation>
 <translation id="5631439013527180824">Ugyldig token for enhetsadministrering</translation>
@@ -3156,7 +3159,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6189351761800074311">Tekst- og sideinnholdet ditt sendes til Google, men brukes ikke til å forbedre AI.
     <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">overstyre enkelte taster på tastaturet, for eksempel Esc</translation>
-<translation id="6192524964213419211">Lagre informasjonen din for å få ting gjort raskere i alle Google-produkter. Informasjonen din er lagret i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Se alle produktene du sporer, her</translation>
 <translation id="6195371403461054755">Geologi</translation>
 <translation id="6195418151868446719">Forbrukerelektronikk</translation>
@@ -3492,7 +3494,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6716039223770814796">Sammenlign <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> varer</translation>
 <translation id="6716672519412350405"><ph name="URL" /> vil lage et 3D-kart av omgivelsene dine og spore kameraposisjonen</translation>
 <translation id="6717692133381953670">Fane fra <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Lagre informasjonen din, slik at autofyll kan fylle ut flere felt for deg neste gang</translation>
 <translation id="6718612893943028815">Vil du bruke kameraet?</translation>
 <translation id="6721164594124191969">Etiketter (glans)</translation>
 <translation id="6726832600570791992">(32-biters emulert)</translation>

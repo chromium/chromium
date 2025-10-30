@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Tallensit jo tämän käyttäjänimen sivustolle</translation>
 <translation id="1497590942294823549">Valikko → Salasanat</translation>
 <translation id="1498283581832036924">Tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
+<translation id="1503814213414825943">Valitse tilit, jotka haluat viedä toiseen sovellukseen.</translation>
 <translation id="1506061864768559482">Hakukone</translation>
 <translation id="1506063256525392513">Tämän avulla voit ottaa kuvia ja ladata niitä palvelimelle sekä skannata QR-koodeja</translation>
 <translation id="1508263560970797965">Jatka incognito-tilassa</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Näytä salasana</translation>
 <translation id="1996318269856535896">Voit edelleen käyttää nykyistä selausdataasi tällä laitteella. Voit käyttää sitä kirjautumalla ulos hallinnoidulta tililtä.</translation>
 <translation id="2010008505735295285">Päivitä</translation>
+<translation id="2012723204723845092">Tervetuloa takaisin!</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="201759455285471444">Laajenna välilehtiryhmä.</translation>
 <translation id="202070562065520783">Selitä tämä minulle</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">Sinulla ei ole tallennettuja salasanoja tai avainkoodeja, mutta voit poistaa listan sivustoista ja sovelluksista, joiden sisäänkirjautumistietoja et halua tallentaa. Sivustoille ja sovelluksille luomiasi tilejä ei poisteta.</translation>
 <translation id="3530206579861815432">Löydä kaikilla synkronoiduilla laitteilla auki olevia tai äskettäin suljettuja välilehtiä nopeasti.</translation>
 <translation id="3530767473765895035">Hallinnoi tämän laitteen tilejä…</translation>
+<translation id="353340646084395154">Uusi välilehti ‐sivun asetukset poistettu</translation>
 <translation id="3533436815740441613">Uusi välilehti</translation>
 <translation id="3540141921715814660">Lisää kirjanmerkkeihin</translation>
 <translation id="3546122170015471515">Maps-ennakkojulkaisut Google.comissa</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Varmista, että käytössäsi on verkkoyhteys, ja yritä uudelleen.</translation>
 <translation id="4070132839822635162">Älä kirjaudu sisään</translation>
 <translation id="4092655288299341041">Näytä ohjeet</translation>
-<translation id="4095483462103784441">Luo uusi välilehtiryhmä</translation>
 <translation id="4099756562043439968">Aseta muistutus</translation>
 <translation id="4108998448622696017">Havaitsee vaaralliset tapahtumat ja varoittaa niistä etukäteen.</translation>
 <translation id="4111985840824673503">Merkitse kaikki luetuiksi</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Tämän avulla voit tehdä hakuja puhumalla</translation>
 <translation id="4895540042460820904">Avattu viimeksi</translation>
 <translation id="4896467949657706481">Välilehdet suljettiin ja sinut kirjattiin ulos</translation>
+<translation id="4911042367886397055">Tervetuloa takaisin, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Voit jakaa kopion salasanastasi perheryhmäsi jäsenille. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Voit käyttää nykyistä selausdataa, kun olet kirjautunut sisään tilillä <ph name="USER_EMAIL" />. Organisaatiosi voi nähdä tämän datan.</translation>
 <translation id="4918086044614829423">Hyväksy</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Muistiinpanossa on yli 1 000 merkkiä</translation>
 <translation id="5087098519049306025">Hintaseuranta</translation>
 <translation id="5090832849094901128">Vaikka poistat salasanan, tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
+<translation id="5113960131843706315">Haetaan sisältöä…</translation>
 <translation id="5118462200606189584">Lisää tili…</translation>
 <translation id="5118764316110575523">Pois päältä</translation>
 <translation id="5119329531859909472">Seuraa tuotetta napauttamalla Seuraa</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Vaihda salasana verkkosivustolla</translation>
 <translation id="5248640482715684545">Sivusto yrittää avata toista sovellusta.</translation>
 <translation id="5250371859659394278">Tuntemattomasta lähteestä</translation>
+<translation id="5269913829202614649">Muokkaa etusivua</translation>
 <translation id="5271265092610673171">{count,plural, =1{Pakollinen kenttä on tyhjä. Täytä se ennen tallentamista.}other{Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.}}</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) haluaa sinun liittyvän välilehtiryhmään. Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten liity harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">Valitse sinua kiinnostavia aiheita ja sivustoja</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} suljettu}other{{count} suljettu}}</translation>
 <translation id="5394975111793637642">Piilota tuotearvostelut ‑kortti</translation>
+<translation id="5407806496954700135">Haluatko ottaa uuden välilehti ‑sivun personoinnit käyttöön toiselta laitteelta?</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="5415289094036440596">Avainkoodeja ei voi jakaa</translation>
 <translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
@@ -1755,6 +1761,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7696316012653762532">Sivun käännösvalinnat</translation>
 <translation id="7700527812567437847">Hae näytöltä Google Lensilla</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
+<translation id="7708668404222666001">Uusi välilehti ‑sivun asetukset otettu käyttöön</translation>
 <translation id="7708994397325774423">Hae kaikki salasanasi</translation>
 <translation id="7711440461521638739">Et uudelleenkäytä salasanoja</translation>
 <translation id="7712361583414030698">Näytetään offline-versio</translation>

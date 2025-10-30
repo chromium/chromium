@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">Her profil; yer işaretleri, geçmiş, şifreler ve benzeri gibi kendi Chrome bilgilerini içerir</translation>
 <translation id="2018879682492276940">Yükleme başarısız oldu. Lütfen tekrar deneyin.</translation>
 <translation id="2024959665595762054">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
+<translation id="2026377840141807639">Chrome profilleri, kişisel tarama işlemlerinizi ve iş için yaptığınız tarama işlemlerinizi ayrı tutmanızı sağlar. Hemen yeni bir profil ekleyin.</translation>
 <translation id="2034233344106846793">Chrome, güvensiz bağlantıları mümkün olduğunda otomatik olarak HTTPS'ye yükseltir</translation>
 <translation id="2039417478970545937">Ayarlar.</translation>
 <translation id="2091012649849228750">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8 kullanıyor.</translation>
@@ -362,6 +363,7 @@
 Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirtin veya daha yeni bir Chrome sürümü kullanın.</translation>
 <translation id="5174969993834422967">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için konum çubuğunuzun sağ köşesindeki bildirim simgesini tıklayın.</translation>
 <translation id="5174983315706567306">Yeterli disk alanı yok.</translation>
+<translation id="5190467473654176081">Chrome'a yeni bir görünüm kazandırın</translation>
 <translation id="5201744974236816379">Chrome güncellemesi</translation>
 <translation id="521447420733633466">Bir cihazı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="5234764350956374838">Kapat</translation>
@@ -383,6 +385,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5510398294750420479">Hareket halindeyken ek koruma katmanı için telefonunuza Chrome'u indirin</translation>
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
 <translation id="5530733413481476019">Chrome'u Daha Hızlı Hale Getirin</translation>
+<translation id="5550137307985173298">Chrome'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chrome'u özelleştir düğmesini tıklayın</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
@@ -411,6 +414,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5736850870166430177">Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir</translation>
 <translation id="5756509061973259733">Cihazda bu hesaba sahip bir Chrome profili zaten var</translation>
 <translation id="5759947850379142561">Google Lens ile aramak istediğiniz metni veya resmi seçin ya da Google Lens'ten çıkmak için Escape tuşuna basın</translation>
+<translation id="5762867845020858790">Yer işaretleri, şifreler ve ayarları ayrı tutmak için yeni bir Chrome profili ekleyin.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome başlatılamadı. Tekrar deneyin.</translation>
 <translation id="5809516625706423866">İnternet'e bağlanılamadı. HTTP 401 Yetkisiz. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
@@ -511,6 +515,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6800285125190089494">iOS'te Chrome için kayıtlı şifreleri kullanarak sitelerde daha hızlı oturum açın</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="683440813066116847">Google Chrome Canary'nin mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
+<translation id="6841242485723266823">Chrome profilleri, hayatınızın farklı yönlerini birbirinden ayırmanıza yardımcı olur. Hemen yeni bir profil ekleyin.</translation>
 <translation id="684888714667046800">İnternete bağlanılamıyor. Güvenlik duvarı kullanıyorsanız lütfen <ph name="PRODUCT_EXE_NAME" /> dosyasının izin verilenler listesine eklendiğinden emin olun.</translation>
 <translation id="6877155553248388166">arama alanının sağ alt köşesi: sağ %<ph name="RIGHT" />, alt %<ph name="BOTTOM" /></translation>
 <translation id="6881299373831449287">Chrome güncelleniyor</translation>
@@ -675,6 +680,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dakika içinde yeniden başlatılacak}other{Chrome # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="8637932705841171563">Pencerenizi paylaşmak için Sistem Ayarları'nda Chrome'un ekranı kaydetmesine izin verin.</translation>
 <translation id="8641606876632989680">Chrome, güvenliği ihlal edilmiş bir şifreyle oturum açtığınızda size haber verir</translation>
+<translation id="8647930742055103497">Her şeyi Chrome'da tutun</translation>
 <translation id="8656634243791296665">Chrome Dev'de Gemini'ı aç</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8677922833187616101">Google AI Modu Kısayolunu Her Zaman Göster</translation>

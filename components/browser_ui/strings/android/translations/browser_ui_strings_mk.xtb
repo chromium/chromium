@@ -202,6 +202,7 @@
 <translation id="3123473560110926937">Блокирано на некои сајтови</translation>
 <translation id="3132996321662585180">Освежувај дневно</translation>
 <translation id="3143754809889689516">Пушти од почеток</translation>
+<translation id="3164169438034704658">Може да вклучите прецизна локација во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Дозволете му на сајт да користи колачиња од трети страни</translation>
 <translation id="3167868116600277716">Активност на Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> складирани податоци</translation>
@@ -540,6 +541,7 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6980861169612950611">Да се избришат податоците од сајтот? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Пристапност</translation>
+<translation id="6991142177939282156">Дозволено • Се користи приближна локација</translation>
 <translation id="6992289844737586249">Прво прашај пред да дозволиш сајтовите да го користат микрофонот (се препорачува)</translation>
 <translation id="7000754031042624318">Исклучена во поставките за Android</translation>
 <translation id="702275896380648118">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови. Сајтов ги добива вашите теми за реклами и од Chrome за да ви прикажува порелевантни реклами.</translation>
@@ -650,6 +652,7 @@
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="8300705686683892304">Управувани од апликација</translation>
+<translation id="8301363963630676147">Дозволено овој пат • Се користи приближна локација</translation>
 <translation id="8315509175050791576">Се споделува картичка</translation>
 <translation id="8324158725704657629">Не прашувај повторно</translation>
 <translation id="8362795839483915693">Можете да зумирате или да одзумирате на сајтовите што ги посетувате</translation>

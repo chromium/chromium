@@ -90,6 +90,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2039417478970545937">Nastavení.</translation>
 <translation id="2049376729098081731">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii prohlížeče Chromium</translation>
 <translation id="2054039611381840095">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 12 nebo novější. Tento počítač používá systém macOS 11.</translation>
+<translation id="2064856577282482477">Kliknutím na tlačítko Přizpůsobit Chromium na stránce Nová karta můžete Chromiu dát nový vzhled</translation>
 <translation id="2086476982681781442">Prohlížeč Chromium toto stahování zablokoval, protože soubor je klamavý a může ve vašem zařízení provést neočekávané změny</translation>
 <translation id="208726765006323911">Až příště otevřete Chromium pro iOS, zobrazí se výzva k vyzkoušení funkce <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Vaše hesla a další data prohlížeče Chromium, která jste si uložili do účtu Google, budou z tohoto zařízení odstraněna. Pokud je budete chtít v prohlížeči Chromium zase použít, znovu se přihlaste.</translation>
@@ -172,6 +173,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2933336679234709858">Vaše data se šifrují heslovou frází. Pokud chcete používat a ukládat data prohlížeče Chromium ve svém účtu Google, zadejte ji.</translation>
 <translation id="2945997411976714835">Chyba instalace: Instalační proces se nepodařilo spustit.</translation>
 <translation id="2948852018303413228">Přihlašujte se na weby rychleji pomocí uložených hesel pro Chromium v systému iOS</translation>
+<translation id="2966959524256557996">Přidejte nový profil Chromium, abyste měli záložky, hesla a nastavení oddělené.</translation>
 <translation id="2970426615109535079">Chromium spravuje vaše organizace</translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="2977506796191543575">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
@@ -238,6 +240,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3788675262216168505">Spravovat profily Chromium</translation>
 <translation id="3790262771324122253">Přečtěte si, proč Chromium blokuje některá stahování</translation>
 <translation id="379589255253486813">Pokud něco bude vyžadovat vaši pozornost, Chromium vám dá vědět</translation>
+<translation id="3798048725356732506">Profily prohlížeče Chromium vám pomůžou oddělit různé části vašeho života. Přidejte nový profil.</translation>
 <translation id="3802055581630249637">Chromium předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="3846683726093018685">**Shrň obsah:** V jedné větě do 30 slov popiš hlavní téma a účel obsahu na snímku obrazovky.
@@ -386,6 +389,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobrazit Chromium v tomto jazyce</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
+<translation id="5713518899297503106">Profily prohlížeče Chromium vám umožní oddělit osobní prohlížení od pracovního. Přidejte nový profil.</translation>
 <translation id="5768371961535086509">Chromium uvolňuje paměť obsazenou neaktivními kartami. Aktivní karty a jiné aplikace tak mají k dispozici více výpočetních zdrojů a prohlížeč Chromium zůstává rychlý. Když se k neaktivním kartám vrátíte, automaticky se aktivují. <ph name="BEGIN_LINK" />Další informace o Spořiči paměti<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="SETTINGS_LINK" /> data prohlížeče Chromium ve svém účtu.</translation>
 <translation id="5800158606660203929">Přizpůsobte si prohlížeč Chromium a ovládejte ho. Nastavte si Chromium jako výchozí prohlížeč.</translation>
@@ -573,6 +577,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7810005234485217901">Vyhledávání obrázků si můžete pro snadný přístup připnout</translation>
 <translation id="7828947555739565424">Profil Chromium s tímto účtem už v tomto zařízení existuje</translation>
 <translation id="7845233973568007926">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat počítač.</translation>
+<translation id="7853661403199074278">Přizpůsobte si Chromium a dodejte mu nový vzhled</translation>
 <translation id="7859018312476869945">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chromium zadaný obsah do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="7867198900892795913">Chromium nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>
@@ -645,6 +650,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8704119203788522458">Toto je váš prohlížeč Chromium</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8719993436687031146">Přihlásit se do prohlížeče Chromium?</translation>
+<translation id="8745263398357414606">Mějte všechno v Chromiu</translation>
 <translation id="8747073452963259673">levý dolní roh oblasti hledání: vlevo <ph name="LEFT" /> %, dole <ph name="BOTTOM" /> %</translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu a mikrofonu</translation>

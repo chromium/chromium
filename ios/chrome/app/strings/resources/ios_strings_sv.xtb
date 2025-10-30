@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
 <translation id="1497590942294823549">Meny → Lösenordshantering</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" />-kontot raderas inte.</translation>
+<translation id="1503814213414825943">Välj de konton du vill exportera till en annan app.</translation>
 <translation id="1506061864768559482">Sökmotor</translation>
 <translation id="1506063256525392513">Det här gör att du kan ta och ladda upp foton samt skanna QR-koder</translation>
 <translation id="1508263560970797965">Fortsätt i inkognitoläget</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Visa lösenord</translation>
 <translation id="1996318269856535896">Du kan fortfarande använda befintlig webbinformation på den här enheten. Logga ut från ditt hanterade konto för att använda den.</translation>
 <translation id="2010008505735295285">Läs in igen</translation>
+<translation id="2012723204723845092">Välkommen tillbaka!</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
 <translation id="202070562065520783">Förklara detta för mig</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">Du har inga sparade lösenord eller nycklar, men du kan radera listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="3530206579861815432">Du hittar snabbt öppna och nyligen stängda flikar på alla dina synkroniserade enheter.</translation>
 <translation id="3530767473765895035">Hantera konton på den här enheten …</translation>
+<translation id="353340646084395154">Inställningar för sidan Ny flik har tagits bort</translation>
 <translation id="3533436815740441613">Ny flik</translation>
 <translation id="3540141921715814660">Lägg till i bokmärken</translation>
 <translation id="3546122170015471515">Förhandsgranskningar av Maps på Google.com</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Kontrollera att du är ansluten till nätverket och försök igen.</translation>
 <translation id="4070132839822635162">Logga inte in</translation>
 <translation id="4092655288299341041">Visa hjälp</translation>
-<translation id="4095483462103784441">Skapa en ny flikgrupp</translation>
 <translation id="4099756562043439968">Ställ in en påminnelse</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
 <translation id="4111985840824673503">Markera alla som lästa</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Det här gör att du kan söka med hjälp av rösten</translation>
 <translation id="4895540042460820904">Senast öppnad</translation>
 <translation id="4896467949657706481">Flikar stängdes eftersom du loggades ut</translation>
+<translation id="4911042367886397055">Välkommen tillbaka <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Du kan tryggt och säkert dela en kopia av ditt lösenord med någon i familjegruppen. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Du kan använda befintlig webbinformation när du är inloggad som <ph name="USER_EMAIL" />. Din organisation kanske kan se denna data.</translation>
 <translation id="4918086044614829423">Acceptera</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Anteckningen är längre än 1 000 tecken</translation>
 <translation id="5087098519049306025">Prisbevakning</translation>
 <translation id="5090832849094901128">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="WEBSITE" /> raderas.</translation>
+<translation id="5113960131843706315">Hämtar dina grejer …</translation>
 <translation id="5118462200606189584">Lägg till konto …</translation>
 <translation id="5118764316110575523">Av</translation>
 <translation id="5119329531859909472">Tryck på Bevaka för att bevaka produkten</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Ändra lösenordet på webbplatsen</translation>
 <translation id="5248640482715684545">Webbplatsen försöker öppna ett annat program.</translation>
 <translation id="5250371859659394278">Från en okänd källa</translation>
+<translation id="5269913829202614649">Anpassa startsida</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.}other{Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.}}</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vill att du ska gå med i en flikgrupp. Alla som har länken kan redigera alla flikar, så tänk efter innan du går med. Länken löper ut om 48 timmar.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} har stängts}other{{count} har stängts}}</translation>
 <translation id="5394975111793637642">Dölj kortet Produktrecensioner för dig</translation>
+<translation id="5407806496954700135">Vill du tillämpa dina anpassningar av sidan Ny flik från en annan enhet?</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
 <translation id="5415289094036440596">Det går inte att dela nycklar</translation>
 <translation id="5416455648658732408">Flytta till flikgrupp</translation>
@@ -1755,6 +1761,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7696316012653762532">Alternativ för att översätta sidan</translation>
 <translation id="7700527812567437847">Sök på skärmen med Google Lens</translation>
 <translation id="7701040980221191251">Inga</translation>
+<translation id="7708668404222666001">Dina inställningar för sidan Ny flik har tillämpats</translation>
 <translation id="7708994397325774423">Få alla dina lösenord</translation>
 <translation id="7711440461521638739">Du återanvänder inga lösenord</translation>
 <translation id="7712361583414030698">Offlineversionen visas</translation>

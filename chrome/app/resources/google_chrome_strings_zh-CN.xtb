@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">每份个人资料均包含自己的 Chrome 信息，例如书签、历史记录、密码等等</translation>
 <translation id="2018879682492276940">安装失败。请重试。</translation>
 <translation id="2024959665595762054">如要使用 Chrome 数据并将其保存在您的 Google 账号中，请验证是您本人在操作</translation>
+<translation id="2026377840141807639">借助 Chrome 个人资料，您可以将个人浏览数据和工作数据分开。立即添加新的个人资料。</translation>
 <translation id="2034233344106846793">Chrome 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="2039417478970545937">设置。</translation>
 <translation id="2091012649849228750">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
@@ -360,6 +361,7 @@
 <translation id="5170938038195470297">您的个人资料来自新版 Google Chrome 浏览器，因此无法使用。某些功能可能无法使用。请指定其他个人资料目录，或使用新版 Chrome 浏览器。</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
 <translation id="5174983315706567306">磁盘可用空间不足。</translation>
+<translation id="5190467473654176081">自定义 Chrome，为它换上全新外观</translation>
 <translation id="5201744974236816379">Chrome 更新</translation>
 <translation id="521447420733633466">如果您是与亲朋好友共用一部设备，他们将能够使用单独的账号进行浏览，并可随心所欲地设置 Chrome</translation>
 <translation id="5234764350956374838">关闭</translation>
@@ -381,6 +383,7 @@
 <translation id="5510398294750420479">在手机上下载 Chrome，随时随地享受额外安全保障</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">提高 Chrome 的运行速度</translation>
+<translation id="5550137307985173298">点击“新标签页”页面上的“自定义 Chrome”按钮，为 Chrome 换上全新外观</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>
@@ -409,6 +412,7 @@
 <translation id="5736850870166430177">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="5756509061973259733">此设备上已有一份使用该账号创建的 Chrome 个人资料</translation>
 <translation id="5759947850379142561">选择任何文字或图片即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
+<translation id="5762867845020858790">添加新的 Chrome 个人资料，将书签、密码和设置分开保存。</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">无法启动 Chrome。请重试。</translation>
 <translation id="5809516625706423866">无法连接到互联网。发生 HTTP 401 Unauthorized 错误，请检查您的代理配置。</translation>
@@ -509,6 +513,7 @@
 <translation id="6800285125190089494">在 iOS 版 Chrome 中使用保存的密码更快地登录网站</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="683440813066116847">Google Chrome Canary版的入站规则，允许mDNS流量。</translation>
+<translation id="6841242485723266823">Chrome 个人资料可帮助您将生活中的不同方面分开。立即添加新的个人资料。</translation>
 <translation id="684888714667046800">无法连接到互联网。如果使用防火墙，请确保 <ph name="PRODUCT_EXE_NAME" /> 在许可名单中。</translation>
 <translation id="6877155553248388166">搜索区域的右下角：右侧 <ph name="RIGHT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
@@ -673,6 +678,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>
 <translation id="8637932705841171563">若要共享窗口，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="8641606876632989680">当您使用已泄露的密码登录时，Chrome 会通知您</translation>
+<translation id="8647930742055103497">在 Chrome 中处理一切事务</translation>
 <translation id="8656634243791296665">打开 Chrome 开发者版中的 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>
 <translation id="8677922833187616101">始终显示 Google AI 模式快捷方式</translation>

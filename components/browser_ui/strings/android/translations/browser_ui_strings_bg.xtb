@@ -202,6 +202,7 @@
 <translation id="3123473560110926937">Блокиране на някои сайтове</translation>
 <translation id="3132996321662585180">Ежедневно опресняване</translation>
 <translation id="3143754809889689516">Възпроизвеждане от началото</translation>
+<translation id="3164169438034704658">Можете да включите точното местоположение от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Разрешаване на даден сайт да използва „бисквитки“ на трети страни</translation>
 <translation id="3167868116600277716">Емисия Discover</translation>
 <translation id="3198916472715691905">Съхранявани данни: <ph name="STORAGE_AMOUNT" /></translation>
@@ -540,6 +541,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Да се изтрият ли данните за сайта? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Достъпност</translation>
+<translation id="6991142177939282156">Разрешено • Използва се приблизителното местоположение</translation>
 <translation id="6992289844737586249">Извеждане на запитване, преди да се разреши на сайтовете да използват микрофона (препоръчително)</translation>
 <translation id="7000754031042624318">Изключено от настройките на Android</translation>
 <translation id="702275896380648118">Този сайт определя какво харесвате и след това предлага реклами на други сайтове. Той също така получава информация за рекламните ви теми от Chrome, за да ви показва по-подходящи реклами.</translation>
@@ -650,6 +652,7 @@
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="8300705686683892304">Управлявани от приложение</translation>
+<translation id="8301363963630676147">Разрешено този път • Използва се приблизителното местоположение</translation>
 <translation id="8315509175050791576">Споделя се раздел</translation>
 <translation id="8324158725704657629">Без повторно питане</translation>
 <translation id="8362795839483915693">Можете да увеличавате или намалявате мащаба на сайтовете, които посещавате</translation>

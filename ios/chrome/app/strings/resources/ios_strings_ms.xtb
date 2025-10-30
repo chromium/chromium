@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Lihat Kata Laluan</translation>
 <translation id="1996318269856535896">Anda masih boleh menggunakan data semakan imbas sedia ada anda pada peranti ini. Untuk menggunakan data tersebut, log keluar dari akaun terurus anda.</translation>
 <translation id="2010008505735295285">Muat semula</translation>
+<translation id="2012723204723845092">Selamat kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="201759455285471444">Kembangkan kumpulan tab.</translation>
 <translation id="202070562065520783">Jelaskan kepada saya</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Anda tiada sebarang kata laluan atau kunci laluan yang disimpan tetapi anda boleh memadamkan senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan maklumat log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="3530206579861815432">Cari tab terbuka dan baru ditutup dengan pantas di seluruh peranti anda yang disegerakkan.</translation>
 <translation id="3530767473765895035">Urus akaun pada peranti ini…</translation>
+<translation id="353340646084395154">Pilihan halaman tab baharu dialih keluar</translation>
 <translation id="3533436815740441613">Tab Baharu</translation>
 <translation id="3540141921715814660">Tambahkan pada Penanda Halaman</translation>
 <translation id="3546122170015471515">Pratonton Peta pada Google.com</translation>
@@ -780,7 +782,6 @@
 <translation id="4049507953662678203">Pastikan anda mempunyai sambungan rangkaian dan cuba lagi.</translation>
 <translation id="4070132839822635162">Jangan log masuk</translation>
 <translation id="4092655288299341041">Tunjukkan Bantuan</translation>
-<translation id="4095483462103784441">Buat kumpulan tab baharu</translation>
 <translation id="4099756562043439968">Tetapkan Peringatan</translation>
 <translation id="4108998448622696017">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku.</translation>
 <translation id="4111985840824673503">Tandai semua sebagai dibaca</translation>
@@ -1001,6 +1002,7 @@
 <translation id="4894963374040315706">Langkah ini membolehkan anda membuat carian menggunakan suara anda</translation>
 <translation id="4895540042460820904">Terakhir Dibuka</translation>
 <translation id="4896467949657706481">Tab telah ditutup; anda telah dilog keluar</translation>
+<translation id="4911042367886397055">Selamat kembali, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Anda boleh berkongsi salinan kata laluan anda dengan selamat dengan seseorang dalam kumpulan keluarga anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Anda boleh menggunakan data semakan imbas sedia ada apabila anda log masuk sebagai <ph name="USER_EMAIL" />. Organisasi anda mungkin dapat melihat data ini.</translation>
 <translation id="4918086044614829423">Terima</translation>
@@ -1052,6 +1054,7 @@
 <translation id="508645147179720015">Nota melebihi 1000 aksara</translation>
 <translation id="5087098519049306025">Penjejakan Harga</translation>
 <translation id="5090832849094901128">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Mendapatkan data anda…</translation>
 <translation id="5118462200606189584">Tambahkan akaun…</translation>
 <translation id="5118764316110575523">Mati</translation>
 <translation id="5119329531859909472">Untuk menjejaki produk, ketik Jejak</translation>
@@ -1122,6 +1125,7 @@
 <translation id="537853552771686272">Urus topik dan laman yang anda minati</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kad ulasan produk untuk anda</translation>
+<translation id="5407806496954700135">Adakah anda mahu menggunakan penyesuaian halaman tab baharu anda daripada peranti lain?</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>
 <translation id="5415289094036440596">Kunci laluan tidak boleh dikongsi</translation>
 <translation id="5416455648658732408">Beralih kepada Kumpulan Tab</translation>
@@ -1757,6 +1761,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7696316012653762532">Pilihan untuk menterjemahkan halaman</translation>
 <translation id="7700527812567437847">Cari pada skrin dengan Google Lens</translation>
 <translation id="7701040980221191251">Tiada</translation>
+<translation id="7708668404222666001">Pilihan halaman tab baharu anda telah digunakan</translation>
 <translation id="7708994397325774423">Dapatkan akses kepada semua kata laluan anda</translation>
 <translation id="7711440461521638739">Anda tidak menggunakan semula apa-apa kata laluan</translation>
 <translation id="7712361583414030698">Melihat versi luar talian</translation>

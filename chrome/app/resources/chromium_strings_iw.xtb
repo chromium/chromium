@@ -89,6 +89,7 @@
 <translation id="2039417478970545937">הגדרות.</translation>
 <translation id="2049376729098081731">‏בוחרים אם לכלול את ההיסטוריה ב-Chromium להתאמה אישית מדויקת יותר בשירותי Google</translation>
 <translation id="2054039611381840095">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 12 ואילך. במחשב הזה פועלת גרסה 11 של macOS.</translation>
+<translation id="2064856577282482477">‏אפשר ללחוץ על הלחצן 'התאמה אישית של Chromium' בדף הכרטיסייה החדשה כדי לשנות את המראה של Chromium</translation>
 <translation id="2086476982681781442">‏Chromium חסם את ההורדה הזאת כי הקובץ מטעה ועשוי לבצע שינויים לא צפויים במכשיר שלך</translation>
 <translation id="208726765006323911">‏בפעם הבאה ש-Chromium ייפתח ב-iOS, תופיע הנחיה לנסות את <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">‏הסיסמאות ונתונים אחרים מ-Chromium ששמרת בחשבון שלך ב-Google יוסרו מהמכשיר הזה. כדי להשתמש בהם שוב ב-Chromium, צריך להיכנס בחזרה לחשבון.</translation>
@@ -151,7 +152,7 @@
 <translation id="2718390899429598676">‏לשיפור האבטחה, Chromium יצפין את הנתונים.</translation>
 <translation id="2721354645805494590">‏כדי להסיר את החשבון שלך ב-Google מ-Chromium, צריך לצאת מהחשבון</translation>
 <translation id="2722636413143664436">‏כדי לקבל גישה לסיסמאות, לסימניות ולנתונים נוספים בכל המכשירים שלך, כדאי להיכנס ל-Chromium</translation>
-<translation id="2723860029395667894">‏להציג תמיד את קיצור הדרך למצב Google AI</translation>
+<translation id="2723860029395667894">‏להציג תמיד את קיצור הדרך למצב AI של Google</translation>
 <translation id="2738871930057338499">‏לא ניתן להתחבר לאינטרנט. HTTP 403: קוד איסור. צריך לבדוק את ההגדרה של שרת ה-proxy.</translation>
 <translation id="2753623023919742414">צריך ללחוץ כדי לחפש</translation>
 <translation id="2768103863314748511">‏הגדרת Chromium ככלי ברירת המחדל לצפייה בקובצי PDF</translation>
@@ -171,6 +172,7 @@
 <translation id="2933336679234709858">‏הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chromium ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה.</translation>
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
 <translation id="2948852018303413228">‏רוצה להיכנס מהר יותר לאתרים? כדאי להשתמש בסיסמאות שמורות ב-Chromium ב-iOS</translation>
+<translation id="2966959524256557996">‏אפשר להוסיף פרופיל חדש ב-Chromium כדי להפריד בין הסימניות, הסיסמאות וההגדרות.</translation>
 <translation id="2970426615109535079">‏‫Chromium מנוהל על ידי הארגון שלך</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="2977506796191543575">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
@@ -235,6 +237,7 @@
 <translation id="3788675262216168505">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="3790262771324122253">‏למה הורדות מסוימות נחסמות ב-Chromium</translation>
 <translation id="379589255253486813">‏Chromium יעדכן אותך אם יש משהו שצריך לבדוק</translation>
+<translation id="3798048725356732506">‏פרופילים ב-Chromium עוזרים להפריד בין חלקים שונים בחיים. אפשר להוסיף פרופיל חדש עכשיו.</translation>
 <translation id="3802055581630249637">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, מערכת Chromium טוענת מראש דפים שיש סיכוי גבוה שייפתחו.</translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3846683726093018685">**סיכום:** במשפט אחד של פחות מ-30 מילים, צריך לתאר את הנושא והמטרה העיקריים של התוכן בצילום המסך.
@@ -383,6 +386,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
 <translation id="569897634095159764">‏לא ניתן להתחבר לאינטרנט. נדרש אימות של שרת ה-proxy.</translation>
+<translation id="5713518899297503106">‏באמצעות פרופילים ב-Chromium, אפשר להפריד בין גלישה אישית לגלישה בעבודה. אפשר להוסיף פרופיל חדש עכשיו.</translation>
 <translation id="5768371961535086509">‏‫Chromium מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chromium פועל מהר. כשחוזרים לכרטיסיות הלא פעילות, הן מופעלות מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון בזיכרון<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, עליך <ph name="SETTINGS_LINK" /> את נתוני Chromium בחשבון</translation>
 <translation id="5800158606660203929">‏אפשר להתאים אישית את Chromium ולנהל אותו. הגדרת Chromium כברירת המחדל.</translation>
@@ -570,6 +574,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7810005234485217901">אפשר להצמיד את התכונה 'חיפוש תמונות' כדי לאפשר גישה נוחה</translation>
 <translation id="7828947555739565424">‏כבר קיים במכשיר פרופיל Chromium עם החשבון הזה.</translation>
 <translation id="7845233973568007926">תודה שהתקנת. עליך להפעיל מחדש את המחשב לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">‏התאמה אישית של Chromium כדי לשנות את המראה שלו</translation>
 <translation id="7859018312476869945">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chromium שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="7867198900892795913">‏עדכון Chromium לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
 <translation id="7872446069773932638">מתבצעת הורדה… יש עוד <ph name="SECONDS" /> שנ'</translation>
@@ -637,11 +642,12 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8601359445272098721">חדש! אפשר לתרגם טקסט ותמונות במסך באמצעות לחיצה על הכפתור 'תרגום המסך'</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
 <translation id="8648201657708811153">‏לא ניתן להגדיר את Google Chrome for Testing כדפדפן ברירת המחדל.</translation>
-<translation id="8677922833187616101">‏להציג תמיד את קיצור הדרך למצב Google AI</translation>
+<translation id="8677922833187616101">‏להציג תמיד את קיצור הדרך למצב AI של Google</translation>
 <translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium או מבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8719993436687031146">‏להיכנס אל Chromium?</translation>
+<translation id="8745263398357414606">‏שמירת כל הנתונים ב-Chromium</translation>
 <translation id="8747073452963259673">‏הפינה השמאלית התחתונה של אזור החיפוש: ‎<ph name="LEFT" />%‎ משמאל, ‎<ph name="BOTTOM" />%‎ מלמטה</translation>
 <translation id="878572486461146056">שגיאת התקנה: מנהל הרשת החיל מדיניות קבוצתית שמונעת את ההתקנה: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>

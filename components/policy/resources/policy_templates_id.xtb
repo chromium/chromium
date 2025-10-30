@@ -2005,6 +2005,7 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan mengubah daftar aplika
 <translation id="2306505001667207184">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.</translation>
 <translation id="230713790688681130">Aktifkan Tata Letak Inscript Hindi</translation>
 <translation id="2307496301287881990">Melaporkan status tampilan dan grafis</translation>
+<translation id="2308084581803907194">Kompleksitas Tinggi</translation>
 <translation id="2308899582897965249">Nonaktifkan Pencetakan Senyap</translation>
 <translation id="2309284543927494965">Blokir update</translation>
 <translation id="2309341709647905294">Jangan laporkan informasi tentang periferal yang dicolokkan ke perangkat</translation>
@@ -2874,6 +2875,19 @@ perilaku tombol fungsi, dan setelan ini tidak akan dapat diubah oleh pengguna.</
       Jika tidak disetel, kebijakan ini akan dinonaktifkan untuk perangkat terkelola dan diaktifkan untuk perangkat yang dimiliki oleh konsumen.
       Perlu diketahui bahwa menyetel kebijakan ini ke nonaktif hanya akan menonaktifkan pengumpulan jejak di seluruh sistem. Pengumpulan jejak browser tidak akan terpengaruh oleh kebijakan ini.</translation>
 <translation id="2922511125678964398">Izinkan autentikasi captive portal mengabaikan setelan proxy</translation>
+<translation id="2923126158151236068">Kebijakan ini mengonfigurasi persyaratan kompleksitas minimum untuk faktor autentikasi lokal (PIN dan sandi lokal) yang ditetapkan pengguna di <ph name="PRODUCT_OS_NAME" />.
+
+Jika kebijakan ini tidak disetel, tingkat kompleksitas akan disetel secara default ke Tidak ada.
+
+Persyaratan kebijakan ini diterapkan saat pengguna menyiapkan PIN/sandi lokal baru atau mengubah yang sudah ada.
+
+Tingkat kompleksitas didasarkan pada metrik kualitas sandi Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), yang disesuaikan untuk <ph name="PRODUCT_OS_NAME" />:
+- 1 = Tidak Ada: PIN/sandi diperlukan, tetapi tidak ada batasan pada isi atau panjangnya.
+- 2 = Rendah: Persyaratan kompleksitas dasar.
+- 3 = Sedang: Persyaratan panjang dan jenis karakter yang lebih ketat.
+- 4 = Tinggi: Persyaratan paling kompleks, yang memerlukan beberapa jenis karakter.
+
+Lihat artikel pusat bantuan untuk penjelasan mendetail tentang arti setiap tingkat untuk PIN dan sandi.</translation>
 <translation id="2926813071464307947">Nonaktifkan sandbox Penampung Aplikasi Perender</translation>
 <translation id="2931888116345994552">Mengaktifkan update komponen untuk semua komponen di <ph name="PRODUCT_NAME" /> jika tidak disetel atau disetel ke aktif.
 
@@ -3667,6 +3681,15 @@ Jika kebijakan tidak disetel, navigasi browser apa pun akan dicegah saat VPN Sel
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, DTC akan dinonaktifkan. DTC tidak akan dapat mengumpulkan, memproses, atau melaporkan data telemetri dan diagnostik dari perangkat.</translation>
 <translation id="3442589735857147823">Izinkan pengguna menggunakan mesin virtual yang diperlukan untuk mendukung aplikasi Linux</translation>
+<translation id="34476328503285475">Menyetel kebijakan ini akan membuat prakonfigurasi pada hingga 10 pintasan khusus di halaman Tab Baru <ph name="PRODUCT_NAME" />.
+
+Jika kebijakan ini disetel, pengguna akan melihat pintasan ini secara default, selain pintasan pribadi mereka. Pengguna dapat mengontrol visibilitas pintasan organisasi mereka di panel "Sesuaikan Chrome".
+
+URL pintasan harus unik.
+
+Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> disetel ke benar (true), pengguna dapat mengubah nama pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat mengubah nama pintasan.
+
+Jika <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> disetel ke benar (true), pengguna dapat menghapus pintasan. Jika disetel ke salah (false) atau tidak disetel, pengguna tidak dapat menghapus pintasan.</translation>
 <translation id="3450649825886735618">Jangan gunakan layanan web Google untuk membantu mengatasi kesalahan ejaan</translation>
 <translation id="3451422488938880786"> Dapat mengaktifkan/menonaktifkan pemetaan ulang tombol pintasan internasional</translation>
 <translation id="3451901387456196887">Pengguna akan diberi opsi di menu <ph name="PRODUCT_NAME" /> untuk memilih perangkat transmisi dengan menggunakan kode akses atau dengan memindai kode QR.</translation>
@@ -6227,6 +6250,7 @@ Domain dengan format yang salah akan diabaikan.</translation>
 <translation id="5163889437570441600">Mengizinkan konten ditransmisikan ke perangkat menggunakan <ph name="PRODUCT_NAME" />.
 
           Jika kebijakan ini disetel ke Salah (False), pengguna tidak akan dapat mentransmisikan konten ke perangkat mereka. Jika kebijakan ini disetel ke Benar (True), pengguna akan diizinkan untuk mentransmisikan konten. Jika kebijakan ini tidak disetel, pengguna tidak diizinkan untuk mentransmisikan konten ke perangkat ChromeOS terdaftar, tetapi dapat melakukan transmisi ke perangkat yang tidak terdaftar.</translation>
+<translation id="5166766992668636906">Kompleksitas Sedang</translation>
 <translation id="5168529971295111207">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan ProxyMode.
 
           Memungkinkan Anda menentukan server proxy yang digunakan oleh <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubah setelan proxy.
@@ -7848,6 +7872,7 @@ Perlu diketahui bahwa pembatasan lain, sebagaimana yang diberlakukan oleh kebija
 <translation id="6144046700495610112">Jika kebijakan disetel ke Aktif, data formulir isi otomatis akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada data formulir isi otomatis yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kontak centang data formulir isi otomatis akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
+<translation id="6144246313478615705">Tetapkan kompleksitas minimum untuk PIN dan sandi lokal</translation>
 <translation id="614551633868957694">Aplikasi dan ekstensi Chrome</translation>
 <translation id="614616930188030377">Pola dalam daftar ini akan dicocokkan dengan asal keamanan URL yang meminta.
       Jika kecocokan ditemukan atau chrome://flags/#enable-webrtc-hide-local-ips-with-mdns Nonaktif, alamat IP lokal akan ditampilkan dalam kandidat WebRTC ICE.
@@ -8589,6 +8614,13 @@ Kebijakan ini tidak memengaruhi analisis konten download yang dikonfigurasi oleh
 <translation id="6520802717075138474">Impor mesin telusur dari browser default saat pertama kali dijalankan</translation>
 <translation id="6521971538031711337">Cegah pengguna terkelola mengonfigurasi nama host perangkat</translation>
 <translation id="6523079496775454310">Aktifkan izin sinyal perangkat untuk pengguna terkelola di perangkat yang tidak dikelola</translation>
+<translation id="6523608518493993483">Kebijakan ini memungkinkan administrator mengenkripsi cache http browser di disk.
+
+Jika kebijakan ini disetel ke Aktif, cache browser akan dienkripsi.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, cache browser tidak akan dienkripsi.
+
+Enkripsi cache browser dapat menyebabkan dampak performa.</translation>
 <translation id="6527674993612811419">Tampilkan peringatan dan nonaktifkan isi otomatis pada formulir yang tidak aman</translation>
 <translation id="6532769014584932288">Izinkan penguncian layar saat aktif</translation>
 <translation id="6533881418188970751">Tanyakan pada pengguna tempat menyimpan file sebelum mendownload</translation>
@@ -9412,6 +9444,26 @@ Hanya origin HTTPS yang valid yang diizinkan. Karakter pengganti tidak didukung.
 Entri yang tidak valid akan diabaikan.</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
 <translation id="7045221780834308118">Jika kebijakan disetel ke Aktif, aplikasi web pihak ketiga dapat menggunakan Desk API untuk mengontrol desktop <ph name="PRODUCT_OS_NAME" />. Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, <ph name="DESK_API_NAME" /> tidak akan tersedia. Kebijakan ini hanya akan berlaku di perangkat terdaftar.</translation>
+<translation id="704591686761455167">Kebijakan ini mengontrol apakah URL Blob dipartisi selama pengambilan dan navigasi.
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, URL Blob akan dipartisi.
+Jika kebijakan ini disetel ke Nonaktif, URL Blob tidak akan dipartisi.
+
+Jika partisi penyimpanan dinonaktifkan untuk origin tingkat teratas tertentu oleh
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+atau <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+URL Blob juga tidak akan dipartisi.
+
+Jika Anda harus menggunakan kebijakan ini, laporkan bug di
+<ph name="BUG_URL" />
+yang menjelaskan kasus penggunaan Anda. Kebijakan ini dijadwalkan untuk ditawarkan hingga
+<ph name="PRODUCT_NAME" /> versi 146, setelah itu
+implementasi lama akan dihapus.
+
+CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
+kebijakan ini saat browser berjalan.
+
+Untuk mengetahui informasi mendetail tentang partisi penyimpanan pihak ketiga, lihat
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7046113122884041950">Jangan izinkan Smart Lock</translation>
 <translation id="7046997898355294677">Tampilkan notifikasi privasi sampai ditutup oleh pengguna</translation>
 <translation id="7047495632846973438">Menentukan apakah kebijakan izin perekaman layar dicentang atau dilewati.</translation>
@@ -10048,6 +10100,17 @@ baca lisan akan diaktifkan.</translation>
       Jika kebijakan disetel ke aktif atau tidak disetel, situs hanya dapat memanggil getDisplayMedia() dari konteks yang berada dalam daftar yang diizinkan oleh kebijakan izin perekaman layar.
 
       Jika kebijakan disetel ke nonaktif, situs dapat memanggil getDisplayMedia() bahkan dari konteks yang tidak berada dalam daftar yang diizinkan oleh kebijakan izin perekaman layar. Perlu diperhatikan bahwa pembatasan lain mungkin masih berlaku.</translation>
+<translation id="750408442628578356">Mengontrol apakah aplikasi Gemini diizinkan untuk mengambil tindakan di halaman web atas nama pengguna.
+
+0/tidak disetel = Aplikasi Gemini diizinkan untuk mengambil tindakan di halaman web.
+
+1 = Aplikasi Gemini tidak diizinkan untuk mengambil tindakan di halaman web.
+
+Kebijakan ini tidak akan berpengaruh jika aplikasi Gemini dinonaktifkan. Misalnya, aplikasi Gemini dapat dinonaktifkan oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Untuk mengetahui informasi selengkapnya tentang Gemini di Chrome, lihat https://support.google.com/chrome/a/answer/16291696.
+
+Aktivasi Gemini hanya tersedia di negara atau bahasa tertentu. Menyetel kebijakan ini tidak menjamin fitur akan diaktifkan; fitur tetap bergantung pada ketersediaan. Untuk mengetahui info selengkapnya tentang peluncuran, baca Catatan Rilis Enterprise: https://support.google.com/chrome/a/answer/7679408?hl=id</translation>
 <translation id="7506745375479451616">Kebijakan ini mengontrol perintah yang akan digunakan untuk membuka URL di <ph name="PRODUCT_NAME" /> saat beralih dari <ph name="IE_PRODUCT_NAME" />. Kebijakan ini dapat disetel ke jalur file yang dapat dijalankan atau <ph name="PRODUCT_NAME_PLACEHOLDER" /> untuk otomatis mendeteksi lokasi dari <ph name="PRODUCT_NAME" />.
 
       Tidak menyetel kebijakan berarti <ph name="IE_PRODUCT_NAME" /> otomatis mendeteksi jalur yang dapat dijalankan milik <ph name="PRODUCT_NAME" /> saat meluncurkan <ph name="PRODUCT_NAME" /> dari Internet Explorer.
@@ -10131,6 +10194,7 @@ Jika kebijakan ini dikosongkan, tidak akan ada pengecualian untuk <ph name="FLOA
 
       Jika perangkat pengguna tidak dikelola, kemampuan untuk menyetel kebijakan ini akan tergantung pada apakah pengguna merupakan pemilik perangkat atau bukan.</translation>
 <translation id="7570291542739287032">Khusus Cloud</translation>
+<translation id="7572641760104970905">Tidak Ada Kompleksitas</translation>
 <translation id="757395965347379751">Jika setelan ini diaktifkan, <ph name="PRODUCT_NAME" /> mengizinkan sertifikat bertanda tangan SHA-1 selama sertifikat tersebut berhasil memvalidasi dan mengarah ke sertifikat CA yang terpasang secara lokal.
 
       Perlu diingat bahwa kebijakan ini bergantung pada tumpukan verifikasi sertifikat sistem operasi yang mengizinkan tanda tangan SHA-1. Jika pembaruan OS mengubah penanganan OS terkait sertifikat SHA-1, kebijakan ini mungkin tidak berlaku lagi.  Selain itu, kebijakan ini dimaksudkan sebagai solusi sementara guna memberikan perusahaan lebih banyak waktu untuk beralih dari SHA-1.  Kebijakan ini akan dihapus pada atau sekitar tanggal 1 Januari 2019.
@@ -10228,6 +10292,7 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 <translation id="7648907905084499629">Gunakan perilaku <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> untuk cookie di semua situs</translation>
 <translation id="7657261947024629645">Mengoptimalkan performa.</translation>
 <translation id="76580522298425324">Mengizinkan screenshot tanpa gestur pengguna sebelumnya</translation>
+<translation id="7661379728107156839">Kompleksitas Rendah</translation>
 <translation id="7666228839913571182">Izinkan cookie pihak ketiga</translation>
 <translation id="7666782560345386904">Setelan untuk isi otomatis yang ditingkatkan</translation>
 <translation id="7669630878711068277">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna dapat mencetak dalam <ph name="PRODUCT_NAME" />, tetapi pengguna tidak dapat mengganti setelan ini.

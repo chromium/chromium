@@ -202,6 +202,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="3123473560110926937">Estetty tietyillä sivustoilla</translation>
 <translation id="3132996321662585180">Päivitä päivittäin</translation>
 <translation id="3143754809889689516">Toista alusta</translation>
+<translation id="3164169438034704658">Voit laittaa tarkan sijainnin päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Salli sivuston käyttää kolmannen osapuolen evästeitä</translation>
 <translation id="3167868116600277716">Discover-fiidi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tallennettua tietoa</translation>
@@ -540,6 +541,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Poistetaanko sivustodata? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Saavutettavuus</translation>
+<translation id="6991142177939282156">Sallittu • Käytetään likimääräistä sijaintia</translation>
 <translation id="6992289844737586249">Pyydä lupaa, kun sivustot yrittävät käyttää mikrofonia (suositus).</translation>
 <translation id="7000754031042624318">Poistettu käytöstä Android-asetuksissa</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
@@ -650,6 +652,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8261506727792406068">Poista</translation>
 <translation id="8284326494547611709">Tekstitykset</translation>
 <translation id="8300705686683892304">Sovelluksen ylläpitämät</translation>
+<translation id="8301363963630676147">Sallittu tällä kertaa • Käytetään likimääräistä sijaintia</translation>
 <translation id="8315509175050791576">Jaetaan välilehteä</translation>
 <translation id="8324158725704657629">Älä kysy uudestaan</translation>
 <translation id="8362795839483915693">Voit lähentää tai loitontaa avaamiasi sivustoja</translation>

@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Bu site için bu kullanıcı adını zaten kaydettiniz</translation>
 <translation id="1497590942294823549">Menü → Şifre Yöneticisi</translation>
 <translation id="1498283581832036924"><ph name="WEBSITE" /> hesabınız silinmeyecek.</translation>
+<translation id="1503814213414825943">Başka bir uygulamaya aktarmak istediğiniz hesapları seçin.</translation>
 <translation id="1506061864768559482">Arama motoru</translation>
 <translation id="1506063256525392513">Bu şekilde, fotoğraf çekip yükleyebilir, QR kodlarını tarayabilirsiniz</translation>
 <translation id="1508263560970797965">Gizli modda devam et</translation>
@@ -277,6 +278,7 @@
 <translation id="199425419756152024">Şifreyi Göster</translation>
 <translation id="1996318269856535896">Mevcut tarama verilerinizi bu cihazda kullanmaya devam edebilirsiniz. Kullanmak için yönetilen hesabınızdan çıkış yapın.</translation>
 <translation id="2010008505735295285">Yeniden yükle</translation>
+<translation id="2012723204723845092">Tekrar hoş geldiniz!</translation>
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="201759455285471444">Sekme grubunu genişletin.</translation>
 <translation id="202070562065520783">Şunu bana açıkla:</translation>
@@ -647,6 +649,7 @@
 <translation id="3530024057633834563">Kaydedilmiş şifreniz veya geçiş anahtarınız yok. Ancak oturum açma bilgilerini hiçbir zaman kaydetmemeyi seçtiğiniz site ve uygulamaların listesini silebilirsiniz. Siteler ve uygulamalar için oluşturduğunuz hesaplar silinmez.</translation>
 <translation id="3530206579861815432">Senkronize edilmiş cihazlarınızdaki açık ve yakın zamanda kapatılan sekmeleri hızlıca bulun.</translation>
 <translation id="3530767473765895035">Bu cihazdaki hesapları yönet…</translation>
+<translation id="353340646084395154">Yeni sekme sayfası tercihleri kaldırıldı</translation>
 <translation id="3533436815740441613">Yeni Sekme</translation>
 <translation id="3540141921715814660">Yer İşaretlerine Ekle</translation>
 <translation id="3546122170015471515">Google.com'da Haritalar Önizlemeleri</translation>
@@ -779,7 +782,6 @@
 <translation id="4049507953662678203">Ağ bağlantınız olduğundan emin olun ve tekrar deneyin.</translation>
 <translation id="4070132839822635162">Oturum açılmasın</translation>
 <translation id="4092655288299341041">Yardımı Göster</translation>
-<translation id="4095483462103784441">Yeni sekme grubu oluştur</translation>
 <translation id="4099756562043439968">Hatırlatıcı Ayarla</translation>
 <translation id="4108998448622696017">Tehlikeli etkinlik meydana geldiğinde tespit ederek sizi uyarır.</translation>
 <translation id="4111985840824673503">Tümünü okundu olarak işaretle</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Bu şekilde, sesinizi kullanarak arama yapabilirsiniz</translation>
 <translation id="4895540042460820904">Son Açıldığı Zaman</translation>
 <translation id="4896467949657706481">Sekmeler ve oturumunuz kapatıldı</translation>
+<translation id="4911042367886397055">Tekrar hoş geldin <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Şifrenizin kopyasını, aile grubunuzdaki kişilerle güvenli bir şekilde paylaşabilirsiniz. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> olarak oturum açtığınızda mevcut tarama verilerini kullanabilirsiniz. Kuruluşunuz bu verileri görüntüleyebilir.</translation>
 <translation id="4918086044614829423">Kabul et</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Not 1.000 karakterden fazlasını içeriyor</translation>
 <translation id="5087098519049306025">Fiyat Takibi</translation>
 <translation id="5090832849094901128">Bu şifre silindiğinde <ph name="WEBSITE" /> üzerindeki hesabınız silinmez.</translation>
+<translation id="5113960131843706315">Öğeleriniz alınıyor…</translation>
 <translation id="5118462200606189584">Hesap ekle…</translation>
 <translation id="5118764316110575523">Kapalı</translation>
 <translation id="5119329531859909472">Ürünü takip etmek için Takip Et'e dokunun</translation>
@@ -1096,6 +1100,7 @@
 <translation id="5242899254250321823">Web sitesindeki şifreyi değiştir</translation>
 <translation id="5248640482715684545">Bu site başka bir uygulamayı açmaya çalışıyor.</translation>
 <translation id="5250371859659394278">Bilinmeyen bir kaynaktan</translation>
+<translation id="5269913829202614649">Ana sayfayı özelleştirin</translation>
 <translation id="5271265092610673171">{count,plural, =1{Zorunlu bir alan boş. Kaydetmeden önce bu alanı doldurun.}other{Bazı zorunlu alanlar boş. Kaydetmeden önce bu alanları doldurun.}}</translation>
 <translation id="5271549068863921519">Şifreyi kaydet</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) bir sekme grubuna katılmanızı istiyor. Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir. Bu nedenle katılırken dikkatli olun. Bağlantı 48 saat süreyle geçerlidir.</translation>
@@ -1120,6 +1125,7 @@
 <translation id="537853552771686272">İlgilendiğiniz konuları ve siteleri yönetin</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} sekme kapalı}other{{count} sekme kapalı}}</translation>
 <translation id="5394975111793637642">Size özel ürün yorumları kartını gizle</translation>
+<translation id="5407806496954700135">Başka bir cihazdaki yeni sekme sayfası özelleştirmelerinizi uygulamak ister misiniz?</translation>
 <translation id="5414763847370083940">Herhangi bir sitede fiyatı düştüğünde uyarı alırsınız.</translation>
 <translation id="5415289094036440596">Geçiş anahtarları paylaşılamaz</translation>
 <translation id="5416455648658732408">Sekme Grubuna Taşı</translation>
@@ -1755,6 +1761,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7696316012653762532">Sayfayı çevirme seçenekleri</translation>
 <translation id="7700527812567437847">Ekranda Google Lens ile Arama Yap</translation>
 <translation id="7701040980221191251">Yok</translation>
+<translation id="7708668404222666001">Yeni sekme sayfası tercihleriniz uygulandı</translation>
 <translation id="7708994397325774423">Tüm şifrelerinize ulaşın</translation>
 <translation id="7711440461521638739">Yeniden kullandığınız şifre yok</translation>
 <translation id="7712361583414030698">Çevrimdışı sürüm gösteriliyor</translation>

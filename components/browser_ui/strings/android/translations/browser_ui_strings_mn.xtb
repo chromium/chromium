@@ -202,6 +202,7 @@
 <translation id="3123473560110926937">Зарим сайт дээр блоклосон</translation>
 <translation id="3132996321662585180">Өдөр бүр сэргээх</translation>
 <translation id="3143754809889689516">Эхнээс нь тоглуулах</translation>
+<translation id="3164169438034704658">Та нарийвчилсан байршлыг <ph name="BEGIN_LINK" />Android-н Тохиргооноос<ph name="END_LINK" /> асаах боломжтой.</translation>
 <translation id="3165022941318558018">Сайтад гуравдагч талын күүки ашиглахыг зөвшөөрнө үү</translation>
 <translation id="3167868116600277716">Discover-н хангамж</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> хадгалсан өгөгдөл</translation>
@@ -540,6 +541,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Энэ сайтын өгөгдлийг устгах уу? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Хандалт</translation>
+<translation id="6991142177939282156">Зөвшөөрсөн • Барагцаалсан байршлыг ашиглаж байна</translation>
 <translation id="6992289844737586249">Сайтууд микрофон ашиглах зөвшөөрөл авах (санал болгосон)</translation>
 <translation id="7000754031042624318">Андройдын тохиргоонд унтраасан</translation>
 <translation id="702275896380648118">Энэ сайт таны дуртай зүйлсийг тодорхойлж, дараа нь бусад сайтад зар санал болгодог. Энэ сайт мөн танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг.</translation>
@@ -650,6 +652,7 @@
 <translation id="8261506727792406068">Устгах</translation>
 <translation id="8284326494547611709">Тайлбар</translation>
 <translation id="8300705686683892304">Аппаар удирддаг</translation>
+<translation id="8301363963630676147">Энэ удаад зөвшөөрсөн • Барагцаалсан байршлыг ашиглаж байна</translation>
 <translation id="8315509175050791576">Таб хуваалцаж байна</translation>
 <translation id="8324158725704657629">Дахиж бүү асуу</translation>
 <translation id="8362795839483915693">Та зочилсон сайтаа томруулах эсвэл жижгэрүүлэх боломжтой</translation>

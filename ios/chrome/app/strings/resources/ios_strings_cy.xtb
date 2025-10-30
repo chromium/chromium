@@ -133,6 +133,7 @@
 <translation id="1492417797159476138">Rydych eisoes wedi cadw'r enw defnyddiwr hwn ar gyfer y wefan hon.</translation>
 <translation id="1497590942294823549">Dewislen → Rheolwr Cyfrineiriau</translation>
 <translation id="1498283581832036924">Ni fydd eich cyfrif <ph name="WEBSITE" /> yn cael ei ddileu.</translation>
+<translation id="1503814213414825943">Dewiswch y cyfrifon rydych am eu hallforio i ap arall.</translation>
 <translation id="1506061864768559482">Peiriant chwilio</translation>
 <translation id="1506063256525392513">Mae hyn yn eich galluogi i dynnu ac uwchlwytho lluniau, yn ogystal â sganio codau QR</translation>
 <translation id="1508263560970797965">Parhau yn y modd Anhysbys</translation>
@@ -779,7 +780,6 @@
 <translation id="4049507953662678203">Gwnewch yn siŵr bod gennych gysylltiad rhwydwaith, a rhowch gynnig arall arni.</translation>
 <translation id="4070132839822635162">Peidio â mewngofnodi</translation>
 <translation id="4092655288299341041">Dangos Help</translation>
-<translation id="4095483462103784441">Creu grŵp tabiau newydd</translation>
 <translation id="4099756562043439968">Gosod Atgoffwr</translation>
 <translation id="4108998448622696017">Yn canfod ac yn eich rhybuddio am ddigwyddiadau peryglus pan fyddant yn digwydd.</translation>
 <translation id="4111985840824673503">Marcio pob un ohonynt fel wedi'u darllen</translation>
@@ -1096,6 +1096,7 @@
 <translation id="5242899254250321823">Newid cyfrinair ar y wefan</translation>
 <translation id="5248640482715684545">Mae'r wefan hon yn ceisio agor ap arall.</translation>
 <translation id="5250371859659394278">O ffynhonnell anhysbys</translation>
+<translation id="5269913829202614649">Addasu'r hafan</translation>
 <translation id="5271265092610673171">{count,plural, =1{Mae maes gofynnol yn wag. Llenwch ef cyn cadw.}zero{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}two{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}few{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}many{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}other{Mae rhai meysydd gofynnol yn wag. Llenwch nhw cyn cadw.}}</translation>
 <translation id="5271549068863921519">Cadw cyfrinair</translation>
 <translation id="5275912569557792098">Mae <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) eisiau i chi ymuno â grŵp tabiau. Gall unrhyw un sydd â'r ddolen olygu'r holl dabiau, felly ymunwch â gofal. Dolen yn dod i ben mewn 48 awr.</translation>

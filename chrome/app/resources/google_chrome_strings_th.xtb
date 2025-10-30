@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">แต่ละโปรไฟล์จะเก็บข้อมูล Chrome ของตัวเอง เช่น บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ</translation>
 <translation id="2018879682492276940">การติดตั้งไม่สำเร็จ โปรดลองอีกครั้ง</translation>
 <translation id="2024959665595762054">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
+<translation id="2026377840141807639">โปรไฟล์ Chrome ช่วยให้คุณแยกการท่องเว็บส่วนตัวและการทำงานออกจากกันได้ เพิ่มโปรไฟล์ใหม่เลย</translation>
 <translation id="2034233344106846793">Chrome จะอัปเกรดการเชื่อมต่อที่ไม่ปลอดภัยเป็น HTTPS โดยอัตโนมัติเมื่อทำได้</translation>
 <translation id="2039417478970545937">การตั้งค่า</translation>
 <translation id="2091012649849228750">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 8</translation>
@@ -360,6 +361,7 @@
 <translation id="5170938038195470297">โปรไฟล์ของคุณไม่สามารถใช้ได้เพราะมาจากรุ่นที่ใหม่กว่าของ Google Chrome ฟีเจอร์บางอย่างอาจจะไม่พร้อมใช้งาน โปรดระบุไดเรกทอรีของโปรไฟล์อื่นหรือใช้ Chrome รุ่นที่ใหม่กว่า</translation>
 <translation id="5174969993834422967">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกไอคอนการแจ้งเตือนที่มุมขวาของแถบตําแหน่ง</translation>
 <translation id="5174983315706567306">มีพื้นที่ในดิสก์ไม่เพียงพอ</translation>
+<translation id="5190467473654176081">ปรับแต่ง Chrome เพื่อสร้างรูปลักษณ์ใหม่ๆ</translation>
 <translation id="5201744974236816379">การอัปเดต Chrome</translation>
 <translation id="521447420733633466">เพื่อนและครอบครัวสามารถท่องเว็บแยกกันและตั้งค่า Chrome ตามที่ตนต้องการในกรณีที่ใช้อุปกรณ์ร่วมกัน</translation>
 <translation id="5234764350956374838">ปิด</translation>
@@ -381,6 +383,7 @@
 <translation id="5510398294750420479">ดาวน์โหลด Chrome บนโทรศัพท์เพื่อเพิ่มการปกป้องอีกชั้นในทุกที่ทุกเวลา</translation>
 <translation id="5524890928877629608">มุมซ้ายบนของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% บน <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">ทำให้ Chrome เร็วขึ้น</translation>
+<translation id="5550137307985173298">คลิกปุ่มปรับแต่ง Chrome ในหน้าแท็บใหม่เพื่อสร้างรูปลักษณ์ใหม่ๆ ให้ Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ใช้ทั่วไป ไม่ใช่ในฐานะผู้ดูแลระบบ</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
@@ -409,6 +412,7 @@
 <translation id="5736850870166430177">หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="5756509061973259733">มีโปรไฟล์ Chrome ที่ใช้บัญชีนี้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="5759947850379142561">เลือกข้อความหรือรูปภาพเพื่อค้นหาด้วย Google Lens หรือกด Escape เพื่อออกจาก Google Lens</translation>
+<translation id="5762867845020858790">เพิ่มโปรไฟล์ Chrome ใหม่เพื่อแยกบุ๊กมาร์ก รหัสผ่าน และการตั้งค่าออกจากกัน</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">เปิด Chrome ไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="5809516625706423866">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ HTTP 401 Unauthorized โปรดตรวจสอบการกำหนดค่าพร็อกซีของคุณ</translation>
@@ -509,6 +513,7 @@
 <translation id="6800285125190089494">ลงชื่อเข้าใช้เว็บไซต์ได้เร็วขึ้นโดยใช้รหัสผ่านที่บันทึกไว้สำหรับ Chrome บน iOS</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="683440813066116847">กฎขาเข้าสำหรับ Google Chrome Canary เพื่ออนุญาตการเข้าชมแบบ mDNS</translation>
+<translation id="6841242485723266823">โปรไฟล์ Chrome ช่วยให้คุณแยกชีวิตแต่ละด้านออกจากกันได้ เพิ่มโปรไฟล์ใหม่เลย</translation>
 <translation id="684888714667046800">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ หากคุณใช้ไฟร์วอลล์ โปรดตรวจสอบว่า <ph name="PRODUCT_EXE_NAME" /> อยู่ในรายการที่อนุญาต</translation>
 <translation id="6877155553248388166">มุมขวาล่างของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% ล่าง <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">กำลังอัปเดต Chrome</translation>
@@ -673,6 +678,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome จะเปิดขึ้นมาใหม่ใน 1 นาที}other{Chrome จะเปิดขึ้นมาใหม่ใน # นาที}}</translation>
 <translation id="8637932705841171563">หากต้องการแชร์หน้าต่าง ให้อนุญาตการบันทึกหน้าจอสำหรับ Chrome ใน "การตั้งค่าระบบ"</translation>
 <translation id="8641606876632989680">Chrome จะแจ้งให้คุณทราบเมื่อคุณลงชื่อเข้าใช้ด้วยรหัสผ่านที่ไม่รัดกุม</translation>
+<translation id="8647930742055103497">เก็บทุกอย่างไว้ใน Chrome</translation>
 <translation id="8656634243791296665">เปิด Gemini ใน Chrome Dev</translation>
 <translation id="8669527147644353129">ตัวช่วยเหลือของ Google Chrome</translation>
 <translation id="8677922833187616101">แสดงทางลัดโหมด AI ของ Google เสมอ</translation>

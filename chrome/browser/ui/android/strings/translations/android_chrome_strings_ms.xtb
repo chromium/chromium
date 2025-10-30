@@ -728,6 +728,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="4355272626458588338">Anda boleh kembali pada halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="4356503491090073318">Nombor kad*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Buka Google Lens</translation>
 <translation id="4359809482106103048">Sekilas pandang tentang keselamatan</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Jika masalah ini tetap berlaku, anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1511,6 +1512,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7612619742409846846">Dilog masuk ke Google sebagai</translation>
 <translation id="7612989789287281429">Anda sedang log masuk…</translation>
 <translation id="7619072057915878432">Muat turun <ph name="FILE_NAME" /> gagal kerana kegagalan rangkaian.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Telah menyahlanggan daripada satu laman}other{Telah menyahlanggan daripada # laman}}</translation>
 <translation id="7626032353295482388">Selamat Datang ke Chrome</translation>
 <translation id="7628417132421583481">Akses Password Manager</translation>
 <translation id="7630202231528827509">URL penyedia</translation>

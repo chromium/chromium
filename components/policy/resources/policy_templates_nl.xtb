@@ -1908,6 +1908,7 @@ Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps 
 <translation id="2306505001667207184">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten.</translation>
 <translation id="230713790688681130">Hindi InScript-indeling aanzetten</translation>
 <translation id="2307496301287881990">Statussen van scherm en grafische kaart rapporteren</translation>
+<translation id="2308084581803907194">Hoge complexiteit</translation>
 <translation id="2308899582897965249">Stil afdrukken uitzetten</translation>
 <translation id="2309284543927494965">Updates blokkeren</translation>
 <translation id="2309341709647905294">Geen informatie rapporteren over randapparaten die zijn aangesloten op het apparaat</translation>
@@ -2718,6 +2719,19 @@ Als je dit beleid toepast, kan de Launcher-/zoektoets het gedrag van functietoet
       Als dit beleid niet is ingesteld, wordt het niet toegepast voor beheerde apparaten en wel toegepast voor apparaten van consumenten.
       Als dit beleid niet wordt toegepast, wordt alleen de verzameling van een tracering voor het hele systeem uitgezet. Dit beleid is niet van invloed op de verzameling van een browsertracering.</translation>
 <translation id="2922511125678964398">Toestaan dat captive portal-verificatie proxyinstellingen negeert</translation>
+<translation id="2923126158151236068">Dit beleid stelt de minimale complexiteitsvereisten in voor lokale verificatiefactoren (pincodes en lokale wachtwoorden) die door gebruikers worden ingesteld op <ph name="PRODUCT_OS_NAME" />.
+
+Als je dit beleid niet instelt, is het complexiteitsniveau standaard Geen.
+
+De vereisten van dit beleid worden afgedwongen als een gebruiker een nieuwe lokale pincode/een nieuw lokaal wachtwoord instelt of een bestaande pincode/een bestaand wachtwoord wijzigt.
+
+De complexiteitsniveaus zijn gebaseerd op de statistieken voor wachtwoordkwaliteit van Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), aangepast voor <ph name="PRODUCT_OS_NAME" />:
+- 1 = Geen: Er is een pincode/wachtwoord vereist, maar er zijn geen beperkingen voor de content of lengte.
+- 2 = Laag: basisvereisten voor complexiteit.
+- 3 = Gemiddeld: strengere vereisten voor lengte en tekentype.
+- 4 = Hoog: De strengste complexiteitsvereisten, waarbij meerdere tekentypen vereist zijn.
+
+Raadpleeg het Helpcentrum-artikel voor gedetailleerde uitleg over wat elk niveau inhoudt voor zowel pincodes als wachtwoorden.</translation>
 <translation id="2926813071464307947">De sandbox voor de app-container van het weergaveprogramma uitzetten</translation>
 <translation id="2931888116345994552">Hiermee zet je componentupdates voor alle componenten in <ph name="PRODUCT_NAME" /> aan als het beleid wordt toegepast of niet is ingesteld.
 
@@ -5922,6 +5936,7 @@ Domeinen met een onjuiste indeling worden genegeerd.</translation>
 <translation id="5163889437570441600">Hiermee sta je toe dat content naar het apparaat wordt gecast met <ph name="PRODUCT_NAME" />.
 
           Als dit beleid is ingesteld op False, kunnen gebruikers geen content naar hun apparaat casten. Als dit beleid is ingesteld op True, kunnen ze dit wel. Als dit beleid niet is ingesteld, kunnen gebruikers geen content casten naar ingeschreven Chrome OS-apparaten, maar wel naar niet-ingeschreven apparaten.</translation>
+<translation id="5166766992668636906">Gemiddelde complexiteit</translation>
 <translation id="5168529971295111207">Dit beleid is verouderd. Gebruik in plaats daarvan ProxyMode.
 
           Specificeert de door <ph name="PRODUCT_NAME" /> gebruikte proxyserver en voorkomt dat gebruikers de proxyinstellingen wijzigen.
@@ -7496,6 +7511,7 @@ Andere beperkingen, zoals de beperkingen die worden opgelegd door de beleidsrege
 <translation id="6144046700495610112">Als je het beleid toepast, worden de formuliergegevens voor automatisch invullen van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden formuliergegevens voor automatisch invullen niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor formuliergegevens voor automatisch invullen aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
+<translation id="6144246313478615705">Minimumcomplexiteit instellen voor lokale pincodes en wachtwoorden</translation>
 <translation id="614551633868957694">Chrome-apps en -extensies</translation>
 <translation id="614616930188030377">Patronen in deze lijst worden vergeleken met de beveiligingsoorsprong van de aanvragende URL.
       Als een overeenkomst wordt gevonden of als chrome://flags/#enable-webrtc-hide-local-ips-with-mdns is Uitgezet, worden de lokale IP-adressen getoond in WebRTC ICE-kandidaten.
@@ -8963,6 +8979,17 @@ Alleen geldige HTTPS-oorsprongen zijn toegestaan. Jokertekens worden niet onders
 Ongeldige vermeldingen worden genegeerd.</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
 <translation id="7045221780834308118">Als je het beleid toepast, kunnen web-apps van derden de Desk API gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is <ph name="DESK_API_NAME" /> niet beschikbaar. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
+<translation id="704591686761455167">Met dit beleid bepaal je of blob-URL's worden gepartitioneerd tijdens ophalen en navigeren.
+Als je dit beleid toepast of niet instelt, worden blob-URL's gepartitioneerd.
+Als je dit beleid niet toepast, worden blob-URL's niet gepartitioneerd.
+
+Als partitionering van opslag voor een bepaalde oorsprong op het hoogste niveau is uitgezet door <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> of <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />, worden blob-URL's ook niet gepartitioneerd.
+
+Als je het beleid moet gebruiken, dien je een bug in op <ph name="BUG_URL" /> waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 146 van <ph name="PRODUCT_NAME" />, waarna de oude implementatie wordt verwijderd.
+
+OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.
+
+Ga naar https://developers.google.com/privacy-sandbox/cookies/storage-partitioning voor meer informatie over partitionering van opslag door derden.</translation>
 <translation id="7046113122884041950">Smart Lock niet toestaan</translation>
 <translation id="7046997898355294677">Privacymeldingen tonen totdat deze worden gesloten door de gebruiker</translation>
 <translation id="7047495632846973438">Geeft aan of het rechtenbeleid voor schermopname is aangevinkt of wordt overgeslagen.</translation>
@@ -9565,6 +9592,17 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
       Als dit beleid wordt toegepast of niet is ingesteld, kunnen sites getDisplayMedia() alleen aanroepen vanuit contexten die door het rechtenbeleid voor schermopname op de toelatingslijst zijn gezet.
 
       Als het beleid niet wordt toegepast, kunnen sites getDisplayMedia() ook aanroepen vanuit contexten die niet door het rechtenbeleid voor schermopname op de toelatingslijst zijn gezet. Er kunnen nog steeds andere beperkingen gelden.</translation>
+<translation id="750408442628578356">Hiermee bepaal je of de Gemini-app actie mag ondernemen op de webpagina's namens de gebruiker.
+
+0/niet ingesteld = De Gemini-app mag actie ondernemen op de webpagina's.
+
+1 = De Gemini-app mag geen actie ondernemen op de webpagina's.
+
+Dit beleid heeft geen effect als de Gemini-app is uitgezet. De Gemini-app kan bijvoorbeeld worden uitgezet met het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Ga voor meer informatie over Gemini in Chrome naar https://support.google.com/chrome/a/answer/16291696.
+
+Activering van Gemini is niet in alle landen of talen beschikbaar. Als je dit beleid instelt, garandeert dit niet dat de functie wordt aangezet. De functie blijft afhankelijk van de beschikbaarheid. Check de release-opmerkingen voor Chrome Enterprise voor meer informatie over de uitrol: https://support.google.com/chrome/a/answer/7679408?hl=nl</translation>
 <translation id="7506745375479451616">Met dit beleid wordt bepaald welke opdracht wordt gebruikt om URL's te openen in <ph name="PRODUCT_NAME" /> bij overschakeling vanuit <ph name="IE_PRODUCT_NAME" />. Dit beleid kan worden ingesteld op een pad naar een uitvoerbaar bestand of op <ph name="PRODUCT_NAME_PLACEHOLDER" /> om de locatie van <ph name="PRODUCT_NAME" /> automatisch te detecteren.
 
       Als je het beleid niet instelt, detecteert <ph name="IE_PRODUCT_NAME" /> het eigen pad van <ph name="PRODUCT_NAME" /> naar een uitvoerbaar bestand als <ph name="PRODUCT_NAME" /> wordt gestart vanuit Internet Explorer.
@@ -9648,6 +9686,7 @@ Als je geen beleid opgeeft, zijn er geen uitzonderingen toegestaan op <ph name="
 
       Als het apparaat van de gebruiker niet wordt beheerd, is de beschikbaarheid van deze functionaliteit ook afhankelijk van of de gebruiker de eigenaar is van het apparaat.</translation>
 <translation id="7570291542739287032">Alleen Google Cloud</translation>
+<translation id="7572641760104970905">Geen complexiteit</translation>
 <translation id="757395965347379751">Als deze instelling aanstaat, staat <ph name="PRODUCT_NAME" /> met SHA-1 ondertekende certificaten toe, zolang deze correct zijn gevalideerd en zijn gekoppeld aan een lokaal geïnstalleerd CA-certificaat.
 
       Opmerking: Dit beleid is afhankelijk van de uitgevoerde verificatiestack voor het certificaat van het besturingssysteem en of hiermee SHA-1-handtekeningen zijn toegestaan. Als door een update van het besturingssysteem een wijziging wordt aangebracht in de verwerking van het besturingssysteem ten aanzien van SHA-1-certificaten, is dit beleid wellicht niet meer van toepassing. Daarnaast is dit beleid bedoeld als tijdelijke oplossing voor bedrijven om af te stappen van SHA-1. Dit beleid wordt op of rond 1 januari 2019 verwijderd.
@@ -9741,6 +9780,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
+<translation id="7661379728107156839">Weinig complex</translation>
 <translation id="7666228839913571182">Cookies van derden toestaan</translation>
 <translation id="7666782560345386904">Instellingen voor verbeterd automatisch invullen</translation>
 <translation id="7669630878711068277">Als je dit beleid toepast of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.

@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cyan 3</translation>
 <translation id="1035709686865413354">Mga Filter at Purifier ng Tubig</translation>
 <translation id="1036348656032585052">I-off</translation>
+<translation id="1036436692654972538">Sine-save sa iyong device</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1038842779957582377">Hindi kilalang pangalan</translation>
 <translation id="1041998700806130099">Mensahe sa sheet ng trabaho</translation>
@@ -79,6 +80,7 @@
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Para lumabas sa full screen, mag-drag mula sa itaas at pindutin ang button na bumalik</translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1142713751288681188">Uri ng papel</translation>
+<translation id="1142965388643537393">Impormasyon sa paglalakbay</translation>
 <translation id="1144136880160289237">Wala ka pang aktibong paksa</translation>
 <translation id="1149617035358809955">i-verify na ikaw ito para mapunan nito ang iyong impormasyon sa pagbabayad</translation>
 <translation id="1150565364351027703">Sunglasses</translation>
@@ -177,6 +179,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1285320974508926690">Huwag isalin kailanman ang site na ito</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">"Pinipigilan ng software sa iyong computer na makakonekta nang ligtas ang Chrome sa web" (mga Windows computer lang)</translation>
+<translation id="1293556467332435079">Mga File</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1296930489679394997">Sales</translation>
@@ -837,6 +840,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
 <translation id="2359629602545592467">Marami</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
+<translation id="236000571258713023">Mga sasakyan</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu ng toggle sa pag-resize</translation>
 <translation id="2365355378251437925">Ilagay ang <ph name="FIELD" /></translation>
@@ -2199,6 +2203,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4598556348158889687">Pamamahala sa storage</translation>
 <translation id="459914240367517409">Pagdidisenyo at Paggawa ng Website</translation>
 <translation id="4602465984861132303">Bowling</translation>
+<translation id="4603727370377253901">Mga reservation ng flight</translation>
 <translation id="4607608436550361748">Tingnan ang mga tip sa Chrome</translation>
 <translation id="460848736049414407">Na-block ng Admin</translation>
 <translation id="4610279718074907952">Ang site na ito ay nasa isang grupo, na tinukoy ng <ph name="SET_OWNER" />, na makakakita ng iyong aktibidad</translation>
@@ -2207,6 +2212,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4622292761762557753">Ilipat pa rin</translation>
 <translation id="4622647778991854660">Mag-enable ng mga notification sa Notification Center. Buksan ang <ph name="LINK" />.</translation>
+<translation id="4623894491222334521">Mga doc ng pagkakakilanlan</translation>
 <translation id="4627675673814409125">Hindi maitatakda ang patakarang ito sa antas ng profile ng Chrome at babalewalain ito.</translation>
 <translation id="4628678854894591460">Mga Alok sa Bakasyon</translation>
 <translation id="4628948037717959914">Larawan</translation>
@@ -2826,6 +2832,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5617949217645503996">Masyadong maraming beses kang na-redirect ng <ph name="HOST_NAME" />.</translation>
 <translation id="5619721953841297650">Preset</translation>
 <translation id="5624120631404540903">Pamahalaan ang mga password</translation>
+<translation id="5628060911499153873">I-save ang iyong impormasyon para mas mabilis na tapusin ang mga bagay, sa lahat ng produkto ng Google. Naka-save ang iyong impormasyon sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para sa <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Nabigong i-load ang mga setting ng patakaran</translation>
 <translation id="5630981295558454585">Button na Magtanong sa Google tungkol sa page na ito, i-activate para magtanong sa Google tungkol sa page na ito</translation>
 <translation id="5631439013527180824">Di-wastong token sa pamamahala ng device</translation>
@@ -3152,7 +3159,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6189351761800074311">Ipapadala sa Google ang iyong text at content ng page, pero hindi ito gagamitin para pahusayin ang AI.
     <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Mag-override ng ilang key sa iyong keyboard, gaya ng Esc</translation>
-<translation id="6192524964213419211">I-save ang iyong impormasyon para mas mabilis na tapusin ang mga bagay, sa lahat ng produkto ng Google. Naka-save ang iyong impormasyon sa <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para sa <ph name="ACCOUNT" /></translation>
 <translation id="6194209731893739467">Tingnan ang lahat ng iyong sinusubaybayang produkto rito</translation>
 <translation id="6195371403461054755">Geology</translation>
 <translation id="6195418151868446719">Consumer Electronics</translation>
@@ -3488,7 +3494,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6716039223770814796">Paghambingin ang <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> (na) item</translation>
 <translation id="6716672519412350405">Gusto ng <ph name="URL" /> na gumawa ng 3D na mapa ng iyong kapaligiran at subaybayan ang posisyon ng camera</translation>
 <translation id="6717692133381953670">Ipinadala ang tab mula sa <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">I-save ang impormasyon mo para mapunan ng autofill ang higit pang field para sa iyo sa susunod</translation>
 <translation id="6718612893943028815">Gamitin ang camera?</translation>
 <translation id="6721164594124191969">Mga Label (Glossy)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>

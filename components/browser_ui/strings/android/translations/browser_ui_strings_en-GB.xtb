@@ -202,6 +202,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3123473560110926937">Blocked on some sites</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
+<translation id="3164169438034704658">You can turn on precise location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Allow a site to use third-party cookies</translation>
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
@@ -540,6 +541,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Delete site data? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accessibility</translation>
+<translation id="6991142177939282156">Allowed • Using approximate</translation>
 <translation id="6992289844737586249">Ask first before allowing sites to use your microphone (recommended)</translation>
 <translation id="7000754031042624318">Turned off in Android settings</translation>
 <translation id="702275896380648118">This site determines things that you like and then suggests ads to other sites. This site also gets your ad topics from Chrome to show you more relevant ads.</translation>
@@ -600,7 +602,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7688240020069572972">Hide Chrome tips card</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="775043444390799886">Revoke permission</translation>
-<translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
+<translation id="7759147511335618829">MIDI device control and reprogramming</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>
@@ -650,6 +652,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8284326494547611709">Captions</translation>
 <translation id="8300705686683892304">Managed by app</translation>
+<translation id="8301363963630676147">Allowed this time • Using approximate</translation>
 <translation id="8315509175050791576">Sharing a tab</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
 <translation id="8362795839483915693">You can zoom in or out on sites that you visit</translation>
