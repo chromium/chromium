@@ -605,6 +605,9 @@ extern const char kLensWebPageLoadOptimizationEnabledDescription[];
 extern const char kLinkedServicesSettingIosName[];
 extern const char kLinkedServicesSettingIosDescription[];
 
+extern const char kLocationBarBadgeMigrationName[];
+extern const char kLocationBarBadgeMigrationDescription[];
+
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
 

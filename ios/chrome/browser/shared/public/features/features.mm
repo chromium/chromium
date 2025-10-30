@@ -1258,3 +1258,9 @@ bool ShouldShowKeyboardAccessoryFeatures() {
       kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
   return feature_param == kDisableKeyboardAccessoryOnlyFeatures;
 }
+
+BASE_FEATURE(kLocationBarBadgeMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLocationBarBadgeMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kLocationBarBadgeMigration);
+}

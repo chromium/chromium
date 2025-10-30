@@ -6690,6 +6690,14 @@
     "expiry_milestone": 148
   },
   {
+    "name": "location-bar-badge-migration",
+    "owners": [
+      "joemerramos@google.com",
+      "bling-alchemy@google.com"
+    ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "lock-controls-on-tablets",
     "owners": [
       "twellington@chromium.org",

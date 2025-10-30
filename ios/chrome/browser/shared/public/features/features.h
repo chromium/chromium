@@ -1161,4 +1161,10 @@ bool ShouldShowKeyboardAccessorySymbols();
 // Returns true if lens and voice search can be shown in the keyboard accessory.
 bool ShouldShowKeyboardAccessoryFeatures();
 
+// Enables the LocationBarBadgeMigration feature.
+BASE_DECLARE_FEATURE(kLocationBarBadgeMigration);
+
+// Returns true if the LocationBarBadgeMigration feature is enabled.
+bool IsLocationBarBadgeMigrationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

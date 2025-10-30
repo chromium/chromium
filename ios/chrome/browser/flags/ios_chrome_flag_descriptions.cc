@@ -1022,6 +1022,10 @@ const char kLinkedServicesSettingIosName[] = "Linked Services Setting";
 const char kLinkedServicesSettingIosDescription[] =
     "Add Linked Services Setting to the Sync Settings page.";
 
+const char kLocationBarBadgeMigrationName[] = "LocationBarBadgeMigration";
+const char kLocationBarBadgeMigrationDescription[] =
+    "Enables the LocationBarBadgeMigration feature.";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
