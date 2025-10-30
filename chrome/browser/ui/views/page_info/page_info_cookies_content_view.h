@@ -40,8 +40,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
-  void IncognitoTrackingProtectionSettingsLinkClicked(const ui::Event& event);
-
   void SyncSettingsLinkClicked(const ui::Event& event);
 
   void RwsSettingsButtonClicked(const ui::Event& event);
@@ -174,9 +172,6 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // RWS info histogram. Needed to not record the histogram each time page info
   // status changed.
   bool rws_histogram_recorded_ = false;
-
-  // The button that links to the Incognito tracking protection settings page.
-  raw_ptr<RichHoverButton> tp_settings_button_ = nullptr;
 
   // Third-party cookies section which contains a title, a description and a
   // toggle row view.

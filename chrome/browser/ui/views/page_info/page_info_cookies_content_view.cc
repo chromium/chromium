@@ -227,44 +227,9 @@ void PageInfoCookiesContentView::InitCookiesDialogButton() {
       views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
 }
 
-void PageInfoCookiesContentView::
-    InitIncognitoTrackingProtectionSettingsButton() {
-  if (tp_settings_button_) {
-    return;
-  }
-
-  tp_settings_button_ = cookies_buttons_container_view_->AddChildView(
-      std::make_unique<RichHoverButton>(
-          base::BindRepeating(
-              &PageInfoCookiesContentView::
-                  IncognitoTrackingProtectionSettingsLinkClicked,
-              base::Unretained(this)),
-          PageInfoViewFactory::GetImageModel(
-              vector_icons::kSettingsChromeRefreshIcon),
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_TITLE),
-          l10n_util::GetStringUTF16(
-              IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_SUBTITLE),
-          PageInfoViewFactory::GetLaunchIcon()));
-  tp_settings_button_->SetID(
-      PageInfoViewFactory::
-          VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS);
-  tp_settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_SUBTITLE));
-  tp_settings_button_->SetTitleTextStyleAndColor(
-      views::style::STYLE_BODY_3_MEDIUM, kColorPageInfoForeground);
-  tp_settings_button_->SetSubtitleTextStyleAndColor(
-      views::style::STYLE_BODY_4, kColorPageInfoSubtitleForeground);
-}
-
 void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
     const ui::Event& event) {
   presenter_->OpenCookiesSettingsView();
-}
-
-void PageInfoCookiesContentView::IncognitoTrackingProtectionSettingsLinkClicked(
-    const ui::Event& event) {
-  presenter_->OpenIncognitoSettingsView();
 }
 
 void PageInfoCookiesContentView::SyncSettingsLinkClicked(
@@ -284,14 +249,11 @@ void PageInfoCookiesContentView::SetCookieInfo(const CookiesInfo& cookie_info) {
                            cookie_info.blocking_status, cookie_info.expiration);
 
   // Ensure the separator is only initialized once.
-  if (!tp_settings_button_ && !cookies_dialog_button_) {
+  if (!cookies_dialog_button_) {
     cookies_buttons_container_view_->AddChildView(
         PageInfoViewFactory::CreateSeparator(
             ChromeLayoutProvider::Get()->GetDistanceMetric(
                 DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
-  }
-  if (IsTrackingProtectionsUi(cookie_info.controls_state)) {
-    InitIncognitoTrackingProtectionSettingsButton();
   }
   InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.

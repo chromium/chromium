@@ -1853,46 +1853,6 @@ IN_PROC_BROWSER_TEST_P(
             1);
 }
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
-                       ClickingSettingsButtonOpensIncognitoSettingsPage) {
-  base::UserActionTester user_actions_stats;
-  Browser* incognito_browser = CreateIncognitoBrowser();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, GURL(kUrl)));
-
-  OpenPageInfoAndGoToPrivacyAndSiteDataSubpage(/*rws_owner =*/{},
-                                               incognito_browser);
-
-  auto* cookies_buttons_container =
-      GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
-  ASSERT_THAT(cookies_buttons_container, NotNull());
-  ASSERT_THAT(cookies_buttons_container->children(), SizeIs(3));
-
-  auto* settings_button_view = GetView(
-      PageInfoViewFactory::
-          VIEW_ID_PAGE_INFO_BUTTON_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS);
-  ASSERT_THAT(settings_button_view, NotNull());
-  auto* settings_button = static_cast<RichHoverButton*>(settings_button_view);
-
-  EXPECT_EQ(
-      settings_button->GetTitleText(),
-      l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_TITLE));
-  EXPECT_EQ(
-      settings_button->GetSubtitleText(),
-      l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_INCOGNITO_TRACKING_PROTECTIONS_SETTINGS_BUTTON_SUBTITLE));
-
-  content::WebContentsAddedObserver new_tab_observer;
-  PerformMouseClickOnView(settings_button);
-
-  EXPECT_EQ(new_tab_observer.GetWebContents()->GetVisibleURL(),
-            chrome::GetSettingsUrl(chrome::kIncognitoSettingsSubPage));
-  EXPECT_EQ(user_actions_stats.GetActionCount(
-                "PageInfo.PrivacySubpage.IncognitoSettingsOpened"),
-            1);
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          PageInfoBubbleViewBrowserTestTrackingProtectionSubpage,
                          testing::Bool());
