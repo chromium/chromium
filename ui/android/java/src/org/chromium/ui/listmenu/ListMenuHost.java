@@ -70,6 +70,7 @@ public class ListMenuHost
 
     // A list of the windows, paired with the parent `ListItem` if the window is a flyout.
     private final ArrayList<FlyoutPopupEntry<AnchoredPopupWindow>> mPopupMenus;
+    private final HierarchicalMenuController mHierarchicalMenuController;
 
     private @Nullable ListMenuDelegate mDelegate;
     private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
@@ -105,6 +106,12 @@ public class ListMenuHost
         a.recycle();
 
         mPopupMenus = new ArrayList<>();
+
+        mHierarchicalMenuController =
+                ListMenuUtils.createHierarchicalMenuController(
+                        mView.getContext(),
+                        /* flyoutHandler= */ this,
+                        /* drillDownOverrideValue= */ null);
     }
 
     /**
@@ -381,6 +388,15 @@ public class ListMenuHost
                 l.onPopupMenuDismissed();
             }
         }
+    }
+
+    /**
+     * Gets the {@link HierarchicalMenuController}.
+     *
+     * @return The {@link HierarchicalMenuController} for this object.
+     */
+    public HierarchicalMenuController getHierarchicalMenuController() {
+        return mHierarchicalMenuController;
     }
 
     public static void setMenuChangedListenerForTesting(PopupMenuHelper listener) {

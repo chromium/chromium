@@ -46,6 +46,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.ui.R;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -175,7 +176,9 @@ public class BrowserUiListMenuUnitTest {
         data.add(submenuParentItem);
         mBasicListMenu = getBasicListMenu(mActivity, data, (item, view) -> {}, 0, colorIntForTest);
         mBasicListMenu.setupCallbacksRecursively(
-                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutHandler= */ null);
+                () -> {},
+                ListMenuUtils.createHierarchicalMenuController(
+                        mActivity, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ null));
         mView = mBasicListMenu.getContentView();
         int itemHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_item_min_height);
@@ -224,7 +227,9 @@ public class BrowserUiListMenuUnitTest {
 
     private ListView setupListViewForSubmenuTesting() {
         mBasicListMenu.setupCallbacksRecursively(
-                () -> {}, /* drillDownOverrideValue= */ null, /* flyoutHandler= */ null);
+                () -> {},
+                ListMenuUtils.createHierarchicalMenuController(
+                        mActivity, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ null));
         mView = mBasicListMenu.getContentView();
         int width = mActivity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
         int height = 300; // Some arbitrary value small enough to make the bottom part scrollable

@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -241,18 +240,10 @@ public class BasicListMenu implements ListMenu {
      * If an item doesn't already have a click callback in its model, no click callback is added.
      *
      * @param dismissDialog The {@link Runnable} to run.
-     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
-     *     true}) or flyout ({@code false}), overriding the default.
-     * @param FlyoutHandler The {@link FlyoutHandler} to use for flyout menus.
+     * @param hierarchicalMenuController The {@link HierarchicalMenuController} to use.
      */
     public void setupCallbacksRecursively(
-            Runnable dismissDialog,
-            @Nullable Boolean drillDownOverrideValue,
-            @Nullable FlyoutHandler flyoutHandler) {
-        HierarchicalMenuController hierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(
-                        mListMenuLayout.getContext(), flyoutHandler, drillDownOverrideValue);
-
+            Runnable dismissDialog, HierarchicalMenuController hierarchicalMenuController) {
         AccessibilityListObserver observer =
                 hierarchicalMenuController
                 .new AccessibilityListObserver(

@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.Acti
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
@@ -277,9 +278,13 @@ public class ExtensionsMenuMediatorTest {
         View.OnClickListener listener = item.model.get(ExtensionsMenuItemProperties.CLICK_LISTENER);
 
         // Stub helper calls on the mock button.
+        ListMenuHost mockListMenuHost = mock(ListMenuHost.class);
+        when(mockListMenuHost.getHierarchicalMenuController())
+                .thenReturn(mock(HierarchicalMenuController.class));
+
         ListMenuButton mockButton = mock(ListMenuButton.class);
         when(mockButton.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
-        when(mockButton.getHost()).thenReturn(mock(ListMenuHost.class));
+        when(mockButton.getHost()).thenReturn(mockListMenuHost);
         when(mockButton.getRootView())
                 .thenReturn(new View(ApplicationProvider.getApplicationContext()));
         when(mockButton.getResources())

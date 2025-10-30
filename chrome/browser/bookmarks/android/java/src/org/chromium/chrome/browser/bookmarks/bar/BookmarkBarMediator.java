@@ -60,6 +60,7 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -460,8 +461,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         mAnchoredPopupWindow.dismiss();
                     }
                 },
-                /* drillDownOverrideValue= */ true,
-                /* flyoutHandler= */ null);
+                ListMenuUtils.createHierarchicalMenuController(
+                        mActivity, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true));
 
         View popupContentView = popupListMenu.getContentView();
         // This is needed because list_menu_layout.xml already sets a background, and we want to

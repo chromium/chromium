@@ -84,8 +84,7 @@ public final class ExtensionActionContextMenuUtils {
                 () -> {
                     buttonView.dismiss();
                 },
-                /* drillDownOverrideValue= */ null,
-                buttonView.getHost());
+                buttonView.getHost().getHierarchicalMenuController());
 
         ListMenuDelegate listDelegate =
                 new ListMenuDelegate() {

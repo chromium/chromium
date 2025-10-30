@@ -13,7 +13,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
-import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
@@ -41,10 +40,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -100,27 +99,11 @@ public class BrowserUiListMenuRenderTest {
                     BasicListMenu listMenu =
                             BrowserUiListMenuUtils.getBasicListMenu(activity, data, delegate);
                     listMenu.setupCallbacksRecursively(
-                            () -> {},
-                            true,
-                            new FlyoutController.FlyoutHandler<BasicListMenu>() {
-                                @Override
-                                public List<FlyoutController.FlyoutPopupEntry<BasicListMenu>>
-                                        getFlyoutWindows() {
-                                    return Collections.emptyList();
-                                }
-
-                                @Override
-                                public Rect getPopupRect(BasicListMenu popupWindow) {
-                                    return new Rect();
-                                }
-
-                                @Override
-                                public void addFlyoutWindow(
-                                        ListItem item, View view, int levelOfHoveredItem) {}
-
-                                @Override
-                                public void removeFlyoutWindows(int removeFromIndex) {}
-                            });
+                            /* dismissDialog= */ () -> {},
+                            ListMenuUtils.createHierarchicalMenuController(
+                                    activity,
+                                    /* flyoutHandler= */ null,
+                                    /* drillDownOverrideValue= */ null));
 
                     mView = listMenu.getContentView();
                     mView.setBackground(
