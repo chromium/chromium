@@ -162,3 +162,21 @@ TEST_F(NewTabPageUITest,
   EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpCustomLinksVisible));
   EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible));
 }
+
+TEST_F(NewTabPageUITest, ShowAllMostVisitedTilesPref_Default_False) {
+  PrefService* prefs = profile().GetPrefs();
+  // Ensure the pref has its default value as false;
+  EXPECT_FALSE(prefs->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles));
+}
+
+TEST_F(NewTabPageUITest, ShowAllMostVisitedTilesPref_Set_True) {
+  PrefService* prefs = profile().GetPrefs();
+  bool init_value = prefs->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles);
+  ASSERT_FALSE(init_value);
+
+  // Set the pref to true
+  prefs->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles, true);
+
+  // Check that the pref is set to true
+  EXPECT_TRUE(prefs->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles));
+}
