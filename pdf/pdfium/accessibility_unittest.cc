@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/zip.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/pdf_accessibility_constants_helper.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"

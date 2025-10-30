@@ -13,6 +13,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "pdf/page_character_index.h"
+#include "pdf/pdf_accessibility_constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -127,63 +128,6 @@ struct AccessibilityImageInfo {
   // Index of the image object in its page.
   int32_t page_object_index;
 };
-
-// Indicates the semantic meaning of each `AccessibilityStructureElement`. Such
-// elements can be associated with either an `AccessibilityTextRun`, e.g. when a
-// piece of text is a heading, or stand on their own, e.g. if an element
-// representing a table row.
-//
-// Please keep the below enum as close as possible to the list defined in the
-// PDF Specification, ISO 32000-1:2008, table 333.
-//
-// TODO(crbug.com/40707542): Consider moving this definition to a shared
-// location for use also by PDF printing.
-enum class PdfTagType {
-  kNone,  // Not present.
-  kDocument,
-  kPart,
-  kArt,
-  kSect,
-  kDiv,
-  kBlockQuote,
-  kCaption,
-  kTOC,   // Table of contents.
-  kTOCI,  // Table of contents entry.
-  kIndex,
-  kP,  // Paragraph.
-  kH,  // Heading.
-  kH1,
-  kH2,
-  kH3,
-  kH4,
-  kH5,
-  kH6,
-  kL,    // List.
-  kLI,   // List item.
-  kLbl,  // List marker.
-  kLBody,
-  kTable,
-  kTR,
-  kTH,
-  kTHead,  // Table row group header.
-  kTBody,
-  kTFoot,
-  kTD,
-  kSpan,
-  kLink,
-  kFigure,
-  kFormula,
-  kForm,
-  kUnknown,  // Unrecognized.
-};
-
-// Given a string containing a PDF tag type, such as "H1", returns the
-// corresponding enum value, such as `PdfTagType::kH1`.
-PdfTagType PdfTagTypeFromString(const std::string& tag_type);
-
-// Returns the PDF tag type string-to-enum map.
-const base::fixed_flat_map<std::string_view, PdfTagType, 35>&
-GetPdfTagTypeMap();
 
 // Represents a node in the PDF's structure tree. This tree represents the
 // logical organization of the text inside the PDF, e.g. when data is placed in

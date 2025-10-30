@@ -28,6 +28,7 @@
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/page_rotation.h"
+#include "pdf/pdf_accessibility_constants_helper.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
