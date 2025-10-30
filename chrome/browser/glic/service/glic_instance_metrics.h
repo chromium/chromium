@@ -9,10 +9,10 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
-#include "components/sessions/core/session_id.h"
 
 namespace tabs {
 class TabInterface;
@@ -77,7 +77,13 @@ enum class GlicInstanceEvent {
   kWebUiStateGuestError = 38,
   kWebUiStateDisabledByAdmin = 39,
   kUnbindEmbedder = 40,
-  kMaxValue = kUnbindEmbedder,
+  kUserInputSubmitted = 41,
+  kContextRequested = 42,
+  kResponseStarted = 43,
+  kResponseStopped = 44,
+  kTurnCompleted = 45,
+  kReaction = 46,
+  kMaxValue = kReaction,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
@@ -187,7 +193,27 @@ class GlicInstanceMetrics {
   // Called when GlicInstanceImpl::WebUiStateChanged is called.
   void OnWebUiStateChanged(mojom::WebUiState state);
 
+  // Turn metrics.
+  void OnUserInputSubmitted(mojom::WebClientMode mode);
+  void DidRequestContextFromFocusedTab();
+  void OnResponseStarted();
+  void OnResponseStopped(mojom::ResponseStopCause cause);
+  void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
+  void OnReaction(mojom::MetricUserInputReactionType reaction_type);
+
  private:
+  // These members are cleared in OnResponseStopped.
+  struct TurnInfo {
+    base::TimeTicks input_submitted_time_;
+    // Set to true in OnResponseStarted() and set to false in
+    // OnResponseStopped(). This is a workaround copied from GlicMetrics and
+    // should be removed, see crbug.com/399151164.
+    bool response_started_ = false;
+    bool did_request_context_ = false;
+    bool reported_reaction_time_canned_ = false;
+    bool reported_reaction_time_modelled_ = false;
+  };
+
   // Stores counts for events to ensure they are only logged once per instance.
   struct GlicInstanceEventCounts {
     GlicInstanceEventCounts();
@@ -195,6 +221,7 @@ class GlicInstanceMetrics {
     // go/keep-sorted start
     int bound_tab_destroyed{};
     int close{};
+    int context_requested{};
     int conversation_switched_from_floaty{};
     int conversation_switched_from_side_panel{};
     int conversation_switched_to_floaty{};
@@ -212,15 +239,21 @@ class GlicInstanceMetrics {
     int interrupt_actor_task{};
     int pause_actor_task{};
     int perform_actions{};
+    int reaction{};
     int register_conversation{};
+    int response_started{};
+    int response_stopped{};
     int resume_actor_task{};
     int side_panel_shown{};
     int stop_actor_task{};
     int tab_bound_via_daisy_chain{};
     int tab_bound{};
     int toggle{};
+    int turn_completed{};
+    int turn_count{};
     int unbind_embedder{};
     int uninterrupt_actor_task{};
+    int user_input_submitted{};
     int warmed_instance_created{};
     int web_ui_state_begin_load{};
     int web_ui_state_disabled_by_admin{};
@@ -247,6 +280,14 @@ class GlicInstanceMetrics {
   bool is_visible_ = false;
   int bound_tab_count_ = 0;
   int max_concurrently_bound_tabs_ = 0;
+
+  // Turn metrics.
+  TurnInfo turn_;
+  mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
+  base::EnumSet<mojom::WebClientMode,
+                mojom::WebClientMode::kMinValue,
+                mojom::WebClientMode::kMaxValue>
+      inputs_modes_used_;
   base::TimeTicks creation_time_;
   base::TimeTicks floaty_open_time_;
   std::map<int, base::TimeTicks> side_panel_open_times_;

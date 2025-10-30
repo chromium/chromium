@@ -599,18 +599,6 @@ chromium-metrics-reviews@google.com.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
-    Records events that happen during a Glic Instance's lifecycle. This
-    histogram answers the question: How many instances had each event type occur
-    at least once? Even if an event occurs multiple times in an instance, only
-    one event is recorded per instance.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.EventTotals" enum="GlicInstanceEvent"
-    expires_after="2026-06-01">
-  <owner>birnie@google.com</owner>
-  <owner>perrier@google.com</owner>
-  <summary>
     Records every event that happens during a Glic Instance's lifecycle. This
     histogram answers the question: What is the total number of times each event
     occurred across all Glic instances? An event is recorded each time it
@@ -635,6 +623,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the source of the invocation that caused the floaty GlicInstance to
     be toggled. Recorded each time the instance is toggled.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.HadEvent" enum="GlicInstanceEvent"
+    expires_after="2026-06-01">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records events that happen during a Glic Instance's lifecycle. This
+    histogram answers the question: How many instances had each event type occur
+    at least once? Even if an event occurs multiple times in an instance, only
+    one event is recorded per instance.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.InputModesUsed" enum="GlicInputModesUsed"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The input modes that were used during the instance's lifetime. Recorded when
+    the instance is destroyed. Metrics recorded on instance destruction may not
+    be recorded successfully on irregular Chrome shutdowns.
   </summary>
 </histogram>
 
@@ -667,7 +678,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the maximum number of tabs that were simultaneously bound to a
     single GlicInstance throughout its lifetime. Recorded when the GlicInstance
-    is destroyed.
+    is destroyed. Metrics recorded on instance destruction may not be recorded
+    successfully on irregular Chrome shutdowns.
   </summary>
 </histogram>
 
@@ -728,6 +740,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the total number of tabs that were bound to a single GlicInstance
     throughout its lifetime. Recorded when the GlicInstance is destroyed.
+    Metrics recorded on instance destruction may not be recorded successfully on
+    irregular Chrome shutdowns.
   </summary>
 </histogram>
 
@@ -738,6 +752,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the total time a GlicInstance was visible (in the foreground)
     throughout its lifetime. Recorded when the GlicInstance is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Instance.TurnCount" units="count"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    The number of turns that occurred in a single Glic instance's lifetime.
+    Recorded when the instance is destroyed. Metrics recorded on instance
+    destruction may not be recorded successfully on irregular Chrome shutdowns.
   </summary>
 </histogram>
 
@@ -1519,6 +1544,95 @@ chromium-metrics-reviews@google.com.
     Emitted in every UMA record from the current session (at the time the record
     is finalized), but only if there is at least one Glic-eligible profile.
   </summary>
+</histogram>
+
+<histogram name="Glic.Turn.Duration.{Model}" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded at the end of a turn response from the server indicating the time
+    the entire request/response sequence took.
+  </summary>
+  <token key="Model">
+    <variant name="Actor"/>
+    <variant name="Default"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Turn.FirstReaction.Text.{ReactionType}.Time" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Recorded when the first reaction is rendered after a user input was made in
+    text mode. Measures the time from a user's submitted input until a response
+    starts and was visible to the user. Reported once for each type, only on the
+    first reaction of each user input.
+  </summary>
+  <token key="ReactionType">
+    <variant name="Canned"/>
+    <variant name="Modelled"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Turn.ResponseStartTime" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user. Recorded for each turn in a Glic instance.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Turn.ResponseStartTime.InputMode.{Mode}" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user, for a given input mode.
+  </summary>
+  <token key="Mode">
+    <variant name="Audio"/>
+    <variant name="Text"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.Turn.ResponseStartTime.WithContext" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user, for turns where context was requested.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Turn.ResponseStartTime.WithoutContext" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time from when the user submitted input until a response starts
+    being presented to the user, for turns where context was not requested.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Turn.ResponseStopTime.{Cause}" units="ms"
+    expires_after="2026-10-16">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Measures the time from a user's submitted input until a response stops.
+    Recorded for each turn in a Glic instance.
+  </summary>
+  <token key="Cause">
+    <variant name="ByUser"/>
+    <variant name="Other"/>
+    <variant name="UnknownCause"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.Usage.Hotkey" enum="GlicHotkeyUsage"

@@ -171,6 +171,10 @@ GlicInstanceImpl::~GlicInstanceImpl() {
   host_.Shutdown();
 }
 
+glic::GlicInstanceMetrics* GlicInstanceImpl::instance_metrics() {
+  return &instance_metrics_;
+}
+
 bool GlicInstanceImpl::IsShowing() const {
   return active_embedder_key_.has_value();
 }
