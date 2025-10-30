@@ -959,7 +959,10 @@ TEST_F(AddressDataManagerTest, UpdateLanguageCodeInProfile) {
 // deleted, when an update of one of the profiles makes it a duplicate of the
 // other, already existing profile. Here, the less recently used profile is
 // edited to become a duplicate of the more recently used profile.
+// TODO(crbug.com/357074792): Remove this test when the feature is cleaned up.
 TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillDeduplicateAccountAddresses);
   AdvanceClock(kArbitraryTime - base::Time::Now());
 
   AutofillProfile more_recently_used_profile(test::GetFullProfile());
@@ -1002,8 +1005,11 @@ TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate) {
 // deleted, when an update of one of the profiles makes it a duplicate of the
 // other, already existing profile. Here, the more recently used profile is
 // edited to become a duplicate of the less recently used profile.
+// TODO(crbug.com/357074792): Remove this test when the feature is cleaned up.
 TEST_F(AddressDataManagerTest,
        CreateDuplicateWithAnUpdate_UpdatedProfileWasMoreRecentlyUsed) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kAutofillDeduplicateAccountAddresses);
   AdvanceClock(kArbitraryTime - base::Time::Now());
 
   AutofillProfile less_recently_used_profile(test::GetFullProfile());

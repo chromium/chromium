@@ -303,7 +303,7 @@ BASE_FEATURE(kAutofillAddressUserDeclinedSuggestionSurvey,
 // GAS addresses will never be deleted as part of the deduplication flow.
 // TODO(crbug.com/357074792): Remove when launched.
 BASE_FEATURE(kAutofillDeduplicateAccountAddresses,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // LINT.IfChange(autofill_disallow_more_hyphen_like_labels)
 // When enabled, the list of characters a label cannot exclusively consist of
