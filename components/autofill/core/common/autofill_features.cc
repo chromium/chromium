@@ -539,10 +539,9 @@ BASE_FEATURE(kAutofillSupportPresentationRole,
 BASE_FEATURE(kAutofillSynchronousAfterParsing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables extended zip code validation
-// and new zip code merging logic.
+// Enables extended zip code validation.
 // TODO(crbug.com/434140055): Clean up when launched.
-BASE_FEATURE(kAutofillZipCodeValidationAndMerging,
+BASE_FEATURE(kAutofillExtendZipCodeValidation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the form field parser won't try to match other attributes if

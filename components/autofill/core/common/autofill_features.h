@@ -187,7 +187,7 @@ BASE_DECLARE_FEATURE(kAutofillSupportPresentationRole);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSynchronousAfterParsing);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillZipCodeValidationAndMerging);
+BASE_DECLARE_FEATURE(kAutofillExtendZipCodeValidation);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission);
 COMPONENT_EXPORT(AUTOFILL)

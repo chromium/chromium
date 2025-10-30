@@ -500,7 +500,7 @@ bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
     case ADDRESS_HOME_ZIP:
       return !IsValidZip(data, AddressCountryCode(country),
                          base::FeatureList::IsEnabled(
-                             features::kAutofillZipCodeValidationAndMerging));
+                             features::kAutofillExtendZipCodeValidation));
 
     case PHONE_HOME_WHOLE_NUMBER:
       return !i18n::PhoneObject(data, country, /*infer_country_code=*/false)

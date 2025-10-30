@@ -495,7 +495,7 @@ TEST_F(AutofillProfileImportMetricsTest,
 TEST_F(AutofillProfileImportMetricsTest,
        ProfileImportRequirements_InvalidZipCode_ZipNotRequired) {
   base::test::ScopedFeatureList feature_list(
-      features::kAutofillZipCodeValidationAndMerging);
+      features::kAutofillExtendZipCodeValidation);
 
   FormData form = GetAndAddSeenForm(
       {.description_for_logging =
@@ -537,7 +537,7 @@ TEST_F(AutofillProfileImportMetricsTest,
 TEST_F(AutofillProfileImportMetricsTest,
        ProfileImportRequirements_InvalidZipCode_ZipRequired) {
   base::test::ScopedFeatureList feature_list(
-      features::kAutofillZipCodeValidationAndMerging);
+      features::kAutofillExtendZipCodeValidation);
 
   FormData form = GetAndAddSeenForm(
       {.description_for_logging =

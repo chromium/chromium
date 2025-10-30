@@ -138,7 +138,7 @@ void RemoveInvalidValues(AutofillProfile& profile,
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kAutofillZipCodeValidationAndMerging)) {
+          features::kAutofillExtendZipCodeValidation)) {
     remove_if_invalid_and_log(
         ADDRESS_HOME_ZIP,
         AddressImportRequirement::kZipValidRequirementFulfilled,
@@ -175,7 +175,7 @@ bool ValidateNonEmptyValues(const AutofillProfile& profile,
                      AddressImportRequirement::kStateValidRequirementViolated);
 
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillZipCodeValidationAndMerging)) {
+          features::kAutofillExtendZipCodeValidation)) {
     all_requirements_satisfied &=
         ValidateAndLog(ADDRESS_HOME_ZIP,
                        AddressImportRequirement::kZipValidRequirementFulfilled,
