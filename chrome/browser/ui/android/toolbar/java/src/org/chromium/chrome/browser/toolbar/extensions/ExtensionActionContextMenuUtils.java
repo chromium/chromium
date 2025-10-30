@@ -121,6 +121,8 @@ public final class ExtensionActionContextMenuUtils {
                     }
                 });
 
+        buttonView.tryToFitLargestItem(true);
+
         buttonView.showMenu();
     }
 }
