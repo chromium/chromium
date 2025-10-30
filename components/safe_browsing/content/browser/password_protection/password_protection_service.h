@@ -51,6 +51,18 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
   using PasswordProtectionServiceBase::PasswordProtectionServiceBase;
 
  public:
+  PasswordProtectionService(
+      const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      history::HistoryService* history_service,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      signin::IdentityManager* identity_manager,
+      bool try_token_fetch,
+      SafeBrowsingMetricsCollector* metrics_collector);
+  ~PasswordProtectionService() override;
+
   // Creates an instance of PasswordProtectionRequest and call Start() on that
   // instance. This function also insert this request object in |requests_| for
   // record keeping.
@@ -147,6 +159,17 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
 
   void ResumeDeferredNavigationsIfNeeded(
       PasswordProtectionRequest* request) override;
+
+  void OnOtpHighConfidenceAllowlistCheckCompleted(
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      OtpPhishingVerdictCallback callback,
+      bool did_match_allowlist,
+      std::optional<SafeBrowsingDatabaseManager::
+                        HighConfidenceAllowlistCheckLoggingDetails>
+          logging_details);
+
+  base::WeakPtrFactory<PasswordProtectionService> weak_ptr_factory_{this};
 };
 
 }  // namespace safe_browsing
