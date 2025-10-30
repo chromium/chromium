@@ -1858,7 +1858,8 @@ public class ToolbarManager
                         mToolbarPositionSupplier,
                         (ObservableSupplier<Profile>) mProfileSupplier,
                         assertNonNull(mWindowAndroid.getInsetObserver())
-                                .getSupplierForKeyboardInset());
+                                .getSupplierForKeyboardInset(),
+                        mWindowAndroid);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
             mMiniOriginBarController =
                     new MiniOriginBarController(

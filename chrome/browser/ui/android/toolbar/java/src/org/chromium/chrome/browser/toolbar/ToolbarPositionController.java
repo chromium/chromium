@@ -47,6 +47,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -150,6 +151,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
     ObservableSupplierImpl<@ControlsPosition Integer> mCurrentPosition;
     private final ObservableSupplier<Integer> mKeyboardHeightSupplier;
+    private final WindowAndroid mWindowAndroid;
     private final int mHairlineHeight;
 
     /**
@@ -201,7 +203,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Context context,
             ObservableSupplierImpl<@ControlsPosition Integer> controlsPosition,
             ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Integer> keyboardHeightSupplier) {
+            ObservableSupplier<Integer> keyboardHeightSupplier,
+            WindowAndroid windowAndroid) {
         mBrowserControlsSizer = browserControlsSizer;
         mIsNtpWithFakeboxShowingSupplier = isNtpWithFakeboxShowingSupplier;
         mIsTabSwitcherFinishedShowingSupplier = isTabSwitcherFinishedShowingSupplier;
@@ -220,6 +223,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mCurrentPosition = controlsPosition;
         mKeyboardHeightSupplier = keyboardHeightSupplier;
+        mWindowAndroid = windowAndroid;
         mCurrentPosition.set(mBrowserControlsSizer.getControlsPosition());
         mProfileSupplier = profileSupplier;
 
@@ -675,7 +679,20 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                                     - windowInsetsCompat.getInsets(
                                                     WindowInsetsCompat.Type.tappableElement())
                                             .bottom);
-            layerYOffset -= keyboardHeight;
+            // The control container can grow quite large with a multiline url bar, making its full
+            // height unrenderable in the amount of space available between the keyboard and window
+            // top. We restrict its position and height to allow scrolling and avoid rendering
+            // offscreen.
+            int windowHeight = mWindowAndroid.getDisplay().getDisplayHeight();
+            int maxHeight = windowHeight - keyboardHeight;
+            mControlContainer.setMaxHeight(maxHeight);
+
+            int maxTranslation = -(windowHeight - layer.getHeight());
+            // The translation is negative so we take the arithmetic max to get the minimum visible
+            // delta.
+            layerYOffset = Math.max(layerYOffset - keyboardHeight, maxTranslation);
+        } else {
+            mControlContainer.setMaxHeight(Integer.MAX_VALUE);
         }
 
         viewForLayer.setTranslationY(layerYOffset);
