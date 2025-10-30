@@ -4,8 +4,6 @@
 
 source_set("model") {
   sources = [
-    "policy_url_blocking_service.h",
-    "policy_url_blocking_service.mm",
     "policy_url_blocking_service_factory.h",
     "policy_url_blocking_service_factory.mm",
     "policy_url_blocking_tab_helper.h",

@@ -67,6 +67,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/pref_registry",

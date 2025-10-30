@@ -49,6 +49,8 @@ source_set("internal") {
     "url_blocklist_manager.h",
     "url_blocklist_policy_handler.cc",
     "url_blocklist_policy_handler.h",
+    "url_list/policy_blocklist_service.cc",
+    "url_list/policy_blocklist_service.h",
     "url_scheme_list_policy_handler.cc",
     "url_scheme_list_policy_handler.h",
     "webui/json_generation.cc",
@@ -102,15 +104,6 @@ source_set("internal") {
       "android/policy_cache_updater_android.h",
     ]
     deps += [ "//components/policy/android:jni_headers" ]
-  }
-
-  # TODO(crbug.com/452575535): Move this to general sources after removing
-  # iOS-specific implementation of PolicyBlocklistService.
-  if (!is_ios) {
-    sources += [
-      "url_list/policy_blocklist_service.cc",
-      "url_list/policy_blocklist_service.h",
-    ]
   }
 
   public_deps += [ "//components/policy/core/common:internal" ]

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #import "components/policy/core/common/policy_pref_names.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
@@ -35,5 +35,6 @@ PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<PolicyBlocklistService>(
       std::make_unique<policy::URLBlocklistManager>(
           prefs, policy::policy_prefs::kUrlBlocklist,
-          policy::policy_prefs::kUrlAllowlist));
+          policy::policy_prefs::kUrlAllowlist),
+      prefs);
 }
