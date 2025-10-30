@@ -523,6 +523,21 @@ bool HasManuallyFilledPassword(const PasswordForm& form) {
       });
 }
 
+PasswordForm CreateFormForLeakCheck(const PasswordForm& pending_credentials,
+                                    const PasswordForm& submitted_credentials) {
+  PasswordForm form = pending_credentials;
+  form.form_data = submitted_credentials.form_data;
+  form.username_element_renderer_id =
+      submitted_credentials.username_element_renderer_id;
+  form.password_element_renderer_id =
+      submitted_credentials.password_element_renderer_id;
+  form.new_password_element_renderer_id =
+      submitted_credentials.new_password_element_renderer_id;
+  form.confirmation_password_element_renderer_id =
+      submitted_credentials.confirmation_password_element_renderer_id;
+  return form;
+}
+
 }  // namespace
 
 // static
@@ -1603,9 +1618,13 @@ void PasswordManager::OnLoginSuccessful() {
           submitted_manager->GetInsecureCredentials(),
           submitted_manager->GetSubmittedForm()->username_value) &&
       !IsSingleUsernameSubmission(*submitted_manager->GetSubmittedForm())) {
-    leak_delegate_.StartLeakCheck(client_->GetLeakDetectionInitiator(),
-                                  submitted_manager->GetPendingCredentials(),
-                                  submitted_manager->GetURL());
+    // Some data from submitted from is used for logging and it may be absent
+    // from pending credentials, see crbug.com/455813888.
+    leak_delegate_.StartLeakCheck(
+        client_->GetLeakDetectionInitiator(),
+        CreateFormForLeakCheck(submitted_manager->GetPendingCredentials(),
+                               *submitted_manager->GetSubmittedForm()),
+        submitted_manager->GetURL());
   }
 
   // TODO(crbug.com/40570965): Implement checking whether to save with
