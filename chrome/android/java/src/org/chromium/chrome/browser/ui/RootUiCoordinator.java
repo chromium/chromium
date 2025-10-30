@@ -1929,13 +1929,17 @@ public class RootUiCoordinator
         if (mAppMenuCoordinator != null) mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
     }
 
-    private void initFindToolbarManager() {
-        if (!mSupportsFindInPageSupplier.getAsBoolean()) return;
-
+    protected int getFindToolbarStub() {
         int stubId = R.id.find_toolbar_stub;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             stubId = R.id.find_toolbar_tablet_stub;
         }
+        return stubId;
+    }
+
+    private void initFindToolbarManager() {
+        if (!mSupportsFindInPageSupplier.getAsBoolean()) return;
+        int stubId = getFindToolbarStub();
         mFindToolbarManager =
                 new FindToolbarManager(
                         mActivity.findViewById(stubId),

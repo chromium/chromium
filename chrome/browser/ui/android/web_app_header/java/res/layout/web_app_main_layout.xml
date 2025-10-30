@@ -20,4 +20,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/web_app_header_layout" />
+
+    <ViewStub
+        android:id="@+id/web_app_header_find_toolbar_tablet_stub"
+        android:inflatedId="@+id/find_toolbar"
+        android:layout_width="@dimen/find_in_page_popup_width"
+        android:layout_height="@dimen/find_in_page_popup_height"
+        android:layout_marginEnd="@dimen/find_in_page_popup_margin_end"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout="@layout/find_toolbar" />
 </RelativeLayout>

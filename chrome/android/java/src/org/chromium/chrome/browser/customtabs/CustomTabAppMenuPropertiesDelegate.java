@@ -193,11 +193,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         } else if (mUiType == CustomTabsUiType.TRUSTED_WEB_ACTIVITY) {
             // The CCT menu button was removed for TWAs. This would only affect the
             // app header's menu button.
+            addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
+            downloadItemVisible = false;
+            bookmarkItemVisible = false;
             if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
-                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
                 requestDesktopSiteVisible = false;
-                downloadItemVisible = false;
-                bookmarkItemVisible = false;
 
                 openInChromeItemVisible = false;
                 translateVisible = false;
@@ -206,7 +206,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 // Site settings menu item row.
                 siteSettingsItemVisible = true;
                 zoomVisible = true;
-                findInPageVisible = false;
+                findInPageVisible = true;
                 mShowShare = true;
             }
         } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {

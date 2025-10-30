@@ -813,6 +813,20 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
+    protected int getFindToolbarStub() {
+        var intentDataProvider = mIntentDataProvider.get();
+        // For PWAs, we have our own app header with a layout that doesn't use
+        // control_container. We need to handle the find toolbar accordingly and use the appropriate
+        // stub.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            return WebAppHeaderUtils.isWebAppHeaderEnabled(intentDataProvider)
+                    ? WebAppHeaderUtils.getWebAppHeaderFindToolbarTabletId()
+                    : R.id.find_toolbar_tablet_stub;
+        }
+        return R.id.find_toolbar_stub;
+    }
+
+    @Override
     protected void onFindToolbarShown() {
         super.onFindToolbarShown();
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);

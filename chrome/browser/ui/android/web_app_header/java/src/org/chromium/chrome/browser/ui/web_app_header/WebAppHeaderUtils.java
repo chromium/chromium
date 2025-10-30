@@ -172,6 +172,15 @@ public class WebAppHeaderUtils {
     }
 
     /**
+     * Provides layout id of the webapp find toolbar tablet stub.
+     *
+     * @return webapp find toolbar tablet stub id.
+     */
+    public static int getWebAppHeaderFindToolbarTabletId() {
+        return R.id.web_app_header_find_toolbar_tablet_stub;
+    }
+
+    /**
      * Checks whether minimal ui is visible based on the desktop window state and feature flag
      * state.
      *
