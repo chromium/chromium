@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -31,7 +30,7 @@ public class TrustedCdn extends TabWebContentsUserData {
      * UnownedUserData shared across all tabs to get the publisher url visibility. This hangs off of
      * an activity via WindowAndroid.
      */
-    public interface PublisherUrlVisibility extends UnownedUserData {
+    public interface PublisherUrlVisibility {
         /** The key for accessing this object on an {@link UnownedUserDataHost}. */
         UnownedUserDataKey<PublisherUrlVisibility> KEY =
                 new UnownedUserDataKey<>(PublisherUrlVisibility.class);

@@ -19,7 +19,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -50,7 +49,6 @@ import java.util.Deque;
 public class SnackbarManager
         implements OnClickListener,
                 ActivityStateListener,
-                UnownedUserData,
                 InsetObserver.WindowInsetObserver,
                 SnackbarStateProvider {
     /** Interface that shows the ability to provide a snackbar manager. */

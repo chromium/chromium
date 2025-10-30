@@ -4956,9 +4956,9 @@ if (is_android) {
 
   android_library("unowned_user_data_java") {
     sources = [
-      "android/java/src/org/chromium/base/UnownedUserData.java",
       "android/java/src/org/chromium/base/UnownedUserDataHost.java",
       "android/java/src/org/chromium/base/UnownedUserDataKey.java",
+      "android/java/src/org/chromium/base/UnownedUserDataListener.java",
     ]
     deps = [
       ":lifetime_java",

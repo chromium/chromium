@@ -13,7 +13,6 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -27,8 +26,7 @@ import org.chromium.url.GURL;
 
 /** Represents the page shown when a CCT is created to download a file. */
 @NullMarked
-public class NewDownloadTab extends EmptyTabObserver
-        implements UserData, UnownedUserData, TabViewProvider {
+public class NewDownloadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<NewDownloadTab> USER_DATA_KEY = NewDownloadTab.class;
 
     private final Tab mTab;

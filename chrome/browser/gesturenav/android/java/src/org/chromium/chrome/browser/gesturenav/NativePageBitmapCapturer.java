@@ -14,7 +14,6 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.task.PostTask;
@@ -31,7 +30,7 @@ import org.chromium.url.GURL;
 
 /** Capture native page as a bitmap. */
 @NullMarked
-public class NativePageBitmapCapturer implements UnownedUserData {
+public class NativePageBitmapCapturer {
     // Share SoftwareDraw in order to share a single java Bitmap across all tabs in a window
     // as the tab size won't change inside one single window.
     private static final UnownedUserDataKey<NativePageBitmapCapturer> CAPTURER_KEY =

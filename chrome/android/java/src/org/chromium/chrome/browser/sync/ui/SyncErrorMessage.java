@@ -19,7 +19,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
@@ -60,7 +59,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * in the whole application will exist at a time.
  */
 @NullMarked
-public class SyncErrorMessage implements SyncService.SyncStateChangedListener, UnownedUserData {
+public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     // Note: Not all SyncErrors have a corresponding SyncErrorMessage, see getError().
     private final @UserActionableError int mError;
     private final Activity mActivity;

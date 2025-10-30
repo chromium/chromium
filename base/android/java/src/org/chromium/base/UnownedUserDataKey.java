@@ -17,101 +17,105 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
- * UnownedUserDataKey is used in conjunction with a particular {@link UnownedUserData} as the key
- * for that when it is added to an {@link UnownedUserDataHost}.
- * <p>
- * This key is supposed to be private and not visible to other parts of the code base. Instead of
+ * UnownedUserDataKey is used in conjunction with a particular as the key for that when it is added
+ * to an {@link UnownedUserDataHost}.
+ *
+ * <p>This key is supposed to be private and not visible to other parts of the code base. Instead of
  * using the class as a key like in owned {@link org.chromium.base.UserData}, for {@link
  * UnownedUserData}, a particular object is used, ensuring that even if a class is visible outside
  * its own module, the instance of it as referenced from a {@link UnownedUserDataHost}, can not be
  * retrieved.
- * <p>
- * In practice, instances will typically be stored on this form:
+ *
+ * <p>In practice, instances will typically be stored on this form:
  *
  * <pre>{@code
- * public class Foo implements UnownedUserData {
+ * public class Foo {
  *     private static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>(Foo.class);
  *     ...
  * }
- * }
- * </pre>
- * <p>
- * This class and all its methods are final to ensure that no usage of the class leads to leaking
+ * }</pre>
+ *
+ * <p>This class and all its methods are final to ensure that no usage of the class leads to leaking
  * data about the object it is used as a key for.
- * <p>
- * It is OK to attach this key to as many different {@link UnownedUserDataHost} instances as
+ *
+ * <p>It is OK to attach this key to as many different {@link UnownedUserDataHost} instances as
  * necessary, but doing so requires the client to invoke either {@link
  * #detachFromHost(UnownedUserDataHost)} or {@link #detachFromAllHosts(UnownedUserData)} during
  * cleanup.
- * <p>
- * Guarantees provided by this class together with {@link UnownedUserDataHost}:
+ *
+ * <p>Guarantees provided by this class together with {@link UnownedUserDataHost}:
+ *
  * <ul>
- * <li> One key can be used for multiple {@link UnownedUserData}s.
- * <li> One key can be attached to multiple {@link UnownedUserDataHost}s.
- * <li> One key can be attached to a particular {@link UnownedUserDataHost} only once. This ensures
- * a pair of {@link UnownedUserDataHost} and UnownedUserDataKey can only refer to a single
- * UnownedUserData.
- * <li> When a {@link UnownedUserData} is detached from a particular host, it is informed of this,
- * except if it has been garbage collected.
- * <li> When an {@link UnownedUserData} object is replaced with a different {@link UnownedUserData}
- * using the same UnownedUserDataKey, the former is detached.
+ *   <li>One key can be used for multiples.
+ *   <li>One key can be attached to multiple {@link UnownedUserDataHost}s.
+ *   <li>One key can be attached to a particular {@link UnownedUserDataHost} only once. This ensures
+ *       a pair of {@link UnownedUserDataHost} and UnownedUserDataKey can only refer to a single
+ *       UnownedUserData.
+ *   <li>When a is detached from a particular host, it is informed of this, except if it has been
+ *       garbage collected.
+ *   <li>When an object is replaced with a different using the same UnownedUserDataKey, the former
+ *       is detached.
  * </ul>
  *
  * @param <T> The Class this key is used for.
  * @see UnownedUserDataHost for more details on ownership and typical usage.
- * @see UnownedUserData for the marker interface used for this type of data.
  */
 @NullMarked
-public final class UnownedUserDataKey<T extends UnownedUserData> {
+public final class UnownedUserDataKey<T> {
     private final Class<T> mClazz;
-    // A Set that uses WeakReference<UnownedUserDataHost> internally.
+    private final @Nullable UnownedUserDataListener<T> mListener;
     private final Set<UnownedUserDataHost> mWeakHostAttachments =
             Collections.newSetFromMap(new WeakHashMap<>());
 
     /**
      * Constructs a key to use for attaching to a particular {@link UnownedUserDataHost}.
      *
-     * @param clazz The particular {@link UnownedUserData} class.
+     * @param clazz The particular class.
      */
     public UnownedUserDataKey(Class<T> clazz) {
-        mClazz = clazz;
+        this(clazz, /* listener= */ null);
     }
 
-    /* package */ final Class<T> getValueClass() {
+    public UnownedUserDataKey(Class<T> clazz, @Nullable UnownedUserDataListener<T> listener) {
+        mClazz = clazz;
+        mListener = listener;
+    }
+
+    /* package */ Class<T> getValueClass() {
         return mClazz;
     }
 
+    /* package */ @Nullable UnownedUserDataListener<T> getListener() {
+        return mListener;
+    }
+
     /**
-     * Attaches the {@link UnownedUserData} object to the given {@link UnownedUserDataHost}, and
-     * stores the host as a {@link WeakReference} to be able to detach from it later.
+     * Attaches the object to the given {@link UnownedUserDataHost}, and stores the host as a {@link
+     * WeakReference} to be able to detach from it later.
      *
-     * @param host   The host to attach the {@code object} to.
+     * @param host The host to attach the {@code object} to.
      * @param object The object to attach.
      */
-    public final void attachToHost(UnownedUserDataHost host, T object) {
+    public void attachToHost(UnownedUserDataHost host, T object) {
         Objects.requireNonNull(object);
         // Setting a new value might lead to detachment of previously attached data, including
         // re-entry to this key, to happen before we update the {@link #mHostAttachments}.
         host.set(this, object);
-
-        if (!isAttachedToHost(host)) {
-            mWeakHostAttachments.add(host);
-        }
+        mWeakHostAttachments.add(host);
     }
 
     /**
-     * Attempts to retrieve the instance of the {@link UnownedUserData} from the given {@link
-     * UnownedUserDataHost}. It will return {@code null} if the object is not attached to that
-     * particular {@link UnownedUserDataHost} using this key, or the {@link UnownedUserData} has
-     * been garbage collected.
+     * Attempts to retrieve the instance of the from the given {@link UnownedUserDataHost}. It will
+     * return {@code null} if the object is not attached to that particular {@link
+     * UnownedUserDataHost} using this key, or the has been garbage collected.
      *
-     * @param host The host to retrieve the {@link UnownedUserData} from.
-     * @return The current {@link UnownedUserData} stored in the {@code host}, or {@code null}.
+     * @param host The host to retrieve the from.
+     * @return The current stored in the {@code host}, or {@code null}.
      */
-    public final @Nullable T retrieveDataFromHost(UnownedUserDataHost host) {
+    public @Nullable T retrieveDataFromHost(UnownedUserDataHost host) {
         assertNoDestroyedAttachments();
         for (UnownedUserDataHost attachedHost : mWeakHostAttachments) {
-            if (host.equals(attachedHost)) {
+            if (host == attachedHost) {
                 return host.get(this);
             }
         }
@@ -124,22 +128,22 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
      *
      * @param host The host to detach from.
      */
-    public final void detachFromHost(UnownedUserDataHost host) {
+    public void detachFromHost(UnownedUserDataHost host) {
         assertNoDestroyedAttachments();
         for (UnownedUserDataHost attachedHost : new ArrayList<>(mWeakHostAttachments)) {
-            if (host.equals(attachedHost)) {
+            if (host == attachedHost) {
                 removeHostAttachment(attachedHost);
             }
         }
     }
 
     /**
-     * Detaches the {@link UnownedUserData} from all hosts that it is currently attached to with
-     * this key. It is OK to call this for already detached objects.
+     * Detaches the from all hosts that it is currently attached to with this key. It is OK to call
+     * this for already detached objects.
      *
      * @param object The object to detach from all hosts.
      */
-    public final void detachFromAllHosts(T object) {
+    public void detachFromAllHosts(T object) {
         assertNoDestroyedAttachments();
         for (UnownedUserDataHost attachedHost : new ArrayList<>(mWeakHostAttachments)) {
             if (object.equals(attachedHost.get(this))) {
@@ -149,20 +153,20 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
     }
 
     /**
-     * Checks if the {@link UnownedUserData} is currently attached to the given host with this key.
+     * Checks if the is currently attached to the given host with this key.
      *
-     * @param host The host to check if the {@link UnownedUserData} is attached to.
+     * @param host The host to check if the is attached to.
      * @return true if currently attached, false otherwise.
      */
-    public final boolean isAttachedToHost(UnownedUserDataHost host) {
+    public boolean isAttachedToHost(UnownedUserDataHost host) {
         T t = retrieveDataFromHost(host);
         return t != null;
     }
 
     /**
-     * @return Whether the {@link UnownedUserData} is currently attached to any hosts with this key.
+     * @return Whether the is currently attached to any hosts with this key.
      */
-    public final boolean isAttachedToAnyHost(T object) {
+    public boolean isAttachedToAnyHost(T object) {
         return getHostAttachmentCount(object) > 0;
     }
 
@@ -186,10 +190,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
     private void assertNoDestroyedAttachments() {
         if (BuildConfig.ENABLE_ASSERTS) {
             for (UnownedUserDataHost attachedHost : mWeakHostAttachments) {
-                if (attachedHost.isDestroyed()) {
-                    assert false : "Host should have been removed already.";
-                    throw new IllegalStateException();
-                }
+                assert !attachedHost.isDestroyed() : "Host should have been removed already.";
             }
         }
     }

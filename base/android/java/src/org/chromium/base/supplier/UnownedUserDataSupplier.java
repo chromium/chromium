@@ -6,7 +6,6 @@ package org.chromium.base.supplier;
 
 import androidx.annotation.CallSuper;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.lifetime.DestroyChecker;
@@ -14,10 +13,10 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * UnownedUserDataSupplier handles the combined lifecycle management for {@link UnownedUserData} and
- * {@link DestroyableObservableSupplier}. It can be constructed anywhere but needs to be attached
- * before it's accessible via {@link UnownedUserDataHost}. When destroyed, UnownedUserDataSupplier
- * is detached from all hosts.
+ * UnownedUserDataSupplier handles the combined lifecycle management for UnownedUserData and {@link
+ * DestroyableObservableSupplier}. It can be constructed anywhere but needs to be attached before
+ * it's accessible via {@link UnownedUserDataHost}. When destroyed, UnownedUserDataSupplier is
+ * detached from all hosts.
  *
  * <p>A functional implementation with best practices is defined in {@link
  * UnownedUserDataSupplierTest}.
@@ -40,11 +39,10 @@ import org.chromium.build.annotations.NullMarked;
  * @param <E> The type of the data to be Supplied and stored in UnownedUserData.
  * @see UnownedUserDataHost for more details on ownership and typical usage.
  * @see UnownedUserDataKey for information about the type of key that is required.
- * @see UnownedUserData for the marker interface used for this type of data.
  */
 @NullMarked
 public abstract class UnownedUserDataSupplier<E> extends ObservableSupplierImpl<E>
-        implements Destroyable, UnownedUserData {
+        implements Destroyable {
     private final UnownedUserDataKey<UnownedUserDataSupplier<E>> mUudKey;
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 

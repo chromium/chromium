@@ -18,45 +18,46 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * UnownedUserDataHost is a type-safe and heterogeneous container that does not own the objects that
  * are stored within. It has the ability to associate a key of type {@code UnownedUserDataKey<T>},
  * where {@code T extends UnownedUserData}, with an instance of {@code T}.
- * <p>
- * Mismatch of types between key and value type information can be checked at compile time, which
+ *
+ * <p>Mismatch of types between key and value type information can be checked at compile time, which
  * ensures it is not possible to insert or retrieve data where the types do not match. Neither the
  * key nor the object is allowed to be {@code null}.
- * <p>
- * Value objects are held using {@link WeakReference} in the container, which means that they can be
- * garbage collected once the last strong reference has been removed. The {@link UnownedUserDataKey}
- * is still a strong reference, so it is important that it does not have a reference to the object
- * it is used as a key for. When trying to retrieve a garbage collected item for which a key is
- * still held, the entry in the map is removed during the invocation.
- * <p>
- * Invoking {@link #destroy()} clears out the map, including both keys and the {@link
+ *
+ * <p>Value objects are held using {@link WeakReference} in the container, which means that they can
+ * be garbage collected once the last strong reference has been removed. The {@link
+ * UnownedUserDataKey} is still a strong reference, so it is important that it does not have a
+ * reference to the object it is used as a key for. When trying to retrieve a garbage collected item
+ * for which a key is still held, the entry in the map is removed during the invocation.
+ *
+ * <p>Invoking {@link #destroy()} clears out the map, including both keys and the {@link
  * WeakReference}s to the {@link UnownedUserData}s, making them available for garbage collection.
  * This enables the garbage collector to not be blocked on this class for continuing the garbage
  * collection cycle. During this process, all {@link UnownedUserData} objects are informed that they
  * have been detached.
- * <p>
- * All interaction with the UnownedUserDataHost must be performed on the same thread.
- * <p>
- * {@link UnownedUserData} is somewhat similar to {@link org.chromium.base.UserData}, except that it
- * is not owned by the host. The structure is also a bit different since the instances are retrieved
- * through a {@link UnownedUserDataKey} instead of the class type itself. The reason for this is to
- * ensure that we protect against accidental incorrect usage where something has been made
- * accessible through misconfigured GN visibility rules, incorrect package visibility or
+ *
+ * <p>All interaction with the UnownedUserDataHost must be performed on the same thread.
+ *
+ * <p>{@link UnownedUserData} is somewhat similar to {@link org.chromium.base.UserData}, except that
+ * it is not owned by the host. The structure is also a bit different since the instances are
+ * retrieved through a {@link UnownedUserDataKey} instead of the class type itself. The reason for
+ * this is to ensure that we protect against accidental incorrect usage where something has been
+ * made accessible through misconfigured GN visibility rules, incorrect package visibility or
  * misconfigured DEPS rules. In addition, it enforces clients to go through the from-method to
  * retrieve the object, ensuring that control stays with the object itself.
- * <p>
- * All methods on UnownedUserDataHost except {@link #destroy()} is package protected to ensure all
- * interaction with the host goes through the {@link UnownedUserDataKey}.
- * <p>
- * Example usage:
+ *
+ * <p>All methods on UnownedUserDataHost except {@link #destroy()} is package protected to ensure
+ * all interaction with the host goes through the {@link UnownedUserDataKey}.
+ *
+ * <p>Example usage:
+ *
  * <pre>{@code
  * public class HolderClass {
  *     // Defines the container.
@@ -67,7 +68,7 @@ import java.util.Set;
  *     }
  * }
  *
- * public class Foo implements UnownedUserData {
+ * public class Foo {
  *     // Keeping KEY private enforces acquisition by calling #from(), therefore Foo is in control
  *     // of getting the instance.
  *     private static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>(Foo.class);
@@ -112,19 +113,19 @@ import java.util.Set;
  *    // During destruction of `foo`, it must remove itself from the instance of HolderClass to
  *    // ensure that it can not be retrieved using that path any longer.
  *    foo.destroy();
- * }
- * </pre>
- * <p>
- * The code snippet above uses a {@code static} key to be able to facilitate the method {@code
+ * }</pre>
+ *
+ * <p>The code snippet above uses a {@code static} key to be able to facilitate the method {@code
  * public static Foo from(HolderClass holderClass)}, since it would not be possible to retrieve the
  * private key from that method if it was an instance member.
- * <p>
- * The code snippet above also assumes that {@code Foo} has knowledge about the {@code HolderClass},
- * instead of taking in a {@link UnownedUserDataHost} in the {@code from} method, since that
- * typically provides a more pleasant experience for users.
- * <p>
- * There is also another common pattern for retrieving an attached object, and that is to do it
+ *
+ * <p>The code snippet above also assumes that {@code Foo} has knowledge about the {@code
+ * HolderClass}, instead of taking in a {@link UnownedUserDataHost} in the {@code from} method,
+ * since that typically provides a more pleasant experience for users.
+ *
+ * <p>There is also another common pattern for retrieving an attached object, and that is to do it
  * lazily:
+ *
  * <pre>{@code
  * public static Foo from(HolderClass holderClass) {
  *     Foo foo = KEY.retrieveDataFromHost(holderClass.getUnownedUserDataHost());
@@ -134,10 +135,9 @@ import java.util.Set;
  *     }
  *     return foo;
  * }
- * }
- * </pre>
- * <p>
- * However, it is important to note that in this scenario, as soon as the code that invokes
+ * }</pre>
+ *
+ * <p>However, it is important to note that in this scenario, as soon as the code that invokes
  * from(...) drops the reference, Foo will be eligible for garbage collection since the host only
  * holds a {@link WeakReference}. This means that Foo could end up being constructed and garbage
  * collected often, depending on whether the caller holds on to a strong reference or not.
@@ -157,14 +157,14 @@ public final class UnownedUserDataHost {
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
     /**
-     * Handler to use to post {@link UnownedUserData#onDetachedFromHost(UnownedUserDataHost)}
-     * invocations to.
+     * Handler to use to post {@link
+     * UnownedUserDataListener#onDetachedFromHost(UnownedUserDataHost)} invocations to.
      */
     private @Nullable Handler mHandler;
 
     /** The core data structure within this host. */
-    private @Nullable HashMap<UnownedUserDataKey<?>, WeakReference<? extends UnownedUserData>>
-            mUnownedUserDataMap = new HashMap<>();
+    private @Nullable HashMap<UnownedUserDataKey<?>, WeakReference<?>> mUnownedUserDataMap =
+            new HashMap<>();
 
     public UnownedUserDataHost() {
         this(new Handler(retrieveNonNullLooperOrThrow()));
@@ -182,9 +182,8 @@ public final class UnownedUserDataHost {
      *
      * @param key the key to use for the object.
      * @param newValue the object to store.
-     * @param <T> the type of {@link UnownedUserData}.
      */
-    /* package */ <T extends UnownedUserData> void set(UnownedUserDataKey<T> key, T newValue) {
+    /* package */ <T> void set(UnownedUserDataKey<T> key, T newValue) {
         checkState();
 
         // If we already have data, we might want to detach that first.
@@ -198,46 +197,43 @@ public final class UnownedUserDataHost {
     }
 
     /**
-     * Retrieves the {@link UnownedUserData} object stored under the given key.
+     * Retrieves the object stored under the given key.
      *
      * @param key the key to use for the object.
-     * @param <T> the type of {@link UnownedUserData}.
      * @return the stored version or {@code null} if it is not stored or has been garbage collected.
      */
 
-    /* package */ <T extends UnownedUserData> @Nullable T get(UnownedUserDataKey<T> key) {
+    /* package */ <T> @Nullable T get(UnownedUserDataKey<T> key) {
         checkState();
 
-        WeakReference<? extends UnownedUserData> valueWeakRef = mUnownedUserDataMap.get(key);
+        WeakReference<?> valueWeakRef = mUnownedUserDataMap.get(key);
         if (valueWeakRef == null) return null;
-        UnownedUserData value = valueWeakRef.get();
+        T value = key.getValueClass().cast(valueWeakRef.get());
         if (value == null) {
             // The object the entry referenced has now been GCed, so remove the entry.
             key.detachFromHost(this);
             return null;
         }
-        return key.getValueClass().cast(value);
+        return value;
     }
 
     /**
-     * Removes the {@link UnownedUserData} object stored under the given key, if any.
+     * Removes the object stored under the given key, if any.
      *
      * @param key the key to use for the object.
-     * @param <T> the type of {@link UnownedUserData}.
      */
-    /* package */ <T extends UnownedUserData> void remove(UnownedUserDataKey<T> key) {
+    /* package */ <T> void remove(UnownedUserDataKey<T> key) {
         checkState();
 
-        WeakReference<? extends UnownedUserData> valueWeakRef = mUnownedUserDataMap.remove(key);
+        WeakReference<?> valueWeakRef = mUnownedUserDataMap.remove(key);
         if (valueWeakRef == null) return;
+        T value = key.getValueClass().cast(valueWeakRef.get());
 
-        UnownedUserData value = valueWeakRef.get();
-        // Invoking anything on `value` might be re-entrant for the caller so responses should be
-        // posted. However, the informOnDetachmentFromHost() method contains a documented warning
-        // that it might be re-entrant, so it is OK to use that to guard the call to
-        // `onDetachedFromHost(...)`.
-        if (value != null && value.informOnDetachmentFromHost()) {
-            mHandler.post(() -> value.onDetachedFromHost(this));
+        if (value != null) {
+            UnownedUserDataListener<T> listener = key.getListener();
+            if (listener != null) {
+                mHandler.post(() -> listener.onDetachedFromHost(value, this));
+            }
         }
     }
 
@@ -245,10 +241,10 @@ public final class UnownedUserDataHost {
      * Destroys the UnownedUserDataHost by clearing out the map, making the objects stored within
      * available for garbage collection as early as possible, in case the object owning the
      * UnownedUserDataHost stays alive for a while after destroy() has been invoked.
-     * <p>
-     * Objects stored within the UnownedUserDataHost are informed of this destroy() call through
-     * {@link UnownedUserData#onDetachedFromHost(UnownedUserDataHost)}, and the {@link
-     * UnownedUserDataKey} instances are updated to not refer to this host anymore.
+     *
+     * <p>Objects stored within the UnownedUserDataHost are informed of this destroy() call through
+     * {@link UnownedUserDataListener#onDetachedFromHost}, and the {@link UnownedUserDataKey}
+     * instances are updated to not refer to this host anymore.
      */
     public void destroy() {
         mThreadChecker.assertOnValidThread();
@@ -258,7 +254,7 @@ public final class UnownedUserDataHost {
 
         // Create a shallow copy of all keys to ensure each held object can safely remove itself
         // from the map while iterating over their keys.
-        Set<UnownedUserDataKey<?>> keys = new HashSet<>(mUnownedUserDataMap.keySet());
+        List<UnownedUserDataKey<?>> keys = new ArrayList<>(mUnownedUserDataMap.keySet());
         for (UnownedUserDataKey<?> key : keys) key.detachFromHost(this);
 
         mUnownedUserDataMap = null;

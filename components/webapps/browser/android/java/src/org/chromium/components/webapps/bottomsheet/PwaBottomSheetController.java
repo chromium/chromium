@@ -19,7 +19,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
 /** This class controls the Bottom Sheet PWA install functionality. */
 @JNINamespace("webapps")
 @NullMarked
-public class PwaBottomSheetController implements UnownedUserData, View.OnClickListener {
+public class PwaBottomSheetController implements View.OnClickListener {
     private final Context mContext;
 
     /** A pointer to the native version of this class. It's lifetime is controlled by this class. */

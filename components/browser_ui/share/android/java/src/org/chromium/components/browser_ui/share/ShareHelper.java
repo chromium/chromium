@@ -33,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
@@ -163,10 +162,10 @@ public class ShareHelper {
     }
 
     /** BroadcastReceiver to record the chosen component when sharing an Intent. */
-    public static class TargetChosenReceiver extends BroadcastReceiver
-            implements IntentCallback, UnownedUserData {
+    public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
         private static final UnownedUserDataKey<TargetChosenReceiver> TARGET_CHOSEN_RECEIVER_KEY =
-                new UnownedUserDataKey<>(TargetChosenReceiver.class);
+                new UnownedUserDataKey<>(
+                        TargetChosenReceiver.class, TargetChosenReceiver::onDetachedFromHost);
         private @Nullable TargetChosenCallback mCallback;
         private WeakReference<Context> mAttachedContext;
         private WeakReference<WindowAndroid> mAttachedWindow;
@@ -296,11 +295,11 @@ public class ShareHelper {
             }
         }
 
-        @Override
-        public void onDetachedFromHost(UnownedUserDataHost host) {
+        private static void onDetachedFromHost(
+                TargetChosenReceiver self, UnownedUserDataHost host) {
             // Remove the weak reference to the context and window when it is removed from the
             // attaching window.
-            Context attachedContext = mAttachedContext.get();
+            Context attachedContext = self.mAttachedContext.get();
             if (attachedContext != null) {
                 Log.i(TAG, "Dispatch cleaning intent to close the share sheet.");
                 // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
@@ -308,7 +307,7 @@ public class ShareHelper {
                 Intent cleanerIntent = createCleanupIntent(attachedContext);
                 attachedContext.startActivity(cleanerIntent);
             }
-            cancel();
+            self.cancel();
         }
 
         private static Intent createCleanupIntent(Context context) {
