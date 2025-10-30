@@ -95,19 +95,6 @@
 
 namespace {
 
-// Sets `level` value for NSURLFileProtectionKey key for the URL with given
-// `local_state_path`.
-void SetProtectionLevel(const base::FilePath& file_path, id level) {
-  NSString* file_path_string = base::SysUTF8ToNSString(file_path.value());
-  NSURL* file_path_url = [NSURL fileURLWithPath:file_path_string
-                                    isDirectory:NO];
-  NSError* error = nil;
-  BOOL protection_set = [file_path_url setResourceValue:level
-                                                 forKey:NSURLFileProtectionKey
-                                                  error:&error];
-  DCHECK(protection_set) << base::SysNSStringToUTF8(error.localizedDescription);
-}
-
 // Initializes OSCrypt.
 void EnsureOSCryptInitialized() {
   // There is no public API to initialize OSCrypt. It is performed one the
@@ -298,22 +285,6 @@ void IOSChromeMainParts::PreCreateThreads() {
   variations::InitCrashKeys();
 
   metrics::EnableExpiryChecker(::kExpiredHistogramsHashes);
-
-  // TODO(crbug.com/40163579): Remove code below some time after February 2021.
-  NSString* const kRemoveProtectionFromPrefFileKey =
-      @"RemoveProtectionFromPrefKey";
-  if ([NSUserDefaults.standardUserDefaults
-          boolForKey:kRemoveProtectionFromPrefFileKey]) {
-    base::FilePath local_state_path;
-    CHECK(base::PathService::Get(ios::FILE_LOCAL_STATE, &local_state_path));
-
-    // Restore default protection level when user is no longer in the
-    // experimental group.
-    SetProtectionLevel(local_state_path,
-                       NSFileProtectionCompleteUntilFirstUserAuthentication);
-    [NSUserDefaults.standardUserDefaults
-        removeObjectForKey:kRemoveProtectionFromPrefFileKey];
-  }
 
   application_context_->PreCreateThreads();
 }
