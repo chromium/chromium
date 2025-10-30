@@ -42,6 +42,10 @@ namespace blink {
 uint32_t MD5Hash32ForBackgroundTracingHelper(std::string_view str);
 }
 
+namespace bookmarks {
+class BookmarkCodec;
+}  // namespace bookmarks
+
 namespace cachetool {
 crypto::obsolete::Md5 MakeMd5HasherForCachetools();
 }
@@ -195,6 +199,9 @@ class CRYPTO_EXPORT Md5 {
   // TODO(https://crbug.com/450285252): get rid of this.
   friend std::array<uint8_t, Md5::kSize> base::Md5ForWinInspectionResultsCache(
       base::span<const uint8_t> payload);
+
+  // TODO(https://crbug.com/426243026): get rid of this.
+  friend class bookmarks::BookmarkCodec;
 
   // TODO(crbug.com/454958766): get rid of this.
   friend std::string content_suggestions_tile_saver::Md5AsHexForFaviconUrl(

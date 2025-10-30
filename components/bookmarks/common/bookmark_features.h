@@ -11,6 +11,9 @@ namespace bookmarks {
 
 BASE_DECLARE_FEATURE(kAllBookmarksBaselineFolderVisibility);
 
+// TODO(crbug.com/426243026): Complete MD5 -> SHA256 migration.
+BASE_DECLARE_FEATURE(kEnableBookmarkCodecSHA256);
+
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_COMMON_BOOKMARK_FEATURES_H_
