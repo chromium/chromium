@@ -143,13 +143,12 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
     read_size = std::min(read_size, max_position.value() - pos);
   }
 
-  auto int_read_size = base::checked_cast<int>(read_size);
   base::span<uint8_t> buffer_data = stream->LockStreamForWriting(read_size);
   auto stream_id = stream->stream_id();
   uint64_t async_event_key = reinterpret_cast<std::uintptr_t>(this);
 
   it->second->Read(
-      base::checked_cast<int64_t>(pos), int_read_size, buffer_data.data(),
+      base::checked_cast<int64_t>(pos), buffer_data,
       base::BindOnce(
           &OnMultiBufferReadComplete, std::move(stream), std::move(callback),
           base::BindOnce(&HlsDataSourceProviderImpl::UpdateStreamMetadata,

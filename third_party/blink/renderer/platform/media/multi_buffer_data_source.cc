@@ -404,10 +404,9 @@ GURL MultiBufferDataSource::GetUrlAfterRedirects() const {
 }
 
 void MultiBufferDataSource::Read(int64_t position,
-                                 int size,
-                                 uint8_t* data,
+                                 base::span<uint8_t> data,
                                  media::DataSource::ReadCB read_cb) {
-  DVLOG(1) << "Read: " << position << " offset, " << size << " bytes";
+  DVLOG(1) << "Read: " << position << " offset, " << data.size() << " bytes";
   // Reading is not allowed until after initialization.
   DCHECK(!init_cb_);
   DCHECK(read_cb);
@@ -425,7 +424,8 @@ void MultiBufferDataSource::Read(int64_t position,
     // muxing as soon as possible. This works because TryReadAt is
     // thread-safe.
     if (reader_) {
-      int64_t bytes_read = reader_->TryReadAt(position, data, size);
+      int64_t bytes_read =
+          reader_->TryReadAt(position, data.data(), data.size());
       if (bytes_read > 0) {
         bytes_read_ += bytes_read;
         seek_positions_.push_back(position + bytes_read);
@@ -441,8 +441,8 @@ void MultiBufferDataSource::Read(int64_t position,
         return;
       }
     }
-    read_op_ = std::make_unique<ReadOperation>(position, size, data,
-                                               std::move(read_cb));
+    read_op_ = std::make_unique<ReadOperation>(position, data.size(),
+                                               data.data(), std::move(read_cb));
   }
 
   PostCrossThreadTask(*render_task_runner_, FROM_HERE,

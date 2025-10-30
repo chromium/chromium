@@ -282,13 +282,13 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
   auto* ds_for_keyfetch = factory_->PregenerateNextMock();
   EXPECT_CALL(*ds_for_keyfetch, Initialize)
       .WillOnce(base::test::RunOnceCallback<0>(true));
-  EXPECT_CALL(*ds_for_keyfetch, Read(0, 16384, _, _))
-      .WillOnce([](int64_t, int, uint8_t* data, DataSource::ReadCB cb) {
-        UNSAFE_TODO(memset(data, 'x', 16));
+  EXPECT_CALL(*ds_for_keyfetch, Read(0, SpanSizeEq(16384), _))
+      .WillOnce([](int64_t, base::span<uint8_t> data, DataSource::ReadCB cb) {
+        std::ranges::fill(data.first<16>(), 'x');
         std::move(cb).Run(16);
       });
-  EXPECT_CALL(*ds_for_keyfetch, Read(16, 16384, _, _))
-      .WillOnce(base::test::RunOnceCallback<3>(0));
+  EXPECT_CALL(*ds_for_keyfetch, Read(16, SpanSizeEq(16384), _))
+      .WillOnce(base::test::RunOnceCallback<2>(0));
 
   // Then expect media content to be read.
   factory_->AddReadExpectation(0, 16384, 1000);

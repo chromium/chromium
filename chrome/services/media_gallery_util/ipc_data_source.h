@@ -35,8 +35,7 @@ class IPCDataSource : public media::DataSource {
   void Stop() override;
   void Abort() override;
   void Read(int64_t position,
-            int size,
-            uint8_t* destination,
+            base::span<uint8_t> destination,
             ReadCB callback) override;
   [[nodiscard]] bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;
@@ -46,11 +45,10 @@ class IPCDataSource : public media::DataSource {
 
  private:
   // Media data read helpers: must be run on the utility thread.
-  void ReadMediaData(uint8_t* destination,
+  void ReadMediaData(base::span<uint8_t> destination,
                      ReadCB callback,
-                     int64_t position,
-                     int size);
-  void ReadDone(uint8_t* destination,
+                     int64_t position);
+  void ReadDone(base::span<uint8_t> destination,
                 ReadCB callback,
                 const std::vector<uint8_t>& data);
 

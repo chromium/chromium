@@ -99,7 +99,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
 
   // Starts the pipeline with |data| (with |size| bytes). The |data| will be
   // valid throughtout the lifetime of this test.
-  PipelineStatus Start(const uint8_t* data, size_t size, uint8_t test_type);
+  PipelineStatus Start(base::span<const uint8_t> data, uint8_t test_type);
 
   void Play();
   void Pause();

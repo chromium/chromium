@@ -31,15 +31,14 @@ void IPCDataSource::Abort() {
 }
 
 void IPCDataSource::Read(int64_t position,
-                         int size,
-                         uint8_t* destination,
+                         base::span<uint8_t> destination,
                          DataSource::ReadCB callback) {
   DCHECK_CALLED_ON_VALID_THREAD(data_source_thread_checker_);
 
   utility_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&IPCDataSource::ReadMediaData, base::Unretained(this),
-                     destination, std::move(callback), position, size));
+                     destination, std::move(callback), position));
 }
 
 bool IPCDataSource::GetSize(int64_t* size_out) {
@@ -57,19 +56,17 @@ void IPCDataSource::SetBitrate(int bitrate) {
   DCHECK_CALLED_ON_VALID_THREAD(data_source_thread_checker_);
 }
 
-void IPCDataSource::ReadMediaData(uint8_t* destination,
+void IPCDataSource::ReadMediaData(base::span<uint8_t> destination,
                                   DataSource::ReadCB callback,
-                                  int64_t position,
-                                  int size) {
+                                  int64_t position) {
   DCHECK_CALLED_ON_VALID_THREAD(utility_thread_checker_);
   CHECK_GE(total_size_, 0);
   CHECK_GE(position, 0);
-  CHECK_GE(size, 0);
 
   // Cap position and size within bounds.
   position = std::min(position, total_size_);
-  int64_t clamped_size =
-      std::min(static_cast<int64_t>(size), total_size_ - position);
+  int64_t clamped_size = std::min(
+      base::checked_cast<int64_t>(destination.size()), total_size_ - position);
 
   media_data_source_->Read(
       position, clamped_size,
@@ -77,12 +74,12 @@ void IPCDataSource::ReadMediaData(uint8_t* destination,
                      destination, std::move(callback)));
 }
 
-void IPCDataSource::ReadDone(uint8_t* destination,
+void IPCDataSource::ReadDone(base::span<uint8_t> destination,
                              DataSource::ReadCB callback,
                              const std::vector<uint8_t>& data) {
   DCHECK_CALLED_ON_VALID_THREAD(utility_thread_checker_);
 
-  std::ranges::copy(data, destination);
+  destination.copy_prefix_from(data);
   std::move(callback).Run(data.size());
 }
 

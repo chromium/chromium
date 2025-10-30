@@ -58,7 +58,7 @@ int BlockingUrlProtocol::Read(base::span<uint8_t> data) {
     // Blocking read from data source until either:
     //   1) |last_read_bytes_| is set and |read_complete_| is signalled
     //   2) |aborted_| is signalled
-    data_source_->Read(read_position_, data.size(), data.data(),
+    data_source_->Read(read_position_, data,
                        base::BindOnce(&BlockingUrlProtocol::SignalReadCompleted,
                                       base::Unretained(this)));
   }

@@ -169,11 +169,9 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
   EXPECT_CALL(*mock_data_source, Stop()).Times(0);
 
   DataSource::ReadCB read_cb;
-  EXPECT_CALL(*mock_data_source, Read(0, _, _, _))
-      .WillOnce(
-          [&read_cb](int64_t, int, uint8_t*, DataSource::ReadCB cb) {
-            read_cb = std::move(cb);
-          });
+  EXPECT_CALL(*mock_data_source, Read(0, _, _))
+      .WillOnce([&read_cb](int64_t, base::span<uint8_t>,
+                           DataSource::ReadCB cb) { read_cb = std::move(cb); });
 
   // The Read CB is captured, and so will not execute right away.
   bool has_been_read = false;

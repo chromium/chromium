@@ -91,8 +91,9 @@ void MockDataSourceFactory::CreateDataSource(GURL uri, bool, DataSourceCb cb) {
     EXPECT_CALL(*next_mock_, Initialize)
         .WillOnce(base::test::RunOnceCallback<0>(true));
     for (const auto& e : read_expectations_) {
-      EXPECT_CALL(*next_mock_, Read(std::get<0>(e), std::get<1>(e), _, _))
-          .WillOnce(base::test::RunOnceCallback<3>(std::get<2>(e)));
+      EXPECT_CALL(*next_mock_,
+                  Read(std::get<0>(e), SpanSizeEq(std::get<1>(e)), _))
+          .WillOnce(base::test::RunOnceCallback<2>(std::get<2>(e)));
     }
     read_expectations_.clear();
     EXPECT_CALL(*next_mock_, Stop());

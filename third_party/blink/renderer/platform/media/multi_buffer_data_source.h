@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -107,8 +108,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
   void Abort() override;
 
   void Read(int64_t position,
-            int size,
-            uint8_t* data,
+            base::span<uint8_t> data,
             media::DataSource::ReadCB read_cb) override;
   [[nodiscard]] bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;

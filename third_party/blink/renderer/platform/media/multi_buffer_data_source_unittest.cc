@@ -371,7 +371,8 @@ class MultiBufferDataSourceTest : public testing::Test {
 
   void ReadAt(int64_t position, int howmuch = kDataSize) {
     data_source_->Read(
-        position, howmuch, buffer_,
+        position,
+        base::span(buffer_).first(base::checked_cast<size_t>(howmuch)),
         BindOnce(&MultiBufferDataSourceTest::ReadCallback, Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
@@ -931,7 +932,7 @@ TEST_F(MultiBufferDataSourceTest, StopDuringRead) {
 
   uint8_t buffer[256];
   data_source_->Read(
-      kDataSize, std::size(buffer), buffer,
+      kDataSize, buffer,
       BindOnce(&MultiBufferDataSourceTest::ReadCallback, Unretained(this)));
 
   // The outstanding read should fail before the stop callback runs.
@@ -1388,7 +1389,8 @@ TEST_F(MultiBufferDataSourceTest,
   ReceiveData(kDataSize);
   EXPECT_EQ(data_source_->downloading(), false);
   data_source_->Read(
-      kDataSize * 10, kDataSize, buffer_,
+      kDataSize * 10,
+      base::span(buffer_).first(base::checked_cast<size_t>(kDataSize)),
       BindOnce(&MultiBufferDataSourceTest::ReadCallback, Unretained(this)));
   data_source_->StopPreloading();
   EXPECT_TRUE(active_loader_allownull());
@@ -2014,7 +2016,7 @@ TEST_F(MultiBufferDataSourceTest, Http_CheckLoadingTransition) {
 
   EXPECT_CALL(*this, ReadCallback(1));
   data_source_->Read(
-      kDataSize, 2, buffer_,
+      kDataSize, base::span(buffer_).first<2u>(),
       BindOnce(&MultiBufferDataSourceTest::ReadCallback, Unretained(this)));
   base::RunLoop().RunUntilIdle();
 

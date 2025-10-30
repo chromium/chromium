@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "media/base/media_export.h"
 #include "url/gurl.h"
@@ -60,12 +61,11 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
 
   ~DataSource() override;
 
-  // Reads |size| bytes from |position| into |data|. And when the read is done
-  // or failed, |read_cb| is called with the number of bytes read or
+  // Reads `data.size()` bytes from `position` into `data`. And when the read
+  // is done or failed, `read_cb` is called with the number of bytes read or
   // kReadError in case of error.
   virtual void Read(int64_t position,
-                    int size,
-                    uint8_t* data,
+                    base::span<uint8_t> data,
                     DataSource::ReadCB read_cb) = 0;
 
   // Stops the DataSource. Once this is called all future Read() calls will

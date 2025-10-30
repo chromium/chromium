@@ -28,11 +28,12 @@ class MockDataSource : public CrossOriginDataSource {
               (override));
 
   // Mocked methods from DataSource
-  MOCK_METHOD(
-      void,
-      Read,
-      (int64_t position, int size, uint8_t* data, DataSource::ReadCB read_cb),
-      (override));
+  MOCK_METHOD(void,
+              Read,
+              (int64_t position,
+               base::span<uint8_t> data,
+               DataSource::ReadCB read_cb),
+              (override));
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, Abort, (), (override));
   MOCK_METHOD(bool, GetSize, (int64_t * size_out), (override));
@@ -245,6 +246,10 @@ class MockHlsNetworkAccess : public HlsNetworkAccess {
                HlsDataSourceProvider::ReadCb cb));
   MOCK_METHOD(void, AbortPendingReads, (base::OnceClosure cb));
 };
+
+MATCHER_P(SpanSizeEq, expected, "") {
+  return arg.size() == base::checked_cast<size_t>(expected);
+}
 
 }  // namespace media
 
