@@ -24,6 +24,7 @@ import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/ct_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
@@ -197,12 +198,6 @@ struct HttpAuthStaticNetworkContextParams {
   // on the system can be used without specifying an account.
   DefaultCredentials allow_default_credentials =
       DefaultCredentials.ALLOW_DEFAULT_CREDENTIALS;
-};
-
-[EnableIf=is_ct_supported]
-struct CTPolicy {
-  array<string> excluded_hosts;
-  array<string> excluded_spkis;
 };
 
 struct NetworkContextFilePaths {

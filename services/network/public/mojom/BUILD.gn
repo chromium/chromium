@@ -1736,6 +1736,7 @@ mojom("mojom") {
     "cert_verifier_service_updater.mojom",
     "connection_change_observer_client.mojom",
     "cookie_encryption_provider.mojom",
+    "ct_policy.mojom",
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
     "digitally_signed.mojom",
