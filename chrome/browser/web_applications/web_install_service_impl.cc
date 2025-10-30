@@ -50,6 +50,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
@@ -136,6 +137,8 @@ void WebInstallServiceImpl::CreateIfAllowed(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WebInstallService> receiver) {
   CHECK(render_frame_host);
+
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
   // This class is created only on the primary main frame.
   if (!render_frame_host->IsInPrimaryMainFrame()) {
