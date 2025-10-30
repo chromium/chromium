@@ -150,20 +150,19 @@ using CategorizationResult =
 
   // Directly check file existence since allRecords is already filtered.
   __weak __typeof__(self) weakSelf = self;
-  [self
-      checkFileExistenceForRecords:self.allRecords
-                 completionHandler:^(std::vector<DownloadRecord> existingFiles,
-                                     std::vector<DownloadRecord> missingFiles) {
-                   __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                   if (!strongSelf) {
-                     return;
-                   }
+  [self categorizeDownloadRecords:self.allRecords
+                completionHandler:^(std::vector<DownloadRecord> existingFiles,
+                                    std::vector<DownloadRecord> missingFiles) {
+                  __strong __typeof__(weakSelf) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return;
+                  }
 
-                   // Update UI with existing files and clean up missing ones.
-                   [strongSelf handleValidatedRecords:std::move(existingFiles)
-                                       invalidRecords:std::move(missingFiles)
-                                          showLoading:NO];
-                 }];
+                  // Update UI with existing files and clean up missing ones.
+                  [strongSelf handleValidatedRecords:std::move(existingFiles)
+                                      invalidRecords:std::move(missingFiles)
+                                         showLoading:NO];
+                }];
 }
 
 - (void)filterRecordsWithType:(DownloadFilterType)type {
@@ -292,8 +291,8 @@ using CategorizationResult =
 
 #pragma mark - Private Methods
 
-// Loads download records with optional loading indicator and file existence
-// checking.
+// Loads download records with optional loading indicator and records
+// categorization (checking file existence only for completed downloads).
 - (void)loadDownloadRecordsWithLoading:(BOOL)showLoading
                     checkFileExistence:(BOOL)checkFileExistence {
   CHECK(_isReady);
@@ -333,23 +332,22 @@ using CategorizationResult =
   }
 
   if (checkFileExistence) {
-    // Check file existence and handle accordingly.
+    // Categorize records (check file existence only for completed downloads).
     __weak __typeof__(self) weakSelf = self;
-    [self checkFileExistenceForRecords:filteredByIncognito
-                     completionHandler:^(
-                         std::vector<DownloadRecord> existingFiles,
-                         std::vector<DownloadRecord> missingFiles) {
-                       __strong __typeof__(weakSelf) strongSelf = weakSelf;
-                       if (!strongSelf) {
-                         return;
-                       }
-                       [strongSelf
-                           handleValidatedRecords:std::move(existingFiles)
-                                   invalidRecords:std::move(missingFiles)
-                                      showLoading:showLoading];
-                     }];
+    [self
+        categorizeDownloadRecords:filteredByIncognito
+                completionHandler:^(std::vector<DownloadRecord> existingFiles,
+                                    std::vector<DownloadRecord> missingFiles) {
+                  __strong __typeof__(weakSelf) strongSelf = weakSelf;
+                  if (!strongSelf) {
+                    return;
+                  }
+                  [strongSelf handleValidatedRecords:std::move(existingFiles)
+                                      invalidRecords:std::move(missingFiles)
+                                         showLoading:showLoading];
+                }];
   } else {
-    // Skip file existence checking.
+    // Skip record categorization.
     [self updateRecordsAndUI:std::move(filteredByIncognito)
                  showLoading:showLoading];
   }
@@ -562,31 +560,42 @@ using CategorizationResult =
   std::vector<DownloadRecord> missingFiles;
 
   for (const auto& record : records) {
-    // Convert relative path to absolute path and check if file exists.
-    bool fileExists = false;
-    if (!record.file_path.empty()) {
-      base::FilePath absolutePath =
-          ConvertToAbsoluteDownloadPath(record.file_path);
-      fileExists = base::PathExists(absolutePath);
-    }
+    // Only check file existence for Complete downloads, as non-Complete
+    // downloads should always be considered "existing" regardless of file
+    // state.
+    if (record.state == web::DownloadTask::State::kComplete) {
+      // Convert relative path to absolute path and check if file exists.
+      bool fileExists = false;
+      if (!record.file_path.empty()) {
+        base::FilePath absolutePath =
+            ConvertToAbsoluteDownloadPath(record.file_path);
+        fileExists = base::PathExists(absolutePath);
+      }
 
-    if (record.state == web::DownloadTask::State::kInProgress || fileExists) {
-      existingFiles.push_back(record);
+      // Complete downloads without files should be filtered out.
+      if (!fileExists) {
+        missingFiles.push_back(record);
+      } else {
+        existingFiles.push_back(record);
+      }
     } else {
-      missingFiles.push_back(record);
+      // Non-Complete downloads (InProgress, Failed, Cancelled, etc.) are always
+      // considered "existing" since they don't require file existence
+      // validation.
+      existingFiles.push_back(record);
     }
   }
 
   return std::make_pair(std::move(existingFiles), std::move(missingFiles));
 }
 
-// Checks file existence for given records asynchronously and returns
-// categorized results.
-- (void)checkFileExistenceForRecords:(const std::vector<DownloadRecord>&)records
-                   completionHandler:
-                       (void (^)(std::vector<DownloadRecord> existingFiles,
-                                 std::vector<DownloadRecord> missingFiles))
-                           completionHandler {
+// Categorizes download records asynchronously, checking file existence only
+// for completed downloads and returns categorized results.
+- (void)categorizeDownloadRecords:(const std::vector<DownloadRecord>&)records
+                completionHandler:
+                    (void (^)(std::vector<DownloadRecord> existingFiles,
+                              std::vector<DownloadRecord> missingFiles))
+                        completionHandler {
   __weak __typeof__(self) weakSelf = self;
 
   // The task to run on a background thread.

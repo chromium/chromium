@@ -45,6 +45,12 @@ constexpr CGFloat kFileIconImageSize = 44.0;
   configuration.cellContentConfiguration.title = item.fileName;
   configuration.cellContentConfiguration.subtitle = item.detailText;
 
+  // Set subtitle color to red for failed downloads, use default for others.
+  if (item.downloadState == web::DownloadTask::State::kFailed) {
+    configuration.cellContentConfiguration.subtitleColor =
+        [UIColor colorNamed:kRed600Color];
+  }
+
   // Configure file icon.
   if (item.fileTypeIcon) {
     ImageContentConfiguration* imageConfiguration =

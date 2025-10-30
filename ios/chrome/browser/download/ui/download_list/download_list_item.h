@@ -52,6 +52,9 @@ typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
 /// Returns the download progress for this download item (0.0 to 1.0).
 @property(nonatomic, assign, readonly) CGFloat downloadProgress;
 
+/// Returns the download state for this download item.
+@property(nonatomic, assign, readonly) web::DownloadTask::State downloadState;
+
 /// Initializes a download list item with the given download record.
 - (instancetype)initWithDownloadRecord:(const DownloadRecord&)downloadRecord
     NS_DESIGNATED_INITIALIZER;

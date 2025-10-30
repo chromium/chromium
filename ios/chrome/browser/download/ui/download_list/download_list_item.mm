@@ -105,6 +105,10 @@ NSString* const kStatusTextEmptyString = @"";
   return _downloadRecord.progress_percent / 100.0f;
 }
 
+- (web::DownloadTask::State)downloadState {
+  return _downloadRecord.state;
+}
+
 - (BOOL)shouldShowProgressView {
   return _downloadRecord.state == web::DownloadTask::State::kInProgress;
 }
