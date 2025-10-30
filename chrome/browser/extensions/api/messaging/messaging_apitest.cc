@@ -617,7 +617,33 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
+class MessagingApiTestWithPageUrlLoad
+    : public MessagingApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  MessagingApiTestWithPageUrlLoad() = default;
+
+  void SetUpOnMainThread() override {
+    MessagingApiTest::SetUpOnMainThread();
+    url_ = embedded_test_server()->GetURL("/extensions/test_file.html");
+  }
+
+ protected:
+  // Runs the extension test located at `extension_name` but first loads a tab
+  // to //chrome/test/data/extensions/test_file.html.
+  testing::AssertionResult RunMessagingTest(const char* extension_name) {
+    return RunExtensionTest(extension_name, {.page_url = url_.spec().c_str(),
+                                             .use_extensions_root_dir = true})
+               ? testing::AssertionSuccess()
+               : testing::AssertionFailure();
+  }
+
+ private:
+  GURL url_;
+};
+
+class OnMessagePromiseReturnMessagingApiTest
+    : public MessagingApiTestWithPageUrlLoad {
  public:
   OnMessagePromiseReturnMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -632,10 +658,7 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
 // promises.
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnResolvesBehavior) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_promise_resolve",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_promise_resolve"))
       << message_;
 }
 
@@ -645,10 +668,8 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
 IN_PROC_BROWSER_TEST_F(
     OnMessagePromiseReturnMessagingApiTest,
     OnMessageMultiPromiseReturnResolvesBehavior_FasterPromiseRegisteredFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_multi_promise_faster_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/on_message_multi_promise_faster_first"))
       << message_;
 }
 
@@ -658,10 +679,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     OnMessagePromiseReturnMessagingApiTest,
     OnMessageMultiPromiseReturnResolvesBehavior_SlowerPromiseRegisteredFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_multi_promise_slower_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/on_message_multi_promise_slower_first"))
       << message_;
 }
 
@@ -670,10 +689,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     OnMessagePromiseReturnMessagingApiTest,
     OnMessageMultiPromiseReturnResolvesBehavior_ReturnTrueThenPromise) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_return_true_then_promise",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_return_true_then_promise"))
       << message_;
 }
 
@@ -682,10 +698,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     OnMessagePromiseReturnMessagingApiTest,
     OnMessageMultiPromiseReturnResolvesBehavior_ReturnTrueThenPromiseFaster) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_return_true_then_promise_faster",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/on_message_return_true_then_promise_faster"))
       << message_;
 }
 
@@ -694,10 +708,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     OnMessagePromiseReturnMessagingApiTest,
     OnMessageMultiPromiseReturnResolvesBehavior_ReturnPromiseThenTrue) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_return_promise_then_true",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_return_promise_then_true"))
       << message_;
 }
 
@@ -763,10 +774,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnRejectsBehavior) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_promise_reject",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_promise_reject"))
       << message_;
 }
 
@@ -777,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
 // `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
 // enabled or disabled.
 class PolyfillSupportMessagingApiTest : public base::test::WithFeatureOverride,
-                                        public MessagingApiTest {
+                                        public MessagingApiTestWithPageUrlLoad {
  public:
  public:
   PolyfillSupportMessagingApiTest()
@@ -795,10 +803,7 @@ class PolyfillSupportMessagingApiTest : public base::test::WithFeatureOverride,
 // (https://github.com/mozilla/webextension-polyfill/issues/102).
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingApiTest,
                        SendMessageListenerBehavior) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/send_message_polyfill_sync",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest("messaging/send_message_polyfill_sync"))
       << message_;
 }
 
@@ -814,7 +819,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingApiTest);
 // stopped in order to elicit a response to message. The polyfill feature
 // handles these scenarios without worker shutdown so we keep it disabled.
 class PolyfillSupportWithWorkerShutdownMessagingApiTest
-    : public MessagingApiTest {
+    : public MessagingApiTestWithPageUrlLoad {
  public:
   // Wait until the message listener finishes running and then stop the worker.
   // Then inform the message sender that the worker shutdown.
@@ -843,7 +848,7 @@ class PolyfillSupportWithWorkerShutdownMessagingApiTest
   }
 
   void SetUpOnMainThread() override {
-    MessagingApiTest::SetUpOnMainThread();
+    MessagingApiTestWithPageUrlLoad::SetUpOnMainThread();
     worker_shutdown_listener_.SetOnRepeatedlySatisfied(base::BindRepeating(
         &PolyfillSupportWithWorkerShutdownMessagingApiTest::OnShutdownMessage,
         base::Unretained(this), extension_id_));
@@ -868,10 +873,7 @@ class PolyfillSupportWithWorkerShutdownMessagingApiTest
 // feature is disabled). Also see PolyfillSupportMessagingApiTest.
 IN_PROC_BROWSER_TEST_F(PolyfillSupportWithWorkerShutdownMessagingApiTest,
                        SendMessageListenerBehavior_Asynchronous) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/send_message_polyfill_async",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest("messaging/send_message_polyfill_async"))
       << message_;
 }
 
@@ -905,10 +907,8 @@ class PolyfillSupportMessagingErrorsApiTest
 // 2) the second registered responds to the message
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenErrorIsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_error_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/one_time_message_handler_error_first"))
       << message_;
 }
 
@@ -917,10 +917,8 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 // 2) the second registered throws a synchronous error
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenResponseIsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_send_response_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_send_response_first"))
       << message_;
 }
 
@@ -928,10 +926,8 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 // and then throws an error immediately afterward.
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenOneListenerResponseIsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_send_response_first_same_listener",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_send_response_first_same_listener"))
       << message_;
 }
 
@@ -940,9 +936,8 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenOneListenerErrorFirst) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_error_first_same_listener",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_error_first_same_listener"))
       << message_;
 }
 
@@ -952,9 +947,8 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenAsyncResponseIsFirst) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_send_async_response_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_send_async_response_first"))
       << message_;
 }
 
@@ -963,10 +957,8 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 // 2) the second registered also throws an error synchronously
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingWhenMultipleSyncErrorsThrown) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_sync_errors",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/one_time_message_handler_sync_errors"))
       << message_;
 }
 
@@ -975,15 +967,15 @@ IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
 IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
                        ListenerErrorHandlingForManySyncErrorTypesThrown) {
   const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_many_error_types_same_listener",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_many_error_types_same_listener"))
       << message_;
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingErrorsApiTest);
 
-class PolyfillFeatureEnabledMessagingApiTest : public MessagingApiTest {
+class PolyfillFeatureEnabledMessagingApiTest
+    : public MessagingApiTestWithPageUrlLoad {
  public:
   PolyfillFeatureEnabledMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -999,10 +991,8 @@ class PolyfillFeatureEnabledMessagingApiTest : public MessagingApiTest {
 // 2) the second registered throws a synchronous error
 IN_PROC_BROWSER_TEST_F(PolyfillFeatureEnabledMessagingApiTest,
                        ListenerErrorHandlingWhenPromiseResolveIsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_promise_resolve_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_promise_resolve_first"))
       << message_;
 }
 
@@ -1011,10 +1001,8 @@ IN_PROC_BROWSER_TEST_F(PolyfillFeatureEnabledMessagingApiTest,
 // 2) the second registered throws a synchronous error
 IN_PROC_BROWSER_TEST_F(PolyfillFeatureEnabledMessagingApiTest,
                        ListenerErrorHandlingWhenPromiseRejectIsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/one_time_message_handler_promise_reject_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_promise_reject_first"))
       << message_;
 }
 
@@ -1025,10 +1013,8 @@ using PolyfillUnserializableMessageResponseShutdownTest =
 // serializable and the polyfill feature is not enabled.
 IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseShutdownTest,
                        UnserializableResponse) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/send_message_non_polyfill_unserializable",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/send_message_non_polyfill_unserializable"))
       << message_;
 }
 
@@ -1046,10 +1032,8 @@ using PolyfillUnserializableMessageResponseTest =
 // error is returned.
 IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseTest,
                        UnserializableResponseClosesChannel) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/send_message_polyfill_unserializable",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/send_message_polyfill_unserializable"))
       << message_;
 }
 
@@ -1058,21 +1042,12 @@ IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseTest,
 // regress asynchronous listener behavior when multiple listeners can return for
 // a single message.
 class OnMessageMultiListenerMessagingApiTest
-    : public MessagingApiTest,
-      public testing::WithParamInterface<bool> {
+    : public MessagingApiTestWithPageUrlLoad,
+      public base::test::WithFeatureOverride {
  public:
-  OnMessageMultiListenerMessagingApiTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              extensions_features::
-                  kRuntimeOnMessageWebExtensionPolyfillSupport});
-    }
+  OnMessageMultiListenerMessagingApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
   }
 
  private:
@@ -1085,10 +1060,8 @@ class OnMessageMultiListenerMessagingApiTest
 // from getting to the message sender. Regression test for crbug.com/424560420.
 IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
                        OnMessageSyncListenerReturnsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_multi_listener/sync_listener_called_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/on_message_multi_listener/sync_listener_called_first"))
       << message_;
 }
 
@@ -1098,17 +1071,12 @@ IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
 // from getting to the message sender. Regression test for crbug.com/424560420.
 IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
                        OnMessageAsyncListenerReturnsFirst) {
-  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(RunExtensionTest(
-      "messaging/on_message_multi_listener/async_listener_called_first",
-      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/on_message_multi_listener/async_listener_called_first"))
       << message_;
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         OnMessageMultiListenerMessagingApiTest,
-                         // extensions_features::kUserScriptUserExtensionToggle
-                         testing::Bool());
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(OnMessageMultiListenerMessagingApiTest);
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
