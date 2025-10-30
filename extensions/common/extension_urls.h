@@ -46,8 +46,12 @@ extern const char kExtensionsMenuUtmSource[];
 extern const char kExtensionsSidebarUtmSource[];
 // From the Extensions Zero State Promo custom action IPH.
 extern const char kCustomActionIphUtmSource[];
-// From the Extensions Zero State Promo, custom UI IPH, chips variant.
-extern const char kCustomUiChipIphUtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, chips variant,
+// version 1.
+extern const char kCustomUiChipIphV1UtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, chips variant,
+// version 2.
+extern const char kCustomUiChipIphV2UtmSource[];
 // From the Extensions Zero State Promo, custom UI IPH, text link variant.
 extern const char kCustomUiPlainLinkIphUtmSource[];
 

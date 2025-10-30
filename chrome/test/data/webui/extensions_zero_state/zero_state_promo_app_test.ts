@@ -50,7 +50,7 @@ export class TestPromoProxy extends TestBrowserProxy implements
   }
 }
 
-suite('ChipsUiTest', () => {
+suite('ChipsUiV1Test', () => {
   let bubbleHandler: TestBubbleHandler;
   let zeroStatePromoApp: ZeroStatePromoAppElement;
   let promoProxy: TestPromoProxy;
@@ -78,6 +78,7 @@ suite('ChipsUiTest', () => {
     assertTrue(isVisible(queryAppSelector('#writingButton')));
     assertTrue(isVisible(queryAppSelector('#productivityButton')));
     assertTrue(isVisible(queryAppSelector('#aiButton')));
+    assertFalse(isVisible(queryAppSelector('#webStoreButton')));
     assertFalse(isVisible(queryAppSelector('#couponsLink')));
     assertFalse(isVisible(queryAppSelector('#writingLink')));
     assertFalse(isVisible(queryAppSelector('#productivityLink')));
@@ -106,6 +107,106 @@ suite('ChipsUiTest', () => {
 
     assertEquals(
         WebStoreLinkClicked.kWriting,
+        await promoProxy.whenCalled('launchWebStoreLink'));
+    assertEquals(
+        CustomHelpBubbleUserAction.kAction,
+        await bubbleHandler.whenCalled('notifyUserAction'));
+  });
+
+  test('ClickProductivityChip', async () => {
+    const chip = queryAppSelector('#productivityButton');
+    assertTrue(!!chip);
+    chip.click();
+
+    assertEquals(
+        WebStoreLinkClicked.kProductivity,
+        await promoProxy.whenCalled('launchWebStoreLink'));
+    assertEquals(
+        CustomHelpBubbleUserAction.kAction,
+        await bubbleHandler.whenCalled('notifyUserAction'));
+  });
+
+  test('ClickAiChip', async () => {
+    const chip = queryAppSelector('#aiButton');
+    assertTrue(!!chip);
+    chip.click();
+
+    assertEquals(
+        WebStoreLinkClicked.kAi,
+        await promoProxy.whenCalled('launchWebStoreLink'));
+    assertEquals(
+        CustomHelpBubbleUserAction.kAction,
+        await bubbleHandler.whenCalled('notifyUserAction'));
+  });
+
+  test('ClickDismissButton', async () => {
+    const button = queryAppSelector('#dismissButton');
+    assertTrue(!!button);
+    button.click();
+
+    assertEquals(
+        CustomHelpBubbleUserAction.kDismiss,
+        await bubbleHandler.whenCalled('notifyUserAction'));
+  });
+});
+
+suite('ChipsUiV2Test', () => {
+  let bubbleHandler: TestBubbleHandler;
+  let zeroStatePromoApp: ZeroStatePromoAppElement;
+  let promoProxy: TestPromoProxy;
+
+  setup(() => {
+    bubbleHandler = new TestBubbleHandler();
+    CustomHelpBubbleProxyImpl.setInstance(new TestBubbleProxy(bubbleHandler));
+
+    promoProxy = new TestPromoProxy();
+    ZeroStatePromoBrowserProxyImpl.setInstance(promoProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    zeroStatePromoApp =
+        document.createElement('extensions-zero-state-promo-app');
+    document.body.appendChild(zeroStatePromoApp);
+  });
+
+  function queryAppSelector(selector: string): HTMLElement|null {
+    return zeroStatePromoApp.shadowRoot.querySelector<HTMLElement>(selector);
+  }
+
+  test('UiElementVisibility', () => {
+    assertTrue(isVisible(queryAppSelector('#dismissButton')));
+    assertTrue(isVisible(queryAppSelector('#couponsButton')));
+    assertTrue(isVisible(queryAppSelector('#productivityButton')));
+    assertTrue(isVisible(queryAppSelector('#aiButton')));
+    assertTrue(isVisible(queryAppSelector('#webStoreButton')));
+    assertFalse(isVisible(queryAppSelector('#writingButton')));
+    assertFalse(isVisible(queryAppSelector('#couponsLink')));
+    assertFalse(isVisible(queryAppSelector('#writingLink')));
+    assertFalse(isVisible(queryAppSelector('#productivityLink')));
+    assertFalse(isVisible(queryAppSelector('#aiLink')));
+    assertFalse(isVisible(queryAppSelector('#closeButton')));
+    assertFalse(isVisible(queryAppSelector('#customActionButton')));
+  });
+
+  test('ClickCouponsChip', async () => {
+    const chip = queryAppSelector('#couponsButton');
+    assertTrue(!!chip);
+    chip.click();
+
+    assertEquals(
+        WebStoreLinkClicked.kCoupon,
+        await promoProxy.whenCalled('launchWebStoreLink'));
+    assertEquals(
+        CustomHelpBubbleUserAction.kAction,
+        await bubbleHandler.whenCalled('notifyUserAction'));
+  });
+
+  test('ClickWebstoreChip', async () => {
+    const chip = queryAppSelector('#webStoreButton');
+    assertTrue(!!chip);
+    chip.click();
+
+    assertEquals(
+        WebStoreLinkClicked.kDiscoverExtension,
         await promoProxy.whenCalled('launchWebStoreLink'));
     assertEquals(
         CustomHelpBubbleUserAction.kAction,

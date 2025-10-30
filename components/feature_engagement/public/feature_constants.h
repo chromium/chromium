@@ -61,7 +61,10 @@ enum IPHExtensionsZeroStatePromoVariant {
   kCustomActionIph,
   // A custom UI IPH, presenting the user with different collections of
   // extension collections in cr-chip buttons.
-  kCustomUiChipIph,
+  kCustomUiChipIphV1,
+  // Same as above, but with a slightly different color scheme to highlight
+  // the chips button, and a different selection of links.
+  kCustomUiChipIphV2,
   // A custom UI IPH, presenting the user with different collections of
   // extension collections in plain text links.
   kCustomUIPlainLinkIph,

@@ -15,6 +15,7 @@
 :host {
   --zero-state-promo-background-color: var(--color-button-foreground);
   --zero-state-promo-foreground-color: var(--color-button-background);
+  --zero-state-promo-chip-border-radius: 8px;
   --container-gap: 8px;
 
   border-radius: 12px;
@@ -67,8 +68,25 @@
 #labelContainer {
   flex-wrap: wrap;
   padding: 0;
+}
+
+.v1Chip, .v2Chip {
+  border-radius: var(--zero-state-promo-chip-border-radius);
+  padding: 0px;
+  gap: 0px;
+  --cr-chip-border-radius: var(--zero-state-promo-chip-border-radius);
+}
+
+.v1Chip {
+  background-color: var(--zero-state-promo-background-color);
   --color-chip-foreground: var(--zero-state-promo-foreground-color);
   --color-chip-icon: var(--color-sys-inverse-primary);
+}
+
+.v2Chip  {
+  background-color: var(--zero-state-promo-foreground-color);
+  --color-chip-foreground: var(--zero-state-promo-background-color);
+  --color-chip-icon: var(--zero-state-promo-background-color);
 }
 
 #anchorContainer {

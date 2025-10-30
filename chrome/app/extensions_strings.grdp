@@ -763,6 +763,9 @@
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LINK" desc="Link text for the button that opens the Chrome Web Store ai productivity collection page.">
     Enhance with AI
   </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WEB_STORE_LINK" desc="Link text for the button that opens the Chrome Web Store page.">
+    Visit Web Store
+  </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TEXT" desc="Text on the button that dismisses the extensions zero state promo IPH.">
     Got it
   </message>

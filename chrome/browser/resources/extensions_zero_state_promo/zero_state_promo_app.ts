@@ -36,7 +36,9 @@ export class ZeroStatePromoAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      showChipsUi_: {type: Boolean},
+      showPlainLinksUi_: {type: Boolean},
+      showChipsV1_: {type: Boolean},
+      showChipsV2_: {type: Boolean},
     };
   }
 
@@ -45,8 +47,14 @@ export class ZeroStatePromoAppElement extends CrLitElement {
   private customHelpBubbleHandler_: CustomHelpBubbleHandlerInterface =
       CustomHelpBubbleProxyImpl.getInstance().getHandler();
 
-  protected accessor showChipsUi_: boolean =
-      loadTimeData.getBoolean('showChipsUi');
+  protected accessor showPlainLinksUi_: boolean =
+      loadTimeData.getBoolean('showPlainLinksUi');
+
+  protected accessor showChipsV1_: boolean =
+      loadTimeData.getBoolean('showChipsUiV1');
+
+  protected accessor showChipsV2_: boolean =
+      loadTimeData.getBoolean('showChipsUiV2');
 
   protected onChromeWebStoreButtonClick_() {
     this.apiProxy_.launchWebStoreLink(WebStoreLinkClicked.kDiscoverExtension);
