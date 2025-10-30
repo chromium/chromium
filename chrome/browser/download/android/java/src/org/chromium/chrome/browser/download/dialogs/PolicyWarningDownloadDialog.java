@@ -68,16 +68,20 @@ public class PolicyWarningDownloadDialog {
                 new ModalDialogProperties.Controller() {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
+                        // This is a special scenario as per UX specs, the Cancel button is
+                        // shown on the right as the default option on the dialog. Hence, the
+                        // positive button is to cancel, and negative button is to download the
+                        // item.
                         boolean acceptDownload =
-                                buttonType == ModalDialogProperties.ButtonType.POSITIVE;
+                                buttonType == ModalDialogProperties.ButtonType.NEGATIVE;
                         if (callback != null) {
                             callback.onResult(acceptDownload);
                         }
                         modalDialogManager.dismissDialog(
                                 model,
                                 acceptDownload
-                                        ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                                        : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                                        ? DialogDismissalCause.NEGATIVE_BUTTON_CLICKED
+                                        : DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         recordPolicyWarningDownloadDialogEvent(
                                 acceptDownload
                                         ? PolicyWarningDownloadDialogEvent.DIALOG_CONFIRM
@@ -111,15 +115,17 @@ public class PolicyWarningDownloadDialog {
                                                                         .policy_warning_download_dialog_text),
                                                         fileName))))
                         .with(
+                                // The positive button is to cancel the download.
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources.getString(R.string.cancel))
+                        .with(
+                                // The negative button is to download anyway.
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources.getString(
                                         R.string.dangerous_download_dialog_confirm_text))
                         .with(
-                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                resources.getString(R.string.cancel))
-                        .with(
                                 ModalDialogProperties.BUTTON_STYLES,
-                                ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED)
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(
                                 ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
                                 UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
