@@ -367,6 +367,7 @@ class XRSession final : public EventTarget,
   bool HasPendingActivity() const override;
 
   bool CanReportPoses() const;
+  bool CanReportInputPoses() const;
 
   // Return whether we should enable anti-aliasing for WebGL layers. Value
   // comes from the underlying XR runtime.
@@ -623,6 +624,7 @@ class XRSession final : public EventTarget,
 
   Member<XRFrame> animation_frame_ = nullptr;
   Member<XRInputSourceArray> input_sources_;
+  Member<XRInputSourceArray> empty_input_sources_;
   Member<XRFrameTransportDelegate> prev_transport_delegate_ = nullptr;
   Member<ResizeObserver> resize_observer_;
   Member<XRCanvasInputProvider> canvas_input_provider_;

@@ -1390,6 +1390,10 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState() {
   return input_helper_->GetInputState(GetPredictedDisplayTime());
 }
 
+void OpenXrApiWrapper::OnHideInputSources() {
+  input_helper_->OnHideInputSources();
+}
+
 void OpenXrApiWrapper::PollFuture(
     XrFutureEXT future,
     base::OnceCallback<void(XrFutureEXT)> on_ready_callback) {

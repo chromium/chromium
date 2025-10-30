@@ -67,6 +67,10 @@ bool XRJointSpace::IsStationary() const {
   return false;
 }
 
+bool XRJointSpace::IsInputSpace() const {
+  return true;
+}
+
 V8XRHandJoint XRJointSpace::jointName() const {
   return V8XRHandJoint(MojomHandJointToV8Enum(joint_));
 }

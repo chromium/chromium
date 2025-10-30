@@ -167,6 +167,10 @@ bool XRReferenceSpace::IsStationary() const {
   }
 }
 
+bool XRReferenceSpace::IsInputSpace() const {
+  return false;
+}
+
 ReferenceSpaceType XRReferenceSpace::GetType() const {
   return type_;
 }

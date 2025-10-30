@@ -240,6 +240,9 @@ void OpenXrRenderLoop::SetVisibilityState(
     mojom::XRVisibilityState visibility_state) {
   if (visibility_state_ != visibility_state) {
     visibility_state_ = visibility_state;
+    if (visibility_state_ != mojom::XRVisibilityState::VISIBLE) {
+      openxr_->OnHideInputSources();
+    }
     if (on_visibility_state_changed_) {
       main_thread_task_runner_->PostTask(
           FROM_HERE,
@@ -707,7 +710,11 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
 
   frame_data->time_delta = base::Nanoseconds(frame_time);
   frame_data->render_info->views = openxr_->GetViews();
-  frame_data->input_state = openxr_->GetInputState();
+
+  // Unless we are fully synchronized/visible we shouldn't report input state.
+  if (visibility_state_ == mojom::XRVisibilityState::VISIBLE) {
+    frame_data->input_state = openxr_->GetInputState();
+  }
 
   frame_data->render_info->mojo_from_viewer = openxr_->GetViewerPose();
 

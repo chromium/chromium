@@ -39,6 +39,8 @@ class XRReferenceSpace : public XRSpace {
 
   bool IsStationary() const override;
 
+  bool IsInputSpace() const override;
+
   gfx::Transform NativeFromOffsetMatrix() const override;
   gfx::Transform OffsetFromNativeMatrix() const override;
 

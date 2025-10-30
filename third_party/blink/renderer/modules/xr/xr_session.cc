@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/mojom/hit_test_subscription_id.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
@@ -69,6 +70,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/transform.h"
+
+#if BUILDFLAG(ENABLE_VR)
+#include "device/vr/public/cpp/features.h"
+#endif
 
 namespace blink {
 
@@ -369,6 +374,7 @@ XRSession::XRSession(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
+      empty_input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       callback_collection_(
           MakeGarbageCollected<XRFrameRequestCallbackCollection>(
@@ -980,6 +986,9 @@ XRInputSourceArray* XRSession::inputSources(ScriptState* script_state) const {
     did_log_getInputSources_ = true;
   }
 
+  if (!CanReportInputPoses()) {
+    return empty_input_sources_.Get();
+  }
   return input_sources_.Get();
 }
 
@@ -1549,7 +1558,7 @@ void XRSession::ForceEnd(ShutdownPolicy shutdown_policy) {
     input_source->OnRemoved();
   }
 
-  input_sources_ = nullptr;
+  input_sources_ = empty_input_sources_;
 
   if (canvas_input_provider_) {
     canvas_input_provider_->Stop();
@@ -1673,12 +1682,6 @@ void XRSession::OnFocusChanged() {
 }
 
 void XRSession::OnVisibilityStateChanged(XRVisibilityState visibility_state) {
-  // TODO(crbug.com/1002742): Until some ambiguities in the spec are cleared up,
-  // force "visible-blurred" states from the device to report as "hidden"
-  if (visibility_state == XRVisibilityState::VISIBLE_BLURRED) {
-    visibility_state = XRVisibilityState::HIDDEN;
-  }
-
   if (device_visibility_state_ != visibility_state) {
     device_visibility_state_ = visibility_state;
     UpdateVisibilityState();
@@ -1705,6 +1708,18 @@ void XRSession::UpdateVisibilityState() {
   // session should be focued, which is owned by the document. For inline, we
   // can and must rely on frame focus.
   if (!immersive() && !xr_->IsFrameFocused()) {
+    state = XRVisibilityState::HIDDEN;
+  }
+
+  // Force visible-blurred state to hidden until the feature to allow it is
+  // enabled. This matches the long-term behavior that the feature is trying to
+  // change.
+  bool can_use_visible_blurred = false;
+#if BUILDFLAG(ENABLE_VR)
+  can_use_visible_blurred =
+      base::FeatureList::IsEnabled(device::features::kWebXrVisibleBlurred);
+#endif
+  if (!can_use_visible_blurred && state == XRVisibilityState::VISIBLE_BLURRED) {
     state = XRVisibilityState::HIDDEN;
   }
 
@@ -1937,11 +1952,18 @@ void XRSession::UpdatePresentationFrameState(
                           frame_data->stage_parameters);
 
     // Now update the input sources
-    base::span<const device::mojom::blink::XRInputSourceStatePtr> input_states;
-    if (frame_data->input_state.has_value())
-      input_states = frame_data->input_state.value();
+    // Only process input when we can report it to the page.
+    if (CanReportInputPoses()) {
+      base::span<const device::mojom::blink::XRInputSourceStatePtr>
+          input_states;
+      if (frame_data->input_state.has_value()) {
+        input_states = frame_data->input_state.value();
+      }
 
-    OnInputStateChangeInternal(frame_id, input_states);
+      OnInputStateChangeInternal(frame_id, input_states);
+
+      ProcessInputSourceEvents(input_states);
+    }
 
     // World understanding includes hit testing for transient input sources, and
     // these sources may have been hidden when touching DOM Overlay content
@@ -1950,8 +1972,6 @@ void XRSession::UpdatePresentationFrameState(
     // generate hit test results. For this to work, this step must happen
     // after OnInputStateChangeInternal which updated input sources.
     UpdateWorldUnderstandingStateForFrame(timestamp, frame_data);
-
-    ProcessInputSourceEvents(input_states);
 
     // Now that all pose data is updated trigger a reset event if it's there.
     if (frame_data->mojo_space_reset) {
@@ -2260,7 +2280,12 @@ bool XRSession::CanReportPoses() const {
   // The spec has a few requirements for if poses can be reported.
   // If we have a session, then user intent is understood. Therefore, (due to
   // the way visibility state is updatd), the rest of the steps really just
-  // boil down to whether or not the XRVisibilityState is Visible.
+  // boil down to whether or not the XRVisibilityState is a "visible" type.
+  return visibility_state_ != XRVisibilityState::HIDDEN;
+}
+
+bool XRSession::CanReportInputPoses() const {
+  // We can only report input-based poses if we're fully visible.
   return visibility_state_ == XRVisibilityState::VISIBLE;
 }
 
@@ -2368,11 +2393,6 @@ void XRSession::OnInputStateChangeInternal(
     int16_t frame_id,
     base::span<const device::mojom::blink::XRInputSourceStatePtr>
         input_states) {
-  // If we're in any state other than visible, input should not be processed
-  if (visibility_state_ != XRVisibilityState::VISIBLE) {
-    return;
-  }
-
   HeapVector<Member<XRInputSource>> added;
   HeapVector<Member<XRInputSource>> removed;
   last_frame_id_ = frame_id;
@@ -2640,6 +2660,7 @@ void XRSession::Trace(Visitor* visitor) const {
   visitor->Trace(end_session_resolver_);
   visitor->Trace(enabled_features_);
   visitor->Trace(animation_frame_);
+  visitor->Trace(empty_input_sources_);
   visitor->Trace(input_sources_);
   visitor->Trace(resize_observer_);
   visitor->Trace(canvas_input_provider_);

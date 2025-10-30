@@ -94,15 +94,25 @@ XrResult OpenXRInputHelper::Initialize(
   return XR_SUCCESS;
 }
 
+void OpenXRInputHelper::OnHideInputSources() {
+  // Clear any "pressed" buttons for the time being. This prevents us from
+  // sending up any clicks when we resume sending input state to the page.
+  ResetControllerButtonState();
+}
+
+void OpenXRInputHelper::ResetControllerButtonState() {
+  for (OpenXrControllerState& state : controller_states_) {
+    state.primary_button_pressed = false;
+    state.squeeze_button_pressed = false;
+  }
+}
+
 std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
     XrTime predicted_display_time) {
   TRACE_EVENT0("xr", "GetInputState");
   std::vector<mojom::XRInputSourceStatePtr> input_states;
   if (XR_FAILED(SyncActions(predicted_display_time))) {
-    for (OpenXrControllerState& state : controller_states_) {
-      state.primary_button_pressed = false;
-      state.squeeze_button_pressed = false;
-    }
+    ResetControllerButtonState();
     return input_states;
   }
 

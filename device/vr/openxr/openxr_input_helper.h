@@ -47,6 +47,9 @@ class OpenXRInputHelper {
 
   bool ReceivedExitGesture() { return received_exit_gesture_; }
 
+  // Called when the device is going to hide input sources from the page.
+  void OnHideInputSources();
+
  private:
   XrResult Initialize(XrInstance instance,
                       XrSystemId system,
@@ -59,6 +62,8 @@ class OpenXRInputHelper {
   }
 
   void OnExitGesture() { received_exit_gesture_ = true; }
+
+  void ResetControllerButtonState();
 
   XrSession session_;
   XrSpace local_space_;

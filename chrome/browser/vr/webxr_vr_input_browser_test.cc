@@ -744,6 +744,40 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestAllKnownInteractionProfileTypes) {
   t->EndTest();
 }
 
+// Test that when a session is blurred, input sources are removed, and trying
+// to get a pose from a cached input source throws an exception.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputNotVisibleWhenBlurred) {
+  WebXrControllerInputMock my_mock;
+
+  // Connect a controller.
+  my_mock.CreateAndConnectMinimalGamepad();
+
+  // Load the test page and enter presentation.
+  t->LoadFileAndAwaitInitialization("test_webxr_input_visibility");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // Check that the input source is visible and the visibility state is
+  // 'visible'.
+  t->PollJavaScriptBooleanOrFail("checkVisibilityState('visible')");
+  my_mock.WaitNumFrames(1);
+  t->RunJavaScriptOrFail("validateInputSourceVisible()");
+
+  // Blur the session.
+  device_test::mojom::EventData event_data = {};
+  event_data.type = device_test::mojom::EventType::kVisibilityVisibleBlurred;
+  my_mock.PopulateEvent(event_data);
+
+  // Check that the input source is no longer visible and the visibility state
+  // is 'visible-blurred'.
+  t->PollJavaScriptBooleanOrFail("checkVisibilityState('visible-blurred')");
+  t->PollJavaScriptBooleanOrFail("checkInputSourceCount(0)");
+
+  // Validate that querying poses from the cached controller are null.
+  t->RunJavaScriptOrFail("validateNullInputPoses()");
+  t->RunJavaScriptOrFail("done()");
+  t->EndTest();
+}
+
 // Test that controller input is registered via WebXR's input method. This uses
 // multiple controllers to make sure the input is going to the correct one.
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleControllerInputRegistered) {

@@ -47,6 +47,8 @@ class XRObjectSpace final : public XRSpace {
 
   bool IsStationary() const override { return is_stationary_; }
 
+  bool IsInputSpace() const override { return false; }
+
   std::string ToString() const override { return "XRObjectSpace"; }
 
   void Trace(Visitor* visitor) const override {
