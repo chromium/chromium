@@ -707,6 +707,9 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   // Create the event which will be set in Stop() when capturing shall stop.
   stop_capture_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
   DCHECK(stop_capture_event_.IsValid());
+
+  use_device_sample_format_ =
+      base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat);
 }
 
 WASAPIAudioInputStream::~WASAPIAudioInputStream() {
@@ -715,6 +718,9 @@ WASAPIAudioInputStream::~WASAPIAudioInputStream() {
 
 bool WASAPIAudioInputStream::UpdateFormats() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sample_format_ = kSampleFormatS16;
+  input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+  output_format_.wFormatTag = WAVE_FORMAT_PCM;
   if (base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat)) {
     // Get the format the audio engine uses.
     WAVEFORMATEXTENSIBLE mix_format;
@@ -725,33 +731,32 @@ bool WASAPIAudioInputStream::UpdateFormats() {
       return false;
     }
     // Note that Windows Audio Engine could potentially be S32 or F32.
-    sample_format_ = GetSampleFormatFromWaveFormat(mix_format);
-    CHECK_NE(sample_format_, kUnknownSampleFormat);
-    // We are not sure if the Windows Audio Engine will ever choose 24bit over
-    // 32bit. Check if this is the case, and if so we choose S32 instead.
-    CHECK_NE(sample_format_, kSampleFormatS24, base::NotFatalUntil::M148);
-    if (sample_format_ == kSampleFormatS24) {
-      sample_format_ = kSampleFormatS32;
-    }
+    auto mix_sample_format = GetSampleFormatFromWaveFormat(mix_format);
+    if (mix_sample_format != kUnknownSampleFormat) {
+      sample_format_ = mix_sample_format;
+      // We are not sure if the Windows Audio Engine will ever choose 24bit over
+      // 32bit. Check if this is the case, and if so we choose S32 instead.
+      CHECK_NE(sample_format_, kSampleFormatS24, base::NotFatalUntil::M148);
+      if (sample_format_ == kSampleFormatS24) {
+        sample_format_ = kSampleFormatS32;
+      }
 
-    input_format_.SubFormat = mix_format.SubFormat;
-    // Set up the fixed output format based on the discovered format.
-    if (IsEqualGUID(mix_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
-      CHECK_NE(sample_format_, kSampleFormatF32);
-      output_format_.wFormatTag = WAVE_FORMAT_PCM;
-    } else if (IsEqualGUID(mix_format.SubFormat,
-                           KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
-      CHECK_EQ(sample_format_, kSampleFormatF32);
-      output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+      input_format_.SubFormat = mix_format.SubFormat;
+      // Set up the fixed output format based on the discovered format.
+      if (IsEqualGUID(mix_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+        CHECK_NE(sample_format_, kSampleFormatF32);
+        output_format_.wFormatTag = WAVE_FORMAT_PCM;
+      } else if (IsEqualGUID(mix_format.SubFormat,
+                             KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
+        CHECK_EQ(sample_format_, kSampleFormatF32);
+        output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+      } else {
+        // We don't support other wFormatTags, consider this as failed.
+        return false;
+      }
     } else {
-      // We don't support other wFormatTags, consider this as failed.
-      return false;
+      use_device_sample_format_ = false;
     }
-  } else {
-    // Use the historical S16 settings if the flag is disabled.
-    sample_format_ = kSampleFormatS16;
-    input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
-    output_format_.wFormatTag = WAVE_FORMAT_PCM;
   }
 
   // The clients asks for an input stream specified by `params`. Start by
@@ -1841,8 +1846,7 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
       // Engine for its MixFormat. The MixFormat should in theory always be
       // supported and have the same bit depth, so we should not hit this
       // pathway.
-      CHECK(!base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat),
-            base::NotFatalUntil::M148);
+      CHECK(!use_device_sample_format_, base::NotFatalUntil::M148);
       input_format->wBitsPerSample = closest_match->wBitsPerSample;
     }
 

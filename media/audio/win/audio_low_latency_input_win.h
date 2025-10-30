@@ -416,6 +416,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   bool simulate_error_for_testing_ = false;
 
+  bool use_device_sample_format_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
