@@ -492,21 +492,17 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
     case ICON_TYPE_LIST:
       return use_color_provider
                  ? color_provider->GetColor(cros_tokens::kCrosSysOnSurface)
-                 : ash_color_provider->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::kButtonIconColor);
+                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
     case ICON_TYPE_TRAY_ACTIVE:
       return use_color_provider
                  ? color_provider->GetColor(
                        cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                 : ash_color_provider->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::kButtonIconColor);
+                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
     case ICON_TYPE_FEATURE_POD_TOGGLED:
       return use_color_provider
                  ? color_provider->GetColor(
                        cros_tokens::kCrosSysSystemOnPrimaryContainer)
-                 : ash_color_provider->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::
-                           kButtonIconColorPrimary);
+                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
       return use_color_provider
                  ? color_provider->GetColor(cros_tokens::kCrosSysDisabled)
@@ -517,8 +513,7 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
     default:
       return use_color_provider
                  ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
-                 : ash_color_provider->GetContentLayerColor(
-                       AshColorProvider::ContentLayerType::kIconColorPrimary);
+                 : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
   }
 }
 

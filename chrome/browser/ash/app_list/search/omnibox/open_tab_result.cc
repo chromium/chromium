@@ -136,8 +136,8 @@ void OpenTabResult::UpdateIcon() {
 void OpenTabResult::SetGenericIcon() {
   uses_generic_icon_ = true;
   SetIcon(IconInfo(
-      ui::ImageModel::FromVectorIcon(
-          omnibox::kSwitchIcon, GetGenericIconColor(), kSystemIconDimension),
+      ui::ImageModel::FromVectorIcon(omnibox::kSwitchIcon, kGenericIconColorId,
+                                     kSystemIconDimension),
       kSystemIconDimension));
 }
 

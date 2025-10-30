@@ -159,12 +159,6 @@ INSTANTIATE_TEST_SUITE_P(
           ColorProvider::ContentLayerType::kIconColorSecondaryBackground,
           SkColorSetRGB(0x3C, 0x40, 0x43)},
 
-         {ColorMode::kLight, ColorProvider::ContentLayerType::kButtonIconColor,
-          SkColorSetRGB(0x17, 0x1D, 0x1E)},
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kButtonIconColorPrimary,
-          SkColorSetRGB(0xDE, 0xE3, 0xE5)},
-
          // Dark colors
          {ColorMode::kDark, ColorProvider::ContentLayerType::kSeparatorColor,
           SkColorSetARGB(0x24, 0xFF, 0xFF, 0xFF)},
@@ -192,13 +186,7 @@ INSTANTIATE_TEST_SUITE_P(
 
          {ColorMode::kDark,
           ColorProvider::ContentLayerType::kIconColorSecondaryBackground,
-          SkColorSetRGB(0xF1, 0xF3, 0xF4)},
-
-         {ColorMode::kDark, ColorProvider::ContentLayerType::kButtonIconColor,
-          SkColorSetRGB(0xDE, 0xE3, 0xE5)},
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kButtonIconColorPrimary,
-          SkColorSetRGB(0x17, 0x1D, 0x1E)}}));
+          SkColorSetRGB(0xF1, 0xF3, 0xF4)}}));
 
 }  // namespace
 

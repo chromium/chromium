@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -109,8 +110,7 @@ void HelpAppZeroStateProvider::StartZeroState() {
     // NOTE: Color provider may not be set in unit tests.
     SkColor icon_color =
         color_provider
-            ? color_provider->GetContentLayerColor(
-                  ash::ColorProvider::ContentLayerType::kButtonIconColorPrimary)
+            ? color_provider->GetColor(cros_tokens::kColorPrimaryInverted)
             : gfx::kGoogleGrey900;
     gfx::ImageSkia icon = gfx::CreateVectorIcon(
         ash::kReleaseNotesChipIcon, app_list::kSystemIconDimension, icon_color);

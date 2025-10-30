@@ -181,10 +181,8 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto* color_provider = AshColorProvider::Get();
 
-  SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningOutlineIcon, icon_color));
+      vector_icons::kWarningOutlineIcon, cros_tokens::kColorPrimary));
 
   SkColor label_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary);
