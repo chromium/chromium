@@ -88,6 +88,10 @@
 // Opens inactive tabs settings.
 - (void)openInactiveTabsSettings {
   [ChromeEarlGreyUI openSettingsMenu];
+  // Required to ensure the previous operation is fully completed before
+  // attempting to interact with the buttons.
+  GREYWaitForAppToIdle(@"App failed to idle");
+
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::TabsSettingsButton()];
   [ChromeEarlGreyUI
