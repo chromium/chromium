@@ -81,12 +81,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
-      enableIncognitoTrackingProtections_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
-      },
-
       // The label of the confirmation toast that is displayed after deletion
       // from 'Delete Browsing data' is completed.
       dbdDeletionConfirmationToastLabel_: {
@@ -104,7 +98,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private showClearBrowsingDataDialog_: boolean;
   declare private showPrivacyGuideDialog_: boolean;
   declare private enableDeleteBrowsingDataRevamp_: boolean;
-  declare private enableIncognitoTrackingProtections_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;
@@ -186,13 +179,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
   }
 
-  private onIncognitoTrackingProtectionsClick_() {
-    this.interactedWithPage_();
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.TrackingProtections.OpenedFromPrivacyPage');
-    Router.getInstance().navigateTo(routes.INCOGNITO_TRACKING_PROTECTIONS);
-  }
-
   private onPrivacyGuideClick_() {
     this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
         PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY);
@@ -258,12 +244,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       map.set(routes.COOKIES.path, '#thirdPartyCookiesLinkRow');
     }
 
-    if (routes.INCOGNITO_TRACKING_PROTECTIONS) {
-      map.set(
-          routes.INCOGNITO_TRACKING_PROTECTIONS.path,
-          '#incognitoTrackingProtectionsLinkRow');
-    }
-
     if (routes.PRIVACY_GUIDE) {
       map.set(routes.PRIVACY_GUIDE.path, '#privacyGuideLinkRow');
     }
@@ -289,9 +269,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     switch (childViewId) {
       case 'cookies':
         triggerId = 'thirdPartyCookiesLinkRow';
-        break;
-      case 'incognitoTrackingProtections':
-        triggerId = 'incognitoTrackingProtectionsLinkRow';
         break;
       case 'security':
       case 'securityKeys':

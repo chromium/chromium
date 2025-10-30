@@ -270,11 +270,6 @@ inline constexpr char kRelatedWebsiteSetsLearnMoreURL[] =
     "third-party-cookies%2Callow-related-sites-to-access-your-activity%2Cabout-"
     "embedded-content";
 
-// "Learn more" URL for Incognito tracking protections.
-// TODO(crbug.com/408036586): Update learn more URL when finalized
-inline constexpr char kIncognitoTrackingProtectionsLearnMoreUrl[] =
-    "https://support.google.com/chrome?p=incognito_tracking_protections";
-
 // Url to a blogpost about Flash deprecation.
 inline constexpr char kFlashDeprecationLearnMoreURL[] =
     "https://blog.chromium.org/2017/07/so-long-and-thanks-for-all-flash.html";

@@ -111,18 +111,6 @@
     </settings-cookies-page>
   </template>
 
-  <template is="dom-if" if="[[enableIncognitoTrackingProtections_]]">
-    <template is="dom-if" if="[[renderView_(
-        routes_.INCOGNITO_TRACKING_PROTECTIONS, currentRoute, inSearchMode)]]"
-        update-when-false>
-      <incognito-tracking-protections-page slot="view"
-          id="incognitoTrackingProtections" data-parent-view-id="privacy"
-          prefs="{{prefs}}"
-          route-path$="[[routes_.INCOGNITO_TRACKING_PROTECTIONS.path]]">
-      </incognito-tracking-protections-page>
-    </template>
-  </template>
-
   <template is="dom-if" if="[[!enableBundledSecuritySettings_]]">
     <template is="dom-if" if="[[renderView_(
         routes_.SECURITY, currentRoute, inSearchMode)]]" update-when-false>

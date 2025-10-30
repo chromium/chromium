@@ -497,19 +497,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
 
-  // ACT UX
-  bool ipp_ux = base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
-  bool fpp_ux = base::FeatureList::IsEnabled(
-      privacy_sandbox::kFingerprintingProtectionUx);
-  html_source->AddBoolean("isIpProtectionUxEnabled", ipp_ux);
-  html_source->AddBoolean("isFingerprintingProtectionUxEnabled", fpp_ux);
-  html_source->AddBoolean("enableIncognitoTrackingProtections",
-                          ipp_ux || fpp_ux);
-  html_source->AddBoolean(
-      "isIpProtectionDisabledForEnterprise",
-      TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->IsIpProtectionDisabledForEnterprise());
-
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(

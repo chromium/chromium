@@ -6,7 +6,6 @@ per-file cookies_page_test.ts=fmacintosh@google.com,rainhard@chromium.org
 per-file cr_lottie*=nsatragno@chromium.org
 per-file *language* , translate_* = file://components/language/OWNERS
 per-file geolocation_page_test.ts=lyf@chromium.org
-per-file incognito_tracking_protections_page_test.ts=fmacintosh@google.com
 per-file notifications_page_test.ts=lyf@chromium.org
 per-file people_page_*.ts=amelies@google.com
 per-file privacy_guide_*test*.ts=rainhard@chromium.org

@@ -33,7 +33,6 @@ suite('PrivacyPageIndex', function() {
           enableExperimentalWebPlatformFeatures: false,
           enableFederatedIdentityApiContentSetting: false,
           enableHandTrackingContentSetting: false,
-          enableIncognitoTrackingProtections: false,
           enableKeyboardLockPrompt: false,
           enableLocalNetworkAccessSetting: false,
           enablePaymentHandlerContentSetting: false,
@@ -231,15 +230,6 @@ suite('PrivacyPageIndex', function() {
       await createPrivacyPageIndex({enableSecurityKeysSubpage: true});
       return testViewsForRoute(
           routes.SECURITY_KEYS, ['securityKeys'], 'privacy');
-    });
-
-    test('RoutingIncognitoTrackingProtections', async function() {
-      assertFalse(
-          loadTimeData.getBoolean('enableIncognitoTrackingProtections'));
-      await createPrivacyPageIndex({enableIncognitoTrackingProtections: true});
-      return testViewsForRoute(
-          routes.INCOGNITO_TRACKING_PROTECTIONS,
-          ['incognitoTrackingProtections'], 'privacy');
     });
 
     // <if expr="is_chromeos">

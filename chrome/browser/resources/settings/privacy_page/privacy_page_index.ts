@@ -116,12 +116,6 @@ export class SettingsPrivacyPageIndexElement extends
         },
       },
 
-      enableIncognitoTrackingProtections_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
-      },
-
       enablePaymentHandlerContentSetting_: {
         type: Boolean,
         value: () => {
@@ -218,7 +212,6 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableFederatedIdentityApiContentSetting_: boolean;
   declare private enableExperimentalWebPlatformFeatures_: boolean;
   declare private enableHandTrackingContentSetting_: boolean;
-  declare private enableIncognitoTrackingProtections_: boolean;
   // <if expr="is_chromeos">
   declare private enableSmartCardReadersContentSetting_: boolean;
   // </if>

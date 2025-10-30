@@ -53,9 +53,10 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
 #if BUILDFLAG(ENABLE_GLIC)
-            features::kGlic, features::kTabstripComboButton,
+            features::kGlic,
+            features::kTabstripComboButton,
 #endif
-            privacy_sandbox::kFingerprintingProtectionUx},
+        },
         /*disabled_features=*/
         {
 #if BUILDFLAG(ENABLE_GLIC)
@@ -270,11 +271,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsListEntryItems) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, IncognitoTrackingProtectionsPageTest) {
-  RunTest("settings/incognito_tracking_protections_page_test.js",
-          "runMochaSuite('IncognitoTrackingProtectionsPageTest')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1283,7 +1279,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #endif
             browsing_data::features::kDbdRevampDesktop,
             permissions::features::kPermissionSiteSettingsRadioButton,
-            privacy_sandbox::kFingerprintingProtectionUx,
             safe_browsing::kBundledSecuritySettings,
         },
         {});
@@ -1314,12 +1309,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('CookiesSubpage')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
-                       IncognitoTrackingProtectionsSubpage) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('IncognitoTrackingProtectionsSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, PrivacyGuideRow) {
