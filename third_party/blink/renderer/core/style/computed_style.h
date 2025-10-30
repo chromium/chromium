@@ -1173,6 +1173,12 @@ class ComputedStyle final : public ComputedStyleBase {
     NOTREACHED();
   }
 
+  bool IsReverseMasonryDirection() const {
+    const auto masonry_direction = MasonryDirection();
+    return (masonry_direction == EMasonryDirection::kColumnReverse ||
+            masonry_direction == EMasonryDirection::kRowReverse);
+  }
+
   // Grid axis utility functions, usable in Grid and Masonry.
   const GridTrackList& AutoTracks(
       GridTrackSizingDirection track_direction) const {

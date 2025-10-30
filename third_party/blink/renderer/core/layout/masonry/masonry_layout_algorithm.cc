@@ -390,8 +390,8 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
 
     // Update auto-placement cursor after we have determined the item's final
     // placement.
-    running_positions.UpdateAutoPlacementCursor(
-        masonry_item.resolved_position.EndLine(grid_axis_direction));
+    running_positions.UpdateAutoPlacementCursor(masonry_item.resolved_position,
+                                                grid_axis_direction);
 
     // `start_offset_in_stacking_axis` specifies where in the stacking axis the
     // item should be placed, so we need to adjust the `containing_rect` in the
