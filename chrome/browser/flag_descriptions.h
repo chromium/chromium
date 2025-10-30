@@ -6480,11 +6480,6 @@ inline constexpr char kMacCatapLoopbackAudioForScreenShareDescription[] =
     "Enable system audio loopback capture for screen share using the macOS "
     "CoreAudio tap API on macOS 14.2+.";
 
-inline constexpr char kMacImeLiveConversionFixName[] =
-    "Mac IME Live Conversion";
-inline constexpr char kMacImeLiveConversionFixDescription[] =
-    "A fix for the Live Conversion feature of Japanese IME.";
-
 inline constexpr char kMacPWAsNotificationAttributionName[] =
     "Mac PWA notification attribution";
 inline constexpr char kMacPWAsNotificationAttributionDescription[] =

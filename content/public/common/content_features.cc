@@ -1315,10 +1315,6 @@ BASE_FEATURE(kUserMediaScreenCapturing, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a fix for a macOS IME Live Conversion issue. crbug.com/40226470 and
-// crbug.com/40060200
-BASE_FEATURE(kMacImeLiveConversionFix, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Changes how Chrome responds to accessibility activation signals on macOS
 // Sonoma, to avoid unnecessary changes to the screen reader state.
 BASE_FEATURE(kSonomaAccessibilityActivationRefinements,

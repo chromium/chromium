@@ -10797,13 +10797,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kFullscreenInsetsApiMigrationOnAutomotive)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
-    {"enable-mac-ime-live-conversion-fix",
-     flag_descriptions::kMacImeLiveConversionFixName,
-     flag_descriptions::kMacImeLiveConversionFixDescription, kOsMac,
-     FEATURE_VALUE_TYPE(features::kMacImeLiveConversionFix)},
-#endif
-
     {"tear-off-web-app-tab-opens-web-app-window",
      flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowName,
      flag_descriptions::kTearOffWebAppAppTabOpensWebAppWindowDescription,
