@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "media/base/limits.h"
 
 namespace media {
 
@@ -188,11 +187,6 @@ int ChannelLayoutToChannelCount(ChannelLayout layout) {
 
 // Converts a channel count into a channel layout.
 ChannelLayout GuessChannelLayout(int channels) {
-  // Use discrete layout for higher channel counts to facilitate
-  // audio passthrough, thus avoiding channel mixing.
-  if (channels > kMaxConcurrentChannels && channels <= limits::kMaxChannels) {
-    return CHANNEL_LAYOUT_DISCRETE;
-  }
   switch (channels) {
     case 1:
       return CHANNEL_LAYOUT_MONO;
@@ -210,6 +204,8 @@ ChannelLayout GuessChannelLayout(int channels) {
       return CHANNEL_LAYOUT_6_1;
     case 8:
       return CHANNEL_LAYOUT_7_1;
+    case 10:
+      return CHANNEL_LAYOUT_5_1_4_DOWNMIX;
     default:
       DVLOG(1) << "Unsupported channel count: " << channels;
   }
