@@ -735,7 +735,7 @@ TEST_P(ManagedDataTypeErrorScreenServiceTest,
       .WillOnce(testing::InvokeWithoutArgs([&future] { future.SetValue(); }));
 
   MockProfileManagementDisclaimerService* disclaimer_service =
-      static_cast<testing::NiceMock<MockProfileManagementDisclaimerService>*>(
+      static_cast<MockProfileManagementDisclaimerService*>(
           ProfileManagementDisclaimerServiceFactory::GetForProfile(
               profile_.get()));
 
@@ -762,7 +762,7 @@ TEST_P(ManagedDataTypeErrorScreenServiceTest,
       /*types=*/{});
 
   MockProfileManagementDisclaimerService* disclaimer_service =
-      static_cast<testing::NiceMock<MockProfileManagementDisclaimerService>*>(
+      static_cast<MockProfileManagementDisclaimerService*>(
           ProfileManagementDisclaimerServiceFactory::GetForProfile(
               profile_.get()));
 
