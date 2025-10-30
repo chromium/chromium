@@ -5209,7 +5209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Heuristic.Result"
-    enum="ReaderModeHeuristicResult" expires_after="2025-11-24">
+    enum="ReaderModeHeuristicResult" expires_after="2026-02-24">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
