@@ -125,8 +125,8 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
     }
 
     @Override
-    public void setVisibility(boolean isVisible) {
-        setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mHomeButton.setHasSpaceToShow(hasSpaceToShow);
     }
 
     @Override

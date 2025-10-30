@@ -215,8 +215,11 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
-    public void setVisibility(boolean isVisible) {
-        mToggleTabStackButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        // TODO(crbug.com/455658153): Ensure setVisibility() can handle multiple sources for setting
+        //  visibility. Currently this only accounts for visibility being set due to the width of
+        //  the ToolbarTablet.
+        mToggleTabStackButton.setVisibility(hasSpaceToShow ? View.VISIBLE : View.GONE);
     }
 
     @Override

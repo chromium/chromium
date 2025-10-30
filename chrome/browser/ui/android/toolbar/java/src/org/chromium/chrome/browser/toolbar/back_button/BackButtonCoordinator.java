@@ -77,6 +77,10 @@ public class BackButtonCoordinator extends ToolbarChildButton {
                         .with(BackButtonProperties.TINT_COLOR_LIST, iconColorList)
                         .with(BackButtonProperties.IS_ENABLED, view.isEnabled())
                         .with(BackButtonProperties.IS_FOCUSABLE, view.isFocusable())
+                        .with(
+                                BackButtonProperties.IS_VISIBLE,
+                                mView.getVisibility() == View.VISIBLE)
+                        .with(BackButtonProperties.HAS_SPACE_TO_SHOW, true)
                         .build();
         mMediator =
                 new BackButtonMediator(
@@ -129,9 +133,18 @@ public class BackButtonCoordinator extends ToolbarChildButton {
                 : ToolbarUtils.asFadeOutAnimation(fadeAnimator);
     }
 
-    @Override
+    /**
+     * Sets back button visibility.
+     *
+     * @param isVisible indicated whether view should be visible or gone.
+     */
     public void setVisibility(boolean isVisible) {
         mMediator.setVisibility(isVisible);
+    }
+
+    @Override
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mMediator.setHasSpaceToShow(hasSpaceToShow);
     }
 
     /**

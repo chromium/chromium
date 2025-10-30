@@ -38,9 +38,9 @@ public abstract class ToolbarChildButton extends ToolbarChild {
     /**
      * Sets button visibility.
      *
-     * @param isVisible indicates whether the button view should be visible or gone.
+     * @param hasSpaceToShow indicates whether the button view has space to show.
      */
-    public abstract void setVisibility(boolean isVisible);
+    public abstract void setHasSpaceToShow(boolean hasSpaceToShow);
 
     @Override
     public int updateVisibility(int availableWidth) {
@@ -48,10 +48,10 @@ public abstract class ToolbarChildButton extends ToolbarChild {
 
         int width = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
         if (availableWidth >= width) {
-            setVisibility(true);
+            setHasSpaceToShow(true);
             return width;
         } else {
-            setVisibility(false);
+            setHasSpaceToShow(false);
             return 0;
         }
     }

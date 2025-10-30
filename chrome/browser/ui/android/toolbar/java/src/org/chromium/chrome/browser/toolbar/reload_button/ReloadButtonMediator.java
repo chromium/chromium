@@ -226,6 +226,15 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     }
 
     /**
+     * Informs the button on whether there is enough space for it to be shown.
+     *
+     * @param hasSpaceToShow indicates whether the button view has space to show.
+     */
+    void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mModel.set(ReloadButtonProperties.HAS_SPACE_TO_SHOW, hasSpaceToShow);
+    }
+
+    /**
      * Checks whether view is visible or not.
      *
      * @return true - view is visible, false - view is not visible.

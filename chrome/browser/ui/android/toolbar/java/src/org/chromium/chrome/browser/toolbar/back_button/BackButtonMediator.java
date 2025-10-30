@@ -198,8 +198,17 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
      *
      * @param isVisible indicated whether view should be visible or gone.
      */
-    public void setVisibility(boolean isVisible) {
+    void setVisibility(boolean isVisible) {
         mModel.set(BackButtonProperties.IS_VISIBLE, isVisible);
+    }
+
+    /**
+     * Informs the button on whether there is enough space for it to be shown.
+     *
+     * @param hasSpaceToShow indicates whether the button view has space to show.
+     */
+    void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mModel.set(BackButtonProperties.HAS_SPACE_TO_SHOW, hasSpaceToShow);
     }
 
     /**

@@ -119,6 +119,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
                                         themeColorProvider.getTint(),
                                         themeColorProvider.getBrandedColorScheme()))
                         .with(MenuButtonProperties.IS_VISIBLE, true)
+                        .with(MenuButtonProperties.HAS_SPACE_TO_SHOW, true)
                         .with(MenuButtonProperties.STATE_SUPPLIER, menuButtonStateSupplier)
                         .with(
                                 MenuButtonProperties.ON_KEY_LISTENER,
@@ -273,10 +274,20 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
      *
      * @param visible Visibility state, true for visible and false for hidden.
      */
-    @Override
     public void setVisibility(boolean visible) {
         if (mMediator == null) return;
         mMediator.setVisibility(visible);
+    }
+
+    /**
+     * Sets whether the MenuButton has space to show.
+     *
+     * @param hasSpaceToShow Whether the button has space to show.
+     */
+    @Override
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        if (mMediator == null) return;
+        mMediator.setHasSpaceToShow(hasSpaceToShow);
     }
 
     /**
