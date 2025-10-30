@@ -1,5 +1,19 @@
 [
   {
-    "reason_for_missing_test": "Mapping not yet implemented."
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.silent_printing_enabled",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
