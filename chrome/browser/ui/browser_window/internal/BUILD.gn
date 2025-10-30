@@ -249,7 +249,6 @@ if (is_android) {
       ":java",
       "//base:base_java_test_support",
       "//base/test:public_transit_java",
-      "//chrome/android:chrome_java",
       "//chrome/android/javatests:chrome_test_java_helper",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",

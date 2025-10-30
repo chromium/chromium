@@ -22,6 +22,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
@@ -206,6 +208,12 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
             // Test needs "new window" in app menu and the tablet behavior to enter split screen
             // mode to trigger a window bounds change.
             DeviceFormFactor.ONLY_TABLET)
+    @Features.DisableFeatures(
+            // When ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL is enabled, a new window will be full
+            // screen instead of being in the split screen mode. This test relies on the split
+            // screen mode to trigger task bounds change, so
+            // ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL needs to be disabled.
+            ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void
             startChromeTabbedActivity_triggerTaskBoundsChange_notifyExtensionWindowController() {
         // Arrange:

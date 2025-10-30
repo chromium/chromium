@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -254,6 +253,12 @@ public class ChromeAndroidTaskIntegrationTest {
             // Test needs "new window" in app menu and the tablet behavior to enter split screen
             // mode to trigger onConfigurationChanged().
             DeviceFormFactor.ONLY_TABLET)
+    @DisableFeatures(
+            // When ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL is enabled, a new window will be full
+            // screen instead of being in the split screen mode. This test relies on the split
+            // screen mode to trigger onConfigurationChanged(), so
+            // ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL needs to be disabled.
+            ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void onConfigurationChanged_invokesOnTaskBoundsChangedForFeature() {
         // Arrange:
         // Launch ChromeTabbedActivity;
@@ -883,9 +888,6 @@ public class ChromeAndroidTaskIntegrationTest {
         AtomicReference<ChromeTabbedActivity> newActivityRef = new AtomicReference<>();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(
-                            MultiWindowUtils.getInstanceCount(),
-                            Matchers.is(currentTabbedActivityTaskIds.size() + 1));
                     for (Activity activity : ApplicationStatus.getRunningActivities()) {
                         if (activity instanceof ChromeTabbedActivity cta
                                 && !currentTabbedActivityTaskIds.contains(activity.getTaskId())) {
