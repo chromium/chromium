@@ -6,6 +6,7 @@
 
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -77,13 +78,18 @@ NSString* const kCredentialProviderPromoAccessibilityId =
      tertiaryActionString:(NSString*)tertiaryActionString
                     image:(UIImage*)image {
   DCHECK(!self.alertScreen);
+
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = primaryActionString;
+  configuration.secondaryActionString = secondaryActionString;
+  configuration.tertiaryActionString = tertiaryActionString;
+
   ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:configuration];
   alertScreen.titleString = titleString;
   alertScreen.subtitleString = subtitleString;
-  alertScreen.primaryActionString = primaryActionString;
-  alertScreen.secondaryActionString = secondaryActionString;
-  alertScreen.tertiaryActionString = tertiaryActionString;
   alertScreen.image = image;
   alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
