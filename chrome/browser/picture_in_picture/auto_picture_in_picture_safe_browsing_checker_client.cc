@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
 AutoPictureInPictureSafeBrowsingCheckerClient::
@@ -20,7 +21,13 @@ AutoPictureInPictureSafeBrowsingCheckerClient::
           {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
            safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
            safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+#if !BUILDFLAG(IS_ANDROID)
+           // The check for this threat type is not supported on Android.
+           // crbug.com/41385006 Threat types used on Android must be supported
+           // by SBThreatTypeToSafeBrowsingApiJavaThreatType in
+           // components/safe_browsing/android/safe_browsing_api_handler_bridge.cc.
            safe_browsing::SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
+#endif  // !BUILDFLAG(IS_ANDROID)
            safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})) {
   DCHECK_GE(safe_browsing_check_delay_, kMinimumCheckDelay);
 }
