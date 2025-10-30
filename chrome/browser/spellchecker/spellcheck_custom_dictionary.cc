@@ -250,9 +250,9 @@ SpellcheckCustomDictionary::SpellcheckCustomDictionary(
 
 SpellcheckCustomDictionary::~SpellcheckCustomDictionary() = default;
 
-const std::set<std::string>& SpellcheckCustomDictionary::GetWords() const {
+std::set<std::string> SpellcheckCustomDictionary::GetWords() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return words_;
+  return base::STLSetUnion<std::set<std::string>>(words_, account_words_);
 }
 
 bool SpellcheckCustomDictionary::AddWord(const std::string& word) {
@@ -280,7 +280,7 @@ bool SpellcheckCustomDictionary::RemoveWord(const std::string& word) {
 }
 
 bool SpellcheckCustomDictionary::HasWord(const std::string& word) const {
-  return base::Contains(words_, word);
+  return base::Contains(GetWords(), word);
 }
 
 void SpellcheckCustomDictionary::Clear() {

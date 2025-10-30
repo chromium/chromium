@@ -205,10 +205,11 @@ InputMethodPrivateFetchAllDictionaryWordsFunction::Run() {
                                              static_function_name())));
   }
 
-  const std::set<std::string>& words = dictionary->GetWords();
+  std::set<std::string> words = dictionary->GetWords();
   base::Value::List output;
-  for (const auto& word : words) {
-    output.Append(word);
+  output.reserve(words.size());
+  for (auto it = words.begin(); it != words.end();) {
+    output.Append(std::move(words.extract(it++).value()));
   }
   return RespondNow(WithArguments(std::move(output)));
 }

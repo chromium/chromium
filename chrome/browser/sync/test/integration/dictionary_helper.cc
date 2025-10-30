@@ -62,7 +62,7 @@ void LoadDictionary(SpellcheckCustomDictionary* dictionary) {
 
 }  // namespace
 
-const std::set<std::string>& GetDictionaryWords(int profile_index) {
+std::set<std::string> GetDictionaryWords(int profile_index) {
   return GetDictionary(profile_index)->GetWords();
 }
 

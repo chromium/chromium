@@ -580,10 +580,11 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::GetSpellcheckWords() const {
 
   // TODO(michaelpg): Sort using app locale.
   base::Value::List word_list;
-  const std::set<std::string>& words = dictionary->GetWords();
+  std::set<std::string> words = dictionary->GetWords();
   word_list.reserve(words.size());
-  for (const std::string& word : words)
-    word_list.Append(word);
+  for (auto it = words.begin(); it != words.end();) {
+    word_list.Append(std::move(words.extract(it++).value()));
+  }
   return word_list;
 }
 

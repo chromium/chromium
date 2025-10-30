@@ -15,8 +15,8 @@
 
 namespace dictionary_helper {
 
-// Returns set of words stored in dictionary for given |profile_index|.
-const std::set<std::string>& GetDictionaryWords(int profile_index);
+// Returns set of words stored in dictionary for given `profile_index`.
+std::set<std::string> GetDictionaryWords(int profile_index);
 
 // Synchronously loads the dictionaries across all profiles. Returns only after
 // the dictionaries have finished to load.

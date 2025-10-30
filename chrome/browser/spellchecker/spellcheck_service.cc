@@ -406,8 +406,9 @@ void SpellcheckService::InitForRenderer(content::RenderProcessHost* host) {
           hunspell_dictionary->GetLanguage()));
     }
 
-    custom_words.assign(custom_dictionary_->GetWords().begin(),
-                        custom_dictionary_->GetWords().end());
+    std::set<std::string> custom_words_set = custom_dictionary_->GetWords();
+    custom_words.assign(std::make_move_iterator(custom_words_set.begin()),
+                        std::make_move_iterator(custom_words_set.end()));
   } else {
     // Disabling spell check should also disable spelling service.
     user_prefs::UserPrefs::Get(context)->SetBoolean(

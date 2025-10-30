@@ -134,7 +134,7 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   ~SpellcheckCustomDictionary() override;
 
   // Returns the in-memory cache of words in the custom dictionary.
-  const std::set<std::string>& GetWords() const;
+  std::set<std::string> GetWords() const;
 
   // Adds |word| to the dictionary, schedules a write to disk, and notifies
   // observers of the change. Returns true if |word| is valid and not a
@@ -205,7 +205,9 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   // LoadDictionaryFile finishes reading the dictionary file.
   void OnLoaded(std::unique_ptr<LoadFileResult> result);
 
-  // Applies the |dictionary_change| to the in-memory copy of the dictionary.
+  // Applies the `dictionary_change` to the in-memory copy of the dictionary.
+  // This applies the change to both local and account words if syncing,
+  // otherwise only to local words.
   void Apply(const Change& dictionary_change);
 
   // Schedules a write of the words in |load_file_result| to disk when the
@@ -228,8 +230,14 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   // Task runner where the file operations takes place.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // In-memory cache of the custom words file.
+  // In-memory cache of the custom words file. When
+  // kSpellcheckSeparateLocalAndAccountDictionaries is disabled, this contains
+  // both local and account words, otherwise only local words.
   std::set<std::string> words_;
+
+  // Account words.Used only when
+  // kSpellcheckSeparateLocalAndAccountDictionaries is enabled.
+  std::set<std::string> account_words_;
 
   // The path to the custom dictionary file.
   base::FilePath custom_dictionary_path_;

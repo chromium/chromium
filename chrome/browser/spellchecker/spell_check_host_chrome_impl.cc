@@ -226,10 +226,10 @@ void SpellCheckHostChromeImpl::OnDictionariesInitialized() {
           hunspell_dictionary->GetLanguage()));
     }
 
-    SpellcheckCustomDictionary* custom_dictionary =
-        spellcheck->GetCustomDictionary();
-    custom_words.assign(custom_dictionary->GetWords().begin(),
-                        custom_dictionary->GetWords().end());
+    std::set<std::string> custom_words_set =
+        spellcheck->GetCustomDictionary()->GetWords();
+    custom_words.assign(std::make_move_iterator(custom_words_set.begin()),
+                        std::make_move_iterator(custom_words_set.end()));
   }
 
   std::move(dictionaries_loaded_callback_)
