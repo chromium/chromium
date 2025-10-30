@@ -1415,7 +1415,11 @@ class TabImpl implements Tab {
 
             boolean needsInitWebContents = true;
             boolean createWebContents = webContents == null;
-            if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()) {
+            // TODO(crbug.com/448420873): For HeadlessTabModel we might not have a WindowAndroid.
+            // We should investigate whether we want to create a WebContents for headless tabs or
+            // how best to handle that. Headless tab models are not associated with
+            // BrowserWindowInterface so this shouldn't be an issue for now.
+            if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled() && mWindowAndroid != null) {
                 if (mWebContentsState != null) {
                     assert webContents == null;
 
