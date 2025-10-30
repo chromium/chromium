@@ -139,11 +139,10 @@ chromium-metrics-reviews@google.com.
   <variant name="FrameLoader.DetachDocument"
       summary="FrameLoader::DetachDocument()"/>
   <variant
-      name="FrameLoader.DispatchUnloadEventAndFillOldDocumentInfoIfNeeded.CommitInFrame"
+      name="FrameLoader.DispatchUnloadEventAndFillOldDocInfo.CommitInFrame"
       summary="FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded()
                for commiting"/>
-  <variant
-      name="FrameLoader.DispatchUnloadEventAndFillOldDocumentInfoIfNeeded.Other"
+  <variant name="FrameLoader.DispatchUnloadEventAndFillOldDocInfo.Other"
       summary="FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded()
                for others"/>
   <variant name="LocalFrame.DetachImpl.Remove"
