@@ -300,8 +300,8 @@ const CGFloat kFeatureRowIconSize = 20;
         initWithFeatureType:PageActionMenuTranslate
                       title:l10n_util::GetNSString(
                                 IDS_IOS_AI_HUB_TRANSLATE_LABEL)
-                       icon:DefaultSymbolWithPointSize(kTranslateSymbol,
-                                                       kFeatureRowIconSize)
+                       icon:CustomSymbolTemplateWithPointSize(
+                                kTranslateSymbol, kFeatureRowIconSize)
                  actionType:PageActionMenuButtonAction];
     translateFeature.subtitle = [self translateLanguagePair];
     translateFeature.actionType = PageActionMenuSettingsAction;

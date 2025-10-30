@@ -72,7 +72,7 @@ const CGFloat kReaderModeIconCornerRadius = 6;
 const CGFloat kReaderModeContentStackSpacing = 12;
 
 // The size of the reader mode icon container.
-const CGFloat kReaderModeIconContainerSize = 32;
+const CGFloat kIconContainerSize = 32;
 
 // The horizontal padding for the reader mode content stack.
 const CGFloat kReaderModeContentStackHorizontalPadding = 16;
@@ -82,9 +82,6 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
 // The minimum height for feature rows in the Page Action Menu.
 const CGFloat kFeatureRowHeight = 56;
-
-// The size of icons displayed in feature rows.
-const CGFloat kFeatureRowIconSize = 20;
 
 // The spacing between icon and content in feature rows.
 const CGFloat kFeatureRowContentSpacing = 12;
@@ -296,16 +293,9 @@ const CGFloat kDividerWidth = 1.0;
   buttonContentStack.userInteractionEnabled = NO;
 
   // Add leading icon.
-  UIView* leadingIconContainer = [[UIView alloc] init];
-  leadingIconContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  leadingIconContainer.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-  leadingIconContainer.layer.cornerRadius = kReaderModeIconCornerRadius;
-  UIImageView* leadingIcon = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(GetReaderModeSymbolName(),
-                                               kSmallButtonIconSize)];
-  leadingIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  leadingIcon.tintColor = [UIColor colorNamed:kBlue600Color];
-  [leadingIconContainer addSubview:leadingIcon];
+  UIView* leadingIconContainer = [self
+      createIconWithImage:DefaultSymbolWithPointSize(GetReaderModeSymbolName(),
+                                                     kSmallButtonIconSize)];
   [buttonContentStack addArrangedSubview:leadingIconContainer];
 
   // Add stack with title and subtitle.
@@ -342,8 +332,6 @@ const CGFloat kDividerWidth = 1.0;
   [button addSubview:buttonContentStack];
 
   // Add constraints.
-  AddSquareConstraints(leadingIconContainer, kReaderModeIconContainerSize);
-  AddSameCenterConstraints(leadingIcon, leadingIconContainer);
   AddSameConstraintsWithInsets(
       buttonContentStack, button,
       NSDirectionalEdgeInsetsMake(kReaderModeContentStackVerticalPadding,
@@ -861,9 +849,7 @@ const CGFloat kDividerWidth = 1.0;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   [containerView addSubview:stackView];
 
-  UIImageView* iconView = [[UIImageView alloc] initWithImage:feature.icon];
-  iconView.translatesAutoresizingMaskIntoConstraints = NO;
-  iconView.tintColor = [UIColor colorNamed:kBlue600Color];
+  UIView* iconView = [self createIconWithImage:feature.icon];
   [stackView addArrangedSubview:iconView];
 
   UIStackView* labelsStack = [[UIStackView alloc] init];
@@ -922,8 +908,6 @@ const CGFloat kDividerWidth = 1.0;
   }
 
   [NSLayoutConstraint activateConstraints:@[
-    [iconView.widthAnchor constraintEqualToConstant:kFeatureRowIconSize],
-    [iconView.heightAnchor constraintEqualToConstant:kFeatureRowIconSize],
     [containerView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kFeatureRowHeight],
 
@@ -1035,13 +1019,7 @@ const CGFloat kDividerWidth = 1.0;
   contentStack.spacing = kFeatureRowContentSpacing;
   contentStack.userInteractionEnabled = NO;
 
-  UIImageView* iconView = [[UIImageView alloc] initWithImage:feature.icon];
-  iconView.translatesAutoresizingMaskIntoConstraints = NO;
-  iconView.tintColor = [UIColor colorNamed:kBlue600Color];
-  [NSLayoutConstraint activateConstraints:@[
-    [iconView.widthAnchor constraintEqualToConstant:kFeatureRowIconSize],
-    [iconView.heightAnchor constraintEqualToConstant:kFeatureRowIconSize],
-  ]];
+  UIView* iconView = [self createIconWithImage:feature.icon];
 
   [contentStack addArrangedSubview:iconView];
 
@@ -1203,6 +1181,28 @@ const CGFloat kDividerWidth = 1.0;
   UIStackView* labelsStack = buttonContentStack.arrangedSubviews[1];
   [labelsStack setContentHuggingPriority:UILayoutPriorityDefaultLow
                                  forAxis:UILayoutConstraintAxisHorizontal];
+}
+
+// Creates an icon with background container and rounded corners.
+- (UIView*)createIconWithImage:(UIImage*)image {
+  UIView* iconContainer = [[UIView alloc] init];
+  iconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  iconContainer.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  iconContainer.layer.cornerRadius = kReaderModeIconCornerRadius;
+
+  UIImageView* icon = [[UIImageView alloc] initWithImage:image];
+  icon.translatesAutoresizingMaskIntoConstraints = NO;
+  icon.tintColor = [UIColor colorNamed:kBlue600Color];
+  [iconContainer addSubview:icon];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainer.widthAnchor constraintEqualToConstant:kIconContainerSize],
+    [iconContainer.heightAnchor constraintEqualToConstant:kIconContainerSize],
+    [icon.centerXAnchor constraintEqualToAnchor:iconContainer.centerXAnchor],
+    [icon.centerYAnchor constraintEqualToAnchor:iconContainer.centerYAnchor],
+  ]];
+
+  return iconContainer;
 }
 
 @end
