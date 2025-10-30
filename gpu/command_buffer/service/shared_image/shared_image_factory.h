@@ -22,7 +22,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
