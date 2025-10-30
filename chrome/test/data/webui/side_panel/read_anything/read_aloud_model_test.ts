@@ -294,27 +294,90 @@ suite('ReadAloudModel', () => {
       });
 
   test(
-      'getCurrentTextContent called multiple times returns the same content if moveSpeechForward or moveSpeechBackwards is not called',
+      'getCurrentText when sentence initially skipped returns expected text',
       async () => {
         const div = document.createElement('div');
-        const sentence1 = document.createElement('strong');
-        sentence1.textContent = 'Can\'t we be seventeen? ';
+        const sentence1 = document.createElement('b');
+        sentence1.textContent = 'See the line where the sky meets the sea? ';
 
-        const sentence2 = document.createElement('i');
-        sentence2.textContent = 'That\'s all I want to do.';
+        const sentence2 = document.createElement('a');
+        sentence2.textContent = 'It calls me. ';
+
+        const sentence3 = document.createElement('b');
+        sentence3.textContent = 'And no one knows how far it goes.';
 
         div.appendChild(sentence1);
         div.appendChild(sentence2);
+        div.appendChild(sentence3);
         document.body.appendChild(div);
+
         await microtasksFinished();
         getReadAloudModel().init(ReadAloudNode.create(document.body)!);
-        for (let i = 0; i < 10; i++) {
-          assertSentenceMatchesEntireSegment(sentence1.textContent);
-        }
 
+        // Move to third sentence
         getReadAloudModel().moveSpeechForward();
-        for (let i = 0; i < 10; i++) {
-          assertSentenceMatchesEntireSegment(sentence2.textContent);
-        }
+        getReadAloudModel().moveSpeechForward();
+        assertSentenceMatchesEntireSegment(sentence3.textContent);
+
+        // Move to second node which was initially skipped
+        getReadAloudModel().moveSpeechBackwards();
+        assertSentenceMatchesEntireSegment(sentence2.textContent);
       });
+
+  test('getCurrentText when sentence split across multiple nodes', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'The wind is howling like this ';
+
+    const sentence2 = document.createElement('a');
+    sentence2.textContent = 'swirling storm ';
+
+    const sentence3 = document.createElement('b');
+    sentence3.textContent = 'inside.';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        'The wind is howling like this swirling storm inside.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test('getCurrentText when sentence split across two nodes', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'And I am almost ';
+
+    const sentence2 = document.createElement('a');
+    sentence2.textContent = 'there. ';
+
+    const sentence3 = document.createElement('b');
+    sentence3.textContent = 'I am almost there.';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        'And I am almost there.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'I am almost there.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
 });
