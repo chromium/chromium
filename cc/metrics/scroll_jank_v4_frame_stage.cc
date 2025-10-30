@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -16,24 +17,17 @@
 
 namespace cc {
 
-ScrollJankV4FrameStage::ScrollJankV4FrameStage(
-    std::variant<ScrollJankV4FrameStage::ScrollUpdates,
-                 ScrollJankV4FrameStage::ScrollEnd> stage)
-    : stage(stage) {}
+namespace {
 
-ScrollJankV4FrameStage::ScrollJankV4FrameStage(
-    const ScrollJankV4FrameStage& stage) = default;
-
-ScrollJankV4FrameStage::~ScrollJankV4FrameStage() = default;
-
-// static
-ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
-    const EventMetrics::List& events_metrics) {
+template <typename EventMetricsPtr>
+ScrollJankV4FrameStage::List CalculateStagesImpl(
+    const std::vector<EventMetricsPtr>& events_metrics,
+    bool skip_non_damaging_events) {
   ScrollJankV4FrameStage::List stages;
 
   bool has_inertial_input = false;
   bool had_earliest_gesture_scroll = false;
-  bool had_latest_gesture_scroll = false;
+  bool had_any_gesture_scroll = false;
   std::optional<base::TimeTicks> scroll_start_ts = std::nullopt;
   std::optional<base::TimeTicks> scroll_end_ts = std::nullopt;
   float total_raw_delta_pixels = 0;
@@ -76,7 +70,7 @@ ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
       scroll_end_ts = generation_ts;
       continue;
     }
-    if (!event->caused_frame_update()) {
+    if (skip_non_damaging_events && !event->caused_frame_update()) {
       // TODO(crbug.com/444183591): Handle non-damaging inputs in the scroll
       // jank metrics.
       continue;
@@ -118,8 +112,9 @@ ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
         NOTREACHED();
     }
 
-    if (scroll_update->did_scroll() || scroll_start_ts) {
-      had_latest_gesture_scroll = true;
+    if (!skip_non_damaging_events || scroll_update->did_scroll() ||
+        scroll_start_ts) {
+      had_any_gesture_scroll = true;
     }
     last_input_generation_ts =
         std::max(last_input_generation_ts, scroll_update->last_timestamp());
@@ -129,12 +124,12 @@ ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
   // generation timestamp of all scroll UPDATES, then we assume that the
   // scroll end belongs to the PREVIOUS scroll (the E?F?U* ordering above). Note
   // that this case also covers the scenario where there were no scroll updates
-  // in this frame (i.e. `had_latest_gesture_scroll` is false).
+  // in this frame (i.e. `had_any_gesture_scroll` is false).
   if (scroll_end_ts && *scroll_end_ts <= earliest_event_generation_ts) {
     stages.emplace_back(ScrollJankV4FrameStage::ScrollEnd{});
   }
 
-  if (!had_latest_gesture_scroll) {
+  if (!had_any_gesture_scroll) {
     return stages;
   }
 
@@ -175,6 +170,32 @@ ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
   }
 
   return stages;
+}
+
+}  // namespace
+
+ScrollJankV4FrameStage::ScrollJankV4FrameStage(
+    std::variant<ScrollJankV4FrameStage::ScrollUpdates,
+                 ScrollJankV4FrameStage::ScrollEnd> stage)
+    : stage(stage) {}
+
+ScrollJankV4FrameStage::ScrollJankV4FrameStage(
+    const ScrollJankV4FrameStage& stage) = default;
+
+ScrollJankV4FrameStage::~ScrollJankV4FrameStage() = default;
+
+// static
+ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
+    const EventMetrics::List& events_metrics,
+    bool skip_non_damaging_events) {
+  return CalculateStagesImpl(events_metrics, skip_non_damaging_events);
+}
+
+// static
+ScrollJankV4FrameStage::List ScrollJankV4FrameStage::CalculateStages(
+    const std::vector<ScrollEventMetrics*>& events_metrics,
+    bool skip_non_damaging_events) {
+  return CalculateStagesImpl(events_metrics, skip_non_damaging_events);
 }
 
 }  // namespace cc

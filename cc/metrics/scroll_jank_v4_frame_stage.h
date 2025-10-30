@@ -5,13 +5,16 @@
 #ifndef CC_METRICS_SCROLL_JANK_V4_FRAME_STAGE_H_
 #define CC_METRICS_SCROLL_JANK_V4_FRAME_STAGE_H_
 
+#include <ostream>
 #include <variant>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
 
@@ -84,9 +87,42 @@ struct CC_EXPORT ScrollJankV4FrameStage {
   // in any way. If there's a `ScrollUpdates` stage in the returned list,
   // `ScrollUpdates::earliest_event` will be a reference to an item in
   // `events_metrics` (possibly the same item).
+  //
+  // `skip_non_damaging_events` controls whether the method ignores non-damaging
+  // scroll updates. This allows us to experiment with the legacy behavior of
+  // the scroll jank v4 metric (`skip_non_damaging_events=true`) and the new
+  // logic for handling non-damaging frames (`skip_non_damaging_events=false`).
+  // See `ScrollJankV4Frame` and `ScrollJankV4Decider` for more information.
+  // TODO(crbug.com/444183591): Remove `skip_non_damaging_events`.
   static ScrollJankV4FrameStage::List CalculateStages(
-      const EventMetrics::List& events_metrics);
+      const EventMetrics::List& events_metrics,
+      bool skip_non_damaging_events = true);
+  static ScrollJankV4FrameStage::List CalculateStages(
+      const std::vector<ScrollEventMetrics*>& events_metrics,
+      bool skip_non_damaging_events = true);
 };
+
+inline std::ostream& operator<<(std::ostream& os,
+                                const ScrollJankV4FrameStage& stage) {
+  std::visit(
+      absl::Overload{
+          [&](const ScrollJankV4FrameStage::ScrollUpdates& updates) {
+            os << "ScrollUpdates{is_scroll_start: " << updates.is_scroll_start
+               << ", earliest_event: " << updates.earliest_event->GetTypeName()
+               << "@" << &(*updates.earliest_event)
+               << ", last_input_generation_ts: "
+               << updates.last_input_generation_ts
+               << ", has_inertial_input: " << updates.has_inertial_input
+               << ", total_raw_delta_pixels: " << updates.total_raw_delta_pixels
+               << ", max_abs_inertial_raw_delta_pixels: "
+               << updates.max_abs_inertial_raw_delta_pixels << "}";
+          },
+          [&](const ScrollJankV4FrameStage::ScrollEnd& end) {
+            os << "ScrollEnd{}";
+          }},
+      stage.stage);
+  return os;
+}
 
 }  // namespace cc
 
