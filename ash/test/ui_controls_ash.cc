@@ -122,11 +122,6 @@ class UIControlsAsh : public UIControlsAura {
     return ui_controls && ui_controls->SendMouseClick(type);
   }
 
-  bool SendTouchEvents(int action, int id, int x, int y) override {
-    UIControlsAura* ui_controls = GetUIControlsAt(gfx::Point(x, y));
-    return ui_controls && ui_controls->SendTouchEvents(action, id, x, y);
-  }
-
   bool SendTouchEventsNotifyWhenDone(int action,
                                      int id,
                                      int x,

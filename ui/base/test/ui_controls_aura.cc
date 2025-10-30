@@ -158,8 +158,7 @@ bool SendTouchEvents(int action, int num, int x, int y) {
 #elif BUILDFLAG(IS_CHROMEOS)
 // static
 bool SendTouchEvents(int action, int id, int x, int y) {
-  CheckUIControlsEnabled();
-  return g_instance->SendTouchEvents(action, id, x, y);
+  return SendTouchEventsNotifyWhenDone(action, id, x, y, base::OnceClosure());
 }
 
 // static

@@ -230,10 +230,6 @@ bool UIControlsOzone::SendMouseClick(ui_controls::MouseButton type) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool UIControlsOzone::SendTouchEvents(int action, int id, int x, int y) {
-  return SendTouchEventsNotifyWhenDone(action, id, x, y, base::OnceClosure());
-}
-
 bool UIControlsOzone::SendTouchEventsNotifyWhenDone(int action,
                                                     int id,
                                                     int x,

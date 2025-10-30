@@ -59,10 +59,6 @@ class UIControlsSystemInputInjector : public ui_controls::UIControlsAura {
 
   bool SendMouseClick(ui_controls::MouseButton type) override;
 
-  bool SendTouchEvents(int action, int id, int x, int y) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
   bool SendTouchEventsNotifyWhenDone(int action,
                                      int id,
                                      int x,
