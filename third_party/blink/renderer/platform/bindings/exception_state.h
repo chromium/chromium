@@ -237,9 +237,18 @@ class PLATFORM_EXPORT TryRethrowScope {
     }
   }
 
-  bool HasCaught() { return try_catch_.HasCaught(); }
-  v8::Local<v8::Value> GetException() { return try_catch_.Exception(); }
+  bool HasCaught() const { return try_catch_.HasCaught(); }
+  v8::Local<v8::Value> GetException() const { return try_catch_.Exception(); }
 
+  static v8::Local<v8::Value> TakeException(v8::TryCatch& try_catch) {
+    v8::Local<v8::Value> result = try_catch.Exception();
+    try_catch.Reset();
+    return result;
+  }
+
+  v8::Local<v8::Value> TakeException() { return TakeException(try_catch_); }
+
+ private:
   v8::TryCatch try_catch_;
   ExceptionState& exception_state_;
 };
