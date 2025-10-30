@@ -423,15 +423,9 @@ public class StripLayoutHelper
                     // would “fly” toward the strip start. To make it appear to fly into the
                     // unpinned section instead, animate offsetX toward the absolute pinned
                     // boundary.
-                    boolean rtl = LocalizationUtils.isLayoutRtl();
-                    float pinnedWidth = getEffectiveTabWidth(/* isPinned= */ true);
-                    // For pinning, subtract one tab width, because the total pinned width already
-                    // includes the newly pinned tab width, but the animation should target the
-                    // x-position before it was included.
-                    float animationEndX =
-                            getPinnedTabsBoundary() + (isPinned && !rtl ? -pinnedWidth : 0f);
                     float startOffsetX = stripTab.getDrawX() - stripTab.getIdealX();
-                    float endOffsetX = animationEndX - stripTab.getIdealX();
+                    float endOffsetX =
+                            isPinned ? 0f : getPinnedTabsBoundary() - stripTab.getIdealX();
                     pinnedAnimations.add(
                             CompositorAnimator.ofFloatProperty(
                                     mUpdateHost.getAnimationHandler(),
