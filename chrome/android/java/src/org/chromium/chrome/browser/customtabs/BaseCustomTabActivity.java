@@ -1549,8 +1549,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getInsetObserver(),
                         getLifecycleDispatcher(),
                         getSavedInstanceState(),
-                        getEdgeToEdgeManager().getEdgeToEdgeStateProvider(),
-                        /* minHeightPx= */ 0);
+                        getEdgeToEdgeManager().getEdgeToEdgeStateProvider());
 
         return mAppHeaderCoordinator;
     }
