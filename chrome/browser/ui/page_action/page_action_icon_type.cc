@@ -52,6 +52,8 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationSharingHub;
     case PageActionIconType::kAiMode:
       return &features::kPageActionsMigrationAiMode;
+    case PageActionIconType::kVirtualCardEnroll:
+      return &features::kPageActionsMigrationVirtualCard;
     default:
       return nullptr;
   }

@@ -17583,6 +17583,7 @@
                         "pwa_install": "true",
                         "sharing_hub": "true",
                         "translate": "true",
+                        "virtual_card": "true",
                         "zoom": "true"
                     },
                     "enable_features": [

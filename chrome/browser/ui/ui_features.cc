@@ -598,6 +598,12 @@ BASE_FEATURE_PARAM(bool,
                    "ai_mode",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationVirtualCard,
+                   &kPageActionsMigration,
+                   "virtual_card",
+                   false);
+
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCompositorLoadingAnimations, base::FEATURE_DISABLED_BY_DEFAULT);

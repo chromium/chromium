@@ -4,9 +4,11 @@
 
 #include <optional>
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
@@ -180,9 +182,27 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
 }
 
 class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
-    : public InProcessBrowserTest {
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() = default;
+  VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          {::features::kPageActionsMigration,
+           {
+               {::features::kPageActionsMigrationVirtualCard.name, "true"},
+           }});
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
   ~VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() override =
       default;
   VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest(
@@ -217,14 +237,14 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
         GetController()->GetVirtualCardBubbleView());
   }
 
-  VirtualCardEnrollIconView* IconView() {
+  IconLabelBubbleView* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kVirtualCardEnroll);
+    IconLabelBubbleView* icon =
+        browser_view->toolbar_button_provider()->GetPageActionView(
+            kActionVirtualCardEnroll);
     CHECK(icon);
-    return static_cast<VirtualCardEnrollIconView*>(icon);
+    return icon;
   }
 
   void ShowBubble(bool is_vcn_enrolled) {
@@ -237,9 +257,10 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
     ShowSuccessBubbleViewThenHideBubbleView) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
@@ -285,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IconView()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
     ShowFailureBubbleViewThenHideBubbleView) {
   CreditCard card = test::GetCreditCard();
@@ -345,5 +366,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(BubbleView(), nullptr);
   EXPECT_FALSE(IconView()->GetVisible());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<
+        VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest::ParamType>&
+           info) {
+      return base::StrCat({info.param ? "NewPageAction" : "OldPageAction"});
+    });
 
 }  // namespace autofill

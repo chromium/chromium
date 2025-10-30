@@ -7,10 +7,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
@@ -150,14 +152,14 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         autofill::payments::GetVirtualCardEnrollmentSupportUrl());
   }
 
-  VirtualCardEnrollIconView* GetIconView() {
+  IconLabelBubbleView* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kVirtualCardEnroll);
+    IconLabelBubbleView* icon =
+        browser_view->toolbar_button_provider()->GetPageActionView(
+            kActionVirtualCardEnroll);
     DCHECK(icon);
-    return static_cast<VirtualCardEnrollIconView*>(icon);
+    return icon;
   }
 
   const VirtualCardEnrollmentFields&
@@ -260,24 +262,44 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
           .AsImageSkia();
 };
 
+struct VirtualCardEnrollBubbleViewsInteractiveUiTestParams {
+  VirtualCardEnrollmentSource enrollment_source;
+  bool show_bubbles_based_on_priorities;
+  bool is_page_action_migration_enabled;
+};
+
 class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
     : public VirtualCardEnrollBubbleViewsInteractiveUiTest,
       public testing::WithParamInterface<
-          std::tuple<VirtualCardEnrollmentSource, bool>> {
+          VirtualCardEnrollBubbleViewsInteractiveUiTestParams> {
  public:
+  VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (GetParam().show_bubbles_based_on_priorities) {
+      enabled_features.push_back(
+          {features::kAutofillShowBubblesBasedOnPriorities, {}});
+    } else {
+      disabled_features.emplace_back(
+          features::kAutofillShowBubblesBasedOnPriorities);
+    }
+
+    if (GetParam().is_page_action_migration_enabled) {
+      enabled_features.push_back({
+          ::features::kPageActionsMigration,
+          {{::features::kPageActionsMigrationVirtualCard.name, "true"}},
+      });
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
   ~VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized() override =
       default;
-
-  void SetUp() override {
-    if (std::get<1>(GetParam())) {
-      feature_list_.InitAndEnableFeature(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          autofill::features::kAutofillShowBubblesBasedOnPriorities);
-    }
-    VirtualCardEnrollBubbleViewsInteractiveUiTest::SetUp();
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -286,17 +308,55 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
 INSTANTIATE_TEST_SUITE_P(
     All,
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
-    testing::Combine(
-        testing::Values(VirtualCardEnrollmentSource::kUpstream,
-                        VirtualCardEnrollmentSource::kDownstream,
-                        VirtualCardEnrollmentSource::kSettingsPage),
-        testing::Bool()));
+    ::testing::ConvertGenerator(
+        ::testing::Combine(
+            testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                            VirtualCardEnrollmentSource::kDownstream,
+                            VirtualCardEnrollmentSource::kSettingsPage),
+            testing::Bool(),
+            testing::Bool()),
+        [](std::tuple<VirtualCardEnrollmentSource, bool, bool> t) {
+          return VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
+              .enrollment_source = std::get<0>(t),
+              .show_bubbles_based_on_priorities = std::get<1>(t),
+              .is_page_action_migration_enabled = std::get<2>(t),
+          };
+        }),
+    [](const ::testing::TestParamInfo<
+        VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized::ParamType>&
+           info) {
+      std::vector<std::string> test_name;
+
+      switch (info.param.enrollment_source) {
+        case VirtualCardEnrollmentSource::kUpstream:
+          test_name.emplace_back("UpstreamSource");
+          break;
+        case VirtualCardEnrollmentSource::kDownstream:
+          test_name.emplace_back("DownstreamSource");
+          break;
+        case VirtualCardEnrollmentSource::kSettingsPage:
+          test_name.emplace_back("SettingsPage");
+          break;
+        default:
+          NOTREACHED();
+      }
+
+      test_name.emplace_back(info.param.show_bubbles_based_on_priorities
+                                 ? "_BubblePriorityEnabled"
+                                 : "_BubblePriorityDisabled");
+
+      test_name.emplace_back(info.param.is_page_action_migration_enabled
+                                 ? "_NewPageAction"
+                                 : "_OldPageAction");
+
+      return base::StrCat(test_name);
+    });
 
 IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     ShowBubble) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
       base::DoNothing());
@@ -311,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(
   TestCloseBubbleForExpectedResultFromSource(
       VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_LOST_FOCUS,
-      std::get<0>(GetParam()));
+      GetParam().enrollment_source);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -320,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(
   TestCloseBubbleForExpectedResultFromSource(
       VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_CANCELLED,
-      std::get<0>(GetParam()));
+      GetParam().enrollment_source);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -328,7 +388,7 @@ IN_PROC_BROWSER_TEST_P(
     Metrics_BubbleClosed) {
   TestCloseBubbleForExpectedResultFromSource(
       VirtualCardEnrollmentBubbleResult::VIRTUAL_CARD_ENROLLMENT_BUBBLE_CLOSED,
-      std::get<0>(GetParam()));
+      GetParam().enrollment_source);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -337,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(
   TestCloseBubbleForExpectedResultFromSource(
       VirtualCardEnrollmentBubbleResult::
           VIRTUAL_CARD_ENROLLMENT_BUBBLE_NOT_INTERACTED,
-      std::get<0>(GetParam()));
+      GetParam().enrollment_source);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -345,7 +405,7 @@ IN_PROC_BROWSER_TEST_P(
     ShownAndLostFocusTest_AllSources) {
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
       base::DoNothing());
@@ -410,7 +470,7 @@ IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     LearnMoreTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
@@ -431,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     GoogleLegalMessageTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
@@ -452,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     IssuerLegalMessageTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
@@ -473,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     CardArtAvailableTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   base::HistogramTester histogram_tester;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
@@ -492,7 +552,7 @@ IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     CardArtNotAvailableTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentFields fields =
       GetFieldsForSource(virtual_card_enrollment_source);
@@ -512,7 +572,7 @@ IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     PreviouslyDeclinedTest_AllSources) {
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentFields fields =
       GetFieldsForSource(virtual_card_enrollment_source);
@@ -561,7 +621,7 @@ IN_PROC_BROWSER_TEST_P(
     NoLoggingOnLinkClickReshowBubbleTest) {
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
       base::DoNothing());
@@ -611,9 +671,6 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(GetIconView()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
-  EXPECT_EQ(GetIconView()->GetTextForTooltipAndAccessibleName(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -621,7 +678,7 @@ IN_PROC_BROWSER_TEST_P(
     ShowLoadingViewOnAccept) {
   base::HistogramTester histogram_tester;
   VirtualCardEnrollmentSource virtual_card_enrollment_source =
-      std::get<0>(GetParam());
+      GetParam().enrollment_source;
   ShowBubbleAndWaitUntilShown(
       GetFieldsForSource(virtual_card_enrollment_source), base::DoNothing(),
       base::DoNothing());

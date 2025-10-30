@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -339,10 +340,16 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
 #endif
 }
 
-std::optional<PageActionIconType>
-VirtualCardEnrollBubbleControllerImpl::GetPageActionIconType() {
-  return PageActionIconType::kVirtualCardEnroll;
+#if !BUILDFLAG(IS_ANDROID)
+bool VirtualCardEnrollBubbleControllerImpl::ShouldShowPageAction() {
+  return IsIconVisible();
 }
+
+std::optional<actions::ActionId>
+VirtualCardEnrollBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionVirtualCardEnroll;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #if BUILDFLAG(IS_ANDROID)
