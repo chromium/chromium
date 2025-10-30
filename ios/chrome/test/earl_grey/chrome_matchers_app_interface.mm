@@ -1522,25 +1522,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                                               descriptionBlock:describe];
 }
 
-+ (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title {
-  GREYMatchesBlock matches = ^BOOL(TableViewURLCell* cell) {
-    return [cell.titleLabel.text isEqualToString:title] &&
-           [cell.URLLabel.text isEqualToString:URL];
-  };
-
-  GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
-    [description appendText:@"view containing URL text: "];
-    [description appendText:URL];
-    [description appendText:@" title text: "];
-    [description appendText:title];
-  };
-  return grey_allOf(
-      grey_kindOfClass([TableViewURLCell class]),
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                           descriptionBlock:describe],
-      grey_sufficientlyVisible(), nil);
-}
-
 + (id<GREYMatcher>)settingsToolbarAddButton {
   return grey_accessibilityID(kSettingsToolbarAddButtonId);
 }

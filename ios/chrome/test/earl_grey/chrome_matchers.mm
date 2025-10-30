@@ -872,9 +872,11 @@ id<GREYMatcher> ContentViewSmallerThanScrollView() {
 }
 
 id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
-  return [ChromeMatchersAppInterface
-      historyEntryForURL:base::SysUTF8ToNSString(url)
-                   title:base::SysUTF8ToNSString(title)];
+  return grey_allOf(
+      grey_accessibilityLabel(
+          [NSString stringWithFormat:@"%@, %@", base::SysUTF8ToNSString(title),
+                                     base::SysUTF8ToNSString(url)]),
+      grey_sufficientlyVisible(), nil);
 }
 
 id<GREYMatcher> HistoryEntry(const GURL& url, const std::string& title) {

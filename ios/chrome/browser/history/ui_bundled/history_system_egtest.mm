@@ -273,7 +273,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       selectElementWithMatcher:
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
                          @"mockurl/sync/"),
-                     grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
                      grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 
