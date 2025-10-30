@@ -49,8 +49,7 @@ void SidePanelCoordinator::Init(Browser* browser) {
 }
 
 void SidePanelCoordinator::TearDownPreBrowserWindowDestruction() {
-  for (auto panel_type : {SidePanelEntry::PanelType::kContent,
-                          SidePanelEntry::PanelType::kToolbar}) {
+  for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
     Close(/*suppress_animations=*/true, panel_type);
   }
   side_panel_toolbar_pinning_controller_.reset();
@@ -327,8 +326,7 @@ void SidePanelCoordinator::ClearCachedEntryViews(
 void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* old_contextual_registry,
     SidePanelRegistry* new_contextual_registry) {
-  for (SidePanelEntry::PanelType type : {SidePanelEntry::PanelType::kContent,
-                                         SidePanelEntry::PanelType::kToolbar}) {
+  for (SidePanelEntry::PanelType type : SidePanelEntry::PanelTypes::All()) {
     SidePanel* side_panel = GetSidePanelFor(type);
     CHECK(side_panel);
     // Show an entry in the following fallback order: new contextual registry's

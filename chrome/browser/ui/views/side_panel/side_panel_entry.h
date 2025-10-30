@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
@@ -32,11 +33,16 @@ enum class SidePanelEntryHideReason;
 class SidePanelEntry final : public ui::PropertyHandler {
  public:
   enum class PanelType {
+    kMinValue,
     // Panel aligned with the web contents.
-    kContent,
+    kContent = kMinValue,
     // Panel aligned with the toolbar.
     kToolbar,
+    kMaxValue = kToolbar,
   };
+
+  using PanelTypes =
+      base::EnumSet<PanelType, PanelType::kMinValue, PanelType::kMaxValue>;
 
   // The default and minimum acceptable side panel content width.
   static constexpr int kSidePanelDefaultContentWidth = 360;
