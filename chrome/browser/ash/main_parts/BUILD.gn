@@ -82,6 +82,7 @@ static_library("main_parts") {
     "//chrome/browser/ash/power/auto_screen_brightness",
     "//chrome/browser/ash/power/ml",
     "//chrome/browser/ash/power/smart_charging",
+    "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/profiles:signin_profile_handler",

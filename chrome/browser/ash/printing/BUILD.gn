@@ -93,6 +93,9 @@ static_library("printing") {
       "cups_print_job_manager_impl.cc",
       "cups_print_job_manager_utils.cc",
       "cups_print_job_manager_utils.h",
+      "local_printer.h",
+      "local_printer_impl.cc",
+      "local_printer_impl.h",
       "printer_info_cups.cc",
     ]
   } else {
@@ -138,7 +141,10 @@ static_library("printing") {
   ]
 
   if (use_cups) {
-    deps += [ "//chrome/browser/chromeos/printing" ]
+    deps += [
+      "//chrome/browser/ash/printing/oauth2",
+      "//chrome/browser/chromeos/printing",
+    ]
   }
 
   if (enable_oop_printing) {

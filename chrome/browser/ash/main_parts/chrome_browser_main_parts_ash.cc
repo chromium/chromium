@@ -306,6 +306,10 @@
 #include "chrome/browser/ash/dbus/fjord_oobe_service_provider.h"
 #endif
 
+#if BUILDFLAG(USE_CUPS)
+#include "chrome/browser/ash/printing/local_printer_impl.h"
+#endif
+
 namespace ash {
 
 namespace {
@@ -1158,6 +1162,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     VLOG(1) << "Relaunching browser for user: " << account_id.Serialize()
             << " with hash: " << username_hash;
   }
+
+#if BUILDFLAG(USE_CUPS)
+  local_printer_ = std::make_unique<LocalPrinterImpl>();
+#endif
 }
 
 class GuestLanguageSetCallbackData {

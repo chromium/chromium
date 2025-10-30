@@ -46,6 +46,7 @@ include_rules = [
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/power",
   "+chrome/browser/ash/printing/enterprise",
+  "+chrome/browser/ash/printing/local_printer_impl.h",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/quick_pair",
   "+chrome/browser/ash/report_controller_initializer",

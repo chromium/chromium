@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/printing/local_printer_impl.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
@@ -34,6 +36,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/cloud_print_cdd_conversion.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
@@ -53,7 +56,6 @@ static constexpr size_t kMaximumFinishedJobs = 10000u;
 // again.
 static constexpr size_t kNumOfJobsToRemove = 51u;
 
-constexpr char kInvalidPrinterIdError[] = "Invalid printer ID";
 constexpr char kNoActivePrintJobWithIdError[] =
     "No active print job with given ID";
 constexpr char kNoPrintJobWithIdError[] = "No print job with given ID";
@@ -73,10 +75,12 @@ std::unique_ptr<PrintingAPIHandler> PrintingAPIHandler::CreateForTesting(
     ExtensionRegistry* extension_registry,
     std::unique_ptr<printing::PrintJobController> print_job_controller,
     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-    crosapi::mojom::LocalPrinter* local_printer) {
+    crosapi::mojom::LocalPrinter* cros_local_printer,
+    ash::LocalPrinter* local_printer) {
   return std::make_unique<PrintingAPIHandler>(
       browser_context, event_router, extension_registry,
-      std::move(print_job_controller), std::move(cups_wrapper), local_printer);
+      std::move(print_job_controller), std::move(cups_wrapper),
+      cros_local_printer, local_printer);
 }
 
 PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
@@ -85,9 +89,10 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
                          ExtensionRegistry::Get(browser_context),
                          std::make_unique<printing::PrintJobController>(),
                          chromeos::CupsWrapper::Create(),
-                         printing::GetLocalPrinterInterface()) {
-  CHECK(local_printer_);
-  local_printer_->AddPrintJobObserver(
+                         printing::GetLocalPrinterInterface(),
+                         ash::LocalPrinterImpl::Get()) {
+  CHECK(cros_local_printer_);
+  cros_local_printer_->AddPrintJobObserver(
       receiver_.BindNewPipeAndPassRemoteWithVersion(),
       crosapi::mojom::PrintJobSource::kExtension, base::DoNothing());
 }
@@ -98,7 +103,8 @@ PrintingAPIHandler::PrintingAPIHandler(
     ExtensionRegistry* extension_registry,
     std::unique_ptr<printing::PrintJobController> print_job_controller,
     std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-    crosapi::mojom::LocalPrinter* local_printer)
+    crosapi::mojom::LocalPrinter* cros_local_printer,
+    ash::LocalPrinter* local_printer)
     : browser_context_(browser_context),
       event_router_(event_router),
       extension_registry_(extension_registry),
@@ -106,8 +112,9 @@ PrintingAPIHandler::PrintingAPIHandler(
       cups_wrapper_(std::move(cups_wrapper)),
       pdf_blob_data_flattener_(std::make_unique<printing::PdfBlobDataFlattener>(
           Profile::FromBrowserContext(browser_context))),
-      local_printer_(local_printer) {
-  CHECK(local_printer_);
+      cros_local_printer_(cros_local_printer),
+      local_printer_(CHECK_DEREF(local_printer)) {
+  CHECK(cros_local_printer_);
 }
 
 PrintingAPIHandler::~PrintingAPIHandler() = default;
@@ -152,7 +159,7 @@ void PrintingAPIHandler::SubmitJob(
   PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
       pdf_blob_data_flattener_.get(), std::move(extension),
-      std::move(params->request), local_printer_,
+      std::move(params->request), cros_local_printer_,
       base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(extension_id))));
@@ -218,22 +225,27 @@ std::optional<std::string> PrintingAPIHandler::CancelJob(
     return kNoActivePrintJobWithIdError;
   }
 
-  local_printer_->CancelPrintJob(it->second.printer_id, it->second.job_id,
-                                 base::DoNothing());
+  cros_local_printer_->CancelPrintJob(it->second.printer_id, it->second.job_id,
+                                      base::DoNothing());
+
   return std::nullopt;
 }
 
 void PrintingAPIHandler::GetPrinters(GetPrintersCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   local_printer_->GetPrinters(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       base::BindOnce(&PrintingAPIHandler::OnPrintersRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PrintingAPIHandler::OnPrintersRetrieved(
     GetPrintersCallback callback,
-    std::vector<crosapi::mojom::LocalDestinationInfoPtr> data) {
+    std::vector<chromeos::Printer> printers) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PrefService* prefs =
@@ -248,21 +260,25 @@ void PrintingAPIHandler::OnPrintersRetrieved(
   base::flat_map<std::string, int> recently_used_ranks =
       sticky_settings->GetPrinterRecentlyUsedRanks();
 
-  std::vector<api::printing::Printer> printers;
-  printers.reserve(data.size());
-  for (const crosapi::mojom::LocalDestinationInfoPtr& ptr : data) {
-    printers.push_back(
-        PrinterToIdl(*ptr, default_printer_rules, recently_used_ranks));
+  std::vector<api::printing::Printer> printers_api;
+  printers_api.reserve(printers.size());
+  for (const chromeos::Printer& printer : printers) {
+    printers_api.push_back(
+        PrinterToIdl(printer, default_printer_rules, recently_used_ranks));
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(printers)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(printers_api)));
 }
 
 void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
                                         GetPrinterInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   local_printer_->GetCapability(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       printer_id,
       base::BindOnce(&PrintingAPIHandler::OnPrinterCapabilitiesRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), printer_id,
@@ -272,17 +288,10 @@ void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
 void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
     const std::string& printer_id,
     GetPrinterInfoCallback callback,
-    crosapi::mojom::CapabilitiesResponsePtr caps) {
+    const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!caps) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), /*capabilities=*/std::nullopt,
-                       /*status=*/std::nullopt, kInvalidPrinterIdError));
-    return;
-  }
-  if (!caps->capabilities) {
+  if (!caps.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), /*capabilities=*/std::nullopt,
@@ -290,12 +299,13 @@ void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
                        /*error=*/std::nullopt));
     return;
   }
+
   cups_wrapper_->QueryCupsPrinterStatus(
       printer_id,
-      base::BindOnce(&PrintingAPIHandler::OnPrinterStatusRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     cloud_print::PrinterSemanticCapsAndDefaultsToCdd(
-                         *caps->capabilities)));
+      base::BindOnce(
+          &PrintingAPIHandler::OnPrinterStatusRetrieved,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          cloud_print::PrinterSemanticCapsAndDefaultsToCdd(caps.value())));
 }
 
 void PrintingAPIHandler::OnPrinterStatusRetrieved(
