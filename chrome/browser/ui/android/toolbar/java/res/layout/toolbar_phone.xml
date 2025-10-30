@@ -33,6 +33,12 @@ found in the LICENSE file.
         android:layout="@layout/home_page_buttons_layout"
         android:visibility="gone"/>
 
+    <View
+        android:id="@+id/location_bar_background_view"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <org.chromium.chrome.browser.omnibox.LocationBarPhone
         android:id="@+id/location_bar"
         android:layout_width="match_parent"

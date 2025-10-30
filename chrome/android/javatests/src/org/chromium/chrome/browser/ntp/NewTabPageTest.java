@@ -243,6 +243,7 @@ public class NewTabPageTest {
                 new int[] {
                     R.id.home_button,
                     R.id.home_page_buttons_stub,
+                    R.id.location_bar_background_view,
                     R.id.location_bar,
                     R.id.toolbar_buttons
                 };

@@ -191,6 +191,13 @@ public class ToolbarPhone extends ToolbarLayout
     /** The omnibox background (white with a shadow). */
     private LocationBarBackgroundDrawable mLocationBarBackground;
 
+    /**
+     * The host for the background drawable when TOOLBAR_PHONE_ANIMATION_REFACTOR is enabled.
+     * TODO(crbug.com/425817689): Remove the Drawable reference when the above refactor is complete
+     * and we no longer need to manually draw the Drawable to the canvas.
+     */
+    private View mActiveLocationBarBackgroundView;
+
     private Drawable mActiveLocationBarBackground;
 
     protected boolean mForceDrawLocationBarBackground;
@@ -352,6 +359,9 @@ public class ToolbarPhone extends ToolbarLayout
 
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
+            if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                setBackground(mToolbarBackground);
+            }
 
             setLayoutTransition(null);
 
@@ -362,6 +372,11 @@ public class ToolbarPhone extends ToolbarLayout
             setWillNotDraw(false);
             mUrlFocusTranslationX =
                     getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
+
+            mActiveLocationBarBackgroundView = findViewById(R.id.location_bar_background_view);
+            if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                mActiveLocationBarBackgroundView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -421,7 +436,15 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBarBackgroundVerticalInset =
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
         mLocationBarBackground = createModernLocationBarBackground(getContext());
-        mActiveLocationBarBackground = mLocationBarBackground;
+        setActiveLocationBarBackground(mLocationBarBackground);
+    }
+
+    private void setActiveLocationBarBackground(Drawable background) {
+        mActiveLocationBarBackground = background;
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            mActiveLocationBarBackgroundView.setBackground(mActiveLocationBarBackground);
+            updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
+        }
     }
 
     private void updateBackgroundHairline(boolean urlHasFocus, @AutocompleteRequestType int type) {
@@ -470,7 +493,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void updateBackground(final boolean hasFocus) {
         if (hasFocus) {
             mDropdownListScrolled = false;
-            mActiveLocationBarBackground = mLocationBarBackground;
+            setActiveLocationBarBackground(mLocationBarBackground);
         } else if (isLocationBarShownInNtp()) {
             updateToNtpBackground();
         }
@@ -481,7 +504,7 @@ public class ToolbarPhone extends ToolbarLayout
         Drawable ntpDrawable =
                 AppCompatResources.getDrawable(
                         getContext(), R.drawable.home_surface_search_box_background);
-        mActiveLocationBarBackground = ntpDrawable;
+        setActiveLocationBarBackground(ntpDrawable);
     }
 
     /** Set the background color of the location bar to appropriately match the theme color. */
@@ -859,12 +882,22 @@ public class ToolbarPhone extends ToolbarLayout
         if (!mTextureCaptureMode && mToolbarBackground.getColor() != Color.TRANSPARENT) {
             // Update to compensate for orientation changes.
             mToolbarBackground.setBounds(0, 0, getWidth(), getHeight());
-            mToolbarBackground.draw(canvas);
+            if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                mToolbarBackground.draw(canvas);
+            } else {
+                mToolbarBackground.setAlpha(255);
+            }
+        } else if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            // TODO(crbug.com/425817689): Move the flag-guarded setAlpha calls outside of the draw
+            //  cycle. Specifically, move to where we set the state that determines whether or not
+            //  the background should be drawn (capture mode && transparent color).
+            mToolbarBackground.setAlpha(0);
         }
 
         if (mLocationBarBackground != null
                 && (mLocationBar.getPhoneCoordinator().getVisibility() == VISIBLE
-                        || mTextureCaptureMode)) {
+                        || mTextureCaptureMode)
+                && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
         }
 
@@ -928,6 +961,7 @@ public class ToolbarPhone extends ToolbarLayout
                 mLocationBar.getPhoneCoordinator().getTop() + verticalInset,
                 rightViewPosition + horizontalInset,
                 mLocationBar.getPhoneCoordinator().getBottom() - verticalInset);
+        onLocationBarBackgroundViewBoundsChanged();
     }
 
     /**
@@ -1248,9 +1282,10 @@ public class ToolbarPhone extends ToolbarLayout
      */
     private void resetNtpAnimationValues() {
         mLocationBarBackgroundNtpOffset.setEmpty();
+        onLocationBarBackgroundViewBoundsChanged();
         mLocationBarNtpOffsetLeft = 0;
         mLocationBarNtpOffsetRight = 0;
-        mActiveLocationBarBackground = mLocationBarBackground;
+        setActiveLocationBarBackground(mLocationBarBackground);
         mNtpSearchBoxTranslation.set(0, 0);
         mLocationBar.getPhoneCoordinator().setTranslationY(0);
         mLocationBar.getPhoneCoordinator().setTranslationX(0);
@@ -1264,6 +1299,9 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         mLocationBar.getPhoneCoordinator().setAlpha(1);
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            mActiveLocationBarBackgroundView.setAlpha(1.f);
+        }
         mForceDrawLocationBarBackground = false;
 
         setAncestorsShouldClipChildren(true);
@@ -1350,6 +1388,7 @@ public class ToolbarPhone extends ToolbarLayout
                                     - focusChangeDelta)
                             * shrinkage;
             mLocationBarBackgroundNtpOffset.inset(0, verticalInset);
+            onLocationBarBackgroundViewBoundsChanged();
 
             if (mUrlFocusChangeInProgress) {
                 leftBoundDifference =
@@ -1365,6 +1404,9 @@ public class ToolbarPhone extends ToolbarLayout
         mForceDrawLocationBarBackground = isExpanded;
         float relativeAlpha = isExpanded ? 1f : 0f;
         mLocationBar.getPhoneCoordinator().setAlpha(relativeAlpha);
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            mActiveLocationBarBackgroundView.setAlpha(relativeAlpha);
+        }
 
         // The search box on the NTP is visible if our omnibox is invisible, and vice-versa.
         ntpDelegate.setSearchBoxAlpha(1f - relativeAlpha);
@@ -1509,12 +1551,41 @@ public class ToolbarPhone extends ToolbarLayout
         return mLocationBarBackground != null;
     }
 
+    /** Called whenever the location bar background view's bounds or its NTP offset changes. */
+    private void onLocationBarBackgroundViewBoundsChanged() {
+        if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            return;
+        }
+        updateLocationBarBackgroundViewBounds();
+    }
+
+    /**
+     * Updates the toolbar animation refactor's location bar background host view's position, based
+     * on its previously calculated bounds, the NTP offset, and the location bar's translation.
+     */
+    private void updateLocationBarBackgroundViewBounds() {
+        int left = mLocationBarBackgroundBounds.left + mLocationBarBackgroundNtpOffset.left;
+        int top = mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top;
+        int right = mLocationBarBackgroundBounds.right + mLocationBarBackgroundNtpOffset.right;
+        int bottom = mLocationBarBackgroundBounds.bottom + mLocationBarBackgroundNtpOffset.bottom;
+
+        mActiveLocationBarBackgroundView.setTranslationX(left);
+        mActiveLocationBarBackgroundView.setTranslationY(top);
+        ViewGroup.LayoutParams lp = mActiveLocationBarBackgroundView.getLayoutParams();
+        lp.width = right - left;
+        lp.height = bottom - top;
+        mActiveLocationBarBackgroundView.setLayoutParams(lp);
+    }
+
     private boolean drawLocationBar(Canvas canvas, long drawingTime) {
         TraceEvent.begin("ToolbarPhone.drawLocationBar");
         boolean clipped = false;
         if (shouldDrawLocationBar()) {
             canvas.save();
-            if (shouldDrawLocationBarBackground()) {
+            // If the animation refactor is enabled, the background will instead be drawn by an
+            // Android view hosting the background drawable.
+            if (shouldDrawLocationBarBackground()
+                    && !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
                 mActiveLocationBarBackground.setBounds(
                         mLocationBarBackgroundBounds.left + mLocationBarBackgroundNtpOffset.left,
                         mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top,
@@ -1787,6 +1858,9 @@ public class ToolbarPhone extends ToolbarLayout
         assert mTextureCaptureMode != textureMode;
         mTextureCaptureMode = textureMode;
         if (mTextureCaptureMode) {
+            if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+                updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
+            }
             if (!hideShadowForIncognitoNtp()
                     && !hideShadowForInterstitial()
                     && !hideShadowForRegularNtpTextureCapture()) {
@@ -2184,7 +2258,11 @@ public class ToolbarPhone extends ToolbarLayout
                         .addTransition(
                                 changeBoundsWithText.addTarget(mLocationBar.getContainerView()))
                         .addTransition(
-                                new ChangeTransform().addTarget(mLocationBar.getContainerView()))
+                                new ChangeBounds().addTarget(mActiveLocationBarBackgroundView))
+                        .addTransition(
+                                new ChangeTransform()
+                                        .addTarget(mLocationBar.getContainerView())
+                                        .addTarget(mActiveLocationBarBackgroundView))
                         .setDuration(URL_FOCUS_CHANGE_ANIMATION_DURATION_MS);
 
         TransitionSet transition =
@@ -2207,7 +2285,6 @@ public class ToolbarPhone extends ToolbarLayout
                         mLocationBar.finishUrlFocusChange(hasFocus, hasFocus);
                     }
                 });
-
         TransitionManager.beginDelayedTransition(this, transition);
 
         int toolbarBtnsVis = hasFocus ? INVISIBLE : VISIBLE;
@@ -2241,6 +2318,10 @@ public class ToolbarPhone extends ToolbarLayout
         //  (namely #invokeTransition). We instead want to directly set the appropriate end state,
         //  like we do with the button visibility and location bar layout params above.
         setUrlFocusChangeFraction(hasFocus ? 1f : 0f);
+
+        // Set the location bar background bounds last, as the NTP offset is determined as part of
+        // focus change above.
+        updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
     }
 
     // ToolbarDataProvider.Observer implementation.
@@ -2611,6 +2692,9 @@ public class ToolbarPhone extends ToolbarLayout
         startLoadingPhaseFromNtpToWebpage(newVisualState);
 
         mVisualState = newVisualState;
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+            updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, newVisualState);
+        }
 
         mHomeButtonDisplay.updateState(
                 mVisualState, mIsHomeButtonEnabled, mIsHomepageNonNtp, urlHasFocus());
