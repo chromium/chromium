@@ -57,6 +57,10 @@ class TestInfoBarViewWithLabelAndIcon : public InfoBarView {
     return nullptr;
   }
   int GetPublicEndX() const { return GetEndX(); }
+  int GetTotalHeight() const {
+    return ChromeLayoutProvider::Get()->GetDistanceMetric(
+        DISTANCE_INFOBAR_HEIGHT);
+  }
 
  protected:
   int GetContentMinimumWidth() const override {
@@ -124,7 +128,7 @@ TEST_F(InfoBarViewUnitTest, CenteredLayout) {
   ASSERT_NE(nullptr, icon);
   views::Label* label = infobar_view->test_label();
   const int spacing = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+      views::DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL);
   const int content_width = icon->GetPreferredSize().width() + spacing / 2 +
                             label->GetPreferredSize().width();
   const int available_width = infobar_view->GetPublicEndX();
@@ -182,5 +186,26 @@ TEST_F(InfoBarViewUnitTest, IconSizeForInfobarRefresh) {
   ASSERT_NE(nullptr, icon);
 
   EXPECT_EQ(gfx::Size(24, 24), icon->GetPreferredSize());
+  widget->CloseNow();
+}
+
+TEST_F(InfoBarViewUnitTest, InfobarContainerPadding) {
+  auto delegate = std::make_unique<TestInfoBarDelegateWithIcon>();
+  auto infobar_view =
+      std::make_unique<TestInfoBarViewWithLabelAndIcon>(std::move(delegate));
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+
+  widget->SetContentsView(infobar_view.get());
+  widget->SetBounds(gfx::Rect(0, 0, 500, 50));
+  widget->Show();
+  widget->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(infobar_view->GetTotalHeight(), infobar_view->target_height());
+
   widget->CloseNow();
 }

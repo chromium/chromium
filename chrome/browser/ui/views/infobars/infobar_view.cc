@@ -62,6 +62,10 @@ namespace {
 const int kInfobarIconSize = 24;
 
 int GetElementSpacing() {
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    return ChromeLayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL);
+  }
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 }
@@ -138,7 +142,6 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
 
     InstallCircleHighlightPathGenerator(close_button_);
   }
-
   SetTargetHeight(
       ChromeLayoutProvider::Get()->GetDistanceMetric(DISTANCE_INFOBAR_HEIGHT));
 
@@ -210,6 +213,27 @@ void InfoBarView::Layout(PassKey) {
 
 gfx::Size InfoBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
+  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
+    // With the refresh, the infobar has a fixed height and centers its content.
+    // The preferred width is the width of the content.
+    int width = 0;
+
+    const int spacing = GetElementSpacing();
+    if (icon_) {
+      width += spacing + icon_->width();
+    }
+
+    const int content_width = GetContentPreferredWidth();
+    if (content_width) {
+      width += spacing + content_width;
+    }
+
+    const int trailing_space =
+        close_button_ ? GetCloseButtonSpacing().width() + close_button_->width()
+                      : GetElementSpacing();
+    return gfx::Size(width + trailing_space, computed_height());
+  }
+
   int width = 0;
 
   const int spacing = GetElementSpacing();
