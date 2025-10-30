@@ -662,6 +662,119 @@ bool ShouldForceLaunchIntoNewProfileWithEmail(
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Attempts to handle the --focus command line switch to focus an existing
+// browser window or tab. Returns true if the focus request was handled
+// (successfully focused, parsing failed, or no fallback URL available),
+// std::nullopt if the focus request was not applicable or not successful
+// and processing should continue.
+std::optional<bool> MaybeHandleFocusRequest(
+    const base::CommandLine& command_line,
+    chrome::startup::IsProcessStartup process_startup,
+    const StartupProfileInfo& profile_info) {
+  // Only handle focus requests when:
+  // - Not during process startup (existing process)
+  // - --focus switch is present
+  // - Profile mode is BrowserWindow
+  // - Profile is available
+  if (process_startup != chrome::startup::IsProcessStartup::kNo ||
+      !command_line.HasSwitch(switches::kFocus) ||
+      profile_info.mode != StartupProfileMode::kBrowserWindow ||
+      !profile_info.profile) {
+    return std::nullopt;
+  }
+
+  focus::FocusResult focus_result = focus::ProcessFocusRequestWithResultFile(
+      command_line, *profile_info.profile);
+
+  // Early return for successful focus, parse errors, or when there's no
+  // fallback URL. When focus succeeds or parsing fails, we're done. When no
+  // match is found but there are no command line args to fall back to
+  // (e.g., no URL to open), we also return to avoid opening an empty browser.
+  if (focus_result.status == focus::FocusStatus::kFocused ||
+      focus_result.status == focus::FocusStatus::kParseError ||
+      (focus_result.status == focus::FocusStatus::kNoMatch &&
+       command_line.GetArgs().empty())) {
+    return true;
+  }
+
+  // Focus request didn't match anything, but there are command line args
+  // to fall back to, so continue normal processing.
+  return std::nullopt;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Contains the computed profile and incognito mode settings for startup.
+struct ProfileSetupResult {
+  bool silent_launch;
+  bool should_launch_incognito;
+  bool can_use_profile;
+  raw_ptr<Profile> privacy_safe_profile;
+};
+
+// Determines incognito mode settings and gets the appropriate profile to use
+// (regular or private browsing profile).
+ProfileSetupResult SetupProfileAndIncognito(
+    const base::CommandLine& command_line,
+    const StartupProfileInfo& profile_info) {
+  ProfileSetupResult result;
+  result.silent_launch = false;
+
+  result.should_launch_incognito =
+      // Note: kIncognito and some related flags disable profile picker startups
+      // via `ShouldShowProfilePickerAtProcessLaunch()`, so we can use it as
+      // a signal here.
+      // TODO(crbug.com/40819749): Refactor command line processing logic
+      // to validate the flag sets and reliably determine the startup mode.
+      profile_info.mode != StartupProfileMode::kProfilePicker &&
+      IncognitoModePrefs::ShouldLaunchIncognito(
+          command_line, profile_info.profile->GetPrefs());
+
+  result.can_use_profile =
+      CanOpenProfileOnStartup(profile_info) && !result.should_launch_incognito;
+
+  RecordIncognitoForcedStart(result.should_launch_incognito,
+                             command_line.HasSwitch(switches::kIncognito));
+
+  // `profile` is never off-the-record. If Incognito or Guest enforcement switch
+  // or policy are provided, use the appropriate private browsing profile
+  // instead.
+  result.privacy_safe_profile =
+      GetPrivateProfileIfRequested(command_line, profile_info);
+
+  return result;
+}
+
+// Attempts to handle the --validate-crx command line switch. Returns false if
+// the switch was present (regardless of whether Chrome is already running or
+// the validation succeeded/failed), or std::nullopt if the switch wasn't
+// present.
+std::optional<bool> MaybeHandleValidateCrx(
+    const base::CommandLine& command_line,
+    chrome::startup::IsProcessStartup process_startup) {
+  if (!command_line.HasSwitch(switches::kValidateCrx)) {
+    return std::nullopt;
+  }
+
+  if (process_startup == chrome::startup::IsProcessStartup::kNo) {
+    LOG(ERROR) << "chrome is already running; you must close all running "
+               << "instances before running with the --"
+               << switches::kValidateCrx << " flag";
+    return false;
+  }
+
+  extensions::StartupHelper helper;
+  std::string message;
+  std::string error;
+  if (helper.ValidateCrx(command_line, &error)) {
+    message = std::string("ValidateCrx Success");
+  } else {
+    message = std::string("ValidateCrx Failure: ") + error;
+  }
+  printf("%s\n", message.c_str());
+  return false;
+}
+
 }  // namespace
 
 StartupBrowserCreator::StartupBrowserCreator() = default;
@@ -1009,65 +1122,25 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
                                     : chrome::startup::IsFirstRun::kNo;
 
-  bool silent_launch = false;
-  bool should_launch_incognito =
-      // Note: kIncognito and some related flags disable profile picker startups
-      // via `ShouldShowProfilePickerAtProcessLaunch()`, so we can use it as
-      // a signal here.
-      // TODO(http://crbug.com/1293024): Refactor command line processing logic
-      // to validate the flag sets and reliably determine the startup mode.
-      profile_info.mode != StartupProfileMode::kProfilePicker &&
-      IncognitoModePrefs::ShouldLaunchIncognito(
-          command_line, profile_info.profile->GetPrefs());
-  bool can_use_profile =
-      CanOpenProfileOnStartup(profile_info) && !should_launch_incognito;
-
-  RecordIncognitoForcedStart(should_launch_incognito,
-                             command_line.HasSwitch(switches::kIncognito));
-
-  // `profile` is never off-the-record. If Incognito or Guest enforcement switch
-  // or policy are provided, use the appropriate private browsing profile
-  // instead.
-  Profile* privacy_safe_profile =
-      GetPrivateProfileIfRequested(command_line, profile_info);
+  // Setup profile and incognito mode settings.
+  ProfileSetupResult profile_setup =
+      SetupProfileAndIncognito(command_line, profile_info);
+  bool silent_launch = profile_setup.silent_launch;
+  bool can_use_profile = profile_setup.can_use_profile;
+  Profile* privacy_safe_profile = profile_setup.privacy_safe_profile;
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (process_startup == chrome::startup::IsProcessStartup::kNo &&
-      command_line.HasSwitch(switches::kFocus) &&
-      profile_info.mode == StartupProfileMode::kBrowserWindow &&
-      profile_info.profile) {
-    focus::FocusResult focus_result = focus::ProcessFocusRequestWithResultFile(
-        command_line, *profile_info.profile);
-    // Early return for successful focus, parse errors, or when there's no
-    // fallback URL. When focus succeeds or parsing fails, we're done. When no
-    // match is found but there are no command line args to fall back to
-    // (e.g., no URL to open), we also return to avoid opening an empty browser.
-    if (focus_result.status == focus::FocusStatus::kFocused ||
-        focus_result.status == focus::FocusStatus::kParseError ||
-        (focus_result.status == focus::FocusStatus::kNoMatch &&
-         command_line.GetArgs().empty())) {
-      return true;
-    }
+  // Try to focus an existing window/tab if --focus is present.
+  if (std::optional<bool> focus_result = MaybeHandleFocusRequest(
+          command_line, process_startup, profile_info)) {
+    return *focus_result;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (command_line.HasSwitch(switches::kValidateCrx)) {
-    if (process_startup == chrome::startup::IsProcessStartup::kNo) {
-      LOG(ERROR) << "chrome is already running; you must close all running "
-                 << "instances before running with the --"
-                 << switches::kValidateCrx << " flag";
-      return false;
-    }
-    extensions::StartupHelper helper;
-    std::string message;
-    std::string error;
-    if (helper.ValidateCrx(command_line, &error)) {
-      message = std::string("ValidateCrx Success");
-    } else {
-      message = std::string("ValidateCrx Failure: ") + error;
-    }
-    printf("%s\n", message.c_str());
-    return false;
+  // Try to validate a CRX if --validate-crx is present.
+  if (std::optional<bool> crx_result =
+          MaybeHandleValidateCrx(command_line, process_startup)) {
+    return *crx_result;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
