@@ -84,6 +84,8 @@ impl TestType {
 
 #[gtest(MojomParserTestSuit, BoolTest)]
 fn test_bools() {
+    use anyhow::Error;
+
     #[derive(MojomParse, Debug, PartialEq, Copy, Clone)]
     struct TenBoolsAndAByte {
         e0: bool,
@@ -330,25 +332,21 @@ fn test_bools() {
     ];
 
     // Test MojomParse derivation for to_mojom_value()
-    assert_eq!(one_byte_rust_val.to_mojom_value(), one_byte_val);
-    assert_eq!(two_byte_rust_val.to_mojom_value(), two_byte_val);
+    assert_eq!(one_byte_val, one_byte_rust_val.into());
+    assert_eq!(two_byte_val, two_byte_rust_val.into());
 
     // Test MojomParse derivation for from_mojom_value()
-    assert_eq!(TenBoolsAndAByte::from_mojom_value(one_byte_val).unwrap(), one_byte_rust_val);
-    assert_eq!(TenBoolsAndTwoBytes::from_mojom_value(two_byte_val).unwrap(), two_byte_rust_val);
+    assert_eq!(one_byte_rust_val, one_byte_val.try_into().unwrap());
+    assert_eq!(two_byte_rust_val, two_byte_val.try_into().unwrap());
 
     // FOR RELEASE: there's gotta be a better way to hand things that return a
     // result in a way that gtest will catch.
     assert_eq!(
         one_byte_rust_val,
-        TenBoolsAndAByte::from_mojom_value(ten_bools_and_a_byte_ty.parse(&one_byte_data).unwrap())
-            .unwrap()
+        ten_bools_and_a_byte_ty.parse(&one_byte_data).unwrap().try_into().unwrap()
     );
     assert_eq!(
         two_byte_rust_val,
-        TenBoolsAndTwoBytes::from_mojom_value(
-            ten_bools_and_two_bytes_ty.parse(&two_byte_data).unwrap()
-        )
-        .unwrap()
+        ten_bools_and_two_bytes_ty.parse(&two_byte_data).unwrap().try_into().unwrap()
     );
 }

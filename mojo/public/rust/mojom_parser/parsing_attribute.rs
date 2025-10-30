@@ -48,7 +48,7 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         .map(|field| {
             let name = field.ident.as_ref().unwrap();
             let name_str = name.to_string();
-            quote! { (#name_str.to_string(), self.#name.to_mojom_value()) }
+            quote! { (#name_str.to_string(), value.#name.into()) }
         })
         .collect();
 
@@ -57,44 +57,54 @@ pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let from_mojom_value_fields: Vec<proc_macro2::TokenStream> = struct_fields
         .iter()
         .map(|field| {
-            let ty = &field.ty;
             let name = field.ident.as_ref().unwrap();
-            quote! { #name: #ty::from_mojom_value(#name)? }
+            quote! { #name: #name.try_into()? }
         })
         .collect();
 
     let quoted = quote! {
         impl MojomParse for #name {
             fn mojom_type() -> MojomType {
-                let fields = vec![
+                let fields : Vec<(String, MojomType)> = vec![
                     #(#mojom_type_fields),*
                 ];
                 MojomType::Struct { fields }
             }
+        }
 
-            fn to_mojom_value(self) -> MojomValue {
-                let fields = vec![
+        impl From<#name> for MojomValue {
+            fn from(value: #name) -> MojomValue {
+                let fields : Vec<(String, MojomValue)> = vec![
                     #(#to_mojom_value_fields),*
                 ];
                 MojomValue::Struct ( fields )
             }
+        }
 
-            fn from_mojom_value(v : MojomValue) -> Option<Self> {
-                if let MojomValue::Struct(fields) = v {
+        impl TryFrom<MojomValue> for #name {
+            type Error = anyhow::Error;
+
+            fn try_from(value : MojomValue) -> Result<Self, Error> {
+                // FOR_RELEASE: Don't clone here
+                if let MojomValue::Struct(fields) = value.clone() {
                     // Drop the strings, we don't care about them here
                     let fields : Vec<MojomValue> = fields.into_iter().map(|field| field.1).collect();
-                    let fields : [MojomValue; #num_fields] = fields.try_into().ok()?;
                     // Try to extract all the field values at once
-                    if let [#(#field_idents),*] = fields {
-                        return Some(Self {
-                            #(#from_mojom_value_fields),*
-                        })
-                    }
-                    else {
-                        return None;
-                    }
+                    let fields : [MojomValue; #num_fields] = fields.try_into()
+                      .or(Err(::anyhow::anyhow!(
+                            "Wrong number of fields to construct a value of type {} from MojomValue {:?}",
+                                std::any::type_name::<#name>(),
+                                value)))?;
+                    let [#(#field_idents),*] = fields;
+                    return Ok(Self {
+                        #(#from_mojom_value_fields),*
+                    })
                 } else {
-                    return None;
+                    anyhow::bail!(
+                        "Cannot construct a value of type {} from non-struct MojomValue {:?}",
+                        std::any::type_name::<#name>(),
+                        value
+                    );
                 }
             }
         }

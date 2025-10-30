@@ -8,17 +8,12 @@ use crate::ast::*;
 use crate::pack::pack_mojom_type;
 
 /// This trait allows a type to be serialized/deserialized into a Mojom message.
-pub trait MojomParse: Sized + 'static {
+pub trait MojomParse:
+    Into<MojomValue> + TryFrom<MojomValue, Error = anyhow::Error> + Sized + 'static
+{
     /// Returns the MojomType associated with this rust struct. This function
     /// should always return the same value.
     fn mojom_type() -> MojomType;
-
-    // FOR_RELEASE: We could use serde to generate these automatically for us, but I don't
-    // think we could generate the mojom_type function so not sure it's worth it vs. just
-    // writing it all together manually.
-    fn to_mojom_value(self) -> MojomValue;
-    // FOR_RELEASE: Either panic or return a nice error message
-    fn from_mojom_value(v: MojomValue) -> Option<Self>;
 
     /// Returns the packed format for this type.
     ///
@@ -71,16 +66,26 @@ macro_rules! mojom_parse_leaf_impl {
             fn mojom_type() -> MojomType {
                 MojomType::$variant
             }
+        }
 
-            fn to_mojom_value(self) -> MojomValue {
-                MojomValue::$variant(self)
+        impl From<$target_type> for MojomValue {
+            fn from(value: $target_type) -> MojomValue {
+                MojomValue::$variant(value)
             }
+        }
 
-            fn from_mojom_value(v: MojomValue) -> Option<Self> {
-                if let MojomValue::$variant(n) = v {
-                    return Some(n);
+        impl TryFrom<MojomValue> for $target_type {
+            type Error = anyhow::Error;
+
+            fn try_from(value: MojomValue) -> anyhow::Result<$target_type> {
+                if let MojomValue::$variant(v) = value {
+                    return Ok(v);
                 } else {
-                    return None;
+                    anyhow::bail!(
+                        "Cannot construct a value of type {} from this MojomValue: {:?}",
+                        std::any::type_name::<$target_type>(),
+                        value
+                    );
                 }
             }
         }
