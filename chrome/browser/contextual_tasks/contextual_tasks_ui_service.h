@@ -79,6 +79,11 @@ class ContextualTasksUiService : public KeyedService {
   bool IsAiUrl(const GURL& url);
 
  private:
+  // Associates a WebContents with a task, assuming the URL of the WebContents'
+  // main frame or side panel is a contextual task URL.
+  void AssociateWebContentsToTask(content::WebContents* web_contents,
+                                  const base::Uuid& task_id);
+
   raw_ptr<contextual_tasks::ContextualTasksContextController>
       context_controller_;
 

@@ -37,6 +37,7 @@ namespace contextual_tasks {
 
 namespace {
 constexpr char kAiPageHost[] = "https://google.com";
+constexpr char kTaskQueryParam[] = "task";
 
 bool IsContextualTasksHost(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
@@ -62,6 +63,13 @@ bool IsSignInDomain(const GURL& url) {
     }
   }
   return false;
+}
+
+// Gets the contextual task Id from a contextual task host URL.
+base::Uuid GetTaskIdFromHostURL(const GURL& url) {
+  std::string task_id;
+  net::GetValueForKeyInQuery(url, kTaskQueryParam, &task_id);
+  return base::Uuid::ParseLowercase(task_id);
 }
 }  // namespace
 
@@ -96,7 +104,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
   // Build a URL for contextual tasks that includes the task ID.
   GURL ui_url(kContextualTasksUiUrl);
-  ui_url = net::AppendQueryParameter(ui_url, "task",
+  ui_url = net::AppendQueryParameter(ui_url, kTaskQueryParam,
                                      task.GetTaskId().AsLowercaseString());
 
   content::WebContents* contextual_task_web_contents = nullptr;
@@ -115,11 +123,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   }
   // Attach the session Id of the ai page to the task.
   if (contextual_task_web_contents) {
-    SessionID session_id =
-        SessionTabHelper::IdForTab(contextual_task_web_contents);
-    if (session_id.is_valid()) {
-      context_controller_->AssociateTabWithTask(task.GetTaskId(), session_id);
-    }
+    AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
   }
 }
 
@@ -146,6 +150,17 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     //    the tab that is responsible for creating it if the AI page is in tab
     //    mode.
     Navigate(&params);
+
+    // Associate the new tab's WebContents to the task.
+    // TODO(crbug.com/449161768): this could happen before the tab is created.
+    // We might need to create the tab in the background and attach it later, or
+    // we need to observe the WebContents lifecycle here.
+    content::WebContents* new_tab_web_contents =
+        params.navigated_or_inserted_contents;
+    base::Uuid task_id = GetTaskIdFromHostURL(source_contents->GetURL());
+    if (new_tab_web_contents && task_id.is_valid()) {
+      AssociateWebContentsToTask(new_tab_web_contents, task_id);
+    }
     return;
   }
 
@@ -286,4 +301,12 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   return udm_value == "50";
 }
 
+void ContextualTasksUiService::AssociateWebContentsToTask(
+    content::WebContents* web_contents,
+    const base::Uuid& task_id) {
+  SessionID session_id = SessionTabHelper::IdForTab(web_contents);
+  if (session_id.is_valid()) {
+    context_controller_->AssociateTabWithTask(task_id, session_id);
+  }
+}
 }  // namespace contextual_tasks

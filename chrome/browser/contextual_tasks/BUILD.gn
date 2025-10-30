@@ -216,8 +216,10 @@ source_set("interactive_ui_tests") {
   sources = []
 
   if (!is_android) {
-    sources +=
-        [ "contextual_tasks_side_panel_coordinator_interactive_uitest.cc" ]
+    sources += [
+      "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
+      "contextual_tasks_ui_service_interactive_uitest.cc",
+    ]
   }
 
   deps = [
