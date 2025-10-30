@@ -53,11 +53,13 @@ bool NotInResponseMap(const ScopedResponseMap& map,
   return map.find(PolicyNamespace(domain, component_id)) == map.end();
 }
 
-bool ToPolicyNamespace(const std::pair<std::string, std::string>& key,
+bool ToPolicyNamespace(const CloudPolicyClientTypeParams& key,
                        PolicyNamespace* ns) {
-  if (!ComponentCloudPolicyStore::GetPolicyDomain(key.first, &ns->domain))
+  if (!ComponentCloudPolicyStore::GetPolicyDomain(key.policy_type(),
+                                                  &ns->domain)) {
     return false;
-  ns->component_id = key.second;
+  }
+  ns->component_id = key.settings_entity_id();
   return true;
 }
 
@@ -498,7 +500,7 @@ void ComponentCloudPolicyService::UpdateFromClient() {
     PolicyNamespace ns;
     if (!ToPolicyNamespace(response.first, &ns)) {
       DVLOG_POLICY(1, POLICY_FETCHING)
-          << "Ignored policy with type = " << response.first.first;
+          << "Ignored policy with type = " << response.first.policy_type();
       continue;
     }
     (*valid_responses)[ns] = response.second;

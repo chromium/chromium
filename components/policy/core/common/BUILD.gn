@@ -82,6 +82,8 @@ source_set("internal") {
     "cloud/cloud_policy_client.h",
     "cloud/cloud_policy_client_registration_helper.cc",
     "cloud/cloud_policy_client_registration_helper.h",
+    "cloud/cloud_policy_client_types.cc",
+    "cloud/cloud_policy_client_types.h",
     "cloud/cloud_policy_core.cc",
     "cloud/cloud_policy_core.h",
     "cloud/cloud_policy_manager.cc",

@@ -18,13 +18,17 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -68,7 +72,7 @@ class POLICY_EXPORT CloudPolicyClient {
  public:
   // Maps a (policy type, settings entity ID) pair to its corresponding
   // PolicyFetchResponse.
-  using ResponseMap = std::map<std::pair<std::string, std::string>,
+  using ResponseMap = base::flat_map<CloudPolicyClientTypeParams,
                                enterprise_management::PolicyFetchResponse>;
 
   // A callback which receives boolean status of an operation. If the
@@ -631,10 +635,14 @@ class POLICY_EXPORT CloudPolicyClient {
   void AddPolicyTypeToFetch(const std::string& policy_type,
                             const std::string& settings_entity_id);
 
+  void AddPolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
+
   // FetchPolicy() calls won't request the given policy type and optional
   // |settings_entity_id| anymore.
   void RemovePolicyTypeToFetch(const std::string& policy_type,
                                const std::string& settings_entity_id);
+
+  void RemovePolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
 
   // Configures a set of device state keys to transfer to the server in the next
   // policy fetch. If the fetch is successful, the keys will be cleared so they
@@ -720,8 +728,10 @@ class POLICY_EXPORT CloudPolicyClient {
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
  protected:
-  // A set of (policy type, settings entity ID) pairs to fetch.
-  typedef std::set<std::pair<std::string, std::string>> PolicyTypeSet;
+  // A map of (policy type, settings entity ID) pairs to fetch to the set of
+  // settings entity IDs that should be fetched for the given policy type and
+  // settings entity ID.
+  typedef base::flat_set<CloudPolicyClientTypeParams> CloudPolicyClientTypeParamsSet;
 
   // Upload a certificate to the server.  Like FetchPolicy, this method
   // requires that the client is in a registered state.  |certificate_data| must
@@ -828,7 +838,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::string oidc_user_email_;
   bool is_dasherless_ = false;
 
-  PolicyTypeSet types_to_fetch_;
+  CloudPolicyClientTypeParamsSet types_to_fetch_;
   std::vector<std::string> state_keys_to_upload_;
 
   // OAuth token that if set is used as an additional form of authentication

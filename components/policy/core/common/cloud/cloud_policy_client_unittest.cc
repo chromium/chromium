@@ -1908,6 +1908,178 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
       1);
 }
 
+TEST_F(CloudPolicyClientTest,
+       PolicyFetchWithSingleExtensionInstallCloudPolicies) {
+  RegisterClient();
+
+  em::DeviceManagementResponse policy_response = GetPolicyResponse();
+
+  // Set up the |expected_responses| and |policy_response|.
+  static const ExtensionIdAndVersion kExtension{"extension_id_1", "1.1.1"};
+
+  typedef std::map<std::pair<std::string, std::string>, em::PolicyFetchResponse>
+      ResponseMap;
+  ResponseMap expected_responses;
+  std::set<std::pair<std::string, std::string>> expected_namespaces;
+  std::pair<std::string, std::string> key(
+      dm_protocol::GetChromeUserPolicyType(), std::string());
+  // Copy the user policy fetch request.
+  expected_responses[key].CopyFrom(
+      policy_response.policy_response().responses(0));
+  expected_namespaces.insert(key);
+
+  key.first = dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+
+  em::PolicyData policy_data;
+  policy_data.set_policy_type(key.first);
+  expected_responses[key].set_policy_data(policy_data.SerializeAsString());
+  policy_response.mutable_policy_response()->add_responses()->CopyFrom(
+      expected_responses[key]);
+  expected_namespaces.insert(key);
+
+  // Make a policy fetch.
+  em::DeviceManagementRequest request;
+  DeviceManagementService::JobConfiguration::JobType job_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
+                      service_.CaptureRequest(&request),
+                      service_.SendJobOKAsync(policy_response)));
+
+  client_->AddPolicyTypeToFetch(CloudPolicyClientTypeParams(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType, kExtension));
+  RunClientTaskAndWaitPolicyFetch(base::BindLambdaForTesting(
+      [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type);
+
+  // Verify that the request includes the expected namespaces.
+  ASSERT_TRUE(request.has_policy_request());
+  const em::DevicePolicyRequest& policy_request = request.policy_request();
+  ASSERT_EQ(2, policy_request.requests_size());
+  for (int i = 0; i < policy_request.requests_size(); ++i) {
+    const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
+    ASSERT_TRUE(fetch_request.has_policy_type());
+    if (fetch_request.policy_type() ==
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
+      EXPECT_EQ(fetch_request.extension_ids_and_version().size(), 1);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_id(),
+                kExtension.extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_version(),
+                kExtension.extension_version);
+      EXPECT_TRUE(fetch_request.has_settings_entity_id());
+    } else {
+      EXPECT_FALSE(fetch_request.has_settings_entity_id());
+    }
+    key = {fetch_request.policy_type(), std::string()};
+    EXPECT_EQ(1u, expected_namespaces.erase(key));
+  }
+  EXPECT_TRUE(expected_namespaces.empty());
+
+  // Verify that the client got all the responses mapped to their namespaces.
+  for (auto it = expected_responses.begin(); it != expected_responses.end();
+       ++it) {
+    const em::PolicyFetchResponse* response =
+        client_->GetPolicyFor(it->first.first, it->first.second);
+    ASSERT_TRUE(response);
+    EXPECT_EQ(it->second.SerializeAsString(), response->SerializeAsString());
+  }
+}
+
+TEST_F(CloudPolicyClientTest,
+       PolicyFetchWithMultipleExtensionInstallCloudPolicies) {
+  RegisterClient();
+
+  em::DeviceManagementResponse policy_response = GetPolicyResponse();
+
+  // Set up the |expected_responses| and |policy_response|.
+  static std::vector<ExtensionIdAndVersion> kExtensions = {
+      {"extension_id_1", "1.1.1"},
+      {"extension_id_2", "2.2.2"},
+      {"extension_id_3", "3.3.3"},
+  };
+
+  typedef std::map<std::pair<std::string, std::string>, em::PolicyFetchResponse>
+      ResponseMap;
+  ResponseMap expected_responses;
+  std::set<std::pair<std::string, std::string>> expected_namespaces;
+  std::pair<std::string, std::string> key(
+      dm_protocol::GetChromeUserPolicyType(), std::string());
+  // Copy the user policy fetch request.
+  expected_responses[key].CopyFrom(
+      policy_response.policy_response().responses(0));
+  expected_namespaces.insert(key);
+
+  key.first = dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+
+  em::PolicyData policy_data;
+  policy_data.set_policy_type(key.first);
+  expected_responses[key].set_policy_data(policy_data.SerializeAsString());
+  policy_response.mutable_policy_response()->add_responses()->CopyFrom(
+      expected_responses[key]);
+  expected_namespaces.insert(key);
+
+  // Make a policy fetch.
+  em::DeviceManagementRequest request;
+  DeviceManagementService::JobConfiguration::JobType job_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
+                      service_.CaptureRequest(&request),
+                      service_.SendJobOKAsync(policy_response)));
+
+  base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>
+      extension_ids_and_version_getter = base::BindRepeating([]() {
+        return std::set<ExtensionIdAndVersion>{kExtensions.begin(),
+                                               kExtensions.end()};
+      });
+  client_->AddPolicyTypeToFetch(CloudPolicyClientTypeParams(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      std::move(extension_ids_and_version_getter)));
+  RunClientTaskAndWaitPolicyFetch(base::BindLambdaForTesting(
+      [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type);
+
+  // Verify that the request includes the expected namespaces.
+  ASSERT_TRUE(request.has_policy_request());
+  const em::DevicePolicyRequest& policy_request = request.policy_request();
+  ASSERT_EQ(2, policy_request.requests_size());
+  for (int i = 0; i < policy_request.requests_size(); ++i) {
+    const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
+    ASSERT_TRUE(fetch_request.has_policy_type());
+    EXPECT_FALSE(fetch_request.has_settings_entity_id());
+    if (fetch_request.policy_type() ==
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
+      EXPECT_EQ(fetch_request.extension_ids_and_version().size(), 3);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_id(),
+                kExtensions[0].extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_version(),
+                kExtensions[0].extension_version);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(1).extension_id(),
+                kExtensions[1].extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(1).extension_version(),
+                kExtensions[1].extension_version);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(2).extension_id(),
+                kExtensions[2].extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(2).extension_version(),
+                kExtensions[2].extension_version);
+    }
+    key = {fetch_request.policy_type(), std::string()};
+    EXPECT_EQ(1u, expected_namespaces.erase(key));
+  }
+  EXPECT_TRUE(expected_namespaces.empty());
+
+  // Verify that the client got all the responses mapped to their namespaces.
+  for (auto it = expected_responses.begin(); it != expected_responses.end();
+       ++it) {
+    const em::PolicyFetchResponse* response =
+        client_->GetPolicyFor(it->first.first, it->first.second);
+    ASSERT_TRUE(response);
+    EXPECT_EQ(it->second.SerializeAsString(), response->SerializeAsString());
+  }
+}
+
 TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   RegisterClient();
 

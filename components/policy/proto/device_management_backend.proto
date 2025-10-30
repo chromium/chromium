@@ -571,6 +571,13 @@ message BrowserDeviceIdentifier {
   optional string host_name = 4;
 }
 
+// Extension id and version used to fetch the policy type
+// google/extension-install-cloud-policy/chrome/*.
+message ExtensionIdAndVersion {
+  optional string extension_id = 1;
+  optional string extension_version = 2;
+}
+
 message PolicyFetchRequest {
   reserved 5, 11;
   reserved "invalidation_topics_only";
@@ -670,6 +677,10 @@ message PolicyFetchRequest {
 
   // Device identifier for helping identify non-Chrome OS devices.
   optional BrowserDeviceIdentifier browser_device_identifier = 13;
+
+  // List of extension ids and version used to fetch the policy type
+  // google/extension-install-cloud-policy/chrome/*.
+  repeated ExtensionIdAndVersion extension_ids_and_version = 14;
 }
 
 // This message customizes how the device behaves when it is disabled by its
