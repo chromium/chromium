@@ -151,7 +151,7 @@ try_.orchestrator_builder(
     ),
 )
 
-CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache_{}".format(settings.project)
+CHROMEOS_SHARED_CACHE = "shared_chromeos_amd64_generic_rel_cache_{}".format(settings.project.replace("-", "_"))
 
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-gtest-compilator",
