@@ -52,7 +52,7 @@ public class MockTab extends TabImpl {
     }
 
     public MockTab(int id, Profile profile, @TabLaunchType int tabLaunchType) {
-        super(id, profile, tabLaunchType);
+        super(id, profile, tabLaunchType, /* isArchived= */ false);
     }
 
     @Override

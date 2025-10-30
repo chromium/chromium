@@ -164,6 +164,9 @@ class TabImpl implements Tab {
     /** Unique id of this tab (within its container). */
     private final int mId;
 
+    /** Whether the tab is archived. */
+    private final boolean mIsArchived;
+
     /** The Profile associated with this tab. */
     private final Profile mProfile;
 
@@ -363,13 +366,15 @@ class TabImpl implements Tab {
      * @param id The id this tab should be identified with.
      * @param profile The profile associated with this Tab.
      * @param launchType Type indicating how this tab was launched.
+     * @param isArchived Whether the tab is archived.
      */
     @SuppressLint("HandlerLeak")
-    TabImpl(int id, Profile profile, @TabLaunchType int launchType) {
+    TabImpl(int id, Profile profile, @TabLaunchType int launchType, boolean isArchived) {
         mId = TabIdManager.getInstance().generateValidId(id);
         mProfile = profile;
         assert mProfile != null;
         mRootId = mId;
+        mIsArchived = isArchived;
 
         // Override the configuration for night mode to always stay in light mode until all UIs in
         // Tab are inflated from activity context instead of application context. This is to
@@ -1415,7 +1420,14 @@ class TabImpl implements Tab {
 
             boolean needsInitWebContents = true;
             boolean createWebContents = webContents == null;
-            if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()) {
+            // TODO(crbug.com/448420873): For HeadlessTabModel we might not have a WindowAndroid.
+            // For archived tabs, we don't want to create a WebContents. Archived and headless tab
+            // models are not associated with BrowserWindowInterface so this shouldn't be an issue
+            // for now. In future we should reconsider whether these tab models should even hold a
+            // TabImpl vs some kind of light weight tab representation.
+            if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()
+                    && mWindowAndroid != null
+                    && !mIsArchived) {
                 if (mWebContentsState != null) {
                     assert webContents == null;
 

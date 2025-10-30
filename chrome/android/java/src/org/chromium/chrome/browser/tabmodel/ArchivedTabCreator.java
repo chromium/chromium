@@ -73,6 +73,7 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
                         .setTabResolver(mTabModel::getTabById)
                         .setInitiallyHidden(true)
                         .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
+                        .setArchived(true)
                         .build();
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_FOR_LAZY_LOAD);
@@ -91,6 +92,7 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
                         .setInitiallyHidden(true)
                         .setTabState(state)
                         .setDelegateFactory(CustomTabDelegateFactory.createEmpty())
+                        .setArchived(true)
                         .build();
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_FOR_LAZY_LOAD);

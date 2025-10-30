@@ -31,7 +31,7 @@ public class TabAndroidTestHelper {
         disablePriceTracking();
 
         // Create a frozen tab.
-        TabImpl tab = new TabImpl(tabId, profile, tabLaunchType);
+        TabImpl tab = new TabImpl(tabId, profile, tabLaunchType, /* isArchived= */ false);
         tab.initialize(
                 /* parent= */ null,
                 /* creationState= */ null,
