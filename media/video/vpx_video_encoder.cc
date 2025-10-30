@@ -137,7 +137,7 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
         // quantizer. Instead we just set CBR and set
         // VP9E_SET_QUANTIZER_ONE_PASS before each frame.
         config->rc_end_usage = VPX_CBR;
-        // Let the whole AV1 quantizer range to be used.
+        // Allow the whole VP8/VP9 quantizer range to be used.
         config->rc_max_quantizer = 63;
         config->rc_min_quantizer = 0;
         break;

@@ -200,7 +200,7 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
         // quantizer. Instead we just set CBR and set
         // AV1E_SET_QUANTIZER_ONE_PASS before each frame.
         config.rc_end_usage = AOM_CBR;
-        // Let the whole AV1 quantizer range to be used.
+        // Allow the whole AV1 quantizer range to be used.
         config.rc_max_quantizer = 63;
         config.rc_min_quantizer = 1;
         break;
