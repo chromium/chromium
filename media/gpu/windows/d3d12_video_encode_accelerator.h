@@ -35,7 +35,7 @@ class CommandBufferHelper;
 class VEAEncodingLatencyMetricsHelper;
 
 typedef base::OnceCallback<void(scoped_refptr<VideoFrame> frame,
-                                Microsoft::WRL::ComPtr<ID3D12Resource> resource,
+                                base::win::ScopedHandle shared_handle,
                                 HRESULT hr)>
     FrameAvailableCB;
 
@@ -143,7 +143,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
 
   // Invoked when a shared image backed VideoFrame is resolved.
   void OnSharedImageResolved(scoped_refptr<VideoFrame> frame,
-                             Microsoft::WRL::ComPtr<ID3D12Resource> resource,
+                             base::win::ScopedHandle shared_handle,
                              HRESULT hr);
 
   std::vector<D3D12_VIDEO_ENCODER_CODEC> codecs_;
