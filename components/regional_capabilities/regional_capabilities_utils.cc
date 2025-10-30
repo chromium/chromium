@@ -54,10 +54,6 @@ void ShufflePrepopulatedEngines(std::vector<const PrepopulatedEngine*>& engines,
 
 }  // namespace
 
-bool IsEeaCountry(country_codes::CountryId country_id) {
-  return kEeaChoiceCountriesIds.contains(country_id);
-}
-
 std::optional<SearchEngineCountryOverride> GetSearchEngineCountryOverride() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kSearchEngineChoiceCountry)) {

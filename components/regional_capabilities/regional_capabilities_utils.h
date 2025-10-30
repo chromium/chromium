@@ -24,11 +24,6 @@ namespace regional_capabilities {
 enum class SearchEngineListType;
 enum class Program;
 
-// Returns whether `country_id` refers to a country member of the European
-// Economic Area.
-// See `//components/country_codes` for the Country ID format.
-bool IsEeaCountry(country_codes::CountryId country_id);
-
 // Override of the regional program set from the
 // `switches::kSearchEngineChoiceCountry` command line flag.
 enum class RegionalProgramOverride {

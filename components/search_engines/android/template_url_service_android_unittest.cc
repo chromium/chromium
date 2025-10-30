@@ -28,8 +28,8 @@ class TemplateUrlServiceAndroidUnitTest
     : public LoadedTemplateURLServiceUnitTestBase {
  public:
   void SetUp() override {
-    // Chosen due to being an EEA country, see
-    // `regional_capabilities::IsEeaCountry()`.
+    // Chosen due to being associated to
+    // `regional_capabilities::ProgramSettings::kWaffle`.
     const char kBelgiumCountryId[] = "BE";
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, kBelgiumCountryId);
