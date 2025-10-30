@@ -7,3 +7,4 @@ License: MPL-1.1
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:2.3:a:mozilla:netscape_portable_runtime:4.8:*:*:*:*:*:*:*
