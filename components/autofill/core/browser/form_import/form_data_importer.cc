@@ -556,11 +556,7 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
       candidate_profile.HasRawInfo(ADDRESS_HOME_ZIP_PREFIX);
 
   if (!SetPhoneNumber(candidate_profile, combined_phone)) {
-    candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
     import_metadata.phone_import_status = PhoneImportStatus::kInvalid;
-    LOG_AF(import_log_buffer)
-        << LogMessage::kImportAddressProfileFromFormRemoveInvalidValue
-        << "Phone number." << CTag{};
   } else if (!combined_phone.IsEmpty()) {
     import_metadata.phone_import_status = PhoneImportStatus::kValid;
   }
@@ -725,6 +721,11 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // step import profile merging requires the profile to be finalized. Ideally
   // we would return false here if it fails, but that breaks the metrics.
   bool finalized_import = candidate_profile.FinalizeAfterImport();
+
+  // Remove invalid values of types that are optional in some countries.
+  // This is done after `FinalizeAfterImport()` to ensure that formatted
+  // invalid values are also removed.
+  RemoveInvalidValues(candidate_profile, import_log_buffer, import_metadata);
 
   // Reject the profile if the validation requirements are not met.
   // `ValidateNonEmptyValues()` goes first to collect metrics.

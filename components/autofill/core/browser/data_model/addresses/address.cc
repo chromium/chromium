@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -139,6 +140,21 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
       AreStringTokenEquivalent(value, Root()->GetValueForType(type))
           ? Root()->SetValueForType(ADDRESS_HOME_STREET_ADDRESS, value, status)
           : Root()->SetValueForType(ADDRESS_HOME_STREET_ADDRESS, value, status,
+                                    /*invalidate_child_nodes=*/true);
+      return;
+    }
+  }
+
+  // In case the settings dialog was used to change the zip code value, the
+  // structure must be reset.
+  if (type == ADDRESS_HOME_ZIP &&
+      base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    const std::u16string current_value = Root()->GetValueForType(type);
+    if (!current_value.empty()) {
+      AutofillProfileComparator::Compare(value, current_value,
+                                         normalization::WhitespaceSpec::kRetain)
+          ? Root()->SetValueForType(ADDRESS_HOME_ZIP, value, status)
+          : Root()->SetValueForType(ADDRESS_HOME_ZIP, value, status,
                                     /*invalidate_child_nodes=*/true);
       return;
     }
