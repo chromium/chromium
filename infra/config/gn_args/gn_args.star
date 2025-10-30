@@ -1497,14 +1497,6 @@ gn_args.config(
     },
 )
 
-# For Android N-P, only userdebug/eng
-gn_args.config(
-    name = "webview_monochrome",
-    args = {
-        "system_webview_package_name": "com.google.android.apps.chrome",
-    },
-)
-
 # Mainly used by builders that use android emulator.
 # See https://bit.ly/3B1cyyt for more details.
 gn_args.config(

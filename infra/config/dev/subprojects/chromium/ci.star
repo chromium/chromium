@@ -137,7 +137,6 @@ ci_builder(
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
-            "webview_monochrome",
         ],
     ),
     targets = targets.bundle(
