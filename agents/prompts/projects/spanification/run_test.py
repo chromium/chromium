@@ -48,8 +48,8 @@ class RunScriptTest(unittest.TestCase):
         """Tests a successful run_gemini execution."""
         mock_exists.return_value = True
         mock_process = mock.Mock()
-        mock_process.communicate.return_value = ('{}', '')
-        mock_process.returncode = 0
+        mock_process.stdout.readline.side_effect = ['{"output": "line"}\n', '']
+        mock_process.wait.return_value = 0
         mock_subprocess_popen.return_value.__enter__.return_value = mock_process
 
         summary_data = {'status': 'SUCCESS', 'summary': 'It worked!'}
@@ -85,10 +85,9 @@ class RunScriptTest(unittest.TestCase):
                                 mock_subprocess_popen):
         """Tests run_gemini with a timeout."""
         mock_process = mock.Mock()
-        mock_process.communicate.side_effect = [
-            subprocess.TimeoutExpired(cmd='gemini', timeout=10),
-            ('', ''),
-        ]
+        mock_process.stdout.readline.side_effect = ['']
+        mock_process.wait.side_effect = subprocess.TimeoutExpired(cmd='gemini',
+                                                                  timeout=10)
         mock_process.kill.return_value = None
         mock_subprocess_popen.return_value.__enter__.return_value = mock_process
 

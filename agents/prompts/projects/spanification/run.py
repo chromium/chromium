@@ -34,7 +34,7 @@ REQUIRED_BUILD_DIRS = [
     'mac-rel',
     'linux-win-cross-rel',
     'android-14-x64-rel',
-    'chromeos-amd64-generic-dbg',
+    'linux-chromeos-rel',
 ]
 
 # Tools allowed for all tasks:
@@ -64,6 +64,11 @@ ALLOWED_TOOLS = [
 
     # Cleanup:
     "run_shell_command(git cl format)",
+
+    # Reporting:
+    "run_shell_command(touch gemini_out/commit_message.md)",
+    "run_shell_command(touch gemini_out/summary.json)",
+    "run_shell_command(mkdir -p gemini_out)",
 ]
 
 def ensure_gn_build_dir():
@@ -178,7 +183,7 @@ def run_gemini(file):
     cmd.extend(['--allowed-tools', ','.join(ALLOWED_TOOLS)])
 
     exit_code = 0
-    TIMEOUT_SECONDS = 1800  # 30 minutes
+    TIMEOUT_SECONDS = 2700  # 45 minutes
     output = []
     try:
         with subprocess.Popen(
