@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -239,6 +239,12 @@ PATH_CONTEXT = {
             'archive_name': 'full-build-linux.zip',
             'archive_extract_dir': 'full-build-linux'
         },
+        'android-desktop-x64': {
+            'binary_name': None,
+            'listing_platform_dir': 'android-desktop-x64-builder-perf/',
+            'archive_name': 'full-build-linux.zip',
+            'archive_extract_dir': 'full-build-linux'
+        },
         'linux64': {
             'binary_name': 'chrome',
             'listing_platform_dir': 'linux-builder-perf/',
@@ -416,13 +422,22 @@ TRICHROME_APK_FILENAMES = {
     'chrome_stable': 'TrichromeChromeGoogleStable.apks',
 }
 
-TRICHROME64_APK_FILENAMES = {
+TRICHROME64_32_APK_FILENAMES = {
     'chrome': 'TrichromeChromeGoogle6432.apks',
     'chrome_beta': 'TrichromeChromeGoogle6432Beta.apks',
     'chrome_canary': 'TrichromeChromeGoogle6432Canary.apks',
     'chrome_dev': 'TrichromeChromeGoogle6432Dev.apks',
     'chrome_stable': 'TrichromeChromeGoogle6432Stable.apks',
     'system_webview': 'TrichromeWebViewGoogle6432.apks',
+}
+
+TRICHROME64_APK_FILENAMES = {
+    'chrome': 'TrichromeChromeGoogle64.apks',
+    'chrome_beta': 'TrichromeChromeGoogle64Beta.apks',
+    'chrome_canary': 'TrichromeChromeGoogle64Canary.apks',
+    'chrome_dev': 'TrichromeChromeGoogle64Dev.apks',
+    'chrome_stable': 'TrichromeChromeGoogle64Stable.apks',
+    'system_webview': 'TrichromeWebViewGoogle64.apks',
 }
 
 TRICHROME_LIBRARY_FILENAMES = {
@@ -433,13 +448,22 @@ TRICHROME_LIBRARY_FILENAMES = {
     'chrome_stable': 'TrichromeLibraryGoogleStable.apk',
 }
 
-TRICHROME64_LIBRARY_FILENAMES = {
+TRICHROME64_32_LIBRARY_FILENAMES = {
     'chrome': 'TrichromeLibraryGoogle6432.apk',
     'chrome_beta': 'TrichromeLibraryGoogle6432Beta.apk',
     'chrome_canary': 'TrichromeLibraryGoogle6432Canary.apk',
     'chrome_dev': 'TrichromeLibraryGoogle6432Dev.apk',
     'chrome_stable': 'TrichromeLibraryGoogle6432Stable.apk',
     'system_webview': 'TrichromeLibraryGoogle6432.apk',
+}
+
+TRICHROME64_LIBRARY_FILENAMES = {
+    'chrome': 'TrichromeLibraryGoogle64.apk',
+    'chrome_beta': 'TrichromeLibraryGoogle64Beta.apk',
+    'chrome_canary': 'TrichromeLibraryGoogle64Canary.apk',
+    'chrome_dev': 'TrichromeLibraryGoogle64Dev.apk',
+    'chrome_stable': 'TrichromeLibraryGoogle64Stable.apk',
+    'system_webview': 'TrichromeLibraryGoogle64.apk',
 }
 
 WEBVIEW_APK_FILENAMES = {
@@ -1299,16 +1323,22 @@ class AndroidBuildMixin:
 class AndroidTrichromeMixin(AndroidBuildMixin):
 
   def __init__(self, options):
+    # "High end" releases of Chrome on Android include only 64 bit libs, while
+    # others include both 32 & 64 bit support. All releases of android-desktop
+    # are considered "high end", while releases for android-mobile are a mix.
     self._64bit_platforms = ('android-arm64', 'android-x64',
                              'android-arm64-high')
+    self._pure_64bit_platforms = ('android-desktop-x64', )
     super().__init__(options)
     if self.device.build_version_sdk < version_codes.Q:
       raise BisectException("Trichrome is only supported after Android Q.")
     self.library_binary_name = self._get_library_filename()
 
   def _get_apk_mapping(self, prefer_64bit=True):
-    if self.platform in self._64bit_platforms and prefer_64bit:
+    if self.platform in self._pure_64bit_platforms and prefer_64bit:
       return TRICHROME64_APK_FILENAMES
+    elif self.platform in self._64bit_platforms and prefer_64bit:
+      return TRICHROME64_32_APK_FILENAMES
     else:
       return TRICHROME_APK_FILENAMES
 
@@ -1322,8 +1352,10 @@ class AndroidTrichromeMixin(AndroidBuildMixin):
 
   def _get_library_filename(self, prefer_64bit=True):
     apk_mapping = None
-    if self.platform in self._64bit_platforms and prefer_64bit:
+    if self.platform in self._pure_64bit_platforms and prefer_64bit:
       apk_mapping = TRICHROME64_LIBRARY_FILENAMES
+    elif self.platform in self._64bit_platforms and prefer_64bit:
+      apk_mapping = TRICHROME64_32_LIBRARY_FILENAMES
     else:
       apk_mapping = TRICHROME_LIBRARY_FILENAMES
     if self.apk not in apk_mapping:
@@ -1597,7 +1629,7 @@ def create_archive_build(options):
       return IOSReleaseBuild(options)
     return ReleaseBuild(options)
   elif options.build_type == 'official':
-    if options.archive == 'android-arm64-high':
+    if options.archive in ('android-arm64-high', 'android-desktop-x64'):
       return AndroidTrichromeOfficialBuild(options)
     elif options.archive.startswith('android'):
       return AndroidOfficialBuild(options)
@@ -2414,7 +2446,8 @@ Tip: add "-- --no-first-run" to bypass the first run prompts.
   apk_choices = sorted(
       set().union(CHROME_APK_FILENAMES, CHROME_MODERN_APK_FILENAMES,
                   MONOCHROME_APK_FILENAMES, WEBVIEW_APK_FILENAMES,
-                  TRICHROME_APK_FILENAMES, TRICHROME64_APK_FILENAMES))
+                  TRICHROME_APK_FILENAMES, TRICHROME64_32_APK_FILENAMES,
+                  TRICHROME64_APK_FILENAMES))
   parser.add_argument(
       '--apk',
       choices=apk_choices,
