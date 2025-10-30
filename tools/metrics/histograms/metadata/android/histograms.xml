@@ -4225,6 +4225,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.OverscrollFromBottom.CanStart" enum="Boolean"
+    expires_after="2026-04-28">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/chrome/browser/ui/android/edge_to_edge/OWNERS</owner>
+  <summary>
+    Records, when user starts a overscroll from the bottom on a tab, whether the
+    overscroll satisfied the start condition (e.g. the browser controls is not
+    already shown).
+  </summary>
+</histogram>
+
+<histogram name="Android.OverscrollFromBottom.DidTriggerOverscroll"
+    enum="Boolean" expires_after="2026-04-28">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/chrome/browser/ui/android/edge_to_edge/OWNERS</owner>
+  <summary>
+    Records, when user starts a overscroll from the bottom on a tab, whether the
+    overscroll handler fired the callback to re-show the browser controls.
+  </summary>
+</histogram>
+
 <histogram name="Android.PackageStats.CacheSize" units="MB"
     expires_after="2024-05-05">
   <owner>nyquist@chromium.org</owner>
