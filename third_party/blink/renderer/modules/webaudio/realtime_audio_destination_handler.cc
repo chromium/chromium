@@ -358,7 +358,7 @@ void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
 
   platform_destination_ = AudioDestination::Create(
       *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
-      Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+      Context()->renderQuantumSize());
 
   // if `sample_rate_` is nullopt, it is supposed to use the default device
   // sample rate. Update the internal sample rate for subsequent device change
@@ -493,9 +493,9 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
 
   // Create a pending AudioDestination to replace the current one.
   scoped_refptr<AudioDestination> pending_platform_destination =
-      AudioDestination::Create(
-          *this, sink_descriptor, ChannelCount(), latency_hint_, sample_rate_,
-          Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+      AudioDestination::Create(*this, sink_descriptor, ChannelCount(),
+                               latency_hint_, sample_rate_,
+                               Context()->renderQuantumSize());
 
   // With this pending AudioDestination, create and initialize an underlying
   // sink in order to query the device status. If the status is OK, then replace

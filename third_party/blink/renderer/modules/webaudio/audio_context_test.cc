@@ -1196,7 +1196,7 @@ TEST_F(AudioContextTest, RenderSizeHint) {
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* context = AudioContext::Create(GetFrame().DomWindow(), options,
                                                ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 128u);
+  EXPECT_EQ(context->renderQuantumSize(), 128u);
 
   options = AudioContextOptions::Create();
   options->setRenderSizeHint(
@@ -1204,7 +1204,7 @@ TEST_F(AudioContextTest, RenderSizeHint) {
           0u));
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 1u);
+  EXPECT_EQ(context->renderQuantumSize(), 1u);
 
   options = AudioContextOptions::Create();
   options->setRenderSizeHint(
@@ -1212,7 +1212,7 @@ TEST_F(AudioContextTest, RenderSizeHint) {
           16385u));
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 16384u);
+  EXPECT_EQ(context->renderQuantumSize(), 16384u);
 
   options = AudioContextOptions::Create();
   options->setRenderSizeHint(
@@ -1220,7 +1220,7 @@ TEST_F(AudioContextTest, RenderSizeHint) {
           256u));
   context = AudioContext::Create(GetFrame().DomWindow(), options,
                                  ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->GetDeferredTaskHandler().RenderQuantumFrames(), 256u);
+  EXPECT_EQ(context->renderQuantumSize(), 256u);
 
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "WebAudioConfigurableRenderQuantum", false);

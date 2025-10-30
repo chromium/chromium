@@ -38,8 +38,7 @@ DelayHandler::DelayHandler(AudioNode& node,
     : AudioHandler(NodeType::kNodeTypeDelay, node, sample_rate),
       number_of_channels_(kDefaultNumberOfChannels),
       sample_rate_(sample_rate),
-      render_quantum_frames_(
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames()),
+      render_quantum_frames_(node.context()->renderQuantumSize()),
       delay_time_(&delay_time),
       max_delay_time_(max_delay_time) {
   AddInput();

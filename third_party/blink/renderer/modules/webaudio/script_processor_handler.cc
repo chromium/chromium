@@ -42,12 +42,10 @@ ScriptProcessorHandler::ScriptProcessorHandler(
       buffer_size_(buffer_size),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
-      internal_input_bus_(AudioBus::Create(
-          number_of_input_channels,
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-          false)) {
-  DCHECK_GE(buffer_size_,
-            node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
+      internal_input_bus_(AudioBus::Create(number_of_input_channels,
+                                           node.context()->renderQuantumSize(),
+                                           false)) {
+  DCHECK_GE(buffer_size_, node.context()->renderQuantumSize());
   DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
 
   AddInput();

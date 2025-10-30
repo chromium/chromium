@@ -99,8 +99,8 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
     : AudioNode(context), ActiveScriptWrappable<ScriptProcessorNode>({}) {
   // Regardless of the allowed buffer sizes, we still need to process at the
   // granularity of the AudioNode.
-  if (buffer_size < context.GetDeferredTaskHandler().RenderQuantumFrames()) {
-    buffer_size = context.GetDeferredTaskHandler().RenderQuantumFrames();
+  if (buffer_size < context.renderQuantumSize()) {
+    buffer_size = context.renderQuantumSize();
   }
 
   // Create double buffers on both the input and output sides.

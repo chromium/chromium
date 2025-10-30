@@ -119,9 +119,8 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
   }
 
   response_kernel_ = std::make_unique<IIRFilter>(&feedforward_, &feedback_);
-  tail_time_ = response_kernel_->TailTime(
-      sample_rate, is_filter_stable,
-      node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
+  tail_time_ = response_kernel_->TailTime(sample_rate, is_filter_stable,
+                                          node.context()->renderQuantumSize());
 }
 
 void IIRFilterHandler::Process(uint32_t frames_to_process) {

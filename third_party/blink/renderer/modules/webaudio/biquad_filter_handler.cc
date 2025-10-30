@@ -665,14 +665,14 @@ BiquadFilterHandler::BiquadFilterHandler(AudioNode& node,
                                          AudioParamHandler& gain,
                                          AudioParamHandler& detune)
     : AudioHandler(NodeType::kNodeTypeBiquadFilter, node, sample_rate),
-      processor_(std::make_unique<BiquadProcessor>(
-          sample_rate,
-          kDefaultNumberOfOutputChannels,
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-          frequency,
-          q,
-          gain,
-          detune)) {
+      processor_(
+          std::make_unique<BiquadProcessor>(sample_rate,
+                                            kDefaultNumberOfOutputChannels,
+                                            node.context()->renderQuantumSize(),
+                                            frequency,
+                                            q,
+                                            gain,
+                                            detune)) {
   DCHECK(Context());
   DCHECK(Context()->GetExecutionContext());
 

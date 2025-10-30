@@ -221,8 +221,7 @@ V8OverSampleType::Enum WaveShaperHandler::Oversample() const {
 WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
     : AudioHandler(NodeType::kNodeTypeWaveShaper, node, sample_rate),
       sample_rate_(sample_rate),
-      render_quantum_frames_(
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames()),
+      render_quantum_frames_(node.context()->renderQuantumSize()),
       // 4 times render size to handle 4x oversampling.
       virtual_index_(4 * render_quantum_frames_),
       index_(4 * render_quantum_frames_),
