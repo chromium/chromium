@@ -4869,6 +4869,17 @@
     "args": [
       "--disable-features=DeprecateUnload"
     ],
+    "exclusive_tests": [
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/001.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/002.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/003.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/004.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/005.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/004.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/007.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-same-origin.window.js",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-cross-origin.window.js"
+    ],
     "expires": "Jun 1, 2026",
     "owners": [
       "fergal@chromium.org",

@@ -3942,6 +3942,29 @@ void Document::open() {
   if (GetFrame())
     GetFrame()->CancelFormSubmission();
 
+  // The HTML spec for document.open()
+  // (https://html.spec.whatwg.org/#document-open-steps) specifies erasing all
+  // event listeners for descendant nodes, but doesn't explicitly address when
+  // child frame unload events should fire. We trigger child frame unload events
+  // first, following the same pattern used in LocalFrame::DetachImpl where
+  // child frames are unloaded before other cleanup. This ensures child frames
+  // properly unload and their handlers execute before removing the parent
+  // document's event listeners (crbug.com/40947017).
+  if (RuntimeEnabledFeatures::DocumentOpenIframeUnloadEventsEnabled() &&
+      GetFrame()) {
+    for (Frame* child = GetFrame()->Tree().FirstChild(); child;) {
+      Frame* next_child = child->Tree().NextSibling();
+      if (auto* local_child = DynamicTo<LocalFrame>(child)) {
+        // Note: Cross-origin frames are handled correctly as the loader
+        // mechanism already respects cross-origin boundaries and security
+        // policies when dispatching unload events.
+        local_child->Loader().DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
+            /*will_commit_new_document_in_this_frame=*/false);
+      }
+      child = next_child;
+    }
+  }
+
   // For each shadow-including inclusive descendant |node| of |document|, erase
   // all event listeners and handlers given |node|.
   //

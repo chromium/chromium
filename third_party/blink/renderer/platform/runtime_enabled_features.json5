@@ -1987,6 +1987,13 @@
       base_feature: "none",
     },
     {
+      // Fix iframe unload events not firing during document.open()
+      // https://crbug.com/40947017
+      // Lands in M144; remove this flag in M146 after the milestone rolls.
+      name: "DocumentOpenIframeUnloadEvents",
+      status: "stable",
+    },
+    {
       name: "DocumentOpenOriginAliasRemoval",
       status: "experimental",
       copied_from_base_feature_if: "overridden",
