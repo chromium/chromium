@@ -942,4 +942,327 @@ TEST_F(FocusgroupControllerTest, SegmentDetectionNonFocusgroupItem) {
   EXPECT_EQ(utils::LastFocusgroupItemInSegment(*outside), nullptr);
 }
 
+TEST_F(FocusgroupControllerTest, EntryElementLowestPositiveTabindex) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="5">Button 1</button>
+      <button id="btn2" tabindex="2">Button 2</button>
+      <button id="btn3" tabindex="3">Button 3</button>
+      <button id="btn4" tabindex="1">Button 4</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn4 = GetElementById("btn4");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn4);
+
+  // Should select btn4 (tabindex="1") - lowest positive tabindex.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn4);
+
+  // Reverse for backward direction.
+  entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kBackward);
+  EXPECT_EQ(entry, btn1);
+
+  // IsEntryElementForFocusgroupSegment should give the same results.
+  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(
+      *btn4, *fg, mojom::blink::FocusType::kForward));
+  EXPECT_TRUE(utils::IsEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kBackward));
+  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kForward));
+  EXPECT_FALSE(utils::IsEntryElementForFocusgroupSegment(
+      *btn4, *fg, mojom::blink::FocusType::kBackward));
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementZeroTabindexForward) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="0">Button 1</button>
+      <button id="btn2" tabindex="0">Button 2</button>
+      <button id="btn3" tabindex="0">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+
+  // Forward direction: should select first element with tabindex=0.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn2, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn1);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementZeroTabindexBackward) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="0">Button 1</button>
+      <button id="btn2" tabindex="0">Button 2</button>
+      <button id="btn3" tabindex="0">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn2 = GetElementById("btn2");
+  auto* btn3 = GetElementById("btn3");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn2);
+  ASSERT_TRUE(btn3);
+
+  // Backward direction: should select last element with tabindex=0.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn2, *fg, mojom::blink::FocusType::kBackward);
+  EXPECT_EQ(entry, btn3);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementNegativeTabindexForward) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="-1">Button 1</button>
+      <button id="btn2" tabindex="-1">Button 2</button>
+      <button id="btn3" tabindex="-1">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+
+  // Forward direction: should select first element with tabindex=-1.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn2, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn1);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementNegativeTabindexBackward) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="-1">Button 1</button>
+      <button id="btn2" tabindex="-1">Button 2</button>
+      <button id="btn3" tabindex="-1">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn2 = GetElementById("btn2");
+  auto* btn3 = GetElementById("btn3");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn2);
+  ASSERT_TRUE(btn3);
+
+  // Backward direction: should select last element with tabindex=-1.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn2, *fg, mojom::blink::FocusType::kBackward);
+  EXPECT_EQ(entry, btn3);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementPriorityOrder) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="neg" tabindex="-1">Negative</button>
+      <button id="zero" tabindex="0">Zero</button>
+      <button id="pos5" tabindex="5">Positive 5</button>
+      <button id="pos2" tabindex="2">Positive 2</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* neg = GetElementById("neg");
+  auto* pos2 = GetElementById("pos2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(neg);
+  ASSERT_TRUE(pos2);
+
+  // Should select lowest positive tabindex (pos2) over zero and negative.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *neg, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, pos2);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementZeroOverNegative) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="neg1" tabindex="-1">Negative 1</button>
+      <button id="zero" tabindex="0">Zero</button>
+      <button id="neg2" tabindex="-1">Negative 2</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* neg1 = GetElementById("neg1");
+  auto* zero = GetElementById("zero");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(neg1);
+  ASSERT_TRUE(zero);
+
+  // Should select zero tabindex over negative.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *neg1, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, zero);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementWithAlreadyFocused) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="1">Button 1</button>
+      <button id="btn2" tabindex="2">Button 2</button>
+      <button id="btn3" tabindex="3">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+
+  btn2->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  // Should return nullptr if another item in segment is already focused.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, nullptr);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementMemoryRestoration) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="1">Button 1</button>
+      <button id="btn2" tabindex="2">Button 2</button>
+      <button id="btn3" tabindex="3">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn3 = GetElementById("btn3");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn3);
+
+  fg->SetFocusgroupLastFocused(*btn3);
+
+  // Should restore memory item (btn3) even though btn1 has lower tabindex.
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn3);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementSegmentBoundary) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="1">Button 1</button>
+      <div focusgroup="none">
+        <button id="barrier">Barrier</button>
+      </div>
+      <button id="btn2" tabindex="2">Button 2</button>
+      <button id="btn3" tabindex="3">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+
+  // btn1 and btn2 are in different segments, so entry element
+  // for btn2's segment should be btn2 (lowest positive in that segment).
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn2, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn2);
+
+  // Entry element for btn1's segment should be btn1 (only item in segment).
+  entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn1, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn1);
+}
+
+TEST_F(FocusgroupControllerTest, EntryElementMemoryOutsideSegment) {
+  ScopedFocusgroupForTest focusgroup_enabled(true);
+
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1" tabindex="5">Button 1</button>
+      <div focusgroup="none">
+        <button id="barrier">Barrier</button>
+      </div>
+      <button id="btn2" tabindex="2">Button 2</button>
+      <button id="btn3" tabindex="3">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* fg = GetElementById("fg");
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  ASSERT_TRUE(fg);
+  ASSERT_TRUE(btn1);
+  ASSERT_TRUE(btn2);
+
+  fg->SetFocusgroupLastFocused(*btn1);
+
+  // Memory should not be restored since btn1 is in a different segment
+  // Should fall back to lowest positive tabindex in btn2's segment (btn2).
+  auto* entry = utils::GetEntryElementForFocusgroupSegment(
+      *btn2, *fg, mojom::blink::FocusType::kForward);
+  EXPECT_EQ(entry, btn2);
+}
+
 }  // namespace blink

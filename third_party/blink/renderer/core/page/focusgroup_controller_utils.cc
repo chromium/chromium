@@ -244,6 +244,109 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   return IsA<LayoutTableCell>(element->GetLayoutObject());
 }
 
+bool FocusgroupControllerUtils::IsEntryElementForFocusgroupSegment(
+    Element& item,
+    Element& owner,
+    mojom::blink::FocusType direction) {
+  if (!IsFocusgroupItemWithOwner(&item, &owner)) {
+    return false;
+  }
+  return &item == GetEntryElementForFocusgroupSegment(item, owner, direction);
+}
+
+Element* FocusgroupControllerUtils::GetEntryElementForFocusgroupSegment(
+    Element& item,
+    Element& owner,
+    mojom::blink::FocusType direction) {
+  DCHECK(IsFocusgroupItemWithOwner(&item, &owner));
+
+  Element* memory_item = owner.GetFocusgroupLastFocused();
+
+  // Walk through all items in the segment to find the best candidate.
+  Element* item_in_segment = nullptr;
+
+  // Start from the beginning/end of the segment based on direction.
+  if (direction == mojom::blink::FocusType::kForward) {
+    item_in_segment = FirstFocusgroupItemInSegment(item);
+  } else {
+    DCHECK(direction == mojom::blink::FocusType::kBackward);
+    item_in_segment = LastFocusgroupItemInSegment(item);
+  }
+
+  if (!item_in_segment) {
+    return nullptr;
+  }
+
+  Element* best_positive_tabindex = nullptr;
+  Element* best_zero_tabindex = nullptr;
+  Element* best_negative_tabindex = nullptr;
+  bool memory_item_in_segment = false;
+
+  // Iterate through all items in segment.
+  while (item_in_segment) {
+    DCHECK(IsFocusgroupItemWithOwner(item_in_segment, &owner));
+    if (item_in_segment->IsFocusedElementInDocument()) {
+      // If another item in the segment is already focused (which can occur
+      // when checking whether we should tab from that focused item to another
+      // item in the same segment), return nullptr to ensure there is only one
+      // item in sequential tab order per segment.
+      return nullptr;
+    }
+
+    if (memory_item && item_in_segment == memory_item) {
+      // If we found the memory item, we no longer need to look for other
+      // candidates, but do need to continue to ensure that there is no focused
+      // element in the segment.
+      memory_item_in_segment = true;
+      item_in_segment = NextFocusgroupItemInSegmentInDirection(
+          *item_in_segment, owner, direction);
+      continue;
+    }
+
+    int tab_index = item_in_segment->tabIndex();
+    if (tab_index > 0) {
+      if (!best_positive_tabindex) {
+        best_positive_tabindex = item_in_segment;
+      } else if (direction == mojom::blink::FocusType::kForward &&
+                 tab_index < best_positive_tabindex->tabIndex()) {
+        best_positive_tabindex = item_in_segment;
+      } else if (direction == mojom::blink::FocusType::kBackward &&
+                 tab_index > best_positive_tabindex->tabIndex()) {
+        best_positive_tabindex = item_in_segment;
+      }
+    } else if (tab_index == 0) {
+      // Zero tabindex: keep the first one (in direction).
+      if (!best_zero_tabindex) {
+        best_zero_tabindex = item_in_segment;
+      }
+    } else {
+      // Negative tabindex: keep the first one (in direction).
+      if (!best_negative_tabindex) {
+        best_negative_tabindex = item_in_segment;
+      }
+    }
+    item_in_segment = NextFocusgroupItemInSegmentInDirection(*item_in_segment,
+                                                             owner, direction);
+  }
+
+  if (memory_item_in_segment) {
+    return memory_item;
+  }
+
+  // Return in priority order.
+  if (best_positive_tabindex) {
+    return best_positive_tabindex;
+  }
+  if (best_zero_tabindex) {
+    return best_zero_tabindex;
+  }
+  if (best_negative_tabindex) {
+    return best_negative_tabindex;
+  }
+
+  return nullptr;
+}
+
 bool FocusgroupControllerUtils::IsElementInOptedOutSubtree(
     const Element* element) {
   // Starting with this element, walk up the ancestor chain looking for an

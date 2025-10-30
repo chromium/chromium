@@ -146,6 +146,39 @@ class CORE_EXPORT FocusgroupControllerUtils {
                                         const Element* focusgroup_owner);
   static bool IsGridFocusgroupItem(const Element* element);
 
+  // Determines the guaranteed tab stop (entry element) for sequential focus
+  // navigation given any focusgroup item in that segment.
+  //
+  // Sequential navigation (Tab/Shift+Tab) treats each focusgroup segment as
+  // having one guaranteed tab stop, ensuring the segment appears once in the
+  // tab order. This function determines which item in the segment should be
+  // that tab stop.
+  //
+  // Selection priority (highest to lowest):
+  // 1. Last focused item (if memory is enabled and item is in this segment).
+  // 2a. If direction is forwards, Item with lowest positive non-zero tabindex
+  // value. 2b. If direction is backwards, Item with highest positive non-zero
+  // tabindex value.
+  // 3. First/last item with tabindex=0 or implicit focusability (by direction).
+  // 4. First/last item with tabindex=-1 (by direction).
+  //
+  // Returns nullptr if:
+  // - |item| is not a focusgroup item
+  // - Another item in the segment is already focused. In this case, the
+  //   segment is not eligible for a new tab stop.
+  //
+  // |item|: Any focusgroup item in the segment to query.
+  // |owner|: The focusgroup owner of |item| (must be valid).
+  // |direction|: the direction that sequential focus navigation is moving in.
+  static bool IsEntryElementForFocusgroupSegment(
+      Element& item,
+      Element& owner,
+      mojom::blink::FocusType direction);
+  static Element* GetEntryElementForFocusgroupSegment(
+      Element& item,
+      Element& owner,
+      mojom::blink::FocusType direction);
+
   // Returns true if the element is opted out or within an opted-out focusgroup
   // subtree.
   static bool IsElementInOptedOutSubtree(const Element* element);
