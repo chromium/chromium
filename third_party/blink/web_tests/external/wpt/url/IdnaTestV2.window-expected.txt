@@ -1,6 +1,18 @@
 This is a testharness.js-based test.
-Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 978 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] ToASCII("a‌b") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("A‌B") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("A‌b") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ab-j1t") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("a‍b") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("A‍B") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("A‍b") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ab-m1t") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -16,11 +28,37 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--xn--a--gua.pt") V4; V2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.aß‌‍b‌‍cßßßßdςσßßßßßßßßeßßßßßßßßßßxßßßßßßßßßßyßßßßßßßß̂ßz") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.ASS‌‍B‌‍CSSSSSSSSDΣΣSSSSSSSSSSSSSSSSESSSSSSSSSSSSSSSSSSSSXSSSSSSSSSSSSSSSSSSSSYSSSSSSSSSSSSSSSŜSSZ") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.ASS‌‍B‌‍CSSSSSSSSDΣΣSSSSSSSSSSSSSSSSESSSSSSSSSSSSSSSSSSSSXSSSSSSSSSSSSSSSSSSSSYSSSSSSSSSSSSSSSŜSSZ") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.ass‌‍b‌‍cssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.ass‌‍b‌‍cssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.Ass‌‍b‌‍cssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.Ass‌‍b‌‍cssssssssdσσssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssŝssz") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("1.xn--assbcssssssssdssssssssssssssssessssssssssssssssssssxssssssssssssssssssssysssssssssssssssssz-pxq1419aa69989dba9gc") C1; C2; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.Aß‌‍b‌‍cßßßßdςσßßßßßßßßeßßßßßßßßßßxßßßßßßßßßßyßßßßßßßß̂ßz") C1; C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("1.xn--abcdexyz-qyacaaabaaaaaaabaaaaaaaaabaaaaaaaaabaaaaaaaa010ze2isb1140zba8cc") C1; C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌x‍n‌-‍-bß") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌X‍N‌-‍-BSS") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌x‍n‌-‍-bss") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌X‍n‌-‍-Bss") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--xn--bss-7z6ccid") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌X‍n‌-‍-Bß") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--xn--b-pqa5796ccahd") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -28,13 +66,23 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("a.b.xn--c-bcb.d") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ஹ‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--dmc225h") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ஹ‌") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--dmc025h") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ۯ‌ۯ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--cmba004q") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -49,6 +97,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("14.xn--7hb713l3v90n.-") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--7hb713lfwbi1311b.-") V7; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍≠ᢙ≯.솣-ᡴႠ") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍≠ᢙ≯.솣-ᡴⴀ") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("≠ᢙ≯.솣-ᡴⴀ")
   Failed to construct 'URL': Invalid URL
@@ -77,6 +129,14 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--1ug6928ac48e.xn--8-o89h") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--ph4h") V6; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß۫。‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("SS۫。‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ss۫。‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ss۫。‍") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-59d.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -170,6 +230,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--8-xmb44974n.xn--su6h") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌긃.榶-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌긃.榶-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug3307c.xn----d87b") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--lwwp69lqs7m.xn--b7b") V6
@@ -194,7 +258,23 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hnd212gz32d54x5r.xn--y86c") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Å둄-．‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Å둄-．‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Å둄-.‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Å둄-.‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("å둄-.‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("å둄-.‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----1fa1788k.xn--0ug") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("å둄-．‌") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("å둄-．‌") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ct2b0738h.xn--772h.") V6; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -338,6 +418,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hdh5636g.xn--ci2d") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⴋ≮𱲆。‍ާ𐋣") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⴋ≮𱲆。‍ާ𐋣") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--gdhz03bxt42d.xn--lrb6479j") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--gdhz03bxt42d.xn--lrb506jqr4n") C2
@@ -362,11 +446,17 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--210d.-") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ꡦᡑ‍1.。𐋣-") C2; V3 (ignored); A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1-o7j663bdl7m..xn----381i") C2; V3 (ignored); A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--h8e863drj7h.xn----381i") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--h8e470bl0d838o.xn----381i") C2; V7; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.䰹‍-。웈") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1.䰹‍-。웈") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("1.xn----tgnz80r.xn--kp5b") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -438,6 +528,8 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--e1g71d.xn--772h") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.≯") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--hdh") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----7m53aj640l.xn----8f4br83t") V6; V7; V3 (ignored)
@@ -479,6 +571,14 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--hdh84f.ss") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--hdh84f.xn--zca") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌｡≠") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌｡≠") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌。≠") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌。≠") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--1ch") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -550,6 +650,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--u836e.xn----qfa750ve7b") C1; V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡙ‌｡≯𐋲≠") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡙ‌。≯𐋲≠") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ᡙ.≯𐋲≠")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--p8e650b.xn--1ch3a7084l") C1
@@ -572,9 +676,27 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--9zh3057f.xn--j7e103b") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("-3.‍ヌᢕ") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("-3.xn--fbf739aq5o") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍｡≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍｡≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍。≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⅎ្‍。≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⅎ្‍。≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⅎ្‍。≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--u4e823bq1a.xn--0ugb89o") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⅎ្‍｡≠‍‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⅎ្‍｡≠‍‌") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--u4e319b.xn--1ch") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -586,9 +708,21 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--l76a726rt2h.xn--3xa") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ς-。‌𝟭-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ς-。‌1-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Σ-。‌1-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("σ-。‌1-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----zmb.xn--1--i1t") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----xmb.xn--1--i1t") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Σ-。‌𝟭-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("σ-。‌𝟭-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----ggf830f.xn--vkj") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -616,6 +750,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug30527h9mxi.xn--k0o") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡯ⚉姶🄉．۷‍🎪‍") C2; U1 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡯ⚉姶8,.۷‍🎪‍") C2; U1 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--8,-g9oy26fzu4d.xn--kmb859ja94998b") C2; U1 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--c9e433epi4b3j20a.xn--kmb6733w") V7
@@ -633,6 +771,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--792h.xn----bse820x") V6; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--792h.xn----bse632b") V6; V7; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𝟵隁⯮．᠍‌") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("9隁⯮.᠍‌") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--9-mfs8024b.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -736,9 +878,29 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--mbm8237g.xn--7-7hf1526p") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß‌꫶ᢥ．⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß‌꫶ᢥ.⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß‌꫶ᢥ.⊶ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("SS‌꫶ᢥ.⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ss‌꫶ᢥ.⊶ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ss‌꫶ᢥ.⊶Ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-4ep585bkm5p.xn--ifh802b6a") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca682johfi89m.xn--ifh802b6a") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ß‌꫶ᢥ．⊶ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("SS‌꫶ᢥ．⊶ჁႶ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ss‌꫶ᢥ．⊶ⴡⴖ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ss‌꫶ᢥ．⊶Ⴡⴖ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ss-4epx629f.xn--5nd703gyrh") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -760,9 +922,21 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3shy698frsu9dt1me.xn----x310m") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("-｡‍") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("-。‍") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("-.xn--1ug") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--d0d41273c887z.xn--8-ob5i") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ς‍-.Ⴣ𦟙") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ς‍-.ⴣ𦟙") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Σ‍-.Ⴣ𦟙") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("σ‍-.ⴣ𦟙") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----zmb048s.xn--rlj2573p") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -800,6 +974,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug1658ftw26f.xn----t2c071q") C1; C2; V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍.j") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍.J") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.j") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--5cb172r175fug38a.xn--mlj") V7
@@ -823,6 +1001,8 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--3-yke.xn--8-ugnv982dbkwm") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--cld333gn31h0158l.xn--3g0d") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("鱊。‌") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--rt6a.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -848,9 +1028,25 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("⾆．ꡈ５≯Ss")
   Failed to construct 'URL': Invalid URL
+[FAIL] ToASCII("‌Ⴚ｡ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴚ。ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ⴚ。ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴚ。Σ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ⴚ。σ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug262c.xn--4xa") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug262c.xn--3xa") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ⴚ｡ς") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴚ｡Σ") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ⴚ｡σ") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ynd.xn--4xa") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -859,6 +1055,12 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--ynd759e.xn--4xa") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ynd759e.xn--3xa") C1; V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍⾕。‌꥓̐ꡎ") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍⾕。‌꥓̐ꡎ") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍谷。‌꥓̐ꡎ") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--6g3a.xn--0sa8175flwa") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -878,6 +1080,8 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca20040bgrkh.xn--zca3653v86qa") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍。‌") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.xn--0ug") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--s136e.") V7; A4_2 (ignored)
@@ -886,21 +1090,41 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ym9av13acp85w.xn--dth22121k") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌。。") C1; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug..") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--y86c") V7; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--y86c") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-𝟹.ß-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-3.ß-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-3.SS-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-3.ss-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-3.Ss-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn---3-p9o.xn--ss---276a") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn---3-p9o.xn-----fia9303a") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-𝟹.SS-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-𝟹.ss-‌-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ᡲ-𝟹.Ss-‌-") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--ibf35138o.xn--fpfz94g") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3-rj42h.1.xn--2-13k96240l") V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--3-rj42h.xn--2-13k746cq465x") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍51.。≯8‍") C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--51-l1t..xn--8-ugn00i") C2; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -921,6 +1145,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--0ug4208b2vjuk63a.xn--4sf36u6u4w") C1; V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--b5q.xn--v7e6041kqqd4m251b") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𝟙｡‍𝟸‍⁷") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1。‍2‍7") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("1.xn--27-l1tb") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -952,11 +1180,19 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----scp6252h.xn--zshy411yzpx2d") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴁ畝‍．≮") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌Ⴁ畝‍.≮") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ⴁ畝‍.≮") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("ⴁ畝.≮")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("Ⴁ畝.≮")
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--0ugc160hb36e.xn--gdh") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ⴁ畝‍．≮") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--8md0962c.xn--gdh") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1068,6 +1304,16 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--f3g73398c.xn--hdhz171b") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.ßႩ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.ßⴉ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.SSႩ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.ssⴉ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.Ssⴉ-") C1; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--ss--bi1b") C1; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn----pfa2305a") C1; V3 (ignored)
@@ -1108,7 +1354,15 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----ogot9g.xn----n89hl0522az9u2a") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⴏ󠅋-．‍Ⴉ") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("Ⴏ󠅋-.‍Ⴉ") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⴏ󠅋-.‍ⴉ") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----3vs.xn--1ug532c") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("ⴏ󠅋-．‍ⴉ") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----00g.xn--hnd") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1135,6 +1389,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--3xa.xn--dhbip2802atb20c") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("9.xn--dbf91222q") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("。Ⴖͦ.‌") C1; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("。ⴖͦ.‌") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--hva754s.xn--0ug") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1180,17 +1438,29 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--qutw175s.xn----mimu6tf67j") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍攌꯭。ᢖ-Ⴘ") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍攌꯭。ᢖ-ⴘ") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug592ykp6b.xn----mck373i") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--p9ut19m.xn----k1g451d") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug592ykp6b.xn----k1g451d") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ꖨ.16.3툒۳") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌ꖨ.16.3툒۳") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug2473c.16.xn--3-nyc0117m") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--9r8a.xn--3-nyc678tu07m") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug2473c.xn--3-nyc678tu07m") C1; V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𝟏𝨙⸖.‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("1𝨙⸖.‍") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1-5bt6845n.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1209,6 +1479,8 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--0uga855aez302a.xn--4grs325b") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--27e.xn--7cy81125a0yq4a") V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌‌。1.≯9") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0uga.1.xn--9-ogo") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1237,6 +1509,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--ss-f4j585j.xn--tsh") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca679eh2l.xn--tsh") C2; V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𝟠≮‌｡󠅱឴") C1; A4_2 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("8≮‌。󠅱឴") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("8≮.") A4_2 (ignored)
   Failed to construct 'URL': Invalid URL
@@ -1304,6 +1580,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--lnd.xn--0ug56448b") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("-‍.Ⴞ𐋷") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("-‍.ⴞ𐋷") C2; V3 (ignored)
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----ugn.xn--mlj8559d") C2; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("-.xn--2nd2315j") V7; V3 (ignored)
@@ -1317,6 +1597,14 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--zca39lk1di19a.xn--xmc") C2; V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--zca19ln1di19a.xn--xmc") C2; V6
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("≠．‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("≠．‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("≠.‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("≠.‍") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ch.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1332,6 +1620,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--j890g.xn--w7e") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("嬃𝍌．‍ୄ") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("嬃𝍌.‍ୄ") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--b6s0078f.xn--0ic") V6
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--b6s0078f.xn--0ic557h") C2
@@ -1346,11 +1638,31 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("-.xn--y86c") V7; V3 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍.F") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍.f") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug.f") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲｡ß") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲。ß") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲。SS") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲。ss") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲。Ss") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug914h.ss") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1ug914h.xn--zca") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲｡SS") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲｡ss") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍㨲｡Ss") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--h327f") V7; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1374,7 +1686,13 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to construct 'URL': Invalid URL
 [FAIL] ToASCII("xn--jnd1986v.xn--gdh") V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("璼𝨭｡‌󠇟") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("璼𝨭。‌󠇟") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--gky8837e.xn--0ug") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‌.‌") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ug.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1399,6 +1717,10 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--l98a.xn--14-jsj57880f.") V6; V7; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--l98a.xn--dgd218hhp28d") V6; V7
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𝟠4󠇗𝈻．‍𐋵⛧‍") C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("84󠇗𝈻.‍𐋵⛧‍") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--84-s850a.xn--1uga573cfq1w") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1426,9 +1748,27 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--tsh94183d.xn--2-rgn") C1; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪｡ß𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪。ß𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪。SS𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪。ss𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪。Ss𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugb.xn--ss-bh7o") C1; C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--0ugb.xn--zca0732l") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪｡SS𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪｡ss𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("‍‌󠆪｡Ss𑓃") C1; C2
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("。‌ヶ䒩.ꡪ") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII(".xn--0ug287dj0o.xn--gd9a") C1; A4_2 (ignored)
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
@@ -1566,6 +1906,8 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--7pj.xn--zca870n") C2; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("梉。‌") C1
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--7zv.xn--0ug") C1
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn----n50a258u.xn---1-up07j.") V7; V3 (ignored); A4_2 (ignored)
@@ -1599,6 +1941,8 @@ Found 806 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] ToASCII("xn--1ug1435cfkyaoi04d.c") C2; V6; V7
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--1chy468a.xn--2ed") V6
+  assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
+[FAIL] ToASCII("𐋷。‍") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
 [FAIL] ToASCII("xn--r97c.xn--1ug") C2
   assert_throws_js: function "() => new URL(`https://${idnaTest.input}/x`)" did not throw
