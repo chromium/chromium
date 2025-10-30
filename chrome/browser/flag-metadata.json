@@ -2464,7 +2464,7 @@
   {
     "name": "disable-dns-proxy",
     "owners": [ "cros-networking@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 160
   },
   {
     "name": "disable-explicit-dma-fences",
@@ -4299,7 +4299,7 @@
   {
     "name": "enable-root-ns-dns-proxy",
     "owners": [ "jasongustaman@chromium.org", "cros-networking@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 160
   },
   {
     "name": "enable-seamless-refresh-rate-switching",
