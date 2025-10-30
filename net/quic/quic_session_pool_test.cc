@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/quic/quic_session_pool.h"
 
 #include <sys/types.h>
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -94,6 +94,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_encrypter.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/transport_parameters.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_test.h"
@@ -331,8 +332,7 @@ class QuicSessionPoolTest : public QuicSessionPoolTestBase,
  protected:
   QuicSessionPoolTest()
       : QuicSessionPoolTestBase(GetParam().version),
-        runner_(base::MakeRefCounted<TestTaskRunner>(context_.mock_clock())) {
-  }
+        runner_(base::MakeRefCounted<TestTaskRunner>(context_.mock_clock())) {}
 
   void RunTestLoopUntilIdle();
 
@@ -15014,6 +15014,67 @@ TEST_P(QuicSessionPoolTest, SendPingOnExistingSession) {
   // since `enable_connection_keep_alive` is enabled, and we already have an
   // existing session.
   socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, DebuggingSniDefaultHost) {
+  quic_params_->enable_debugging_sni_in_transport_param = true;
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  builder.destination = kDefaultDestination;
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream);
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  const quic::QuicConfig* config = session->config();
+  ASSERT_TRUE(config);
+  quic::TransportParameters params;
+  EXPECT_TRUE(config->FillTransportParameters(&params));
+  EXPECT_THAT(params.debugging_sni, std::nullopt);
+}
+
+TEST_P(QuicSessionPoolTest, DebuggingSniGoogleHost) {
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  quic_params_->enable_debugging_sni_in_transport_param = true;
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  builder.destination = kGoogleDestination;
+  builder.url = GURL("https://www.google.com");
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream);
+
+  QuicChromiumClientSession* session = GetActiveSession(kGoogleDestination);
+  ASSERT_TRUE(session);
+  const quic::QuicConfig* config = session->config();
+  ASSERT_TRUE(config);
+  quic::TransportParameters params;
+  EXPECT_TRUE(config->FillTransportParameters(&params));
+  EXPECT_THAT(params.debugging_sni,
+              testing::Optional(kGoogleDestination.host()));
 }
 
 TEST_P(QuicSessionPoolTest, ConfigureSupportedGroupsAndKeyShares) {

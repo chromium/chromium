@@ -106,6 +106,14 @@ openssl req \
   -reqexts req_wildcard \
   -config ee.cnf
 
+copy_or_generate_key ../certificates/google_wildcard.pem out/google_wildcard.key
+openssl req \
+  -new \
+  -key out/google_wildcard.key \
+  -out out/google_wildcard.req \
+  -reqexts req_google_wildcard \
+  -config ee.cnf
+
 copy_or_generate_key ../certificates/localhost_cert.pem out/localhost_cert.key
 SUBJECT_NAME="req_localhost_cn" \
 openssl req \
@@ -166,6 +174,14 @@ CA_NAME="req_ca_dn" \
   openssl ca \
     -batch \
     -extensions user_cert \
+    -in out/google_wildcard.req \
+    -out out/google_wildcard.pem \
+    -config ca.cnf
+
+CA_NAME="req_ca_dn" \
+  openssl ca \
+    -batch \
+    -extensions user_cert \
     -days ${CERT_LIFETIME} \
     -in out/localhost_cert.req \
     -out out/localhost_cert.pem \
@@ -184,6 +200,8 @@ CA_NAME="req_ca_dn" \
     > ../certificates/ok_cert.pem"
 /bin/sh -c "cat out/wildcard.key out/wildcard.pem \
     > ../certificates/wildcard.pem"
+/bin/sh -c "cat out/google_wildcard.key out/google_wildcard.pem \
+    > ../certificates/google_wildcard.pem"
 /bin/sh -c "cat out/localhost_cert.key out/localhost_cert.pem \
     > ../certificates/localhost_cert.pem"
 /bin/sh -c "cat out/expired_cert.key out/expired_cert.pem \

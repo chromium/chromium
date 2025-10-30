@@ -2005,6 +2005,11 @@ QuicSessionPool::CreateSessionHelper(
   ConfigureInitialRttEstimate(
       server_id, key.session_key().network_anonymization_key(), &config);
 
+  if (params_.enable_debugging_sni_in_transport_param &&
+      IsGoogleHost(server_id.host())) {
+    config.SetDebuggingSniToSend(server_id.host());
+  }
+
   if (base::FeatureList::IsEnabled(features::kTryQuicByDefault)) {
     config.AddConnectionOptionsToSend(
         quic::ParseQuicTagVector(features::kQuicOptions.Get()));

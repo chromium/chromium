@@ -191,6 +191,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
   static ProofVerifyDetailsChromium DefaultProofVerifyDetails();
 
+  static ProofVerifyDetailsChromium GoogleProofVerifyDetails();
+
   void NotifyIPAddressChanged();
 
   std::unique_ptr<quic::QuicEncryptedPacket>

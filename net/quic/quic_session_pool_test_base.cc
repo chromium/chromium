@@ -336,6 +336,17 @@ QuicSessionPoolTestBase::DefaultProofVerifyDetails() {
   return verify_details;
 }
 
+ProofVerifyDetailsChromium QuicSessionPoolTestBase::GoogleProofVerifyDetails() {
+  // Load a certificate that is valid for *.google.com
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(GetTestCertsDirectory(), "google_wildcard.pem"));
+  EXPECT_TRUE(test_cert.get());
+  ProofVerifyDetailsChromium verify_details;
+  verify_details.cert_verify_result.verified_cert = test_cert;
+  verify_details.cert_verify_result.is_issued_by_known_root = true;
+  return verify_details;
+}
+
 void QuicSessionPoolTestBase::NotifyIPAddressChanged() {
   NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
   // Spin the message loop so the notification is delivered.

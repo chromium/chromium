@@ -100,6 +100,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.disable_tls_zero_rtt);
   EXPECT_TRUE(quic_params_.allow_port_migration);
   EXPECT_EQ(0, quic_params_.multi_port_probing_interval);
+  EXPECT_FALSE(quic_params_.enable_debugging_sni_in_transport_param);
 
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
@@ -966,6 +967,18 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_EQ(base::Milliseconds(500), quic_params_.initial_rtt_for_handshake);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       QuicEnableDebuggingSniInTransportParamFromFieldTrialParams) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["enable_debugging_sni_in_transport_param"] = "true";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_TRUE(quic_params_.enable_debugging_sni_in_transport_param);
 }
 
 class NetworkSessionConfiguratorWithQuicVersionTest

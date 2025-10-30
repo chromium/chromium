@@ -250,6 +250,9 @@ struct NET_EXPORT QuicParams {
   // If true, a request will be sent on the existing session iff the hostname
   // matches the certificate presented during the handshake.
   bool ignore_ip_matching_when_finding_existing_sessions = false;
+
+  // If true, the obfuscated sni is sent in the transport parameters.
+  bool enable_debugging_sni_in_transport_param = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the
