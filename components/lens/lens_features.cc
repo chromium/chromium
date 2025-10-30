@@ -76,7 +76,7 @@ BASE_FEATURE(kLensSearchProtectedPage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-BASE_FEATURE(kLensOverlayEduActionChip, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayEduActionChip, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayKeyboardSelection, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -506,7 +506,7 @@ const base::FeatureParam<std::string>
         "[]"};
 
 const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
-    &kLensOverlayEduActionChip, "disabled-by-glic", true};
+    &kLensOverlayEduActionChip, "disabled-by-glic", false};
 
 const base::FeatureParam<int> kLensOverlayEduActionChipMaxShownCount{
     &kLensOverlayEduActionChip, "max-shown-count", 3};
