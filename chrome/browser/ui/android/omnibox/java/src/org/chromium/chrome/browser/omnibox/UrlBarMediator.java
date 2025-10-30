@@ -179,6 +179,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                         mUrlBarData.originEndIndex,
                         mSelectionState);
         mModel.set(UrlBarProperties.TEXT_STATE, state);
+        updateShowHintText(text.toString());
     }
 
     @VisibleForTesting
