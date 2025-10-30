@@ -15,6 +15,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -28,7 +29,8 @@ class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
               (override));
   MOCK_METHOD(void,
               MaybeShowFeaturePromo,
-              (const base::Feature& iph_feature, content::WebContents*),
+              (user_education::FeaturePromoParams params,
+               content::WebContents*),
               (override));
   MOCK_METHOD(bool,
               IsSigninModalDialogOpen,

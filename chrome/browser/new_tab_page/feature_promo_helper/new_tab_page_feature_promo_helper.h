@@ -8,6 +8,10 @@
 #include "base/feature_list.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace user_education {
+struct FeaturePromoParams;
+}  // namespace user_education
+
 class NewTabPageFeaturePromoHelper {
  public:
   virtual void RecordPromoFeatureUsageAndClosePromo(
@@ -15,7 +19,7 @@ class NewTabPageFeaturePromoHelper {
       content::WebContents* web_contents);
   virtual void SetDefaultSearchProviderIsGoogleForTesting(bool value);
   virtual bool DefaultSearchProviderIsGoogle(Profile* profile);
-  virtual void MaybeShowFeaturePromo(const base::Feature& iph_feature,
+  virtual void MaybeShowFeaturePromo(user_education::FeaturePromoParams params,
                                      content::WebContents* web_contents);
   virtual bool IsSigninModalDialogOpen(content::WebContents* web_contents);
 

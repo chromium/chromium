@@ -44,7 +44,7 @@ bool NewTabPageFeaturePromoHelper::DefaultSearchProviderIsGoogle(
 }
 
 void NewTabPageFeaturePromoHelper::MaybeShowFeaturePromo(
-    const base::Feature& iph_feature,
+    user_education::FeaturePromoParams params,
     content::WebContents* web_contents) {
   if (!DefaultSearchProviderIsGoogle(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
@@ -53,7 +53,7 @@ void NewTabPageFeaturePromoHelper::MaybeShowFeaturePromo(
   if (auto* const interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents)) {
-    interface->MaybeShowFeaturePromo(iph_feature);
+    interface->MaybeShowFeaturePromo(std::move(params));
   }
 }
 

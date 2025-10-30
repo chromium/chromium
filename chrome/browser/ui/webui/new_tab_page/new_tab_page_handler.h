@@ -36,6 +36,7 @@
 #include "components/search_provider_logos/logo_common.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/themes/ntp_background_service_observer.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -207,6 +208,10 @@ class NewTabPageHandler
 
   // Called when the embedding BrowserWindowInterface has changed.
   void OnBrowserWindowInterfaceChanged();
+
+  void OnShowPromoResult(user_education::FeaturePromoResult result);
+
+  void ShowCustomizeChromeSidePanel();
 
   NTPCustomizeChromePromoEligibility CanShowCustomizeChromePromo();
 
