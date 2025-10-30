@@ -1222,16 +1222,12 @@ CanvasResourceProvider::CreateSwapChainProvider(
   if (!SharedGpuContext::IsGpuCompositingEnabled() || !context_provider_wrapper)
     return nullptr;
 
-  const auto& capabilities =
-      context_provider_wrapper->ContextProvider().GetCapabilities();
   const auto& shared_image_capabilities =
       context_provider_wrapper->ContextProvider()
           .SharedImageInterface()
           ->GetCapabilities();
 
-  if (size.width() > capabilities.max_texture_size ||
-      size.height() > capabilities.max_texture_size ||
-      !shared_image_capabilities.shared_image_swap_chain) {
+  if (!shared_image_capabilities.shared_image_swap_chain) {
     return nullptr;
   }
 
