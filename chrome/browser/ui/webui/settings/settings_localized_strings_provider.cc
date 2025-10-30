@@ -2312,7 +2312,13 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
       {"securitySafeBrowsingStandardTitle",
        IDS_SETTINGS_SECURITY_SAFE_BROWSING_STANDARD_TITLE},
       {"securitySafeBrowsingEnhancedTitle",
-       IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_TITLE}};
+       IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_TITLE},
+      {"securityFeatureRowStateEnhanced",
+       IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED},
+      {"securityFeatureRowStateStandard",
+       IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_STANDARD},
+      {"securityFeatureRowStateOff",
+       IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_OFF}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("cookiesSettingsHelpCenterURL",

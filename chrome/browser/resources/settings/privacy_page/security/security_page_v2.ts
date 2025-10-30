@@ -14,10 +14,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {ControlledRadioButtonElement} from '../../controls/controlled_radio_button.js';
 import type {SettingsRadioGroupElement} from '../../controls/settings_radio_group.js';
+import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 
 import type {SecurityPageFeatureRowElement} from './security_page_feature_row.js';
 import {getTemplate} from './security_page_v2.html.js';
+
 
 /** Enumeration of all security settings bundle modes.*/
 // LINT.IfChange(SecuritySettingsBundleSetting)
@@ -79,10 +81,22 @@ export class SettingsSecurityPageV2Element extends
         type: Array,
         value: () => [SafeBrowsingSetting.DISABLED],
       },
+
+      safeBrowsingStateTextMap_: {
+        type: Object,
+        value: () => ({
+          [SafeBrowsingSetting.ENHANCED]:
+              loadTimeData.getString('securityFeatureRowStateEnhanced'),
+          [SafeBrowsingSetting.STANDARD]:
+              loadTimeData.getString('securityFeatureRowStateStandard'),
+          [SafeBrowsingSetting.DISABLED]:
+              loadTimeData.getString('securityFeatureRowStateOff'),
+        }),
+      },
     };
   }
-
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
+  declare private safeBrowsingStateTextMap_: Object;
 
   // SettingsViewMixin implementation.
   override focusBackButton() {

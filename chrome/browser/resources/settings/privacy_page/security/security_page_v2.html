@@ -94,7 +94,8 @@
       label="$i18n{securitySafeBrowsingTitle}"
       sub-label="$i18n{securitySafeBrowsingDesc}"
       class="box"
-      numeric-unchecked-values="[[safeBrowsingOff_]]">
+      numeric-unchecked-values="[[safeBrowsingOff_]]"
+      state-text-map="[[safeBrowsingStateTextMap_]]">
     <div slot="collapse">
       <settings-radio-group id="safeBrowsingRadioGroup"
           pref="{{prefs.generated.safe_browsing}}"

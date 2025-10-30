@@ -2,6 +2,13 @@
   :host {
     display: block;
   }
+
+  #content-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
 </style>
 <template is="dom-if" if="[[expanded]]" restamp>
   <settings-toggle-button id="toggleButton" pref="{{pref}}" label="[[label]]"
@@ -15,8 +22,15 @@
 </template>
 <template is="dom-if" if="[[!expanded]]" restamp>
   <cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
-    [[label]]
-    <div class="cr-secondary-text">[[subLabel]]</div>
+    <div id="content-wrapper">
+      <div class="flex">
+        [[label]]
+        <div class="cr-secondary-text">[[subLabel]]</div>
+      </div>
+      <div class="cr-secondary-text" id="stateLabel">
+        [[currentStateLabel_]]
+      </div>
+    </div>
   </cr-expand-button>
 </template>
 <cr-collapse opened="[[expanded]]">

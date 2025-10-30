@@ -42,6 +42,14 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
       subLabel: String,
 
       numericUncheckedValues: Array,
+
+      stateTextMap: Object,
+
+      /* The computed string label for the current pref state. */
+      currentStateLabel_: {
+        type: String,
+        computed: 'computeCurrentStateLabel_(pref.value, stateTextMap)',
+      },
     };
   }
 
@@ -50,6 +58,16 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
   declare pref: chrome.settingsPrivate.PrefObject;
   declare subLabel: string;
   declare numericUncheckedValues: number[];
+  declare stateTextMap: Record<string, string>;
+  declare private currentStateLabel_: string;
+
+  private computeCurrentStateLabel_(): string {
+    if (this.stateTextMap && this.stateTextMap[this.pref.value] !== undefined) {
+      return this.stateTextMap[this.pref.value];
+    }
+    // Return an empty string if no mapping is found
+    return '';
+  }
 }
 
 declare global {
