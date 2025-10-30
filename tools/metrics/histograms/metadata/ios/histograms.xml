@@ -4393,7 +4393,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.Settings.DeleteAllSavedCredentialsActions"
-    enum="IOSDeleteAllSavedCredentialsActions" expires_after="2025-12-01">
+    enum="IOSDeleteAllSavedCredentialsActions" expires_after="2026-12-01">
   <owner>mxlg@google.com</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
