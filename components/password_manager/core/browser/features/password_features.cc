@@ -84,7 +84,7 @@ BASE_FEATURE(kDownloadModelForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableFillingOnPageLoadForLeakedCredentials,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFetchChangePasswordUrlForPasswordChange,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
