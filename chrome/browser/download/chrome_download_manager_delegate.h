@@ -40,8 +40,12 @@
 #include "chrome/browser/download/android/download_message_bridge.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "base/types/expected.h"
+#endif
+
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
-#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/download/download_completion_blocker.h"
 #endif
 
 class DownloadPrefs;
@@ -67,6 +71,7 @@ enum class Error;
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 namespace safe_browsing {
 class DownloadProtectionService;
+enum class DownloadCheckResult;
 }
 #endif
 

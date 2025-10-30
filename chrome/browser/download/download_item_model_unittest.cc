@@ -54,6 +54,7 @@
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -69,7 +70,7 @@ using ::testing::ReturnRef;
 using ::testing::ReturnRefOfCopy;
 using ::testing::SetArgPointee;
 
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 #endif
 
