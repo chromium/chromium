@@ -85,7 +85,7 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
     if (model_) {
       model_->SetViewState(
           TranslateBubbleModelImpl::TranslateStepToViewState(step));
-      return ShowTranslateBubbleResult::SUCCESS;
+      return ShowTranslateBubbleResult::kSuccess;
     }
 
     ChromeTranslateClient* chrome_translate_client =
@@ -97,7 +97,7 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
             source_language, target_language));
     model_ = std::make_unique<TranslateBubbleModelImpl>(step,
                                                         std::move(ui_delegate));
-    return ShowTranslateBubbleResult::SUCCESS;
+    return ShowTranslateBubbleResult::kSuccess;
   }
 
   bool DismissBubble() {

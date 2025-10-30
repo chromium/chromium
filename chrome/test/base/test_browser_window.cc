@@ -276,7 +276,7 @@ ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  return ShowTranslateBubbleResult::SUCCESS;
+  return ShowTranslateBubbleResult::kSuccess;
 }
 
 void TestBrowserWindow::StartPartialTranslate(

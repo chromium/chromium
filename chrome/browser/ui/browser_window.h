@@ -96,15 +96,15 @@ class WebContentsModalDialogHost;
 
 enum class ShowTranslateBubbleResult {
   // The Full Page Translate bubble was successfully shown.
-  SUCCESS,
+  kSuccess,
 
   // The various reasons for which the Full Page Translate bubble could fail to
   // be shown.
-  BROWSER_WINDOW_NOT_VALID,
-  BROWSER_WINDOW_MINIMIZED,
-  BROWSER_WINDOW_NOT_ACTIVE,
-  WEB_CONTENTS_NOT_ACTIVE,
-  EDITABLE_FIELD_IS_ACTIVE,
+  kBrowserWindowNotValid,
+  kBrowserWindowMinimized,
+  kBrowserWindowNotActive,
+  kWebContentsNotActive,
+  kEditableFieldIsActive,
 };
 
 enum class BrowserThemeChangeType {

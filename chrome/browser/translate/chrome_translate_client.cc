@@ -73,15 +73,15 @@ using metrics::TranslateEventProto;
 TranslateEventProto::EventType BubbleResultToTranslateEvent(
     ShowTranslateBubbleResult result) {
   switch (result) {
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID:
+    case ShowTranslateBubbleResult::kBrowserWindowNotValid:
       return TranslateEventProto::BROWSER_WINDOW_IS_INVALID;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED:
+    case ShowTranslateBubbleResult::kBrowserWindowMinimized:
       return TranslateEventProto::BROWSER_WINDOW_IS_MINIMIZED;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_ACTIVE:
+    case ShowTranslateBubbleResult::kBrowserWindowNotActive:
       return TranslateEventProto::BROWSER_WINDOW_NOT_ACTIVE;
-    case ShowTranslateBubbleResult::WEB_CONTENTS_NOT_ACTIVE:
+    case ShowTranslateBubbleResult::kWebContentsNotActive:
       return TranslateEventProto::WEB_CONTENTS_NOT_ACTIVE;
-    case ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE:
+    case ShowTranslateBubbleResult::kEditableFieldIsActive:
       return TranslateEventProto::EDITABLE_FIELD_IS_ACTIVE;
     default:
       NOTREACHED();
@@ -259,7 +259,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
 
   ShowTranslateBubbleResult result = ShowBubble(
       step, source_language, target_language, error_type, triggered_from_menu);
-  if (result != ShowTranslateBubbleResult::SUCCESS &&
+  if (result != ShowTranslateBubbleResult::kSuccess &&
       step == translate::TRANSLATE_STEP_BEFORE_TRANSLATE) {
     translate_manager_->RecordTranslateEvent(
         BubbleResultToTranslateEvent(result));
@@ -388,7 +388,7 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
   }
 
   if (web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
-    return ShowTranslateBubbleResult::WEB_CONTENTS_NOT_ACTIVE;
+    return ShowTranslateBubbleResult::kWebContentsNotActive;
   }
 
   // This ShowBubble function is also used for updating the existing bubble.
@@ -397,14 +397,14 @@ ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
   // browser windows. So it is checked that |browser| is the last activated
   // browser, not is now activated.
   if (browser != chrome::FindLastActive()) {
-    return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_ACTIVE;
+    return ShowTranslateBubbleResult::kBrowserWindowNotActive;
   }
 
   // During auto-translating, the bubble should not be shown.
   if (!is_user_gesture && (step == translate::TRANSLATE_STEP_TRANSLATING ||
                            step == translate::TRANSLATE_STEP_AFTER_TRANSLATE)) {
     if (GetLanguageState().InTranslateNavigation()) {
-      return ShowTranslateBubbleResult::SUCCESS;
+      return ShowTranslateBubbleResult::kSuccess;
     }
   }
 

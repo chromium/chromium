@@ -3148,7 +3148,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
 
   if (contents_view->HasFocus() && !GetLocationBarView()->IsMouseHovered() &&
       web_contents->IsFocusedElementEditable()) {
-    return ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE;
+    return ShowTranslateBubbleResult::kEditableFieldIsActive;
   }
 
   ChromeTranslateClient::FromWebContents(web_contents)
@@ -3157,7 +3157,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
       ->SetTranslateEnabled(true);
 
   if (IsMinimized()) {
-    return ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED;
+    return ShowTranslateBubbleResult::kBrowserWindowMinimized;
   }
 
   views::Button* translate_icon =
@@ -3174,7 +3174,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
                            is_user_gesture ? TranslateBubbleView::USER_GESTURE
                                            : TranslateBubbleView::AUTOMATIC);
 
-  return ShowTranslateBubbleResult::SUCCESS;
+  return ShowTranslateBubbleResult::kSuccess;
 }
 
 void BrowserView::StartPartialTranslate(const std::string& source_language,

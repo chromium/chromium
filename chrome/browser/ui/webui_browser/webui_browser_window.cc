@@ -842,7 +842,7 @@ ShowTranslateBubbleResult WebUIBrowserWindow::ShowTranslateBubble(
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
   NOTIMPLEMENTED();
-  return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID;
+  return ShowTranslateBubbleResult::kBrowserWindowNotValid;
 }
 
 void WebUIBrowserWindow::StartPartialTranslate(
