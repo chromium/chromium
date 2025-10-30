@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.customtabs;
 
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_END;
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_DARK;
+import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_LIGHT;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withAlpha;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -30,8 +34,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -51,7 +57,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -73,13 +78,16 @@ public class CustomTabActivityRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParameter =
             Arrays.asList(
-                    new ParameterSet().name("HTTPS").value(true),
-                    new ParameterSet().name("HTTP").value(false));
+                    new ParameterSet().value(true, true).name("HTTPS_NightModeEnabled"),
+                    new ParameterSet().value(true, false).name("HTTPS_NightModeDisabled"),
+                    new ParameterSet().value(false, true).name("HTTP_NightModeEnabled"),
+                    new ParameterSet().value(false, false).name("HTTP_NightModeDisabled"));
 
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final int PORT_NO = 31415;
 
     private final boolean mRunWithHttps;
+    private final boolean mNightModeEnabled;
     private String mUrl;
     private Intent mIntent;
 
@@ -118,7 +126,7 @@ public class CustomTabActivityRenderTest {
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(8)
+                    .setRevision(9)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
                     .build();
 
@@ -136,8 +144,9 @@ public class CustomTabActivityRenderTest {
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
-    public CustomTabActivityRenderTest(boolean runWithHttps) {
+    public CustomTabActivityRenderTest(boolean runWithHttps, boolean nightModeEnabled) {
         mRunWithHttps = runWithHttps;
+        mNightModeEnabled = nightModeEnabled;
     }
 
     private static Bitmap createVectorDrawableBitmap(
@@ -157,8 +166,15 @@ public class CustomTabActivityRenderTest {
     private void prepareCctIntent() {
         mUrl = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent =
-                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                        ApplicationProvider.getApplicationContext(), mUrl);
+                CustomTabsIntentTestUtils.createCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(),
+                        mUrl,
+                        /* launchAsNewTask= */ true,
+                        builder ->
+                                builder.setColorScheme(
+                                        mNightModeEnabled
+                                                ? COLOR_SCHEME_DARK
+                                                : COLOR_SCHEME_LIGHT));
     }
 
     private void startActivityAndRenderToolbar(String renderTestId) throws IOException {
@@ -169,17 +185,20 @@ public class CustomTabActivityRenderTest {
             throws IOException {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(mIntent);
         if (expectTitle) {
-            onViewWaiting(withId(R.id.title_bar)).check(matches(isDisplayed()));
+            onViewWaiting(allOf(withId(R.id.title_bar), withAlpha(1.f)))
+                    .check(matches(isDisplayed()));
         }
         View toolbarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        mRenderTestRule.render(toolbarView, renderTestId);
+        String httpStr = mRunWithHttps ? "https" : "http";
+        String nightStr = mNightModeEnabled ? "night" : "day";
+        mRenderTestRule.render(toolbarView, renderTestId + "_" + httpStr + "_" + nightStr);
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testCctToolbar() throws IOException {
-        startActivityAndRenderToolbar("default_cct_toolbar_with_https_" + mRunWithHttps);
+        startActivityAndRenderToolbar("default_cct_toolbar");
     }
 
     @Test
@@ -188,17 +207,7 @@ public class CustomTabActivityRenderTest {
     public void testCctToolbarWithTitle() throws IOException {
         mIntent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
-        startActivityAndRenderToolbar(
-                "cct_toolbar_with_title_with_https_" + mRunWithHttps, /* expectTitle= */ true);
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testCctToolbarWithMinimizeButton() throws IOException {
-        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
-        startActivityAndRenderToolbar(
-                "default_cct_toolbar_with_https_" + mRunWithHttps + "_minimize_button");
+        startActivityAndRenderToolbar("cct_toolbar_with_title", /* expectTitle= */ true);
     }
 
     @Test
@@ -207,8 +216,7 @@ public class CustomTabActivityRenderTest {
     public void testCctToolbarWithCustomCloseButton() throws IOException {
         Bitmap closeIcon = createVectorDrawableBitmap(R.drawable.btn_back, 24, 24);
         mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, closeIcon);
-        startActivityAndRenderToolbar(
-                "cct_toolbar_with_custom_close_button_and_with_https_" + mRunWithHttps);
+        startActivityAndRenderToolbar("cct_toolbar_with_custom_close_button");
     }
 
     @Test
@@ -220,8 +228,7 @@ public class CustomTabActivityRenderTest {
     public void testCctToolbarWithDefaultCloseButtonAndMaxTopActionItems() throws IOException {
         CustomTabTopActionIconHelper.addMaxTopActionIconToIntent(mIntent);
         startActivityAndRenderToolbar(
-                "cct_toolbar_with_default_close_button_and_max_top_action_icon_and_with_https_"
-                        + mRunWithHttps);
+                "cct_toolbar_with_default_close_button_and_max_top_action_icon");
     }
 
     @Test
@@ -235,8 +242,7 @@ public class CustomTabActivityRenderTest {
         mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, closeIcon);
         CustomTabTopActionIconHelper.addMaxTopActionIconToIntent(mIntent);
         startActivityAndRenderToolbar(
-                "cct_toolbar_with_custom_close_button_and_max_top_action_icon_and_with_https_"
-                        + mRunWithHttps);
+                "cct_toolbar_with_custom_close_button_and_max_top_action_icon");
     }
 
     @Test
@@ -245,18 +251,7 @@ public class CustomTabActivityRenderTest {
     public void testCctToolbarWithEndCloseButton() throws IOException {
         mIntent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_END);
 
-        startActivityAndRenderToolbar("cct_close_button_end_with_https_" + mRunWithHttps);
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testCctToolbarWithEndCloseButtonWithMinimizeButton() throws IOException {
-        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
-        mIntent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_END);
-
-        startActivityAndRenderToolbar(
-                "cct_close_button_end_with_https_" + mRunWithHttps + "_minimize_button");
+        startActivityAndRenderToolbar("cct_close_button_end");
     }
 
     @Test
@@ -267,7 +262,7 @@ public class CustomTabActivityRenderTest {
         var connection = spy(CustomTabsConnection.getInstance());
         doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
         CustomTabsConnection.setInstanceForTesting(connection);
-        startActivityAndRenderToolbar("cct_omnibox_" + mRunWithHttps);
+        startActivityAndRenderToolbar("cct_omnibox");
     }
 
     @Test
@@ -275,32 +270,37 @@ public class CustomTabActivityRenderTest {
     @Feature("RenderTest")
     public void custom_color_red() throws IOException {
         Context context = ApplicationProvider.getApplicationContext();
-        mIntent =
-                CustomTabsIntentTestUtils.createCustomTabIntent(
-                        context,
-                        mUrl,
-                        true,
-                        builder -> {
-                            builder.setToolbarColor(Color.RED);
-                        });
+        initIntentWithColorSchemeParams(
+                context.getColor(R.color.google_red_300), context.getColor(R.color.google_red_600));
 
-        startActivityAndRenderToolbar("cct_red" + mRunWithHttps);
+        startActivityAndRenderToolbar("cct_red");
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void custom_color_black() throws IOException {
-        Context context = ApplicationProvider.getApplicationContext();
+    public void custom_color_white_black() throws IOException {
+        initIntentWithColorSchemeParams(Color.WHITE, Color.BLACK);
+
+        startActivityAndRenderToolbar("cct_white_black");
+    }
+
+    private void initIntentWithColorSchemeParams(
+            @ColorInt int lightToolbarColor, @ColorInt int darkToolbarColor) {
+        var lightParams =
+                new CustomTabColorSchemeParams.Builder().setToolbarColor(lightToolbarColor).build();
+        var darkParams =
+                new CustomTabColorSchemeParams.Builder().setToolbarColor(darkToolbarColor).build();
+        int colorScheme = mNightModeEnabled ? COLOR_SCHEME_DARK : COLOR_SCHEME_LIGHT;
         mIntent =
                 CustomTabsIntentTestUtils.createCustomTabIntent(
-                        context,
+                        ApplicationProvider.getApplicationContext(),
                         mUrl,
                         true,
                         builder -> {
-                            builder.setToolbarColor(Color.BLACK);
+                            builder.setColorScheme(colorScheme)
+                                    .setColorSchemeParams(COLOR_SCHEME_LIGHT, lightParams)
+                                    .setColorSchemeParams(COLOR_SCHEME_DARK, darkParams);
                         });
-
-        startActivityAndRenderToolbar("cct_black" + mRunWithHttps);
     }
 }
