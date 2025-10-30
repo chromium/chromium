@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmniboxIntoNewTab) {
 
   // Navigate to url.
   NavigateParams p(browser(), url, ui::PAGE_TRANSITION_LINK);
-  p.window_action = NavigateParams::SHOW_WINDOW;
+  p.window_action = NavigateParams::WindowAction::kShowWindow;
   p.disposition = WindowOpenDisposition::CURRENT_TAB;
   Navigate(&p);
 

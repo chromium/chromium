@@ -246,7 +246,7 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
     NavigateParams nav_params(
         settings_browser_, GURL(url_string),
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    nav_params.window_action = NavigateParams::SHOW_WINDOW;
+    nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&nav_params);
     return;
   }

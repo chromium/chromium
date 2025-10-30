@@ -218,21 +218,21 @@ struct NavigateParams {
 
   // Determines if and how the target window should be made visible at the end
   // of the call to Navigate().
-  enum WindowAction {
+  enum class WindowAction {
     // Do not show or activate the browser window after navigating.
-    NO_ACTION,
+    kNoAction,
     // Show and activate the browser window after navigating.
-    SHOW_WINDOW,
+    kShowWindow,
     // Show the browser window after navigating but do not activate.
     // Note: This may cause a space / virtual desktop switch if the window is
     // being shown on a display which is currently showing a fullscreen app.
     // (crbug.com/1315749).
-    SHOW_WINDOW_INACTIVE
+    kShowWindowInactive
   };
-  // Default is NO_ACTION (don't show or activate the window).
+  // Default is kNoAction (don't show or activate the window).
   // If disposition is NEW_WINDOW or NEW_POPUP, and |window_action| is set to
-  // NO_ACTION, |window_action| will be set to SHOW_WINDOW.
-  WindowAction window_action = NO_ACTION;
+  // kNoAction, |window_action| will be set to kShowWindow.
+  WindowAction window_action = WindowAction::kNoAction;
 
   // Captive portal type for this browser window.
   captive_portal::CaptivePortalWindowType captive_portal_window_type =

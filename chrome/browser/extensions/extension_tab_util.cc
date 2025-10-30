@@ -1239,7 +1239,7 @@ void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
   NavigateParams params(chrome::FindBrowserWithTab(web_contents), url,
                         ui::PAGE_TRANSITION_FROM_API);
   params.disposition = disposition;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   if (web_contents) {
     params.source_contents = web_contents;
   }
@@ -1386,7 +1386,7 @@ void ExtensionTabUtil::CreateTab(
 
   params.disposition = disposition;
   params.window_features = window_features;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = user_gesture;
   Navigate(&params);
 

@@ -59,7 +59,7 @@ NavigateParams NavigateAndReturnParams(const GURL& url,
   auto& profile = CurrentProfile();
   NavigateParams params(&profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = disposition;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
   return params;
 }

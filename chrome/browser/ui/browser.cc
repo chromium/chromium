@@ -1539,7 +1539,8 @@ void Browser::UpdateUIForNavigationInTab(WebContents* contents,
   // Note that focusing contents of NTP-initiated navigations is taken care of
   // elsewhere - see FocusTabAfterNavigationHelper.
   if (user_initiated && contents_is_selected &&
-      (window()->IsActive() || action == NavigateParams::SHOW_WINDOW)) {
+      (window()->IsActive() ||
+       action == NavigateParams::WindowAction::kShowWindow)) {
     contents->SetInitialFocus();
   }
 }
@@ -2030,7 +2031,7 @@ WebContents* Browser::OpenURLFromTab(
   nav_params.source_contents = source;
   nav_params.tabstrip_add_types = AddTabTypes::ADD_NONE;
   if (params.user_gesture) {
-    nav_params.window_action = NavigateParams::SHOW_WINDOW;
+    nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
   bool is_popup =
       source && blocked_content::ConsiderForPopupBlocking(params.disposition);
@@ -2164,11 +2165,12 @@ content::WebContents* Browser::AddNewContents(
   // Popups are activated when the opener exits fullscreen, which happens
   // immediately if the popup would overlap the fullscreen window.
   // Allow fullscreen-within-tab openers to open popups normally.
-  NavigateParams::WindowAction window_action = NavigateParams::SHOW_WINDOW;
+  NavigateParams::WindowAction window_action =
+      NavigateParams::WindowAction::kShowWindow;
   if (disposition == WindowOpenDisposition::NEW_POPUP &&
       GetFullscreenState(source).target_mode ==
           content::FullscreenMode::kContent) {
-    window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
+    window_action = NavigateParams::WindowAction::kShowWindowInactive;
     fullscreen_controller->FullscreenTabOpeningPopup(source,
                                                      new_contents.get());
     // Defer popup creation if the opener has a fullscreen transition in

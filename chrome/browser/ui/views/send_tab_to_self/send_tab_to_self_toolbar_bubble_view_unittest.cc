@@ -34,7 +34,8 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
         EXPECT_EQ("https://www.example.com", params->url.spec());
         EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
                   params->disposition);
-        EXPECT_EQ(NavigateParams::SHOW_WINDOW, params->window_action);
+        EXPECT_EQ(NavigateParams::WindowAction::kShowWindow,
+                  params->window_action);
       }));
 }
 

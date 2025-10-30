@@ -746,7 +746,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
   for (auto& url_and_id : url_and_ids) {
     NavigateParams navigate_params(window_profile, url_and_id.url,
                                    ui::PAGE_TRANSITION_LINK);
-    navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+    navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
     navigate_params.disposition =
         first_tab ? WindowOpenDisposition::NEW_WINDOW
                   : WindowOpenDisposition::NEW_FOREGROUND_TAB;

@@ -122,7 +122,7 @@ message_center::Notification CreateNotification(
             profile.get(), GURL(chrome::kChromeUIManagementURL),
             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
         params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-        params.window_action = NavigateParams::SHOW_WINDOW;
+        params.window_action = NavigateParams::WindowAction::kShowWindow;
         Navigate(&params);
       },
       profile);

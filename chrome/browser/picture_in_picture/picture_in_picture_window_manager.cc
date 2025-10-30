@@ -575,9 +575,10 @@ void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
 #if !BUILDFLAG(IS_ANDROID)
   // Always show document picture-in-picture in a new window. When this is
   // not opened via the AutoPictureInPictureTabHelper, focus the window.
-  params.window_action = ShouldFocusPictureInPictureWindow(params)
-                             ? NavigateParams::SHOW_WINDOW
-                             : NavigateParams::SHOW_WINDOW_INACTIVE;
+  params.window_action =
+      ShouldFocusPictureInPictureWindow(params)
+          ? NavigateParams::WindowAction::kShowWindow
+          : NavigateParams::WindowAction::kShowWindowInactive;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

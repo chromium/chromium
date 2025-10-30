@@ -316,7 +316,7 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
   NavigateParams nav_params(profile, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
   nav_params.source_contents = source;
-  nav_params.window_action = NavigateParams::SHOW_WINDOW;
+  nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
   auto popup_delegate =
       std::make_unique<ChromePopupNavigationDelegate>(std::move(nav_params));
   if (blocked_content::ConsiderForPopupBlocking(params.disposition)) {

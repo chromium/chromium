@@ -70,7 +70,8 @@ content::WebContents* AddWebContents(
     const GURL& target_url,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
-    NavigateParams::WindowAction window_action = NavigateParams::SHOW_WINDOW,
+    NavigateParams::WindowAction window_action =
+        NavigateParams::WindowAction::kShowWindow,
     bool user_gesture = true);
 
 // Closes the specified WebContents in the specified Browser. If

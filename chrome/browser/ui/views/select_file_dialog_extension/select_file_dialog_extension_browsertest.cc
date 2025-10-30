@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   // Open a singleton tab in background.
   NavigateParams p(browser(), GURL("http://www.google.com"),
                    ui::PAGE_TRANSITION_LINK);
-  p.window_action = NavigateParams::SHOW_WINDOW;
+  p.window_action = NavigateParams::WindowAction::kShowWindow;
   p.disposition = WindowOpenDisposition::SINGLETON_TAB;
   Navigate(&p);
 

@@ -47,7 +47,7 @@ NavigateParams::NavigateParams(Profile* a_profile,
     : url(a_url),
       disposition(WindowOpenDisposition::NEW_FOREGROUND_TAB),
       transition(a_transition),
-      window_action(SHOW_WINDOW),
+      window_action(WindowAction::kShowWindow),
       initiating_profile(a_profile) {}
 
 NavigateParams::NavigateParams(NavigateParams&&) = default;

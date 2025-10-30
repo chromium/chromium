@@ -96,7 +96,7 @@ void NetworkPortalSigninWindow::Show(const GURL& url) {
   if (browser) {
     NET_LOG(EVENT) << "Show existing portal signin window";
     NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.user_gesture = true;
     params.trusted_source = false;
     ::Navigate(&params);

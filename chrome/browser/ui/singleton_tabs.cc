@@ -100,7 +100,7 @@ NavigateParams GetSingletonTabNavigateParams(Browser* browser,
                                              const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = true;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
   return params;

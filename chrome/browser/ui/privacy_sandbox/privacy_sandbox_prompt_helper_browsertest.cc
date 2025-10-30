@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserTest,
 
   NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                         ui::PAGE_TRANSITION_FIRST);
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.window_features.bounds = gfx::Rect(0, 0, 500, 500);
   ui_test_utils::NavigateToURL(&params);
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserTest,
 
   NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                         ui::PAGE_TRANSITION_FIRST);
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   ui_test_utils::NavigateToURL(&params);

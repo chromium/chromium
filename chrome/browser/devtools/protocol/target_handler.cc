@@ -44,7 +44,7 @@ NavigateParams CreateNavigateParams(Profile* profile,
   if (new_window) {
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
     if (background)
-      params.window_action = NavigateParams::WindowAction::SHOW_WINDOW_INACTIVE;
+      params.window_action = NavigateParams::WindowAction::kShowWindowInactive;
   } else {
     params.disposition = (background)
                              ? WindowOpenDisposition::NEW_BACKGROUND_TAB

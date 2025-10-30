@@ -32,7 +32,7 @@ AshWebView::InitParams GetInitParams() {
 
 // Modifies `new_tab_params` to open in a new tab.
 void OpenURLFromTabInternal(NavigateParams& new_tab_params) {
-  new_tab_params.window_action = NavigateParams::SHOW_WINDOW;
+  new_tab_params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&new_tab_params);
 }
 

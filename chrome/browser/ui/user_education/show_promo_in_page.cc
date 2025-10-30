@@ -67,7 +67,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
                                      ui::PAGE_TRANSITION_LINK);
       navigate_params.disposition =
           user_education::GetWindowOpenDisposition(params.page_open_mode);
-      navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+      navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
       navigate_handle_ = Navigate(&navigate_params);
     } else {
       auto* visible_element =

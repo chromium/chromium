@@ -633,7 +633,7 @@ void BrowserRootView::NavigateToDroppedUrls(
     params.disposition = WindowOpenDisposition::CURRENT_TAB;
     params.initiator_origin = event.data().GetRendererTaintedOrigin();
     params.source_contents = model->GetWebContentsAt(insertion_index);
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
 
     urls = urls.subspan<1>();
@@ -652,7 +652,7 @@ void BrowserRootView::NavigateToDroppedUrls(
       params.group = model->GetTabGroupForTab(insertion_index);
     }
     params.initiator_origin = event.data().GetRendererTaintedOrigin();
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
   }
 

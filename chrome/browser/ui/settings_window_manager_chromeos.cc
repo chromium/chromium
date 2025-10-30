@@ -166,7 +166,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
     }
 
     NavigateParams params(browser, gurl, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.user_gesture = true;
     Navigate(&params);
     if (callback) {
@@ -179,7 +179,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
   NavigateParams params(profile, gurl, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.trusted_source = true;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = true;
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);

@@ -494,7 +494,7 @@ void MediaDialogView::OnSettingsButtonPressed() {
   NavigateParams navigate_params(profile_,
                                  GURL(captions::GetCaptionSettingsUrl()),
                                  ui::PAGE_TRANSITION_LINK);
-  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
 }

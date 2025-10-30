@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_WINDOW;
   params.url = url;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
 
   // The page should not be opened, and the browser should still sit at the
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_WINDOW;
   params.url = kUrl;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
 
   // The original browser should still be at the same page, but the newly
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGuestSessionNavigatorTest,
   NavigateParams params(MakeNavigateParams(incognito_browser));
   params.disposition = WindowOpenDisposition::SINGLETON_TAB;
   params.url = GURL("chrome://settings");
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
 
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     NavigateParams params(MakeNavigateParams(browser));
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     params.url = GURL("chrome://settings");
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
     params.browser = browser;
     auto navigated = Navigate(&params);
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     NavigateParams params(MakeNavigateParams(browser));
     params.disposition = WindowOpenDisposition::NEW_POPUP;
     params.url = GURL("chrome://settings");
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
     params.browser = browser;
     auto navigated = Navigate(&params);

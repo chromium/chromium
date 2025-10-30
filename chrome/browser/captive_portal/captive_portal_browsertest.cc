@@ -3158,7 +3158,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, DISABLED_TwoWindows) {
   NavigateParams params(inactive_browser, GURL(kMockHttpsQuickTimeoutUrl),
                         ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  params.window_action = NavigateParams::NO_ACTION;
+  params.window_action = NavigateParams::WindowAction::kNoAction;
   ui_test_utils::NavigateToURL(&params);
   navigation_observer.WaitForNavigations(2);
 

@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                                      "/authenticate?client_id=123"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   ui_test_utils::NavigateToURL(&navigate_params);
   Browser* const popup_browser =
       navigate_params.browser->GetBrowserForMigrationOnly();
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                                      "/authenticate?client_id=123"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.disposition = WindowOpenDisposition::NEW_POPUP;
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   ui_test_utils::NavigateToURL(&navigate_params);
   Browser* const popup_browser =
       navigate_params.browser->GetBrowserForMigrationOnly();

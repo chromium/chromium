@@ -279,7 +279,7 @@ void HistoryEmbeddingsHandler::OpenSettingsPage() {
   NavigateParams navigate_params(profile_.get(),
                                  GURL(chrome::kHistorySearchSettingURL),
                                  ui::PAGE_TRANSITION_LINK);
-  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
 }

@@ -138,7 +138,7 @@ void SendTabToSelfToolbarBubbleView::OpenInNewTab() {
   opened_ = true;
   NavigateParams params(browser_->GetProfile(), url_, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   std::move(navigate_callback_).Run(&params);
 
   GetWidget()->Close();
