@@ -325,7 +325,8 @@ void CredentialProviderService::SyncAllCredentials(
   AddCredentials(memoryCredentialStore, std::move(forms));
   // We only sync passkeys into the account store.
   if (passkey_model_ && (store == account_password_store_)) {
-    AddCredentials(memoryCredentialStore, passkey_model_->GetAllPasskeys());
+    AddCredentials(memoryCredentialStore,
+                   passkey_model_->GetUnShadowedPasskeys());
   }
   SyncStore();
 }

@@ -46,11 +46,12 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-using testing::_;
-
 namespace {
 
-using testing::UnorderedElementsAre;
+using ::testing::_;
+using ::testing::UnorderedElementsAre;
+
+constexpr char kRpId[] = "example.com";
 
 // Extracts the service names of `credentials` to an std::vector, so tests can
 // use a gmock matcher on it.
@@ -715,7 +716,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   // Add passkey with valid URL to store.
   EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics valid_passkey = CreatePasskey(
-      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+      kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey);
   task_environment_.RunUntilIdle();
 
@@ -735,7 +736,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   // No favicon should be fetched for hidden passkeys.
   EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
   sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
-      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+      kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   hidden_passkey.set_hidden(true);
   test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
   task_environment_.RunUntilIdle();
@@ -745,7 +746,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   // Add 2nd passkey with valid URL to store.
   EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics valid_passkey2 = CreatePasskey(
-      "g.com", {1, 2, 3, 4}, "passkey_username2", "passkey_display_name2");
+      kRpId, {1, 2, 3, 4}, "passkey_username2", "passkey_display_name2");
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
   task_environment_.RunUntilIdle();
 
@@ -762,7 +763,7 @@ TEST_F(CredentialProviderServiceTest,
 
   EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
-      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+      kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   hidden_passkey.set_hidden(true);
   test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
   task_environment_.RunUntilIdle();
@@ -777,7 +778,7 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   // Add passkey with valid URL to store.
   EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
-      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+      kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(passkey);
   task_environment_.RunUntilIdle();
 
@@ -796,7 +797,7 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
 
   // Add passkey with valid URL to store.
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
-      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+      kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   const base::Time timestamp =
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(10));
   passkey.set_last_used_time_windows_epoch_micros(
@@ -828,6 +829,29 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_NSEQ(credential_store_.credentials[0].userDisplayName,
               @"new_passkey_display_name");
+}
+
+TEST_F(CredentialProviderServiceTest,
+       FiltersOutShadowedPasskeysDuringInitialSync) {
+  sync_pb::WebauthnCredentialSpecifics shadowed_passkey =
+      CreatePasskey(kRpId, /*user_id=*/{1, 2, 3, 4}, "shadowed_username",
+                    "shadowed_user_display_name");
+  sync_pb::WebauthnCredentialSpecifics shadowing_passkey =
+      CreatePasskey(kRpId, shadowed_passkey.user_id(), "shadowing_username",
+                    "shadowing_user_display_name");
+  shadowing_passkey.add_newly_shadowed_credential_ids(
+      shadowed_passkey.credential_id());
+  test_passkey_model_->AddNewPasskeyForTesting(shadowed_passkey);
+  test_passkey_model_->AddNewPasskeyForTesting(shadowing_passkey);
+
+  CreateCredentialProviderService(/*with_account_store=*/true);
+
+  // The initial sync is delayed, make sure it kicks in.
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  // Check that only the shadowing passkey is present in the store.
+  ASSERT_TRUE(WaitForCredentialCount(1u));
+  EXPECT_NSEQ(credential_store_.credentials[0].username, @"shadowing_username");
 }
 
 TEST_F(CredentialProviderServiceTest,
