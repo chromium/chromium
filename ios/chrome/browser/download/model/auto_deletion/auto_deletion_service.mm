@@ -8,8 +8,9 @@
 #import "base/base64.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
-#import "base/hash/md5.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -18,6 +19,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "crypto/hash.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_histograms.h"
 #import "ios/chrome/browser/download/model/auto_deletion/scheduled_file.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -26,13 +28,11 @@
 
 namespace {
 
-// Creates an MD5Hash of the downloaded file's contents. This hash is used to
+// Creates a SHA256 hash of the downloaded file's contents. This hash is used to
 // verify that the file that is scheduled to be deleted is the same file that
 // was originally scheduled for deletion.
-std::string HashDownloadData(base::span<const uint8_t> data_span) {
-  base::MD5Digest hash;
-  base::MD5Sum(data_span, &hash);
-  return base::MD5DigestToBase16(hash);
+std::string HashDownloadData(base::span<const uint8_t> data) {
+  return base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(data)));
 }
 
 // Removes the ScheduledFiles from the device. It is intended to be invoked on a
@@ -42,7 +42,6 @@ void RemoveScheduledFilesHelper(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   // Delete the files from the file system.
-  std::string buffer;
   for (const auto& file : files_to_delete) {
     base::UmaHistogramEnumeration(
         kAutoDeletionServiceActionsHistogram,
@@ -64,7 +63,11 @@ void RemoveScheduledFilesHelper(
       continue;
     }
 
-    const std::string hash = HashDownloadData(base::as_byte_span(buffer));
+    // TODO(crbug.com/455800280): Use `base::ReadFileToBytes()` to read the file
+    // into `buffer`.
+    std::vector<uint8_t> buffer;
+    const std::string hash = HashDownloadData(buffer);
+
     if (hash != file.hash()) {
       base::UmaHistogramEnumeration(
           kAutoDeletionServiceFileRemovalFailureHistogram,

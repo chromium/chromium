@@ -11,6 +11,7 @@ source_set("auto_deletion") {
   ]
   deps = [
     "//components/prefs",
+    "//crypto",
     "//ios/chrome/browser/download/model/auto_deletion/proto",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs",
