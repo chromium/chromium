@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -38,10 +39,12 @@ ReloadButtonWebView::ReloadButtonWebView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>(browser->GetProfile());
+  auto* web_contents = web_view->GetWebContents();
+  // PLM has to be initialized before loading the URL.
+  InitializePageLoadMetricsForWebContents(web_contents);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIReloadButtonURL));
   const int size = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
   web_view->SetPreferredSize(gfx::Size(size, size));
-  auto* web_contents = web_view->GetWebContents();
   webui::SetBrowserWindowInterface(web_contents, browser);
   web_contents->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
   reload_button_ui_ =
