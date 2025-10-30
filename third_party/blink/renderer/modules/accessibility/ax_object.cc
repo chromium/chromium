@@ -7758,185 +7758,9 @@ ax::mojom::blink::Role AXObject::FirstValidRoleInRoleString(
 bool AXObject::SupportsNameFromContents(bool recursive,
                                         bool consider_focus) const {
   // ARIA 1.1, section 5.2.7.5.
-  bool result = false;
 
+  // Handle special cases that need custom logic before checking the spec
   switch (RoleValue()) {
-    // ----- NameFrom: contents -------------------------
-    // Get their own name from contents, or contribute to ancestors
-    case ax::mojom::blink::Role::kButton:
-    case ax::mojom::blink::Role::kCell:
-    case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kColumnHeader:
-    case ax::mojom::blink::Role::kDocBackLink:
-    case ax::mojom::blink::Role::kDocBiblioRef:
-    case ax::mojom::blink::Role::kDocNoteRef:
-    case ax::mojom::blink::Role::kDocGlossRef:
-    case ax::mojom::blink::Role::kDisclosureTriangle:
-    case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
-    case ax::mojom::blink::Role::kGridCell:
-    case ax::mojom::blink::Role::kHeading:
-    case ax::mojom::blink::Role::kLayoutTableCell:
-    case ax::mojom::blink::Role::kLineBreak:
-    case ax::mojom::blink::Role::kLink:
-    case ax::mojom::blink::Role::kListBoxOption:
-    case ax::mojom::blink::Role::kListMarker:
-    case ax::mojom::blink::Role::kMath:
-    case ax::mojom::blink::Role::kMenuItem:
-    case ax::mojom::blink::Role::kMenuItemCheckBox:
-    case ax::mojom::blink::Role::kMenuItemRadio:
-    case ax::mojom::blink::Role::kPopUpButton:
-    case ax::mojom::blink::Role::kRadioButton:
-    case ax::mojom::blink::Role::kRowHeader:
-    case ax::mojom::blink::Role::kStaticText:
-    case ax::mojom::blink::Role::kSwitch:
-    case ax::mojom::blink::Role::kTab:
-    case ax::mojom::blink::Role::kTerm:
-    case ax::mojom::blink::Role::kToggleButton:
-    case ax::mojom::blink::Role::kTreeItem:
-    case ax::mojom::blink::Role::kTooltip:
-      result = true;
-      break;
-
-    case ax::mojom::blink::Role::kMenuListOption:
-      // If only has one text child, will use HTMLOptionElement::DisplayLabel().
-      result = !GetElement()->HasOneTextChild();
-      break;
-
-    // ----- No name from contents -------------------------
-    // These never have or contribute a name from contents, as they are
-    // containers for many subobjects. Superset of nameFrom:author ARIA roles.
-    case ax::mojom::blink::Role::kAlert:
-    case ax::mojom::blink::Role::kAlertDialog:
-    case ax::mojom::blink::Role::kApplication:
-    case ax::mojom::blink::Role::kAudio:
-    case ax::mojom::blink::Role::kArticle:
-    case ax::mojom::blink::Role::kBanner:
-    case ax::mojom::blink::Role::kBlockquote:
-    case ax::mojom::blink::Role::kColorWell:
-    case ax::mojom::blink::Role::kComboBoxMenuButton:  // Only value from
-                                                       // content.
-    case ax::mojom::blink::Role::kComboBoxGrouping:
-    case ax::mojom::blink::Role::kComboBoxSelect:
-    case ax::mojom::blink::Role::kComment:
-    case ax::mojom::blink::Role::kComplementary:
-    case ax::mojom::blink::Role::kContentInfo:
-    case ax::mojom::blink::Role::kDate:
-    case ax::mojom::blink::Role::kDateTime:
-    case ax::mojom::blink::Role::kDialog:
-    case ax::mojom::blink::Role::kDocCover:
-    case ax::mojom::blink::Role::kDocBiblioEntry:
-    case ax::mojom::blink::Role::kDocEndnote:
-    case ax::mojom::blink::Role::kDocFootnote:
-    case ax::mojom::blink::Role::kDocPageBreak:
-    case ax::mojom::blink::Role::kDocPageFooter:
-    case ax::mojom::blink::Role::kDocPageHeader:
-    case ax::mojom::blink::Role::kDocAbstract:
-    case ax::mojom::blink::Role::kDocAcknowledgments:
-    case ax::mojom::blink::Role::kDocAfterword:
-    case ax::mojom::blink::Role::kDocAppendix:
-    case ax::mojom::blink::Role::kDocBibliography:
-    case ax::mojom::blink::Role::kDocChapter:
-    case ax::mojom::blink::Role::kDocColophon:
-    case ax::mojom::blink::Role::kDocConclusion:
-    case ax::mojom::blink::Role::kDocCredit:
-    case ax::mojom::blink::Role::kDocCredits:
-    case ax::mojom::blink::Role::kDocDedication:
-    case ax::mojom::blink::Role::kDocEndnotes:
-    case ax::mojom::blink::Role::kDocEpigraph:
-    case ax::mojom::blink::Role::kDocEpilogue:
-    case ax::mojom::blink::Role::kDocErrata:
-    case ax::mojom::blink::Role::kDocExample:
-    case ax::mojom::blink::Role::kDocForeword:
-    case ax::mojom::blink::Role::kDocGlossary:
-    case ax::mojom::blink::Role::kDocIndex:
-    case ax::mojom::blink::Role::kDocIntroduction:
-    case ax::mojom::blink::Role::kDocNotice:
-    case ax::mojom::blink::Role::kDocPageList:
-    case ax::mojom::blink::Role::kDocPart:
-    case ax::mojom::blink::Role::kDocPreface:
-    case ax::mojom::blink::Role::kDocPrologue:
-    case ax::mojom::blink::Role::kDocPullquote:
-    case ax::mojom::blink::Role::kDocQna:
-    case ax::mojom::blink::Role::kDocSubtitle:
-    case ax::mojom::blink::Role::kDocTip:
-    case ax::mojom::blink::Role::kDocToc:
-    case ax::mojom::blink::Role::kDocument:
-    case ax::mojom::blink::Role::kEmbeddedObject:
-    case ax::mojom::blink::Role::kFeed:
-    case ax::mojom::blink::Role::kFigure:
-    case ax::mojom::blink::Role::kForm:
-    case ax::mojom::blink::Role::kGraphicsDocument:
-    case ax::mojom::blink::Role::kGraphicsObject:
-    case ax::mojom::blink::Role::kGraphicsSymbol:
-    case ax::mojom::blink::Role::kGrid:
-    case ax::mojom::blink::Role::kHeader:
-    case ax::mojom::blink::Role::kIframePresentational:
-    case ax::mojom::blink::Role::kIframe:
-    case ax::mojom::blink::Role::kImage:
-    case ax::mojom::blink::Role::kInputTime:
-    case ax::mojom::blink::Role::kListBox:
-    case ax::mojom::blink::Role::kLog:
-    case ax::mojom::blink::Role::kMain:
-    case ax::mojom::blink::Role::kMarquee:
-    case ax::mojom::blink::Role::kMathMLFraction:
-    case ax::mojom::blink::Role::kMathMLIdentifier:
-    case ax::mojom::blink::Role::kMathMLMath:
-    case ax::mojom::blink::Role::kMathMLMultiscripts:
-    case ax::mojom::blink::Role::kMathMLNoneScript:
-    case ax::mojom::blink::Role::kMathMLNumber:
-    case ax::mojom::blink::Role::kMathMLOperator:
-    case ax::mojom::blink::Role::kMathMLOver:
-    case ax::mojom::blink::Role::kMathMLPrescriptDelimiter:
-    case ax::mojom::blink::Role::kMathMLRoot:
-    case ax::mojom::blink::Role::kMathMLRow:
-    case ax::mojom::blink::Role::kMathMLSquareRoot:
-    case ax::mojom::blink::Role::kMathMLStringLiteral:
-    case ax::mojom::blink::Role::kMathMLSub:
-    case ax::mojom::blink::Role::kMathMLSubSup:
-    case ax::mojom::blink::Role::kMathMLSup:
-    case ax::mojom::blink::Role::kMathMLTable:
-    case ax::mojom::blink::Role::kMathMLTableCell:
-    case ax::mojom::blink::Role::kMathMLTableRow:
-    case ax::mojom::blink::Role::kMathMLText:
-    case ax::mojom::blink::Role::kMathMLUnder:
-    case ax::mojom::blink::Role::kMathMLUnderOver:
-    case ax::mojom::blink::Role::kMenuListPopup:
-    case ax::mojom::blink::Role::kMenu:
-    case ax::mojom::blink::Role::kMenuBar:
-    case ax::mojom::blink::Role::kMeter:
-    case ax::mojom::blink::Role::kNavigation:
-    case ax::mojom::blink::Role::kNote:
-    case ax::mojom::blink::Role::kPluginObject:
-    case ax::mojom::blink::Role::kProgressIndicator:
-    case ax::mojom::blink::Role::kRadioGroup:
-    case ax::mojom::blink::Role::kRootWebArea:
-    case ax::mojom::blink::Role::kRowGroup:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kScrollView:
-    case ax::mojom::blink::Role::kSearch:
-    case ax::mojom::blink::Role::kSearchBox:
-    case ax::mojom::blink::Role::kSectionFooter:
-    case ax::mojom::blink::Role::kSectionHeader:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kSlider:
-    case ax::mojom::blink::Role::kSpinButton:
-    case ax::mojom::blink::Role::kStatus:
-    case ax::mojom::blink::Role::kSuggestion:
-    case ax::mojom::blink::Role::kSvgRoot:
-    case ax::mojom::blink::Role::kTable:
-    case ax::mojom::blink::Role::kTabList:
-    case ax::mojom::blink::Role::kTabPanel:
-    case ax::mojom::blink::Role::kTextField:
-    case ax::mojom::blink::Role::kTextFieldWithComboBox:
-    case ax::mojom::blink::Role::kTimer:
-    case ax::mojom::blink::Role::kToolbar:
-    case ax::mojom::blink::Role::kTree:
-    case ax::mojom::blink::Role::kTreeGrid:
-    case ax::mojom::blink::Role::kVideo:
-      result = false;
-      break;
-
-    // ----- role="row" -------
     // ARIA spec says to compute "name from content" on role="row" at
     // https://w3c.github.io/aria/#row.
     // However, for performance reasons we only do it if the row is the
@@ -7972,6 +7796,83 @@ bool AXObject::SupportsNameFromContents(bool recursive,
       }
       return false;
     }
+    default:
+      break;
+  }
+
+  // TODO(accessibility): The ARIA spec says name from: prohibited on the term
+  // role, but that breaks DumpAccessibilityTreeTest.AccessibilityAriaTerm.
+  if (RoleValue() == ax::mojom::blink::Role::kTerm) {
+    return true;
+  }
+
+  // TODO(accessibility): The ARIA spec says name from: author on the math
+  // role, but that breaks DumpAccessibilityTreeTest.AccessibilityAriaMath.
+  if (RoleValue() == ax::mojom::blink::Role::kMath) {
+    return true;
+  }
+
+  // MenuListOption elements with one text child use
+  // HTMLOptionElement::DisplayLabel() in NativeTextAlternative(), which already
+  // adds a "contents" name source. Return false here to prevent adding a
+  // duplicate "contents" name source later.
+  if (RoleValue() == ax::mojom::blink::Role::kMenuListOption) {
+    return !GetElement()->HasOneTextChild();
+  }
+
+  // Check if the ARIA role supports name from contents according to the spec.
+  if (RoleSupportsNameFromContents(RoleValue())) {
+    return true;
+  }
+
+  // Handle non-ARIA Blink-specific roles that support name from contents
+  switch (RoleValue()) {
+    case ax::mojom::blink::Role::kDisclosureTriangle:
+    case ax::mojom::blink::Role::kDisclosureTriangleGrouped:
+    case ax::mojom::blink::Role::kLayoutTableCell:
+    case ax::mojom::blink::Role::kLineBreak:
+    case ax::mojom::blink::Role::kListMarker:
+    case ax::mojom::blink::Role::kStaticText:
+      return true;
+
+    // ----- Non-ARIA Blink-specific roles without name from contents -------
+    case ax::mojom::blink::Role::kAudio:
+    case ax::mojom::blink::Role::kColorWell:
+    case ax::mojom::blink::Role::kDate:
+    case ax::mojom::blink::Role::kDateTime:
+    case ax::mojom::blink::Role::kEmbeddedObject:
+    case ax::mojom::blink::Role::kIframePresentational:
+    case ax::mojom::blink::Role::kIframe:
+    case ax::mojom::blink::Role::kInputTime:
+    case ax::mojom::blink::Role::kMathMLFraction:
+    case ax::mojom::blink::Role::kMathMLIdentifier:
+    case ax::mojom::blink::Role::kMathMLMath:
+    case ax::mojom::blink::Role::kMathMLMultiscripts:
+    case ax::mojom::blink::Role::kMathMLNoneScript:
+    case ax::mojom::blink::Role::kMathMLNumber:
+    case ax::mojom::blink::Role::kMathMLOperator:
+    case ax::mojom::blink::Role::kMathMLOver:
+    case ax::mojom::blink::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::blink::Role::kMathMLRoot:
+    case ax::mojom::blink::Role::kMathMLRow:
+    case ax::mojom::blink::Role::kMathMLSquareRoot:
+    case ax::mojom::blink::Role::kMathMLStringLiteral:
+    case ax::mojom::blink::Role::kMathMLSub:
+    case ax::mojom::blink::Role::kMathMLSubSup:
+    case ax::mojom::blink::Role::kMathMLSup:
+    case ax::mojom::blink::Role::kMathMLTable:
+    case ax::mojom::blink::Role::kMathMLTableCell:
+    case ax::mojom::blink::Role::kMathMLTableRow:
+    case ax::mojom::blink::Role::kMathMLText:
+    case ax::mojom::blink::Role::kMathMLUnder:
+    case ax::mojom::blink::Role::kMathMLUnderOver:
+    case ax::mojom::blink::Role::kMenuListPopup:
+    case ax::mojom::blink::Role::kPluginObject:
+    case ax::mojom::blink::Role::kRootWebArea:
+    case ax::mojom::blink::Role::kScrollView:
+    case ax::mojom::blink::Role::kSvgRoot:
+    case ax::mojom::blink::Role::kVideo:
+      return false;
 
     // ----- Conditional: contribute to ancestor only, unless focusable -------
     // Some objects can contribute their contents to ancestor names, but
@@ -8023,7 +7924,7 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kStrong:
     case ax::mojom::blink::Role::kSubscript:
     case ax::mojom::blink::Role::kSuperscript:
-    case ax::mojom::blink::Role::kTime:
+    case ax::mojom::blink::Role::kTime: {
       // Usually these items don't have a name, but Blink provides one if they
       // are tabbable, as a repair, so that if a user navigates to one, screen
       // reader users have enough context to understand where they landed.
@@ -8031,39 +7932,41 @@ bool AXObject::SupportsNameFromContents(bool recursive,
         // Use contents if part of a recursive name computation. This doesn't
         // affect the final serialized name for this object, but it allows it
         // to contribute to an ancestor name.
-        result = true;
-      } else if (!GetElement() || GetElement()->IsInUserAgentShadowRoot()) {
+        return true;
+      }
+      if (!GetElement() || GetElement()->IsInUserAgentShadowRoot()) {
         // Built-in UI must have correct accessibility without needing repairs.
-        result = false;
-      } else if (IsEditable() ||
-                 ElementFromAttributeOrInternals(
-                     GetElement(), html_names::kAriaActivedescendantAttr)) {
+        return false;
+      }
+      if (IsEditable() ||
+          ElementFromAttributeOrInternals(
+              GetElement(), html_names::kAriaActivedescendantAttr)) {
         // Handle exceptions:
         // 1.Elements with contenteditable, where using the contents as a name
         //   would cause them to be double-announced.
         // 2.Containers with aria-activedescendant, where the focus is being
         //   forwarded somewhere else.
-        result = false;
-      } else {
-        // Don't repair name from contents to focusable elements unless
-        // focused, because providing a repaired accessible name
-        // often leads to redundant verbalizations.
-        result = consider_focus && IsFocused();
-#if DCHECK_IS_ON()
-        // TODO(crbug.com/350528330): Add this check and address focusable
-        // UI elements that are missing a role, or using an improper role.
-        // DCHECK(!result || !AXObjectCache().IsInternalUICheckerOn(*this))
-        //     << "A focusable node lacked proper accessibility markup, "
-        //        "causing a repair situation:"
-        //     << "\n* Is name prohibited: " << IsNameProhibited()
-        //     << "\n* Role: " << RoleValue()
-        //     << "\n* URL: " << GetDocument()->Url()
-        //     << "\n* Outer html: " << GetElement()->outerHTML()
-        //     << "\n* AXObject ancestry:\n"
-        //     << ParentChainToStringHelper(this);
-#endif
+        return false;
       }
-      break;
+      // Don't repair name from contents to focusable elements unless
+      // focused, because providing a repaired accessible name
+      // often leads to redundant verbalizations.
+      bool result = consider_focus && IsFocused();
+#if DCHECK_IS_ON()
+      // TODO(crbug.com/350528330): Add this check and address focusable
+      // UI elements that are missing a role, or using an improper role.
+      // DCHECK(!result || !AXObjectCache().IsInternalUICheckerOn(*this))
+      //     << "A focusable node lacked proper accessibility markup, "
+      //        "causing a repair situation:"
+      //     << "\n* Is name prohibited: " << IsNameProhibited()
+      //     << "\n* Role: " << RoleValue()
+      //     << "\n* URL: " << GetDocument()->Url()
+      //     << "\n* Outer html: " << GetElement()->outerHTML()
+      //     << "\n* AXObject ancestry:\n"
+      //     << ParentChainToStringHelper(this);
+#endif
+      return result;
+    }
 
     case ax::mojom::blink::Role::kRubyAnnotation:
       // Ruby annotations are removed from accessible names and instead used
@@ -8103,9 +8006,11 @@ bool AXObject::SupportsNameFromContents(bool recursive,
     case ax::mojom::blink::Role::kWebView:
     case ax::mojom::blink::Role::kWindow:
       NOTREACHED() << "Role shouldn't occur in Blink: " << this;
-  }
 
-  return result;
+    default:
+      // All other roles are handled by RoleSupportsNameFromContents() above
+      return false;
+  }
 }
 
 bool AXObject::SupportsARIAReadOnly() const {
