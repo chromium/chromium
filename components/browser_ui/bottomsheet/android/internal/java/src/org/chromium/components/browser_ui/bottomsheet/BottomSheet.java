@@ -1074,7 +1074,7 @@ class BottomSheet extends FrameLayout
                     mCurrentState == SheetState.FULL
                             ? getCurrentSheetContent().getSheetFullHeightAccessibilityStringId()
                             : getCurrentSheetContent().getSheetHalfHeightAccessibilityStringId();
-            announceForAccessibility(getResources().getString(resId));
+            setAccessibilityPaneTitle(getResources().getString(resId));
 
             // TalkBack will announce the content description if it has changed, so wait to set the
             // content description until after announcing full/half height.
