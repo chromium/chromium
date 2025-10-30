@@ -27,4 +27,9 @@ DesktopBnplStrategy::GetNextActionOnAmountExtractionReturned() {
       kNotifyUpdateCallbackOfAmountExtractionReturnedResponse;
 }
 
+BnplStrategy::BeforeSwitchingViewAction
+DesktopBnplStrategy::GetBeforeViewSwitchAction() {
+  return BeforeSwitchingViewAction::kCloseCurrentUi;
+}
+
 }  // namespace autofill::payments

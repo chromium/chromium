@@ -25,4 +25,9 @@ BnplStrategy::GetNextActionOnAmountExtractionReturned() {
   NOTREACHED();
 }
 
+BnplStrategy::BeforeSwitchingViewAction
+BnplStrategy::GetBeforeViewSwitchAction() {
+  NOTREACHED();
+}
+
 }  // namespace autofill::payments

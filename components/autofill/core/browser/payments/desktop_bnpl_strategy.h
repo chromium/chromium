@@ -24,6 +24,7 @@ class DesktopBnplStrategy : public BnplStrategy {
       override;
   BnplAmountExtractionReturnedNextAction
   GetNextActionOnAmountExtractionReturned() override;
+  BeforeSwitchingViewAction GetBeforeViewSwitchAction() override;
 };
 
 }  // namespace autofill::payments

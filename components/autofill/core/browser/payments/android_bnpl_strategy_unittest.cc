@@ -41,4 +41,11 @@ TEST_F(AndroidBnplStrategyTest, GetNextActionOnAmountExtractionReturned) {
                 kNotifyUiOfAmountExtractionReturnedResponse);
 }
 
+// Verify that GetBeforeViewSwitchAction() returns the correct action for
+// the Android platform.
+TEST_F(AndroidBnplStrategyTest, GetBeforeViewSwitchAction) {
+  EXPECT_EQ(android_bnpl_strategy_.GetBeforeViewSwitchAction(),
+            BnplStrategy::BeforeSwitchingViewAction::kDoNothing);
+}
+
 }  // namespace autofill::payments

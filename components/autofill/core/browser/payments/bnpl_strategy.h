@@ -55,6 +55,19 @@ class BnplStrategy {
     kMaxValue = kNotifyUiOfAmountExtractionReturnedResponse,
   };
 
+  // Defines the step that the BnplManager should take before switching to the
+  // next view, based on the platform.
+  enum class BeforeSwitchingViewAction {
+    // The UI code should handle the switching. BnplManager will
+    // continue to show the next view directly.
+    kDoNothing = 0,
+
+    // Close the current view before showing the next one.
+    kCloseCurrentUi = 1,
+
+    kMaxValue = kCloseCurrentUi,
+  };
+
   virtual ~BnplStrategy();
 
   // Returns the next action to take after the user has been shown a payment
@@ -69,6 +82,9 @@ class BnplStrategy {
   // Returns the next action to take after the amount extraction is finished.
   virtual BnplAmountExtractionReturnedNextAction
   GetNextActionOnAmountExtractionReturned();
+
+  // Returns the action to take before switching to the next view.
+  virtual BeforeSwitchingViewAction GetBeforeViewSwitchAction();
 };
 
 }  // namespace autofill::payments

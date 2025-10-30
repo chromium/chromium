@@ -41,4 +41,11 @@ TEST_F(DesktopBnplStrategyTest, GetNextActionOnAmountExtractionReturned) {
                 kNotifyUpdateCallbackOfAmountExtractionReturnedResponse);
 }
 
+// Verify that GetBeforeViewSwitchAction() returns the correct action for
+// the desktop platform.
+TEST_F(DesktopBnplStrategyTest, GetBeforeViewSwitchAction) {
+  EXPECT_EQ(desktop_bnpl_strategy_.GetBeforeViewSwitchAction(),
+            BnplStrategy::BeforeSwitchingViewAction::kCloseCurrentUi);
+}
+
 }  // namespace autofill::payments
