@@ -3269,7 +3269,9 @@ bool AXObject::IsRangeValueSupported() const {
   if (RoleValue() == ax::mojom::blink::Role::kSplitter) {
     // According to the ARIA spec, role="separator" acts as a splitter only
     // when focusable, and supports a range only in that case.
-    return CanSetFocusAttribute();
+    // However, contenteditable makes elements focusable for editing purposes,
+    // not as interactive widgets, so we exclude that case.
+    return CanSetFocusAttribute() && !IsEditable();
   }
   return ui::IsRangeValueSupported(RoleValue());
 }

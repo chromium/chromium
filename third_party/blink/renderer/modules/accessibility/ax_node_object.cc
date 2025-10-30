@@ -4475,6 +4475,10 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
 }
 
 bool AXNodeObject::MaxValueForRange(float* out_value) const {
+  if (!IsRangeValueSupported()) {
+    return false;
+  }
+
   if (AriaFloatAttribute(html_names::kAriaValuemaxAttr, out_value)) {
     return true;
   }
@@ -4489,26 +4493,21 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
     return true;
   }
 
-  // In ARIA 1.1, default value of scrollbar, separator and slider
-  // for aria-valuemax were changed to 100. This change was made for
-  // progressbar in ARIA 1.2.
-  switch (RawAriaRole()) {
-    case ax::mojom::blink::Role::kMeter:
-    case ax::mojom::blink::Role::kProgressIndicator:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kSlider: {
-      *out_value = 100.0f;
-      return true;
-    }
-    default:
-      break;
+  // Fall back to implicit value from ARIA spec.
+  const String& implicit_value = GetImplicitAriaValuemax(RoleValue());
+  if (!implicit_value.empty()) {
+    *out_value = implicit_value.ToFloat();
+    return true;
   }
 
   return false;
 }
 
 bool AXNodeObject::MinValueForRange(float* out_value) const {
+  if (!IsRangeValueSupported()) {
+    return false;
+  }
+
   if (AriaFloatAttribute(html_names::kAriaValueminAttr, out_value)) {
     return true;
   }
@@ -4523,20 +4522,11 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
     return true;
   }
 
-  // In ARIA 1.1, default value of scrollbar, separator and slider
-  // for aria-valuemin were changed to 0. This change was made for
-  // progressbar in ARIA 1.2.
-  switch (RawAriaRole()) {
-    case ax::mojom::blink::Role::kMeter:
-    case ax::mojom::blink::Role::kProgressIndicator:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kSlider: {
-      *out_value = 0.0f;
-      return true;
-    }
-    default:
-      break;
+  // Fall back to implicit value from ARIA spec.
+  const String& implicit_value = GetImplicitAriaValuemin(RoleValue());
+  if (!implicit_value.empty()) {
+    *out_value = implicit_value.ToFloat();
+    return true;
   }
 
   return false;
