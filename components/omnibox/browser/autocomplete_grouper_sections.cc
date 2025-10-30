@@ -600,11 +600,16 @@ DesktopLensContextualZpsSection::DesktopLensContextualZpsSection(
 
 DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(8,
+    : DesktopLensMultimodalZpsSection(group_configs, 8) {}
+
+DesktopLensMultimodalZpsSection::DesktopLensMultimodalZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t max_suggestions)
+    : ZpsSection(max_suggestions,
                  {
-                     Group(8,
+                     Group(max_suggestions,
                            {
-                               {omnibox::GROUP_MULTIMODAL, 8},
+                               {omnibox::GROUP_MULTIMODAL, max_suggestions},
                            }),
                  },
                  group_configs) {}

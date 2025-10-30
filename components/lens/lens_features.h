@@ -831,6 +831,17 @@ extern bool GetShouldComposeboxContextualizeOnFocus();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetAimSuggestionsEnabled();
 
+// Enum for the parameter values.
+enum class LensAimSuggestionsType {
+  kNone,
+  kContextual,
+  kMultimodal,
+};
+
+// Returns the type of AIM suggestions to show.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern LensAimSuggestionsType GetLensAimSuggestionsType();
+
 // Whether to close the overlay when the user transitions to the AIM UI.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldCloseOverlayOnAimTransition();
@@ -1003,12 +1014,6 @@ extern int GetLensUpdatedFeedbackToastTimeoutMs();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayOptimizationFilterEnabled();
 
-// Enum for the parameter values.
-enum class LensAimSuggestionsType {
-  kNone,
-  kContextual,
-};
-
 // Flag to control the type of suggestions for Lens Aim.
 // Access this value using: kLensAimSuggestionsType.Get()
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -1019,6 +1024,7 @@ extern const base::FeatureParam<LensAimSuggestionsType>
 // Field Trial configuration.
 inline constexpr char kLensAimSuggestionsTypeNone[] = "None";
 inline constexpr char kLensAimSuggestionsTypeContextual[] = "Contextual";
+inline constexpr char kLensAimSuggestionsTypeMultimodal[] = "Multimodal";
 
 // Returns the string representation of LensAimSuggestionsType for
 // logging/telemetry.
