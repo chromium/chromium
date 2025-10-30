@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 
 namespace ui {
 
@@ -30,6 +31,10 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
     // Called when the contrast level changes.
     virtual void OnContrastLevelChanged(bool high_contrast_enabled) {}
 
+    // Called when the text cursor blink interval changes.
+    virtual void OnTextCursorBlinkIntervalChanged(
+        base::TimeDelta text_cursor_blink_interval) {}
+
     // Called during browser startup and any time enabled services change.
     virtual void RecordAccessibilityServiceInfoHistograms() {}
   };
@@ -47,6 +52,9 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
 
   // Notifies all delegates of a contrast level change.
   void NotifyContrastLevelObservers(bool high_contrast_enabled);
+
+  // Notifies all delegates of a cursor blink interval change.
+  void NotifyTextCursorBlinkIntervalObservers(base::TimeDelta new_interval);
 
   // Notifies all delegates to record service info histograms.
   void NotifyRecordAccessibilityServiceInfoHistogram();
@@ -69,6 +77,9 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
 
   // Returns a vector containing the IDs of all running accessibility services.
   static std::vector<std::string> GetAccessibilityServiceIds();
+
+  // Returns the OS-level setting for the text cursor blink interval.
+  static base::TimeDelta GetTextCursorBlinkInterval();
 
   // Returns true when the user has set the OS-level setting to reduce motion.
   static bool PrefersReducedMotion();

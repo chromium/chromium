@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 
 namespace gfx {
 
@@ -26,6 +27,7 @@ class COMPONENT_EXPORT(GFX) ViewConfiguration {
   static int GetDoubleTapSlopInDips();
 
   static int GetMinScalingSpanInDips();
+  static base::TimeDelta GetTextCursorBlinkInterval();
 };
 
 }  // namespace gfx
