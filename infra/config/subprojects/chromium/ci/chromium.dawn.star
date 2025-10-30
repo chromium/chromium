@@ -1930,9 +1930,9 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_telemetry_tests",
-            "gpu_dawn_integration_gtests_passthrough",
-            "gpu_dawn_isolated_scripts",
         ],
         mixins = [
             "mac_mini_intel_gpu_stable",
