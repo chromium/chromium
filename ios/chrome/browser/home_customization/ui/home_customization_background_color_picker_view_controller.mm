@@ -34,7 +34,7 @@ const CGFloat kLineSpacing = 23.0;
 const CGFloat kItemSpacing = 2.0;
 
 // The top padding for the section in the collection view.
-const CGFloat kSectionInsetTop = 20.0;
+const CGFloat kSectionInsetTop = 0.0;
 
 // The left and right padding for the section in the collection view.
 const CGFloat kSectionInsetSides = 25.0;
@@ -243,35 +243,18 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[selectedID];
 
-  if (IsNTPBackgroundColorSliderEnabled() &&
-      [backgroundConfiguration.configurationID
-          isEqualToString:_customColorConfiguration.configurationID]) {
-    // Show the color slider and animate the footer if the custom color cell is
-    // selected.
-    UICollectionReusableView* footerView = [self footerView];
-    footerView.hidden = NO;
-    footerView.transform =
-        CGAffineTransformMakeTranslation(0, footerView.bounds.size.height);
-    [UIView animateWithDuration:kFooterSlideInDuration
-                          delay:0
-         usingSpringWithDamping:kFooterSlideInDamping
-          initialSpringVelocity:kFooterSlideInVelocity
-                        options:UIViewAnimationOptionCurveEaseInOut
-                     animations:^{
-                       footerView.transform = CGAffineTransformIdentity;
-                     }
-                     completion:nil];
+  if (IsNTPBackgroundColorSliderEnabled()) {
+    BOOL isCustomColorCell = [backgroundConfiguration.configurationID
+        isEqualToString:_customColorConfiguration.configurationID];
 
-    // If the custom color cell hasn't even been set, don't actually apply the
-    // background color until later, when the user drags the slider.
-    if (backgroundConfiguration.isCustomColor) {
-      [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
+    [self setFooterVisible:isCustomColorCell];
+
+    if (isCustomColorCell && !backgroundConfiguration.isCustomColor) {
+      // If the custom color cell hasn't even been set, don't actually apply the
+      // background color until later, when the user drags the slider.
+      return;
     }
-    return;
   }
-
-  // The footer is only visible if the custom color cell is selected.
-  [self footerView].hidden = YES;
 
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
 
@@ -328,6 +311,46 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 }
 
 #pragma mark - Private
+
+// Shows or hides the footer with an animation.
+- (void)setFooterVisible:(BOOL)visible {
+  if (IsNTPBackgroundColorSliderEnabled()) {
+    UICollectionReusableView* footerView = [self footerView];
+
+    if (visible) {
+      // Show the color slider and animate the footer if the custom color cell
+      // is selected.
+      footerView.hidden = NO;
+      footerView.transform =
+          CGAffineTransformMakeTranslation(0, footerView.bounds.size.height);
+      [UIView animateWithDuration:kFooterSlideInDuration
+                            delay:0
+           usingSpringWithDamping:kFooterSlideInDamping
+            initialSpringVelocity:kFooterSlideInVelocity
+                          options:UIViewAnimationOptionCurveEaseInOut
+                       animations:^{
+                         footerView.transform = CGAffineTransformIdentity;
+                       }
+                       completion:nil];
+    } else if (!footerView.hidden) {
+      // The footer is only visible if the custom color cell is selected.
+      [UIView animateWithDuration:kFooterSlideInDuration
+          delay:0
+          usingSpringWithDamping:kFooterSlideInDamping
+          initialSpringVelocity:kFooterSlideInVelocity
+          options:UIViewAnimationOptionCurveEaseInOut
+          animations:^{
+            footerView.transform = CGAffineTransformMakeTranslation(
+                0, footerView.bounds.size.height +
+                       20.0);  // 20px is added to hide the footer completely.
+          }
+          completion:^(BOOL finished) {
+            footerView.hidden = YES;
+            footerView.transform = CGAffineTransformIdentity;
+          }];
+    }
+  }
+}
 
 // Retrieve the light color from the color palette, or use the default color if
 // none is available.

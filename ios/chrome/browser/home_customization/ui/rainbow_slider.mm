@@ -16,6 +16,15 @@ const CGFloat kThumbDiameter = 33.0;
 
 // The thickness of the white border around the thumb circle.
 const CGFloat kThumbBorderWidth = 3.0;
+
+// The blur radius for the thumb shadow.
+const CGFloat kThumbShadowBlur = 3.0;
+
+// The opacity of the thumb shadow.
+const CGFloat kThumbShadowOpacity = 0.3;
+
+// The offset of the thumb shadow.
+const CGSize kThumbShadowOffset = {0.0, 1.0};
 }  // namespace
 
 @interface RainbowSlider () {
@@ -28,8 +37,17 @@ const CGFloat kThumbBorderWidth = 3.0;
 @implementation RainbowSlider
 
 - (UIImage*)thumbImageWithColor:(UIColor*)color diameter:(CGFloat)diameter {
-  CGSize size = CGSizeMake(diameter, diameter);
-  CGRect rect = CGRectMake(0, 0, diameter, diameter);
+  // Constants remain the same, ensuring canvas is large enough for the shadow.
+  const CGFloat kShadowHorizontalPadding =
+      kThumbShadowBlur + kThumbShadowOffset.width;
+  const CGFloat kShadowVerticalPadding =
+      kThumbShadowBlur + kThumbShadowOffset.height;
+
+  CGSize size = CGSizeMake(diameter + 2 * kShadowHorizontalPadding,
+                           diameter + 2 * kShadowVerticalPadding);
+
+  CGRect thumbRect = CGRectMake(kShadowHorizontalPadding,
+                                kShadowVerticalPadding, diameter, diameter);
 
   UIGraphicsImageRenderer* renderer =
       [[UIGraphicsImageRenderer alloc] initWithSize:size];
@@ -40,14 +58,32 @@ const CGFloat kThumbBorderWidth = 3.0;
         CGContextSetAllowsAntialiasing(ctx, true);
         CGContextSetShouldAntialias(ctx, true);
 
-        // White border.
-        UIBezierPath* outerPath = [UIBezierPath bezierPathWithOvalInRect:rect];
+        // Creates the shadow.
+        CGContextSetShadowWithColor(
+            ctx, kThumbShadowOffset, kThumbShadowBlur,
+            [UIColor colorWithWhite:0.0 alpha:kThumbShadowOpacity].CGColor);
+
+        // Draw a black circle (which is opaque and casts a strong shadow).
+        [[UIColor blackColor] setFill];
+        UIBezierPath* shadowCasterPath =
+            [UIBezierPath bezierPathWithOvalInRect:thumbRect];
+        [shadowCasterPath fill];
+
+        // Clear the black circle itself, leaving ONLY the shadow.
+        CGContextSetBlendMode(ctx, kCGBlendModeClear);
+        [shadowCasterPath fill];  // Use the same path to clear the area.
+        CGContextSetBlendMode(ctx, kCGBlendModeNormal);
+        CGContextSetShadowWithColor(ctx, CGSizeZero, 0.0, nullptr);
+
+        // White border (Drawn without shadow).
+        UIBezierPath* outerPath =
+            [UIBezierPath bezierPathWithOvalInRect:thumbRect];
         [[UIColor whiteColor] setFill];
         [outerPath fill];
 
-        // Inner circle.
+        // Inner circle (Drawn without shadow).
         CGRect innerRect =
-            CGRectInset(rect, kThumbBorderWidth, kThumbBorderWidth);
+            CGRectInset(thumbRect, kThumbBorderWidth, kThumbBorderWidth);
         UIBezierPath* innerPath =
             [UIBezierPath bezierPathWithOvalInRect:innerRect];
         [color setFill];
