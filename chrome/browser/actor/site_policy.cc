@@ -132,10 +132,12 @@ void OnOptimizationGuideDecisionForOriginGating(
                           optimization_guide::OptimizationGuideDecision::kTrue);
 }
 
-void MayActOnUrl(const GURL& url,
-                 bool allow_insecure_http,
-                 Profile* profile,
-                 std::unique_ptr<DecisionWrapper> decision_wrapper) {
+void MayActOnUrl(
+    const GURL& url,
+    bool allow_insecure_http,
+    Profile* profile,
+    const std::optional<absl::flat_hash_set<url::Origin>>& allowed_origins,
+    std::unique_ptr<DecisionWrapper> decision_wrapper) {
   if (net::IsLocalhost(url) || url.IsAboutBlank()) {
     decision_wrapper->Accept();
     return;
@@ -230,8 +232,12 @@ void MayActOnUrl(const GURL& url,
   }
 
   // Blocklist is checked by `ShouldBlockNavigationUrlForOriginGating` when this
-  // feature is enabled.
-  if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+  // feature is enabled, and origins the user allowed the actor to interact with
+  // will be included in the `allowed_origins` set. If `url` has an origin not
+  // in the set, we apply the optimization guide check.
+  if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating) &&
+      (!allowed_origins ||
+       base::Contains(*allowed_origins, url::Origin::Create(url)))) {
     decision_wrapper->Accept();
     return;
   }
@@ -277,6 +283,7 @@ void InitActionBlocklist(Profile* profile) {
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
+                 const absl::flat_hash_set<url::Origin>& allowed_origins,
                  DecisionCallback callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
@@ -305,7 +312,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
 
   MayActOnUrl(url, /*allow_insecure_http=*/false,
               Profile::FromBrowserContext(web_contents.GetBrowserContext()),
-              std::move(decision_wrapper));
+              allowed_origins, std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
@@ -317,7 +324,8 @@ void MayActOnUrl(const GURL& url,
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
-  MayActOnUrl(url, allow_insecure_http, profile, std::move(decision_wrapper));
+  MayActOnUrl(url, allow_insecure_http, profile, std::nullopt,
+              std::move(decision_wrapper));
 }
 
 bool ShouldBlockNavigationUrlForOriginGating(const GURL& url,

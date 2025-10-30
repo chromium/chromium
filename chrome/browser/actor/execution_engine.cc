@@ -512,7 +512,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
 
   // Asynchronously check if we can act on the tab.
   ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnTab(
-      *tab, *journal_, task_->id(),
+      *tab, *journal_, task_->id(), allowed_navigation_origins_,
       base::BindOnce(
           &ExecutionEngine::DidFinishAsyncSafetyChecks, GetWeakPtr(),
           tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));

@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "chrome/common/actor/task_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/origin.h"
 
 namespace tabs {
 class TabInterface;
@@ -27,10 +29,17 @@ using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 // Checks whether the actor may perform actions on the given tab based on the
 // last committed document and URL. Invokes the callback with true if it is
 // allowed.
+// `MayActOnTab` takes a set of `allowed_origins` where for which do not apply
+// the optimization guide check. We do so because `MayActOnTab` is called before
+// any navigations can take place, so we need to check if the current URL when a
+// task starts. However, any future URLs the actor navigates to should undergo
+// blocklist checks in `MayActOnUrl` or
+// `ShouldBlockNavigationUrlForOriginGating`.
 // Please use ActorPolicyChecker instead of calling this directly.
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
+                 const absl::flat_hash_set<url::Origin>& allowed_origins,
                  DecisionCallback callback);
 
 // Like MayActOnTab, but considers a URL on its own.

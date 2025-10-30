@@ -9,6 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "url/origin.h"
 
 class GURL;
 class Profile;
@@ -38,6 +40,7 @@ class ActorPolicyChecker {
   void MayActOnTab(const tabs::TabInterface& tab,
                    AggregatedJournal& journal,
                    TaskId task_id,
+                   const absl::flat_hash_set<url::Origin>& allowed_origins,
                    DecisionCallback callback);
   void MayActOnUrl(const GURL& url,
                    bool allow_insecure_http,
