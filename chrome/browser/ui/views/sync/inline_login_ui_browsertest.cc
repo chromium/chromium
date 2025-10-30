@@ -36,6 +36,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
@@ -285,10 +286,10 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
-  GURL test_url_1 = ui_test_utils::GetTestUrl(
+  GURL test_url_1 = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title1.html")));
-  GURL test_url_2 = ui_test_utils::GetTestUrl(
+  GURL test_url_2 = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory)
           .Append(FILE_PATH_LITERAL("frame_tree")),
       base::FilePath(FILE_PATH_LITERAL("simple.htm")));

@@ -80,6 +80,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -1916,7 +1917,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // Download a file in the app browser.
   ui_test_utils::DownloadURL(
       helper()->app_browser(),
-      ui_test_utils::GetTestUrl(
+      chrome_test_utils::GetTestUrl(
           base::FilePath().AppendASCII("downloads"),
           base::FilePath().AppendASCII("a_zip_file.zip")));
   views::test::WaitForAnimatingLayoutManager(
@@ -1957,7 +1958,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   // Download a file in the regular browser.
   ui_test_utils::DownloadURL(
-      non_app_browser, ui_test_utils::GetTestUrl(
+      non_app_browser, chrome_test_utils::GetTestUrl(
                            base::FilePath().AppendASCII("downloads"),
                            base::FilePath().AppendASCII("a_zip_file.zip")));
 

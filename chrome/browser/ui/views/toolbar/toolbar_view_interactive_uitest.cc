@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -189,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonUpdate) {
   EXPECT_FALSE(back_button->GetEnabled());
 
   // Navigate to title1.html. Back button should be enabled.
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(back_button->GetEnabled());
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonHoverThenClick) {
   EXPECT_FALSE(back_button->GetEnabled());
 
   // Navigate to title1.html. Back button should be enabled.
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(back_button->GetEnabled());

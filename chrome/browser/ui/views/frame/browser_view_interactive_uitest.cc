@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -471,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest,
       contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
 
   // Navigate without blocking.
-  const GURL test_url = ui_test_utils::GetTestUrl(
+  const GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
   contents->GetController().LoadURL(test_url, content::Referrer(),
