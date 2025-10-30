@@ -1625,8 +1625,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 }
 
 void AIPageContentAgent::ContentBuilder::ComputeHitTestableNodesInViewport(
-    const LocalFrame& frame,
-    mojom::blink::AIPageContentFrameData& frame_data) {
+    const LocalFrame& frame) {
   if (!actionable_mode()) {
     return;
   }
@@ -1749,7 +1748,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
     }
   }
 
-  ComputeHitTestableNodesInViewport(frame, frame_data);
+  ComputeHitTestableNodesInViewport(frame);
 
   if (auto* model_context = ModelContextSupplement::GetIfExists(
           *frame.DomWindow()->navigator())) {
@@ -1758,36 +1757,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
     });
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAIPageContentIncludePopupWindows)) {
-    // Check for an open popup window.
-    WebViewImpl* web_view = frame.GetPage()->GetChromeClient().GetWebView();
-    if (web_view->HasOpenedPopup()) {
-      // Fetch the popup window and the element that opened it.
-      WebPagePopupImpl* web_popup = web_view->GetPagePopup();
-      Element& opener = web_popup->OwnerElement();
-
-      // Only fill AIPageContentPopup if this frame owns the popup.
-      if (opener.GetDocument() == frame.GetDocument()) {
-        auto mojom_popup = mojom::blink::AIPageContentPopup::New();
-        if (LayoutView* web_popup_layout_view =
-                web_popup->Window()->GetFrame()->ContentLayoutObject()) {
-          // Build the ContentNode tree.
-          auto web_popup_root_node = MaybeGenerateContentNode(
-              *web_popup_layout_view, *web_popup_layout_view->Style());
-          CHECK(web_popup_root_node);
-          WalkChildren(*web_popup_layout_view, *web_popup_root_node,
-                       *web_popup_layout_view->Style());
-          mojom_popup->root_node = std::move(web_popup_root_node);
-
-          // Add identifier for the node which opened the popup.
-          mojom_popup->opener_dom_node_id = opener.GetDomNodeId();
-
-          frame_data.popup = std::move(mojom_popup);
-        }
-      }
-    }
-  }
+  MaybeAddPopupData(frame, frame_data);
 }
 
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
@@ -1822,6 +1792,59 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
       selection.end_offset = end_position.ComputeOffsetInContainerNode();
     }
   }
+}
+
+void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
+    LocalFrame& frame,
+    mojom::blink::AIPageContentFrameData& frame_data) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentIncludePopupWindows)) {
+    return;
+  }
+
+  // Check for an open popup window.
+  WebViewImpl* web_view = frame.GetPage()->GetChromeClient().GetWebView();
+  if (!web_view->HasOpenedPopup()) {
+    return;
+  }
+
+  // Fetch the popup window and the element that opened it.
+  WebPagePopupImpl* web_popup = web_view->GetPagePopup();
+  Element& opener = web_popup->OwnerElement();
+
+  // Only fill AIPageContentPopup if this frame owns the popup.
+  if (opener.GetDocument() != frame.GetDocument()) {
+    return;
+  }
+  LocalDOMWindow* popup_window = web_popup->Window();
+  if (!popup_window) {
+    return;
+  }
+  LocalFrame* popup_frame = popup_window->GetFrame();
+  if (!popup_frame) {
+    return;
+  }
+  LayoutView* web_popup_layout_view = popup_frame->ContentLayoutObject();
+  if (!web_popup_layout_view) {
+    return;
+  }
+
+  ComputeHitTestableNodesInViewport(*popup_frame);
+
+  auto mojom_popup = mojom::blink::AIPageContentPopup::New();
+  // Build the ContentNode tree.
+  auto web_popup_root_node = MaybeGenerateContentNode(
+      *web_popup_layout_view, *web_popup_layout_view->Style());
+  CHECK(web_popup_root_node);
+  WalkChildren(*web_popup_layout_view, *web_popup_root_node,
+               *web_popup_layout_view->Style());
+
+  mojom_popup->root_node = std::move(web_popup_root_node);
+
+  // Add identifier for the node which opened the popup.
+  mojom_popup->opener_dom_node_id = opener.GetDomNodeId();
+
+  frame_data.popup = std::move(mojom_popup);
 }
 
 void AIPageContentAgent::ContentBuilder::AddInteractionInfoForHitTesting(

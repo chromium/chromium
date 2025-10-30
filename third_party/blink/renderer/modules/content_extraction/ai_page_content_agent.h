@@ -112,6 +112,8 @@ class MODULES_EXPORT AIPageContentAgent final
         const LocalFrame& frame,
         mojom::blink::AIPageContentFrameInteractionInfo&
             frame_interaction_info);
+    void MaybeAddPopupData(LocalFrame& frame,
+                           mojom::blink::AIPageContentFrameData& frame_data);
     void AddAriaRole(const LayoutObject& object,
                      mojom::blink::AIPageContentAttributes& attributes);
     void AddNodeInteractionInfo(
@@ -144,9 +146,7 @@ class MODULES_EXPORT AIPageContentAgent final
         const mojom::blink::AIPageContentAttributes& attributes) const;
 
     void AddInteractiveNode(DOMNodeId dom_node_id);
-    void ComputeHitTestableNodesInViewport(
-        const LocalFrame& frame,
-        mojom::blink::AIPageContentFrameData& frame_data);
+    void ComputeHitTestableNodesInViewport(const LocalFrame& frame);
 
     void UpdateLifecycle(Document& document);
 

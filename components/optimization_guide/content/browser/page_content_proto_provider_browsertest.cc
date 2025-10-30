@@ -137,19 +137,6 @@ void SimulateMouseClickAt(content::RenderWidgetHost* rwh, gfx::PointF point) {
   rwh->ForwardMouseEvent(mouse_event);
 }
 
-bool HasTextNode(const optimization_guide::proto::ContentNode& node,
-                 const std::string& text) {
-  if (node.content_attributes().has_text_data() &&
-      node.content_attributes().text_data().text_content() == text) {
-    return true;
-  }
-  for (const auto& child : node.children_nodes()) {
-    if (HasTextNode(child, text)) {
-      return true;
-    }
-  }
-  return false;
-}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
@@ -1257,8 +1244,10 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+  const auto& select_node_in_popup =
+      popup_window.root_node().children_nodes()[0];
+  EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
@@ -1699,6 +1688,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
 
   WaitForPopup();
 
+  LoadData(GetActionableAIPageContentOptions());
+
   const auto& popup_window = page_content().popup_window();
   EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
             page_content()
@@ -1706,12 +1697,20 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                 .document_identifier()
                 .serialized_token());
 
-  const auto& select_node = page_content().root_node().children_nodes()[0];
+  const auto& select_node = ActionableContentRootNode().children_nodes()[0];
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+  const auto& popup_root = ContentRootNodeForFrameActionableMode(
+      popup_window.root_node().children_nodes()[0]);
+
+  const auto& select_node_in_popup = popup_root.children_nodes()[0];
+  EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_GT(select_node_in_popup.content_attributes()
+                .interaction_info()
+                .document_scoped_z_order(),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
@@ -1725,9 +1724,11 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
 
   WaitForPopup();
 
+  LoadData(GetActionableAIPageContentOptions());
+
   const auto& popup_window = page_content().popup_window();
 
-  const auto& iframe_node = page_content().root_node().children_nodes()[0];
+  const auto& iframe_node = ActionableContentRootNode().children_nodes()[0];
   EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
             iframe_node.content_attributes()
                 .iframe_data()
@@ -1736,13 +1737,21 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                 .serialized_token());
 
   EXPECT_EQ(iframe_node.children_nodes().size(), 1);
-  const auto& iframe_node_root = iframe_node.children_nodes()[0];
+  const auto& iframe_node_root =
+      ContentRootNodeForFrameActionableMode(iframe_node.children_nodes()[0]);
   const auto& select_node = iframe_node_root.children_nodes()[0];
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+  const auto& popup_root = ContentRootNodeForFrameActionableMode(
+      popup_window.root_node().children_nodes()[0]);
+  const auto& select_node_in_popup = popup_root.children_nodes()[0];
+  EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_GT(select_node_in_popup.content_attributes()
+                .interaction_info()
+                .document_scoped_z_order(),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
@@ -1761,9 +1770,11 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
 
   WaitForPopup();
 
+  LoadData(GetActionableAIPageContentOptions());
+
   const auto& popup_window = page_content().popup_window();
 
-  const auto& iframe_node = page_content().root_node().children_nodes()[0];
+  const auto& iframe_node = ActionableContentRootNode().children_nodes()[0];
   EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
             iframe_node.content_attributes()
                 .iframe_data()
@@ -1772,13 +1783,17 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                 .serialized_token());
 
   EXPECT_EQ(iframe_node.children_nodes().size(), 1);
-  const auto& iframe_node_root = iframe_node.children_nodes()[0];
+  const auto& iframe_node_root =
+      ContentRootNodeForFrameActionableMode(iframe_node.children_nodes()[0]);
   const auto& select_node = iframe_node_root.children_nodes()[0];
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 1"));
-  EXPECT_TRUE(HasTextNode(popup_window.root_node(), "Option 2"));
+  const auto& popup_root = ContentRootNodeForFrameActionableMode(
+      popup_window.root_node().children_nodes()[0]);
+  const auto& select_node_in_popup = popup_root.children_nodes()[0];
+  EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest, ColorPicker) {
