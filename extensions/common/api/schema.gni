@@ -54,7 +54,7 @@ extensions_types_only_schema_files_ = [
 if (enable_extensions) {
   extensions_api_schema_files_ += [
     "app_current_window_internal.webidl",
-    "app_runtime.idl",
+    "app_runtime.webidl",
     "app_view_guest_internal.json",
     "app_window.idl",
     "audio.webidl",

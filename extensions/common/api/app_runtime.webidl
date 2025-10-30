@@ -1,0 +1,165 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary LaunchItem {
+  // Entry for the item.
+  [instanceOf=Entry] required object entry;
+
+  // The MIME type of the file.
+  DOMString type;
+};
+
+// Enumeration of app launch sources.
+// This should be kept in sync with AppLaunchSource in
+// components/services/app_service/public/mojom/types.mojom, and
+// GetLaunchSourceEnum() in
+// extensions/browser/api/app_runtime/app_runtime_api.cc.
+// Note the enumeration is used in UMA histogram so entries
+// should not be re-ordered or removed.
+enum LaunchSource {
+  "untracked",
+  "app_launcher",
+  "new_tab_page",
+  "reload",
+  "restart",
+  "load_and_launch",
+  "command_line",
+  "file_handler",
+  "url_handler",
+  "system_tray",
+  "about_page",
+  "keyboard",
+  "extensions_page",
+  "management_api",
+  "ephemeral_app",
+  "background",
+  "kiosk",
+  "chrome_internal",
+  "test",
+  "installed_notification",
+  "context_menu",
+  "arc",
+  "intent_url",
+  "app_home_page",
+  "focus_mode",
+  "sparky"
+};
+
+// Optional data for the launch. Either <code>items</code>, or
+// the pair (<code>url, referrerUrl</code>) can be present for any given
+// launch.
+[inline_doc] dictionary LaunchData {
+  // The ID of the file or URL handler that the app is being invoked with.
+  // Handler IDs are the top-level keys in the <code>file_handlers</code>
+  // and/or <code>url_handlers</code> dictionaries in the manifest.
+  DOMString id;
+
+  // The file entries for the <code>onLaunched</code> event triggered by a
+  // matching file handler in the <code>file_handlers</code> manifest key.
+  sequence<LaunchItem> items;
+
+  // The URL for the <code>onLaunched</code> event triggered by a matching
+  // URL handler in the <code>url_handlers</code> manifest key.
+  DOMString url;
+
+  // The referrer URL for the <code>onLaunched</code> event triggered by a
+  // matching URL handler in the <code>url_handlers</code> manifest key.
+  DOMString referrerUrl;
+
+  // Whether the app is launched in a Chrome OS Demo Mode session. Used for
+  // default-installed Demo Mode Chrome apps.
+  [nodoc] boolean isDemoSession;
+
+  // Whether the app is being launched in a <a
+  // href="https://support.google.com/chromebook/answer/3134673">Chrome OS
+  // kiosk session</a>.
+  boolean isKioskSession;
+
+  // Whether the app is being launched in a <a
+  // href="https://support.google.com/chrome/a/answer/3017014">Chrome OS
+  // public session</a>.
+  boolean isPublicSession;
+
+  // Where the app is launched from.
+  LaunchSource source;
+};
+
+callback AllowCallback = undefined(DOMString url);
+callback DenyCallback = undefined();
+
+// This object specifies details and operations to perform on the embedding
+// request. The app to be embedded can make a decision on whether or not to
+// allow the embedding and what to embed based on the embedder making the
+// request.
+dictionary EmbedRequest {
+  required DOMString embedderId;
+
+  // Optional developer specified data that the app to be embedded can use
+  // when making an embedding decision.
+  any data;
+
+  // Allows <code>embedderId</code> to embed this app in an &lt;appview&gt;
+  // element. The <code>url</code> specifies the content to embed.
+  [nocompile] required AllowCallback allow;
+
+
+  // Prevents <code> embedderId</code> from embedding this app in an
+  // &lt;appview&gt; element.
+  [nocompile] required DenyCallback deny;
+};
+
+// Listener callback for the onEmbedRequested event.
+callback OnEmbedRequestedListener = undefined(EmbedRequest request);
+
+interface OnEmbedRequestedEvent : ExtensionEvent {
+  static undefined addListener(OnEmbedRequestedListener listener);
+  static undefined removeListener(OnEmbedRequestedListener listener);
+  static boolean hasListener(OnEmbedRequestedListener listener);
+};
+
+// Listener callback for the onLaunched event.
+callback OnLaunchedListener = undefined(optional LaunchData launchData);
+
+interface OnLaunchedEvent : ExtensionEvent {
+  static undefined addListener(OnLaunchedListener listener);
+  static undefined removeListener(OnLaunchedListener listener);
+  static boolean hasListener(OnLaunchedListener listener);
+};
+
+// Listener callback for the onRestarted event.
+callback OnRestartedListener = undefined();
+
+interface OnRestartedEvent : ExtensionEvent {
+  static undefined addListener(OnRestartedListener listener);
+  static undefined removeListener(OnRestartedListener listener);
+  static boolean hasListener(OnRestartedListener listener);
+};
+
+// Use the <code>chrome.app.runtime</code> API to manage the app lifecycle.
+// The app runtime manages app installation, controls the event page, and can
+// shut down the app at anytime.
+interface Runtime {
+  // Fired when an embedding app requests to embed this app. This event is
+  // only available on dev channel with the flag --enable-app-view.
+  static attribute OnEmbedRequestedEvent onEmbedRequested;
+
+  // Fired when an app is launched from the launcher.
+  static attribute OnLaunchedEvent onLaunched;
+
+  // Fired at Chrome startup to apps that were running when Chrome last shut
+  // down, or when apps have been requested to restart from their previous
+  // state for other reasons (e.g. when the user revokes access to an app's
+  // retained files the runtime will restart the app). In these situations if
+  // apps do not have an <code>onRestarted</code> handler they will be sent
+  // an <code>onLaunched </code> event instead.
+  static attribute OnRestartedEvent onRestarted;
+};
+
+partial interface App {
+  static attribute Runtime runtime;
+};
+
+partial interface Browser {
+  static attribute App app;
+};

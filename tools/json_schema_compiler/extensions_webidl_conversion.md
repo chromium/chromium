@@ -55,6 +55,24 @@ dictionary MyDictionary {
 };
 ```
 
+### Operations on Dictionaries to Callbacks
+Some dictionaries previously would define static operations on them to indicate they had a callable function. These are now instead defined using callbacks, which are defined on the top level of the IDL file and then referenced as the type for the dictionary member. Any descriptive comment above the old operation definition should remain above the new dictionary member that replaced it.
+e.g.
+```
+dictionary AutomationEvent {
+  // Function description.
+  static void stopPropagation();
+};
+```
+Would become:
+```
+callback StopPropagationCallback = undefined();
+dictionary AutomationEvent {
+  // Function description.
+  required StopPropagationCallback stopPropagation;
+};
+```
+
 ### Enums
 Enums are moved outside the main interface to the top level of the file. Their internal structure remains very similar, but the values are instead defined with quoted strings e.g.
 ```
