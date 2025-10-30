@@ -12,6 +12,16 @@
 
 namespace net {
 
+// Socket pools update their state before every socket allocation and release.
+enum class SocketPoolState {
+
+  // Uncapped pools can allocate or release sockets.
+  kUncapped,
+
+  // Capped pools cannot allocate sockets, but can release them.
+  kCapped
+};
+
 // This class encapsulates the logic for the additional TCP Socket Pool capacity
 // allocated (and randomized) to prevent cross-site state tracking.
 // See crbug.com/415691664 for more details.
@@ -24,6 +34,20 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
                                                     int capacity,
                                                     double minimum,
                                                     double noise);
+
+  // Calculates the next `SocketPoolState` before the allocation of a socket.
+  // `sockets_in_use` should be counted pre-allocation and `socket_soft_cap`
+  // is likely being passed down from `g_max_sockets_per_pool`.
+  SocketPoolState NextStateBeforeAllocation(SocketPoolState current_state,
+                                            int sockets_in_use,
+                                            int socket_soft_cap) const;
+
+  // Calculates the next `SocketPoolState` after the release of a socket.
+  // `sockets_in_use` should be counted post-release and `socket_soft_cap`
+  // is likely being passed down from `g_max_sockets_per_pool`.
+  SocketPoolState NextStateAfterRelease(SocketPoolState current_state,
+                                        int sockets_in_use,
+                                        int socket_soft_cap) const;
 
   explicit operator std::string() const {
     return base::StringPrintf(
@@ -38,13 +62,47 @@ class NET_EXPORT_PRIVATE SocketPoolAdditionalCapacity {
   }
 
  private:
+  enum class SocketPoolAction { kAllocation, kRelease };
+
+  static void LogStateTransition(SocketPoolAction action,
+                                 SocketPoolState current_state,
+                                 SocketPoolState next_state,
+                                 int sockets_in_use);
+
   SocketPoolAdditionalCapacity() = default;
   SocketPoolAdditionalCapacity(double base,
                                int capacity,
                                double minimum,
-                               double noise)
-      : base_(base), capacity_(capacity), minimum_(minimum), noise_(noise) {}
+                               double noise);
 
+  // Helper for NextStateBeforeAllocation to avoid duplicate logging code.
+  SocketPoolState NextStateBeforeAllocationImpl(SocketPoolState current_state,
+                                                int sockets_in_use,
+                                                int socket_soft_cap) const;
+
+  // Helper for NextStateAfterRelease to avoid duplicate logging code.
+  SocketPoolState NextStateAfterReleaseImpl(SocketPoolState current_state,
+                                            int sockets_in_use,
+                                            int socket_soft_cap) const;
+
+  // This helper function for `NextStateBefore(Allocation|Release)` handles
+  // common logic. Returns a SocketPoolState if the common logic is controlling,
+  // and std::nullopt otherwise.
+  std::optional<SocketPoolState> NextStateCommonImpl(int sockets_in_use,
+                                                     int socket_soft_cap) const;
+
+  // Unlike other functions in this class, this one will CHECK on invalid
+  // constants and inputs. As such, all validation must be performed before we
+  // get to this stage. The actual way this function rolls dice are quite
+  // complex, please see the implementation for details.
+  // `actions_taken` must be between 0 and `capacity_`, and is the
+  // amount of `capacity_` already allocated for `NextStateBeforeAllocationImpl`
+  // and the amount of `capacity_` free for `NextStateAfterReleaseImpl`. This is
+  // done to ensure the probability converges toward 1 correctly for each.
+  bool ShouldTransitionState(SocketPoolAction action, int actions_taken) const;
+
+  // See the implementation of `ShouldTransitionState` for how these constants
+  // are used and bound in calculating the probability of a state transition.
   double base_ = 0.0;
   int capacity_ = 0;
   double minimum_ = 0.0;

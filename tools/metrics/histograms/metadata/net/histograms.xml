@@ -205,6 +205,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Success" summary="Operation succeeded"/>
 </variants>
 
+<variants name="TcpSocketPoolLimitRandomizationAction">
+  <variant name="Allocation" summary="New Socket Allocation"/>
+  <variant name="Release" summary="Existing Socket Release"/>
+</variants>
+
+<variants name="TcpSocketPoolLimitRandomizationState">
+  <variant name="Capped" summary="Capped Pool"/>
+  <variant name="Uncapped" summary="Uncapped Pool"/>
+</variants>
+
 <variants name="TotalTimeToHttpsGoogle">
   <variant name=".Secure.Quic"
       summary="Recorded for Google servers (https) only when QUIC is used."/>
@@ -8369,6 +8379,56 @@ chromium-metrics-reviews@google.com.
     <variant name="Failure" summary="Socket failed to connect."/>
     <variant name="Success" summary="Socket did connect."/>
   </token>
+</histogram>
+
+<histogram name="Net.TcpSocketPoolLimitRandomization.Error"
+    enum="SocketPoolAdditionalCapacityError" expires_after="2026-01-28">
+  <owner>arichiv@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    Records when SocketPoolAdditionalCapacity is constructed with invalid
+    constants, or when transitions are calculated with invalid parameters. Most
+    errors cannot cause exits as the code path is critical, so we just log and
+    take a low-risk route.
+
+    This data is used to validate proper behavior of the probability function.
+
+    See crbug.com/415691664 for more details.
+  </summary>
+</histogram>
+
+<histogram name="Net.TcpSocketPoolLimitRandomization.Probability.{Action}"
+    units="%" expires_after="2026-01-28">
+  <owner>arichiv@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    Records the probability of a state transition returned when a socket is
+    having action, {Action}, performed.
+
+    This data is used to validate proper behavior of the probability function.
+
+    See crbug.com/415691664 for more details.
+  </summary>
+  <token key="Action" variants="TcpSocketPoolLimitRandomizationAction"/>
+</histogram>
+
+<histogram
+    name="Net.TcpSocketPoolLimitRandomization.Transition.{Action}.{PastState}To{NextState}"
+    units="sockets" expires_after="2026-01-28">
+  <owner>arichiv@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    Records the number of active sockets at the time the new state for the
+    socket pool is calculated. The state {PastState} was the behavior before the
+    action, {Action}, and the state {NextState} defines the behavior after.
+
+    This data is used to validate proper behavior of the probability function.
+
+    See crbug.com/415691664 for more details.
+  </summary>
+  <token key="Action" variants="TcpSocketPoolLimitRandomizationAction"/>
+  <token key="PastState" variants="TcpSocketPoolLimitRandomizationState"/>
+  <token key="NextState" variants="TcpSocketPoolLimitRandomizationState"/>
 </histogram>
 
 <histogram

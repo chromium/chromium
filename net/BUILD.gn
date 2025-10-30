@@ -3152,6 +3152,7 @@ target(_test_target_type, "net_unittests") {
     "PickleTest.FuzzRoundTrip",
     "QuicheHostnameUtilsFuzzTest.FuzzPropertyNormalizationIsIdempotentForValidSni",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
+    "SocketPoolAdditionalCapacityTest.ValidateRandomizedInputs",
     "TransportParametersFuzzTest.ParseTransportParametersDoesNotCrash",
     "UrlUnescapeIteratorTest.SameOutputAsUnescapePercentEncodedUrl",
   ]
