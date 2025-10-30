@@ -250,14 +250,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/453856709): Remove when we determine how to ensure
   // SitePerProcess is enabled for all necessary or eligible Android devices.
   feature_overrides.EnableFeature(::features::kSitePerProcess);
-
-  // Enable all tabs to have WebContents at all times for desktop platforms.
-  // TODO(crbug.com/448420873): Remove once we enable this feature for all form
-  // factors. This is currently blocked by performance regressions on low-end
-  // Android devices.
-  feature_overrides.EnableFeature(features::kWebContentsDiscard);
-  feature_overrides.EnableFeature(chrome::android::kTabFreezingUsesDiscard);
-  feature_overrides.EnableFeature(chrome::android::kLoadAllTabsAtStartup);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
