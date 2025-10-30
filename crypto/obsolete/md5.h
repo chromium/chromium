@@ -86,6 +86,11 @@ namespace media::test {
 crypto::obsolete::Md5 MakeMd5HasherForVideoFrameValidation();
 }
 
+namespace nearby {
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForNearby(
+    std::string_view input);
+}
+
 namespace net {
 crypto::obsolete::Md5 MakeMd5HasherForHttpVaryData();
 }
@@ -177,6 +182,8 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 drive::MakeMd5HasherForDriveFsAccount();
   friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+  friend std::array<uint8_t, kSize> nearby::Md5ForNearby(
+      std::string_view input);
   friend Md5 policy::MakeMd5HasherForPolicyEventId();
   friend std::string remoting::GetHostHash();
   friend std::string safe_browsing::Md5AsHexForBodyDigest(

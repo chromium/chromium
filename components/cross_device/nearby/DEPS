@@ -1,5 +1,5 @@
 include_rules = [
-  '+crypto/hash.h',
+  '+crypto',
   '+third_party/abseil-cpp/absl/time/time.h',
   '+third_party/nearby/src/internal/platform/implementation/crypto.h',
   '+third_party/nearby/src/internal/platform/implementation/system_clock.h',
