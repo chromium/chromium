@@ -348,8 +348,6 @@ ExternalVkImageBacking::CreateWithPixmap(
     gfx::BufferUsage buffer_usage) {
 #if BUILDFLAG(IS_OZONE)
   // Create a pixmap.
-  gfx::BufferFormat buffer_format =
-      viz::SharedImageFormatToBufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
   if (context_state->vk_context_provider()) {
     device_queue = context_state->vk_context_provider()->GetDeviceQueue();
@@ -357,8 +355,8 @@ ExternalVkImageBacking::CreateWithPixmap(
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(surface_handle, device_queue, size,
-                               buffer_format, buffer_usage);
+          ->CreateNativePixmap(surface_handle, device_queue, size, format,
+                               buffer_usage);
   if (!pixmap) {
     DLOG(ERROR) << "Failed to create native pixmap";
     return nullptr;
