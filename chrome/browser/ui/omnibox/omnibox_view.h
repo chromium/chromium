@@ -223,6 +223,12 @@ class OmniboxView {
   // Hides a virtual keyboard or alternate input view if enabled.
   virtual void HideImeIfNeeded();
 
+  // Shows the Omnibox popup and transitions to the AI-Mode compose plate.
+  // Note: WebUI-only.
+  virtual void ShowAiModeInPopup();
+
+  virtual bool IsAiModeInPopup() const;
+
  protected:
   // Tracks important state that may change between OnBeforePossibleChange() and
   // OnAfterPossibleChange().

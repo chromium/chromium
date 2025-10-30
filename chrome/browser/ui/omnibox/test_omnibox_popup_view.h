@@ -18,6 +18,8 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void ProvideButtonFocusHint(size_t line) override {}
   void OnDragCanceled() override {}
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override {}
+  void OpenAiMode() override {}
+  bool IsAiModeOpen() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_TEST_OMNIBOX_POPUP_VIEW_H_

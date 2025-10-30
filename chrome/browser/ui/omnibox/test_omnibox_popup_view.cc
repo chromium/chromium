@@ -7,3 +7,7 @@
 bool TestOmniboxPopupView::IsOpen() const {
   return false;
 }
+
+bool TestOmniboxPopupView::IsAiModeOpen() const {
+  return false;
+}

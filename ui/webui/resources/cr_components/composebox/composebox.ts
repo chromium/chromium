@@ -318,6 +318,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  focusInput() {
+    this.$.input.focus();
+  }
+
   getText() {
     return this.input_;
   }

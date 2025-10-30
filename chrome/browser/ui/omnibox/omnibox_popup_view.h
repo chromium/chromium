@@ -64,6 +64,12 @@ class OmniboxPopupView {
   virtual std::u16string_view GetAccessibleButtonTextForResult(
       size_t line) const;
 
+  // Opens up the AI-Mode compose plate inside the popup view.
+  virtual void OpenAiMode() = 0;
+
+  // Whether AI-Mode is active in the popup.
+  virtual bool IsAiModeOpen() const = 0;
+
   // Adds a callback that will be called when the popup window becomes visible.
   base::CallbackListSubscription AddOpenListener(
       base::RepeatingClosure callback);

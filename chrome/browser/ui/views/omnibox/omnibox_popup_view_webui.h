@@ -21,7 +21,7 @@
 class LocationBarView;
 class OmniboxController;
 class OmniboxViewViews;
-class OmniboxPopupPresenter;
+class OmniboxPopupPresenterBase;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView {
  public:
@@ -39,6 +39,8 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   void ProvideButtonFocusHint(size_t line) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
+  void OpenAiMode() override;
+  bool IsAiModeOpen() const override;
 
  protected:
   friend class OmniboxPopupViewWebUITest;
@@ -46,6 +48,8 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
                            PopupLoadsAndAcceptsCalls);
 
  private:
+  void UpdatePopupAppearanceInternal(bool ai_mode);
+
   // Time when this instance was constructed, or null after use for histogram.
   base::TimeTicks construction_time_;
 
@@ -56,7 +60,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView {
   raw_ptr<LocationBarView> location_bar_view_;
 
   // The presenter that manages its own widget and WebUI presentation.
-  std::unique_ptr<OmniboxPopupPresenter> presenter_;
+  std::unique_ptr<OmniboxPopupPresenterBase> presenter_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_WEBUI_H_

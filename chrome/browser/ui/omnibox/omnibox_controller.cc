@@ -113,20 +113,22 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
   DCHECK(controller == autocomplete_controller_.get());
 
   const bool popup_was_open = edit_model_->PopupIsOpen();
-  if (default_match_changed) {
-    // The default match has changed, we need to let the OmniboxEditModel know
-    // about new inline autocomplete text (blue highlight).
-    if (autocomplete_controller_->result().default_match()) {
-      edit_model_->OnCurrentMatchChanged();
+  if (!edit_model_->PopupInAiMode()) {
+    if (default_match_changed) {
+      // The default match has changed, we need to let the OmniboxEditModel know
+      // about new inline autocomplete text (blue highlight).
+      if (autocomplete_controller_->result().default_match()) {
+        edit_model_->OnCurrentMatchChanged();
+      } else {
+        edit_model_->OnPopupResultChanged();
+        edit_model_->OnPopupDataChanged(
+            std::u16string(),
+            /*is_temporary_text=*/false, std::u16string(), std::u16string(),
+            std::u16string(), false, std::u16string(), AutocompleteMatch());
+      }
     } else {
       edit_model_->OnPopupResultChanged();
-      edit_model_->OnPopupDataChanged(
-          std::u16string(),
-          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
-          std::u16string(), false, std::u16string(), AutocompleteMatch());
     }
-  } else {
-    edit_model_->OnPopupResultChanged();
   }
 
   const bool popup_is_open = edit_model_->PopupIsOpen();

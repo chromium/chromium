@@ -50,7 +50,7 @@ export class OmniboxAimAppElement extends CrLitElement {
 
     const composebox = this.shadowRoot.querySelector('cr-composebox');
     assert(composebox);
-    composebox.focus();
+    composebox.focusInput();
   }
 }
 
