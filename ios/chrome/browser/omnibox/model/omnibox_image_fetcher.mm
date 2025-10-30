@@ -79,7 +79,7 @@ const CGFloat kFaviconIconSize = 16;
       pageURL, kFaviconIconSize, kFaviconIconSize,
       /*fallback_to_google_server=*/false,
       ^(FaviconAttributes* attributes, bool cached) {
-        if (attributes.faviconImage && !attributes.usesDefaultImage) {
+        if (attributes.faviconImage) {
           completion(attributes.faviconImage);
         }
       });

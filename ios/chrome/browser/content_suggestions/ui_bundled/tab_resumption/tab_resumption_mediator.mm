@@ -1084,14 +1084,15 @@ class TabResumptionMediatorProxy {
       item.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true,
       ^(FaviconAttributes* attributes, bool cached) {
-        [weakSelf faviconReceived:attributes forItem:item];
+        [weakSelf faviconReceived:attributes cached:cached forItem:item];
       });
 }
 
 // The favicon has been received. Display it.
 - (void)faviconReceived:(FaviconAttributes*)attributes
+                 cached:(BOOL)cached
                 forItem:(TabResumptionItem*)item {
-  if (!attributes.usesDefaultImage) {
+  if (item.faviconImage || !cached) {
     if ([UIImagePNGRepresentation(item.faviconImage)
             isEqual:UIImagePNGRepresentation(attributes.faviconImage)]) {
       return;

@@ -112,7 +112,7 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
           if (!weak_token) {
             return;
           }
-          if (attributes.usesDefaultImage || !attributes.faviconImage) {
+          if (!attributes.faviconImage) {
             UpdateFaviconsGrid(favicons_grid, favicon, index);
           } else {
             UpdateFaviconsGrid(favicons_grid, attributes.faviconImage, index);
@@ -196,7 +196,7 @@ void TabGroupFaviconsGridConfigurator::FetchFaviconsGrid(
             return;
           }
           // Synchronously returned default favicon.
-          if (attributes.usesDefaultImage) {
+          if (cached && !attributes.faviconImage) {
             UpdateFaviconsGrid(favicons_grid, favicon, index);
             return;
           }

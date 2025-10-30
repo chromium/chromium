@@ -133,10 +133,11 @@ TEST_P(FaviconLoaderImplTest, FaviconForPageUrl) {
                       ++counter;
                       if (counter == 1) {
                         EXPECT_TRUE(cached);
+                        EXPECT_FALSE(attrs.faviconImage);
                       } else {
                         EXPECT_FALSE(cached);
+                        EXPECT_TRUE(attrs.faviconImage);
                       }
-                      EXPECT_TRUE(attrs.faviconImage);
                     },
                     std::ref(call_count)));
   EXPECT_GE(call_count, 1);
@@ -151,11 +152,14 @@ TEST_P(FaviconLoaderImplTest, FallbackIcon) {
                     [](int& counter, FaviconAttributes* attrs, bool cached) {
                       ++counter;
                       if (counter == 1) {
-                        // Check that a placeholder image is received.
-                        EXPECT_TRUE(attrs.faviconImage);
+                        // Check that a monogram is received.
+                        EXPECT_FALSE(attrs.faviconImage);
+                        EXPECT_TRUE(attrs.monogramString);
+                        EXPECT_TRUE(attrs.textColor);
+                        EXPECT_TRUE(attrs.backgroundColor);
                         EXPECT_TRUE(cached);
                       } else if (counter == 2) {
-                        // Check that a monogram is used as a fallback.
+                        // Check that the monogram is used as a fallback.
                         EXPECT_FALSE(attrs.faviconImage);
                         EXPECT_TRUE(attrs.monogramString);
                         EXPECT_TRUE(attrs.textColor);

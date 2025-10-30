@@ -236,7 +236,7 @@ void PlaceholderService::PerformIconFetch(const TemplateURL* template_url,
       [](base::WeakPtr<PlaceholderService> weak_self,
          TemplateURLID template_url_id, CGFloat icon_point_size,
          FaviconAttributes* favicon_result, bool cached) {
-        if (!favicon_result.faviconImage || favicon_result.usesDefaultImage) {
+        if (!favicon_result.faviconImage) {
           return;
         }
         UIImage* favicon = favicon_result.faviconImage;

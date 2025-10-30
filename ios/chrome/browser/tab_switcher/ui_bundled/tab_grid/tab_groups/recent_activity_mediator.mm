@@ -264,9 +264,6 @@ const int kMaxNumberOfLogs = 5;
       URL.gurl, kFaviconSize, kFaviconSize,
       /*fallback_to_google_server=*/false,
       ^(FaviconAttributes* attributes, bool cached) {
-        if (attributes.usesDefaultImage) {
-          return;
-        }
         if (attributes.faviconImage) {
           completion(attributes, cached);
         }

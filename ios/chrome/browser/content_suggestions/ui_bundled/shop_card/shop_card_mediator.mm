@@ -300,7 +300,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
-  if (attributes.faviconImage && !attributes.usesDefaultImage) {
+  if (attributes.faviconImage) {
     self->_shopCardItem.shopCardData.faviconImage = attributes.faviconImage;
     if (_faviconCallbackCalledOnce) {
       [_faviconConsumer faviconCompleted:attributes.faviconImage];

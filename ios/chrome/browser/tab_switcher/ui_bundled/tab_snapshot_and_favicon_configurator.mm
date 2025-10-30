@@ -48,7 +48,7 @@ void OnFaviconFetched(TabSnapshotAndFavicon* tab_snapshot_and_favicon,
                       FaviconAttributes* attributes,
                       bool cached) {
   // Nothing to do if the favicon returned is the default favicon.
-  if (attributes.usesDefaultImage) {
+  if (cached && !attributes.faviconImage) {
     return;
   }
 

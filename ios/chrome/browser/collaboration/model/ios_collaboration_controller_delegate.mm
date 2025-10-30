@@ -721,7 +721,8 @@ void IOSCollaborationControllerDelegate::FetchPreviewItems(
         /*fallback_to_google_server=*/true,
         ^(FaviconAttributes* attributes, bool cached) {
           // Skip synchronously returned default favicon.
-          if (completion_block_executed || attributes.usesDefaultImage) {
+          if (completion_block_executed ||
+              (cached && !attributes.faviconImage)) {
             return;
           }
           if (attributes.faviconImage) {

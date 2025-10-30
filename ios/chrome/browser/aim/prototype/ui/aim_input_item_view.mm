@@ -78,6 +78,11 @@ const CGFloat kTitleCloseButtonPadding = 6.0;
     if (item.type == AIMInputItemType::kAIMInputItemTypeFile) {
       _leadingIconImageView.image =
           DefaultSymbolWithPointSize(kTextDocument, kLeadingIconSize);
+    } else if (item.type == AIMInputItemType::kAIMInputItemTypeTab) {
+      _leadingIconImageView.image =
+          item.leadingIconImage
+              ?: DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
+                                            kLeadingIconSize);
     } else {
       _leadingIconImageView.image = item.leadingIconImage;
     }

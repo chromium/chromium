@@ -402,7 +402,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 }
 
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
-  if (attributes.faviconImage && !attributes.usesDefaultImage) {
+  if (attributes.faviconImage) {
     self->_priceTrackingPromoItem.faviconImage = attributes.faviconImage;
     if (_faviconCallbackCalledOnce) {
       [_faviconConsumer

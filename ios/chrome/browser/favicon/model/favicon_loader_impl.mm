@@ -171,20 +171,6 @@ class FaviconLoaderImpl::Request {
         sizeInPoints:static_cast<int>(round(size_in_points_))];
   }
 
-  // Returns the default fallback favicon if no icon is found in the cache.
-  FaviconAttributes* fallback() const {
-    switch (type_) {
-      case Type::kFaviconForPageUrl:
-      case Type::kFaviconForPageUrlWithFallback:
-      case Type::kFaviconForPageUrlOrHost:
-        return [FaviconAttributes attributesWithDefaultImage];
-
-      case Type::kFaviconForIconUrl:
-        return [FaviconAttributes
-            attributesWithImage:[UIImage imageNamed:@"default_world_favicon"]];
-    }
-  }
-
   // Invokes the request's completion block with `attributes`.
   void completion(FaviconAttributes* attributes, bool cached) {
     completion_(attributes, cached);
@@ -263,14 +249,29 @@ base::WeakPtr<FaviconLoader> FaviconLoaderImpl::AsWeakPtr() {
 void FaviconLoaderImpl::FetchFavicon(Request request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // First check whether the favicon is present in the cache.
-  if (FaviconAttributes* cached_value = GetCachedAttributes(request.key())) {
+  FaviconAttributes* cached_value = GetCachedAttributes(request.key());
+
+  // First check whether the favicon is present in the cache. If the cache
+  // doesn't contain an image, it is only worth continuing if there is a
+  // fallback mechanism.
+  if (cached_value &&
+      (cached_value.faviconImage ||
+       request.type() != Request::Type::kFaviconForPageUrlWithFallback)) {
     request.completion(cached_value, /*cached*/ true);
     return;
   }
 
+  FaviconAttributes* attributes = [FaviconAttributes
+      attributesWithMonogram:base::SysUTF16ToNSString(
+                                 favicon::GetFallbackIconText(request.url()))
+                   textColor:[UIColor colorWithWhite:
+                                          kFallbackIconDefaultTextColorGrayscale
+                                               alpha:1]
+             backgroundColor:UIColor.clearColor
+      defaultBackgroundColor:YES];
+
   // If the favicon was not cached, then return a fallback image synchronously.
-  request.completion(request.fallback(), /*cached*/ true);
+  request.completion(attributes, /*cached*/ true);
 
   // Fetch asynchronously a better favicon using the LargeIconServvice.
   DCHECK(large_icon_service_);
@@ -350,8 +351,7 @@ void FaviconLoaderImpl::OnFaviconFetched(
                                           kFallbackIconDefaultTextColorGrayscale
                                                alpha:1]
              backgroundColor:UIColor.clearColor
-      defaultBackgroundColor:result.fallback_icon_style->
-                             is_default_background_color];
+      defaultBackgroundColor:YES];
   request.completion(attributes, /*cached*/ false);
 }
 
