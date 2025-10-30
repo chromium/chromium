@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFillingRequest, GetPinCandidatesOptions, HostCapability, Journal, MetricUserInputReactionType, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -719,6 +719,15 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientRequestToShowAutofillSuggestionsDialog: {
+    request: {
+      request: SelectAutofillSuggestionsDialogRequestPrivate,
+    },
+    response: {
+      response: SelectAutofillSuggestionsDialogResponsePrivate,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 
@@ -1002,6 +1011,41 @@ export enum SelectCredentialDialogErrorReason {
 export declare interface SelectCredentialDialogResponsePrivate extends
     SelectCredentialDialogResponse {
   errorReason?: SelectCredentialDialogErrorReason;
+}
+
+export declare interface AutofillSuggestionPrivate extends
+    Omit<AutofillSuggestion, 'getIcon'> {
+  icon?: RgbaImage;
+}
+
+export declare interface FormFillingRequestPrivate extends
+    Omit<FormFillingRequest, 'suggestions'> {
+  suggestions: AutofillSuggestionPrivate[];
+}
+
+export declare interface SelectAutofillSuggestionsDialogRequestPrivate extends
+    Omit<
+        SelectAutofillSuggestionsDialogRequest,
+        'onDialogClosed'|'formFillingRequests'> {
+  taskId: number;
+  formFillingRequests: FormFillingRequestPrivate[];
+}
+
+// LINT.IfChange(SelectAutofillSuggestionsDialogErrorReason)
+/** Reasons why the autofill suggestion selection dialog request failed. */
+export enum SelectAutofillSuggestionsDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  DIALOG_PROMISE_NO_SUBSCRIBER = 0,
+  // The requested task id did not match the response task id.
+  MISMATCHED_TASK_ID = 1,
+}
+// LINT.ThenChange(//chrome/common/actor_webui.mojom:SelectAutofillSuggestionsDialogErrorReason)
+
+export declare interface SelectAutofillSuggestionsDialogResponsePrivate extends
+    SelectAutofillSuggestionsDialogResponse {
+  taskId: number;
+  errorReason?: SelectAutofillSuggestionsDialogErrorReason;
 }
 
 export declare interface UserConfirmationDialogRequestPrivate extends

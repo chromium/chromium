@@ -1185,6 +1185,16 @@ interface WebClient {
       actor.webui.mojom.SelectCredentialDialogRequest request)
       => (actor.webui.mojom.SelectCredentialDialogResponse response);
 
+  // Requests the web client to show a dialog to the user to select autofill
+  // suggestions. The web client should show the dialog and wait for the user
+  // to interact with it.
+  //
+  // Selections for multiple forms can be requested by populating multiple
+  // FormFillingRequest objects.
+  RequestToShowAutofillSuggestionsDialog(
+    actor.webui.mojom.SelectAutofillSuggestionsDialogRequest request)
+      => (actor.webui.mojom.SelectAutofillSuggestionsDialogResponse response);
+
   // Requests the web client to show a dialog for deterministic user
   // confirmation. This should occur when Chrome detects the actor
   // engaging in security-sensitive operations that require user permission.

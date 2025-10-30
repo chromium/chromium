@@ -80,6 +80,68 @@ struct SelectCredentialDialogResponse {
   int32? selected_credential_id;
 };
 
+//
+// Autofill suggestion selection dialog.
+//
+
+// An autofill suggestion for actor form filling. Mapped from
+// autofill::ActorSuggestion in
+// components/autofill/core/browser/actor_form_filling_types.h
+struct AutofillSuggestion {
+  string id;
+  string title;
+  string details;
+  skia.mojom.BitmapN32? icon;
+};
+
+// A request to fill a form includes the requested data type and available
+// options.
+struct FormFillingRequest {
+  // See the FormFillingRequest.RequestedData enum in actions_data.proto.
+  int64 requested_data;
+  // The list of suggestions to show for this request.
+  array<AutofillSuggestion> suggestions;
+};
+
+struct SelectAutofillSuggestionsDialogRequest {
+  // The task ID that is requesting the autofill suggestion selection.
+  int32 task_id;
+  // The list of requested forms to be filled.
+  array<FormFillingRequest> form_filling_requests;
+};
+
+// LINT.IfChange(SelectAutofillSuggestionsDialogErrorReason)
+enum SelectAutofillSuggestionsDialogErrorReason {
+  // The hosting WebUI received the request, but the web client has not
+  // subscribed to the request yet. We couldn't show the dialog in this case.
+  kDialogPromiseNoSubscriber = 0,
+  // The requested task id did not match the response task id.
+  kMismatchedTaskId = 1,
+};
+// LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:SelectAutofillSuggestionsDialogErrorReason)
+
+struct FormFillingResponse {
+  // The ID corresponding to the user selected suggestion.
+  string selected_suggestion_id;
+};
+
+// Contains either an error or the users' response to the offered autofill
+// suggestions.
+union SelectAutofillSuggestionsDialogResult {
+  SelectAutofillSuggestionsDialogErrorReason error_reason;
+  // The responses to each FormFillingRequest. The order of this list
+  // corresponds to the order of `requests` in the
+  // `SelectAutofillSuggestionsDialogRequest`.
+  array<FormFillingResponse> selected_suggestions;
+};
+
+struct SelectAutofillSuggestionsDialogResponse {
+  // The response is associated with the request that has the same task ID.
+  int32 task_id;
+  // The result will be either an error or the selected suggestion responses.
+  SelectAutofillSuggestionsDialogResult result;
+};
+
 // Contains information about the confirmation request
 // that also encodes what type of request is being sent.
 union UserConfirmationDialogPayload {

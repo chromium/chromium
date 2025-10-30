@@ -15,7 +15,7 @@ import {AlphaType} from '//resources/mojo/skia/public/mojom/image_info.mojom-web
 import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from '../actor_webui.mojom-webui.js';
+import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from '../actor_webui.mojom-webui.js';
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
@@ -30,7 +30,7 @@ import {OneShotTimer} from '../timer.js';
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {AdditionalContextPartPrivate, AdditionalContextPrivate, AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
+import type {AdditionalContextPartPrivate, AdditionalContextPrivate, AllRequestTypesWithoutReturn, AllRequestTypesWithReturn, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientInitialStatePrivate, WebClientRequestTypes} from './request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, HOST_REQUEST_TYPES, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -433,6 +433,18 @@ class WebClientImpl implements WebClientInterface {
   notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
     this.sender.requestNoResponse(
         'glicWebClientNotifyActOnWebCapabilityChanged', {canActOnWeb});
+  }
+
+  async requestToShowAutofillSuggestionsDialog(
+      request: SelectAutofillSuggestionsDialogRequestMojo):
+      Promise<{response: SelectAutofillSuggestionsDialogResponseMojo}> {
+    const clientResponse = await this.sender.requestWithResponse(
+        'glicWebClientRequestToShowAutofillSuggestionsDialog',
+        {request: selectAutofillSuggestionsDialogRequestToClient(request)});
+    return {
+      response: selectAutofillSuggestionsDialogResponseToMojo(
+          clientResponse.response),
+    };
   }
 }
 
@@ -2307,8 +2319,49 @@ function navigationConfirmationResponseToMojo(
     };
   }
   return {
-    result: {permissionGranted: response.permissionGranted},
+    result: {
+      permissionGranted: response.permissionGranted,
+    },
   };
+}
+
+function selectAutofillSuggestionsDialogRequestToClient(
+    request: SelectAutofillSuggestionsDialogRequestMojo):
+    SelectAutofillSuggestionsDialogRequestPrivate {
+  return {
+    ...request,
+    formFillingRequests: request.formFillingRequests.map(
+        r => ({
+          ...r,
+          requestedData: Number(r.requestedData),
+          suggestions: r.suggestions.map(
+              s => ({
+                ...s,
+                icon: s.icon ? bitmapN32ToRGBAImage(s.icon) : undefined,
+              })),
+        })),
+  };
+}
+
+function selectAutofillSuggestionsDialogResponseToMojo(
+    response: SelectAutofillSuggestionsDialogResponsePrivate):
+    SelectAutofillSuggestionsDialogResponseMojo {
+  if (response.errorReason) {
+    return {
+      taskId: response.taskId,
+      result: {
+        errorReason: response.errorReason as number as
+            SelectAutofillSuggestionsDialogErrorReasonMojo,
+      },
+    };
+  } else {
+    return {
+      taskId: response.taskId,
+      result: {
+        selectedSuggestions: response.selectedSuggestions,
+      },
+    };
+  }
 }
 
 function taskOptionsToMojo(taskOptions?: TaskOptions): TaskOptionsMojo|null {

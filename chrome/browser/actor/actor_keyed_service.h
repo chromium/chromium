@@ -20,6 +20,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
 #include "chrome/common/buildflags.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -165,6 +166,30 @@ class ActorKeyedService : public KeyedService {
       TaskId request_task_id,
       webui::mojom::SelectCredentialDialogResponsePtr response);
 
+  // Allows the subscribers to be notified when an autofill suggestion prompt
+  // is requested by a tool.
+  using AutofillSuggestionsSelectedCallback = base::RepeatingCallback<void(
+      webui::mojom::SelectAutofillSuggestionsDialogResponsePtr)>;
+  using RequestToShowAutofillSuggestionsDialogSubscriberCallback =
+      base::RepeatingCallback<void(
+          TaskId,
+          const std::vector<autofill::ActorFormFillingRequest>&,
+          AutofillSuggestionsSelectedCallback)>;
+  base::CallbackListSubscription
+  AddRequestToShowAutofillSuggestionsDialogSubscriberCallback(
+      RequestToShowAutofillSuggestionsDialogSubscriberCallback callback);
+
+  // Notifies the subscribers that an autofill suggestion selection prompt is
+  // requested for the given task.
+  void NotifyRequestToShowAutofillSuggestionsDialog(
+      TaskId task_id,
+      const std::vector<autofill::ActorFormFillingRequest>& requests);
+
+  // Callback for when an autofill suggestion is selected.
+  void OnAutofillSuggestionsSelected(
+      TaskId request_task_id,
+      webui::mojom::SelectAutofillSuggestionsDialogResponsePtr response);
+
   using UserConfirmationDialogCallback = base::RepeatingCallback<void(
       webui::mojom::UserConfirmationDialogResponsePtr)>;
   using RequestToShowUserConfirmationDialogSubscriberCallback =
@@ -264,6 +289,10 @@ class ActorKeyedService : public KeyedService {
   base::RepeatingCallbackList<
       RequestToShowCredentialSelectionDialogSubscriberCallback::RunType>
       request_to_show_credential_selection_dialog_callback_list_;
+
+  base::RepeatingCallbackList<
+      RequestToShowAutofillSuggestionsDialogSubscriberCallback::RunType>
+      request_to_show_autofill_suggestions_dialog_callback_list_;
 
   base::RepeatingCallbackList<
       RequestToShowUserConfirmationDialogSubscriberCallback::RunType>
