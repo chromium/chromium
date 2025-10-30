@@ -19,7 +19,8 @@ class Widget;
 
 class OmniboxContextMenu : public views::MenuDelegate {
  public:
-  explicit OmniboxContextMenu(views::Widget* parent_widget);
+  explicit OmniboxContextMenu(views::Widget* parent_widget,
+                              BrowserWindowInterface* browser_window_interface);
 
   ~OmniboxContextMenu() override;
 
