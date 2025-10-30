@@ -25,12 +25,11 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
     public static final ViewSpec<View> STATUS_ICON =
             viewSpec(withId(R.id.location_bar_status_icon));
     public static final ViewSpec<UrlBar> URL_FIELD = viewSpec(UrlBar.class, withId(R.id.url_bar));
-    public static final ViewSpec<View> ACTION_CONTAINER =
-            viewSpec(withId(R.id.url_action_container));
+    public static final ViewSpec<View> LOCATION_BAR = viewSpec(withId(R.id.location_bar));
     public static final ViewSpec<View> MIC_BUTTON =
-            ACTION_CONTAINER.descendant(withId(R.id.mic_button));
+            LOCATION_BAR.descendant(withId(R.id.mic_button));
     public static final ViewSpec<View> DELETE_BUTTON =
-            ACTION_CONTAINER.descendant(withId(R.id.delete_button));
+            LOCATION_BAR.descendant(withId(R.id.delete_button));
     private final boolean mIncognito;
     private final FakeOmniboxSuggestions mFakeSuggestions;
     public ViewElement<UrlBar> urlBarElement;
@@ -56,10 +55,6 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
         if (!mIncognito) {
             // Regular tab
             urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
-            actionContainerElement =
-                    declareView(
-                            ACTION_CONTAINER,
-                            ViewElement.newOptions().unscoped().displayingAtLeast(50).build());
             micButtonElement =
                     declareView(
                             MIC_BUTTON,
@@ -68,7 +63,6 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
         } else {
             // Incognito tab
             urlBarElement = declareView(URL_FIELD, ViewElement.unscopedOption());
-            declareNoView(ACTION_CONTAINER);
             declareNoView(MIC_BUTTON);
             declareNoView(DELETE_BUTTON);
         }

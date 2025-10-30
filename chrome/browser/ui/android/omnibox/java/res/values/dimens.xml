@@ -40,6 +40,7 @@ found in the LICENSE file.
     <dimen name="url_bar_vertical_padding">
         @dimen/location_bar_vertical_margin
     </dimen>
+    <dimen name="url_bar_end_padding">8dp</dimen>
     <dimen name="url_bar_vertical_margin">3dp</dimen>
 
     <!-- Bottom Toolbar -->
@@ -80,7 +81,8 @@ found in the LICENSE file.
     <dimen name="location_bar_min_url_width">68dp</dimen>
     <dimen name="location_bar_min_verbose_status_text_width">48dp</dimen>
     <dimen name="location_bar_start_padding">0dp</dimen>
-    <dimen name="location_bar_end_padding">8dp</dimen>
+    <dimen name="location_bar_end_padding">0dp</dimen>
+    <dimen name="location_bar_minimalistic_ui_threshold">160dp</dimen>
     <dimen name="fake_search_box_lateral_padding">10dp</dimen>
     <dimen name="fake_search_box_end_padding">12dp</dimen>
     <dimen name="fake_search_box_start_padding">24dp</dimen>
@@ -98,7 +100,6 @@ found in the LICENSE file.
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
     <dimen name="location_bar_url_action_offset">8dp</dimen>
     <dimen name="location_bar_url_action_offset_ntp">4dp</dimen>
-    <dimen name="location_bar_url_action_padding">0dp</dimen>
     <dimen name="location_bar_status_view_left_space_width_bigger">12dp</dimen>
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
     <dimen name="incognito_indicator_lateral_margin">8dp</dimen>

@@ -145,7 +145,6 @@ public class ToolbarPhone extends ToolbarLayout
     private ObservableSupplier<Tracker> mTrackerSupplier;
 
     private ViewGroup mToolbarButtonsContainer;
-    protected View mUrlActionContainer;
     private @MonotonicNonNull OptionalButtonCoordinator mOptionalButtonCoordinator;
     private HomeButtonDisplay mHomeButtonDisplay;
 
@@ -351,7 +350,6 @@ public class ToolbarPhone extends ToolbarLayout
                 }
             }
 
-            mUrlActionContainer = findViewById(R.id.url_action_container);
             mToolbarBackground =
                     new ColorDrawable(getToolbarColorForVisualState(VisualState.NORMAL));
 
@@ -1115,11 +1113,13 @@ public class ToolbarPhone extends ToolbarLayout
         if (!mOptionalButtonAnimationRunning) {
             boolean isUrlFocusChangeInProgressWithScrollCompleted =
                     mNtpSearchBoxScrollFraction == 1 && mUrlFocusChangeInProgress;
-            mUrlActionContainer.setTranslationX(
+
+            mLocationBar.setLocationBarButtonTranslationForNtpAnimation(
                     getUrlActionsTranslationXForExpansionAnimation(
                             isLocationBarRtl,
                             locationBarBaseTranslationX,
                             isUrlFocusChangeInProgressWithScrollCompleted));
+
             // A url expansion fraction < 1.0 fades and translates the DSE icon away from its final
             // state. If the DSE icon is always visible on the NTP, it should stay at full alpha and
             // in its final location rather than being affected by scroll offset.
@@ -2224,10 +2224,6 @@ public class ToolbarPhone extends ToolbarLayout
                         ? getFocusedLocationBarWidth(getWidth(), 0, true)
                         : mUnfocusedLocationBarLayoutWidth;
 
-        // TODO (crbug.com/430347234): Should be handled by LocationBarCoordinator. Not setting it
-        // here causes this container to be visible in first frame during unfocus.
-        int urlActionContainerVis = hasFocus ? VISIBLE : INVISIBLE;
-
         mToolbarButtonsContainer.setVisibility(toolbarBtnsVis);
         mHomeButtonDisplay.getView().setVisibility(homeBtnVis);
         getToolbarShadow().setVisibility(toolbarBtnsVis);
@@ -2236,7 +2232,9 @@ public class ToolbarPhone extends ToolbarLayout
         layoutParams.leftMargin = locationBarLeftMargin;
         layoutParams.width = locationBarWidth;
         mLocationBar.getContainerView().setLayoutParams(layoutParams);
-        mUrlActionContainer.setVisibility(urlActionContainerVis);
+        // TODO (crbug.com/430347234): Should be handled by LocationBarCoordinator. Not setting it
+        // here causes this container to be visible in first frame during unfocus.
+        mLocationBar.setUrlActionContainerVisibility(hasFocus);
 
         // TODO(crbug.com/425817689): In the end state of the refactored animations, we don't want
         //  to rely on the interpolation methods that will be called by #setUrlFocusChangeFraction

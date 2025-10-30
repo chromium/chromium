@@ -233,7 +233,8 @@ public class UrlBar extends AutocompleteEditText {
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         int verticalPadding =
                 getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
-        setPaddingRelative(0, verticalPadding, 0, verticalPadding);
+        int endPadding = getResources().getDimensionPixelSize(R.dimen.url_bar_end_padding);
+        setPaddingRelative(0, verticalPadding, endPadding, verticalPadding);
 
         setTextClassifier(TextClassifier.NO_OP);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

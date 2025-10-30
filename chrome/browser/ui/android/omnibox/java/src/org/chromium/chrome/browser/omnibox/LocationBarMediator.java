@@ -474,12 +474,12 @@ class LocationBarMediator
 
             if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
                 if (fraction > 0f) {
-                    mLocationBarLayout.setUrlActionContainerVisibility(View.VISIBLE);
+                    setUrlActionContainerVisibility(true);
                 } else if (fraction == 0f && !mIsUrlFocusChangeInProgress) {
                     // If a URL focus change is in progress, then it will handle setting the
                     // visibility correctly after it completes.  If done here, it would cause the
                     // URL to jump due to a badly timed layout call.
-                    mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+                    setUrlActionContainerVisibility(false);
                 }
             }
 
@@ -931,7 +931,7 @@ class LocationBarMediator
         setUrlFocusChangeInProgress(false);
         updateShouldAnimateIconChanges();
         if (!mIsTablet && !showExpandedState) {
-            mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+            setUrlActionContainerVisibility(false);
         }
         if (mIsTablet) {
             float urlFocusChangeFraction = showExpandedState ? 1.0f : 0.0f;
@@ -2012,6 +2012,10 @@ class LocationBarMediator
         }
     }
 
+    /* package */ void setLocationBarButtonTranslationForNtpAnimation(float translationX) {
+        mLocationBarLayout.setLocationBarButtonTranslationForNtpAnimation(translationX);
+    }
+
     /** Updates the tints of UI buttons. */
     private void updateButtonTints() {
         ColorStateList tint = ThemeUtils.getThemedToolbarIconTint(mContext, mBrandedColorScheme);
@@ -2142,5 +2146,16 @@ class LocationBarMediator
                 int availableWidth, Collection<Animator> animators) {
             return updateVisibility(availableWidth);
         }
+    }
+
+    /**
+     * Set the visibility of the URL action buttons as a whole.
+     *
+     * <p>Visibility of each button is guarded by two states: visibility of a specific button and
+     * visibility of the entire group, ensuring that only requested buttons are shown/hidden when
+     * the value passed to this method is toggled.
+     */
+    void setUrlActionContainerVisibility(boolean shouldShow) {
+        mLocationBarLayout.setUrlActionContainerVisibility(shouldShow);
     }
 }

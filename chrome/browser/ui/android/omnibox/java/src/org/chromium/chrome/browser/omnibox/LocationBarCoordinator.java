@@ -1011,4 +1011,25 @@ public class LocationBarCoordinator
     public ToolbarWidthConsumer getLensButtonToolbarWidthConsumer() {
         return mLocationBarMediator.getLensButtonToolbarWidthConsumer();
     }
+
+    /**
+     * Apply the X translation to the LocationBar buttons to match the NTP fakebox -> omnibox
+     * transition.
+     *
+     * @param translationX the desired translation to be applied to appropriate LocationBar buttons.
+     */
+    public void setLocationBarButtonTranslationForNtpAnimation(float translationX) {
+        mLocationBarMediator.setLocationBarButtonTranslationForNtpAnimation(translationX);
+    }
+
+    /**
+     * Set the visibility of the URL action buttons as a whole.
+     *
+     * <p>Visibility of each button is guarded by two states: visibility of a specific button and
+     * visibility of the entire group, ensuring that only requested buttons are shown/hidden when
+     * the value passed to this method is toggled.
+     */
+    public void setUrlActionContainerVisibility(boolean shouldShow) {
+        mLocationBarMediator.setUrlActionContainerVisibility(shouldShow);
+    }
 }

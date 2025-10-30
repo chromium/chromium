@@ -12,6 +12,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
@@ -237,30 +239,22 @@ public class LocationBarLayoutTest {
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(constrainedWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
-                    Assert.assertEquals(
-                            View.INVISIBLE,
-                            locationBar.findViewById(R.id.url_action_container).getVisibility());
+                    assertFalse(locationBar.getLocationBarButtonsVisibilityForTesting());
 
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
-                    Assert.assertEquals(
-                            View.VISIBLE,
-                            locationBar.findViewById(R.id.url_action_container).getVisibility());
+                    assertTrue(locationBar.getLocationBarButtonsVisibilityForTesting());
 
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(
                                     constrainedWidth + urlContainerMarginEnd - 1,
                                     MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
-                    Assert.assertEquals(
-                            View.INVISIBLE,
-                            locationBar.findViewById(R.id.url_action_container).getVisibility());
+                    assertFalse(locationBar.getLocationBarButtonsVisibilityForTesting());
 
-                    locationBar.setUrlActionContainerVisibility(VISIBLE);
-                    Assert.assertEquals(
-                            View.INVISIBLE,
-                            locationBar.findViewById(R.id.url_action_container).getVisibility());
+                    locationBar.setUrlActionContainerVisibility(true);
+                    assertFalse(locationBar.getLocationBarButtonsVisibilityForTesting());
                 });
     }
 

@@ -7,79 +7,101 @@ found in the LICENSE file.
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- TODO: the linear layout would likely no longer be needed -->
-    <!-- removing it would further unlock ConstraintLayout performance -->
-    <LinearLayout
-        android:id="@+id/url_action_container"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/location_bar_height"
-        android:layout_gravity="end|center_vertical"
-        android:paddingStart="@dimen/location_bar_url_action_padding"
-        app:layout_constraintStart_toEndOf="@id/url_bar"
-        app:layout_constraintEnd_toEndOf="@+id/margin_spacer"
+    <!-- Fusebox/Omnibox top-stacked elements on Inactive Omnibox on NTP -->
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/composeplate_button"
+        android:src="@drawable/search_spark_black_24dp"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_toolbar_btn_composeplate"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintHorizontal_weight="0"
-        android:orientation="horizontal">
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/delete_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:src="@drawable/btn_delete_24dp"
-            android:visibility="invisible"
-            android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
-            android:tooltipText="@string/accessibility_toolbar_btn_delete_url"/>
+    <!-- Fusebox/Omnibox top-stacked elements on Inactive Omnibox on Tablets -->
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/install_button"
+        android:src="@drawable/ic_add_to_home_screen"
+        android:visibility="gone"
+        android:contentDescription="@string/app_banner_install"
+        android:tooltipText="@string/app_banner_install"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/zoom_button"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/composeplate_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:src="@drawable/search_spark_black_24dp"
-            android:visibility="gone"
-            android:contentDescription="@string/accessibility_toolbar_btn_composeplate"/>
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/zoom_button"
+        android:src="@drawable/ic_zoom"
+        android:visibility="gone"
+        android:tooltipText="@string/page_zoom_menu_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/bookmark_button"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/mic_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:src="@drawable/ic_mic_white_24dp"
-            android:visibility="invisible"
-            android:contentDescription="@string/accessibility_toolbar_btn_mic"
-            android:tooltipText="@string/accessibility_toolbar_btn_mic"/>
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/bookmark_button"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_menu_bookmark"
+        android:tooltipText="@string/accessibility_menu_bookmark"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/lens_camera_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:src="@drawable/lens_camera_icon"
-            android:visibility="gone"
-            android:contentDescription="@string/accessibility_btn_lens_camera"
-            android:tooltipText="@string/accessibility_btn_lens_camera"/>
+    <!--
+    Fusebox/Omnibox top-stacked elements on Active Omnibox with Empty content
+    -->
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/mic_button"
+        android:src="@drawable/ic_mic_white_24dp"
+        android:visibility="invisible"
+        android:contentDescription="@string/accessibility_toolbar_btn_mic"
+        android:tooltipText="@string/accessibility_toolbar_btn_mic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lens_camera_button"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/install_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:src="@drawable/ic_add_to_home_screen"
-            android:visibility="gone"
-            android:contentDescription="@string/app_banner_install"
-            android:tooltipText="@string/app_banner_install" />
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/lens_camera_button"
+        android:src="@drawable/lens_camera_icon"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_btn_lens_camera"
+        android:tooltipText="@string/accessibility_btn_lens_camera"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/zoom_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:src="@drawable/ic_zoom"
-            android:visibility="gone"
-            android:tooltipText="@string/page_zoom_menu_title"/>
+    <!--
+    Fusebox/Omnibox top-stacked elements on Active Omnibox with Non-empty content
+    -->
+    <org.chromium.ui.widget.ChromeImageButton
+        style="@style/LocationBarActionButton.AdaptiveDensity"
+        android:id="@+id/delete_button"
+        android:src="@drawable/btn_delete_24dp"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
+        android:tooltipText="@string/accessibility_toolbar_btn_delete_url"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/bookmark_button"
-            style="@style/LocationBarActionButton.AdaptiveDensity"
-            android:visibility="gone"
-            android:contentDescription="@string/accessibility_menu_bookmark"
-            android:tooltipText="@string/accessibility_menu_bookmark"/>
-
-    </LinearLayout>
     <Space
         android:id="@+id/margin_spacer"
         android:layout_width="@dimen/location_bar_url_action_offset"
         android:layout_height="0dp"
         app:layout_constraintStart_toEndOf="parent"/>
+
+    <!-- URL Bar barrier for conventional location bar -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/action_buttons_segment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="composeplate_button,install_button,delete_button,mic_button,margin_spacer"/>
+
+    <!-- URL Bar barrier for multimodal location bar -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/action_buttons_segment_multimodal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:barrierDirection="start"
+        app:constraint_referenced_ids="composeplate_button,install_button,delete_button,margin_spacer"/>
 
 </merge>
