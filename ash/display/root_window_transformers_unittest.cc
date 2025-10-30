@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "ui/aura/env.h"
@@ -461,6 +462,42 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
 
     const bool need_transpose = rotation == display::Display::ROTATE_90 ||
                                 rotation == display::Display::ROTATE_270;
+
+    // Y margin is (400 - 500/400 * 200) / 2 = 75 for no rotation. Transposed
+    // on 90/270 degree.
+    gfx::Insets expected_insets =
+        need_transpose ? gfx::Insets::VH(0, 75) : gfx::Insets::VH(75, 0);
+    EXPECT_EQ(expected_insets, transformer->GetHostInsets());
+
+    // Expected rect in mirror of the source root.
+    gfx::RectF expected_rect = need_transpose ? gfx::RectF(75, 0, 250, 500)
+                                              : gfx::RectF(0, 75, 500, 250);
+
+    gfx::RectF rect = transformer->GetTransform().MapRect(
+        gfx::RectF(transformer->GetRootWindowBounds(gfx::Size())));
+    EXPECT_EQ(expected_rect, rect);
+  }
+}
+
+TEST_F(RootWindowTransformersTest, MirrorWithRotationTabletMode) {
+  MirrorWindowTestApi test_api;
+  UpdateDisplay("400x200,500x400");
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  for (auto rotation :
+       {display::Display::ROTATE_0, display::Display::ROTATE_90,
+        display::Display::ROTATE_180, display::Display::ROTATE_270}) {
+    SCOPED_TRACE(::testing::Message() << "Rotation: " << rotation);
+    display_manager()->SetDisplayRotation(
+        display::Screen::Get()->GetPrimaryDisplay().id(), rotation,
+        display::Display::RotationSource::ACCELEROMETER);
+    std::unique_ptr<RootWindowTransformer> transformer(
+        CreateCurrentRootWindowTransformerForMirroring());
+
+    const bool need_transpose = rotation == display::Display::ROTATE_90 ||
+                                rotation == display::Display::ROTATE_270;
+
     // X margin is (500 - 200) / 2 = 150 for with rotation.
     // Y margin is (400 - 500/400 * 200) / 2 = 75 for without rotation.
     gfx::Insets expected_insets =

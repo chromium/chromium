@@ -34,6 +34,7 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -268,6 +269,37 @@ void MirrorWindowController::UpdateWindow(
 
     auto* mirroring_host_info =
         mirroring_host_info_map_[display_info.id()].get();
+
+    const bool should_undo_rotation = ShouldUndoRotationForMirror();
+
+    if (!should_undo_rotation && !display_manager->IsInUnifiedMode()) {
+      // Use the rotation from source display without panel orientation
+      // applied instead of the display transform hint in |source_compositor|
+      // so that panel orientation is not applied to the mirror host.
+      // If the panel orientation of mirroring host display is not 0, we need to
+      // add an offset to set the correct hint.
+      int offset = 0;
+      switch (display_info.panel_orientation()) {
+        case display::PanelOrientation::kNormal:
+          break;
+        case display::PanelOrientation::kBottomUp:
+          offset = 2;
+          break;
+        case display::PanelOrientation::kRightUp:
+          offset = 1;
+          break;
+        case display::PanelOrientation::kLeftUp:
+          offset = 3;
+          break;
+      }
+      mirroring_host_info->ash_host->AsWindowTreeHost()
+          ->SetDisplayTransformHint(display::DisplayRotationToOverlayTransform(
+              static_cast<display::Display::Rotation>(
+                  (display_manager->GetDisplayInfo(reflecting_source_id_)
+                       .GetActiveRotation() +
+                   offset) %
+                  4)));
+    }
 
     aura::Window* mirror_window = mirroring_host_info->mirror_window;
     mirror_window->SetBounds(gfx::Rect(mirror_size));

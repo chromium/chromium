@@ -206,7 +206,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     display::Display::Rotation active_root_rotation =
         source_display_info.GetActiveRotation();
     display::Display::Rotation active_mirror_rotation =
-        mirror_display_info.GetActiveRotation();
+        mirror_display_info.GetLogicalActiveRotation();
 
     const bool should_undo_rotation = ShouldUndoRotationForMirror();
     gfx::Transform rotation_transform;
@@ -223,7 +223,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     }
 
     gfx::Rect mirror_display_rect =
-        gfx::Rect(mirror_display_info.bounds_in_native().size());
+        gfx::Rect(mirror_display_info.GetSizeInPixelWithPanelOrientation());
 
     // When logical rotation is 90 or 270 degree, transpose is needed to apply
     // reverse rotation to `root_bounds_` and `mirror_display_rect` to exclude
@@ -234,9 +234,14 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     if (active_root_rotation == display::Display::ROTATE_90 ||
         active_root_rotation == display::Display::ROTATE_270) {
       root_bounds_.Transpose();
+      mirror_display_rect.Transpose();
     }
-    if (active_mirror_rotation == display::Display::ROTATE_90 ||
-        active_mirror_rotation == display::Display::ROTATE_270) {
+
+    // In tablet mode, we want to keep the active rotation of the mirroring
+    // display.
+    if (Shell::Get()->IsInTabletMode() &&
+        (active_mirror_rotation == display::Display::ROTATE_90 ||
+         active_mirror_rotation == display::Display::ROTATE_270)) {
       mirror_display_rect.Transpose();
     }
 
