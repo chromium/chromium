@@ -76,8 +76,11 @@ class FilledCardInformationBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  std::optional<PageActionIconType> GetPageActionIconType() override;
   void DoShowBubble() override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool ShouldShowPageAction() override;
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<

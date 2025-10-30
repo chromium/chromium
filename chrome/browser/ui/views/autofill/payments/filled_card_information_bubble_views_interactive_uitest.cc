@@ -11,11 +11,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -83,19 +84,50 @@ class ViewVisibilityWaiter : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
 };
 
+struct FilledCardInformationBubbleViewsTestParams {
+  bool show_bubbles_based_on_priorities = false;
+  bool is_page_action_migration_enabled = false;
+};
+
 class FilledCardInformationBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,
       public FilledCardInformationBubbleControllerImpl::ObserverForTest,
-      public base::test::WithFeatureOverride {
+      public ::testing::WithParamInterface<
+          FilledCardInformationBubbleViewsTestParams> {
  public:
   // Various events that can be waited on by the DialogEventWaiter.
   enum class BubbleEvent : int {
     BUBBLE_SHOWN,
   };
 
-  FilledCardInformationBubbleViewsInteractiveUiTest()
-      : base::test::WithFeatureOverride(
-            features::kAutofillShowBubblesBasedOnPriorities) {}
+  FilledCardInformationBubbleViewsInteractiveUiTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+
+    if (GetParam().show_bubbles_based_on_priorities) {
+      enabled_features.push_back(
+          {features::kAutofillShowBubblesBasedOnPriorities, {}});
+    } else {
+      disabled_features.emplace_back(
+          features::kAutofillShowBubblesBasedOnPriorities);
+    }
+
+    if (GetParam().is_page_action_migration_enabled) {
+      enabled_features.push_back({
+          ::features::kPageActionsMigration,
+          {{
+              ::features::kPageActionsMigrationFilledCardInformation.name,
+              "true",
+          }},
+      });
+    } else {
+      disabled_features.emplace_back(::features::kPageActionsMigration);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
   ~FilledCardInformationBubbleViewsInteractiveUiTest() override = default;
   FilledCardInformationBubbleViewsInteractiveUiTest(
       const FilledCardInformationBubbleViewsInteractiveUiTest&) = delete;
@@ -174,14 +206,14 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
         controller->GetBubble());
   }
 
-  FilledCardInformationIconView* GetIconView() {
+  IconLabelBubbleView* GetIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    PageActionIconView* icon =
-        browser_view->toolbar_button_provider()->GetPageActionIconView(
-            PageActionIconType::kFilledCardInformation);
+    IconLabelBubbleView* icon =
+        browser_view->toolbar_button_provider()->GetPageActionView(
+            kActionFilledCardInformation);
     DCHECK(icon);
-    return static_cast<FilledCardInformationIconView*>(icon);
+    return icon;
   }
 
   void ResetEventWaiterForSequence(std::list<BubbleEvent> event_sequence) {
@@ -195,6 +227,7 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<EventWaiter<BubbleEvent>> event_waiter_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Invokes a bubble showing the complete information for the virtual card
@@ -516,10 +549,6 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
       GetIconView()->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD));
-  EXPECT_EQ(
-      GetIconView()->GetTextForTooltipAndAccessibleName(),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD));
 }
 
 IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsInteractiveUiTest,
@@ -813,9 +842,50 @@ IN_PROC_BROWSER_TEST_P(FilledCardInformationBubbleViewsPrerenderTest,
   EXPECT_FALSE(IsIconVisible());
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    FilledCardInformationBubbleViewsInteractiveUiTest);
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    FilledCardInformationBubbleViewsPrerenderTest);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FilledCardInformationBubbleViewsInteractiveUiTest,
+    ::testing::ConvertGenerator(
+        ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+        [](std::tuple<bool, bool> t) {
+          return FilledCardInformationBubbleViewsTestParams{
+              .show_bubbles_based_on_priorities = std::get<0>(t),
+              .is_page_action_migration_enabled = std::get<1>(t),
+          };
+        }),
+    [](const ::testing::TestParamInfo<
+        FilledCardInformationBubbleViewsInteractiveUiTest::ParamType>& info) {
+      return base::StrCat({
+          info.param.show_bubbles_based_on_priorities
+              ? "BubblesBasedOnPrioritiesEnabled"
+              : "BubblesBasedOnPrioritiesDisabled",
+          "_with_",
+          info.param.is_page_action_migration_enabled ? "NewPageAction"
+                                                      : "OldPageAction",
+      });
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FilledCardInformationBubbleViewsPrerenderTest,
+    ::testing::ConvertGenerator(
+        ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+        [](std::tuple<bool, bool> t) {
+          return FilledCardInformationBubbleViewsTestParams{
+              .show_bubbles_based_on_priorities = std::get<0>(t),
+              .is_page_action_migration_enabled = std::get<1>(t),
+          };
+        }),
+    [](const ::testing::TestParamInfo<
+        FilledCardInformationBubbleViewsPrerenderTest::ParamType>& info) {
+      return base::StrCat({
+          info.param.show_bubbles_based_on_priorities
+              ? "BubblesBasedOnPrioritiesEnabled"
+              : "BubblesBasedOnPrioritiesDisabled",
+          "_with_",
+          info.param.is_page_action_migration_enabled ? "NewPageAction"
+                                                      : "OldPageAction",
+      });
+    });
 
 }  // namespace autofill

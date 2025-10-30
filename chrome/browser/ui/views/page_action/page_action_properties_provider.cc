@@ -157,6 +157,13 @@ constexpr auto kPageActionProperties =
                 .type = PageActionIconType::kVirtualCardEnroll,
             },
         },
+        {
+            kActionFilledCardInformation,
+            {
+                .histogram_name = "FilledCardInformation",
+                .type = PageActionIconType::kFilledCardInformation,
+            },
+        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {

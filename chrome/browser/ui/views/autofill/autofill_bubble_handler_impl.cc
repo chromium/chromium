@@ -226,10 +226,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowFilledCardInformationBubble(
     content::WebContents* web_contents,
     FilledCardInformationBubbleController* controller,
     bool is_user_gesture) {
-  // TODO(crbug.com/376284059): An action ID should be created and used here
-  // when this page action is migrated to the new page actions framework.
   return ShowBubble<FilledCardInformationBubbleViews>(
-      toolbar_button_provider_, std::nullopt,
+      toolbar_button_provider_, kActionFilledCardInformation,
       PageActionIconType::kFilledCardInformation, is_user_gesture, web_contents,
       controller);
 }

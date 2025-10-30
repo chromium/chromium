@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -388,10 +389,16 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
   }
 }
 
-std::optional<PageActionIconType>
-FilledCardInformationBubbleControllerImpl::GetPageActionIconType() {
-  return PageActionIconType::kFilledCardInformation;
+#if !BUILDFLAG(IS_ANDROID)
+bool FilledCardInformationBubbleControllerImpl::ShouldShowPageAction() {
+  return ShouldIconBeVisible();
 }
+
+std::optional<actions::ActionId>
+FilledCardInformationBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionFilledCardInformation;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void FilledCardInformationBubbleControllerImpl::DoShowBubble() {
   if (!IsWebContentsActive()) {

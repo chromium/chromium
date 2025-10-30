@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
@@ -412,6 +413,35 @@ void BrowserActions::InitializeBrowserActions() {
           .SetActionId(kActionVirtualCardEnroll)
           .SetTooltipText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP))
+          .SetImage(
+              ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                tabs::TabInterface* tab_interface =
+                    bwi->GetActiveTabInterface();
+                CHECK(tab_interface);
+
+                content::WebContents* web_contents =
+                    tab_interface->GetContents();
+                CHECK(web_contents);
+
+                autofill::FilledCardInformationBubbleControllerImpl*
+                    controller =
+                        autofill::FilledCardInformationBubbleControllerImpl::
+                            FromWebContents(web_contents);
+                CHECK(controller);
+
+                controller->ReshowBubble();
+              },
+              bwi))
+          .SetActionId(kActionFilledCardInformation)
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_FILLED_CARD_INFORMATION_ICON_TOOLTIP_VIRTUAL_CARD))
           .SetImage(
               ui::ImageModel::FromVectorIcon(kCreditCardChromeRefreshIcon))
           .Build());
