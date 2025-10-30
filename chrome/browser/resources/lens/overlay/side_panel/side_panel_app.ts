@@ -369,8 +369,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
           this.focusResultsFrame.bind(this)),
       this.browserProxy.callbackRouter.setIsOverlayShowing.addListener(
           this.setIsOverlayShowing.bind(this)),
-      this.browserProxy.callbackRouter.focusSearchbox.addListener(
-          this.focusSearchbox.bind(this)),
     ];
     this.eventTracker_.add(this.$.searchbox, 'mousedown', () => {
       this.suppressGhostLoader = false;
@@ -699,14 +697,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     }
 
     this.getResults().focus();
-  }
-
-  private focusSearchbox() {
-    if (this.enableAimSearchbox) {
-      this.$.composebox.focusInput();
-      return;
-    }
-    this.$.searchbox.focus();
   }
 
   private async showToast(toast: CrToastElement, message?: string) {
