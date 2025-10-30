@@ -68,6 +68,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
 
       return If(add_seals, Allow()).Else(BPFBasePolicy::EvaluateSyscall(sysno));
     }
+    case __NR_fdatasync:
     case __NR_ftruncate:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
@@ -97,6 +98,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       break;
     // TODO(jln): restrict prctl.
     case __NR_prctl:
+    case __NR_pwrite64:
     case __NR_sysinfo:
     case __NR_uname:  // https://crbug.com/1075934
       return Allow();
