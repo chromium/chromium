@@ -14,6 +14,8 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #import "components/autofill/ios/browser/autofill_client_ios_bridge.h"
@@ -89,6 +91,22 @@ class CreditCard;
 
 // Bridge for PaymentsAutofillClient's method `VirtualCardEnrollCompleted`.
 - (void)handleVirtualCardEnrollmentResult:(BOOL)cardEnrolled;
+
+// Bridge for PaymentsAutofillClient's method `ShowCardUnmaskOtpInputDialog`.
+- (void)showCardUnmaskOtpInputDialogForCardType:
+            (autofill::CreditCard::RecordType)cardType
+                                challengeOption:
+                                    (const autofill::CardUnmaskChallengeOption&)
+                                        challengeOption
+                                       delegate:
+                                           (base::WeakPtr<
+                                               autofill::OtpUnmaskDelegate>)
+                                               delegate;
+
+// Bridge for PaymentsAutofillClient's method `OnUnmaskOtpVerificationResult`.
+- (void)didReceiveUnmaskOtpVerificationResult:
+    (autofill::OtpUnmaskResult)unmaskResult;
+
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_AUTOFILL_CWV_AUTOFILL_CLIENT_IOS_BRIDGE_H_

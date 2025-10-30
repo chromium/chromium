@@ -27,10 +27,10 @@ class BnplIssuer;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
+class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
 class WebViewAutofillClientIOS;
 class PaymentsDataManager;
-class CreditCardRiskBasedAuthenticator;
 struct CardUnmaskChallengeOption;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -200,6 +200,8 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
 
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
+
+  std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;

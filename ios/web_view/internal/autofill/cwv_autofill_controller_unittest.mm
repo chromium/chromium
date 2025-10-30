@@ -14,6 +14,8 @@
 #import "base/test/test_future.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
+#import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/mock_autocomplete_history_manager.h"
@@ -50,6 +52,7 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "ios/web_view/internal/autofill/cwv_card_unmask_challenge_option_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_otp_verifier_internal.h"
 #import "ios/web_view/internal/autofill/cwv_vcn_enrollment_manager_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
@@ -75,6 +78,26 @@ NSString* const kTestFieldIdentifier = @"FieldIdentifier";
 FieldRendererId kTestFieldRendererID = FieldRendererId(1);
 NSString* const kTestFieldValue = @"FieldValue";
 NSString* const kTestDisplayDescription = @"DisplayDescription";
+
+class MockOtpUnmaskDelegate : public autofill::OtpUnmaskDelegate {
+ public:
+  MOCK_METHOD(void,
+              OnUnmaskPromptAccepted,
+              (const std::u16string& otp),
+              (override));
+  MOCK_METHOD(void,
+              OnUnmaskPromptClosed,
+              (bool user_closed_dialog),
+              (override));
+  MOCK_METHOD(void, OnNewOtpRequested, (), (override));
+
+  base::WeakPtr<autofill::OtpUnmaskDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockOtpUnmaskDelegate> weak_factory_{this};
+};
 
 class CWVAutofillControllerTest : public web::WebTest {
  protected:
@@ -813,5 +836,90 @@ TEST_F(CWVAutofillControllerTest,
     strongManager = nil;
   }
 }
+
+// Tests that the delegate is called to show the OTP input dialog.
+TEST_F(CWVAutofillControllerTest, ShowCardUnmaskOtpInputDialog) {
+  id mock_delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = mock_delegate;
+
+  autofill::CardUnmaskChallengeOption option;
+  option.id =
+      autofill::CardUnmaskChallengeOption::ChallengeOptionId("test_otp_id");
+  option.type = autofill::CardUnmaskChallengeOptionType::kSmsOtp;
+
+  MockOtpUnmaskDelegate mock_otp_delegate;
+  base::WeakPtr<autofill::OtpUnmaskDelegate> otp_delegate_ptr =
+      mock_otp_delegate.GetWeakPtr();
+
+  __block CWVCreditCardOTPVerifier* capturedVerifier = nil;
+  OCMExpect([mock_delegate
+                   autofillController:autofill_controller_
+      verifyCreditCardWithOTPVerifier:[OCMArg checkWithBlock:^BOOL(id obj) {
+        capturedVerifier = obj;
+        return [obj isKindOfClass:[CWVCreditCardOTPVerifier class]];
+      }]]);
+
+  [autofill_controller_
+      showCardUnmaskOtpInputDialogForCardType:autofill::CreditCard::RecordType::
+                                                  kVirtualCard
+                              challengeOption:option
+                                     delegate:otp_delegate_ptr];
+
+  [mock_delegate verify];
+  ASSERT_NE(capturedVerifier, nullptr) << "CWVCreditCardOTPVerifier should be "
+                                          "created and passed to the delegate";
+}
+
+// Tests that the verification result is passed to the CWVCreditCardOTPVerifier.
+TEST_F(CWVAutofillControllerTest, DidReceiveUnmaskOtpVerificationResult) {
+  id mock_delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = mock_delegate;
+
+  autofill::CardUnmaskChallengeOption option;
+  option.type = autofill::CardUnmaskChallengeOptionType::kSmsOtp;
+  MockOtpUnmaskDelegate mock_otp_delegate;
+  base::WeakPtr<autofill::OtpUnmaskDelegate> otp_delegate_ptr =
+      mock_otp_delegate.GetWeakPtr();
+
+  __block CWVCreditCardOTPVerifier* capturedVerifier = nil;
+  OCMExpect([mock_delegate
+                   autofillController:autofill_controller_
+      verifyCreditCardWithOTPVerifier:[OCMArg checkWithBlock:^BOOL(id obj) {
+        capturedVerifier = obj;
+        return [obj isKindOfClass:[CWVCreditCardOTPVerifier class]];
+      }]]);
+
+  [autofill_controller_
+      showCardUnmaskOtpInputDialogForCardType:autofill::CreditCard::RecordType::
+                                                  kVirtualCard
+                              challengeOption:option
+                                     delegate:otp_delegate_ptr];
+  [mock_delegate verify];
+  ASSERT_NE(capturedVerifier, nullptr);
+
+  id mockVerifierInstance = OCMPartialMock(capturedVerifier);
+
+  @try {
+    OCMExpect([mockVerifierInstance didReceiveUnmaskOtpVerificationResult:
+                                        autofill::OtpUnmaskResult::kSuccess]);
+
+    [autofill_controller_ didReceiveUnmaskOtpVerificationResult:
+                              autofill::OtpUnmaskResult::kSuccess];
+
+    [mockVerifierInstance verify];
+
+    OCMExpect(
+        [mockVerifierInstance didReceiveUnmaskOtpVerificationResult:
+                                  autofill::OtpUnmaskResult::kOtpExpired]);
+
+    [autofill_controller_ didReceiveUnmaskOtpVerificationResult:
+                              autofill::OtpUnmaskResult::kOtpExpired];
+
+    [(OCMockObject*)mockVerifierInstance verify];
+  } @finally {
+    [mockVerifierInstance stopMocking];
+  }
+}
+
 }  // namespace
 }  // namespace ios_web_view

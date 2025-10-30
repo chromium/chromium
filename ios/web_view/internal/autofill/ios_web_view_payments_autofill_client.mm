@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/payments/bnpl_util.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -151,23 +152,35 @@ void IOSWebViewPaymentsAutofillClient::CloseAutofillProgressDialog(
 void IOSWebViewPaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
     CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
-    base::WeakPtr<OtpUnmaskDelegate> delegate) {}
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {
+  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    [bridge_ showCardUnmaskOtpInputDialogForCardType:card_type
+                                     challengeOption:challenge_option
+                                            delegate:delegate];
+  }
+}
 
 void IOSWebViewPaymentsAutofillClient::OnUnmaskOtpVerificationResult(
-    OtpUnmaskResult unmask_result) {}
+    OtpUnmaskResult unmask_result) {
+  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    [bridge_ didReceiveUnmaskOtpVerificationResult:unmask_result];
+  }
+}
 
 void IOSWebViewPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
     const std::vector<CardUnmaskChallengeOption>& challenge_options,
     base::OnceCallback<void(const std::string&)>
         confirm_unmask_challenge_option_callback,
     base::OnceClosure cancel_unmasking_closure) {
-  [bridge_
-      showUnmaskAuthenticatorSelectorWithOptions:challenge_options
-                                  acceptCallback:
-                                      std::move(
-                                          confirm_unmask_challenge_option_callback)
-                                  cancelCallback:std::move(
-                                                     cancel_unmasking_closure)];
+  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    [bridge_
+        showUnmaskAuthenticatorSelectorWithOptions:challenge_options
+                                    acceptCallback:
+                                        std::move(
+                                            confirm_unmask_challenge_option_callback)
+                                    cancelCallback:
+                                        std::move(cancel_unmasking_closure)];
+  }
 }
 
 void IOSWebViewPaymentsAutofillClient::
@@ -236,6 +249,13 @@ IOSWebViewPaymentsAutofillClient::GetCvcAuthenticator() {
 
 CreditCardOtpAuthenticator*
 IOSWebViewPaymentsAutofillClient::GetOtpAuthenticator() {
+  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    if (!otp_authenticator_) {
+      otp_authenticator_ =
+          std::make_unique<CreditCardOtpAuthenticator>(&client_.get());
+    }
+    return otp_authenticator_.get();
+  }
   return nullptr;
 }
 

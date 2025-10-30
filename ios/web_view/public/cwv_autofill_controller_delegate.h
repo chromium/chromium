@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVPassword;
 @class CWVCardUnmaskChallengeOption;
 @class CWVVCNEnrollmentManager;
+@class CWVCreditCardOTPVerifier;
 
 // User decision for saving / updating an autofill profile.
 typedef NS_ENUM(NSInteger, CWVAutofillProfileUserDecision) {
@@ -150,6 +151,11 @@ typedef void (^ProceduralBlock)(void);
 - (void)autofillController:(CWVAutofillController*)autofillController
     verifyCreditCardWithVerifier:(CWVCreditCardVerifier*)verifier;
 
+// Called when the user needs to use |OTPVerifier| to verify a credit card.
+// Lifetime of |OTPVerifier| should be managed by the delegate.
+- (void)autofillController:(CWVAutofillController*)autofillController
+    verifyCreditCardWithOTPVerifier:(CWVCreditCardOTPVerifier*)OTPVerifier;
+
 // Called when user needs to decide on whether or not to save the |password|.
 // This can happen when user successfully logs into a web site with a new
 // username.
@@ -275,6 +281,7 @@ typedef void (^ProceduralBlock)(void);
 - (void)autofillController:(CWVAutofillController*)autofillController
     enrollCreditCardWithVCNEnrollmentManager:
         (CWVVCNEnrollmentManager*)enrollmentManager;
+
 @end
 
 NS_ASSUME_NONNULL_END
