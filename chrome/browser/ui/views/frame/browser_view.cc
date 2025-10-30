@@ -2106,6 +2106,8 @@ void BrowserView::FullscreenStateChanged() {
                                                       : nullptr;
   contents_container()->SetProperty(views::kWidgetForAnchoringKey,
                                     widget_for_anchoring);
+  GetFrameView()->OnFullscreenStateChanged();
+
 #endif  // BUILDFLAG(IS_MAC)
 
   browser_->WindowFullscreenStateChanged();

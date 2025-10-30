@@ -1375,6 +1375,10 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
     bool actual_fullscreen_state) {
   in_fullscreen_transition_ = false;
 
+  // `target_fullscreen_state_` might be different from
+  // `actual_fullscreen_state` if the window failed to enter or exit fullscreen.
+  target_fullscreen_state_ = actual_fullscreen_state;
+
   // Notify that fullscreen state has changed.
   native_widget_mac_->OnWindowFullscreenTransitionComplete();
 

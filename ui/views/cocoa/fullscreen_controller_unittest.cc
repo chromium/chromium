@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -191,6 +192,30 @@ TEST_F(MacFullscreenControllerTest, FailEnterFullscreenSimple) {
   EXPECT_FALSE(controller_.IsInFullscreenTransition());
   EXPECT_FALSE(controller_.GetTargetFullscreenState());
   task_environment_.RunUntilIdle();
+  EXPECT_FALSE(controller_.IsInFullscreenTransition());
+  EXPECT_FALSE(controller_.GetTargetFullscreenState());
+}
+
+// A transition that fails to enter fullscreen via
+// OnWindowFailToEnterFullscreen.
+TEST_F(MacFullscreenControllerTest, FailToEnterFullscreenViaDelegate) {
+  // Enter fullscreen.
+  EXPECT_CALL(mock_client_, FullscreenControllerGetFrame())
+      .Times(1)
+      .WillOnce(Return(kWindowRect));
+  EXPECT_CALL(mock_client_, FullscreenControllerTransitionStart(true)).Times(1);
+  controller_.EnterFullscreen(display::kInvalidDisplayId);
+  EXPECT_CALL(mock_client_, FullscreenControllerToggleFullscreen())
+      .WillOnce(Invoke(&controller_, &NativeWidgetNSWindowFullscreenController::
+                                         OnWindowWillEnterFullscreen));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller_.IsInFullscreenTransition(); }));
+
+  // Fail the transition by calling OnWindowDidFailToEnterFullscreen.
+  EXPECT_CALL(mock_client_, FullscreenControllerTransitionComplete(false))
+      .Times(1);
+  controller_.OnWindowDidFailToEnterFullscreen();
   EXPECT_FALSE(controller_.IsInFullscreenTransition());
   EXPECT_FALSE(controller_.GetTargetFullscreenState());
 }
