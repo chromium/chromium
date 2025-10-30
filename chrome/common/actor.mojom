@@ -239,6 +239,10 @@ enum ActionResultCode {
   // File pikcer was cancelled.
   kFilePickerCancelled = 36,
 
+  // The execution engine already had an existing action sequence when a new
+  // sequence was provided.
+  kExecutionEngineExistingAction = 37,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
