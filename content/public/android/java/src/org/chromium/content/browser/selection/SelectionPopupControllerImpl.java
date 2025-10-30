@@ -44,6 +44,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -678,7 +679,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         MVCListAdapter.ModelList items = new MVCListAdapter.ModelList();
         if (mDropdownMenuDelegate != null) {
             assumeNonNull(mContext);
-            PendingSelectionMenu pendingMenu = getPendingSelectionMenu();
+            PendingSelectionMenu pendingMenu = getPendingSelectionMenu(MenuType.DROPDOWN);
             items = pendingMenu.getMenuAsDropdown(mDropdownMenuDelegate);
         }
         return items;
@@ -902,13 +903,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
         assumeNonNull(mContext);
-        PendingSelectionMenu pendingMenu = getPendingSelectionMenu();
+        PendingSelectionMenu pendingMenu = getPendingSelectionMenu(MenuType.FLOATING);
         pendingMenu.getMenuAsActionMode(menu);
         return true;
     }
 
     @VisibleForTesting
-    public PendingSelectionMenu getPendingSelectionMenu() {
+    public PendingSelectionMenu getPendingSelectionMenu(@MenuType int menuType) {
         // If the menu items haven't been cached, process new menu and cache it.
         if (mSelectionMenuCachedResult == null
                 || !mSelectionMenuCachedResult.canReuseResult(
@@ -916,6 +917,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         isSelectionPassword(),
                         !isFocusedNodeEditable(),
                         getSelectedText(),
+                        menuType,
                         mSelectionActionMenuDelegate)) {
             assert mContext != null;
             PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
@@ -924,6 +926,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     pendingMenu,
                     mContext,
                     mClassificationResult,
+                    menuType,
                     isSelectionPassword(),
                     !isFocusedNodeEditable(),
                     getSelectedText(),
@@ -935,6 +938,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             isSelectionPassword(),
                             !isFocusedNodeEditable(),
                             getSelectedText(),
+                            menuType,
                             pendingMenu);
         }
 
@@ -1010,7 +1014,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         List<SelectionMenuItem> textProcessingItems =
                 SelectActionMenuHelper.getTextProcessingItems(
-                        mContext, false, false, "test", true, mSelectionActionMenuDelegate);
+                        mContext,
+                        MenuType.FLOATING,
+                        false,
+                        false,
+                        "test",
+                        true,
+                        mSelectionActionMenuDelegate);
         if (textProcessingItems != null && !textProcessingItems.isEmpty()) {
             PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
             pendingMenu.addAll(textProcessingItems);

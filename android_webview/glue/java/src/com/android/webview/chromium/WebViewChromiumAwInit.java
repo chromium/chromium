@@ -46,6 +46,7 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
@@ -717,6 +718,13 @@ public class WebViewChromiumAwInit {
 
                     AwBrowserProcess.postBackgroundTasks(
                             mFactory.isSafeModeEnabled(), mFactory.getWebViewPrefs());
+
+                    AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+                    if (delegate != null) {
+                        AwContentsStatics.setSelectionActionMenuClient(
+                                delegate.getSelectionActionMenuClient(
+                                        mFactory.getWebViewDelegate()));
+                    }
 
                     AwCrashyClassUtils.maybeCrashIfEnabled();
                     // Must happen right after Chromium initialization is complete.
