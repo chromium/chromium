@@ -19,6 +19,7 @@ rust_static_library("mojom_parser") {
 rust_static_library("mojom_parser_core") {
   crate_root = "lib_core.rs"
   sources = [
+    "api.rs",
     "ast.rs",
     "deparse_values.rs",
     "lib_core.rs",

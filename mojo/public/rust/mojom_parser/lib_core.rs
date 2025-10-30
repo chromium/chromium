@@ -7,6 +7,7 @@
 // FOR_RELEASE: Figure out the organization of this crate, what needs to be
 // public, etc. For now, just export everything blindly.
 
+mod api;
 mod ast;
 mod deparse_values;
 mod pack;
@@ -15,6 +16,7 @@ mod parse_primitives;
 mod parse_values;
 mod parsing_trait;
 
+pub use crate::api::*;
 pub use crate::ast::*;
 pub use crate::deparse_values::*;
 pub use crate::pack::*;
