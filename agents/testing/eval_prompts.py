@@ -335,7 +335,9 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
             git_revision=args.git_revision,
             bucket=args.gcs_bucket,
             build_id=args.build_id,
-            builder=args.builder)
+            builder=args.builder,
+            builder_group=args.builder_group,
+            build_number=args.build_number)
 
     returncode = 0
     if failed_test_results:
@@ -376,6 +378,14 @@ def _validate_args(args: argparse.Namespace,
         if not args.builder:
             parser.error(
                 '--builder must be passed if --enable-perf-uploading is')
+        if not args.builder_group:
+            parser.error(
+                '--builder-group must be passed if --enable-perf-uploading is')
+        if args.build_number is None:
+            parser.error(
+                '--build-number must be passed if --enable-perf-uploading is')
+        if args.build_number <= 0:
+            parser.error('--build-number must be positive')
 
     # Test Selection Arguments group.
     if args.shard_index is not None and args.shard_index < 0:
@@ -452,6 +462,23 @@ def _parse_args() -> argparse.Namespace:
     group.add_argument('--builder',
                        help=('The name of the builder running these tests. '
                              'Must be set if --enable-perf-uploading is set.'))
+    group.add_argument(
+        '--builder-group',
+        # TODO(crbug.com/449818513): Remove default once the
+        # recipe is updated to pass this in.
+        default='chromium.prompt_eval',
+        help=('The name of the group the builder running these '
+              'tests belongs to. Must be set if '
+              '--enable-perf-uploading is set.'))
+    group.add_argument(
+        '--build-number',
+        # TODO(crbug.com/449818513): Remove default once the
+        # recipe is updated to pass this in.
+        default=1,
+        type=int,
+        help=('The build number of the build running these '
+              'tests. Must be set if --enable-perf-uploading '
+              'is set.'))
 
     group = parser.add_argument_group('Test Selection Arguments')
     filter_group = group.add_mutually_exclusive_group()

@@ -22,7 +22,7 @@ import eval_config
 sys.path.append(str(constants.CHROMIUM_SRC))
 from agents.common import tempfile_ext
 
-BUCKET_SUBDIR = 'chromium_prompt_eval'
+BUCKET_SUBDIR = 'ingest'
 
 # A mapping of metric name to value. Metric names can be nested, e.g.
 # {
@@ -45,7 +45,8 @@ class IterationMetrics:
 
 def merge_and_upload_metrics(iteration_metrics: Iterable[IterationMetrics],
                              git_revision: str, bucket: str, build_id: str,
-                             builder: str) -> None:
+                             builder: str, builder_group: str,
+                             build_number: int) -> None:
     """Merges collected metrics and uploads them to the perf dashboard.
 
     Args:
@@ -54,11 +55,14 @@ def merge_and_upload_metrics(iteration_metrics: Iterable[IterationMetrics],
         bucket: The GCS bucket to upload data to.
         build_id: The Buildbucket ID of the current build.
         builder: The name of the builder the tests are running on.
+        builder_group: The name of the group the builder belongs to.
+        build_number: The build number of the current build.
     """
     dashboard_json = _create_dashboard_json(iteration_metrics, git_revision,
                                             build_id, builder)
     try:
-        _upload_dashboard_json(dashboard_json, bucket)
+        _upload_dashboard_json(dashboard_json, bucket, builder, builder_group,
+                               build_number)
     except Exception as e:
         # These tests are primarily meant to be functional tests, so make a
         # failure to upload non-fatal.
@@ -202,13 +206,17 @@ def _generate_stats_for_metric_values(
     return stats
 
 
-def _upload_dashboard_json(dashboard_json: dict, bucket: str) -> None:
+def _upload_dashboard_json(dashboard_json: dict, bucket: str, builder: str,
+                           builder_group: str, build_number: int) -> None:
     """Uploads dashboard JSON to a GCS bucket for ingestion.
 
     Args:
         dashboard_json: Valid perf dashboard JSON to upload. See
             _create_dashboard_json for more details.
         bucket: The GCS bucket to upload to.
+        builder: The name of the builder the tests are running on.
+        builder_group: The name of the group the builder belongs to.
+        build_number: The build number of the current build.
     """
     # Should be provided by depot_tools.
     gsutil = shutil.which('gsutil.py')
@@ -223,8 +231,15 @@ def _upload_dashboard_json(dashboard_json: dict, bucket: str) -> None:
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     # YYYY/MM/DD/HH
     timestamp_path_component = now.strftime('%Y/%m/%d/%H')
-    gcs_path = posixpath.join(f'gs://{bucket}', BUCKET_SUBDIR,
-                              timestamp_path_component, gcs_filename)
+    gcs_path = posixpath.join(
+        f'gs://{bucket}',
+        BUCKET_SUBDIR,
+        timestamp_path_component,
+        builder_group,
+        builder,
+        str(build_number),
+        gcs_filename,
+    )
 
     with tempfile_ext.mkstemp_closed() as json_file:
         with open(json_file, 'w', encoding='utf-8') as outfile:

@@ -39,6 +39,8 @@ class MergeAndUploadMetricsUnittest(unittest.TestCase):
             bucket='test-bucket',
             build_id='123',
             builder='test_builder',
+            builder_group='test_builder_group',
+            build_number=1,
         )
         self.mock_create_dashboard_json.assert_called_once_with(
             [],
@@ -51,6 +53,9 @@ class MergeAndUploadMetricsUnittest(unittest.TestCase):
                 'foo': 'bar',
             },
             'test-bucket',
+            'test_builder',
+            'test_builder_group',
+            1,
         )
 
     def test_upload_fails(self):
@@ -62,6 +67,8 @@ class MergeAndUploadMetricsUnittest(unittest.TestCase):
                 bucket='test-bucket',
                 build_id='123',
                 builder='test_builder',
+                builder_group='test_builder_group',
+                build_number=1,
             )
             self.assertIn('Error occurred while uploading to bucket',
                           cm.output[0])
@@ -327,18 +334,20 @@ class UploadDashboardJsonUnittest(fake_filesystem_unittest.TestCase):
     def test_success(self):
         self.mock_dt_module.datetime.now.return_value = datetime.datetime(
             2025, 10, 29, 12, 30, 0, tzinfo=datetime.timezone.utc)
-        metrics._upload_dashboard_json({}, 'test-bucket')
+        metrics._upload_dashboard_json({}, 'test-bucket', 'test_builder',
+                                       'test_builder_group', 1)
         self.mock_run.assert_called_once()
         self.assertIn('/path/to/gsutil.py', self.mock_run.call_args[0][0])
         self.assertRegex(
             self.mock_run.call_args[0][0][-1],
-            r'gs://test-bucket/chromium_prompt_eval/2025/10/29/12/'
-            r'[a-f0-9]{40}\.json')
+            r'gs://test-bucket/ingest/2025/10/29/12/test_builder_group/'
+            r'test_builder/1/[a-f0-9]{40}\.json')
 
     def test_no_gsutil(self):
         self.mock_which.return_value = None
         with self.assertRaisesRegex(RuntimeError, 'Unable to find gsutil.py'):
-            metrics._upload_dashboard_json({}, 'test-bucket')
+            metrics._upload_dashboard_json({}, 'test-bucket', 'test_builder',
+                                           'test_builder_group', 1)
 
 
 if __name__ == '__main__':

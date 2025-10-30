@@ -557,6 +557,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.enable_perf_uploading = False
         self.args.git_revision = None
         self.args.builder = None
+        self.args.builder_group = None
+        self.args.build_number = None
         self.args.use_pinned_binaries = False
         self.args.node_bin = None
 
@@ -889,6 +891,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.gcs_bucket = 'test_bucket'
         self.args.build_id = '123'
         self.args.builder = 'test_builder'
+        self.args.builder_group = 'test_builder_group'
+        self.args.build_number = 1
         self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
             return_value = []
 
@@ -899,7 +903,9 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             git_revision='test_revision',
             bucket='test_bucket',
             build_id='123',
-            builder='test_builder')
+            builder='test_builder',
+            builder_group='test_builder_group',
+            build_number=1)
 
     def test_run_prompt_eval_tests_perf_disabled(self):
         """Tests that metrics are not uploaded when perf uploading is
@@ -968,7 +974,8 @@ class ParseArgsUnittest(unittest.TestCase):
         self.mock_argv[:] = [
             'eval_prompts.py', '--enable-perf-uploading', '--git-revision',
             'my-revision', '--gcs-bucket', 'my-bucket', '--build-id', '123',
-            '--builder', 'my-builder'
+            '--builder', 'my-builder', '--builder-group', 'my-builder-group',
+            '--build-number', '1'
         ]
         args = eval_prompts._parse_args()
         self.assertTrue(args.enable_perf_uploading)
@@ -976,6 +983,10 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertEqual(args.gcs_bucket, 'my-bucket')
         self.assertEqual(args.build_id, '123')
         self.assertEqual(args.builder, 'my-builder')
+        self.assertEqual(args.builder_group, 'my-builder-group')
+        self.assertEqual(args.build_number, 1)
+        self.assertEqual(args.builder_group, 'my-builder-group')
+        self.assertEqual(args.build_number, 1)
 
     def test_parse_args_all_test_selection_args(self):
         """Tests that all test selection arguments are parsed correctly."""
@@ -1135,9 +1146,15 @@ class ParseArgsUnittest(unittest.TestCase):
             '--gcs-bucket': 'my-bucket',
             '--build-id': '123',
             '--builder': 'my-builder',
+            '--builder-group': 'my-builder-group',
+            '--build-number': '1',
         }
 
         for key_to_omit in perf_args:
+            # TODO(crbug.com/449818513): Remove this once the default values
+            # for these arguments are removed.
+            if key_to_omit in ('--builder-group', '--build-number'):
+                continue
             with self.subTest(missing_arg=key_to_omit):
                 args_list = base_args[:]
                 for arg, value in perf_args.items():
@@ -1147,6 +1164,17 @@ class ParseArgsUnittest(unittest.TestCase):
                 self.mock_argv[:] = args_list
                 with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
                     eval_prompts._parse_args()
+
+    def test_parse_args_non_positive_build_number(self):
+        """Tests that a non-positive build_number raises an error."""
+        self.mock_argv[:] = [
+            'eval_prompts.py', '--enable-perf-uploading', '--git-revision',
+            'my-revision', '--gcs-bucket', 'my-bucket', '--build-id', '123',
+            '--builder', 'my-builder', '--builder-group', 'my-builder-group',
+            '--build-number', '0'
+        ]
+        with self.assertRaises(SystemExit), mock.patch('sys.stderr'):
+            eval_prompts._parse_args()
 
 
 if __name__ == '__main__':
