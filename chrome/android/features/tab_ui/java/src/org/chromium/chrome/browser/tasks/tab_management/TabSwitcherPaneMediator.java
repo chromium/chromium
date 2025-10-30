@@ -13,7 +13,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
@@ -410,7 +410,8 @@ public class TabSwitcherPaneMediator
             boolean show,
             boolean forced) {
         Configuration config = activity.getResources().getConfiguration();
-        FrameLayout pinnedTabsContainer = mContainerView.findViewById(R.id.pinned_tabs_container);
+        LinearLayout supplementaryDataContainer =
+                mContainerView.findViewById(R.id.supplementary_data_container);
         boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
         boolean shouldShow = show && !isTabletOrLandscape;
         if (hubSearchBoxVisibilitySupplier.get() != null
@@ -427,7 +428,9 @@ public class TabSwitcherPaneMediator
                 shouldShow
                         ? PINNED_TABS_SHOW_SEARCH_BOX_DURATION
                         : PINNED_TABS_HIDE_SEARCH_BOX_DURATION;
-        pinnedTabsContainer
+
+        // TODO(crbug.com/455919135): Move view manipulation to View binder with relevant property.
+        supplementaryDataContainer
                 .animate()
                 .withStartAction(
                         () -> {

@@ -229,6 +229,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final Callback<Boolean> mOnContextMenuFocusableChanged =
             this::onContextMenuFocusableChanged;
     private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier;
+    private final @Nullable View mPaneHairline;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
@@ -261,7 +262,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param isVisibleSupplier The supplier of the pane's visibility.
      * @param isAnimatingSupplier Whether the pane is animating into or out of view.
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
-     * @param setHairlineVisibilityCallback Callback to be invoked to show or hide the hairline.
      * @param mode The {@link TabListMode} to use.
      * @param supportsEmptyState Whether empty state UI should be shown when the model is empty.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
@@ -292,7 +292,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             ObservableSupplier<Boolean> isVisibleSupplier,
             ObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
-            Callback<Boolean> setHairlineVisibilityCallback,
             @TabListMode int mode,
             boolean supportsEmptyState,
             @Nullable Runnable onTabGroupCreation,
@@ -455,6 +454,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
             FrameLayout tabListContainer = layout.findViewById(R.id.tab_list_container);
             tabListContainer.addView(recyclerView);
+            mPaneHairline = layout.findViewById(R.id.pane_hairline);
 
             maybeMakeSpaceForSearchBar();
             mActivity.registerComponentCallbacks(mComponentsCallbacks);
@@ -488,7 +488,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             } else {
                 mTabListOnScrollListener
                         .getYOffsetNonZeroSupplier()
-                        .addObserver(setHairlineVisibilityCallback);
+                        .addObserver(this::setHairlineVisibility);
             }
 
             recyclerView.setVisibility(View.VISIBLE);
@@ -1152,5 +1152,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private boolean isAnyTabPinned() {
         return mTabGroupModelFilterSupplier.get().getTabModel().getPinnedTabsCount() > 0;
+    }
+
+    // TODO(crbug.com/455919135): Move view manipulation to View binder with relevant property.
+    private void setHairlineVisibility(boolean isYOffsetNonZero) {
+        if (mPaneHairline != null) {
+            mPaneHairline.setVisibility(isYOffsetNonZero ? View.VISIBLE : View.GONE);
+        }
     }
 }

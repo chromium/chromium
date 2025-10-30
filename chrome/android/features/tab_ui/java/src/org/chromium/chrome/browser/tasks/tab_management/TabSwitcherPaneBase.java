@@ -212,6 +212,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mUiFlow = tabGroupCreationUiDelegate;
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
+        mHairlineVisibilitySupplier.set(false);
     }
 
     @Override
@@ -290,6 +291,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
         return mReferenceButtonDataSupplier;
     }
 
+    /**
+     * Tab switcher pane manages its own hairline and hence, doesn't use central hub's hairline.
+     * Check {@link TabSwitcherPaneCoordinator} for more details.
+     */
     @Override
     public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
         return mHairlineVisibilitySupplier;
@@ -659,7 +664,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcher, TabSwitc
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
                         this::onTabClick,
-                        mHairlineVisibilitySupplier::set,
                         mIsIncognito,
                         getOnTabGroupCreationRunnable(),
                         mEdgeToEdgeSupplier,

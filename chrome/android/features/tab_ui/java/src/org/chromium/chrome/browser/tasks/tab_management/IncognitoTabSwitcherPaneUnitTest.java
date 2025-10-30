@@ -127,7 +127,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         any(),
                         any(),
                         mOnTabClickedCallbackCaptor.capture(),
-                        any(),
                         anyBoolean(),
                         any(),
                         any(),

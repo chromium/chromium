@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -1234,6 +1235,31 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 0);
 
         ThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
+    }
+
+    @Test
+    @MediumTest
+    public void testHairlineVisibility() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        prepareTabs(10, 0, null);
+        enterTabSwitcher(cta);
+
+        // Scroll to make hairline visible.
+        onView(tabSwitcherViewMatcher()).perform(RecyclerViewActions.scrollToPosition(9));
+        onView(withId(R.id.pane_hairline)).check(matches(withEffectiveVisibility(VISIBLE)));
+
+        // Scroll back to top to make hairline gone.
+        onView(tabSwitcherViewMatcher()).perform(RecyclerViewActions.scrollToPosition(0));
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        onView(withId(R.id.pane_hairline))
+                                .check(matches(withEffectiveVisibility(GONE)));
+                        return true;
+                    } catch (Throwable e) {
+                        return false;
+                    }
+                });
     }
 
     private void enterTabListEditor(ChromeTabbedActivity cta) {
