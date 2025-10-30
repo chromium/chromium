@@ -1331,6 +1331,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        OnTabCloseLogsUnexpectedFailure) {
   SetPrivacyNoticeAcceptedPref();
+  SetModelQualityLogsUploader();
+
   content::WebContents* original_apc_flow_web_contents = WebContents();
   int original_apc_flow_tab_index =
       browser()->tab_strip_model()->GetIndexOfWebContents(
@@ -1346,15 +1348,11 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       password_change_service()->GetPasswordChangeDelegate(
           original_apc_flow_web_contents);
   delegate->StartPasswordChangeFlow();
-  SetModelQualityLogsUploader();
 
-  // Set the 'open form' quality log, so that when there is an interruption
-  // the next step is set as FLOW_INTERRUPTED.
-  static_cast<PasswordChangeDelegateImpl*>(delegate)
-      ->logs_uploader()
-      ->SetOpenFormQualityStatus(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kWaitingForChangePasswordForm;
+  }));
 
   // Add an extra tab to prevent a dangling pointer when closing
   // the tab where the main flow is active.
@@ -1381,10 +1379,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
       /* submit_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*verify_submission_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
@@ -1393,8 +1391,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       FlowInterruptedAfterOpenFormStep) {
+                       FlowInterruptedDuringOpenFormStep) {
   SetPrivacyNoticeAcceptedPref();
+  SetModelQualityLogsUploader();
+
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
@@ -1404,15 +1404,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  SetModelQualityLogsUploader();
-
-  // Set the 'open form' quality log, so that when there is an interruption
-  // the next step is set as FLOW_INTERRUPTED.
-  static_cast<PasswordChangeDelegateImpl*>(delegate)
-      ->logs_uploader()
-      ->SetOpenFormQualityStatus(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 
   PasswordChangeUIController* ui_controller =
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
@@ -1435,7 +1426,60 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
+      /* submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*verify_submission_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       FlowInterruptedAfterOpenFormStep) {
+  SetPrivacyNoticeAcceptedPref();
+  SetModelQualityLogsUploader();
+
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"pa$$word", WebContents());
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
+
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kChangingPassword;
+  }));
+
+  PasswordChangeUIController* ui_controller =
+      static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
+  EXPECT_TRUE(base::test::RunUntil(
+      [ui_controller]() { return ui_controller->toast_view(); }));
+  base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
+      delegate->AsWeakPtr();
+  // Simulate clicking the "cancel" button on the UI toast.
+  views::test::ButtonTestApi clicker(
+      ui_controller->toast_view()->close_button());
+  clicker.NotifyClick(ui::test::TestEvent());
+  // Verify that the flow's state is "canceled".
+  EXPECT_EQ(PasswordChangeDelegate::State::kCanceled,
+            delegate->GetCurrentState());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
+
+  VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*open_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED,
@@ -1449,24 +1493,19 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        FlowInterruptedAfterSubmitFormStep) {
   SetPrivacyNoticeAcceptedPref();
+  SetModelQualityLogsUploader();
+
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
+      .WillOnce(Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
 
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"pa$$word", WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
-  SetModelQualityLogsUploader();
-
-  // Set the 'submit form' quality log, so that when there is an interruption
-  // the next step is set as FLOW_INTERRUPTED.
-  static_cast<PasswordChangeDelegateImpl*>(delegate)
-      ->logs_uploader()
-      ->SetSubmitFormQualityStatus(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  MockSuccessfulSubmitButtonClick(delegate);
 
   PasswordChangeUIController* ui_controller =
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
@@ -1489,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
@@ -1501,26 +1540,26 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
-                       OtpDetectedfterSubmitFormStep) {
+                       OtpDetectedDuringSubmitFormStep) {
   SetPrivacyNoticeAcceptedPref();
+  SetModelQualityLogsUploader();
+
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
+      .WillOnce(Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
 
   password_change_service()->OfferPasswordChangeUi(main_url, u"test",
                                                    u"pa$$word", WebContents());
-  SetModelQualityLogsUploader();
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
 
-  // Set the 'submit form' quality log, so that when there is an interruption
-  // the next step is set as FLOW_INTERRUPTED.
-  static_cast<PasswordChangeDelegateImpl*>(delegate)
-      ->logs_uploader()
-      ->SetSubmitFormQualityStatus(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
+  EXPECT_TRUE(base::test::RunUntil([delegate]() {
+    return delegate->GetCurrentState() ==
+           PasswordChangeDelegate::State::kChangingPassword;
+  }));
+
   base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
       delegate->AsWeakPtr();
 
@@ -1537,7 +1576,51 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*open_form_status=*/
       QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
+      /* submit_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED,
+      /*verify_submission_status=*/
+      QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*final_status=*/
+      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
+                       OtpDetectedDuringVerificationStep) {
+  SetPrivacyNoticeAcceptedPref();
+  SetModelQualityLogsUploader();
+
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"pa$$word", WebContents());
+  PasswordChangeDelegate* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
+  MockSuccessfulSubmitButtonClick(delegate);
+
+  base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
+      delegate->AsWeakPtr();
+
+  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
+  delegate_impl->OnOtpFieldDetected();
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kOtpDetected);
+  delegate_impl->ui_controller()->CallOnDialogCanceledForTesting();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
+
+  VerifyUniqueQualityLog(
+      /*login_check_status=*/QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+      /*open_form_status=*/
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,

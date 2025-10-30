@@ -72,13 +72,9 @@ class ModelQualityLogsUploader {
   // in Step=OPEN_FORM_STEP (e.g. Page Content is unavailable).
   void SetOpenFormUnexpectedFailure();
 
-  // To be called if the flow is interrupted
-  // (e.g., if the tab or dialog are closed).
-  void SetFlowInterrupted();
-
-  // To be called if the flow is halted
-  // because an OTP was detected.
-  void SetOtpDetected();
+  // To be called if the flow is interrupted (e.g., if the tab or dialog are
+  // closed).
+  void SetFlowInterrupted(FlowStep step, QualityStatus quality_status);
 
   // Marks a flow step as skipped, indicating no
   // model call was made for this step.
@@ -111,21 +107,6 @@ class ModelQualityLogsUploader {
   const optimization_guide::proto::LogAiDataRequest& GetFinalLog() const {
     return final_log_data_;
   }
-
-  void SetOpenFormQualityStatus(QualityStatus quality_status) {
-    final_log_data_.mutable_password_change_submission()
-        ->mutable_quality()
-        ->mutable_open_form()
-        ->set_status(quality_status);
-  }
-
-  void SetSubmitFormQualityStatus(QualityStatus quality_status) {
-    final_log_data_.mutable_password_change_submission()
-        ->mutable_quality()
-        ->mutable_submit_form()
-        ->set_status(quality_status);
-  }
-
 #endif
 
  private:

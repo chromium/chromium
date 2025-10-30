@@ -87,6 +87,10 @@ class ChangePasswordFormFillingSubmissionHelper {
     return form_manager_.get();
   }
 #endif
+  // Whether helper has submitted change password form or not.
+  bool IsPasswordFormSubmitted() const {
+    return submission_verifier_ != nullptr;
+  }
 
  private:
   void TriggerFilling(

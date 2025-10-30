@@ -20,7 +20,6 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
-#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_hats.h"
 #include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -61,6 +60,8 @@
 namespace {
 
 using ::password_manager::BrowserSavePasswordProgressLogger;
+using FlowStep = ModelQualityLogsUploader::FlowStep;
+using QualityStatus = ModelQualityLogsUploader::QualityStatus;
 
 constexpr base::TimeDelta kToastDisplayTime = base::Seconds(8);
 
@@ -412,9 +413,9 @@ void PasswordChangeDelegateImpl::CancelPasswordChangeFlow() {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
                            STRING_AUTOMATED_PASSWORD_CHANGE_CANCEL_FLOW);
   }
-  if (logs_uploader_) {
-    logs_uploader_->SetFlowInterrupted();
-  }
+  ReportFlowInterruption(
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
   login_state_checker_.reset();
   navigation_observer_.reset();
   submission_verifier_.reset();
@@ -471,9 +472,9 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
     }
     base::UmaHistogramEnumeration(
         "PasswordManager.PasswordChange.UserClosedTab", current_state_);
-    if (logs_uploader_) {
-      logs_uploader_->SetFlowInterrupted();
-    }
+    ReportFlowInterruption(
+        QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
     // Reset pointers immediately to avoid keeping dangling pointer to the tab.
     originator_ = nullptr;
     visible_executor_ = nullptr;
@@ -515,9 +516,9 @@ void PasswordChangeDelegateImpl::OnOtpFieldDetected() {
     logger->LogMessage(BrowserSavePasswordProgressLogger::
                            STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED);
   }
-  if (logs_uploader_) {
-    logs_uploader_->SetOtpDetected();
-  }
+  ReportFlowInterruption(
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
 
   form_finder_.reset();
   submission_verifier_.reset();
@@ -737,6 +738,8 @@ void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
   }
   navigation_observer_.reset();
 
+  // TODO(454022517): Record a special interruption for this case in MQLS.
+
   // Navigation happened when looking for a change password form, password
   // change can be terminated safely with `kChangePasswordFormNotFound`.
   if (form_finder_) {
@@ -752,6 +755,33 @@ void PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected() {
 
   // This shouldn't happen, just stop the flow immediately.
   Stop();
+}
+
+void PasswordChangeDelegateImpl::ReportFlowInterruption(QualityStatus status) {
+  if (!logs_uploader_) {
+    return;
+  }
+
+  if (login_state_checker_) {
+    logs_uploader_->SetFlowInterrupted(
+        FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP, status);
+    return;
+  }
+
+  if (form_finder_) {
+    logs_uploader_->SetFlowInterrupted(
+        FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP, status);
+    return;
+  }
+
+  if (submission_verifier_) {
+    logs_uploader_->SetFlowInterrupted(
+        submission_verifier_->IsPasswordFormSubmitted()
+            ? FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP
+            : FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP,
+        status);
+    return;
+  }
 }
 
 base::WeakPtr<PasswordChangeDelegate> PasswordChangeDelegateImpl::AsWeakPtr() {

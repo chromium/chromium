@@ -97,34 +97,6 @@ ModelQualityLogsUploader::QualityStatus GetVerifySubmissionQualityStatus(
       PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
 }
 
-optimization_guide::proto::PasswordChangeQuality_StepQuality*
-GetNextStepQuality(optimization_guide::proto::LogAiDataRequest& log) {
-  optimization_guide::proto::PasswordChangeQuality* quality =
-      log.mutable_password_change_submission()->mutable_quality();
-  if (quality->submit_form().status() !=
-      ModelQualityLogsUploader::QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
-    return quality->mutable_verify_submission();
-  }
-
-  if (quality->open_form().status() !=
-      ModelQualityLogsUploader::QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS) {
-    return quality->mutable_submit_form();
-  }
-
-  // TODO(crbug.com/446883346): Remove flag after feature is launched.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kCheckLoginStateBeforePasswordChange) ||
-      (quality->logged_in_check().status() !=
-       ModelQualityLogsUploader::QualityStatus::
-           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS)) {
-    return quality->mutable_open_form();
-  }
-
-  return quality->mutable_logged_in_check();
-}
-
 optimization_guide::proto::PasswordChangeQuality_StepQuality* GetStepQuality(
     ModelQualityLogsUploader::FlowStep step,
     optimization_guide::proto::LogAiDataRequest& log) {
@@ -376,18 +348,10 @@ void ModelQualityLogsUploader::SetOpenFormUnexpectedFailure() {
               PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
 }
 
-void ModelQualityLogsUploader::SetFlowInterrupted() {
-  GetNextStepQuality(final_log_data_)
-      ->set_status(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
-}
-
-void ModelQualityLogsUploader::SetOtpDetected() {
-  GetNextStepQuality(final_log_data_)
-      ->set_status(
-          QualityStatus::
-              PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
+void ModelQualityLogsUploader::SetFlowInterrupted(
+    FlowStep step,
+    QualityStatus quality_status) {
+  GetStepQuality(step, final_log_data_)->set_status(quality_status);
 }
 
 void ModelQualityLogsUploader::MarkStepSkipped(
