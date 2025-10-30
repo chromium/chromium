@@ -364,7 +364,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   // Call recordBannerOnScreenTime on viewWillDisappear since viewDidDisappear
-  // is called after the dismissal animation has occured.
+  // is called after the dismissal animation has occurred.
   [self recordBannerOnScreenTime];
 }
 
