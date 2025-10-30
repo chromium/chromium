@@ -380,6 +380,9 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
 // FET feature flag that enables AI Hub "New" badge.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSAIHubNewBadge);
 
+// FET feature flag that enables omnibox Gemini contextual cue chip.
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiContextualCueChip);
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

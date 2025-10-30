@@ -184,6 +184,10 @@ const char kIOSIPHBadgedReaderModeTriggered[] =
     "ios_iph_badged_reader_mode_triggered";
 const char kIOSAIHubNewBadgeTriggered[] = "ios_new_ai_hub_badge_triggered";
 const char kIOSAIHubNewBadgeUsed[] = "ios_new_ai_hub_badge_used";
+const char kIOSGeminiContextualCueChipTriggered[] =
+    "ios_gemini_contextual_cue_chip_triggered";
+const char kIOSGeminiContextualCueChipUsed[] =
+    "ios_gemini_contextual_cue_chip_used";
 const char kIOSGeminiPromoFirstCompletion[] =
     "ios_gemini_promo_first_completion";
 const char kIOSGeminiEligiblity[] = "ios_gemini_eligiblity";

@@ -353,6 +353,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSHomepageLensNewBadge,
 DEFINE_VARIATION_PARAM(kIPHiOSHomepageCustomizationNewBadge,
                        "IPH_iOSHomepageCustomizationNewBadge");
 DEFINE_VARIATION_PARAM(kIPHiOSAIHubNewBadge, "IPH_iOSAIHubNewBadge");
+DEFINE_VARIATION_PARAM(kIPHiOSGeminiContextualCueChip,
+                       "IPH_iOSGeminiContextualCueChip");
 
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -781,6 +783,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSSafariImportFeature),
         VARIATION_ENTRY(kIPHIOSPageActionMenu),
         VARIATION_ENTRY(kIPHiOSAIHubNewBadge),
+        VARIATION_ENTRY(kIPHiOSGeminiContextualCueChip),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

@@ -359,6 +359,12 @@ extern const char kIOSAIHubNewBadgeTriggered[];
 // Event fired when the AI Hub's entry point is tapped.
 extern const char kIOSAIHubNewBadgeUsed[];
 
+// Event fired when the omnibox Gemini contextual cue chip is shown.
+extern const char kIOSGeminiContextualCueChipTriggered[];
+
+// Event fired when the omnibox Gemini contextual cue chip is tapped.
+extern const char kIOSGeminiContextualCueChipUsed[];
+
 // Event fired when the Gemini Promo is completed for the first time on iOS.
 extern const char kIOSGeminiPromoFirstCompletion[];
 
