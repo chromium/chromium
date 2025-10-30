@@ -191,15 +191,18 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
     @Override
     protected Set<Integer> listedItemTypes() {
         return Set.of(
+                TouchToFillPaymentMethodProperties.ItemType.BNPL,
+                TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER,
+                TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT,
                 TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD,
                 TouchToFillPaymentMethodProperties.ItemType.IBAN,
-                TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD,
-                TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT);
+                TouchToFillPaymentMethodProperties.ItemType.LOYALTY_CARD);
     }
 
     @Override
     protected Set<Integer> footerItemTypes() {
         return Set.of(
+                TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_FOOTER,
                 TouchToFillPaymentMethodProperties.ItemType.TOS_FOOTER,
                 TouchToFillPaymentMethodProperties.ItemType.FOOTER);
     }
