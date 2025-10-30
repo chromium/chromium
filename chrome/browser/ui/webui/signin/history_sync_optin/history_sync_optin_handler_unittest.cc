@@ -264,6 +264,15 @@ TEST_P(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
       "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
 }
 
+// Tests that the dialog does not crash if a button is pressed more than once.
+// Regression test for crbug.com/449140137.
+TEST_P(HistorySyncOptinHandlerTest, DoubleClickingDoesNotCrash) {
+  AccountInfo account_info = SignInAndSetUpSyncService();
+  DisableAllSyncedDataTypes();
+  handler_->Accept();
+  handler_->Reject();
+}
+
 // This boolean parameter controls the value of the account capability
 // `can_show_history_sync_opt_ins_without_minor_mode_restrictions`.
 INSTANTIATE_TEST_SUITE_P(
