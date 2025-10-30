@@ -47,6 +47,7 @@ class GlicButton : public TabStripNudgeButton,
 
   void SetNudgeLabel(std::string label);
   void RestoreDefaultLabel();
+  void SetGlicPanelIsOpen(bool open);
 
   // Update button for glic attachment state.
   void SetGlicDetached(bool detached);
@@ -196,6 +197,8 @@ class GlicButton : public TabStripNudgeButton,
 
   const ui::ImageModel normal_icon_;
   const ui::ImageModel icon_for_highlight_;
+
+  bool glic_panel_is_open_ = false;
 
   base::WeakPtrFactory<GlicButton> weak_ptr_factory_{this};
 };

@@ -1079,6 +1079,14 @@ void TabStripActionContainer::SetGlicDetached(bool detached) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
+void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_button_) {
+    glic_button_->SetGlicPanelIsOpen(open);
+  }
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
 void TabStripActionContainer::DidBecomeActive(BrowserWindowInterface* browser) {
   separator_->SetColorId(kColorTabDividerFrameActive);
 }

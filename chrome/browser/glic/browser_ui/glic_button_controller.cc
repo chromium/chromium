@@ -19,9 +19,11 @@ namespace glic {
 
 GlicButtonController::GlicButtonController(
     Profile* profile,
+    BrowserWindowInterface& browser,
     GlicButtonControllerDelegate* delegate,
     GlicKeyedService* service)
     : profile_(profile),
+      browser_(browser),
       glic_controller_delegate_(delegate),
       glic_keyed_service_(service) {
   CHECK(glic_controller_delegate_);
@@ -71,19 +73,23 @@ void GlicButtonController::UpdateShowState(bool detached) {
   // regardless of glic enabling/pinned state.
   if (detached && !GlicWindowController::AlwaysDetached()) {
     glic_controller_delegate_->SetGlicShowState(true);
-    return;
+  } else {
+    const bool is_enabled_for_profile =
+        GlicEnabling::IsEnabledForProfile(profile_);
+    const bool is_pinned_to_tabstrip =
+        profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
+
+    if (is_enabled_for_profile && is_pinned_to_tabstrip) {
+      glic_keyed_service_->TryPreload();
+      glic_controller_delegate_->SetGlicShowState(true);
+    } else {
+      glic_controller_delegate_->SetGlicShowState(false);
+    }
   }
 
-  const bool is_enabled_for_profile =
-      GlicEnabling::IsEnabledForProfile(profile_);
-  const bool is_pinned_to_tabstrip =
-      profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
-
-  if (is_enabled_for_profile && is_pinned_to_tabstrip) {
-    glic_keyed_service_->TryPreload();
-    glic_controller_delegate_->SetGlicShowState(true);
-  } else {
-    glic_controller_delegate_->SetGlicShowState(false);
+  if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
+    glic_controller_delegate_->SetGlicPanelIsOpen(
+        glic_keyed_service_->IsPanelShowingForBrowser(*browser_));
   }
 }
 

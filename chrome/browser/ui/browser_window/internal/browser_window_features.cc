@@ -685,7 +685,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         glic::GlicKeyedService::Get(browser_view->GetProfile());
     if (glic_service) {
       glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
-          browser_view->GetProfile(),
+          browser_view->GetProfile(), *browser_,
           BrowserElementsViews::From(browser_view->browser())
               ->GetViewAs<TabStripActionContainer>(
                   kTabStripActionContainerElementId),
