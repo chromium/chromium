@@ -41,6 +41,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       <div class="context-menu-container" part="context-menu-and-tools">
         <composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
+            exportparts="context-menu-entrypoint-icon"
             class="upload-icon no-overlap"
             .tabSuggestions="${this.tabSuggestions}"
             .entrypointName="${this.entrypointName}"

@@ -19,6 +19,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     </cr-button>
     `: html`
       <cr-icon-button id="entrypoint"
+          part="context-menu-entrypoint-icon"
           iron-icon="cr:add"
           @click="${this.onEntrypointClick_}"
           ?disabled="${this.inputsDisabled}"
