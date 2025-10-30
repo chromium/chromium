@@ -16,8 +16,5 @@ source_set("common") {
     "//skia",
     "//ui/accessibility",
   ]
-  deps = [
-    "//pdf:pdf_accessibility_constants",
-    "//printing/buildflags",
-  ]
+  deps = [ "//printing/buildflags" ]
 }

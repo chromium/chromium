@@ -19,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "pdf/pdf_accessibility_constants.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
 #include "skia/ext/codec_utils.h"
@@ -58,6 +57,63 @@
 
 namespace {
 
+// TODO(crbug.com/451536362) Share these constants with PDF.
+
+// Table 364 in PDF 32000-2:2020 spec, section 14.8.4.3
+const char kPDFStructureTypeDocument[] = "Document";
+
+// Table 365 in PDF 32000-2:2020 spec, section 14.8.4.4
+const char kPDFStructureTypeDiv[] = "Div";
+const char kPDFStructureTypeAside[] = "Aside";
+const char kPDFStructureTypeNonStruct[] = "NonStruct";
+
+// Table 366 in PDF 32000-2:2020 spec, section 14.8.4.5
+const char kPDFStructureTypeParagraph[] = "P";
+const char kPDFStructureTypeHeading[] = "H";
+
+// Table 368 in PDF 32000-2:2020 spec, section 14.8.4.7.2
+const char kPDFStructureTypeListItemLabel[] = "Lbl";
+const char kPDFStructureTypeEmphasis[] = "Em";
+const char kPDFStructureTypeStrong[] = "Strong";
+const char kPDFStructureTypeLink[] = "Link";
+
+// Table 370 in PDF 32000-2:2020 spec, section 14.8.4.8.2
+const char kPDFStructureTypeList[] = "L";
+const char kPDFStructureTypeListItemBody[] = "LI";
+
+// Table 371 in PDF 32000-2:2020 spec, section 14.8.4.8.3
+const char kPDFStructureTypeTable[] = "Table";
+const char kPDFStructureTypeTableRow[] = "TR";
+const char kPDFStructureTypeTableHeader[] = "TH";
+const char kPDFStructureTypeTableCell[] = "TD";
+
+// Table 372 in PDF 32000-2:2020 spec, section 14.8.4.8.3
+const char kPDFStructureTypeCaption[] = "Caption";
+
+// Table 373 in PDF 32000-2:2020 spec, section 14.8.4.8.5
+const char kPDFStructureTypeFigure[] = "Figure";
+
+// Standard attribute owners from Table 376 PDF 32000-2:2020 spec,
+// section 14.8.5.2 (Attribute owners are kind of like "categories"
+// for structure node attributes.)
+const char kPDFTableAttributeOwner[] = "Table";
+
+// Table Attributes from tabl 384 in PDF 32000-2:2020 spec,
+// section 14.8.5.7
+const char kPDFTableCellColSpanAttribute[] = "ColSpan";
+const char kPDFTableCellHeadersAttribute[] = "Headers";
+const char kPDFTableCellRowSpanAttribute[] = "RowSpan";
+const char kPDFTableHeaderScopeAttribute[] = "Scope";
+const char kPDFTableHeaderScopeColumn[] = "Column";
+const char kPDFTableHeaderScopeRow[] = "Row";
+
+// Table 333 in PDF 32000-1:2008 spec, section 14.8.4.2
+const char kPDFStructureTypeArticle[] = "Art";
+const char kPDFStructureTypeBlockQuote[] = "BlockQuote";
+
+// Table 338 in PDF 32000-1:2008 spec, section 14.8.4.4.1
+const char kPDFStructureTypeCode[] = "Code";
+
 SkString GetHeadingStructureType(int heading_level) {
   // From Table 366 in PDF 32000-2:2020 spec, section 14.8.4.5,
   // "H1"..."H6" are valid structure types.
@@ -65,7 +121,7 @@ SkString GetHeadingStructureType(int heading_level) {
     return SkString(base::StringPrintf("H%d", heading_level).c_str());
 
   // If we don't have a valid heading level, use the generic heading role.
-  return SkString(chrome_pdf::kPDFStructureTypeHeading);
+  return SkString(kPDFStructureTypeHeading);
 }
 
 SkPDF::DateTime TimeToSkTime(base::Time time) {
@@ -101,19 +157,19 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   tag->fNodeId = ax_node->data().GetDOMNodeId();
   switch (ax_node->GetRole()) {
     case ax::mojom::Role::kRootWebArea:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeDocument;
+      tag->fTypeString = kPDFStructureTypeDocument;
       break;
     case ax::mojom::Role::kParagraph:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeParagraph;
+      tag->fTypeString = kPDFStructureTypeParagraph;
       break;
     case ax::mojom::Role::kGenericContainer:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeDiv;
+      tag->fTypeString = kPDFStructureTypeDiv;
       break;
     case ax::mojom::Role::kArticle:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeArticle;
+      tag->fTypeString = kPDFStructureTypeArticle;
       break;
     case ax::mojom::Role::kBlockquote:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeBlockQuote;
+      tag->fTypeString = kPDFStructureTypeBlockQuote;
       break;
     case ax::mojom::Role::kCaption: {
       ui::AXNode* parent = ax_node->GetParent();
@@ -122,65 +178,65 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
         // of Table, luckily, the AXTree always reorders caption to be the
         // first child.
         DCHECK_EQ(parent->GetUnignoredChildAtIndex(0), ax_node);
-        tag->fTypeString = chrome_pdf::kPDFStructureTypeCaption;
+        tag->fTypeString = kPDFStructureTypeCaption;
       } else {
         // TODO(crbug.com/448962793) Investigate in which other scenarios a
         // node with role caption should be mapped to PDF Tag caption.
-        tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
+        tag->fTypeString = kPDFStructureTypeNonStruct;
       }
       break;
     }
     case ax::mojom::Role::kCode:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeCode;
+      tag->fTypeString = kPDFStructureTypeCode;
       break;
     case ax::mojom::Role::kComplementary:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeAside;
+      tag->fTypeString = kPDFStructureTypeAside;
       break;
     case ax::mojom::Role::kHeading:
       tag->fTypeString = GetHeadingStructureType(ax_node->GetIntAttribute(
           ax::mojom::IntAttribute::kHierarchicalLevel));
       break;
     case ax::mojom::Role::kLink:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeLink;
+      tag->fTypeString = kPDFStructureTypeLink;
       break;
     case ax::mojom::Role::kEmphasis:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeEmphasis;
+      tag->fTypeString = kPDFStructureTypeEmphasis;
       break;
     case ax::mojom::Role::kStrong:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeStrong;
+      tag->fTypeString = kPDFStructureTypeStrong;
       break;
     case ax::mojom::Role::kList:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeList;
+      tag->fTypeString = kPDFStructureTypeList;
       break;
     case ax::mojom::Role::kListMarker:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeListItemLabel;
+      tag->fTypeString = kPDFStructureTypeListItemLabel;
       break;
     case ax::mojom::Role::kListItem:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeListItemBody;
+      tag->fTypeString = kPDFStructureTypeListItemBody;
       break;
     case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kTable:
     case ax::mojom::Role::kTreeGrid:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeTable;
+      tag->fTypeString = kPDFStructureTypeTable;
       break;
     case ax::mojom::Role::kRow:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeTableRow;
+      tag->fTypeString = kPDFStructureTypeTableRow;
       break;
     case ax::mojom::Role::kColumnHeader:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeTableHeader;
-      tag->fAttributes.appendName(chrome_pdf::kPDFTableAttributeOwner,
-                                  chrome_pdf::kPDFTableHeaderScopeAttribute,
-                                  chrome_pdf::kPDFTableHeaderScopeColumn);
+      tag->fTypeString = kPDFStructureTypeTableHeader;
+      tag->fAttributes.appendName(kPDFTableAttributeOwner,
+                                  kPDFTableHeaderScopeAttribute,
+                                  kPDFTableHeaderScopeColumn);
       break;
     case ax::mojom::Role::kRowHeader:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeTableHeader;
-      tag->fAttributes.appendName(chrome_pdf::kPDFTableAttributeOwner,
-                                  chrome_pdf::kPDFTableHeaderScopeAttribute,
-                                  chrome_pdf::kPDFTableHeaderScopeRow);
+      tag->fTypeString = kPDFStructureTypeTableHeader;
+      tag->fAttributes.appendName(kPDFTableAttributeOwner,
+                                  kPDFTableHeaderScopeAttribute,
+                                  kPDFTableHeaderScopeRow);
       break;
     case ax::mojom::Role::kCell:
     case ax::mojom::Role::kGridCell: {
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeTableCell;
+      tag->fTypeString = kPDFStructureTypeTableCell;
 
       // Append an attribute consisting of the string IDs of all of the
       // header cells that correspond to this table cell.
@@ -193,8 +249,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
         header_ids.push_back(header_node->data().GetDOMNodeId());
       }
       tag->fAttributes.appendNodeIdArray(
-          chrome_pdf::kPDFTableAttributeOwner,
-          chrome_pdf::kPDFTableCellHeadersAttribute, header_ids);
+          kPDFTableAttributeOwner, kPDFTableCellHeadersAttribute, header_ids);
       break;
     }
     case ax::mojom::Role::kImage:
@@ -204,32 +259,32 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       valid = true;
       [[fallthrough]];
     case ax::mojom::Role::kFigure: {
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeFigure;
+      tag->fTypeString = kPDFStructureTypeFigure;
       std::string alt =
           ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
       tag->fAlt = SkString(alt.c_str());
       break;
     }
     case ax::mojom::Role::kStaticText:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
+      tag->fTypeString = kPDFStructureTypeNonStruct;
       valid = true;
       break;
     default:
-      tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
+      tag->fTypeString = kPDFStructureTypeNonStruct;
       break;
   }
 
   if (ui::IsCellOrTableHeader(ax_node->GetRole())) {
     std::optional<int> row_span = ax_node->GetTableCellRowSpan();
     if (row_span.has_value()) {
-      tag->fAttributes.appendInt(chrome_pdf::kPDFTableAttributeOwner,
-                                 chrome_pdf::kPDFTableCellRowSpanAttribute,
+      tag->fAttributes.appendInt(kPDFTableAttributeOwner,
+                                 kPDFTableCellRowSpanAttribute,
                                  row_span.value());
     }
     std::optional<int> col_span = ax_node->GetTableCellColSpan();
     if (col_span.has_value()) {
-      tag->fAttributes.appendInt(chrome_pdf::kPDFTableAttributeOwner,
-                                 chrome_pdf::kPDFTableCellColSpanAttribute,
+      tag->fAttributes.appendInt(kPDFTableAttributeOwner,
+                                 kPDFTableCellColSpanAttribute,
                                  col_span.value());
     }
   }
