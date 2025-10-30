@@ -56,7 +56,8 @@ class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
   void Show(
       SidePanelEntry::Key entry_key,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
-  std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
+  std::optional<SidePanelEntry::Id> GetCurrentEntryId(
+      SidePanelEntry::PanelType panel_type) const override;
   int GetCurrentEntryDefaultContentWidth(
       SidePanelEntry::PanelType type) const override;
   bool IsSidePanelShowing(SidePanelEntry::PanelType type) const override;

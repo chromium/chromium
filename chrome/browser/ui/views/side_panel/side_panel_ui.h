@@ -43,7 +43,8 @@ class SidePanelUI {
                       SidePanelOpenTrigger open_trigger) = 0;
 
   // Get the current entry id if the side panel is open.
-  virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
+  virtual std::optional<SidePanelEntryId> GetCurrentEntryId(
+      SidePanelEntry::PanelType panel_type) const = 0;
 
   // Returns the current entries default width. Returns nullopt if this value is
   // not set or if the side panel is closed.

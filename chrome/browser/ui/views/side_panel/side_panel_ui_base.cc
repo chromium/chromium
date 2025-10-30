@@ -66,11 +66,12 @@ void SidePanelUIBase::Show(
   Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
 }
 
-std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId() const {
-  if (!current_key(SidePanelEntry::PanelType::kContent).has_value()) {
+std::optional<SidePanelEntry::Id> SidePanelUIBase::GetCurrentEntryId(
+    SidePanelEntry::PanelType panel_type) const {
+  if (!IsSidePanelShowing(panel_type)) {
     return std::nullopt;
   }
-  return current_key(SidePanelEntry::PanelType::kContent)->key.id();
+  return current_key(panel_type)->key.id();
 }
 
 int SidePanelUIBase::GetCurrentEntryDefaultContentWidth(
