@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "crypto/hash.h"
-#include "crypto/obsolete/md5.h"
 
 namespace bookmarks {
 
@@ -81,11 +80,6 @@ class BookmarkCodec {
   }
 
   // Test-only APIs.
-  const std::string& ComputedChecksumForTest() const {
-    return computed_checksum_;
-  }
-  const std::string& StoredChecksumForTest() const { return stored_checksum_; }
-
   const std::string& ComputedSha256ChecksumForTest() const {
     return computed_sha256_checksum_;
   }
@@ -210,15 +204,9 @@ class BookmarkCodec {
   // if we have duplicates.
   std::set<base::Uuid> uuids_;
 
-  // MD5 context used to compute MD5 hash of all bookmark data.
-  crypto::obsolete::Md5 md5_hasher_;
-
   // SHA context used to compute SHA256 hash of all bookmark data.
   // Intended to replace MD5 hasher (crbug.com/426243026)
   crypto::hash::Hasher sha256_hasher_{crypto::hash::kSha256};
-
-  // MD5 checksum computed during last encoding/decoding call.
-  std::string computed_checksum_;
 
   // SHA256 checksum computed during last encoding/decoding call.
   std::string computed_sha256_checksum_;
@@ -228,8 +216,6 @@ class BookmarkCodec {
   // stored to the file. After a call to decode, the computed checksum can
   // differ from the stored checksum if the file contents were changed by the
   // user.
-  std::string stored_checksum_;
-  // Same as above but encoded using SHA256 rather than MD5.
   std::string stored_sha256_checksum_;
 
   // Maximum ID assigned when decoding data.
