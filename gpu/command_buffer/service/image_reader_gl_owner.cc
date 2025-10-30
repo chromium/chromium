@@ -481,16 +481,6 @@ void ImageReaderGLOwner::ReleaseBackBuffers() {
   // ReleaseBackBuffers() call is not required with image reader.
 }
 
-gl::GLContext* ImageReaderGLOwner::GetContext() const {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  return context_.get();
-}
-
-gl::GLSurface* ImageReaderGLOwner::GetSurface() const {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
-  return surface_.get();
-}
-
 // This callback function will be called when there is a new image available
 // for in the image reader's queue.
 void ImageReaderGLOwner::OnFrameAvailable(void* context, AImageReader* reader) {

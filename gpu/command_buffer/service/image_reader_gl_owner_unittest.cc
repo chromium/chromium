@@ -115,12 +115,6 @@ TEST_F(ImageReaderGLOwnerTest, GLTextureIsCreatedAndDestroyed) {
   EXPECT_FALSE(abstract_texture_);
 }
 
-// Make sure that image_reader_ remembers the correct context and surface.
-TEST_F(ImageReaderGLOwnerTest, ContextAndSurfaceAreCaptured) {
-  ASSERT_EQ(context_, image_reader_->GetContext());
-  ASSERT_EQ(context_->default_surface(), image_reader_->GetSurface());
-}
-
 // Verify that destruction works even if some other context is current.
 TEST_F(ImageReaderGLOwnerTest, DestructionWorksWithWrongContext) {
   scoped_refptr<gl::GLSurface> new_surface(new gl::PbufferGLSurfaceEGL(

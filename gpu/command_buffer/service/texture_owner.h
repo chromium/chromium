@@ -27,7 +27,6 @@ class ScopedHardwareBufferFenceSync;
 
 namespace gpu {
 class AbstractTextureAndroid;
-class TextureBase;
 
 // Used for diagnosting metrics. Do not use for anything else.
 // TODO(crbug.com/329821776): Remove once we get enough data.
@@ -79,12 +78,6 @@ class GPU_GLES2_EXPORT TextureOwner
     return task_runner_;
   }
 
-  // Returns the GL texture id that the TextureOwner is attached to.
-  GLuint GetTextureId() const;
-  TextureBase* GetTextureBase() const;
-  virtual gl::GLContext* GetContext() const = 0;
-  virtual gl::GLSurface* GetSurface() const = 0;
-
   // Create a java surface for the TextureOwner.
   virtual gl::ScopedJavaSurface CreateJavaSurface() const = 0;
 
@@ -124,8 +117,6 @@ class GPU_GLES2_EXPORT TextureOwner
   // thread.
   virtual void RunWhenBufferIsAvailable(base::OnceClosure callback) = 0;
 
-  bool binds_texture_on_update() const { return binds_texture_on_update_; }
-
   // SharedContextState::ContextLostObserver implementation.
   void OnContextLost() override;
 
@@ -142,8 +133,6 @@ class GPU_GLES2_EXPORT TextureOwner
   // Called when |texture_| signals that the platform texture will be destroyed.
   virtual void ReleaseResources() = 0;
 
-  AbstractTextureAndroid* texture() const { return texture_.get(); }
-
   int tracing_id() const { return tracing_id_; }
 
   static constexpr char kMemoryDumpPrefix[] = "gpu/media_texture_owner_0x%x";
@@ -154,10 +143,6 @@ class GPU_GLES2_EXPORT TextureOwner
   // To be used by MockTextureOwner.
   TextureOwner(bool binds_texture_on_update,
                std::unique_ptr<AbstractTextureAndroid> texture);
-
-  // Set to true if the updating the image for this owner will automatically
-  // bind it to the texture target.
-  const bool binds_texture_on_update_;
 
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<AbstractTextureAndroid> texture_;

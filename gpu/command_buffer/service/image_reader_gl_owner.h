@@ -37,8 +37,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   ImageReaderGLOwner(const ImageReaderGLOwner&) = delete;
   ImageReaderGLOwner& operator=(const ImageReaderGLOwner&) = delete;
 
-  gl::GLContext* GetContext() const override;
-  gl::GLSurface* GetSurface() const override;
   void SetFrameAvailableCallback(
       const base::RepeatingClosure& frame_available_cb) override;
   gl::ScopedJavaSurface CreateJavaSurface() const override;

@@ -28,9 +28,6 @@ class MockTextureOwner : public TextureOwner {
                    gl::GLSurface* fake_surface,
                    bool binds_texture_on_update = false);
 
-  MOCK_CONST_METHOD0(GetTextureId, GLuint());
-  MOCK_CONST_METHOD0(GetContext, gl::GLContext*());
-  MOCK_CONST_METHOD0(GetSurface, gl::GLSurface*());
   MOCK_CONST_METHOD0(CreateJavaSurface, gl::ScopedJavaSurface());
   MOCK_METHOD1(UpdateTexImage, bool(bool));
   MOCK_METHOD0(ReleaseBackBuffers, void());
@@ -52,8 +49,6 @@ class MockTextureOwner : public TextureOwner {
     return nullptr;
   }
 
-  raw_ptr<gl::GLContext> fake_context;
-  raw_ptr<gl::GLSurface> fake_surface;
   int get_a_hardware_buffer_count = 0;
 
  protected:

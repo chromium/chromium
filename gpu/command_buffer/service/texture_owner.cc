@@ -44,7 +44,6 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
                            scoped_refptr<SharedContextState> context_state)
     : base::RefCountedDeleteOnSequence<TextureOwner>(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
-      binds_texture_on_update_(binds_texture_on_update),
       context_state_(std::move(context_state)),
       texture_(std::move(texture)),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -60,7 +59,6 @@ TextureOwner::TextureOwner(bool binds_texture_on_update,
                            std::unique_ptr<AbstractTextureAndroid> texture)
     : base::RefCountedDeleteOnSequence<TextureOwner>(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
-      binds_texture_on_update_(binds_texture_on_update),
       texture_(std::move(texture)),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       tracing_id_(g_next_texture_owner_tracing_id.GetNext()) {
@@ -102,14 +100,6 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
   return new ImageReaderGLOwner(std::move(texture), mode,
                                 std::move(context_state), std::move(drdc_lock),
                                 type_for_metrics);
-}
-
-GLuint TextureOwner::GetTextureId() const {
-  return texture_->service_id();
-}
-
-TextureBase* TextureOwner::GetTextureBase() const {
-  return texture_->GetTextureBase();
 }
 
 void TextureOwner::OnContextLost() {
