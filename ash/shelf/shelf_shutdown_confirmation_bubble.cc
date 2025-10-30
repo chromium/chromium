@@ -22,6 +22,8 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -188,10 +190,8 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kTextColorPrimary);
   title_->SetEnabledColor(label_color);
 
-  SkColor button_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColor);
-  cancel_->SetEnabledTextColors(button_color);
-  confirm_->SetEnabledTextColors(button_color);
+  cancel_->SetEnabledTextColors(cros_tokens::kColorPrimary);
+  confirm_->SetEnabledTextColors(cros_tokens::kColorPrimary);
   SetBackgroundColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
 }
 

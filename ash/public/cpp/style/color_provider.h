@@ -47,11 +47,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     // Background for kIconColorSecondary.
     kIconColorSecondaryBackground,
 
-    // The default color for button labels.
-    kButtonLabelColor,
-
-    // Color for blue button labels, e.g, 'Retry' button of the system toast.
-    kButtonLabelColorBlue,
 
     kButtonIconColor,
     kButtonIconColorPrimary,

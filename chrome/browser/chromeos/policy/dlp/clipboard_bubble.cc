@@ -84,9 +84,7 @@ class BubbleButton : public views::LabelButton {
     const gfx::FontList font_list = GetFontList();
     label()->SetFontList(font_list);
 
-    const SkColor text_color = ash::ColorProvider::Get()->GetContentLayerColor(
-        ash::ColorProvider::ContentLayerType::kButtonLabelColorBlue);
-    SetTextColor(ButtonState::STATE_NORMAL, text_color);
+    SetTextColor(ButtonState::STATE_NORMAL, cros_tokens::kTextColorProminent);
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetSize({gfx::GetStringWidth(button_label, font_list) + 2 * kButtonPadding,
              kButtonHeight});

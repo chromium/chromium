@@ -171,9 +171,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
                 GURL(phonehub::kPhoneHubLearnMoreLink),
                 NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                 NewWindowDelegate::Disposition::kNewForegroundTab)));
-    const SkColor link_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
-    link_style.override_color = link_color;
+    link_style.override_color_id = cros_tokens::kTextColorProminent;
     body_->AddStyleRange(gfx::Range(offset, offset + learn_more_link.length()),
                          link_style);
 

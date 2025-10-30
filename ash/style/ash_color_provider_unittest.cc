@@ -159,13 +159,6 @@ INSTANTIATE_TEST_SUITE_P(
           ColorProvider::ContentLayerType::kIconColorSecondaryBackground,
           SkColorSetRGB(0x3C, 0x40, 0x43)},
 
-         {ColorMode::kLight, ColorProvider::ContentLayerType::kButtonLabelColor,
-          SkColorSetRGB(0x17, 0x1D, 0x1E)},
-
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kButtonLabelColorBlue,
-          SkColorSetRGB(0x0, 0x68, 0x74)},
-
          {ColorMode::kLight, ColorProvider::ContentLayerType::kButtonIconColor,
           SkColorSetRGB(0x17, 0x1D, 0x1E)},
          {ColorMode::kLight,
@@ -200,13 +193,6 @@ INSTANTIATE_TEST_SUITE_P(
          {ColorMode::kDark,
           ColorProvider::ContentLayerType::kIconColorSecondaryBackground,
           SkColorSetRGB(0xF1, 0xF3, 0xF4)},
-
-         {ColorMode::kDark, ColorProvider::ContentLayerType::kButtonLabelColor,
-          SkColorSetRGB(0xDE, 0xE3, 0xE5)},
-
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kButtonLabelColorBlue,
-          SkColorSetRGB(0x74, 0xD5, 0xE4)},
 
          {ColorMode::kDark, ColorProvider::ContentLayerType::kButtonIconColor,
           SkColorSetRGB(0xDE, 0xE3, 0xE5)},
