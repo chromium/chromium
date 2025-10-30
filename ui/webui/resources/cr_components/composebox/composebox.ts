@@ -125,10 +125,6 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
       },
       showContextMenuDescription_: {type: Boolean},
-      inputsDisabled_: {
-        reflect: true,
-        type: Boolean,
-      },
       lensButtonDisabled_: {
         reflect: true,
         type: Boolean,
@@ -177,7 +173,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor inCreateImageMode_: boolean = false;
   protected accessor inDeepSearchMode_: boolean = false;
   protected accessor showContextMenuDescription_: boolean = true;
-  protected accessor inputsDisabled_: boolean = false;
   protected accessor lensButtonDisabled_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor errorScrimVisible_: boolean = false;

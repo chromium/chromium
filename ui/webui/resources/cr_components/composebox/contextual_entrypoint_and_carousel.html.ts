@@ -19,7 +19,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         <composebox-recent-tab-chip id="recentTabChip"
             class="upload-icon"
             .recentTab="${this.tabSuggestions[0]}"
-            .inputsDisabled="${this.inputsDisabled_}"
+            .inputsDisabled="${this.recentTabChipDisabled_}"
             @add-tab-context="${this.addTabContext_}">
         </composebox-recent-tab-chip>
         ` :

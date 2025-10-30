@@ -669,7 +669,10 @@ suite('NewTabPageComposeboxTest', () => {
 
   test(
       'inputs disabled based on file count and create image mode', async () => {
-        loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
+        loadTimeData.overrideValues({
+          'composeboxFileMaxCount': 1,
+          'composeboxShowCreateImageButton': true,
+        });
 
         createComposeboxElement();
         await microtasksFinished();
