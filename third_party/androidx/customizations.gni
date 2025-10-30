@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("common.gni")
 
 template("_androidx_prebuilt") {
   target(invoker.target_type, target_name) {
@@ -44,8 +45,13 @@ template("_androidx_prebuilt") {
       jar_excluded_patterns = [
         "androidx/core/os/BuildCompat*",
         "androidx/core/content/res/TypedArrayUtils*",
-        "androidx/core/view/accessibility/AccessibilityNodeInfoCompat*",
       ]
+
+      if (clank_accessibility_custom_overrides) {
+        jar_excluded_patterns +=
+            [ "androidx/core/view/accessibility/AccessibilityNodeInfoCompat*" ]
+      }
+
       public_deps = [ "//third_party/androidx/local_modifications/buildcompat:buildcompat_java" ]
 
       if (!enable_java_asserts) {
