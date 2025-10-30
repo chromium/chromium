@@ -9,6 +9,8 @@ namespace autofill {
 ActorSuggestion::ActorSuggestion() = default;
 ActorSuggestion::ActorSuggestion(const ActorSuggestion&) = default;
 ActorSuggestion& ActorSuggestion::operator=(const ActorSuggestion&) = default;
+ActorSuggestion::ActorSuggestion(ActorSuggestion&&) = default;
+ActorSuggestion& ActorSuggestion::operator=(ActorSuggestion&&) = default;
 ActorSuggestion::~ActorSuggestion() = default;
 
 ActorFormFillingRequest::ActorFormFillingRequest() = default;
@@ -16,6 +18,21 @@ ActorFormFillingRequest::ActorFormFillingRequest(
     const ActorFormFillingRequest&) = default;
 ActorFormFillingRequest& ActorFormFillingRequest::operator=(
     const ActorFormFillingRequest&) = default;
+ActorFormFillingRequest::ActorFormFillingRequest(ActorFormFillingRequest&&) =
+    default;
+ActorFormFillingRequest& ActorFormFillingRequest::operator=(
+    ActorFormFillingRequest&&) = default;
 ActorFormFillingRequest::~ActorFormFillingRequest() = default;
+
+ActorFormFillingSelection::ActorFormFillingSelection() = default;
+ActorFormFillingSelection::ActorFormFillingSelection(
+    const ActorFormFillingSelection&) = default;
+ActorFormFillingSelection& ActorFormFillingSelection::operator=(
+    const ActorFormFillingSelection&) = default;
+ActorFormFillingSelection::ActorFormFillingSelection(
+    ActorFormFillingSelection&&) = default;
+ActorFormFillingSelection& ActorFormFillingSelection::operator=(
+    ActorFormFillingSelection&&) = default;
+ActorFormFillingSelection::~ActorFormFillingSelection() = default;
 
 }  // namespace autofill
