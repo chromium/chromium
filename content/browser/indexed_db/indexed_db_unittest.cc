@@ -2299,6 +2299,7 @@ TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
 }
 
 TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
+  base::HistogramTester histograms;
   if (IsSqliteBackingStoreEnabled()) {
     // The mechanism used to induce errors (`MakeFileUnwritable`) doesn't work
     // on Fuchsia.
@@ -2350,6 +2351,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
     permission_restorer.emplace(data_path);
     ASSERT_TRUE(base::MakeFileUnwritable(data_path))
         << base::File::GetLastFileError();
+    histograms.ExpectTotalCount("IndexedDB.SQLite.OpenRetryResult", 0);
   }
 
   // Expect an error when opening.
@@ -2365,6 +2367,11 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
                        transaction_remote.BindNewEndpointAndPassReceiver(),
                        /*transaction_id=*/2, /*priority=*/0);
   run_loop.Run();
+
+  if (IsSqliteBackingStoreEnabled()) {
+    histograms.ExpectUniqueSample("IndexedDB.SQLite.OpenRetryResult",
+                                  5 /*Status::Type::kDatabaseEngine*/, 1);
+  }
 
   // An error on open results in a write error reported to the quota system.
   ASSERT_EQ(1U, quota_manager_->write_error_tracker().size());
@@ -2488,6 +2495,7 @@ TEST_P(IndexedDBTest, DataLoss) {
   // Set an older data format version and try to reopen said database. Expect
   // total data loss.
   {
+    base::HistogramTester histograms;
     base::AutoReset<IndexedDBDataFormatVersion> override_version(
         &IndexedDBDataFormatVersion::GetMutableCurrentForTesting(),
         IndexedDBDataFormatVersion(3, 3));
@@ -2504,6 +2512,10 @@ TEST_P(IndexedDBTest, DataLoss) {
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/2, /*priority=*/0);
     run_loop.Run();
+    if (IsSqliteBackingStoreEnabled()) {
+      histograms.ExpectUniqueSample("IndexedDB.SQLite.OpenRetryResult",
+                                    0 /*Status::Type::kOk*/, 1);
+    }
   }
 }
 

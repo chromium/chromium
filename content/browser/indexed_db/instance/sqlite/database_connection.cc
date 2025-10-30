@@ -819,7 +819,7 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
   auto connection =
       base::WrapUnique(new DatabaseConnection(path, backing_store));
   Status s = connection->Init(name);
-  if (!s.ok()) {
+  if (!path.empty() && !s.ok()) {
     IndexedDBDataLossInfo loss;
     if (connection->marked_for_permanent_deletion_) {
       loss.status = blink::mojom::IDBDataLoss::Total;
@@ -828,11 +828,10 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     // If opening fails, recover or destroy the DB and try once more. This is
     // accomplished by destroying `connection`, since the destructor handles
     // errors.
-    // TODO(crbug.com/419272070): add logging for success rate of second
-    // attempt.
     connection = base::WrapUnique(new DatabaseConnection(path, backing_store));
     s = connection->Init(name);
     connection->data_loss_info_ = std::move(loss);
+    s.Log("IndexedDB.SQLite.OpenRetryResult");
   }
   if (!s.ok()) {
     return base::unexpected(s);

@@ -676,6 +676,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SQLite.OpenRetryResult" enum="IndexedDbStatusType"
+    expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the result when the SQLite backing store automatically retries opening
+    a DB after the first attempt fails. This only happens for on-disk DBs.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.SQLite.SpecificEvent.{Mode}"
     enum="IndexedDbSqliteSpecificEvent" expires_after="2026-09-01">
   <owner>leimy@chromium.org</owner>
