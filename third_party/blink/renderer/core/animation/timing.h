@@ -242,7 +242,8 @@ struct CORE_EXPORT Timing {
       AnimationDirection animation_direction,
       bool is_keyframe_effect,
       std::optional<double> playback_rate,
-      bool paused_for_trigger) const;
+      bool paused_for_trigger,
+      bool is_endpoint_inclusive = false) const;
   ComputedEffectTiming* getComputedTiming(const CalculatedTiming& calculated,
                                           const NormalizedTiming& normalized,
                                           bool is_keyframe_effect) const;

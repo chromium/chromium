@@ -98,7 +98,8 @@ Timing::Phase TimingCalculations::CalculatePhase(
     const Timing::NormalizedTiming& normalized,
     std::optional<AnimationTimeDelta>& local_time,
     Timing::AnimationDirection direction,
-    bool paused_for_trigger) {
+    bool paused_for_trigger,
+    bool is_endpoint_inclusive) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
                                                  AnimationTimeDelta()));
   if (!local_time) {
@@ -123,7 +124,7 @@ Timing::Phase TimingCalculations::CalculatePhase(
   if (((direction == Timing::AnimationDirection::kBackwards ||
         paused_for_trigger) &&
        local_time.value() == before_active_boundary_time &&
-       !normalized.is_start_boundary_aligned)) {
+       !normalized.is_start_boundary_aligned && !is_endpoint_inclusive)) {
     return Timing::kPhaseBefore;
   }
 
@@ -145,7 +146,7 @@ Timing::Phase TimingCalculations::CalculatePhase(
   if (((direction == Timing::AnimationDirection::kForwards ||
         paused_for_trigger) &&
        local_time.value() == active_after_boundary_time &&
-       !normalized.is_end_boundary_aligned)) {
+       !normalized.is_end_boundary_aligned && !is_endpoint_inclusive)) {
     return Timing::kPhaseAfter;
   }
   return Timing::kPhaseActive;

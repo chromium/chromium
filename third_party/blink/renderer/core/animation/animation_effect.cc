@@ -337,8 +337,8 @@ void AnimationEffect::UpdateInheritedTime(
   if (needs_update) {
     Timing::CalculatedTiming calculated = SpecifiedTiming().CalculateTimings(
         inherited_time, is_idle, NormalizedTiming(), direction,
-        IsA<KeyframeEffect>(this), inherited_playback_rate,
-        paused_for_trigger_);
+        IsA<KeyframeEffect>(this), inherited_playback_rate, paused_for_trigger_,
+        reason == TimingUpdateReason::kTimingUpdateCommitStyles);
 
     const bool was_canceled = calculated.phase != calculated_.phase &&
                               calculated.phase == Timing::kPhaseNone;

@@ -42,6 +42,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -311,6 +313,30 @@ bool GreaterThanOrEqualWithinTimeTolerance(const AnimationTimeDelta& a,
 constexpr const char* AnimationTraceCategories() {
   return "blink.animations,devtools.timeline,benchmark,rail";
 }
+
+class ScopedCommitStylesTiming {
+  STACK_ALLOCATED();
+
+ public:
+  ScopedCommitStylesTiming(Animation* animation, bool endpoint_inclusive)
+      : animation_(animation), endpoint_inclusive_(endpoint_inclusive) {
+    if (endpoint_inclusive_) {
+      animation_->InvalidateEffect();
+      animation_->Update(kTimingUpdateCommitStyles);
+    }
+  }
+
+  ~ScopedCommitStylesTiming() {
+    if (endpoint_inclusive_) {
+      animation_->InvalidateEffect();
+      animation_->Update(kTimingUpdateOnDemand);
+    }
+  }
+
+ private:
+  Animation* animation_;
+  const bool endpoint_inclusive_;
+};
 
 // Consider boundaries aligned if they round to the same integer pixel value.
 const double kScrollBoundaryTolerance = 0.5;
@@ -3586,6 +3612,13 @@ void Animation::commitStyles(ExceptionState& exception_state) {
   // 2. If, after applying any pending style changes, target is not being
   //    rendered, throw an "InvalidStateError" DOMException and abort these
   //    steps.
+
+  // If endpoint-inclusive feature is enabled, update animations' phases in an
+  // endpoint-inclusive way (See the spec 5.4). This is done before style update
+  // for efficiency.
+  ScopedCommitStylesTiming timing_update(
+      this, RuntimeEnabledFeatures::EndpointInclusiveCommitStylesEnabled());
+
   target->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
   if (!target->GetLayoutObject()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -3615,7 +3648,10 @@ void Animation::commitStyles(ExceptionState& exception_state) {
   //       associated animation has a higher composite order than animation.
   //   5.4 Let effect value be the result of calculating the result of
   //       partialEffectStack for property using target’s computed style
-  //       (see § 5.4.3 Calculating the result of an effect stack).
+  //       (see § 5.4.3 Calculating the result of an effect stack) and setting
+  //       the endpoint-inclusive active interval flag to true when calculating
+  //       the animation effect phase (see § 4.6.6 Animation effect phases and
+  //       states).
   //   5.5 Set a CSS declaration property for effect value in inline style.
   // 6. Update style attribute for inline style.
   ActiveInterpolationsMap interpolations_map =

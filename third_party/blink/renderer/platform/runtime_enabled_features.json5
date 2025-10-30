@@ -2118,6 +2118,10 @@
       status: "stable",
     },
     {
+      name: "EndpointInclusiveCommitStyles",
+      status: "stable",
+    },
+    {
       name: "EnforceAnonymityExposure",
       status: "stable",
     },

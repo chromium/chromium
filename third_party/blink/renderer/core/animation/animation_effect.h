@@ -54,7 +54,8 @@ class WorkletAnimation;
 
 enum TimingUpdateReason {
   kTimingUpdateOnDemand,
-  kTimingUpdateForAnimationFrame
+  kTimingUpdateForAnimationFrame,
+  kTimingUpdateCommitStyles
 };
 
 // Represents the content of an Animation and its fractional timing state.

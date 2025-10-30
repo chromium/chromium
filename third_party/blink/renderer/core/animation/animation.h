@@ -377,6 +377,7 @@ class CORE_EXPORT Animation : public EventTarget,
                                 const StyleChangeReasonForTracing&);
   void InvalidateEffectTargetStyle();
   void InvalidateNormalizedTiming();
+  void InvalidateEffect() { effect()->Invalidate(); }
 
   void Trace(Visitor*) const override;
 

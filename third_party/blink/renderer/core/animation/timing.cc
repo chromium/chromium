@@ -188,12 +188,14 @@ Timing::CalculatedTiming Timing::CalculateTimings(
     AnimationDirection animation_direction,
     bool is_keyframe_effect,
     std::optional<double> playback_rate,
-    bool paused_for_trigger) const {
+    bool paused_for_trigger,
+    bool is_endpoint_inclusive) const {
   const AnimationTimeDelta active_duration = normalized_timing.active_duration;
   const AnimationTimeDelta duration = normalized_timing.iteration_duration;
 
   Timing::Phase current_phase = TimingCalculations::CalculatePhase(
-      normalized_timing, local_time, animation_direction, paused_for_trigger);
+      normalized_timing, local_time, animation_direction, paused_for_trigger,
+      is_endpoint_inclusive);
 
   const std::optional<AnimationTimeDelta> active_time =
       TimingCalculations::CalculateActiveTime(
