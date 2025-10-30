@@ -838,4 +838,59 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
   EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
 }
 
+// Tests that `NotifyOnServerEntityMetadataChanged` is called on entity deletion
+// when the `kSyncAutofillValuableMetadata` feature is enabled.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_NotifiesMetadataObserverOnDelete) {
+  base::test::ScopedFeatureList feature_list{
+      syncer::kSyncAutofillValuableMetadata};
+
+  const EntityInstance remote1 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-0000-0000-000000000001",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(200),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_count = 2});
+  AddEntities({remote1});
+  const EntityInstance::EntityMetadata metadata = remote1.metadata();
+
+  EntityInstanceMetadataChange change(EntityInstanceMetadataChange::REMOVE,
+                                      remote1.guid(), metadata);
+  EXPECT_CALL(backend(), NotifyOnServerEntityMetadataChanged(change));
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      remote1.guid().value(), syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+}
+
+// Tests that `NotifyOnServerEntityMetadataChanged` is not called on entity
+// deletion when the `kSyncAutofillValuableMetadata` feature is disabled.
+TEST_F(
+    ValuableSyncBridgeIncrementalUpdatesTest,
+    ApplyIncrementalSyncChanges_DoesNotNotifyMetadataObserverOnDeleteWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kSyncAutofillValuableMetadata);
+
+  const EntityInstance remote1 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-0000-0000-000000000001",
+       .date_modified = base::Time::FromSecondsSinceUnixEpoch(200),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(100),
+       .use_count = 2});
+  AddEntities({remote1});
+  const EntityInstance::EntityMetadata metadata = remote1.metadata();
+
+  EntityInstanceMetadataChange change(EntityInstanceMetadataChange::REMOVE,
+                                      remote1.guid(), metadata);
+  EXPECT_CALL(backend(), NotifyOnServerEntityMetadataChanged).Times(0);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      remote1.guid().value(), syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+}
+
 }  // namespace autofill

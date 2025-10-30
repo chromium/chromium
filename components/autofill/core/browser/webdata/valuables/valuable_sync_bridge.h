@@ -90,6 +90,13 @@ class ValuableSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // the processor.
   void LoadMetadata();
 
+  // Handles delete request for a valuable with the corresponding `storage_key`
+  // as id. As during delete request the valuable type is not available, the
+  // function tries to delete the valuable from the corresponding table using
+  // only the `storage_key`.
+  ValuableDatabaseOperationResult HandleDeleteRequest(
+      const std::string& storage_key);
+
   // Sets `loyalty_cards` in the database.
   ValuableDatabaseOperationResult SetLoyaltyCards(
       std::vector<LoyaltyCard> loyalty_cards);

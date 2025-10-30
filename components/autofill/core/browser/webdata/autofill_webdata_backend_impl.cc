@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -286,6 +287,48 @@ void AutofillWebDataBackendImpl::NotifyOnServerCvcChanged(
   }
 }
 
+void AutofillWebDataBackendImpl::NotifyOnEntityInstanceChanged(
+    const EntityInstanceChange& change) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  // DB sequence notification.
+  for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
+       db_observer_list_) {
+    db_observer.EntityInstanceChanged(change);
+  }
+
+  // Notify about potential server metadata changes.
+  if (change.data_model().IsServerInstance()) {
+    EntityInstanceMetadataChange::Type metadata_change_type = [&] {
+      switch (change.type()) {
+        case EntityInstanceChange::ADD:
+          return EntityInstanceMetadataChange::ADD;
+        case EntityInstanceChange::UPDATE:
+          return EntityInstanceMetadataChange::UPDATE;
+        case EntityInstanceChange::REMOVE:
+          return EntityInstanceMetadataChange::REMOVE;
+        case EntityInstanceChange::HIDE_IN_AUTOFILL:
+          return EntityInstanceMetadataChange::HIDE_IN_AUTOFILL;
+      }
+      NOTREACHED();
+    }();
+
+    NotifyOnServerEntityMetadataChanged(EntityInstanceMetadataChange(
+        metadata_change_type, change.key(), change.data_model().metadata()));
+  }
+}
+
+void AutofillWebDataBackendImpl::NotifyOnServerEntityMetadataChanged(
+    const EntityInstanceMetadataChange& change) {
+  CHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+
+  // DB sequence notification.
+  for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
+       db_observer_list_) {
+    db_observer.ServerEntityInstanceMetadataChanged(change);
+  }
+}
+
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!user_data_)
@@ -512,9 +555,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddOrUpdateEntityInstance(
   }
 
   EntityInstanceChange change(change_type, std::move(guid), std::move(entity));
-  for (auto& db_observer : db_observer_list_) {
-    db_observer.EntityInstanceChanged(change);
-  }
+  NotifyOnEntityInstanceChanged(change);
 
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
@@ -536,10 +577,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveEntityInstance(
   // Notify observers.
   EntityInstanceChange change(EntityInstanceChange::REMOVE, std::move(guid),
                               std::move(entity));
-  for (AutofillWebDataServiceObserverOnDBSequence& db_observer :
-       db_observer_list_) {
-    db_observer.EntityInstanceChanged(change);
-  }
+  NotifyOnEntityInstanceChanged(change);
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_success), std::move(change)));
   ReportResult(Result::kRemoveEntityInstance_Success);

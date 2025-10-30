@@ -74,6 +74,18 @@ class AutofillWebDataBackend {
   // added/removed/updated in the WebDatabase.
   // NOTE: This method is intended to be called from the DB sequence.
   virtual void NotifyOnServerCvcChanged(const ServerCvcChange& change) = 0;
+
+  // Notifies listeners on the DB sequence that an entity instance has been
+  // added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence.
+  virtual void NotifyOnEntityInstanceChanged(
+      const EntityInstanceChange& change) = 0;
+
+  // Notifies listeners on the DB sequence that a server entity instance's
+  // metadata has been added/removed/updated in the WebDatabase.
+  // NOTE: This method is intended to be called from the DB sequence.
+  virtual void NotifyOnServerEntityMetadataChanged(
+      const EntityInstanceMetadataChange& change) = 0;
 };
 
 } // namespace autofill
