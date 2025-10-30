@@ -127,8 +127,8 @@ class NavigationCapturingProcess
       content::WebContents& web_contents,
       content::NavigationHandle* navigation_handle);
 
-  // Attaches this NavigationCapturing process to a specific navigation. Will
-  // CHECK-fail if called before
+  // Attaches this NavigationCapturing process to a specific navigation.
+  // Will CHECK-fail if called before
   // `GetInitialNavigationParamsOverrideForNavigation()` is called. If that
   // method decided no navigation capturing should apply to this navigation,
   // this will destroy `user_data` rather than attach it.
@@ -170,6 +170,14 @@ class NavigationCapturingProcess
 
   std::optional<NavigationCapturingOverride> HandleIsolatedWebAppNavigation(
       const NavigateParams& params);
+
+  // Checks if a newly created `WebContents` was programmatically opened by an
+  // Isolated Web App and notifies the `IsolatedWebAppsOpenedTabsCounterService`
+  // so it can be tracked. The opener is identified via the opener chain or the
+  // navigation's initiator origin. Standard link clicks are ignored.
+  void MaybeNotifyIwaTabCounterService(
+      content::WebContents& web_contents,
+      content::NavigationHandle* navigation_handle);
 
   // Returns true if based on the NavigateParams this instance was created with
   // the navigation capturing reimpl experiment is enabled.

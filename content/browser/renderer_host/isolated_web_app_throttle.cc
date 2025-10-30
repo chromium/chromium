@@ -90,6 +90,10 @@ void RunNavigationInDefaultBrowser(NavigationHandle* handle) {
                        WindowOpenDisposition::NEW_FOREGROUND_TAB,
                        ui::PageTransition::PAGE_TRANSITION_LINK,
                        /*is_renderer_initiated=*/false);
+
+  params.initiator_origin =
+      handle->GetWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
   GetContentClient()->browser()->OpenURL(handle->GetStartingSiteInstance(),
                                          params, base::DoNothing());
 }

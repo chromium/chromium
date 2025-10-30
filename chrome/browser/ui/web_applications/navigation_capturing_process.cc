@@ -22,11 +22,14 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
 #include "chrome/browser/web_applications/navigation_capturing_settings.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -819,11 +822,69 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   }
 }
 
+void NavigationCapturingProcess::MaybeNotifyIwaTabCounterService(
+    content::WebContents& web_contents,
+    content::NavigationHandle* navigation_handle) {
+  Profile* const profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+
+  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
+  if (!provider) {
+    return;
+  }
+
+  std::optional<webapps::AppId> iwa_opener_app_id;
+
+  // Try to find the App ID from the opener chain.
+  content::WebContents* opener =
+      web_contents.GetFirstWebContentsInLiveOriginalOpenerChain();
+  const webapps::AppId* app_id =
+      opener ? WebAppTabHelper::GetAppId(opener) : nullptr;
+
+  if (app_id && provider->registrar_unsafe().IsIsolated(*app_id)) {
+    iwa_opener_app_id = *app_id;
+  }
+
+  // Fallback to the initiator origin.
+  if (!iwa_opener_app_id) {
+    if (!navigation_handle) {
+      return;
+    }
+
+    const auto& initiator_origin = navigation_handle->GetInitiatorOrigin();
+    if (!initiator_origin) {
+      return;
+    }
+
+    iwa_opener_app_id = provider->registrar_unsafe().FindBestAppWithUrlInScope(
+        initiator_origin->GetURL(), WebAppFilter::IsIsolatedApp());
+  }
+
+  // If the "iwa_opener_app_id" is still not found, then there is a chance that
+  // the popup was not opened by the IWA. Exist early if that is the case.
+  if (!iwa_opener_app_id) {
+    return;
+  }
+
+  auto* counter_service =
+      IsolatedWebAppsOpenedTabsCounterServiceFactory::GetForProfile(profile);
+  if (!counter_service) {
+    return;
+  }
+
+  counter_service->OnWebContentsCreated(*iwa_opener_app_id, &web_contents);
+}
+
 // static
 void NavigationCapturingProcess::AfterWebContentsCreation(
     std::unique_ptr<NavigationCapturingProcess> process,
     content::WebContents& web_contents,
     content::NavigationHandle* navigation_handle) {
+  process->MaybeNotifyIwaTabCounterService(web_contents, navigation_handle);
+
   if (navigation_handle) {
     AttachToNavigationHandle(*navigation_handle, std::move(process));
   } else {

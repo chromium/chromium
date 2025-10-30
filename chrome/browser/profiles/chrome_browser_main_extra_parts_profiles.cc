@@ -1075,7 +1075,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   MicrosoftAuthServiceFactory::GetInstance();
 #endif
-#if !BUILDFLAG(IS_ANDROID) && defined(USE_AURA)
+#if !BUILDFLAG(IS_ANDROID)
   web_app::IsolatedWebAppsOpenedTabsCounterServiceFactory::GetInstance();
 #endif
   NavigationPredictorKeyedServiceFactory::GetInstance();
