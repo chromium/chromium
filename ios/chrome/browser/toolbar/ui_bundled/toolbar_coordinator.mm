@@ -370,6 +370,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
                                                          completion:completion];
                              }];
   }
+
+  [self.primaryToolbarCoordinator.viewController setLocationBarFocused:focused];
+  [self.secondaryToolbarCoordinator.viewController
+      setLocationBarFocused:focused];
   self.locationBarFocused = focused;
   [self updateLocationBarHeightWithAnimation:YES];
 }
