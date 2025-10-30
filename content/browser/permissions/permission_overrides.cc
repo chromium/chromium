@@ -55,7 +55,10 @@ PermissionOverrides::PermissionKey::MakeScopeData(
       return std::make_pair(*requesting_origin,
                             net::SchemefulSite(*embedding_origin));
     default:
-      return *requesting_origin;
+      // All other permission types use the top-level origin as the "permission
+      // key". See
+      // https://www.w3.org/TR/permissions/#dfn-default-permission-key-generation-algorithm.
+      return *embedding_origin;
   }
 }
 

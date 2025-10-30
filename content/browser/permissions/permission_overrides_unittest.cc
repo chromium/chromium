@@ -236,28 +236,28 @@ TEST(PermissionOverridesTest, DifferentOriginsDifferentOverrides) {
 
 TEST(PermissionOverridesTest, CreateContentSettingsForTypeSingleOrigin) {
   PermissionOverrides overrides;
-  Origin first_origin = Origin::Create(GURL("https://sub.foo.com/"));
-  Origin second_origin = Origin::Create(GURL("https://sub.bar.com/"));
+  Origin requesting_origin = Origin::Create(GURL("https://sub.foo.com/"));
+  Origin embedding_origin = Origin::Create(GURL("https://sub.bar.com/"));
 
   overrides.Set(/*requesting_origin=*/std::nullopt,
                 /*embedding_origin=*/std::nullopt, PermissionType::GEOLOCATION,
                 PermissionStatus::DENIED);
-  overrides.Set(first_origin, second_origin, PermissionType::GEOLOCATION,
-                PermissionStatus::GRANTED);
+  overrides.Set(requesting_origin, embedding_origin,
+                PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
 
   EXPECT_THAT(
       overrides.CreateContentSettingsForType(PermissionType::GEOLOCATION),
-      testing::ElementsAre(
-          ContentSettingPatternSource(
-              ContentSettingsPattern::Wildcard(),
-              ContentSettingsPattern::FromURLNoWildcard(first_origin.GetURL()),
-              base::Value(CONTENT_SETTING_ALLOW),
-              content_settings::ProviderType::kNone, false),
-          ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
-                                      ContentSettingsPattern::Wildcard(),
-                                      base::Value(CONTENT_SETTING_BLOCK),
-                                      content_settings::ProviderType::kNone,
-                                      false)));
+      testing::ElementsAre(ContentSettingPatternSource(
+                               ContentSettingsPattern::Wildcard(),
+                               ContentSettingsPattern::FromURLNoWildcard(
+                                   embedding_origin.GetURL()),
+                               base::Value(CONTENT_SETTING_ALLOW),
+                               content_settings::ProviderType::kNone, false),
+                           ContentSettingPatternSource(
+                               ContentSettingsPattern::Wildcard(),
+                               ContentSettingsPattern::Wildcard(),
+                               base::Value(CONTENT_SETTING_BLOCK),
+                               content_settings::ProviderType::kNone, false)));
 }
 
 TEST(PermissionOverridesTest, CreateContentSettingsForTypeTwoSites) {

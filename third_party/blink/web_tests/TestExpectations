@@ -3164,7 +3164,6 @@ crbug.com/438909307 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/aut
 crbug.com/438903183 [ Win11-arm64 ] external/wpt/service-workers/service-worker/controller-on-reload.https.html [ Crash ]
 crbug.com/438909307 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_fetch_error-downgraded.tentative.html [ Crash ]
 crbug.com/438909307 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-cert_parse_error-downgraded.tentative.html [ Timeout ]
-crbug.com/438909308 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
 crbug.com/438909308 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-insecure.sub.window.html [ Crash ]
 crbug.com/438909308 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Crash Failure Timeout ]
 crbug.com/438909308 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Crash Failure Timeout ]
@@ -3211,8 +3210,6 @@ crbug.com/438294027 [ Mac14 ] external/wpt/storage-access-api/requestStorageAcce
 crbug.com/438294027 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-nested-same-origin-iframe.sub.https.window.html [ Crash Timeout ]
 crbug.com/438294027 [ Mac14 ] external/wpt/storage-access-api/requestStorageAccess-nested-same-origin-iframe.sub.https.window.html [ Crash ]
 crbug.com/438294027 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-same-origin-iframe.sub.https.window.html [ Crash ]
-# crbug.com/438294027 [ Mac14 ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Crash ]
-# crbug.com/438294027 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Crash ]
 crbug.com/438246977 virtual/threaded/external/wpt/css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html [ Failure ]
 crbug.com/438246977 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html [ Failure ]
 crbug.com/438246977 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-element-overflow-clip-with-border-radius.html [ Failure ]
@@ -3506,8 +3503,6 @@ crbug.com/426164366 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/426164366 [ Win11-arm64 ] external/wpt/speech-api/SpeechRecognition-availableOnDevice.https.html [ Crash ]
 # crbug.com/426509691 [ Win11-arm64 ] external/wpt/storage-access-api/hasStorageAccess-ABA.sub.https.window.html [ Crash ]
 # crbug.com/426509691 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-origin-fetch.sub.https.window.html [ Crash ]
-crbug.com/426509691 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-same-site-iframe.sub.https.window.html [ Crash Timeout ]
-crbug.com/426509691 [ Win11-arm64 ] external/wpt/storage-access-api/requestStorageAccess-same-site-iframe.sub.https.window.html [ Crash ]
 crbug.com/426509691 [ Win11-arm64 ] external/wpt/storage-access-api/storage-access-beyond-cookies.cookies.sub.https.window.html [ Crash ]
 crbug.com/425730182 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/refresh-replaces-config.https.html [ Crash ]
 crbug.com/425730182 [ Win11-arm64 ] virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/registration-sends-challenge.https.html [ Crash ]
@@ -7587,16 +7582,6 @@ crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackP
 crbug.com/1371395 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.tentative.window.html [ Failure Pass ]
 
 # Test is flaky because of test_driver.bless, see crbug.com/1066891
-crbug.com/1382865 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
-crbug.com/1382865 [ Mac12 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Mac12-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Mac13 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Mac13-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Mac14-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Mac15 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Mac15-arm64 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Win10.20h2 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
-crbug.com/1382865 [ Win11 ] external/wpt/storage-access-api/requestStorageAccess-cross-site-iframe.sub.https.window.html [ Failure ]
 crbug.com/1382865 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure Timeout ]
 crbug.com/1382865 [ Mac12-arm64 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
 crbug.com/1382865 [ Mac13 ] external/wpt/storage-access-api/requestStorageAccess-nested-cross-site-iframe.sub.https.window.html [ Failure ]
@@ -9394,7 +9379,6 @@ crbug.com/384904807 [ Mac ] http/tests/inspector-protocol/tracing/image-decoding
 crbug.com/384863733 external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-mediation-optional.https.html [ Timeout ]
 
 crbug.com/366530634 external/wpt/storage-access-api/storage-access-headers.tentative.https.sub.window.html [ Failure Timeout ]
-crbug.com/366530634 external/wpt/storage-access-api/storage-access-permission.sub.https.window.html [ Timeout ]
 
 # Gardener 2024-12-23
 crbug.com/385571958 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-none-video.html [ Failure Pass ]
@@ -9748,7 +9732,6 @@ crbug.com/419705502 [ Win10.20h2 ] http/tests/devtools/elements/styles-2/nested-
 
 # Gardener 2025-08-28
 crbug.com/441519564 [ Mac ] external/wpt/webrtc/RTCRtpParameters-codec.html [ Failure Pass ]
-# crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Pass Timeout ]
 
 # Gardener 2025-08-29
 crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]

@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <string>
 
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -51,7 +52,8 @@ class StubChrome : public Chrome {
   Status SetAcceptInsecureCerts() override;
   Status SetPermission(std::unique_ptr<base::Value::Dict> permission_descriptor,
                        Chrome::PermissionState desired_state,
-                       WebView* current_view) override;
+                       WebView* current_view,
+                       const std::string& current_frame_id) override;
   std::string GetOperatingSystemName() override;
   bool IsMobileEmulationEnabled() const override;
   bool HasTouchScreen() const override;
