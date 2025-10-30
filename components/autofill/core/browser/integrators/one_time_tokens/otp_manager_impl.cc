@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 
 using one_time_tokens::ExpiringSubscriptionHandle;
@@ -100,6 +101,7 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
     std::variant<OneTimeToken, OneTimeTokenRetrievalError> token_or_error) {
   // TODO(crbug.com/415272524): Record metrics on how often the retrieval
   // succeeds or fails, in combination with the OTP source.
+  // If token_or_error holds an error, run the callback with empty otp value.
   if (std::holds_alternative<OneTimeTokenRetrievalError>(token_or_error)) {
     if (!last_pending_get_suggestions_callback_.is_null()) {
       std::move(last_pending_get_suggestions_callback_).Run({});
@@ -107,23 +109,46 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
     return;
   }
 
-  const OneTimeToken& token = std::get<OneTimeToken>(token_or_error);
+  // If we are here, token_or_error holds a OneTimeToken, we check if the
+  // callback is valid.
+  if (!last_pending_get_suggestions_callback_) {
+    return;
+  }
+
+  OneTimeToken& token = std::get<OneTimeToken>(token_or_error);
+
+  // We run PhishGuard check to make sure OTPs are not shown to users on
+  // potential phishing sites.
+  if (OtpPhishGuardDelegate* delegate =
+          owner_->client().GetOtpPhishGuardDelegate()) {
+    delegate->StartOtpPhishGuardCheck(
+        owner_->client().GetLastCommittedPrimaryMainFrameURL(),
+        base::BindOnce(&OtpManagerImpl::MaybeShowOtpSuggestions,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(token)));
+  } else {
+    MaybeShowOtpSuggestions(std::move(token), /*is_phishing_site=*/false);
+  }
+}
+
+void OtpManagerImpl::MaybeShowOtpSuggestions(OneTimeToken token,
+                                             bool is_phishing_site) {
+  if (!last_pending_get_suggestions_callback_) {
+    return;
+  }
 
   std::vector<std::string> suggestions;
   if (!token.value().empty()) {
-    suggestions.emplace_back(token.value());
+    suggestions.emplace_back(std::move(token).value());
   }
 
-  if (IsOtpDeliveryBlocked()) {
+  if (IsOtpDeliveryBlocked() || is_phishing_site) {
     suggestions.clear();
   }
 
-  if (!last_pending_get_suggestions_callback_.is_null()) {
-    if (owner_->GetMetricState().has_value()) {
-      owner_->GetMetricState()->otp_form_event_logger.OnOtpAvailable();
-    }
-    std::move(last_pending_get_suggestions_callback_).Run(suggestions);
+  if (owner_->GetMetricState().has_value()) {
+    owner_->GetMetricState()->otp_form_event_logger.OnOtpAvailable();
   }
+  std::move(last_pending_get_suggestions_callback_).Run(std::move(suggestions));
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {

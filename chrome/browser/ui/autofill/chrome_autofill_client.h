@@ -66,6 +66,7 @@ class AutofillOptimizationGuideDecider;
 class EmailVerifierDelegate;
 class FormFieldData;
 class OtpFieldDetector;
+class ChromeOtpPhishGuardDelegate;
 class LogRouter;
 enum class SuggestionType;
 
@@ -281,6 +282,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       override;
 
   OtpFieldDetector* GetOtpFieldDetector() override;
+  OtpPhishGuardDelegate* GetOtpPhishGuardDelegate() override;
 
   one_time_tokens::OneTimeTokenService* GetOneTimeTokenService() const final;
 
@@ -343,6 +345,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   ContentIdentityCredentialDelegate identity_credential_delegate_;
   std::unique_ptr<OtpFieldDetector> otp_field_detector_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
+  std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
 
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };

@@ -414,6 +414,7 @@ static_library("browser") {
     "integrators/one_time_tokens/otp_manager.h",
     "integrators/one_time_tokens/otp_manager_impl.cc",
     "integrators/one_time_tokens/otp_manager_impl.h",
+    "integrators/one_time_tokens/otp_phish_guard_delegate.h",
     "integrators/one_time_tokens/otp_suggestion.cc",
     "integrators/one_time_tokens/otp_suggestion.h",
     "integrators/optimization_guide/autofill_optimization_guide_decider.cc",
