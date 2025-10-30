@@ -1252,6 +1252,27 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 }
 
 void NewTabPageUI::OnEnterpriseShortcutsPolicyChanged() {
+  MaybeEnableEnterpriseShortcutsVisibility();
+  OnTileTypesChanged();
+}
+
+void NewTabPageUI::OnLoad() {
+  MaybeEnableEnterpriseShortcutsVisibility();
+  base::Value::Dict update;
+  update.Set("navigationStartTime",
+             navigation_start_time_.InMillisecondsFSinceUnixEpoch());
+  const bool modules_enabled = ntp::HasModulesEnabled(
+      module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
+  update.Set("modulesEnabled", modules_enabled);
+
+  // Set up the NTP promo, if any.
+  update.Set("browserPromoType", GetNtpPromoType());
+
+  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                   std::move(update));
+}
+
+void NewTabPageUI::MaybeEnableEnterpriseShortcutsVisibility() {
   // If enterprise shortcuts feature or mixing is disabled, do nothing.
   if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
       !ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get()) {
@@ -1268,22 +1289,6 @@ void NewTabPageUI::OnEnterpriseShortcutsPolicyChanged() {
     profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpEnterpriseShortcutsVisible,
                                      true);
   }
-}
-
-void NewTabPageUI::OnLoad() {
-  OnEnterpriseShortcutsPolicyChanged();
-  base::Value::Dict update;
-  update.Set("navigationStartTime",
-             navigation_start_time_.InMillisecondsFSinceUnixEpoch());
-  const bool modules_enabled = ntp::HasModulesEnabled(
-      module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
-  update.Set("modulesEnabled", modules_enabled);
-
-  // Set up the NTP promo, if any.
-  update.Set("browserPromoType", GetNtpPromoType());
-
-  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
-                                   std::move(update));
 }
 
 // static

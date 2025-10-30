@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/ntp_tiles/features.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/prefs/pref_service.h"
@@ -272,16 +273,27 @@ bool IsCustomLinksEnabled(Profile* profile) {
               ntp_prefs::kNtpEnterpriseShortcutsVisible));
 }
 
+bool IsEnterpriseShortcutsEmpty(Profile* profile) {
+  return profile->GetPrefs()
+      ->GetList(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList)
+      .empty();
+}
+
 bool IsEnterpriseShortcutsEnabled(Profile* profile) {
+  // Enable enterprise shortcuts if the feature is enabled, enterprise shortcuts
+  // policy is set, and user has enabled visibility.
   return base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+         !IsEnterpriseShortcutsEmpty(profile) &&
          profile->GetPrefs()->GetBoolean(
              ntp_prefs::kNtpEnterpriseShortcutsVisible);
 }
 
 bool IsPersonalShortcutsVisible(Profile* profile) {
-  // Always return true if enterprise shortcuts feature is disabled. Rely on
-  // `IsTopSitesEnabled()` and `IsCustomLinksEnabled()` only.
-  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts)) {
+  // Always return true if enterprise shortcuts feature is disabled or no
+  // enterprise shortcuts are set by policy. Rely on `IsTopSitesEnabled()` and
+  // `IsCustomLinksEnabled()` only.
+  if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) ||
+      IsEnterpriseShortcutsEmpty(profile)) {
     return true;
   }
   // If enterprise shortcuts mixing is disabled, return the opposite of

@@ -2277,6 +2277,7 @@ static_library("browser") {
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/ntp_tiles",
+    "//components/ntp_tiles:pref_names",
     "//components/offline_pages/buildflags",
     "//components/offline_pages/core",
     "//components/offline_pages/core/background:background_offliner",

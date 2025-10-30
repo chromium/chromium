@@ -315,6 +315,9 @@ class NewTabPageUI
   // Called when the NTP (re)loads. Sets mutable load time data.
   void OnLoad();
 
+  // Called to maybe enable enterprise shortcuts visibility by default.
+  void MaybeEnableEnterpriseShortcutsVisibility();
+
   // Based on the current profile and NTP promo controller, determine which
   // type of NTP promos can be shown, if any.
   std::string_view GetNtpPromoType();
