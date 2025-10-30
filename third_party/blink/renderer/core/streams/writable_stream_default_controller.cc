@@ -406,7 +406,8 @@ double WritableStreamDefaultController::GetChunkSize(
   if (!return_value.has_value()) {
     //      a. Perform ! WritableStreamDefaultControllerErrorIfNeeded(
     //         controller, returnValue.[[Value]]).
-    ErrorIfNeeded(script_state, controller, try_catch.Exception());
+    ErrorIfNeeded(script_state, controller,
+                  TryRethrowScope::TakeException(try_catch));
 
     //      b. Return 1.
     return 1;
@@ -445,8 +446,8 @@ void WritableStreamDefaultController::Write(
     if (try_catch.HasCaught()) {
       //      a. Perform ! WritableStreamDefaultControllerErrorIfNeeded(
       //         controller, enqueueResult.[[Value]]).
-
-      ErrorIfNeeded(script_state, controller, try_catch.Exception());
+      ErrorIfNeeded(script_state, controller,
+                    TryRethrowScope::TakeException(try_catch));
 
       //      b. Return.
       return;

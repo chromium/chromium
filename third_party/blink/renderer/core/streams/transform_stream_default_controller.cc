@@ -321,8 +321,8 @@ void TransformStreamDefaultController::Enqueue(
   if (rethrow_scope.HasCaught()) {
     // a. Perform ! TransformStreamErrorWritableAndUnblockWrite(stream,
     //    enqueueResult.[[Value]]).
-    TransformStream::ErrorWritableAndUnblockWrite(script_state, stream,
-                                                  rethrow_scope.GetException());
+    TransformStream::ErrorWritableAndUnblockWrite(
+        script_state, stream, rethrow_scope.TakeException());
 
     // b. Throw stream.[[readable]].[[storedError]].
     V8ThrowException::ThrowException(
