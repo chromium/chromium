@@ -1285,12 +1285,6 @@ const char kOptimizationGuideDebugLogsDescription[] =
     "Enables the optimization guide to log and save debug messages that can be "
     "shown in the internals page.";
 
-const char kOptimizationGuidePushNotificationClientName[] =
-    "Enable optimization guide push notification client";
-const char kOptimizationGuidePushNotificationClientDescription[] =
-    "Enables the client that handles incoming push notifications on behalf of "
-    "the optimization guide.";
-
 const char kPageActionMenuName[] = "Page Action Menu";
 const char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "

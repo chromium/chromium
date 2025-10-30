@@ -9353,13 +9353,6 @@ const FeatureEntry kFeatureEntries[] = {
     },
 
 #endif
-#if BUILDFLAG(IS_ANDROID)
-    {"optimization-guide-push-notifications",
-     flag_descriptions::kOptimizationGuidePushNotificationName,
-     flag_descriptions::kOptimizationGuidePushNotificationDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(optimization_guide::features::kPushNotifications)},
-#endif
 
     {"fedcm-alternative-identifiers",
      flag_descriptions::kFedCmAlternativeIdentifiersName,

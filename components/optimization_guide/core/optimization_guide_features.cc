@@ -54,11 +54,6 @@ BASE_FEATURE(kOptimizationHints, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables the prediction of optimization targets.
 BASE_FEATURE(kOptimizationTargetPrediction, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables push notification of hints.
-BASE_FEATURE(kPushNotifications,
-             "OptimizationGuidePushNotifications",
-             enabled_by_default_mobile_only);
-
 // This feature flag does not turn off any behavior, it is only used for
 // experiment parameters.
 BASE_FEATURE(kPageTextExtraction,
@@ -234,7 +229,7 @@ bool IsSRPFetchingEnabled() {
 }
 
 bool IsPushNotificationsEnabled() {
-  return base::FeatureList::IsEnabled(kPushNotifications);
+  return enabled_by_default_mobile_only;
 }
 
 size_t MaxHostKeyedHintCacheSize() {

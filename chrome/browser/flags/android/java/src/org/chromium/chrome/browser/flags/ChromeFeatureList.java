@@ -506,8 +506,6 @@ public abstract class ChromeFeatureList {
             "OmniboxAutofocusOnIncognitoNtp";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
-    public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
-            "OptimizationGuidePushNotifications";
     public static final String PAGE_CONTENT_PROVIDER = "PageContentProvider";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS =
             "PageInfoAboutThisSiteMoreLangs";
@@ -991,8 +989,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_V2, false);
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
-    public static final CachedFlag sOptimizationGuidePushNotifications =
-            newCachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, true);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPostGetMyMemoryStateToBackground =
@@ -1222,7 +1218,6 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationToolbarButton,
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
-                    sOptimizationGuidePushNotifications,
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
                     sPostGetMyMemoryStateToBackground,
@@ -1666,10 +1661,6 @@ public abstract class ChromeFeatureList {
     public static final IntCachedFeatureParam sOmahaMinSdkVersionMinSdkVersion =
             newIntCachedFeatureParam(OMAHA_MIN_SDK_VERSION_ANDROID, "min_sdk_version", -1);
 
-    /** The default cache size in Java for push notification. */
-    public static final IntCachedFeatureParam sOptimizationGuidePushNotificationsMaxCacheSize =
-            newIntCachedFeatureParam(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, "max_cache_size", 100);
-
     public static final DoubleCachedFeatureParam sPCctMinimumHeightRatio =
             newDoubleCachedFeatureParam(PCCT_MINIMUM_HEIGHT, "pcct_minimum_height_ratio", 0.3);
 
@@ -1806,7 +1797,6 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampolineNormalJobDurationMs,
                     sNotificationTrampolineTimeoutPriorNativeInitMs,
                     sOmahaMinSdkVersionMinSdkVersion,
-                    sOptimizationGuidePushNotificationsMaxCacheSize,
                     sPCctMinimumHeightRatio,
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,

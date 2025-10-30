@@ -761,9 +761,6 @@ extern const char kOnlyAccessClipboardAsyncDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
-extern const char kOptimizationGuidePushNotificationClientName[];
-extern const char kOptimizationGuidePushNotificationClientDescription[];
-
 extern const char kPageActionMenuName[];
 extern const char kPageActionMenuDescription[];
 

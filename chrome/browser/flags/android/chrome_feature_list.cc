@@ -467,7 +467,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &net::features::kVerifyQWACs,
     &network::features::kLocalNetworkAccessChecks,
     &notifications::features::kUseChimeAndroidSdk,
-    &optimization_guide::features::kPushNotifications,
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &paint_preview::kPaintPreviewDemo,
     &password_manager::features::kBiometricAuthIdentityCheck,

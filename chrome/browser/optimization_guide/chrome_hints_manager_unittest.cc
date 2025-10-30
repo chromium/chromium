@@ -368,36 +368,12 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtNonSRP) {
       0);
 }
 
-class ChromeHintsManagerPushEnabledTest
-    : public ChromeHintsManagerFetchingTest {
- public:
-  ChromeHintsManagerPushEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        optimization_guide::features::kPushNotifications);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSet) {
+TEST_F(ChromeHintsManagerFetchingTest, PushManagerSet) {
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(hints_manager()->push_notification_manager());
-}
-
-class ChromeHintsManagerPushDisabledTest
-    : public ChromeHintsManagerFetchingTest {
- public:
-  ChromeHintsManagerPushDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        optimization_guide::features::kPushNotifications);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ChromeHintsManagerPushDisabledTest, PushManagerSet) {
+#else
   EXPECT_FALSE(hints_manager()->push_notification_manager());
+#endif
 }
 
 TEST_F(ChromeHintsManagerFetchingTest, NoOptimizationGuideWebContentsObserver) {
