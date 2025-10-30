@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Extended lifetime SharedWorker can be alive if all its clients are in BFCache.
+  BFCache not supported.
+Harness: the test ran to completion.
+
