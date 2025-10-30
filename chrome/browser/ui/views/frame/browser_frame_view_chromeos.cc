@@ -281,13 +281,8 @@ BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
   }
   if (GetShowCaptionButtonsWhenNotInOverview()) {
     const auto caption_bounds = caption_button_container_->bounds();
-    // Prefer to use the painted height of the caption buttons rather than the
-    // actual height, if it is specified.
-    const int height = frame_header_
-                           ? frame_header_->GetHeaderHeightForPainting()
-                           : caption_bounds.bottom();
     params.trailing_exclusion.content =
-        gfx::SizeF(width() - caption_bounds.x(), height);
+        gfx::SizeF(width() - caption_bounds.x(), caption_bounds.height());
   }
   return params;
 }
