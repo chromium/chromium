@@ -336,6 +336,13 @@ void WaylandEventSource::OnPointerFocusChanged(
     // Save new pointer location.
     pointer_location_ = location;
     window_manager_->SetPointerFocusedWindow(window);
+  } else {
+    // The compositor may swallow the release event for any buttons that are
+    // pressed when the window loses focus, e.g. when right-clicking the
+    // titlebar to open the system menu on GNOME.
+    if (!connection_->IsDragInProgress()) {
+      ReleasePressedPointerButtons(window, ui::EventTimeForNow());
+    }
   }
 
   auto closure = focused ? base::NullCallback()
