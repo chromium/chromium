@@ -75,6 +75,10 @@ void PasswordManagerUIHandler::RevokeActorLoginPermission(
           .username = base::UTF8ToUTF16(site->username)});
 }
 
+void PasswordManagerUIHandler::ShowAddShortcutDialog() {
+  passwords_private_delegate_->ShowAddShortcutDialog(web_contents_);
+}
+
 password_manager::SavedPasswordsPresenter*
 PasswordManagerUIHandler::GetSavedPasswordsPresenter() {
   return passwords_private_delegate_->GetSavedPasswordsPresenter();

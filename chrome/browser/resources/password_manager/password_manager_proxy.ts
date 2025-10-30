@@ -544,7 +544,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   }
 
   showAddShortcutDialog() {
-    chrome.passwordsPrivate.showAddShortcutDialog();
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApi')) {
+      chrome.passwordsPrivate.showAddShortcutDialog();
+      return;
+    }
+    this.handler.showAddShortcutDialog();
   }
 
   requestCredentialsDetails(ids: number[]) {

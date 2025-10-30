@@ -200,4 +200,12 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_FALSE(passwords[0].actor_login_approved);
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest, ShowAddShortcutDialog_CallsDelegate) {
+  EXPECT_FALSE(test_delegate().get_add_shortcut_dialog_shown());
+
+  handler().ShowAddShortcutDialog();
+
+  EXPECT_TRUE(test_delegate().get_add_shortcut_dialog_shown());
+}
+
 }  // namespace password_manager

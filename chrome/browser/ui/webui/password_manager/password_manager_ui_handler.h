@@ -51,6 +51,8 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
   void RevokeActorLoginPermission(
       password_manager::mojom::ActorLoginPermissionPtr site) override;
 
+  void ShowAddShortcutDialog() override;
+
  private:
   password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter();
 
