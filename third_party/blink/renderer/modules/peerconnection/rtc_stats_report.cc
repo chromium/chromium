@@ -133,6 +133,10 @@ RTCInboundRtpStreamStats* ToV8Stat(
            v8_stat->setPacketsReceivedWithEct1);
   SET_STAT(webrtc_stat.packets_received_with_ce,
            v8_stat->setPacketsReceivedWithCe);
+  SET_STAT(webrtc_stat.packets_reported_as_lost,
+           v8_stat->setPacketsReportedAsLost);
+  SET_STAT(webrtc_stat.packets_reported_as_lost_but_recovered,
+           v8_stat->setPacketsReportedAsLostButRecovered);
   // RTCInboundRtpStreamStats
   SET_STAT(webrtc_stat.track_identifier, v8_stat->setTrackIdentifier);
   SET_STAT(webrtc_stat.mid, v8_stat->setMid);
