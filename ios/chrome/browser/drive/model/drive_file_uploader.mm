@@ -9,9 +9,3 @@
 DriveFileUploader::DriveFileUploader() = default;
 
 DriveFileUploader::~DriveFileUploader() = default;
-
-void DriveFileUploader::FetchSaveToDriveClientFolder(
-    NSString* folder_name,
-    DriveFolderCompletionCallback completion_callback) {
-  NOTIMPLEMENTED();
-}
