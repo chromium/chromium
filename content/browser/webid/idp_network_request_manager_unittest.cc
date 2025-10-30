@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -330,7 +331,9 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     std::string url_string =
         client_id_endpoint.spec() + "?client_id=" + client_id;
     if (top_level_origin) {
-      url_string += std::string("&top_frame_origin=") + top_level_origin;
+      url_string +=
+          std::string("&top_frame_origin=") +
+          base::EscapeQueryParamValue(top_level_origin, /*use_plus=*/false);
     }
     AddResponse(GURL(url_string), net::HTTP_OK, "application/json", response);
 
