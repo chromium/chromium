@@ -37,7 +37,6 @@ class ASH_EXPORT TrayToggleButton : public views::ToggleButton {
   ~TrayToggleButton() override = default;
 
   // views::ToggleButton:
-  void OnThemeChanged() override;
   void NotifyClick(const ui::Event& event) override;
 };
 

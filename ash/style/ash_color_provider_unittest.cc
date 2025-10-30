@@ -172,19 +172,6 @@ INSTANTIATE_TEST_SUITE_P(
           ColorProvider::ContentLayerType::kButtonIconColorPrimary,
           SkColorSetRGB(0xDE, 0xE3, 0xE5)},
 
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kSwitchKnobColorActive,
-          SkColorSetRGB(0x0, 0x68, 0x74)},
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kSwitchKnobColorInactive,
-          SkColorSetRGB(0xFF, 0xFF, 0xFF)},
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kSwitchTrackColorActive,
-          SkColorSetARGB(0x4C, 0x0, 0x68, 0x74)},
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kSwitchTrackColorInactive,
-          SkColorSetARGB(0x4C, 0x5F, 0x63, 0x68)},
-
          // Dark colors
          {ColorMode::kDark, ColorProvider::ContentLayerType::kSeparatorColor,
           SkColorSetARGB(0x24, 0xFF, 0xFF, 0xFF)},
@@ -225,20 +212,7 @@ INSTANTIATE_TEST_SUITE_P(
           SkColorSetRGB(0xDE, 0xE3, 0xE5)},
          {ColorMode::kDark,
           ColorProvider::ContentLayerType::kButtonIconColorPrimary,
-          SkColorSetRGB(0x17, 0x1D, 0x1E)},
-
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kSwitchKnobColorActive,
-          SkColorSetRGB(0x74, 0xD5, 0xE4)},
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kSwitchKnobColorInactive,
-          SkColorSetRGB(0xBD, 0xC1, 0xC6)},
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kSwitchTrackColorActive,
-          SkColorSetARGB(0x4C, 0x74, 0xD5, 0xE4)},
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kSwitchTrackColorInactive,
-          SkColorSetARGB(0x4C, 0xE8, 0xEA, 0xED)}}));
+          SkColorSetRGB(0x17, 0x1D, 0x1E)}}));
 
 }  // namespace
 

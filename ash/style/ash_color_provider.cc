@@ -69,18 +69,10 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
       return color_provider->GetColor(kColorAshIconColorSecondary);
     case ContentLayerType::kIconColorSecondaryBackground:
       return color_provider->GetColor(kColorAshIconColorSecondaryBackground);
-    case ContentLayerType::kSwitchKnobColorInactive:
-      return color_provider->GetColor(kColorAshSwitchKnobColorInactive);
-    case ContentLayerType::kSwitchTrackColorInactive:
-      return color_provider->GetColor(kColorAshSwitchTrackColorInactive);
     case ContentLayerType::kButtonLabelColorBlue:
       return color_provider->GetColor(kColorAshButtonLabelColorBlue);
     case ContentLayerType::kTextColorURL:
       return color_provider->GetColor(kColorAshTextColorURL);
-    case ContentLayerType::kSwitchKnobColorActive:
-      return color_provider->GetColor(kColorAshSwitchKnobColorActive);
-    case ContentLayerType::kSwitchTrackColorActive:
-      return color_provider->GetColor(kColorAshSwitchTrackColorActive);
     case ContentLayerType::kButtonIconColorPrimary:
       return color_provider->GetColor(kColorAshButtonIconColorPrimary);
     case ContentLayerType::kButtonIconColor:

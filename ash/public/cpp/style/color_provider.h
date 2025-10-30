@@ -55,12 +55,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     kButtonIconColor,
     kButtonIconColorPrimary,
-
-    // Color for toggle button.
-    kSwitchKnobColorActive,
-    kSwitchKnobColorInactive,
-    kSwitchTrackColorActive,
-    kSwitchTrackColorInactive,
   };
 
   static ColorProvider* Get();
