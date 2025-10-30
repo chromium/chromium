@@ -49,7 +49,13 @@ class ActorPolicyChecker {
                    TaskId task_id,
                    DecisionCallback callback);
 
-  bool can_act_on_web() const { return can_act_on_web_; }
+  void SetActOnWebForTesting(bool enabled) {
+    can_act_on_web_for_testing_ = enabled;
+  }
+
+  bool can_act_on_web() const {
+    return can_act_on_web_for_testing_ || can_act_on_web_;
+  }
 
  private:
   void OnPrefChanged();
@@ -60,6 +66,8 @@ class ActorPolicyChecker {
   PrefChangeRegistrar pref_change_registrar_;
 
   bool can_act_on_web_ = true;
+
+  bool can_act_on_web_for_testing_ = false;
 
   base::WeakPtrFactory<ActorPolicyChecker> weak_ptr_factory_{this};
 };

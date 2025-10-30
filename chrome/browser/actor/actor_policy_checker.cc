@@ -115,7 +115,7 @@ void ActorPolicyChecker::MayActOnTab(
     TaskId task_id,
     const absl::flat_hash_set<url::Origin>& allowed_origins,
     DecisionCallback callback) {
-  if (!can_act_on_web_) {
+  if (!can_act_on_web()) {
     journal.Log(tab.GetContents()->GetLastCommittedURL(), task_id,
                 "MayActOnTab",
                 JournalDetailsBuilder()
@@ -136,7 +136,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      TaskId task_id,
                                      DecisionCallback callback) {
   // TODO(http://crbug.com/455645486): This may be turned into a CHECK.
-  if (!can_act_on_web_) {
+  if (!can_act_on_web()) {
     journal.Log(url, task_id, "MayActOnUrl",
                 JournalDetailsBuilder()
                     .AddError("Actuation capability disabled")

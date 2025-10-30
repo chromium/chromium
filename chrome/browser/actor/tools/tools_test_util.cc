@@ -9,14 +9,17 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -103,14 +106,18 @@ ActorToolsTest::~ActorToolsTest() = default;
 void ActorToolsTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
+
+  auto* actor_service = ActorKeyedService::Get(browser()->profile());
+  actor_service->GetPolicyChecker().SetActOnWebForTesting(
+      ShouldForceActOnWeb());
+
   auto execution_engine = CreateExecutionEngine(browser()->profile());
-  auto event_dispatcher = ui::NewUiEventDispatcher(
-      ActorKeyedService::Get(browser()->profile())->GetActorUiStateManager());
+  auto event_dispatcher =
+      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager());
   auto actor_task = std::make_unique<ActorTask>(browser()->profile(),
                                                 std::move(execution_engine),
                                                 std::move(event_dispatcher));
-  task_id_ = ActorKeyedService::Get(browser()->profile())
-                 ->AddActiveTask(std::move(actor_task));
+  task_id_ = actor_service->AddActiveTask(std::move(actor_task));
 
   // Optimization guide uses this histogram to signal initialization in tests.
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -178,6 +185,10 @@ ActorTask& ActorToolsTest::actor_task() const {
 std::unique_ptr<ExecutionEngine> ActorToolsTest::CreateExecutionEngine(
     Profile* profile) {
   return std::make_unique<ExecutionEngine>(profile);
+}
+
+bool ActorToolsTest::ShouldForceActOnWeb() {
+  return true;
 }
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,

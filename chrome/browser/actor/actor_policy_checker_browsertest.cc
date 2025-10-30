@@ -44,6 +44,27 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kNoErrorDialogs);
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void UpdateProviderPolicy(const policy::PolicyMap& policy) {
+    policy::PolicyMap policy_with_defaults = policy.Clone();
+    policy_provider_.UpdateChromePolicy(policy_with_defaults);
+  }
+
+ protected:
+  bool ShouldForceActOnWeb() override { return false; }
+
+ private:
+  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 // Tests that exercise the policy checker for non-managed clients.
