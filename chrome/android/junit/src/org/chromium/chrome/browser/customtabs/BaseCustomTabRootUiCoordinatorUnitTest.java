@@ -228,7 +228,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         CallbackUtils.emptyRunnable(),
                         mEdgeToEdgeManager,
                         mDesktopWindowStateManager,
-                        mBrowserServicesColorProviderSupplier) {
+                        mBrowserServicesColorProviderSupplier,
+                        null) {
 
                     @Nullable
                     @Override

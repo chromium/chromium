@@ -1033,6 +1033,13 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX =
             new KeyPrefix("Chrome.WebFeed.IntroWebFeedIdShownCount.*");
 
+    /**
+     * Key used to track the names of client packages that requested the Window Controls Overlay
+     * windowing mode and had the user enable it.
+     */
+    public static final String WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES =
+            "Chrome.WindowControlsOverlay.EnabledPackages";
+
     /** Cached Suggestions and Suggestion Headers. */
     public static final String KEY_ZERO_SUGGEST_LIST_SIZE = "zero_suggest_list_size";
 
@@ -1263,7 +1270,8 @@ public final class ChromePreferenceKeys {
                 WEB_FEED_INTRO_LAST_SHOWN_TIME_MS,
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),
-                WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
+                WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
+                WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);
     }
 
     private ChromePreferenceKeys() {}

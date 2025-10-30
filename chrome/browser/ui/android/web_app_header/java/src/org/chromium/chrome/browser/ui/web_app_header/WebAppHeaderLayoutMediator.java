@@ -12,11 +12,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils.BackEvent;
@@ -61,9 +64,11 @@ class WebAppHeaderLayoutMediator
     private @Nullable Callback<Integer> mOnButtonBottomInsetChanged;
     private final Callback<Boolean> mSetHeaderAsOverlayCallback;
     private boolean mHeaderAsOverlay;
+    private boolean mUserToggleHeaderAsOverlay;
     private int mButtonBottomInset;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final Callback<@Nullable Tab> mOnTabUpdate;
+    private final String mClientPackageName;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsFirstAppHeaderStateUpdate = true;
@@ -93,7 +98,8 @@ class WebAppHeaderLayoutMediator
             int webAppHeaderMinHeightFromResources,
             int headerButtonHeight,
             int displayMode,
-            Callback<Boolean> setHeaderAsOverlayCallback) {
+            Callback<Boolean> setHeaderAsOverlayCallback,
+            String clientPackageName) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mHeaderDelegate = headerDelegate;
@@ -106,6 +112,7 @@ class WebAppHeaderLayoutMediator
         mHeaderAsOverlay = mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY;
         mOnTabUpdate = this::onTabUpdate;
         mTabSupplier.addObserver(mOnTabUpdate);
+        mClientPackageName = clientPackageName;
 
         mScrimVisibilityObserver =
                 (isScrimVisible) -> {
@@ -138,6 +145,31 @@ class WebAppHeaderLayoutMediator
 
         onThemeColorChanged(mThemeColorProvider.getThemeColor(), false);
         mThemeColorProvider.addThemeColorObserver(this);
+
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        mUserToggleHeaderAsOverlay =
+                prefs.readStringSet(ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES)
+                        .contains(mClientPackageName);
+    }
+
+    public void setUserToggleHeaderAsOverlay(boolean userToggleHeaderAsOverlay) {
+        if (mUserToggleHeaderAsOverlay == userToggleHeaderAsOverlay) return;
+        mUserToggleHeaderAsOverlay = userToggleHeaderAsOverlay;
+        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+        if (mUserToggleHeaderAsOverlay) {
+            prefs.addToStringSet(
+                    ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                    mClientPackageName);
+        } else {
+            prefs.removeFromStringSet(
+                    ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                    mClientPackageName);
+        }
+        updateHeaderAsOverlay();
+    }
+
+    public boolean getUserToggleHeaderAsOverlay() {
+        return mUserToggleHeaderAsOverlay;
     }
 
     private void updateHeaderAsOverlay() {
@@ -145,7 +177,8 @@ class WebAppHeaderLayoutMediator
                 mCurrentHeaderState != null
                         && mCurrentHeaderState.isInDesktopWindow()
                         && mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
-                        && !mBrowserControlsVisible;
+                        && !mBrowserControlsVisible
+                        && mUserToggleHeaderAsOverlay;
 
         final Tab tab = mTabSupplier.get();
         if (tab == null) return;
@@ -162,7 +195,9 @@ class WebAppHeaderLayoutMediator
     private void onLayoutWidthUpdated(int width) {
         mWidthSupplier.set(width);
 
-        // Update draggable area even if width hasn't changed, because children might've changed.
+        // Update background bars and draggable areas even if width hasn't changed, because
+        // children might've changed.
+        updateBackgroundBars();
         updateNonDraggableAreas();
     }
 
@@ -192,12 +227,26 @@ class WebAppHeaderLayoutMediator
 
         final int leftPadding = mCurrentHeaderState.getLeftPadding();
 
+        // This logic depends on all header controls being right-aligned.
+        int headerControlsLeftEdge = leftPadding + mCurrentHeaderState.getUnoccludedRectWidth();
+        List<Rect> controlPositions = mHeaderControlPositionSupplier.get();
+        if (controlPositions != null) {
+            for (Rect controlPosition : controlPositions) {
+                if (controlPosition.left < headerControlsLeftEdge) {
+                    headerControlsLeftEdge = controlPosition.left;
+                }
+            }
+        }
+
+        final int headerHeight =
+                Math.min(mCurrentHeaderState.getCaptionControlsHeight(), mHeaderButtonHeight);
+
         Rect cutoutRect =
                 new Rect(
                         leftPadding,
                         mCurrentHeaderState.getCaptionControlsTopOffset(),
-                        leftPadding + mCurrentHeaderState.getUnoccludedRectWidth(),
-                        mCurrentHeaderState.getAppHeaderHeight());
+                        headerControlsLeftEdge,
+                        mCurrentHeaderState.getCaptionControlsTopOffset() + headerHeight);
         mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS, Arrays.asList(cutoutRect));
 
         // The area passed to the web contents is different from the cutout specified in the app
@@ -207,11 +256,7 @@ class WebAppHeaderLayoutMediator
         // Therefore, the cutout rect should be offset vertically by the caption controls top offset
         // while the web contents WCO rect should not be offset vertically.
         webContents.updateWindowControlsOverlay(
-                new Rect(
-                        leftPadding,
-                        0,
-                        leftPadding + mCurrentHeaderState.getUnoccludedRectWidth(),
-                        mCurrentHeaderState.getCaptionControlsHeight()));
+                new Rect(leftPadding, 0, headerControlsLeftEdge, headerHeight));
     }
 
     @Override

@@ -108,7 +108,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.MINIMAL_UI,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package name");
 
         mShadowLooper.idle();
     }
@@ -189,7 +190,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.MINIMAL_UI,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package name");
 
         assertEquals(
                 "Header min height should match app header height",
@@ -239,7 +241,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.MINIMAL_UI,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package name");
         assertEquals(
                 "Header paddings should match updated system insets",
                 new Rect(0, 0, 0, 0),
@@ -292,7 +295,8 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.MINIMAL_UI,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package name");
         mShadowLooper.idle();
 
         mModel.get(WebAppHeaderLayoutProperties.WIDTH_CHANGED_CALLBACK).onResult(SCREEN_WIDTH);
@@ -588,12 +592,14 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.WINDOW_CONTROLS_OVERLAY,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package Name");
         setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mMediator.setUserToggleHeaderAsOverlay(true);
         mMediator.setBrowserControlsVisible(true);
-        verify(mSetHeaderAsOverlayCallback).onResult(false);
-        verify(mWebContents, times(2)).updateWindowControlsOverlay(new Rect());
+        verify(mSetHeaderAsOverlayCallback, times(2)).onResult(false);
+        verify(mWebContents, times(3)).updateWindowControlsOverlay(new Rect());
         assertEquals(
                 "Bars should be hidden when browser controls are visible",
                 null,
@@ -614,9 +620,11 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.WINDOW_CONTROLS_OVERLAY,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package Name");
         setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mMediator.setUserToggleHeaderAsOverlay(true);
         mMediator.setBrowserControlsVisible(false);
         verify(mSetHeaderAsOverlayCallback, times(2)).onResult(true);
         verify(mWebContents, times(2)).updateWindowControlsOverlay(WIDEST_UNOCCLUDED_RECT);
@@ -663,8 +671,10 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.WINDOW_CONTROLS_OVERLAY,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package Name");
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mMediator.setUserToggleHeaderAsOverlay(true);
         mMediator.setBrowserControlsVisible(false);
 
         final var areasBefore = mModel.get(WebAppHeaderLayoutProperties.NON_DRAGGABLE_AREAS);
@@ -702,8 +712,10 @@ public class WebAppHeaderLayoutMediatorTest {
                         SYS_APP_HEADER_HEIGHT,
                         HEADER_BUTTON_HEIGHT,
                         DisplayMode.WINDOW_CONTROLS_OVERLAY,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        "Package Name");
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
+        mMediator.setUserToggleHeaderAsOverlay(true);
         mMediator.setBrowserControlsVisible(false);
         mMediator.onSystemGestureExclusionRectsChanged(List.of(WIDEST_UNOCCLUDED_RECT));
 

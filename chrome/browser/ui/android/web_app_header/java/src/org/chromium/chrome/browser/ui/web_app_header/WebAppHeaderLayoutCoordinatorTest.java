@@ -151,7 +151,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         mAppMenuSupplier,
                         null,
                         mWindowAndroid,
-                        mRequestRenderRunnable);
+                        mRequestRenderRunnable,
+                        "Package name");
     }
 
     private void setupDesktopWindowing(boolean isInDesktopWindow) {

@@ -36,7 +36,6 @@ found in the LICENSE file.
         android:layout_gravity="start|center_vertical"
         app:tint="@color/default_icon_color_tint_list" />
 
-
     <FrameLayout
         android:id="@+id/web_app_menu_button_wrapper"
         style="@style/HeaderButton"
@@ -45,4 +44,13 @@ found in the LICENSE file.
         <include
             layout="@layout/menu_button" />
     </FrameLayout>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/wco_toggle_button"
+        style="@style/HeaderButton"
+        android:src="@drawable/window_controls_overlay_toggle"
+        android:contentDescription="@string/accessibility_toolbar_btn_menu"
+        android:visibility="gone"
+        android:layout_gravity="end|center_vertical"
+        app:tint="@color/default_icon_color_tint_list" />
 </org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout>

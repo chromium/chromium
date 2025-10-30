@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
@@ -101,6 +102,8 @@ public class WebAppHeaderLayoutCoordinator
     private final ObservableSupplierImpl<MenuButtonState> mMenuButtonStateSupplier =
             new ObservableSupplierImpl<>();
     private @Nullable View mMenuButtonContainer;
+    private final String mClientPackageName;
+    private @Nullable ChromeImageButton mToggleButtonView;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -123,7 +126,8 @@ public class WebAppHeaderLayoutCoordinator
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
             WindowAndroid activityWindowAndroid,
-            Runnable requestRenderRunnable) {
+            Runnable requestRenderRunnable,
+            @Nullable String clientPackageName) {
         assert browserServicesIntentDataProvider.isWebApkActivity()
                 || browserServicesIntentDataProvider.isTrustedWebActivity();
 
@@ -151,6 +155,9 @@ public class WebAppHeaderLayoutCoordinator
         buttonState.lightBadgeIcon = R.drawable.badge_update_light;
         buttonState.adaptiveBadgeIcon = R.drawable.badge_update;
         mMenuButtonStateSupplier.set(buttonState);
+
+        assert clientPackageName != null;
+        mClientPackageName = clientPackageName;
 
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -204,7 +211,8 @@ public class WebAppHeaderLayoutCoordinator
                         headerMinHeight,
                         headerButtonHeight,
                         mDisplayMode,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        mClientPackageName);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
         // Initial visibility state must be initialized after mediator is initialized.
@@ -215,6 +223,42 @@ public class WebAppHeaderLayoutCoordinator
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
             initMinUiControls();
         }
+
+        if (mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY) {
+            initWCOControls();
+        }
+    }
+
+    private void initWCOControls() {
+        assert mView != null;
+        assert mMediator != null;
+
+        mToggleButtonView = mView.findViewById(R.id.wco_toggle_button);
+        mToggleButtonView.setVisibility(View.VISIBLE);
+        syncToggleButtonView();
+        mToggleButtonView.setOnClickListener(
+                v -> {
+                    assert mMediator != null;
+                    mMediator.setUserToggleHeaderAsOverlay(
+                            !mMediator.getUserToggleHeaderAsOverlay());
+                    syncToggleButtonView();
+                });
+        mToggleButtonView.setForegroundTintList(mThemeColorProvider.getTint());
+    }
+
+    private void syncToggleButtonView() {
+        assert mView != null;
+        assert mMediator != null;
+        assert mToggleButtonView != null;
+
+        Resources resources = mView.getContext().getResources();
+        int level =
+                mMediator.getUserToggleHeaderAsOverlay()
+                        ? resources.getInteger(
+                                R.integer.window_controls_overlay_toggle_level_disable)
+                        : resources.getInteger(
+                                R.integer.window_controls_overlay_toggle_level_enable);
+        mToggleButtonView.getDrawable().setLevel(level);
     }
 
     private void initMinUiControls() {
@@ -338,6 +382,11 @@ public class WebAppHeaderLayoutCoordinator
             Rect rect = mMenuButtonCoordinator.getHitRect();
             View menuDescendent = mView.findViewById(R.id.menu_button_wrapper);
             mView.offsetDescendantRectToMyCoords(menuDescendent, rect);
+            areas.add(rect);
+        }
+        if (mToggleButtonView != null && mToggleButtonView.getVisibility() == View.VISIBLE) {
+            final var rect = new Rect();
+            mToggleButtonView.getHitRect(rect);
             areas.add(rect);
         }
 
@@ -469,6 +518,14 @@ public class WebAppHeaderLayoutCoordinator
     @Override
     public void onAndroidControlsVisibilityChanged(int visibility) {
         if (mMediator == null) return;
-        mMediator.setBrowserControlsVisible(visibility == View.VISIBLE);
+        boolean isVisible = visibility == View.VISIBLE;
+        if (mToggleButtonView != null) {
+            if (isVisible) {
+                mToggleButtonView.setVisibility(View.GONE);
+            } else {
+                mToggleButtonView.setVisibility(View.VISIBLE);
+            }
+        }
+        mMediator.setBrowserControlsVisible(isVisible);
     }
 }
