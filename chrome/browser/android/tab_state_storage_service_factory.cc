@@ -52,12 +52,6 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
 
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kTabStorageSqlitePrototype) ||
-      !base::FeatureList::IsEnabled(chrome::android::kTabCollectionAndroid)) {
-    return nullptr;
-  }
-
   Profile* profile = static_cast<Profile*>(context);
   std::unique_ptr<TabStateStorageBackend> tab_backend =
       std::make_unique<TabStateStorageBackend>(profile->GetPath());

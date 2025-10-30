@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -79,6 +81,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabModelSelectorBase mTabModelSelector;
     @Mock private TabModel mTabModel;
+    @Mock private TabStateStorageService mTabStateStorageService;
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<Supplier<TabModel>> mSupplierCaptor;
 
@@ -107,6 +110,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
         when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(1L);
+        TabStateStorageServiceFactory.setForTesting(mTabStateStorageService);
     }
 
     @After
