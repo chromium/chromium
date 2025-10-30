@@ -613,8 +613,14 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
     decoder_buffer->set_duration(chunk.buffer()->duration());
   }
 
-  bool is_key_frame = chunk.type() == V8EncodedVideoChunkType::Enum::kKey;
   if (verify_key_frame) {
+    if (chunk.type() != V8EncodedVideoChunkType::Enum::kKey) {
+      return media::DecoderStatus(
+          media::DecoderStatus::Codes::kKeyFrameRequired,
+          "A key frame is required after configure() or flush().");
+    }
+
+    bool is_key_frame = true;
     if (pending_codec_ == media::VideoCodec::kVP9 ||
         pending_codec_ == media::VideoCodec::kVP8) {
       ParseVpxKeyFrame(*decoder_buffer, pending_codec_, &is_key_frame);
@@ -657,7 +663,8 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
     if (!is_key_frame) {
       return media::DecoderStatus(
           media::DecoderStatus::Codes::kKeyFrameRequired,
-          "A key frame is required after configure() or flush().");
+          "An EncodedVideoChunk was marked as type `key` but wasn't a key frame"
+          ". A key frame is required after configure() or flush().");
     }
   }
 
