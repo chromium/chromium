@@ -16,6 +16,7 @@ class WebContents;
 
 namespace password_manager {
 enum class LogInWithChangedPasswordOutcome;
+struct PasswordForm;
 }
 
 // Helper class which handles Model Logging Quality logic and uploads the
@@ -93,6 +94,10 @@ class ModelQualityLogsUploader {
   // to begin the password change flow, which may indicate an incorrect
   // classification of the user's login state by the model.
   void LoginCheckSkipped();
+
+  // Called when the leak check is shown to the user. Sets information about the
+  // password form which triggered the leak check.
+  void SetPasswordFormInfo(const password_manager::PasswordForm& password_form);
 
   // Records the outcome of the first login attempt
   // using a previously saved APC-password and immediately

@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_change_service_interface.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 class GURL;
 
@@ -81,11 +82,8 @@ class ChromePasswordChangeService
   ~ChromePasswordChangeService() override;
 
   // Indicates that password change will be proposed to the user for a given
-  // `url`, `username` and `password`. `originator` belongs to a tab which
-  // initiated the process.
-  virtual void OfferPasswordChangeUi(const GURL& url,
-                                     const std::u16string& username,
-                                     const std::u16string& password,
+  // `credentials`. `originator` belongs to a tab which initiated the process.
+  virtual void OfferPasswordChangeUi(password_manager::PasswordForm credentials,
                                      content::WebContents* originator);
 
   // Responds with PasswordChangeDelegate for a given `web_contents`.

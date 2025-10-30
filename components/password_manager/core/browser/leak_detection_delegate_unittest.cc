@@ -427,8 +427,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(false), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
@@ -463,8 +462,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
 
@@ -502,8 +500,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ true)));
+                  form, /* in_account_store = */ true)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
 
@@ -543,8 +540,7 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
 
@@ -580,8 +576,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneLocalStore) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
 
@@ -616,8 +611,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneAccountStore) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ true)));
+                  form, /* in_account_store = */ true)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
 
@@ -643,8 +637,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, form);
 
@@ -790,8 +783,7 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
                             password_manager::CreateLeakType(
                                 IsSaved(false), IsReused(false),
                                 IsSyncing(false), HasChangePasswordUrl(true)),
-                            form.url, form.username_value, form.password_value,
-                            /* in_account_store = */ false)));
+                            form, /* in_account_store = */ false)));
   std::move(change_pwd_url_fetch_callback).Run();
 }
 
@@ -823,8 +815,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
                             password_manager::CreateLeakType(
                                 IsSaved(false), IsReused(false),
                                 IsSyncing(false), HasChangePasswordUrl(true)),
-                            form.url, form.username_value, form.password_value,
-                            /* in_account_store = */ false)));
+                            form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
@@ -867,8 +858,7 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(false), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
 
   delegate_interface->OnLeakDetectionDone(
       /*is_leaked=*/true, std::move(form));

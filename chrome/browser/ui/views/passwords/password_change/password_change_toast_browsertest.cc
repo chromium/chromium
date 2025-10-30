@@ -36,9 +36,13 @@ class PasswordChangeToastBrowserTest : public UiBrowserTest {
     tabs::TabInterface* tab_interface = browser()->GetActiveTabInterface();
     ASSERT_TRUE(tab_interface);
 
+    password_manager::PasswordForm form;
+    form.url = GURL(kTestChangePasswordUrl);
+    form.signon_realm = GURL(kTestChangePasswordUrl).GetWithEmptyPath().spec();
+    form.username_value = kTestUsername;
+    form.password_value = kTestPassword;
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
-        GURL(kTestChangePasswordUrl), kTestUsername, kTestPassword,
-        tab_interface);
+        GURL(kTestChangePasswordUrl), std::move(form), tab_interface);
 
     ui_controller_ = delegate_->ui_controller();
 

@@ -81,6 +81,11 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
           .WillByDefault(Return(true));
     }
 
+    password_manager::PasswordForm form;
+    form.url = main_url;
+    form.signon_realm = main_url.GetWithEmptyPath().spec();
+    form.username_value = u"username";
+    form.password_value = u"password";
     ManagePasswordsUIController::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents())
         ->OnCredentialLeak(password_manager::LeakedPasswordDetails(
@@ -89,7 +94,7 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
                 password_manager::IsReused(false),
                 password_manager::IsSyncing(true),
                 password_manager::HasChangePasswordUrl(true)),
-            GURL("https://example.com/"), u"username", u"password",
+            std::move(form),
             /*in_account_store=*/false));
   }
 

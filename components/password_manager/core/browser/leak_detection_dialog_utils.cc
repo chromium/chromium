@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,14 +30,10 @@ constexpr char kPasswordCheckupURL[] =
     "https://passwords.google.com/checkup/start?hideExplanation=true";
 
 LeakedPasswordDetails::LeakedPasswordDetails(CredentialLeakType leak_type,
-                                             GURL origin,
-                                             std::u16string username,
-                                             std::u16string password,
+                                             PasswordForm credentials,
                                              bool in_account_store)
     : leak_type(leak_type),
-      origin(std::move(origin)),
-      username(std::move(username)),
-      password(std::move(password)),
+      credentials(std::move(credentials)),
       in_account_store(in_account_store) {}
 LeakedPasswordDetails::LeakedPasswordDetails(const LeakedPasswordDetails&) =
     default;
@@ -48,9 +45,6 @@ LeakedPasswordDetails& LeakedPasswordDetails::operator=(
     const LeakedPasswordDetails&) = default;
 LeakedPasswordDetails& LeakedPasswordDetails::operator=(
     LeakedPasswordDetails&& other) = default;
-
-bool LeakedPasswordDetails::operator==(
-    const LeakedPasswordDetails& other) const = default;
 
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,

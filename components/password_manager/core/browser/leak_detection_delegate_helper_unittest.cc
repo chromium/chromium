@@ -68,8 +68,8 @@ class LeakDetectionDelegateHelperTestBase {
  protected:
   // Initiates determining the credential leak type.
   void InitiateGetCredentialLeakType() {
-    delegate_helper_->ProcessLeakedPassword(GURL(kLeakedOrigin),
-                                            kLeakedUsername, kLeakedPassword);
+    delegate_helper_->ProcessLeakedPassword(
+        CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword));
     task_environment_.RunUntilIdle();
   }
 
@@ -79,11 +79,10 @@ class LeakDetectionDelegateHelperTestBase {
       IsReused is_reused,
       IsSavedAsBackup is_saved_as_backup,
       std::vector<GURL> all_urls_with_leaked_credentials = {}) {
-    EXPECT_CALL(
-        callback_,
-        Run(in_stores, is_reused, is_saved_as_backup, GURL(kLeakedOrigin),
-            std::u16string(kLeakedUsername), std::u16string(kLeakedPassword),
-            all_urls_with_leaked_credentials))
+    PasswordForm form =
+        CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword);
+    EXPECT_CALL(callback_, Run(in_stores, is_reused, is_saved_as_backup, form,
+                               all_urls_with_leaked_credentials))
         .Times(1);
   }
 

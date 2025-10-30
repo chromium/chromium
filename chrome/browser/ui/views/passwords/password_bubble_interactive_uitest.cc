@@ -595,10 +595,15 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, LeakPromptHidesBubble) {
   ASSERT_NE(password_bubble, nullptr);
   views::test::WidgetVisibleWaiter(password_bubble).Wait();
 
+  auto origin = GURL("https://example.com");
+  PasswordForm form;
+  form.url = origin;
+  form.signon_realm = origin.GetWithEmptyPath().spec();
+  form.username_value = u"Eve";
+  form.password_value = u"password";
   GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
-      password_manager::CredentialLeakFlags::kPasswordSaved,
-      GURL("https://example.com"), std::u16string(u"Eve"),
-      std::u16string(u"password"), /*in_account_store=*/false));
+      password_manager::CredentialLeakFlags::kPasswordSaved, std::move(form),
+      /*in_account_store=*/false));
   views::test::WidgetDestroyedWaiter(password_bubble).Wait();
 }
 

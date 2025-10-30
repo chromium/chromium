@@ -527,7 +527,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
     }
 
     password_change_service->OfferPasswordChangeUi(
-        details.origin, details.username, details.password, web_contents());
+        std::move(details.credentials), web_contents());
     UpdateBubbleAndIconVisibility();
     return;
   }

@@ -60,9 +60,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
       PasswordForm::Store in_stores,
       IsReused is_reused,
       IsSavedAsBackup is_saved_as_backup,
-      GURL url,
-      std::u16string username,
-      std::u16string password,
+      PasswordForm credentials,
       std::vector<GURL> all_urls_with_leaked_credentials);
 
   // Notifies `client_` about leaked credentials.

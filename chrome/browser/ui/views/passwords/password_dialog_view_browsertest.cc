@@ -49,6 +49,18 @@ using ::testing::ReturnRef;
 
 namespace {
 
+password_manager::PasswordForm CreatePasswordForm(
+    const GURL& url,
+    const std::u16string& username,
+    const std::u16string& password) {
+  password_manager::PasswordForm password_form;
+  password_form.url = url;
+  password_form.signon_realm = url.GetWithEmptyPath().spec();
+  password_form.username_value = username;
+  password_form.password_value = password;
+  return password_form;
+}
+
 // ManagePasswordsUIController subclass to capture the dialog instance
 class TestManagePasswordsUIController : public ManagePasswordsUIController {
  public:
@@ -486,7 +498,8 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
   CredentialLeakType leak_type = CredentialLeakFlags::kPasswordSaved |
                                  CredentialLeakFlags::kPasswordUsedOnOtherSites;
   controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
-      leak_type, GURL("https://example.com"), u"Eve", u"qwerty",
+      leak_type,
+      CreatePasswordForm(GURL("https://example.com"), u"Eve", u"qwerty"),
       /*in_account_store=*/false));
   ASSERT_TRUE(controller()->current_credential_leak_widget());
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
@@ -559,7 +572,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
         CredentialLeakFlags::kPasswordUsedOnOtherSites;
 
     controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
-        leak_type, origin, u"Eve", u"qwerty",
+        leak_type, CreatePasswordForm(origin, u"Eve", u"qwerty"),
         /*in_account_store=*/false));
     return;
   }
