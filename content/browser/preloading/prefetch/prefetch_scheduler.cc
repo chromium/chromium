@@ -195,6 +195,19 @@ bool PrefetchQueue::MaybeUpdatePriority(PrefetchContainer& prefetch_container,
   return false;
 }
 
+std::optional<int> PrefetchQueue::GetIndexForMetrics(
+    const PrefetchContainer& prefetch_container) const {
+  for (int i = 0; const auto& it : queue_) {
+    if (it.prefetch_container.get() == &prefetch_container) {
+      return i;
+    }
+
+    ++i;
+  }
+
+  return std::nullopt;
+}
+
 PrefetchScheduler::PrefetchScheduler(PrefetchService* prefetch_service)
     : prefetch_service_(prefetch_service) {}
 

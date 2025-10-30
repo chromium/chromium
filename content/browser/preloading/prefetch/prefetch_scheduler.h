@@ -126,6 +126,9 @@ class PrefetchQueue {
   bool MaybeUpdatePriority(PrefetchContainer& prefetch_container,
                            PrefetchSchedulerPriority priority);
 
+  std::optional<int> GetIndexForMetrics(
+      const PrefetchContainer& prefetch_container) const;
+
  private:
   std::vector<PrefetchQueue::Item> queue_;
 };
@@ -195,6 +198,12 @@ class CONTENT_EXPORT PrefetchScheduler {
   void SetCalculatePriorityForTesting(
       base::RepeatingCallback<
           PrefetchSchedulerPriority(const PrefetchContainer&)> callback);
+
+  int GetQueueSizeForMetrics() const { return queue_.size(); }
+  std::optional<int> GetIndexForMetrics(
+      const PrefetchContainer& prefetch_container) const {
+    return queue_.GetIndexForMetrics(prefetch_container);
+  }
 
  private:
   PrefetchSchedulerPriority CalculatePriority(

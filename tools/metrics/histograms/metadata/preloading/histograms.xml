@@ -117,6 +117,16 @@ chromium-metrics-reviews@google.com.
       summary="Recorded when a prerender initial navigation failed. Metrics
                are about the prerender initial navigation."/>
   <variant
+      name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.FallbackAborted.Match0"
+      summary="Recorded when a prerender initial navigation failed and is
+               aborted by PrerenderURLLoaderThrottle. Metrics are about the
+               prerender initial navigation and the first prefetch matching."/>
+  <variant
+      name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.FallbackAborted.Match1"
+      summary="Recorded when a prerender initial navigation failed and is
+               aborted by PrerenderURLLoaderThrottle. Metrics are about the
+               prerender initial navigation and the second prefetch matching."/>
+  <variant
       name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.WithMatchDurationGe10000"
       summary="Recorded when a prerender initial navigation failed and the
                first prefetch matching took duration greater than or equal to
@@ -124,6 +134,11 @@ chromium-metrics-reviews@google.com.
   <variant name="PreloadServingMetrics.ForPrerenderInitialNavigationUsed"
       summary="Recorded when a prerender activation is committed. Metrics are
                about the prerender initial navigation that is used."/>
+</variants>
+
+<variants name="PreloadServingMetricsPrerenderFallbackMatchSuffix">
+  <variant name=".Match0" summary="For the first prefetch matching."/>
+  <variant name=".Match1" summary="For the second prefetch matching."/>
 </variants>
 
 <variants name="WithPreloadSuffix">
@@ -381,6 +396,98 @@ chromium-metrics-reviews@google.com.
     The number of prefetches that are matched with a navigation.
 
     Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaop"
+    units="bool" expires_after="2026-03-29">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether a prefetch ahead of prerender existed at the timing of prefetch
+    matching.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.PotentialCandidateServingResultAndServableStateAndMatcherAction"
+    units="code" expires_after="2026-03-29">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The combination of `PrefetchPotentialCandidateServingResult`,
+    `PrefetchServableState`, and `PrefetchMatchResolverAction`.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.PrefetchStatus"
+    enum="PrefetchStatus" expires_after="2026-03-29">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The status of the prefetch at the timing of prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.QueueIndexPlus1"
+    units="count" expires_after="2026-03-29">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The index of the prefetch in the queue, plus one. 0 if the prefetch is not
+    in the queue at the timing of prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.QueueSize"
+    units="count" expires_after="2026-03-29">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The size of the prefetch queue at the timing of prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.ServableStateAndMatcherAction"
+    units="code" expires_after="2026-03-29">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The servable state of the prefetch and the PrefetchMatchResolver's action
+    taken.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
   </summary>
   <token key="PreloadServingMetricsPrefix"
       variants="PreloadServingMetricsPrefix"/>
