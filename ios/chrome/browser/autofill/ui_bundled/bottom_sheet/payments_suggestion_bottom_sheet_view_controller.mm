@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -112,11 +113,11 @@ CGFloat const kTitleLogoHeight = 32;
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.actionHandler = self;
 
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
-  self.secondaryActionImage =
+  self.configuration.secondaryActionImage =
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
