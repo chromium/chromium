@@ -255,7 +255,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             initWithBackgroundColor:hueSliderColor
                        colorVariant:ui::ColorProviderKey::SchemeVariant::
                                         kTonalSpot
-                  accessibilityName:@""];
+                  accessibilityName:
+                      l10n_util::GetNSString(
+                          IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_CUSTOM_ACCESSIBILITY_LABEL)];
     customHueConfiguration.isCustomColor = isCustomColor;
     collectionConfiguration
         .configurations[customHueConfiguration.configurationID] =

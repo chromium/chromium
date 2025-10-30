@@ -365,6 +365,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   NewTabPageColorPalette* colorPalette =
       [_customColorConfiguration colorPalette];
   cell.color = colorPalette.lightColor;
+  cell.accessibilityLabel = _customColorConfiguration.accessibilityName;
 
   // Since there's a custom color applied, the custom color cell should be
   // initially selected.

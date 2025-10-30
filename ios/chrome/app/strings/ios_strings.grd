@@ -2965,6 +2965,9 @@
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_CITRON_ACCESSIBILITY_LABEL" desc="Accessibility label for the 'Citron' color theme.">
         Citron theme
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_CUSTOM_ACCESSIBILITY_LABEL" desc="Accessibility label for a custom, user-defined background color theme.">
+        Custom color theme
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_COLOR_DEFAULT_ACCESSIBILITY_LABEL" desc="Accessibility label for the 'Default' color theme.">
         Default theme
       </message>
