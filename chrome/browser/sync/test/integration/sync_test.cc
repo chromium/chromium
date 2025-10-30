@@ -480,6 +480,10 @@ syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
       ->GetRegisteredSelectableTypes();
 }
 
+SyncTest::SetupSyncMode SyncTest::GetSetupSyncMode() const {
+  return kSyncTheFeature;
+}
+
 std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>>
 SyncTest::GetSyncServices() {
   std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
@@ -620,9 +624,9 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   EXPECT_NE(nullptr, GetClient(index)) << "Could not create Client " << index;
 }
 
-bool SyncTest::SetupSyncInternal(SyncTestAccount account,
-                                 SetupSyncMode setup_mode,
-                                 SyncWaitCondition wait_condition) {
+bool SyncTest::SetupSyncInternal(SetupSyncMode setup_mode,
+                                 SyncWaitCondition wait_condition,
+                                 SyncTestAccount account) {
   // Create sync profiles and clients if they haven't already been created.
   if (profiles_.empty()) {
     if (!SetupClients()) {
@@ -729,15 +733,18 @@ bool SyncTest::SetupSyncInternal(SyncTestAccount account,
   return true;
 }
 
-bool SyncTest::SetupSync(SetupSyncMode setup_mode,
-                         SyncWaitCondition wait_condition) {
-  return SetupSync(SyncTestAccount::kDefaultAccount, setup_mode,
-                   wait_condition);
+bool SyncTest::SetupSync(SyncWaitCondition wait_condition) {
+  return SetupSync(SyncTestAccount::kDefaultAccount, wait_condition);
 }
 
 bool SyncTest::SetupSync(SyncTestAccount account,
-                         SetupSyncMode setup_mode,
                          SyncWaitCondition wait_condition) {
+  return SetupSyncWithMode(GetSetupSyncMode(), wait_condition, account);
+}
+
+bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
+                                 SyncWaitCondition wait_condition,
+                                 SyncTestAccount account) {
 #if BUILDFLAG(IS_ANDROID)
   // For Android, currently the framework only supports one client.
   // The client uses the default profile.
@@ -747,7 +754,7 @@ bool SyncTest::SetupSync(SyncTestAccount account,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  if (!SetupSyncInternal(account, setup_mode, wait_condition)) {
+  if (!SetupSyncInternal(setup_mode, wait_condition, account)) {
     return false;
   }
 

@@ -203,6 +203,11 @@ class SyncTest : public PlatformBrowserTest,
   // the SyncServiceImpl at the given |index|.
   syncer::UserSelectableTypeSet GetRegisteredSelectableTypes(int index);
 
+  // Returns the SetupSyncMode to be used for setting up sync.
+  // Subclasses should override this method to specify the desired mode, often
+  // in conjunction with test parameterization.
+  virtual SetupSyncMode GetSetupSyncMode() const;
+
   // Returns a pointer to the sync profile that is used to verify changes to
   // individual sync profiles. Callee owns the object and manages its lifetime.
   Profile* verifier();
@@ -219,14 +224,18 @@ class SyncTest : public PlatformBrowserTest,
   [[nodiscard]] virtual bool SetupClients();
 
   // Initializes sync clients and waits for different stages to complete
-  // depending on |setup_mode|.
+  // depending on `wait_condition`.
   [[nodiscard]] bool SetupSync(
-      SetupSyncMode setup_mode = kSyncTheFeature,
       SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
   [[nodiscard]] bool SetupSync(
       SyncTestAccount account,
-      SetupSyncMode setup_mode = kSyncTheFeature,
       SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE);
+  // Should only be used if SetupSync() doesn't work, i.e. `setup_mode` needs to
+  // be changed during the test.
+  [[nodiscard]] bool SetupSyncWithMode(
+      SetupSyncMode setup_mode,
+      SyncWaitCondition wait_condition = WAIT_FOR_COMMITS_TO_COMPLETE,
+      SyncTestAccount account = SyncTestAccount::kDefaultAccount);
 
   // This is similar to click the reset button on chrome.google.com/data.
   // Only takes effect when running with external servers.
@@ -336,9 +345,9 @@ class SyncTest : public PlatformBrowserTest,
   void InitializeProfile(int index, Profile* profile);
 
   // Internal routine for setting up sync.
-  [[nodiscard]] bool SetupSyncInternal(SyncTestAccount account,
-                                       SetupSyncMode setup_mode,
-                                       SyncWaitCondition wait_condition);
+  [[nodiscard]] bool SetupSyncInternal(SetupSyncMode setup_mode,
+                                       SyncWaitCondition wait_condition,
+                                       SyncTestAccount account);
 
   // Used to determine whether ARC_PACKAGE data type needs to be enabled. This
   // is applicable on ChromeOS-Ash platform only.
