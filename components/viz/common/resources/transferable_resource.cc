@@ -17,6 +17,7 @@ TransferableResource TransferableResource::Make(
     const gpu::SyncToken& sync_token,
     const MetadataOverride& override) {
   CHECK(shared_image);
+
   TransferableResource resource;
   resource.is_software = shared_image->is_software();
   resource.memory_buffer_id_ = shared_image->mailbox();
@@ -24,8 +25,8 @@ TransferableResource TransferableResource::Make(
   resource.resource_source = source;
   resource.format = shared_image->format();
   resource.set_texture_target(shared_image->GetTextureTarget());
+  resource.size = shared_image->size();
 
-  resource.size = override.size.value_or(shared_image->size());
   // Passed in format must be either single or multiplane and not default set.
   CHECK(resource.format.is_single_plane() || resource.format.is_multi_plane());
   resource.is_overlay_candidate = override.is_overlay_candidate.value_or(

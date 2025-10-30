@@ -36,7 +36,6 @@ struct ReturnedResource;
 
 struct VIZ_COMMON_EXPORT TransferableResource {
   struct VIZ_COMMON_EXPORT MetadataOverride {
-    std::optional<gfx::Size> size;
     std::optional<bool> is_overlay_candidate;
     std::optional<gfx::ColorSpace> color_space;
     std::optional<GrSurfaceOrigin> origin;

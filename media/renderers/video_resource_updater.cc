@@ -814,7 +814,6 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwareFrame(
           : kUnpremul_SkAlphaType;
 
   viz::TransferableResource::MetadataOverride overrides = {
-      .size = video_frame->coded_size(),
       .is_overlay_candidate = video_frame->metadata().allow_overlay,
       .color_space = video_frame->ColorSpace(),
       .alpha_type = alpha_type,
