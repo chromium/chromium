@@ -20,5 +20,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.SOURCE)
 public @interface OneTimeTokensBackendErrorCode {
     int GMSCORE_VERSION_NOT_SUPPORTED = 0;
-    int MAX_VALUE = GMSCORE_VERSION_NOT_SUPPORTED;
+    // Upper bound for RecordHistogram.recordEnumeratedHistogram, must be at least 2 according to
+    // https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram.cc;l=896-902;drc=0c40cb5b64021b4fe5d35a69ac7bfb29e2ce2e35
+    // MAX_VALUE must be updated when new error codes are added exceeding 2.
+    int MAX_VALUE = 2;
 }
