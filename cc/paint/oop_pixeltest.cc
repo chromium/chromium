@@ -310,10 +310,11 @@ class OopPixelTest : public testing::Test,
     return client_shared_image;
   }
 
-  void UploadPixels(gpu::raster::RasterInterface* ri,
-                    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-                    const SkImageInfo& info,
-                    const SkBitmap& bitmap) {
+  gpu::SyncToken UploadPixels(
+      gpu::raster::RasterInterface* ri,
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      const SkImageInfo& info,
+      const SkBitmap& bitmap) {
     auto ri_access = shared_image->BeginRasterAccess(
         ri, shared_image->creation_sync_token(), /*readonly=*/false);
     ri->WritePixels(shared_image->mailbox(), /*dst_x_offset=*/0,
@@ -321,7 +322,7 @@ class OopPixelTest : public testing::Test,
                     /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
-    gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    return gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   }
 
   void UploadPixelsYUV(
@@ -2687,12 +2688,15 @@ TEST_F(OopPixelTest, WritePixels) {
       SkImageInfo::MakeN32Premul(dest_size.width(), dest_size.height()),
       expected_pixels.data(), dest_size.width() * sizeof(SkColor));
 
-  UploadPixels(ri, dest_client_si, expected.info(), expected);
+  gpu::SyncToken sync_token =
+      UploadPixels(ri, dest_client_si, expected.info(), expected);
 
+  auto ri_access =
+      dest_client_si->BeginRasterAccess(ri, sync_token, /*readonly=*/true);
   SkBitmap actual =
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+
   sii->DestroySharedImage(sync_token, std::move(dest_client_si));
   ExpectEquals(actual, expected);
 }
