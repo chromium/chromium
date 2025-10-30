@@ -236,9 +236,15 @@ export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
 
     if (changedPrivateProperties.has('showCustomizeButtons_') &&
         this.showCustomizeButtons_) {
+      // Anchoring on the internal icon of the button is required here because
+      // the button may collapse (when the main view reaches a minimum width
+      // size). The collapse happens by hiding a text, which does not trigger
+      // the appropriate notifications for the help bubble to reposition
+      // properly. Anchoring to the icon ensures that the help bubble adapts
+      // accordingly.
       this.registerHelpBubble(
           CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
-          ['ntp-customize-buttons', '#customizeButton'], {fixed: true});
+          ['ntp-customize-buttons', '.customize-icon'], {anchorPaddingTop: 10});
       this.handler_.notifyCustomizationButtonVisible();
     }
   }
