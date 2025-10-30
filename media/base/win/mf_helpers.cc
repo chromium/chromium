@@ -1,12 +1,6 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/win/mf_helpers.h"
 
 #include <initguid.h>
@@ -21,7 +15,12 @@
 #include <mmreg.h>
 #include <wrl.h>
 
+#include <algorithm>
+#include <string_view>
+
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -300,12 +299,24 @@ HRESULT CopyCoTaskMemWideString(LPCWSTR in_string, LPWSTR* out_string) {
     return E_INVALIDARG;
   }
 
-  size_t size = (wcslen(in_string) + 1) * sizeof(wchar_t);
+  std::wstring_view input_str_view = in_string;
+  // `wstring_view::size()` doesn't count the null-terminator.
+  const size_t size_in_chars = input_str_view.size() + 1;
+  const size_t size = size_in_chars * sizeof(wchar_t);
   LPWSTR copy = reinterpret_cast<LPWSTR>(CoTaskMemAlloc(size));
-  if (!copy)
+  if (!copy) {
     return E_OUTOFMEMORY;
+  }
 
-  wcscpy(copy, in_string);
+  // SAFETY: We've just allocated sufficient memory with `CoTaskMemAlloc`
+  // to fit `size_in_chars` characters.
+  auto out_span = UNSAFE_BUFFERS(base::span(copy, size_in_chars));
+
+  // Put a null-terminator at the end of the string.
+  *out_span.rbegin() = 0;
+  // Copy the real characters.
+  out_span.copy_prefix_from(base::span(input_str_view));
+
   *out_string = copy;
   return S_OK;
 }
@@ -364,12 +375,12 @@ ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config) {
 // GUID is little endian. The byte array in network order is big endian.
 std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid) {
   std::vector<uint8_t> byte_array(sizeof(GUID));
-  GUID* reversed_guid = reinterpret_cast<GUID*>(byte_array.data());
-  *reversed_guid = guid;
-  reversed_guid->Data1 = _byteswap_ulong(guid.Data1);
-  reversed_guid->Data2 = _byteswap_ushort(guid.Data2);
-  reversed_guid->Data3 = _byteswap_ushort(guid.Data3);
+  auto writer = base::SpanWriter(base::span(byte_array));
+  CHECK(writer.WriteU32BigEndian(guid.Data1));
+  CHECK(writer.WriteU16BigEndian(guid.Data2));
+  CHECK(writer.WriteU16BigEndian(guid.Data3));
   // Data4 is already a byte array so no need to byte swap.
+  writer.remaining_span().copy_from(base::span(guid.Data4));
   return byte_array;
 }
 
@@ -470,8 +481,10 @@ HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
 
   size_t wave_format_size = sizeof(HEAACWAVEINFO) + extra_data.size();
   std::vector<uint8_t> wave_format_buffer(wave_format_size);
+  // TODO(crbug.com/40285824): Spanify this usage. This is somewhat iffy from
+  // alignment point of view.
   HEAACWAVEINFO* aac_wave_format =
-      reinterpret_cast<HEAACWAVEINFO*>(wave_format_buffer.data());
+      UNSAFE_TODO(reinterpret_cast<HEAACWAVEINFO*>(wave_format_buffer.data()));
 
   aac_wave_format->wfx.wFormatTag = WAVE_FORMAT_MPEG_HEAAC;
   aac_wave_format->wfx.nChannels = decoder_config.channels();
@@ -491,8 +504,9 @@ HRESULT GetAacAudioType(const AudioDecoderConfig& decoder_config,
   aac_wave_format->dwReserved2 = 0;
 
   if (!extra_data.empty()) {
-    memcpy(reinterpret_cast<uint8_t*>(aac_wave_format) + sizeof(HEAACWAVEINFO),
-           extra_data.data(), extra_data.size());
+    base::span(wave_format_buffer)
+        .subspan(sizeof(HEAACWAVEINFO))
+        .copy_from(extra_data);
   }
 
   RETURN_IF_FAILED(MFInitMediaTypeFromWaveFormatEx(
@@ -685,7 +699,9 @@ HRESULT GenerateSampleFromDecoderBuffer(
   BYTE* mf_buffer_data = nullptr;
   DWORD max_length = 0;
   RETURN_IF_FAILED(mf_buffer->Lock(&mf_buffer_data, &max_length, 0));
-  memcpy(mf_buffer_data, buffer_span.data(), buffer_span.size());
+  // SAFETY: `IMFMediaBuffer::Lock` returns buffer size via `max_length`
+  auto mf_buffer_span = UNSAFE_BUFFERS(base::span(mf_buffer_data, max_length));
+  mf_buffer_span.copy_prefix_from(buffer_span);
   RETURN_IF_FAILED(mf_buffer->SetCurrentLength(buffer_span.size()));
   RETURN_IF_FAILED(mf_buffer->Unlock());
 
@@ -749,7 +765,9 @@ HRESULT CreateDecryptConfigFromSample(
   if (!iv) {
     return E_OUTOFMEMORY;
   }
-  ZeroMemory(iv, iv_length * sizeof(BYTE));
+  // SAFETY: `IMFSample::GetBlobSize` returns size via `iv_length`.
+  auto iv_span = UNSAFE_BUFFERS(base::span(iv.get(), iv_length));
+  std::ranges::fill(iv_span, 0);
   RETURN_IF_FAILED(mf_sample->GetBlob(MFSampleExtension_Encryption_SampleID, iv,
                                       iv_length, nullptr));
 
@@ -764,22 +782,24 @@ HRESULT CreateDecryptConfigFromSample(
           MFSampleExtension_Encryption_SubSample_Mapping,
           reinterpret_cast<uint8_t**>(&subsample_mappings),
           &subsample_mappings_size))) {
-    if (subsample_mappings_size >= sizeof(MediaFoundationSubsampleEntry)) {
-      uint32_t subsample_count =
-          subsample_mappings_size / sizeof(MediaFoundationSubsampleEntry);
-      for (uint32_t i = 0; i < subsample_count; ++i) {
-        DVLOG(3) << __func__ << ": subsample_mappings[" << i
-                 << "].clear_bytes=" << subsample_mappings[i].clear_bytes
-                 << ", cipher_bytes=" << subsample_mappings[i].cipher_bytes;
-        subsamples.emplace_back(subsample_mappings[i].clear_bytes,
-                                subsample_mappings[i].cipher_bytes);
-      }
+    // SAFETY: `IMFSample::GetAllocatedBlob` returns the size in bytes via
+    // `subsample_mappings_size`, we get the number of entries by dividing
+    // it by the entry size.
+    auto mappings_span = UNSAFE_BUFFERS(base::span(
+        subsample_mappings.get(),
+        subsample_mappings_size / sizeof(MediaFoundationSubsampleEntry)));
+
+    for (MediaFoundationSubsampleEntry& entry : mappings_span) {
+      DVLOG(3) << __func__ << ": subsample_mapping"
+               << ".clear_bytes=" << entry.clear_bytes
+               << ", cipher_bytes=" << entry.cipher_bytes;
+      subsamples.emplace_back(entry.clear_bytes, entry.cipher_bytes);
     }
   }
 
   // Key ID
   const auto key_id_string = GetStringFromGUID(key_id);
-  const auto iv_string = std::string(iv.get(), iv.get() + iv_length);
+  const auto iv_string = std::string(iv_span.begin(), iv_span.end());
   DVLOG(3) << __func__ << ": key_id_string=" << key_id_string
            << ", iv_string=" << iv_string
            << ", iv_string.size()=" << iv_string.size();

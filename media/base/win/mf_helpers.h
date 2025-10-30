@@ -96,7 +96,8 @@ class MEDIA_EXPORT MediaBufferScopedPointer {
   base::raw_span<uint8_t> data_;
 };
 
-// Copies |in_string| to |out_string| that is allocated with CoTaskMemAlloc().
+// Copies null-terminated `in_string` to `out_string`
+// that is allocated with CoTaskMemAlloc().
 MEDIA_EXPORT HRESULT CopyCoTaskMemWideString(LPCWSTR in_string,
                                              LPWSTR* out_string);
 
