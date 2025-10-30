@@ -30,6 +30,17 @@ class PageEmbeddingsService;
 
 namespace contextual_tasks {
 
+enum class ContextDeterminationStatus {
+  kSuccess = 0,
+  kEmbedderNotAvailable = 1,
+  kQueryEmbeddingFailed = 2,
+  kQueryEmbeddingOutputMalformed = 3,
+
+  // Keep in sync with ContextualTasksContextDeterminationStatus in
+  // contextual_tasks/enums.xml.
+  kMaxValue = kQueryEmbeddingOutputMalformed,
+};
+
 // A service used to determine the relevant context for a given task.
 class ContextualTasksContextService
     : public KeyedService,

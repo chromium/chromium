@@ -29,6 +29,11 @@ namespace {
       optimization_guide_keyed_service_->GetOptimizationGuideLogger(),       \
       (message))
 
+void RecordContextDeterminationStatus(ContextDeterminationStatus status) {
+  base::UmaHistogramEnumeration(
+      "ContextualTasks.Context.ContextDeterminationStatus", status);
+}
+
 }  // namespace
 
 ContextualTasksContextService::ContextualTasksContextService(
@@ -56,6 +61,8 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
 
   if (!is_embedder_available_) {
     AUTO_CONTEXT_LOG("Embedder not available");
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kEmbedderNotAvailable);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   std::vector<content::WebContents*>({})));
@@ -90,6 +97,8 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
     AUTO_CONTEXT_LOG(
         base::StringPrintf("Query embedding for %s failed", query));
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kQueryEmbeddingFailed);
     std::move(callback).Run({});
     return;
   }
@@ -97,9 +106,13 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   if (embeddings.size() != 1u) {
     AUTO_CONTEXT_LOG(base::StringPrintf(
         "Query embedding for %s had unexpected output", query));
+    RecordContextDeterminationStatus(
+        ContextDeterminationStatus::kQueryEmbeddingOutputMalformed);
     std::move(callback).Run({});
     return;
   }
+
+  RecordContextDeterminationStatus(ContextDeterminationStatus::kSuccess);
 
   AUTO_CONTEXT_LOG(
       base::StringPrintf("Processing query embedding for %s", query));

@@ -34,6 +34,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.Context.ContextDeterminationStatus"
+    enum="ContextualTasksContextDeterminationStatus" expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>abhayprakash@google.com</owner>
+  <summary>
+    Recorded every time a query is entered by the user (before being sent) in
+    the contextual tasks framework. Records the status of context determination
+    (success or failure reason).
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.Context.RelevantTabsCount" units="count"
     expires_after="2026-03-22">
   <owner>sophiechang@chromium.org</owner>

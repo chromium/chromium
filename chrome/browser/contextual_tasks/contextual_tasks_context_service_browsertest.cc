@@ -223,6 +223,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
                                     0);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.ContextCalculationLatency", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kEmbedderNotAvailable, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
@@ -242,6 +245,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmbedderFailed) {
                                     0);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.ContextCalculationLatency", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kQueryEmbeddingFailed, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -260,6 +266,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.RelevantTabsCount", 0, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.ContextCalculationLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
@@ -293,6 +302,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.ContextCalculationLatency", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SkipsNonHttp) {
